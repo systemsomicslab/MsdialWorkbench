@@ -1,0 +1,63 @@
+﻿<Window x:Class="Msdial.DendrogramTest.DendrogramPlotTestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Msdial.DendrogramTest"
+        mc:Ignorable="d"
+        xmlns:dendrogramplot="clr-namespace:Msdial.Dendrogram;assembly=Dendrogram"
+        xmlns:axis="clr-namespace:Msdial.AxisControl;assembly=GraphAxisControl"
+        Name="mainwindow"
+        Title="DendrogramPlotTest" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="7*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Button
+            Content="Show"
+            Click="Button_Click"
+            Width="60"
+            Margin="5,5,5,5"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Grid.Row="0"
+            Grid.Column="0"/>
+        <dendrogramplot:DendrogramPlotControl
+            Name="dendrogram"
+            Dendrogram="{Binding Dendrogram}"
+            Root="{Binding Root}"
+            XPositions="{Binding XPositions}"
+            YPositions="{Binding YPositions}"
+            XDisplayMin="{Binding DisplayMinX}"
+            XDisplayMax="{Binding DisplayMaxX}"
+            YDisplayMin="{Binding DisplayMinY}"
+            YDisplayMax="{Binding DisplayMaxY}"
+            LeafIdxs="{Binding LeafIdxs, Mode=OneWay}"
+            Grid.Row="1"
+            Grid.Column="1" />
+        <axis:CategoryHorizontalAxisControl
+            Grid.Row ="2" Grid.Column="1"
+            XLabels="{Binding LabelCollection}"
+            XPositions="{Binding XLeafPositions, Mode=OneWay}"
+            XMin="{Binding XDisplayMin, ElementName=dendrogram}"
+            XMax="{Binding XDisplayMax, ElementName=dendrogram}"
+            Rotate="30" />
+        <axis:ContinuousVerticalAxisControl
+            Grid.Row="1" Grid.Column="0"
+            Direction="Right"
+            YMin="{Binding YDisplayMin, ElementName=dendrogram}"
+            YMax="{Binding YDisplayMax, ElementName=dendrogram}" />
+        <ListBox Width="200"
+            Margin="5,5,5,5"
+            Grid.Column="2" Grid.Row="1"
+            ItemsSource="{Binding LabelCollection}"
+            SelectedIndex="{Binding SelectedIdx}" />
+    </Grid>
+</Window>

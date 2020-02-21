@@ -1,0 +1,34 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.DownloadOnlineMsMsRecordWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Download online MS/MS records" Height="200" Width="545">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Download folder: " />
+        <TextBox Name="TextBox_DownloadFolderPath" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="30" Text="" Margin="105, 5, 90, 5" />
+        <Button Name="Button_DownloadFolder" Click="Button_DownloadFolder_Click" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Browse" Height="30" Width="75" Margin="0,0,5,0" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Label HorizontalAlignment="Left" VerticalAlignment="Center" Content="Directories: " />
+            <CheckBox Name="CheckBox_MoNA"  IsChecked="True" Content="MoNA" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="32,0,0,0" />
+            <CheckBox Name="CheckBox_MassBank" IsEnabled="False" Content="MassBank" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label HorizontalAlignment="Left" VerticalAlignment="Center" Content="Ion mode: " />
+            <RadioButton IsChecked="True" Name="RadioButton_Both" Content="Both" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="37,0,0,0" />
+            <RadioButton Name="RadioButton_Positive" Content="Positive" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" />
+            <RadioButton Name="RadioButton_Negative" Content="Negative" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="10,0,0,0" />
+        </StackPanel>
+
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="3" Height="30" Width="75" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Download" Content="Download" Click="Download_Click" Grid.Row="3" Height="30" Width="75" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,90,5" />
+
+    </Grid>
+</Window>

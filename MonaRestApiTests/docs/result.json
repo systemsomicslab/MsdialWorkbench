@@ -1,0 +1,160 @@
+[
+  {
+    "compounds": [
+      {
+        "comments": [ ],
+        "id": 1092190,
+        "inchi": "InChI=1S/C9H11NO2/c1-2-12-9(11)7-3-5-8(10)6-4-7/h3-6H,2,10H2,1H3",
+        "inchiKey": "BLFLLBZGZJTVJG-UHFFFAOYSA-N",
+        "lastUpdated": "2015-09-11T14:59:38Z",
+        "metaData": [
+          {
+            "category": "external id",
+            "computed": true,
+            "dateCreated": "2015-09-14T15:28:14Z",
+            "deleted": false,
+            "hidden": false,
+            "id": 5440912,
+            "lastUpdated": "2015-09-14T15:28:14Z",
+            "metaDataId": "5403558",
+            "name": "Pubchem SID",
+            "reasonForSuspicion": "",
+            "score": null,
+            "suspect": false,
+            "type": "string",
+            "unit": null,
+            "url": "https://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?sid=104668186",
+            "value": "104668186"
+          }
+        ],
+        "molFile": "\n  CDK     0924151040\n\n 12 12  0  0  0  0  0  0  0  0999 V2000\n   -3.8971    6.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5981    6.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5981    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5981   -0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2990    2.2500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2990   -0.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2990    3.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2990   -2.2500    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    4.5000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5981    4.5000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  2  1  1  0  0  0  0 \n  5  3  1  0  0  0  0 \n  6  4  2  0  0  0  0 \n  7  3  2  0  0  0  0 \n  7  4  1  0  0  0  0 \n  8  5  2  0  0  0  0 \n  8  6  1  0  0  0  0 \n  9  7  1  0  0  0  0 \n 10  8  1  0  0  0  0 \n 11  9  2  0  0  0  0 \n 12  2  1  0  0  0  0 \n 12  9  1  0  0  0  0 \nM  END\n",
+        "names": [
+          {
+            "computed": false,
+            "lastUpdated": "2015-09-11T14:59:38Z",
+            "name": "ETHYL PARA AMINO BENZOATE",
+            "score": null,
+            "source": "user provided"
+          }
+        ],
+        "tags": [
+          {
+            "ruleBased": false,
+            "text": "derivative/adduct doesn't match predicted compound!"
+          }
+        ]
+      }
+    ],
+    "comments": [ ],
+    "deleted": false,
+    "id": 2567663,
+    "lastUpdated": "2015-09-11T15:35:05Z",
+    "library": {
+      "dateCreated": "2016-03-02T13:09:26Z",
+      "description": "MassBank Spectral Database",
+      "id": 50305168,
+      "library": "MassBank",
+      "link": "http://www.massbank.jp/jsp/FwdRecord.jsp?id=%s",
+      "tag": {
+        "ruleBased": false,
+        "text": "massbank"
+      }
+    },
+    "libraryIdentifier": "PR010193",
+    "metaData": [
+      {
+        "category": "none",
+        "computed": false,
+        "dateCreated": "2015-09-11T15:35:05Z",
+        "deleted": false,
+        "hidden": false,
+        "id": 2568317,
+        "lastUpdated": "2015-09-11T15:35:05Z",
+        "metaDataId": "843",
+        "name": "data processing",
+        "reasonForSuspicion": "",
+        "score": null,
+        "suspect": false,
+        "type": "string",
+        "unit": null,
+        "url": null,
+        "value": "WHOLE ChromaTOF ver. 2.32 (Leco)"
+      },
+      {
+        "category": "mass spectrometry",
+        "computed": false,
+        "dateCreated": "2015-12-04T23:22:18Z",
+        "deleted": false,
+        "hidden": false,
+        "id": 50199045,
+        "lastUpdated": "2015-12-04T23:22:18Z",
+        "metaDataId": "112",
+        "name": "ion mode",
+        "reasonForSuspicion": "",
+        "score": null,
+        "suspect": false,
+        "type": "string",
+        "unit": null,
+        "url": null,
+        "value": "positive"
+      }
+    ],
+    "queryOptions": {
+      "nameSimilarity": 1.0
+    },
+    "score": {
+      "impacts": [
+        {
+          "impactValue": 0.1,
+          "reason": "score was adjusted by '0.1' because object did have metadata field 'instrument type'"
+        },
+        {
+          "impactValue": -0.1,
+          "reason": "score was adjusted by '-0.1' because object failed to have metadata field 'ri'"
+        }
+      ],
+      "relativeScore": 0.1180124223602484,
+      "scaledScore": 5.590062111801242,
+      "score": 0.18999999999999997
+    },
+    "spectrum": "63:1.401401 64:1.201201 70:0.600601 72:0.600601 73:16.616617 82:0.1001 96:0.1001 99:0.3003 102:0.500501 122:0.3003 124:0.1001 130:0.4004 131:0.3003 132:1.001001 133:1.701702 134:4.404404 136:1.101101 138:0.500501 141:0.1001 142:0.1001 143:0.4004 145:0.1001 146:2.802803 147:0.600601 148:14.114114 149:32.532533 150:25.325325 151:2.202202 152:0.4004 154:0.1001 155:0.1001 160:1.101101 162:6.306306 163:4.604605 164:3.403403 165:1.501502 166:4.304304 167:1.101101 168:0.3003 169:0.2002 170:0.4004 172:0.1001 174:0.4004 175:0.1001 176:25.525526 177:3.603604 178:5.305305 179:1.401401 180:0.500501 185:0.1001 187:0.2002 190:0.500501 192:41.741742 193:8.908909 194:26.326326 195:6.106106 196:0.900901 197:0.3003 199:0.2002 203:0.1001 204:0.500501 206:0.3003 207:0.4004 208:0.3003 209:4.504505 210:1.301301 212:0.1001 215:0.1001 217:0.2002 220:0.4004 221:0.4004 222:100 223:14.614615 224:3.603604 225:0.500501 226:0.3003 228:0.3003 231:0.3003 234:0.1001 236:0.800801 237:62.862863 238:12.812813 239:1.301301 243:0.500501 244:0.2002 245:0.4004 247:0.1001 248:0.1001 250:0.3003 252:0.2002 253:0.2002 255:0.1001 256:0.2002 257:0.2002 259:0.2002 260:0.1001 261:0.3003 262:0.1001 265:0.1001 268:0.1001 326:0.1001 722:0.1001",
+    "splash": {
+      "block1": "splash10",
+      "block2": "3zv0000000",
+      "block3": "9bd6d020be04ce49bd3e",
+      "id": 44132146,
+      "splash": "splash10-3zv0000000-9bd6d020be04ce49bd3e"
+    },
+    "submitter": {
+      "accountEnabled": false,
+      "accountExpired": false,
+      "accountLocked": false,
+      "authorities": [
+        {
+          "authority": "ROLE_USER"
+        }
+      ],
+      "emailAddress": "PR@MassBank.jp",
+      "firstName": "Matsuda",
+      "id": 48,
+      "institution": "RIKEN",
+      "lastName": "F",
+      "passwordExpired": false,
+      "webhooks": [ ]
+    },
+    "tags": [
+      {
+        "ruleBased": false,
+        "text": "virtually derivatized compound"
+      },
+      {
+        "ruleBased": false,
+        "text": "massbank"
+      },
+      {
+        "ruleBased": false,
+        "text": "GCMS"
+      }
+    ]
+  }
+]

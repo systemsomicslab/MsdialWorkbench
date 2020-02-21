@@ -1,0 +1,85 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.HcaResultWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
+        xmlns:dendrogramplot="clr-namespace:Msdial.Dendrogram;assembly=Dendrogram"
+        xmlns:heatmap="clr-namespace:Msdial.Heatmap;assembly=Heatmap"
+        xmlns:axis="clr-namespace:Msdial.AxisControl;assembly=GraphAxisControl"
+        mc:Ignorable="d"
+        Title="HcaResultWin" Height="700" Width="950">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <dendrogramplot:DendrogramPlotControl
+            Name="dendrogram"
+            Grid.Row="1" Grid.Column="1"
+            Margin="0,10,0,10" 
+            Dendrogram="{Binding YDendrogramPlotBean.Dendrogram}"
+            Root="{Binding YDendrogramPlotBean.Root}"
+            XPositions="{Binding YDendrogramPlotBean.XPositions}"
+            YPositions="{Binding YDendrogramPlotBean.YPositions}"
+            XDisplayMin="{Binding YDendrogramPlotBean.DisplayMinX}"
+            XDisplayMax="{Binding YDendrogramPlotBean.DisplayMaxX}"
+            YDisplayMin="{Binding YDendrogramPlotBean.DisplayMinY}"
+            YDisplayMax="{Binding YDendrogramPlotBean.DisplayMaxY}"
+            LeafIdxs="{Binding YDendrogramPlotBean.LeafIdxs, Mode=OneWay}"/>
+        <axis:ContinuousVerticalAxisControl
+            Grid.Row="1" Grid.Column="0"
+            Margin="0,10,0,10" 
+            Direction="Right"
+            YMin="{Binding YDisplayMin, ElementName=dendrogram}"
+            YMax="{Binding YDisplayMax, ElementName=dendrogram}" />
+        <heatmap:HeatmapControl
+            Name="heatmap"
+            Grid.Row="2" Grid.Column="1"
+            Margin="0,10,0,0"
+            ValueMin="{Binding HeatmapBean.ValueMin}"
+            ValueMax="{Binding HeatmapBean.ValueMax}"
+            XPositions="{Binding HeatmapBean.XPositions}"
+            YPositions="{Binding HeatmapBean.YPositions}"
+            XBorders="{Binding HeatmapBean.XBorders}"
+            YBorders="{Binding HeatmapBean.YBorders}"
+            XDisplayMin="{Binding HeatmapBean.XDisplayMin}"
+            XDisplayMax="{Binding HeatmapBean.XDisplayMax}"
+            YDisplayMin="{Binding HeatmapBean.YDisplayMin}"
+            YDisplayMax="{Binding HeatmapBean.YDisplayMax}"
+            DataMatrix="{Binding HeatmapBean.DataMatrix, Mode=OneWay}">
+        </heatmap:HeatmapControl>
+        <axis:CategoryVerticalAxisControl
+            Grid.Row="2" Grid.Column="0"
+            Margin="0,10,0,0"
+            YLabels="{Binding HeatmapBean.YLabels}"
+            YPositions="{Binding YPositions, ElementName=heatmap}"
+            YMin="{Binding YDisplayMin, ElementName=heatmap}"
+            YMax="{Binding YDisplayMax, ElementName=heatmap}"
+            Rotate="30" />
+        <axis:CategoryHorizontalAxisControl
+            Grid.Row="3" Grid.Column="1"
+            XLabels="{Binding HeatmapBean.XLabels}"
+            XPositions="{Binding XPositions, ElementName=heatmap}"
+            XMin="{Binding XDisplayMin, ElementName=heatmap}"
+            XMax="{Binding XDisplayMax, ElementName=heatmap}"
+            Rotate="30" />
+        <heatmap:ColorbarControl
+            Grid.Row="2" Grid.Column="2"
+            Brush="{Binding Brush, ElementName=heatmap}"
+            Margin="10,0,0,0"/>
+        <axis:ContinuousVerticalAxisControl
+            Grid.Row="2" Grid.Column="3"
+            Direction="Left"
+            YMin="{Binding ValueMin, ElementName=heatmap}"
+            YMax="{Binding ValueMax, ElementName=heatmap}" />
+    </Grid>
+</Window>

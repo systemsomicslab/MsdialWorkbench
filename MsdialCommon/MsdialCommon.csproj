@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{049645F4-4EA5-41A2-B369-22D23FB09040}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Msdial.Common</RootNamespace>
+    <AssemblyName>MsdialCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Windows" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
+      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
+      <Name>DataProcessing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
+      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
+      <Name>Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
+      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
+      <Name>MsdialGcmsProcess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcmsProcess\MsdialLcmsProcess.csproj">
+      <Project>{a1826252-a661-419f-81f7-b5d872b3ae94}</Project>
+      <Name>MsdialLcmsProcess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PdfExporter\PdfExporter.csproj">
+      <Project>{227e13a4-6c2f-4bfd-8597-0da0f77ab642}</Project>
+      <Name>PdfExporter</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DrawVisual\RtCorrection.cs" />
+    <Compile Include="Export\DataExportAsPdf.cs" />
+    <Compile Include="DrawVisual\VariousDrawVisual.cs" />
+    <Compile Include="Export\ExportMassSpectrum.cs" />
+    <Compile Include="Export\PrivateMethodTargetCompoundExport.cs" />
+    <Compile Include="Utility\BasicUtility.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

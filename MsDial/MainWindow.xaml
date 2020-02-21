@@ -1,0 +1,1403 @@
+<Window x:Class="Rfx.Riken.OsakaUniv.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:chromatogram="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Chromatogram"
+        xmlns:massSpectrogram="clr-namespace:Rfx.Riken.OsakaUniv;assembly=MassSpectrogram"
+        xmlns:pairwisePlot="clr-namespace:Rfx.Riken.OsakaUniv;assembly=PairwisePlot"
+        xmlns:mvvm="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:barChart="clr-namespace:Common.BarChart;assembly=BarChart"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
+        xmlns:props="clr-namespace:Rfx.Riken.OsakaUniv.Properties"
+        xmlns:mona="clr-namespace:edu.ucdavis.fiehnlab.MonaExport;assembly=MonaExport"  
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Icon="Resources/MS-DIAL.ico"
+        KeyUp="RtMzPairwisePlotPeakViewUI_KeyUp"
+        Title="ms-dial version" Height="800" Width="1280" Loaded="Window_Loaded" 
+        Closing="Window_Closing" ContentRendered="Window_ContentRendered"
+        WindowStartupLocation="CenterScreen">
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <mvvm:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+
+        <mvvm:PercentSliderToLabelConverter x:Key="sliderToLabelConverter" />
+        <mvvm:DoubleToStringConverter x:Key="doubleToStringConverter" />
+
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <Style TargetType="GridSplitter">
+            <Setter Property="Background" Value="Gray" />
+        </Style>
+
+        <Style TargetType="Menu">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush>
+                        <SolidColorBrush.Color>
+                            <Color A="255" R="130" G="170" B="200"/>
+                        </SolidColorBrush.Color>
+                    </SolidColorBrush>
+                </Setter.Value>
+            </Setter>
+
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="ContextMenu">
+            <!--<Setter Property="Background" Value="SteelBlue" />-->
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <ContextMenu x:Key="menuReverseMassSpectrogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+            <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+            <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuMs2Chromatogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuRawSpectrogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+            <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+            <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuDeconvolutedSpectrogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveSpectraTableAs_Click" />
+            <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
+            <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuRepresentativeSpectrogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save spectra table as.." Click="contextMenu_SaveRepresentativeSpectraTableAs_Click" />
+            <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopyRepresentativeSpectraTableAs_Click" />
+            <MenuItem Header="Save image as emf and png" Click="contextMenu_SaveSpectraAsUserSettingFormat_Alignment_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuEicChromatogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+            <MenuItem Header="Browse smoother and baseline correction result" Click="contextMenu_BrowseSmootherBaselineCorrectionResult_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuBarChart">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Save data table as.." Click="contextMenu_SaveChromatogramTableAs_Click" />
+            <MenuItem Header="Copy variables to clipboard.." Click="contextMenu_CopyVariablesToClipboard_Click" />
+            <MenuItem Header="Change data source to..">
+                <MenuItem Header="Original peak height (OH)" Click="contextMenu_BarChartDisplayMode_OriginalHeight_Click" />
+                <MenuItem Header="Normalized peak height (NH)" Click="contextMenu_BarChartDisplayMode_NormalizedHeight_Click" IsEnabled="{Binding Path=isNormalized}"/>
+                <MenuItem Header="Original peak area (OA)" Click="contextMenu_BarChartDisplayMode_OriginalArea_Click" />
+            </MenuItem>
+            <MenuItem Header="Change chart type to..">
+                <MenuItem Header="Box plot" Click="contextMenu_BarChartType_BoxPlot_Click" />
+                <MenuItem Header="Bar chart" Click="contextMenu_BarChartType_BarChart_Click" />
+            </MenuItem>
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuAlignedEicChromatogram">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+            <MenuItem Header="Table viewer for curating each chromatogram" Click="MenuItem_ShowAlignmentSampleTable_Click" />
+            <MenuItem Header="Aligned chromatogram viewer for the simultaneous curations" Click="MenuItem_AlignedChromatogramModification_Click" />
+
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuSurveyMsSpectrum">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuPeakViewer" Name="ContextMenu_PeakViewer">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+
+            <MenuItem Header="Search formula and structure" IsEnabled="True">
+                <MenuItem Header="Add components to search list" Click="contextMenu_AddComponentToSearchList_Click" IsEnabled="True" />
+                <MenuItem Header="Go to MS-FINDER program" IsEnabled="True">
+                    <MenuItem Header="Centroid" Click="contextMenu_GoToMsFinderAsCentroid_Click" />
+                    <MenuItem Header="Profile" Click="contextMenu_GoToMsFinderAsProfile_Click" />
+                    <MenuItem Header="Deconvoluted" Click="contextMenu_GoToMsFinderAsDeconvoluted_Click" />
+                </MenuItem>
+            </MenuItem>
+
+            <MenuItem x:Name="MonaExport"  Header="Export to Mona" IsEnabled="True">
+                <MenuItem Header="Mark for Export" InputGestureText="Ctrl+A" x:Name="MenuItem_Mona_MarkForExport" Click="contextMenu_MarkForExportMona_Click" IsEnabled="True" />
+                <MenuItem Header="Export Marked Peaks.." InputGestureText="Ctrl+E" Name="MenuItem_Mona_ExportMarked" Click="contextMenu_exportToMonaMultiple_Click"  IsEnabled="True"/>
+                <MenuItem Header="Export Selected Peak.." InputGestureText="Ctrl+S" Name="MenuItem_Mona_ExportSelected" Click="contextMenu_exportToMonaSingle_Click"  IsEnabled="True"/>
+                <MenuItem Header="Clear Marked Peaks" Name="MenuItem_Mona_ClearMarked" Click="contextMenu_ClearMarkedPeaksMona_Click" />
+                <!--<MenuItem Header="Load Export file.." Name="MenuItem_Mona_Load" Click="contextMenu_LoadMonaExportFile_Click" />-->
+            </MenuItem>
+
+            <MenuItem x:Name="MrmprobsExport" Header="Export as MRMPROBS reference format" IsEnabled="True">
+                <MenuItem Header="Save as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportSaveAs_Click" IsEnabled="True" />
+                <MenuItem Header="Copy as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportCopyAs_Click" IsEnabled="True" />
+            </MenuItem>
+
+        </ContextMenu>
+
+        <ContextMenu x:Key="menuAlignmentViewer">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+
+            <MenuItem Header="Search formula and structure" IsEnabled="True">
+                <MenuItem Header="Add components to search list" Click="contextMenu_AddComponentToSearchListAtAlignmentViewer_Click" IsEnabled="True" />
+                <MenuItem Header="Go to MS-FINDER program" Click="contextMenu_GoToMsFinderAsAlignmentResult_Click" IsEnabled="True" />
+            </MenuItem>
+
+            <MenuItem x:Name="MrmprobsExport_AlignmentView" Header="Export as MRMPROBS reference format" IsEnabled="True">
+                <MenuItem Header="Save as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportSaveAs_Click" IsEnabled="True" />
+                <MenuItem Header="Copy as MRMPROBS reference format" Click="contextMenu_MrmprobsRefExportCopyAs_Click" IsEnabled="True" />
+            </MenuItem>
+
+            <!--<MenuItem Header="View as overlayed chromatograms" Click="contextMenu_ViewAsOverlayedChromatograms_Click" IsEnabled="True" />-->
+        </ContextMenu>
+
+    </Window.Resources>
+
+    <Window.CommandBindings>
+
+        <CommandBinding Command="mona:CustomCommands.MarkForExport" Executed="contextMenu_MarkForExportMona_HotKey"/>
+        <CommandBinding Command="mona:CustomCommands.ExportMultiple" Executed="contextMenu_ExportMultiple_Hotkey"/>
+        <CommandBinding Command="mona:CustomCommands.ExportSingle" Executed="contextMenu_ExportSingle_Hotkey"/>
+
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Key="A" Modifiers="Control" Command="mona:CustomCommands.MarkForExport"/>
+        <KeyBinding Key="E" Modifiers="Control" Command="mona:CustomCommands.ExportMultiple"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="mona:CustomCommands.ExportSingle"/>
+
+    </Window.InputBindings>
+
+    <DockPanel Name="DockPanel_MainWindow">
+
+        <Menu Name="Menu_MainMenuBar" Height ="25" DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Name="MenuItem_NewProject" Header="_New project" Click="newProjectMenu_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Start a project." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_OpenProject" Header="_Open project" Click="openProjectMenu_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Open a existing project (select .mtd format file)." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_SaveAsProject" Header="_Save as..." Click="saveAsProjectMenu_Click"/>
+                <MenuItem Name="MenuItem_SaveProject" Header="_Save" Click="saveProjectMenu_Click"/>
+                <MenuItem Name="MenuItem_SaveParameters" Header="_Save parameter setting" Click="saveParametersMenu_Click"/>
+                <!--<MenuItem Name="MenuItem_Download" IsEnabled="False" Header="_Download online-MS/MS records" Click="downloadOnlineMsMsMenu_Click" />-->
+
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_Dataprocessing" Header="_Data processing">
+                <MenuItem Name="MenuItem_AllProcessing" Header="_All processing (from peak detection)" Click="allProcessing_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Reanalysis for all data processing." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <!--<MenuItem Name="MenuItem_AdductPicking" Header="_Adduct ion picking" Click="adductPicking_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Re analysis for adduct ion picking." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>-->
+                <!--<MenuItem Name="MenuItem_DeconvolutionProcessing" Header="_MS2Dec" Click="decovolutioProcessing_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Reanalysis for adduct ion picking." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>-->
+                <MenuItem Name="MenuItem_IdentificationProcessig" Header="_Identification" Click="identificationProcessing_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Reanalysis for peak identification." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_AlingmentProcessing" Header="_Alignment" Click="alignmetProcessing_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Reanalysis for peak alignment." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_CorrDec" Header="_Correlation-based deconvolution (LC-MS only)" IsEnabled="{Binding Path=ProjectProperty.CheckAIF}" >
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Correlation-based deconvolution" />
+                    </ToolTipService.ToolTip>
+                    <MenuItem Name="MenuItem_CorrDec_Run" Header="Setting and run" Click="MenuItem_CorrelationBasedDeconvolution_ForAIF_SettingAndRun_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="CorrDec setting and run" />
+                        </ToolTipService.ToolTip>
+                    </MenuItem>
+                    <MenuItem Name="MenuItem_CorrDec_Identification" Header="Identification" Click="MenuItem_CorrelationBasedDeconvolution_ForAIF_Identification_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="CorrDec setting and run" />
+                        </ToolTipService.ToolTip>
+                    </MenuItem>
+                    <MenuItem Name="MenuItem_CorrDec_SingleSpot" Header="Run single spot (Temporal)" Click="MenuItem_CorrelationBasedDeconvolution_SingleSpot_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Running for Selected alignment spot; The result will be removed." />
+                        </ToolTipService.ToolTip>
+                    </MenuItem>
+                    <MenuItem Name="MenuItem_CorrDec_ShowResult" Header="Show CorrDec spectra" Click="MenuItem_CorrelationBasedDeconvolution_ShowResult_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Launch deconvoluted spectra window" />
+                        </ToolTipService.ToolTip>
+                    </MenuItem>
+                </MenuItem>
+
+                <!--
+                <MenuItem Name="MenuItem_MsViewerForAIF2" Header="_Temporary Methods" Click="MenuItem_MsViewerForAIF2_Click" IsEnabled="{Binding Path=ProjectProperty.CheckAIF}" >
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Correlation-based deconvolution" />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+-->
+                <ToolTipService.ToolTip>
+                    <ToolTip Content="For data re-processing" />
+                </ToolTipService.ToolTip>
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_Postprocessing" Header="_Post processing">
+
+                <MenuItem Name="MenuItem_PosNegAmalgamator" Header="Amalgamation of different polarity peak list" Click="PosNegAmalgamator_Click" IsEnabled="True">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The adduct type can be evaluated by using different ion mode peak list." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+
+                <MenuItem Name="MenuItem_QuantMassUpdate" Header="Quant mass manager" Click="QuantMassUpdater_Click" IsEnabled="True">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Users can define the quant masses for metabolic profiling in GC-MS project." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <!--    <MenuItem Name="MenuItem_AlignedChromatogramModification" Header="Manual peak modification for alignment spot" Click="MenuItem_AlignedChromatogramModification_Click" IsEnabled="True">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Users can manually modify peak in an alignment spot." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+            -->
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_StatisticalAnalysis" Header="_Data visualization">
+                <MenuItem Name="MenuItem_NormalizationMethod" Header="_Normalization" Click="normalizationMethod_Click" />
+                <MenuItem Name="MenuItem_PrincipalComponentAnalysis" Header="_Principal component analysis" Click="principalComponentAnalysis_Click" />
+                <MenuItem Name="MenuItem_PartialLeastSquares" Header="_Partial least squares" Click="partialLeastSquares_Click" />
+                <MenuItem Name="MenuItem_HierarchicalClusteringAnalysis" Header="_Hierarchical clustering analysis" Click="hierarchicalclusteringanalysis_Click" />
+                <MenuItem Name="MenuItem_MolecularNetworking" Header="_Molecular spectrum networking" Click="MenuItem_MsmsMolecularNetwork_Click" IsEnabled="TRUE" />
+                <MenuItem Name="MenuItem_PathwayMapper" Header="_Pathway" IsEnabled="True" Click="MenuItem_MappingToLipidPathway_Click" />
+
+            </MenuItem>
+
+
+
+            <!--<MenuItem Name="MenuItem_Identification" Header="_Identification">
+                <MenuItem Name="MenuItem_IdentificationSetting" Header="Identification setting" Click="identificationSetting_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The result of peak identification can be modified here." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+            </MenuItem>-->
+
+
+
+            <MenuItem Name="MenuItem_Search" Header="_Search">
+                <MenuItem Name="MenuItem_MsmsFragmentSearch" Header="MS/MS fragment searcher" Click="fragmentQuerySetting_Click" IsEnabled="True">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The unique product ion or neutral loss can be examined." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_View" Header="_View">
+                <MenuItem Name="MenuItem_DrawTicChromatogram" Header="Display total ion chromatogram" Click="MenuItem_DrawTicChromatogram_Click">
+                </MenuItem>
+                <MenuItem Name="MenuItem_DrawEicChromatogram" Header="Display extracted ion chromatogram" Click="MenuItem_DrawEicChromatogram_Click">
+                </MenuItem>
+                <MenuItem Name="MenuItem_DrawBpcChromatogram" Header="Display base peak chromatogram" Click="MenuItem_DrawBpcChromatogram_Click">
+                </MenuItem>
+                <MenuItem Name="MenuItem_DrawTicBpcEicChromatogram" Header="Display TIC, BPC, and most abundant ion's EIC" 
+                          Click="MenuItem_DrawTicBpcHighestEicChromatogram_Click">
+                </MenuItem>
+                <MenuItem Name="MenuItem_ShowRtCorrection" Header="Display retention time correction window" Click="MenuItem_ShowRtCorrection_Click" IsEnabled="True">
+
+                </MenuItem>
+                <!--<MenuItem Name="MenuItem_Dev_method" Header="Developing method; show MS2 chromatogram" Click="MenuItem_DevMethod_MS2Chromatogram_Click" />
+                <MenuItem Name="MenuItem_PeakSpotTableViewer" Header="Display peak spot table viewer" Click="MenuItem_PeakSpotTableViewer_Click" />
+                <MenuItem Name="MenuItem_AlignmentSpotTableViewer" Header="Display alignment spot table viewer" Click="MenuItem_AlignmentSpotTableViewer_Click" />
+         -->
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_Option" Header="_Option">
+                <MenuItem Name="MenuItem_FilePropertySetting" Header="File property setting" Click="filePropertySetting_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The file properties including type, analytical order, class, and included/not included can be modified here." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_ClassPropertySetting" Header="Class property setting" Click="classPropertySetting_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The class properties including the color and the order in chart can be modified here." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_AlignmentPropertySetting" Header="Alignment result property setting" Click="alignmentResultPropertySetting_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="The internal standard information can be added to each peak. Please add the suitable alignment ID to each peak." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_ProjectPropertySetting" Header="Project property setting" Click="ProjectPropertySetting_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Meta data can be added for MassBank, MoNA, and MSP export." />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+                <MenuItem Name="MenuItem_ExperimentConfig" Header="Experiment config setting" Click="MenuItem_ExperimentConfig_Click" IsEnabled="{Binding Path=ProjectProperty.CheckAIF}" >
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Change Experiment config, such as cycle name, collision energy, and deconvolution target" />
+                    </ToolTipService.ToolTip>
+                </MenuItem>
+
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_Export" Header="_Export">
+                <MenuItem Name="MenuItem_PeakResultExport" Header="Peak list result" Click="menuItem_PeaklistExport_Click" />
+                <MenuItem Name="MenuItem_AlignmentResultExport" Header="Alignment result" Click="menuItem_AlignmentResultExport_Click"/>
+                <MenuItem Name="MenuItem_MolecularSpectrumNetworkingExport" Header="Molecular spectrum networking export" Click="menuItem_MolecularSpectrumNetworkingExport_Click"/>
+                <MenuItem Name="MenuItem_CopyScreenshotToClipboard" Header="Copy screenshot to clipboard (emf)" Click="menuItem_CopyScreenshotToClipboard_Click"/>
+                <MenuItem Name="MenuItem_ParameterExport" Header="Parameter export (Tab-delimited text)" Click="menuItem_ParameterExport_Click" />
+                <MenuItem Name="MenuItem_LipoqualityDatabaseFormatExport" Header="Export as lipoquality database format" 
+                          Click="menuItem_LipoqualityDatabaseFormatExport_Click"/>
+                <MenuItem Name="MenuItem_NormalizationResultExport" Header="Export normalization result" 
+                          Click="menuItem_NormalizationResultExport_Click"/>
+
+                <!--                <MenuItem Name="MenuItem_ParticularAlignmentSpotExport" Header="Export MS/MS spectrum from a particular alignment spot" 
+                          Click="MenuItem_ParticularAlignmentSpotExport_Click" />-->
+            </MenuItem>
+
+            <MenuItem Name="MenuItem_Help" Header="_Help">
+                <MenuItem Name="MenuItem_HelpAbout" Header="...About" Click="menuItem_HelpAbout_Click" />
+                <!--<MenuItem Name="MenuItem_PlantProjectExport" Header="...Plant project" Click="exportPlantMetabolomeResult_Click" />-->
+            </MenuItem>
+        </Menu>
+
+        <Grid Name="Grid_MainWindow">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" MinWidth="150"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Name="Grid_Navigation" Grid.Column="0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="1*" MinHeight="200" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="File navigator" 
+                           Height="28"
+                           Foreground="Black"
+                           VerticalAlignment="Top"
+                           HorizontalContentAlignment="Center" 
+                           Grid.Row="0" Background="LightSteelBlue" />
+
+                    <ListBox Name="ListBox_FileName" Grid.Row="0" ItemsSource="{Binding}" BorderThickness="0" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                             Margin="2,28,2,2" >
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Double click a file to show the result in peak viewer" />
+                        </ToolTipService.ToolTip>
+                    </ListBox>
+
+                    <GridSplitter Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+
+                    <Label Content="Alignment navigator" Background="LightSteelBlue" 
+                           Height="28"
+                           Foreground="Black" 
+                           VerticalAlignment="Top"
+                           HorizontalContentAlignment="Center" Grid.Row="1"/>
+
+                    <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding}" 
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                             Margin="2,28,2,2">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Double click a alignment file to show the result in alignment viewer" />
+                        </ToolTipService.ToolTip>
+                    </ListBox>
+
+                </Grid>
+
+                <Grid Name="Grid_DataViewer" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="370"/>
+                        <ColumnDefinition Width="370" MinWidth="370" MaxWidth="730" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="200" />
+                            <ColumnDefinition Width="*" MinWidth="200" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="15" />
+                            <RowDefinition Height="220"/>
+                            <RowDefinition Height="*" MinHeight="200" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+
+                            <Label Content="Peak spot navigator" 
+                                   Height="28" Foreground="Black" 
+                                   HorizontalContentAlignment="Center" Background="LightSteelBlue" VerticalAlignment="Top" />
+
+                            <!--<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10, 25, 0, 0">
+                            <Button Height="30" Width="30" Margin="5,1,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" Click="buttonClick_DisplayRangeAll_Reset">
+                                <Button.Content>
+                                    <Image Source="Resources/PairwiseplotReset.ico" />
+                                </Button.Content>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Reset both retention time and ms1 range" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+                            <Button Height="30" Width="30" Margin="5,1,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" Click="buttonClick_DisplayRangeRT_Reset">
+                                <Button.Content>
+                                    <Image Source="Resources/XicReset.ico" />
+                                </Button.Content>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Reset retention time range" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+                            <Button Height="30" Width="30" Margin="5,1,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" Click="buttonClick_DisplayRangeMS1_Reset">
+                                <Button.Content>
+                                    <Image Source="Resources/MS1Reset.ico" />
+                                </Button.Content>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Reset ms1 range" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+                            <Button Height="30" Width="30" Margin="5,1,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" Click="buttonClick_DisplayRangeMS2_Reset">
+                                <Button.Content>
+                                    <Image Source="Resources/MS2Reset.ico" />
+                                </Button.Content>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Reset MS/MS spectra viewer" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+
+                        </StackPanel>-->
+
+                            <Label Content="Label: " 
+                                   Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" 
+                                   Width="50" Margin="0,35,5,5" />
+
+                            <ComboBox Height="25" Width="140" Name="ComboBox_DisplayLabel" 
+                                      ItemsSource="{Binding}" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="50, 37, 15, 0" SelectionChanged="ComboBox_DisplayLabel_SelectionChanged" />
+
+                            <!--<TextBlock Text="Scan #" Margin="5,65,160,141"/>-->
+
+                            <xctk:IntegerUpDown Name="ScanNumberFilter" Margin="50,60,15,141" 
+                                                ValueChanged="ScanNumberFilter_TextChanged" 
+                                                Visibility="Hidden"
+                                                IsEnabled="False"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="140" Minimum="-1" Value="-1"/>
+
+                            <Label Name="Label_AmplitudeFilter" 
+                                   Content="{Binding ElementName=doubleSlider_AmplitudeFilter, Path=IntervalValue, Converter={StaticResource ResourceKey=sliderToLabelConverter}}" 
+                                   Height="27" VerticalAlignment="Top" Margin="0,60,15,0" />
+
+                            <Label Name="Label_DisplayPeakNum" Height="25" 
+                                   VerticalAlignment="Top" Margin="0,60,15,0" HorizontalAlignment="Right" />
+
+                            <!--<Slider Name="Slider_AmplitudeFilter" ValueChanged="slider_AmplitudeFilter_ValueChanged" HorizontalAlignment="Left" Width="182" VerticalAlignment="Top" Maximum="100" Minimum="0" Height="25" Margin="10,120,0,0" >
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="Display filter based on peak height(red color: higher, blue color: lower)" />
+                            </ToolTipService.ToolTip>
+                        </Slider>-->
+
+                            <local:RangeSlider x:Name="doubleSlider_AmplitudeFilter" Minimum="0" Maximum="100" 
+                                               IntervalValue="100" LowerValue="0" UpperValue="100" 
+                                               Height="25" HorizontalAlignment="Left" Width="185" VerticalAlignment="Top" 
+                                               Margin="10,82,0,0">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display filter based on peak height(red color: higher, blue color: lower)" />
+                                </ToolTipService.ToolTip>
+                            </local:RangeSlider>
+
+                            <Label Content="Display filter" Height="25" VerticalAlignment="Top" Margin="0,108,4.8,0" />
+
+                            <CheckBox Name="CheckBox_PlotIdentifiedOnly" 
+                                      Checked="checkBox_PlotIdentifiedOnly_Checked" 
+                                      Unchecked="checkBox_PlotIdentifiedOnly_Unchecked" 
+                                      Content="Ref. matched" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="5,138,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display the annotated peaks with reference spectra" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_PlotAnnotatedOnly" 
+                                      Checked="checkBox_PlotAnnotatedOnly_Checked" 
+                                      Unchecked="checkBox_PlotAnnotatedOnly_Unchecked" 
+                                      Content="Suggested" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                      Margin="105,138,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display the annotated peaks without MS/MS spectra" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_CcsMatchedOnly" 
+                                      Checked="checkBox_MatchedOnly_Checked" 
+                                      Unchecked="checkBox_MatchedOnly_Unchecked" 
+                                      Content="CCS matched" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="5,163,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display annotated peaks with CCS value" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_PlotUnknownOnly" 
+                                      Checked="checkBox_PlotUnknownOnly_Checked" 
+                                      Unchecked="checkBox_PlotUnknownOnly_Unchecked" 
+                                      Content="Unknown" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="105,163,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display unknown peaks" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_PlotMolcularIonOnly" 
+                                      Checked="checkBox_PlotMolcularIonOnly_Checked"
+                                      Unchecked="checkBox_PlotMolcularIonOnly_Unchecked" 
+                                      Content="Molecular ion" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                      Margin="105,187,0,10">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display mono isotopic ion [M + 0]" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_PlotMsMsOnly" 
+                                      Checked="checkBox_PlotMsMsOnly_Checked" 
+                                      Unchecked="checkBox_PlotMsMsOnly_Unchecked" 
+                                      Content="MS2 acquired" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="5,187,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display peaks having MS/MS information" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_IsBlankPassed" 
+                                      Checked="checkBox_IsBlankPassed_Checked" 
+                                      Unchecked="checkBox_IsBlankPassed_Unchecked" 
+                                      Content="Blank filter" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="5,210,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display peaks passing blank filter" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <CheckBox Name="CheckBox_SearchedFragment" 
+                                      Checked="checkBox_SearchedFragment_Checked" 
+                                      Unchecked="checkBox_SearchedFragment_Unchecked" 
+                                      Content="Unique ions" HorizontalAlignment="Left" 
+                                      VerticalAlignment="Top" 
+                                      Margin="105,210,0,10" >
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Display precursor ions having searched fragments" />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                        </Grid>
+
+                        <Label Content="Survey scan (MS1) spectrum"  Grid.Row="2" Grid.Column="0" 
+                               Height="28" Foreground="Black" HorizontalContentAlignment="Center" 
+                               Background="LightSteelBlue" VerticalAlignment="Top" />
+
+                        <massSpectrogram:MassSpectrogramLeftRotateUI Name="Ms1MassSpectrogramUI" Grid.Row="2" 
+                                                                     Grid.Column="0" Margin="0,28,0,0" ContextMenu="{DynamicResource ResourceKey=menuSurveyMsSpectrum}"/>
+
+                        <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged">
+
+                            <TabItem Header="Peak spot viewer" 
+                                     Name="TabItem_RtMzPairwisePlotPeakView" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+
+                                <Grid Name="Grid_PeakSpotViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <pairwisePlot:PairwisePlotPeakViewUI Name="RtMzPairwisePlotPeakViewUI" 
+                                                                     Margin="0,-1,0,0"
+                                                                     ContextMenu="{DynamicResource ResourceKey=menuPeakViewer}"
+                                                                     MouseRightButtonUp="RtMzPairwisePlotPeakViewUI_MouseRightButtonUp"/>
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <pairwisePlot:PairwisePlotPeakViewUI Name="DriftTimeMzPairwisePlotPeakViewUI" 
+                                                                     Margin="0,-1,0,0"
+                                                                     ContextMenu="{DynamicResource ResourceKey=menuPeakViewer}"
+                                                                     MouseRightButtonUp="RtMzPairwisePlotPeakViewUI_MouseRightButtonUp"/>
+                                    </Grid>
+                                </Grid>
+
+
+
+                                <!--<pairwisePlot:PairwisePlotPeakViewUI Name="RtMzPairwisePlotPeakViewUI2" 
+                                                                     Margin="0,-1,0,0"
+                                                                     ContextMenu="{DynamicResource ResourceKey=menuPeakViewer}"
+                                                                     MouseRightButtonUp="RtMzPairwisePlotPeakViewUI_MouseRightButtonUp"/>-->
+                            </TabItem>
+
+                            <TabItem Header="Alignment spot viewer" 
+                                     Name="TabItem_RtMzPairwisePlotAlignmentView" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+
+                                <Grid Name="Grid_AlignmentSpotViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <pairwisePlot:PairwisePlotPeakViewUI Name="RtMzPairwisePlotAlignmentViewUI" 
+                                                                     Margin="0,-1,0,0"
+                                                                     ContextMenu="{DynamicResource ResourceKey=menuAlignmentViewer}"
+                                                                     MouseRightButtonUp="RtMzPairwisePlotAlignmentViewUI_MouseRightButtonUp"/>
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <pairwisePlot:PairwisePlotPeakViewUI Name="DriftTimeMzPairwiseAlignmentViewUI" 
+                                                                     Margin="0,-1,0,0"
+                                                                     ContextMenu="{DynamicResource ResourceKey=menuAlignmentViewer}"
+                                                                     MouseRightButtonUp="RtMzPairwisePlotAlignmentViewUI_MouseRightButtonUp"/>
+                                    </Grid>
+                                </Grid>
+
+                            </TabItem>
+
+                        </TabControl>
+
+                        <TabControl Name="TabControl_EicViewAndBarChart" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="0,-1,0,0" >
+
+                            <TabItem Header="EIC of focused spot" 
+                                     Height="26"
+                                     Name="TabItem_EicViewer" Background="LightSteelBlue">
+
+                                <Grid Name="Grid_EicViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <chromatogram:ChromatogramXicUI 
+                                            Name="ChromatogramXicUI" HorizontalAlignment="Stretch" 
+                                            VerticalAlignment="Stretch" 
+                                            Margin="0,0,0,0" 
+                                            ContextMenu="{DynamicResource ResourceKey=menuEicChromatogram}" />
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <chromatogram:ChromatogramXicUI 
+                                            Name="DriftChromatogramXicUI" HorizontalAlignment="Stretch" 
+                                            VerticalAlignment="Stretch" 
+                                            Margin="0,0,0,0" 
+                                            ContextMenu="{DynamicResource ResourceKey=menuEicChromatogram}" />
+                                    </Grid>
+                                </Grid>
+
+                            </TabItem>
+
+                            <TabItem Header="Bar chart of aligned spot" 
+                                     Name="TabItem_BarChartViewer" 
+                                     Height="26"
+                                     Background="LightSteelBlue">
+
+                                <Grid Name="Grid_BarChart" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <barChart:BarChartUI Name="BarChartUI" Margin="0,0,0,0" 
+                                                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                                     ContextMenu="{DynamicResource ResourceKey=menuBarChart}" />
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <barChart:BarChartUI Name="BarChartUIOnDrift" Margin="0,0,0,0" 
+                                                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                                     ContextMenu="{DynamicResource ResourceKey=menuBarChart}" />
+                                    </Grid>
+                                </Grid>
+
+                            </TabItem>
+
+                            <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="LightSteelBlue">
+
+                                <Grid Name="Grid_AlignedEIC" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="0" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <chromatogram:ChromatogramAlignedEicUI Name="AlignedEicUI" Margin="0,0,0,0" 
+                                                                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ContextMenu="{DynamicResource ResourceKey=menuAlignedEicChromatogram}"/>
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <chromatogram:ChromatogramAlignedEicUI Name="AlignedEicUIOnDrift" Margin="0,0,0,0" 
+                                                                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ContextMenu="{DynamicResource ResourceKey=menuAlignedEicChromatogram}"/>
+                                    </Grid>
+                                </Grid>
+
+
+                            </TabItem>
+
+                        </TabControl>
+                        <Grid Grid.Row="2" Grid.Column="1">
+
+                            <Button Name="Button_TableViewer" Height="25" 
+                                    Width="110" Margin="0,2,0,0" 
+                                    HorizontalContentAlignment="Right"
+                                    Background="AliceBlue"
+                                    VerticalAlignment="Top" HorizontalAlignment="Right">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="Resources/Table.png"/>
+                                        <TextBlock Text=" Show ion table " VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+
+
+                            <!--<Button Name="Button_TableViewer" Content="Show ion table " Height="25" 
+                                    Width="120" Margin="0,2,5,0" 
+                                    HorizontalContentAlignment="Right"
+                                    VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                <Button.Content>
+                                    <Image Source="Resources/ShowTable.ico" />
+                                </Button.Content>
+                                
+                            </Button>-->
+                        </Grid>
+
+                        <GridSplitter Margin="0, 0, 0, 0" 
+                                      Width="2" 
+                                      ResizeDirection="Columns" 
+                                      Grid.Column="1" Grid.RowSpan="3" 
+                                      VerticalAlignment="Stretch" HorizontalAlignment="Left" />
+
+                        <GridSplitter Margin="0,0,0,-2" 
+                                      Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                                      Grid.ColumnSpan="2" 
+                                      VerticalAlignment="Bottom" 
+                                      HorizontalAlignment="Stretch" 
+                                      Grid.Row="1" />
+
+
+
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" MinHeight="235" />
+                            <RowDefinition Height="*" MinHeight="300" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.Resources>
+                                <Style x:Key="ReadOnlyTextBox" TargetType="TextBox">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    <Setter Property="IsReadOnly" Value="True" />
+                                </Style>
+                            </Grid.Resources>
+                            <!--<Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="97" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>-->
+
+
+                            <TabControl Name="TabControl_PeakCharacter" Grid.Row="0" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+
+                                <TabItem Header="Basic peak property" 
+                                     Name="TabItem_BasicProperty" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+                                    <Grid>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    
+                                        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0" Margin="5,0,0,0">
+                                            <Label Content="Annotation:" Height="25"/>
+                                            <Label Name="Label_RetentionTime" Content="RT [min]:" Height="25"/>
+                                            <Label Name="Label_Ccs" Content="CCS:" Height="25" />
+                                            <Label Name="Label_UiMass" Content="m/z:" Height="25" />
+                                            <Label Name="Label_PeakIntensity" Content="Peak height|area:" Height="25" />
+                                            <Label Name="Label_FormulaOntology" Content="Formula|Ontology:" Height="25" />
+                                            <Label Name="Label_InChIKey" Content="InChIKey:" Height="25" />
+                                            <Label Content="Comment:" Height="25" />
+
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0">
+                                            <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Text="{Binding DisplayedAnnotatedNameInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_RetentionTime" Text="{Binding DisplayedRetentionInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Text="{Binding DisplayedOtherDiagnosticsInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding DisplayedMzInfo}" 
+                                         Height="25" Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_PeakIntensity" Text="{Binding DisplayedPeakQuantInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_FormulaOntology" Text="{Binding DisplayedFormulaOntologyInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_InChIKey2" Text="{Binding DisplayedInChIKeyInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_Comment" Text="{Binding DisplayedCommentInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                        </StackPanel>
+
+                                        <!--<Label Content="Compound information" FontStyle="Italic" Grid.ColumnSpan="2" Grid.Row="1" />-->
+
+                                      
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem Header="Compound detail" 
+                                     Name="TabItem_CompoundDetail" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+                                    <Grid>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="5,0,0,0">
+                                            <Label Content="Annotation:" Height="25"/>
+                                            <Label Name="Label_ReferenceRT" Content="RT similarity:" Height="25"/>
+                                            <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
+                                            <Label Name="Label_SpectrumSimilarity" Content="Spectrum similarity:" Height="25"/>
+                                            <Label Name="Label_CcsSimilarity" Content="CCS similarity:" Height="25"/>
+                                            <Label Content="Formula|Ontology:" Height="25"/>
+                                            <Label Content="SMILES:" Height="25"/>
+                                            <Label Content="InChIKey:" Height="25"/>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0">
+                                            <TextBox Name="TextBox_PeakInformation_AnnotationInCompDetail" Text="{Binding DisplayedAnnotatedNameInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_RtSimilarity" Text="{Binding DisplayedRtSimilarityInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Text="{Binding DisplayedMzSimilarityInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_MS2Similarity" Text="{Binding DisplayedSpectrumMatchInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_CcsSimilarity" Text="{Binding DisplayedCcsSimilarityInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_Ontology" Text="{Binding DisplayedFormulaOntologyInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_Smiles" Text="{Binding DisplayedSmilesInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                            <TextBox Name="TextBox_PeakInformation_InChIKey" Text="{Binding DisplayedInChIKeyInfo}" Height="25" 
+                                         Style="{StaticResource ReadOnlyTextBox}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </TabItem>
+                             
+                            </TabControl>
+
+
+
+                            <!--<Label Content="Peak and compound information" Grid.ColumnSpan="2" 
+                                   Grid.Row="0" Height="28" 
+                                   Foreground="Black" 
+                                   HorizontalContentAlignment="Center" Background="LightSteelBlue" VerticalAlignment="Top" />-->
+
+                            
+
+                        </Grid>
+
+                        <TabControl Name="TabControl_MS2Viewer" Grid.Row="1" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    SelectionChanged="TabControl_MS2Viewer_SelectionChanged" >
+
+                            <TabItem Header="Exp. vs. Ref." 
+                                     Name="TabItem_MeasurementVsReference" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraRaw" Checked="ToggleButton_MeasurmentReferenceSpectraRaw_Checked" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                        <ToggleButton.Content>
+                                            <Image Source="Resources/RawChromatogram.ico" />
+                                        </ToggleButton.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show centroid spectra vs. reference spectra" />
+                                        </ToolTipService.ToolTip>
+                                    </ToggleButton>
+                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraDeconvoluted" Checked="ToggleButton_MeasurmentReferenceSpectraDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                        <ToggleButton.Content>
+                                            <Image Source="Resources/Deconvoluted.ico" />
+                                        </ToggleButton.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show deconvoluted spectra vs. reference spectra" />
+                                        </ToolTipService.ToolTip>
+                                    </ToggleButton>
+
+                                    <Button Name="Button_CompoundSearchPeakViewer" Click="buttonClick_CompoundSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/CompoundSearchIcon.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Compound search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_MsFinderSearchPeakViewer" Click="buttonClick_MsFinderSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/MS-FINDER-Main-Icon.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="MS-FINDER search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_MolecularNetworkPeakViewer" Click="buttonClick_MolecularNetworkPeakViewer" Grid.Row="0" 
+                                            Height="30" Width="30" Margin="170,5,5,5" 
+                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/MolecularNetworking.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Molecular-spectrum networking for selected peak spot" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_BinVestigateSearchPeakViewer" Click="buttonClick_BinVestigateSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="210,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/BinVestigate.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="BinVestigate search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_LipoqualityDbSearchPeakViewer" Click="buttonClick_LipoqualityDbSearchPeakViewer" 
+                                            Grid.Row="0" Height="30" Width="30" Margin="250,5,5,5" 
+                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left"
+                                            IsEnabled="True">
+                                        <Button.Content>
+                                            <Image Source="Resources/Lipoquality.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show lipoquality database (developing, and the result of mouse experiments can be shown now.)" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+
+
+                                    <Grid Grid.Row="1">
+                                        <massSpectrogram:MassSpectrogramWithReferenceUI Name="Ms2MassSpectrogramUI" ContextMenu="{DynamicResource ResourceKey=menuReverseMassSpectrogram}" />
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+
+                            <TabItem Header="MS2 Chrom." 
+                                     Name="TabItem_MS2Chromatogram" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRaw" Checked="ToggleButton_MsMsChromatogramRaw_Checked" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                        <ToggleButton.Content>
+                                            <Image Source="Resources/RawChromatogram.ico" />
+                                        </ToggleButton.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show raw chromatograms (product ion chromatograms)" />
+                                        </ToolTipService.ToolTip>
+                                    </ToggleButton>
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramDeconvoluted" Checked="ToggleButton_MsMsChromatogramDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                        <ToggleButton.Content>
+                                            <Image Source="Resources/Deconvoluted.ico" />
+                                        </ToggleButton.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show deconvoluted chromatograms (product ion chromatograms)" />
+                                        </ToolTipService.ToolTip>
+                                    </ToggleButton>
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRawAndDeconvoluted" Checked="ToggleButton_MsMsChromatogramRawAndDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                        <ToggleButton.Content>
+                                            <Image Source="Resources/RawAndDeconvo.ico" />
+                                        </ToggleButton.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Show both raw and deconvoluted chromatograms (overdrawing)" />
+                                        </ToolTipService.ToolTip>
+                                    </ToggleButton>
+
+                                    <Grid Grid.Row="1">
+                                        <chromatogram:ChromatogramMrmUI Name="MS2ChromatogramUI" ContextMenu="{DynamicResource ResourceKey=menuMs2Chromatogram}" />
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+
+                            <TabItem Header="Raw vs. Purified" 
+                                     Name="TabItem_RawVsDeconvolution" 
+                                     Height="25"
+                                     Background="LightSteelBlue">
+                                <Grid Name="Grid_RawVsDeconvolution" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <massSpectrogram:MassSpectrogramUI Name="RawMassSpectrogramUI" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  ContextMenu="{DynamicResource ResourceKey=menuRawSpectrogram}" />
+                                    </Grid>
+                                    <Grid Grid.Row="1">
+                                        <massSpectrogram:MassSpectrogramUI Name="DeconvolutedMassSpectrogramUI" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  ContextMenu="{DynamicResource ResourceKey=menuDeconvolutedSpectrogram}" />
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+
+                            <TabItem Header="Rep. vs. Ref." 
+                                     Height="25"
+                                     Background="LightSteelBlue" 
+                                     Name="TabItem_RepresentativeVsReference">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <Button Name="Button_CompoundSearchAlignmentViewer" Click="buttonClick_CompoundSearchAlignmentViewer" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/CompoundSearchIcon.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Compound search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_MsFinderSearchAlignmentViewer" Click="buttonClick_MsFinderSearchAlignmentViewer" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/MS-FINDER-Main-Icon.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="MS-FINDER search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_MolecularNetworkAlignmentViewer" Click="buttonClick_MolecularNetworkAlignmentViewer" Grid.Row="0" 
+                                            Height="30" Width="30" Margin="90,5,5,5" 
+                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/MolecularNetworking.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Molecular-spectrum networking for selected alignment spot" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_BinVestigateSearchAlignmentViewer" Click="buttonClick_BinVestigateSearchAlignmentViewer" 
+                                            Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                        <Button.Content>
+                                            <Image Source="Resources/BinVestigate.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="BinVestigate search" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Button Name="Button_LipoqualityDbSearchAlignmentViewer" Click="buttonClick_LipoqualityDbSearchAlignmentViewer" 
+                                            Grid.Row="0" Height="30" Width="30" Margin="170,5,5,5" 
+                                            Background="Gray" BorderBrush="Black" BorderThickness="0" 
+                                            HorizontalAlignment="Left" IsEnabled="True">
+                                        <Button.Content>
+                                            <Image Source="Resources/Lipoquality.ico" />
+                                        </Button.Content>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Go to lipoquality database (developing, and the result of mouse experiments can be shown now.)" />
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+
+                                    <Grid Grid.Row="1">
+                                        <massSpectrogram:MassSpectrogramWithReferenceUI 
+                                            Name="RepAndRefMassSpectrogramUI"
+                                            ContextMenu="{DynamicResource ResourceKey=menuRepresentativeSpectrogram}" />
+                                    </Grid>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+
+                        <GridSplitter Margin="0, 0, 0, -2" Height="2" 
+                                      ResizeDirection="Rows"
+                                      ResizeBehavior="CurrentAndNext" 
+                                      Grid.Row="0" VerticalAlignment="Bottom" 
+                                      HorizontalAlignment="Stretch" />
+
+                    </Grid>
+
+                    <GridSplitter Margin="0, 0, 0, 0" Width="2" 
+                                  ResizeDirection="Columns" 
+                                  Grid.Column="1" Grid.RowSpan="2" 
+                                  VerticalAlignment="Stretch" 
+                                  HorizontalAlignment="Left" />
+
+                </Grid>
+
+                <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+
+                <Label Content="Region focus by ID: "
+                               HorizontalAlignment="Right" VerticalAlignment="Top"
+                               Margin="0,0,790,0"
+                               />
+
+                <TextBox Name="TextBox_FocusSpotID"
+                         VerticalAlignment="Center" 
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Right"
+                         HorizontalAlignment="Right"
+                         Margin="0,0,720,0"
+                         Width="70"
+                         KeyDown="TextBox_FocusSpotID_KeyDown"
+                         >
+
+                    <TextBox.Text>
+                        <Binding Path="DisplayFocusId" 
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 
+                                 >
+                            <!--ValidatesOnDataErrors="True"--> 
+                            <!--" NotifyOnValidationError="True"-->
+                            <!--<Binding.ValidationRules>
+                                <mvvm:PositiveIntNumericValidation />
+                            </Binding.ValidationRules>-->
+                        </Binding>
+                    </TextBox.Text>
+                   
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Enter key is available for going to the target spot" />
+                    </ToolTipService.ToolTip>
+
+                </TextBox>
+
+                <Button Name="Button_FocusRegionByID"
+                        Content=">"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,700,0"
+                        Click="Button_FocusRegionByID_Click"
+                        Width="15">
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                go to the region
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTipService.ToolTip>
+                </Button>
+
+                <Label Content="RT(min): " Name="Label_FocusSpotRt"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,0,625,0"
+                        />
+
+                <TextBox Name="TextBox_FocusSpotRT"
+                         VerticalAlignment="Center" 
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Right"
+                         HorizontalAlignment="Right"
+                         Margin="0,0,555,0"
+                         Width="70"
+                         KeyDown="TextBox_FocusSpotRT_KeyDown">
+
+                    <TextBox.Text>
+                        <Binding Path="DisplayFocusRt" 
+                                 UpdateSourceTrigger="PropertyChanged" 
+                                 Converter="{StaticResource doubleToStringConverter}"
+                                 ConverterParameter='#,0.#####'
+                                 >
+                            <!--ValidatesOnDataErrors="True" 
+                                 NotifyOnValidationError="True">-->
+                            <!--<Binding.ValidationRules>
+                                <mvvm:PositiveDoubleNumericValidation />
+                            </Binding.ValidationRules>-->
+                        </Binding>
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Enter key is available for going to the target spot" />
+                    </ToolTipService.ToolTip>
+
+
+                </TextBox>
+
+
+                <Button Name="Button_FocusRegionByRt"
+                        Content=">"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,535,0"
+                        Click="Button_FocusRegionByRt_Click"
+                        Width="15">
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                go to the region
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTipService.ToolTip>
+                </Button>
+
+
+                <Label Content="m/z: " FontStyle="Italic"
+                               HorizontalAlignment="Right" VerticalAlignment="Top"
+                               Margin="0,0,480,0"
+                               />
+
+                <TextBox Name="TextBox_FocusSpotMZ"
+                         VerticalAlignment="Center" 
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Right"
+                         HorizontalAlignment="Right"
+                         Margin="0,0,410,0"
+                         Width="70"
+                         KeyDown="TextBox_FocusSpotMZ_KeyDown"
+                         >
+
+                    <TextBox.Text>
+                        <Binding Path="DisplayFocusMz" 
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 Converter="{StaticResource doubleToStringConverter}"
+                                 ConverterParameter='#,0.#####'
+                                 >
+                            <!--ValidatesOnDataErrors="True" 
+                                 NotifyOnValidationError="True">-->
+                            <!--<Binding.ValidationRules>
+                                <mvvm:PositiveDoubleNumericValidation />
+                            </Binding.ValidationRules>-->
+                        </Binding>
+                    </TextBox.Text>
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Enter key is available for going to the target spot" />
+                    </ToolTipService.ToolTip>
+
+                </TextBox>
+
+                <Button Name="Button_FocusRegionByMz"
+                        Content=">"
+                        Click="Button_FocusRegionByMz_Click"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,390,0"
+                        Width="15">
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                go to the region
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTipService.ToolTip>
+                </Button>
+
+
+                <TextBox x:Name="informationBox" 
+                         Text="Information box: Ctr+D, metabolite name to 'Unknown'" 
+                         BorderThickness="0"
+                         IsReadOnly="True" 
+                         Foreground="ForestGreen" 
+                         VerticalAlignment="Center" 
+                         HorizontalAlignment="Right"
+                         Width="370"
+                         DockPanel.Dock="Bottom">
+                </TextBox>
+            </Grid>
+
+            <GridSplitter Margin="0,0,0,0" 
+                        Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                        VerticalAlignment="Bottom" 
+                        HorizontalAlignment="Stretch" 
+                        Grid.Row="0" />
+        </Grid>
+
+    </DockPanel>
+</Window>

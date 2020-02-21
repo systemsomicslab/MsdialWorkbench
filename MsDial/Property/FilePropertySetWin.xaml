@@ -1,0 +1,210 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.FilePropertySetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
+        Title="File property setting" Loaded="Window_Loaded" Height="600" Width="1100">
+    
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    
+    <Window.Resources>
+        
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ObjectDataProvider x:Key="FileType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:AnalysisFileType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="Button_Finish" Content="Finish" Command="{Binding OkCommand}" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,80,5" />
+        <Button x:Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
+
+        <DataGrid x:Name="Datagrid_FileProperty" ItemsSource="{Binding Path=AnalysisFilePropertyCollection}" Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AutoGenerateColumns="False" SelectionMode="Extended" 
+                  SelectionUnit="CellOrRowHeader" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" ClipboardCopyMode="IncludeHeader" 
+                  PreviewKeyDown="datagrid_FileProperty_PreviewKeyDown" Margin="5,10,5,0" CurrentCellChanged="Datagrid_FileProperty_CurrentCellChanged" >
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileName" Width="3*" Header="File name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileName}" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileName}" VerticalContentAlignment="Center" IsReadOnly="True" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridComboBoxColumn Width="3*" Header="File type" SelectedValueBinding="{Binding Path=AnalysisFileType}" 
+                                        ItemsSource="{Binding Source={StaticResource FileType}}" 
+                                        ClipboardContentBinding="{Binding Path=AnalysisFileType}"
+                                        IsReadOnly="False"/>
+
+                <DataGridTemplateColumn Width="3*" SortMemberPath="AnalysisFileClass" Header="Class ID" IsReadOnly="False"  ClipboardContentBinding="{Binding Path=AnalysisFileClass}" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_Class" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileClass, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Class}">
+                                <TextBox Name="TextBox_Class" Text="{Binding AnalysisFileClass, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="2*" SortMemberPath="AnalysisBatch" Header="Batch" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisBatch}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_AnalysisBatch" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center">
+                                <TextBox.Text>
+                                    <Binding Path="AnalysisBatch" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_AnalysisBatch}">
+                                <TextBox Name="TextBox_AnalysisBatch" Text="{Binding AnalysisBatch, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+
+                </DataGridTemplateColumn>
+             
+                <DataGridTemplateColumn Width="2*" SortMemberPath="AnalysisFileAnalyticalOrder" Header="Analytical order" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileAnalyticalOrder}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_AnalyticalOrder" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center">
+                                <TextBox.Text>
+                                    <Binding Path="AnalysisFileAnalyticalOrder" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_AnalyticalOrder}">
+                                <TextBox Name="TextBox_AnalyticalOrder" Text="{Binding AnalysisFileAnalyticalOrder, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                    
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="3*" SortMemberPath="InjectionVolume" Header="Injection volume (&#181;L)" IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_InjectionVolume" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center">
+
+                                <TextBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Auto fill"
+                                                      Click="MenuItem_AutoFill_Click" />
+                                        <MenuItem Header="Copy"
+                                                      Click="MenuItem_CopyToClipboard" />
+                                        <MenuItem Header="Paste"
+                                                      Click="MenuItem_Paste" />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
+
+                                <TextBox.Text>
+                                    <Binding Path="InjectionVolume" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+
+
+                <DataGridTemplateColumn Width="2*" SortMemberPath="ResponseVariable" Header="Y variable" IsReadOnly="False" ClipboardContentBinding="{Binding Path=ResponseVariable}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="TextBox_ResponseVariable" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center">
+
+                                <TextBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Auto fill"
+                                                      Click="MenuItem_Responses_AutoFill_Click" />
+                                        <MenuItem Header="Copy"
+                                                      Click="MenuItem_Responses_CopyToClipboard" />
+                                        <MenuItem Header="Paste"
+                                                      Click="MenuItem_Responses_Paste" />
+                                    </ContextMenu>
+                                </TextBox.ContextMenu>
+
+                                <TextBox.Text>
+                                    <Binding Path="ResponseVariable" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                </DataGridTemplateColumn>
+
+
+
+
+                <DataGridTemplateColumn Width="2*" Header="Included" ClipboardContentBinding="{Binding Path=AnalysisFileIncluded}" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=AnalysisFileIncluded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

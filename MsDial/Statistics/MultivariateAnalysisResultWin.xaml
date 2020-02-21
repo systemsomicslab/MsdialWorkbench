@@ -1,0 +1,188 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.MultivariateAnalysisResultWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        xmlns:common="clr-namespace:Riken.Metabolomics.Common.Query;assembly=Common"
+        xmlns:pairwiseplot="clr-namespace:Rfx.Riken.OsakaUniv;assembly=PairwisePlot"
+        xmlns:barchart="clr-namespace:Common.BarChart;assembly=BarChart"
+        
+        Name="MultivariateAnalysisResultView"
+        Title="Multivariate analysis result window" Height="700" Width="950">
+    <!--interaction trigers-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction
+                    Command="{Binding WindowLoaded}"
+                    CommandParameter="{Binding ElementName=MultivariateAnalysisResultView}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ObjectDataProvider x:Key="SearchType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="common:SearchType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+       
+
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                <Label Content="Viewer option" VerticalContentAlignment="Center" FontStyle="Italic" Height="30" Margin="0,5,0,0" />
+                <Label Content="X component number: " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Y component number: " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Label type (sample): " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Label type (metabolite): " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Plot size (sample): " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Plot size (metabolite): " VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="" VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Other plots" VerticalContentAlignment="Center" FontStyle="Italic" Height="30" Margin="0,5,0,0" />
+
+                <Button Content="Contributions"
+                        Name="Button_Contributions"
+                        Command="{Binding ShowContributionPlot}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+
+                <Button Content="Predicted vs Experiment"
+                        Name="Button_PredictedVsExperiment"
+                        Command="{Binding ShowPredVsExp}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+
+                <Button Content="VIP"
+                        Name="Button_VIP"
+                        Command="{Binding ShowVIPs}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+
+                <Button Content="Coefficient"
+                        Name="Button_Coefficient"
+                        Command="{Binding ShowCoefficients}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+            
+                <Button Content="S-plot"
+                        Name="Button_Splot"
+                        Command="{Binding ShowSPlot}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+
+                <Label Content="" VerticalContentAlignment="Center" Height="30" Margin="5,5,0,0" />
+                <Label Content="Save" VerticalContentAlignment="Center" FontStyle="Italic" Height="30" Margin="0,5,0,0" />
+
+                <Button Content="Save plot properties"
+                        Name="Button_Save"
+                        Command="{Binding SavePlotProperties}"
+                        VerticalContentAlignment="Center" Height="25" Margin="5,5,5,0" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                <Label Content="" VerticalContentAlignment="Center" Margin="0,5,5,3.5" Height="30" />
+                <ComboBox ItemsSource="{Binding XComponents}" 
+                          SelectedIndex="{Binding SelectedXComponent}"
+                          VerticalContentAlignment="Center" Height="25" Margin="5,5,5,5" />
+                <ComboBox ItemsSource="{Binding YComponents}" 
+                          SelectedIndex="{Binding SelectedYComponent}"
+                          Height="25"
+                          VerticalContentAlignment="Center" Margin="5,5,5,5" />
+                <ComboBox ItemsSource="{Binding SampleLabels}" 
+                          SelectedIndex="{Binding SelectedSampleLabel}"
+                          Height="25"
+                          VerticalContentAlignment="Center" Margin="5,5,5,5" />
+                <ComboBox ItemsSource="{Binding MetaboliteLabels}" 
+                          SelectedIndex="{Binding SelectedMetaboliteLabel}"
+                          Height="25"
+                          VerticalContentAlignment="Center" Margin="5,5,5,5" />
+                <ComboBox ItemsSource="{Binding SamplePlotSizes}" 
+                          SelectedIndex="{Binding SelectedSamplePlotSize}"
+                          Height="25"
+                          VerticalContentAlignment="Center" Margin="5,5,5,5" />
+                <ComboBox ItemsSource="{Binding MetabolitePlotSizes}" 
+                          SelectedIndex="{Binding SelectedMetabolitePlotSize}"
+                          Height="25"
+                          VerticalContentAlignment="Center" Margin="5,5,5,5" />
+
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Column="2">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <pairwiseplot:PairwisePlotUI 
+                    Name="Scoreplot" 
+                    Content="{Binding ScoreplotUI}"
+                    Grid.Column="0" />
+
+                <pairwiseplot:PairwisePlotUI 
+                    Content="{Binding LoadingplotUI}"
+                    Name="Loadingplot" Grid.Column="1" />
+
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+
+                <barchart:BarChartUI Name="Chart1" 
+                                     Content="{Binding Chart1}"
+                                     Grid.Row="0" />
+                <barchart:BarChartUI Name="Chart2" 
+                                     Content="{Binding Chart2}"
+                                     Grid.Row="1" />
+                <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Content="Red: positive correlation   Blue: negative correlation" />
+
+            </Grid>
+            
+            
+        </Grid>
+
+    </Grid>
+</Window>

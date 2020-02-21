@@ -1,0 +1,204 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.MrmprobsExportWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Title="MRMPROBES reference library export" Height="460" Width="500"
+        Name="MrmprobsExportView">
+    
+    <!--interaction trigers-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction
+                    Command="{Binding WindowLoaded}"
+                    CommandParameter="{Binding ElementName=MrmprobsExportView}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <!--interaction Behaviors-->
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+
+    <!--Window resources-->
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="190"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <!--on the first row-->
+        <Label Content="Directory: " VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" />
+
+        <TextBox Name="TextBox_ExportFolderPath" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="70,5,80,5" >
+            <TextBox.Text>
+                <Binding Path="ExportFolderPath" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True"
+                         NotifyOnSourceUpdated="True" NotifyOnTargetUpdated="True"/>
+            </TextBox.Text>
+        </TextBox>
+
+        <Button Name="Button_ExportFolderPath" Content="Browse" Command="{Binding SelectDestinationFolder}" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="70" Margin="5"/>
+
+        <!--On the second row-->
+        <Grid Grid.Row="1">
+            
+            <!--column definition-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Export parameters: " FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,0,0,0" />
+
+            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
+                <Label Content="MS1 mass tolerance:" Height="27" VerticalContentAlignment="Center" />
+                <Label Content="MS2 mass tolerance:" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="Retention time tolerance:" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="Top N peaks export:" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="Export other significant candidates:" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="Identification score cut off (%):" Height="27" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
+
+                <TextBox Name="TextBox_MpMs1Tolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                    <TextBox.Text>
+                        <Binding Path="MpMs1Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <local:PositiveDoubleNumericValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBox Name="TextBox_MpMs2Tolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                    <TextBox.Text>
+                        <Binding Path="MpMs2Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <local:PositiveDoubleNumericValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBox Name="TextBox_MpRtTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                    <TextBox.Text>
+                        <Binding Path="MpRtTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <local:PositiveDoubleNumericValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBox Name="TextBox_MpTopNoutput" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                    <TextBox.Text>
+                        <Binding Path="MpTopNoutput" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                            <Binding.ValidationRules>
+                                <local:PositiveIntNumericValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <CheckBox Name="CheckBox_IsExportOtherCandidates" IsChecked="{Binding IsExportOtherCandidates}"
+                          HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" 
+                          Height="25" Margin="5,2,0,1">
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                If checked, all other candidates having more than an identification score are exported.
+                                <LineBreak />
+                                This option is available when 'se reference spectrum to make MRMPROBS library' is checked.
+                            </TextBlock>
+                        </ToolTip> 
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+
+                <TextBox Name="TextBox_IdentificationScoreCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                         IsEnabled="{Binding Path=IsExportOtherCandidates}"
+                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,0,5,1">
+                    <TextBox.Text>
+                        <Binding Path="IdentificationScoreCutOff" 
+                                 ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                            <Binding.ValidationRules>
+                                <local:PositiveIntNumericValidation />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+
+
+            </StackPanel>
+            
+            <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
+                <Label Content="Da" Height="27" VerticalAlignment="Center"/>
+                <Label Content="Da" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="min" Height="27" VerticalContentAlignment="Center"/>
+                <Label Content="" Height="27" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+        </Grid>
+
+        <!--On the third row-->
+        <Grid Grid.Row="2">
+
+            <Label Content="Options: " FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,0,0,0" />
+
+            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
+
+                <CheckBox Name="CheckBox_IsIncludeMsLevel1" Content="Include MS1 sequence as the reference output" IsChecked="{Binding IsIncludeMsLevel1}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="25" Margin="5,2.5,0,2">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="MS1 information will be also included in this output." />
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+
+                <CheckBox Name="CheckBox_IsUseMs1LevelForQuant" Content="Use MS1 sequence as the quant mass of target metabolite" IsChecked="{Binding IsUseMs1LevelForQuant}" IsEnabled="{Binding Path=IsIncludeMsLevel1}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="25" Margin="5,2.5,0,2">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Ion abundance of MS1 information will be set as the quant mass in reference." />
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+
+                <CheckBox Name="CheckBox_IsFocusedSpotOutput" Content="Export the focused (target) peak spot" IsChecked="{Binding IsFocusedSpotOutput}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="25" Margin="5,2.5,0,2">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="If unchecked, all of identified spots are exported." />
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+
+                <CheckBox Name="CheckBox_IsReferenceBaseOutput" Content="Use reference spectrum to make MRMPROBS library" IsChecked="{Binding IsReferenceBaseOutput}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="25" Margin="5,2.5,0,2">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="If unchecked, the experimental spectrum is used as the output." />
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+            </StackPanel>
+
+        </Grid>
+
+        <Button Name="Button_Cancel" Content="Cancel" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                Command="{Binding CloseExportWindow}" CommandParameter="{Binding ElementName=MrmprobsExportView}"/>
+        <Button Name="Button_Export" Content="Export" Grid.Row="3" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,85,5"
+                Command="{Binding ExportMrmprobsReference}" CommandParameter="{Binding ElementName=MrmprobsExportView}"/>
+    </Grid>
+</Window>

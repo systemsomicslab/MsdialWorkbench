@@ -1,0 +1,8 @@
+Copyright (C) 2016 Hiroshi Tsugawa, RIKEN JAPAN
+Contact: hiroshi.tsugawa@riken.jp
+
+License terms
+=============
+
+This package is free in the condition of LPGL.
+See LGPL.txt for full text of the license.

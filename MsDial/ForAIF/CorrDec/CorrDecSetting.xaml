@@ -1,0 +1,228 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.ForAIF.CorrDecSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        mc:Ignorable="d"
+        Title="CorrDec Setting"
+        Height="630" Width="600">
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Name="TabItem_DataCollection" Header="Processing">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="120" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="MS/MS Binning" FontStyle="Italic" Margin="10,0,0,0" />
+
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
+                            <Label Content="MS2 tolerance:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Minimum MS2 peak intensity:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Min. number of detected samples:" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
+                            <TextBox Name="TextBox_CentroidMs1Tolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MS2Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="This is one of parameters for binning MS2 spectra." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                            <TextBox Name="TextBox_MinMS2Intensity" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MinMS2Intensity" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="MS2 peaks less than this value are removed" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                            <TextBox Name="TextBox_MinNumberOfSample" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="MinNumberOfSample" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveIntNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Minimum number of detected samples for one MS2 bin. If you set large number, it will be faster." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
+                            <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="amplitude" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="samples" Height="30" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Expander Header="Advanced"
+                                  HorizontalAlignment="Stretch" 
+                                  VerticalAlignment="Top" 
+                                  ExpandDirection="Down">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
+                                    <Label Content="Exclude highly correlated spots:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Min. correlation coefficient (MS2):" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Margin 1 (target precursor): " Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Margin 2 (coeluted precursor):" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Min. detected rate:" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="Min. MS2 relative intensity:" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
+                                    <TextBox Name="TextBox_MinCorr_MS1" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="MinCorr_MS1" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="To ignore highly correlated precursor ions (related ions e.g. adducts and isotopes); 0.8-0.95" />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    <TextBox Name="TextBox_MinCorr_MS2" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="MinCorr_MS2" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="a cutoff value to remove not correlated MS2 peaks" />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    <TextBox Name="TextBox_CorrDiff_MS1" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="CorrDiff_MS1" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Minimum correlation cutoff value: max correlation (vs. a target precursor) - this value. Criterion 2 in the method paper, it should be published soon." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+
+                                    <TextBox Name="TextBox_CorrDiff_MS2" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="CorrDiff_MS2" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Minimum correlation cutoff value: max correlation (vs. coeluted precursors) - this value. Criterion 3 in the method paper, it should be published soon." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    <TextBox Name="TextBox_MinDetectedPercentToVisualize" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="MinDetectedPercentToVisualize" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveDoubleNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="Minimum percentage of detected sample." />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                    <TextBox Name="TextBox_MinMS2RelativeIntensity" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                                        <TextBox.Text>
+                                            <Binding Path="MinMS2RelativeIntensity" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                                <Binding.ValidationRules>
+                                                    <local:PositiveIntNumericValidation />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="After deconvolution, MS2 peaks which have less than this value are removed" />
+                                        </ToolTipService.ToolTip>
+                                    </TextBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
+                                    <Label Content="" Height="30" VerticalAlignment="Center"/>
+                                    <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="" Height="30" VerticalContentAlignment="Center"/>
+                                    <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <Label Content="Remove peaks larger than precursor:" FontStyle="Italic" Margin="10,210,0,0" />
+                                
+                                <CheckBox Name="CheckBox_ExcuteRtCorrectoin" 
+                                    HorizontalAlignment="Left" 
+                                    VerticalAlignment="Center" 
+                                    Grid.Column="1"
+                                    IsEnabled="True"
+                                    IsChecked="{Binding Path=RemoveAfterPrecursor}" 
+                                    Margin="5,215,0,0" Height="25" Width="25">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip Content="If you want to remove the ions larger than precursor m/z, please check." />
+                                    </ToolTipService.ToolTip>
+                                </CheckBox>
+                            </Grid>
+                        </Expander>
+                        <Button Content="Run" Command="{Binding OkCommand}" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,150,10"/>
+                        <Button Content="Cancel" Click="Button_Click" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,10"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

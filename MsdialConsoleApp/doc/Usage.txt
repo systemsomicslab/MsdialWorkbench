@@ -1,0 +1,1 @@
+MsdialConsoleApp lcmsdda -i ..\..\Resources\DDA-files -m ..\..\Resources\DDA-files\lcdda-params.txt -o ..\..\Resources\DDA-files

@@ -1,0 +1,184 @@
+﻿<Window x:Class="Rfx.Riken.OsakaUniv.MetabolicPathwaySetWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:CommonMVVM="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
+        Name="MetabolicPathwaySetView"
+        Title="Metabolite pathway setting" Height="450" Width="800">
+
+    <Window.Resources>
+        <CommonMVVM:CBoolNegativeConverter x:Key="cBoolNegativeConverter" />
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="110" />
+            <RowDefinition Height="200" />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Label Content="Pathway selection" Margin="5,5,5,5"
+                   VerticalAlignment="Top" HorizontalAlignment="Left"
+                   FontStyle="Italic" />
+            <StackPanel Orientation="Horizontal" Margin="10,30,0,0"
+                        HorizontalAlignment="Left" VerticalAlignment="Top">
+                <RadioButton Content="Animal pathway" IsChecked="{Binding AnimalPathway}" Margin="10,0,10,0" />
+                <RadioButton Content="Plant pathway" IsChecked="{Binding PlantPathway}" Margin="10,0,10,0" />
+                <RadioButton Content="User-defined pathway (Vanted or Wikipathway format)" 
+                             IsChecked="{Binding UserPathway}"
+                             Margin="10,0,10,0"  />
+            </StackPanel>
+
+            <Label Content="'Key' for mapping" Margin="5,25,55,5"
+                   VerticalAlignment="Top" HorizontalAlignment="Right"
+                   FontStyle="Italic" />
+
+            <Label Content="File path:" Margin="5,60,5,5"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" />
+            <TextBox Text="{Binding UserPathwayFilePath}" IsEnabled="{Binding UserPathway}"
+                     Height="30" HorizontalAlignment="Stretch" 
+                     VerticalAlignment="Top"
+                     VerticalContentAlignment="Center"
+                     Margin="70,60,300,0" />
+
+            <Button Content="Load" IsEnabled="{Binding UserPathway}"
+                    Command="{Binding LoadUserPathway}"
+                    Width="80" Height="30" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="0,60,215,0" />
+
+            <RadioButton Content="InChIKey" 
+                         GroupName="MainKey"
+                         IsChecked="{Binding IsMainInChIKey}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,68,135,0" />
+
+            <RadioButton Content="Metabolite name" 
+                         GroupName="MainKey"
+                         IsChecked="{Binding IsMainInChIKey, ConverterParameter=key, Converter={StaticResource cBoolNegativeConverter}}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,68,15,0" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Label Content="Load different project aligned data (class setting must be equal, and now, the projct must be closed when loaded)" 
+                   Margin="5,5,5,5"
+                   VerticalAlignment="Top" HorizontalAlignment="Left"
+                   FontStyle="Italic" />
+            <Label Content="Project 1:" Margin="5,40,0,0" />
+            <ComboBox ItemsSource="{Binding AlignedResults1}" DisplayMemberPath="FileName"
+                      SelectedIndex="{Binding Project1SelectedResultIndex}" Height="30"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                      VerticalContentAlignment="Center"
+                      Margin="70,40,300,0" />
+            <Button Content="Load"
+                    Command="{Binding LoadProject1}"
+                    Width="80" Height="30" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="0,40,215,0" />
+
+            <RadioButton Content="InChIKey"
+                         GroupName="Project1"
+                         IsChecked="{Binding IsProject1InChIKey}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,48,135,0" />
+
+            <RadioButton Content="Metabolite name" 
+                         GroupName="Project1"
+                         IsChecked="{Binding IsProject1InChIKey, ConverterParameter=key, Converter={StaticResource cBoolNegativeConverter}}"  
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,48,15,0" />
+
+            <Label Content="Project 2:" Margin="5,80,0,0" />
+            <ComboBox ItemsSource="{Binding AlignedResults2}" DisplayMemberPath="FileName"
+                      SelectedIndex="{Binding Project2SelectedResultIndex}" Height="30"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                      VerticalContentAlignment="Center"
+                      Margin="70,80,300,0" />
+            <Button Content="Load"
+                    Command="{Binding LoadProject2}"
+                    Width="80" Height="30" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="0,80,215,0" />
+
+            <RadioButton Content="InChIKey" 
+                         GroupName="Project2"
+                         IsChecked="{Binding IsProject2InChIKey}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,88,135,0" />
+
+            <RadioButton Content="Metabolite name"
+                         GroupName="Project2"
+                         IsChecked="{Binding IsProject2InChIKey, ConverterParameter=key, Converter={StaticResource cBoolNegativeConverter}}"  
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,88,15,0" />
+
+
+            <Label Content="Project 3:" Margin="5,120,0,0" />
+            <ComboBox ItemsSource="{Binding AlignedResults3}" DisplayMemberPath="FileName"
+                      SelectedIndex="{Binding Project3SelectedResultIndex}" Height="30"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                      VerticalContentAlignment="Center"
+                      Margin="70,120,300,0" />
+            <Button Content="Load"
+                    Command="{Binding LoadProject3}"
+                    Width="80" Height="30" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="0,120,215,0" />
+
+            <RadioButton Content="InChIKey" 
+                         GroupName="Project3"
+                         IsChecked="{Binding IsProject3InChIKey}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,128,135,0" />
+
+            <RadioButton Content="Metabolite name" 
+                         GroupName="Project3"
+                         IsChecked="{Binding IsProject3InChIKey, ConverterParameter=key, Converter={StaticResource cBoolNegativeConverter}}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,128,15,0" />
+
+
+            <Label Content="Project 4:" Margin="5,160,0,0" />
+            <ComboBox ItemsSource="{Binding AlignedResults4}" DisplayMemberPath="FileName"
+                      SelectedIndex="{Binding Project4SelectedResultIndex}" Height="30"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                      VerticalContentAlignment="Center"
+                      Margin="70,160,300,0" />
+            <Button Content="Load"
+                    Command="{Binding LoadProject4}"
+                    Width="80" Height="30" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="0,160,215,0" />
+
+            <RadioButton Content="InChIKey" 
+                         GroupName="Project4"
+                         IsChecked="{Binding IsProject4InChIKey}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,168,135,0" />
+
+            <RadioButton Content="Metabolite name" 
+                         GroupName="Project4"
+                         IsChecked="{Binding IsProject4InChIKey, ConverterParameter=key, Converter={StaticResource cBoolNegativeConverter}}" 
+                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,168,15,0" />
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Button Content="Mapping" Command="{Binding Mapping}" CommandParameter="{Binding ElementName=MetabolicPathwaySetView}" Height="30" Width="80" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,90,5" />
+            <Button Content="Cancel" Command="{Binding Cancel}" CommandParameter="{Binding ElementName=MetabolicPathwaySetView}" Height="30" Width="80" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        </Grid>
+
+        <Grid Grid.Row="3" Background="AliceBlue">
+            <Label Content="Two formats graphml (VANTED) and gpml (Wikipathway) are accepted. In lipidomics project, the label name of nodes is used&#10;for mapping aligned data. In metabolomics project, InChIKey is used. Please register the InChIKey to tooltip in Vanted. In&#10;Wikipathway, there is the field (see the tutorial). Currently, the first layer is used for matching node and annotated data." 
+                   Margin="5,0,5,0"
+                   VerticalAlignment="Center"
+                   />
+        </Grid>
+    </Grid>
+</Window>

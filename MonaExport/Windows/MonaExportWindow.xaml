@@ -1,0 +1,438 @@
+﻿<Window x:Class="edu.ucdavis.fiehnlab.MonaExport.Windows.MonaExportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.Windows"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:vm="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.ViewModels"
+        xmlns:b="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.Behaviors"
+        xmlns:do="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.DataObjects"
+        xmlns:model="clr-namespace:edu.ucdavis.fiehnlab.MonaRestApi.model;assembly=MonaRestApi"
+        xmlns:util="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.UtilClasses"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:OsakaUniv="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM" x:Name="MonaExportView" 
+        mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type vm:MonaExportWindowVM}}"
+        Title="Export To Mona" ShowInTaskbar="False" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <!--<i:Interaction.Behaviors>
+        <b:CloseWindowBehavior CloseButton="{Binding ElementName=ExitButton}"/>
+    </i:Interaction.Behaviors>-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding ExitCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding WindowLoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Window.Resources>
+        <do:MonaProjectData x:Key="DataSource"/>
+        <vm:MonaExportWindowVM x:Key="ViewModel"/>
+        <model:MetaData x:Key="MetaDataType"/>
+        <util:ValueToMetadataConverter x:Key="ValuesToMetadata"/>
+        <util:MetadataValueToStringConverter x:Key="MetadataValueToStringConverter"/>
+
+        <Style TargetType="{x:Type TextBox}" x:Key="TextBoxStyle">
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="IsEnabled" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}" x:Key="TextBlockStyle">
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="IsEnabled" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type UserControl}" x:Key="passwordBoxStyle">
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="IsEnabled" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type Button}" x:Key="buttonStyle">
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="MinWidth" Value="75"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style TargetType="{x:Type Label}" x:Key="labelStyle">
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}" x:Key="titleStyle">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}" x:Key="TextStyle">
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <Binding Source="{StaticResource ViewModel}"/>
+    </Window.DataContext>
+
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+        <!-- Project -->
+        <GroupBox Header="Project" HorizontalAlignment="Stretch">
+            <DockPanel Margin="5">
+
+                <!--buttons-->
+                <StackPanel Orientation="Vertical" Margin="5" DockPanel.Dock="Right"
+                            HorizontalAlignment="Right">
+                    <Button Content="_Upload" Style="{StaticResource buttonStyle}" 
+                            IsEnabled="{Binding UploadButtonEnabled}"
+                            Command="{Binding UploadData}" TabIndex="23"/>
+                    <Button Content="_Load" Style="{StaticResource buttonStyle}" 
+                            IsEnabled="{Binding LoadButtonEnabled}"
+                            Command="{Binding LoadProject}" TabIndex="24"/>
+                    <Button Content="_Save" Style="{StaticResource buttonStyle}" 
+                            IsEnabled="{Binding SaveButtonEnabled}"
+                            Command="{Binding SaveProject}" TabIndex="25"/>
+                    <Button Content="E_xit" Name="ExitButton" Style="{StaticResource buttonStyle}" IsEnabled="True" TabIndex="26">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <i:InvokeCommandAction Command="{Binding ExitCommand, Mode=OneWay}"
+									CommandParameter="{Binding ElementName=MonaExportView}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                </StackPanel>
+
+                <!--submitter-->
+                <GroupBox Header="Submitter">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" Visibility="{Binding SubmitterLoginVisibility, FallbackValue=Visible}">
+                            <DockPanel>
+                                <!-- username-->
+                                <Label Content="Username:" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left"/>
+                                <TextBox ToolTip="Enter your email address here" TabIndex="1"
+                                         DockPanel.Dock="Right"
+                                         Style="{StaticResource TextBoxStyle}"
+                                         Text="{Binding Username, NotifyOnSourceUpdated=True, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MaxLines="1">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding Login}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                            </DockPanel>
+
+                            <DockPanel>
+                                <!-- password -->
+                                <Label Content="Password:" VerticalAlignment="Center" Width="75" DockPanel.Dock="Left"/>
+                                <local:PasswordUserControl
+                                    ToolTip="Please enter your password here"
+                                         DockPanel.Dock="Right"
+                                         Style="{StaticResource passwordBoxStyle}"
+                                         Password="{Binding Password, NotifyOnSourceUpdated=True, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                                    <local:PasswordUserControl.InputBindings>
+                                        <KeyBinding Command="{Binding Login}" Key="Return" />
+                                    </local:PasswordUserControl.InputBindings>
+                                </local:PasswordUserControl>
+                            </DockPanel>
+
+                            <Button Content="Login" Margin="5" TabIndex="3" HorizontalAlignment="Center"
+                                Style="{StaticResource buttonStyle}"
+                                IsEnabled="{Binding LoginButtonEnabled, FallbackValue=true}"
+                                Command="{Binding Login}"/>
+                        </StackPanel>
+                        
+                        <!-- Welcome message after successful login -->
+                        <StackPanel Orientation="Vertical"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Visibility="{Binding SubmitterDataVisibility, FallbackValue=Collapsed}">
+                            <StackPanel>
+                                <TextBlock Text="Welcome"
+                                           Style="{StaticResource TextBlockStyle}" />
+                                <TextBlock Text="{Binding SubmitterData.FullName, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                           Margin="50,0,0,0"
+                                           Style="{StaticResource TextBlockStyle}" />
+                                <TextBlock Text="{Binding SubmitterData.emailAddress, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                           Margin="50,0,0,0"
+                                           Style="{StaticResource TextBlockStyle}" />
+                                <TextBlock Text="{Binding SubmitterData.institution, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                           Margin="50,0,0,0"
+                                           Style="{StaticResource TextBlockStyle}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </DockPanel>
+        </GroupBox>
+        
+        <!-- Sample -->
+        <GroupBox Header="Sample Origin" Margin="5,0,5,0"
+                  IsEnabled="{Binding SampleOriginEnabled, FallbackValue=False}">
+            <StackPanel Orientation="Vertical">
+                <DockPanel>
+                <TextBlock Text="Sample Species" VerticalAlignment="Center" Margin="5" Width="100"/>
+                <ComboBox HorizontalAlignment="Stretch" Margin="0,5" x:Name="SampleSpecies"
+                          MinWidth="100" Height="25"
+                          SelectedItem="{Binding SelectedSpecies, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding SpeciesList, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                          TabIndex="2" Tag="Select the sample species" ToolTip="Select the sample species" MaxWidth="200" SelectedIndex="0">
+                </ComboBox>
+            </DockPanel>
+            <DockPanel>
+                <TextBlock Text="Sample Organ" VerticalAlignment="Center" Margin="5"  Width="100"/>
+                <ComboBox Margin="0,5" x:Name="SampleOrgan"
+                          MinWidth="100" Height="25"
+                          SelectedItem="{Binding SelectedOrgan, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding OrganList, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                          TabIndex="3" ToolTip="Select the sample organ" Tag="Select the sample organ" MaxWidth="200">
+                </ComboBox>
+            </DockPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Spectra -->
+        <GroupBox IsEnabled="{Binding SpectraGroupEnabled, FallbackValue=False}"
+                  BorderThickness="0" Margin="0"
+                  HorizontalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <!--left side spectra group (list)-->
+                    <GroupBox  Header="Spectra" Margin="0,-5,0,0"
+					           MinWidth="200" MinHeight="250">
+                        <ListBox Name="spectraListBox"
+					        HorizontalAlignment="Stretch"
+					        ItemsSource="{Binding Spectra, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+					        ItemTemplate="{DynamicResource spectraList}"
+					        SelectedItem="{Binding SelectedSpectrum, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" TabIndex="8">
+                            <ListBox.Resources>
+                                <DataTemplate x:Key="spectraList">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding splash.splash}" FontSize="10" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding compounds/names/name}" HorizontalAlignment="Left"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.Resources>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding ChangeSelectedSpectrum}"
+                                                           CommandParameter="{Binding ElementName=spectraListBox, Path=SelectedItem}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ListBox>
+                    </GroupBox>
+                    
+                    <!--compound info-->
+                    <GroupBox Header="Selected spectrum"
+                              VerticalAlignment="Stretch">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                      MaxHeight="250" MaxWidth="300">
+                            <TextBlock Margin="5" Text="{Binding SelectedSpectrum, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"/>
+                        </ScrollViewer>
+                    </GroupBox>
+                </StackPanel>
+
+                <!-- right side spectrum group-->
+                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <!--metadata-->
+                    <GroupBox Header="Meta Data" Margin="0,-5,0,0" VerticalAlignment="Stretch"
+                              MinWidth="200" MinHeight="250">
+                        <StackPanel Orientation="Vertical">
+                            <!-- sample origin and type-->
+                            <CheckBox Content="Compound is standard" Margin="5" IsChecked="{Binding IsStandard}"
+                                        Tag="Check this if compound is an authentic standard"
+                                        ToolTip="Check this if compound is an authentic standard" TabIndex="4"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                            <!-- metadata list and input-->
+                            <StackPanel Orientation="Vertical">
+                                <!-- input -->
+                                <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0" Margin="0">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                                        <TextBlock Text="Name" Style="{StaticResource titleStyle}"/>
+                                        <TextBlock Text=" : " Margin="5,0" VerticalAlignment="Stretch"/>
+                                        <TextBlock Text="Value" Style="{StaticResource titleStyle}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                            <ComboBox HorizontalAlignment="Stretch" Margin="0,5" x:Name="NewMDName"
+                                                  MinWidth="100" Height="25"
+                                                  ItemsSource="{Binding MetadataNameList}"
+                                                  SelectedItem="{Binding SelectedMetadataName, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" TabIndex="7"
+                                                  ><!--MouseUp="NewMDName_MouseUp">-->
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="SelectionChanged">
+                                                    <i:InvokeCommandAction Command="{Binding ChangeMetadataNameSelection}"
+                                                                           CommandParameter="{Binding ElementName=NewMDName}"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </ComboBox>
+                                        <TextBlock Text=" : " Margin="5" VerticalAlignment="Center"/>
+                                        <TextBox HorizontalAlignment="Stretch" Margin="0,5" x:Name="NewMDValue"
+                                                 MinWidth="100"
+                                                 Grid.Column="2" Grid.Row="1"
+                                                 Text="{Binding NewMetadataValue, Mode=TwoWay, NotifyOnSourceUpdated=True, 
+                                                    NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource TextBoxStyle}" TabIndex="8">
+                                            <!--<TextBox.Text>
+                                                <Binding Source="{StaticResource newMetadata}" Path="NewMetadataValue"
+                                                         UpdateSourceTrigger="PropertyChanged"
+                                                         Mode="TwoWay"
+                                                         NotifyOnTargetUpdated="True"
+                                                         NotifyOnSourceUpdated="True"
+                                                         ValidatesOnDataErrors="True">
+                                                    <Binding.ValidationRules>
+                                                        <DataErrorValidationRule/>
+                                                    </Binding.ValidationRules>
+                                                </Binding>
+                                            </TextBox.Text>-->
+                                        </TextBox>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- list -->
+                                <ListBox x:Name="spectrumMetadataListBox"
+								     MinHeight="100"
+								     ItemsSource="{Binding SelectedSpectrum.metaData, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+								     SelectedItem="{Binding SelectedMetadata, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+								     ItemTemplate="{DynamicResource metadataList}" TabIndex="9">
+                                    <ListBox.Resources>
+                                        <DataTemplate x:Key="metadataList">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="5*"/>
+                                                    <ColumnDefinition Width="1*"/>
+                                                    <ColumnDefinition Width="5*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Margin="5,0" Text="{Binding Name}"/>
+                                                <TextBlock Text=" : " Grid.Column="1" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Value, Converter={StaticResource MetadataValueToStringConverter}}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.Resources>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding ChangeMetadataListSelection}"
+                                                                   CommandParameter="{Binding ElementName=spectrumMetadataListBox}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ListBox>
+                            </StackPanel>
+
+                            <!-- metadata buttons-->
+                            <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5" Grid.RowSpan="2" VerticalAlignment="Stretch">
+                                <Button Content="{Binding AddMetadataButtonCaption, FallbackValue=Add}"
+                                        Style="{DynamicResource buttonStyle}"
+                                        Command="{Binding AddMetadataToCurrentSpectrum}"
+                                        TabIndex="10" IsEnabled="{Binding AddMetadataButtonEnabled}">
+                                    <!--IsEnabled="{Binding AddMetadataButtonEnabled}"-->
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource ValuesToMetadata}">
+                                            <Binding ElementName="NewMDName" Path="SelectedItem"/>
+                                            <Binding ElementName="NewMDValue" Path="Text"/>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button Content="Remove" Style="{DynamicResource buttonStyle}" 
+									    Command="{Binding RemoveMetadataFromSelectedSpectrum}"
+									    CommandParameter="{Binding ElementName=spectrumMetadataListBox}"
+                                        TabIndex="11"/>
+                                <!--IsEnabled="{Binding RemoveMetadataButtonEnabled}"-->
+                                <Button Content="Clear list" Style="{DynamicResource buttonStyle}"
+                                        Command="{Binding ClearSelectedSpectrumMetadata}"
+                                        TabIndex="12"/>
+                                <!--IsEnabled="{Binding ClearMetadataButtonEnabled}"-->
+                                <Button Style="{DynamicResource buttonStyle}"
+                                        Content="{Binding AddAllMetadataButtonCaption, FallbackValue='Add to all'}"
+                                        Command="{Binding AddMetadataToAllSpectra}"
+                                        TabIndex="13">
+                                    <!--IsEnabled="{Binding AddToAllMetadataButtonEnabled}"-->
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource ValuesToMetadata}">
+                                            <Binding ElementName="NewMDName" Path="SelectedItem"/>
+                                            <Binding ElementName="NewMDValue" Path="Text"/>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button Style="{DynamicResource buttonStyle}"
+                                        Content="{Binding RemoveAllMetadataButtonCaption, FallbackValue='Remove from all'}"
+                                        Command="{Binding RemoveMetadataFromAllSpectra}"
+									    CommandParameter="{Binding ElementName=spectrumMetadataListBox}"
+                                        TabIndex="14"/>
+                                <!--IsEnabled="{Binding RemoveFromAllMetadataButtonEnabled}"-->
+                            </StackPanel>
+                        </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!--tags-->
+                    <GroupBox Header="Tags" Grid.Row="2" VerticalAlignment="Stretch"
+                              MinHeight="250" MinWidth="200">
+                        <DockPanel Margin="0,5,0,0" VerticalAlignment="Stretch">
+                            <StackPanel Orientation="Vertical" DockPanel.Dock="Right" VerticalAlignment="Stretch">
+                                <Button Content="Add"
+                                        Style="{StaticResource buttonStyle}"
+                                        Command="{Binding AddTag}"
+                                        IsEnabled="{Binding AddTagButtonEnabled}" TabIndex="17"/>
+                                <Button Content="Add common Tag" Style="{StaticResource buttonStyle}"
+                                        Command="{Binding ShowCommonTagsWindow}"
+                                        CommandParameter="{Binding ElementName=MonaExportView}"
+                                        IsEnabled="{Binding AddCommonTagButtonEnabled}" TabIndex="18"/>
+                                <Button Content="Remove" Style="{StaticResource buttonStyle}"
+                                        Command="{Binding RemoveTag}"
+                                        CommandParameter="{Binding ElementName=spectraTagListBox, Path=SelectedItem}"
+                                        IsEnabled="{Binding RemoveTagButtonEnabled}" TabIndex="19"/>
+                                <Button Content="Clear list" Style="{StaticResource buttonStyle}"
+                                        Command="{Binding ClearTags}"
+                                        IsEnabled="{Binding ClearTagsButtonEnabled}" TabIndex="20"/>
+                                <Button Style="{StaticResource buttonStyle}"
+                                        Content="Add to all" 
+                                        Command="{Binding AddTagToAll}"
+                                        IsEnabled="{Binding AddAllTagButtonEnabled}" TabIndex="21"/>
+                                <Button Style="{StaticResource buttonStyle}"
+                                        Content="Remove from all"
+                                        Command="{Binding RemoveTagFromAll}"
+                                        IsEnabled="{Binding RemoveAllTagButtonEnabled}" TabIndex="22"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical" DockPanel.Dock="Left" Margin="5">
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+                                    <TextBox Name="newTag" Margin="0,0,0,5"
+								             Text="{Binding NewTagValue, Mode=TwoWay, NotifyOnSourceUpdated=True, 
+                                                 NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+								             Style="{StaticResource TextBoxStyle}" TabIndex="15"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch">
+                                    <ListBox x:Name="spectraTagListBox" MinHeight="100"
+                                             VerticalAlignment="Stretch"
+                                             ItemTemplate="{DynamicResource tagList}"
+                                             SelectedItem="{Binding SelectedTag, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                             ItemsSource="{Binding SelectedSpectrum.tags}" TabIndex="16">
+                                        <ListBox.Resources>
+                                            <DataTemplate x:Key="tagList" >
+                                                <TextBlock Text="{Binding text}"/>
+                                            </DataTemplate>
+                                        </ListBox.Resources>
+                                    </ListBox>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </DockPanel>
+                    </GroupBox>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <TextBox Foreground="Red" IsReadOnly="True" 
+			Text="{Binding InfoBoxText, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"/>
+    </StackPanel>
+</Window>

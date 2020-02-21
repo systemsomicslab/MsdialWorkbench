@@ -1,0 +1,27 @@
+﻿<Window x:Class="edu.ucdavis.fiehnlab.MonaExport.Windows.LoginError"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:edu.ucdavis.fiehnlab.MonaExport.Windows"
+        mc:Ignorable="d"
+        x:Name="LoginErrorView"
+        Title="Login Error" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" Icon="pack://application:,,,/MonaExport;component/Resources/loginerror.png" ResizeMode="NoResize">
+    <StackPanel Orientation="Vertical" Margin="10">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="10">
+            <Image Width="50" Height="50" Source="../Resources/loginerror.png"/>
+            <TextBlock TextAlignment="Center" Margin="50,10,10,10">
+                Invalid Username or Password.<LineBreak/>
+                Please close this window and try again.
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Vertical">
+            <TextBlock TextAlignment="Center" Margin="10">
+                If you don't have an account you can register at the main <Hyperlink NavigateUri="http://mona.fiehnlab.ucdavis.edu" Command="{Binding MonaRegistrationCommand}">MoNA website</Hyperlink>
+            </TextBlock>
+            <Button Content="OK" Width="100" Height="25" Margin="5"
+                    Command="{Binding Close}"
+                    CommandParameter="{Binding ElementName=LoginErrorView}"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

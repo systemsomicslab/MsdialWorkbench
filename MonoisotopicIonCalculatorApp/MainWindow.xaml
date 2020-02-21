@@ -1,0 +1,20 @@
+﻿<Window x:Class="MonoisotopicIonCalculatorApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MonoisotopicIonCalculatorApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="80" Width="650">
+    <Grid>
+        <Label Content="Formula: " VerticalAlignment="Center" />
+        <TextBox Name="TextBox_Formula" VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                 HorizontalAlignment="Left" Width="150" Height="30" Margin="60,5,5,5" />
+        <RadioButton Name="RadioButton_Positive" Content="Positive" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="230,5,5,5" />
+        <RadioButton Name="RadioButton_Negative" Content="Negative" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="300,5,5,5" />
+        <Button Content="Calculate" Click="Button_Click"
+                Width="80" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="390,5,5,5" />
+        <TextBox Name="TextBox_Result" VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                 HorizontalAlignment="Right" Width="150" Height="30" Margin="5,5,5,5" />
+    </Grid>
+</Window>

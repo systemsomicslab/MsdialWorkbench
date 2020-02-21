@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{11F13AA9-0AF3-4C22-8BAE-347035070D2F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
+    <AssemblyName>Common</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MessagePack, Version=1.7.3.4, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
+      <HintPath>..\packages\MessagePack.1.7.3.4\lib\net45\MessagePack.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\ms-dial\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\ms-dial\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ms-dial\Assemblies\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Annotation info\LipidAnnotation.cs" />
+    <Compile Include="Fragment\AnnotatedIon.cs" />
+    <Compile Include="LipoqualityQuantTree.cs" />
+    <Compile Include="MessagePack\AlignmentResultBeanMethods.cs" />
+    <Compile Include="MessagePack\LargeListMessagePack.cs" />
+    <Compile Include="MessagePack\MessagePackHandler.cs" />
+    <Compile Include="MessagePack\MspMethods.cs" />
+    <Compile Include="MessagePack\SavePropertyBeanMethods.cs" />
+    <Compile Include="Molecular spectrum networking\MolecularSpectrumNetworkingCommon.cs" />
+    <Compile Include="Ontology\ChemicalOntology.cs" />
+    <Compile Include="Database\AdductIonBean.cs" />
+    <Compile Include="Database\MspFormatCompoundInformationBean.cs" />
+    <Compile Include="Database\MzIntensityCommentBean.cs" />
+    <Compile Include="Database\TextFormatCompoundInformationBean.cs" />
+    <Compile Include="Method\ErrorHandler.cs" />
+    <Compile Include="Isotope calculator\CompoundPropertyBean.cs" />
+    <Compile Include="Isotope calculator\ElementPropertyBean.cs" />
+    <Compile Include="Isotope calculator\IsotopeElementPropertyBean.cs" />
+    <Compile Include="Isotope calculator\IupacElementPropertyBean.cs" />
+    <Compile Include="Isotope calculator\IupacReferenceBean.cs" />
+    <Compile Include="Paramerter\AnalysisParamOfMsdialCorrDec.cs" />
+    <Compile Include="Paramerter\AnalysisParamOfMsdialLcms.cs" />
+    <Compile Include="Query\FragmentSearcherQuery.cs" />
+    <Compile Include="RawData\IonMobilitySpectrum.cs" />
+    <Compile Include="RawData\Raw_Measurement.cs" />
+    <Compile Include="StandardCompound.cs" />
+    <Compile Include="Storage\PostIdentificatioinReferenceBean.cs" />
+    <Compile Include="Storage\ProjectPropertyBean.cs" />
+    <Compile Include="Storage\RdamFileContentBean.cs" />
+    <Compile Include="Storage\RdamPropertyBean.cs" />
+    <Compile Include="Storage\RetentionTimeCorrectionBean.cs" />
+    <Compile Include="Storage\SavePropertyBean.cs" />
+    <Compile Include="Paramerter\AnalysisParamEnums.cs" />
+    <Compile Include="File\AlignmentFileBean.cs" />
+    <Compile Include="File\AlignmentResultBean.cs" />
+    <Compile Include="File\AnalysisFileBean.cs" />
+    <Compile Include="File\AnalysisFilePropertyBean.cs" />
+    <Compile Include="Paramerter\AnalysisParamOfMsdialGcms.cs" />
+    <Compile Include="Storage\DataSummaryBean.cs" />
+    <Compile Include="Paramerter\AnalystExperimentInformationBean.cs" />
+    <Compile Include="Paramerter\ExcludeMassBean.cs" />
+    <Compile Include="Paramerter\AnalysisParamOfMsdialMzML.cs" />
+    <Compile Include="Database\DatabaseQuery.cs" />
+    <Compile Include="FormulaData\AdductIonInformationBean.cs" />
+    <Compile Include="Alignment\AlignedPeakPropertyBean.cs" />
+    <Compile Include="Alignment\AlignmentPropertyBean.cs" />
+    <Compile Include="FormulaData\AdductIon.cs" />
+    <Compile Include="Fragment\ProductIon.cs" />
+    <Compile Include="Fragment\NeutralLoss.cs" />
+    <Compile Include="Isotope labeled tracking\IsotopeElement.cs" />
+    <Compile Include="Isotope labeled tracking\IsotopeTrackingDictionary.cs" />
+    <Compile Include="Database\LbmQuery.cs" />
+    <Compile Include="Database\LipidQueryBean.cs" />
+    <Compile Include="Peak infomation\ModelpeakBean.cs" />
+    <Compile Include="Peak infomation\PeakAreaBean.cs" />
+    <Compile Include="Paramerter\AnalysisParamOfMsfinder.cs" />
+    <Compile Include="FormulaData\ChemicalElement.cs" />
+    <Compile Include="FormulaData\Formula.cs" />
+    <Compile Include="FormulaData\Isotope.cs" />
+    <Compile Include="FormulaData\IsotopicPeak.cs" />
+    <Compile Include="Resource\Iupac.cs" />
+    <Compile Include="Resource\IupacChemicalElement.cs" />
+    <Compile Include="RawData\Peak.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RawData\RawData.cs" />
+    <Compile Include="RawData\Spectrum.cs" />
+    <Compile Include="Fragment\UniqueFragment.cs" />
+    <Compile Include="View\ExtractedIonChromatogramDisplaySettingBean.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\ms-dial\packages\MessagePackAnalyzer.1.6.0\analyzers\dotnet\cs\MessagePackAnalyzer.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Standard\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
