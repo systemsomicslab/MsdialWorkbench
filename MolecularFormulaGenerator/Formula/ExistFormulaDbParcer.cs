@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Windows;
+//using System.Windows;
 using System.Linq;
 
 namespace Rfx.Riken.OsakaUniv {
@@ -16,15 +16,17 @@ namespace Rfx.Riken.OsakaUniv {
         /// </summary>
         /// <param name="file">Add the EFD format file path.</param>
         /// <returns>The queries will be return as generic list.</returns>
-        public static List<ExistFormulaQuery> ReadExistFormulaDB(string file) {
+        public static List<ExistFormulaQuery> ReadExistFormulaDB(string file, out string errorString) {
             var queries = new List<ExistFormulaQuery>();
 
             int formulaRecords;
             int dbRecords;
-            string dbNames, errorString;
+            string dbNames;
+
+            errorString = string.Empty;
  
             if (ErrorHandler.IsFileLocked(file, out errorString)){
-                MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -58,16 +60,17 @@ namespace Rfx.Riken.OsakaUniv {
         /// <returns>The queries will be return as generic list.</returns>
         public static List<ExistFormulaQuery> ReadExistFormulaDB(string file, double cLabelMass, double hLabelMass, double nLabelMass,
             double oLabelMass, double pLabelMass, double sLabelMass, double fLabelMass, double clLabelMass, double brLabelMass,
-            double iLabelMass, double siLabelMass) {
+            double iLabelMass, double siLabelMass, out string errorString) {
             var queries = new List<ExistFormulaQuery>();
 
             int formulaRecords;
             int dbRecords;
-            string dbNames, errorString;
+            string dbNames;
+            errorString = string.Empty;
 
             if (ErrorHandler.IsFileLocked(file, out errorString))
             {
-                MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 

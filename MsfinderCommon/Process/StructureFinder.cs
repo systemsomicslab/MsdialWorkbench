@@ -41,8 +41,13 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
                     FragmenterResultParcer.InsilicoFragmentResultWriter(output, smiles, fragments);
 
                     counter++;
-                    Console.Write("Progress {0}/{1}", counter, smilesCodes.Count);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("Progress {0}/{1}", counter, smilesCodes.Count);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("Progress {0}/{1}", counter, smilesCodes.Count);
+                    }
                 }
             }); 
         }

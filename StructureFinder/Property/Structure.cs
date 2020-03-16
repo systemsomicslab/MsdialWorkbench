@@ -137,6 +137,7 @@ namespace Riken.Metabolomics.StructureFinder.Property
         private bool isValidatedStructure;
         private double xlogP;
         private float retentiontime;
+        private Dictionary<string, float> adductToCcs;
         private string errorMessage;
         private double totalBondEnergy;
         private List<string> substructureInChIKeys;
@@ -182,6 +183,7 @@ namespace Riken.Metabolomics.StructureFinder.Property
             this.substructureInChIKeys = MoleculeMapper.GetAssignedSubstructureInChIKeys(this.molecularDescriptor);
             this.substructureOntologies = MoleculeMapper.GetAssignedFragmentOntologies(this.substructureInChIKeys);
             this.xlogP = XlogpCalculator.XlogP(this);
+            this.adductToCcs = new Dictionary<string, float>();
             //this.inchikey = MoleculeConverter.AtomContainerToInChIKey(this.iContainer);
 
             PubChemFingerprint.SetSection1Properties(this.molecularDescriptor, this.formula);
@@ -391,6 +393,16 @@ namespace Riken.Metabolomics.StructureFinder.Property
 
             set {
                 retentiontime = value;
+            }
+        }
+
+        public Dictionary<string, float> AdductToCcs {
+            get {
+                return adductToCcs;
+            }
+
+            set {
+                adductToCcs = value;
             }
         }
 

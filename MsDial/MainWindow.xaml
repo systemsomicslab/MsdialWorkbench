@@ -321,7 +321,7 @@
                 <MenuItem Name="MenuItem_NormalizationMethod" Header="_Normalization" Click="normalizationMethod_Click" />
                 <MenuItem Name="MenuItem_PrincipalComponentAnalysis" Header="_Principal component analysis" Click="principalComponentAnalysis_Click" />
                 <MenuItem Name="MenuItem_PartialLeastSquares" Header="_Partial least squares" Click="partialLeastSquares_Click" />
-                <MenuItem Name="MenuItem_HierarchicalClusteringAnalysis" Header="_Hierarchical clustering analysis" Click="hierarchicalclusteringanalysis_Click" />
+                <!--<MenuItem Name="MenuItem_HierarchicalClusteringAnalysis" Header="_Hierarchical clustering analysis" Click="hierarchicalclusteringanalysis_Click" />-->
                 <MenuItem Name="MenuItem_MolecularNetworking" Header="_Molecular spectrum networking" Click="MenuItem_MsmsMolecularNetwork_Click" IsEnabled="TRUE" />
                 <MenuItem Name="MenuItem_PathwayMapper" Header="_Pathway" IsEnabled="True" Click="MenuItem_MappingToLipidPathway_Click" />
 

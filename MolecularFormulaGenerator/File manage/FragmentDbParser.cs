@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+//using System.Windows;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -11,14 +11,14 @@ namespace Rfx.Riken.OsakaUniv
     {
         private FragmentDbParser() { }
 
-        public static List<ProductIon> GetProductIonDB(string dbFilePath)
+        public static List<ProductIon> GetProductIonDB(string dbFilePath, out string errorString)
         {
             var productIonDB = new List<ProductIon>();
             double mass;
-            string errorString;
+            errorString = string.Empty;
 
             if (ErrorHandler.IsFileLocked(dbFilePath, out errorString)) {
-                MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -30,7 +30,8 @@ namespace Rfx.Riken.OsakaUniv
                     var lineArray = line.Split('\t');
 
                     if (lineArray.Length != 5) {
-                        MessageBox.Show("There is some empty values or redundant cells in your product ion DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        errorString = "There is some empty values or redundant cells in your product ion DB. Please check your sheet.";
+                        //MessageBox.Show("There is some empty values or redundant cells in your product ion DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
                     }
 
@@ -51,7 +52,8 @@ namespace Rfx.Riken.OsakaUniv
                         });
                     }
                     else {
-                        MessageBox.Show("There are non-figure values in the Accurata mass or elemental composition cells in your product ion DB. Please check your sheet and reboot this application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        errorString = "There are non-figure values in the Accurata mass or elemental composition cells in your product ion DB. Please check your sheet and reboot this application.";
+                        //MessageBox.Show("There are non-figure values in the Accurata mass or elemental composition cells in your product ion DB. Please check your sheet and reboot this application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
                     }
                 }
@@ -59,14 +61,14 @@ namespace Rfx.Riken.OsakaUniv
             return productIonDB;
         }
 
-		public static List<NeutralLoss> GetNeutralLossDB(string dbFilePath)
+		public static List<NeutralLoss> GetNeutralLossDB(string dbFilePath, out string errorString)
 		{
             var neutralLossDB = new List<NeutralLoss>();
             double mass;
-            string errorString;
+            errorString = string.Empty;
 
             if (ErrorHandler.IsFileLocked(dbFilePath, out errorString)) {
-                MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -79,8 +81,9 @@ namespace Rfx.Riken.OsakaUniv
                     if (line == string.Empty) break;
                     var lineArray = line.Split('\t');
 
-                    if (lineArray.Length != 5) { 
-                        MessageBox.Show("There is some empty values or redundant cells in your neutral loss DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
+                    if (lineArray.Length != 5) {
+                        errorString = "There is some empty values or redundant cells in your neutral loss DB. Please check your sheet.";
+                        //MessageBox.Show("There is some empty values or redundant cells in your neutral loss DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
                         return null; 
                     }
                     
@@ -103,7 +106,8 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else
                     {
-                        MessageBox.Show("There are non-figure values in the Accurata mass or elemental composition cells in your neutral loss DB. Please check your sheet and reboot this application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
+                        errorString = "There are non-figure values in the Accurata mass or elemental composition cells in your neutral loss DB. Please check your sheet and reboot this application.";
+                        //MessageBox.Show("There are non-figure values in the Accurata mass or elemental composition cells in your neutral loss DB. Please check your sheet and reboot this application.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
                         return null;
                     }
                 }
@@ -111,13 +115,13 @@ namespace Rfx.Riken.OsakaUniv
             return neutralLossDB;
         }
 
-        public static List<FragmentOntology> GetFragmentOntologyDB(string dbFilePath)
+        public static List<FragmentOntology> GetFragmentOntologyDB(string dbFilePath, out string errorString)
         {
             var uniqueFragmentDB = new List<FragmentOntology>();
-            string errorString;
+            errorString = string.Empty;
 
             if (ErrorHandler.IsFileLocked(dbFilePath, out errorString)) {
-                MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(errorString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -129,7 +133,8 @@ namespace Rfx.Riken.OsakaUniv
                     var lineArray = line.Split('\t');
 
                     if (lineArray.Length != 6) {
-                        MessageBox.Show("There is some empty values or redundant cells in your fragment ontology DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        errorString = "There is some empty values or redundant cells in your fragment ontology DB. Please check your sheet.";
+                        //MessageBox.Show("There is some empty values or redundant cells in your fragment ontology DB. Please check your sheet.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
                     }
 

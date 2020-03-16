@@ -16,11 +16,16 @@ namespace Rfx.Riken.OsakaUniv
             {
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath).OrderByDescending(n => n.TotalScore).ToList();
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error).OrderByDescending(n => n.TotalScore).ToList();
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
+
                     var sfdFiles = System.IO.Directory.GetFiles(rawfile.StructureFolderPath);
                     var sfdResults = new List<FragmenterResult>();
 
@@ -182,6 +187,7 @@ namespace Rfx.Riken.OsakaUniv
 
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            var error = string.Empty;
 
             using (var sw = new StreamWriter(formulaFile, false, Encoding.ASCII))
             {
@@ -190,7 +196,10 @@ namespace Rfx.Riken.OsakaUniv
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
 
                     if (formulaResults.Count > 0) {
                         formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
@@ -206,7 +215,11 @@ namespace Rfx.Riken.OsakaUniv
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
+
                     var sfdResults = new List<FragmenterResult>();
 
                     if (formulaResults.Count > 0) {
@@ -234,13 +247,18 @@ namespace Rfx.Riken.OsakaUniv
             var dateString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            var error = string.Empty;
 
             foreach (var rawfile in files) {
                 var formulaFile = exportFolderPath + "\\" + "Formula result-" + rawfile.RawDataFileName + "-" + dateString + ".txt";
                 var structureFile = exportFolderPath + "\\" + "Structure result-" + rawfile.RawDataFileName + "-" + dateString + ".txt";
                 var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
 
-                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
+
                 formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
 
                 var sfdFiles = System.IO.Directory.GetFiles(rawfile.StructureFolderPath);
@@ -261,10 +279,15 @@ namespace Rfx.Riken.OsakaUniv
         public static void ReflectMsfinderResultToMspFile(MainWindow mainWindow, MainWindowVM mainWindowVM) {
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            var error = string.Empty;
 
             foreach (var rawfile in files) {
                 var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
-                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
+
                 formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                 if (formulaResults.Count == 0) continue;
 

@@ -99,8 +99,13 @@ namespace Msdial.Gcms.Dataprocess.Validation
                         }
 
                         results.Add(result);
-                        Console.Write("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
-                        Console.SetCursorPosition(0, Console.CursorTop);
+                        if (!Console.IsOutputRedirected) {
+                            Console.Write("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                        }
+                        else {
+                            Console.WriteLine("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
+                        }
                     }
                 }
                 writeValidationResults(detailOutputpath, results);
@@ -171,8 +176,13 @@ namespace Msdial.Gcms.Dataprocess.Validation
                     }
 
                     results.Add(result);
-                    Console.Write("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("{0} %", Math.Round((double)results.Count / (double)queries.Count * 100, 1));
+                    }
                 }
             }
             writeValidationResults(detailOutputpath, results);

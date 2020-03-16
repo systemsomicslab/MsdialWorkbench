@@ -127,12 +127,16 @@ namespace Rfx.Riken.OsakaUniv
             var mineStructureDB = mainWindowVM.MineStructureDB;
             var fragmentOntologies = mainWindowVM.FragmentOntologyDB.Where(n => n.Frequency >= 0.2).ToList();
             var mspDB = mainWindowVM.MspDB;
+            var error = string.Empty;
             
             List<FragmentLibrary> fragmentDB = null; 
             if (param.IsUseEiFragmentDB && mainWindowVM.EiFragmentDB != null && mainWindowVM.EiFragmentDB.Count > 0) fragmentDB = mainWindowVM.EiFragmentDB;
 
             if (!System.IO.File.Exists(file.FormulaFilePath)) return;
-            var formulaResults = FormulaResultParcer.FormulaResultReader(file.FormulaFilePath);
+            var formulaResults = FormulaResultParcer.FormulaResultReader(file.FormulaFilePath, out error);
+            if (error != string.Empty) {
+                Console.WriteLine(error);
+            }
 
             if (formulaResults == null || formulaResults.Count == 0) return;
 

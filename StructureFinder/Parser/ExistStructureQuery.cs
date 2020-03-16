@@ -22,6 +22,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
         private int resourceNumber;
         private float retentiontime;
         private DatabaseQuery databaseQuery;
+        private Dictionary<string, float> adductToCCS;
 
         public ExistStructureQuery()
         {
@@ -29,6 +30,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
             formula = new Formula();
             databaseQuery = new DatabaseQuery();
             this.retentiontime = -1;
+            this.adductToCCS = new Dictionary<string, float>();
         }
 
         public ExistStructureQuery(string title, string inchiKey, string shortIhchi, 
@@ -47,6 +49,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
             this.classyfireID = string.Empty;
             this.classyfireOntology = string.Empty;
             this.retentiontime = -1;
+            this.adductToCCS = new Dictionary<string, float>();
         }
 
         [Key(0)]
@@ -142,6 +145,17 @@ namespace Riken.Metabolomics.StructureFinder.Parser
 
             set {
                 retentiontime = value;
+            }
+        }
+
+        [Key(12)]
+        public Dictionary<string, float> AdductToCCS {
+            get {
+                return adductToCCS;
+            }
+
+            set {
+                adductToCCS = value;
             }
         }
     }

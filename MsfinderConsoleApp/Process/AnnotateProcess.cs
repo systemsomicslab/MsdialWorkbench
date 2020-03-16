@@ -112,8 +112,13 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
                 lock (syncObj) {
                     progress++;
-                    Console.Write("Fragment annotation finished: {0} / {1}", progress, queryCount);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("Fragment annotation finished: {0} / {1}", progress, queryCount);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("Fragment annotation finished: {0} / {1}", progress, queryCount);
+                    }
                 }
             });
             return 1;

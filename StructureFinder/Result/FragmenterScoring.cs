@@ -17,7 +17,9 @@ namespace Riken.Metabolomics.StructureFinder.Result {
             var subStructureFactor = 1.0;
             var dbFactor = 3.0;
             var rtFactor = 0.0;
+            var ccsFactor = 0.0;
             if (result.RtSimilarityScore > 0) rtFactor = 1.0;
+            if (result.CcsSimilarityScore > 0) ccsFactor = 1.0;
 
             if (isEimsSearch) {
                 var totalScore = fragFactore * fragmenterScore +
@@ -28,10 +30,11 @@ namespace Riken.Metabolomics.StructureFinder.Result {
             else {
                 var totalScore = fragFactore * fragmenterScore +
                 result.SubstructureAssignmentScore * subStructureFactor +
-                result.DatabaseScore * dbFactor + result.RtSimilarityScore * rtFactor;
+                result.DatabaseScore * dbFactor + 
+                result.RtSimilarityScore * rtFactor + result.CcsSimilarityScore * ccsFactor;
 
                 return totalScore /
-                    (fragFactore + subStructureFactor + dbFactor + rtFactor) * 5.0;
+                    (fragFactore + subStructureFactor + dbFactor + rtFactor + ccsFactor) * 5.0;
             }
         }
 
@@ -134,6 +137,19 @@ namespace Riken.Metabolomics.StructureFinder.Result {
             }
         }
 
+        public static double CollisionCrossSection(Rfx.Riken.OsakaUniv.RawData rawdata,
+            Structure structure, AnalysisParamOfMsfinder param) {
+
+            if (!param.IsUsePredictedCcsForStructureElucidation) return -1.0;
+           
+            var adductString = rawdata.PrecursorType;
+            if (structure.AdductToCcs == null) return -1.0;
+            if (!structure.AdductToCcs.ContainsKey(adductString)) return -1.0;
+            var predCcs = structure.AdductToCcs[adductString];
+            if (predCcs <= 0) return -1.0;
+            return predCcs;
+        }
+
         public static double CalculateRtSimilarity(Rfx.Riken.OsakaUniv.RawData rawdata, 
             Structure structure, AnalysisParamOfMsfinder param) {
             if (!param.IsUsePredictedRtForStructureElucidation) return -1.0;
@@ -162,6 +178,23 @@ namespace Riken.Metabolomics.StructureFinder.Result {
                 return -1.0;
             }
         }
+
+        public static double CalculateCcsSimilarity(Rfx.Riken.OsakaUniv.RawData rawdata,
+            Structure structure, AnalysisParamOfMsfinder param) {
+            if (!param.IsUsePredictedCcsForStructureElucidation) return -1.0;
+            if (rawdata.Ccs <= 0) return -1.0;
+            var expCcs = rawdata.Ccs;
+            var adductString = rawdata.PrecursorType;
+            if (structure.AdductToCcs == null) return -1.0;
+            if (!structure.AdductToCcs.ContainsKey(adductString)) return -1.0;
+            var predCcs = structure.AdductToCcs[adductString];
+            if (predCcs <= 0) return -1.0;
+
+            var ccsSimilarity = BasicMathematics.StandadizedGaussianFunction(Math.Abs(expCcs - predCcs),
+                param.RtToleranceForStructureElucidation);
+            return ccsSimilarity;
+        }
+
 
         public static double CalculateDatabaseScore(string databases, int databaseNumber, string queries) 
         {

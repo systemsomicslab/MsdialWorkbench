@@ -840,7 +840,7 @@
                             <RadioButton Content="Calculated by XLogP based equation" IsEnabled="{Binding Path=IsUsePredictedRtForStructureElucidation}" 
                                          IsChecked="{Binding Path=IsUseXlogpPrediction}" Margin="220,77,0,0" />
 
-                            <Label Content="User-defined RT-InChIKey library" FontStyle="Italic" Margin="21,105,0,0" />
+                            <Label Content="User-defined InChIKey-RT text library" FontStyle="Italic" Margin="21,105,0,0" />
 
                             <Label Content="File path:" Margin="21,135,0,0" />
                             
@@ -992,7 +992,7 @@
                                      />
 
                             <Label Content="Ao^2" Margin="375,35,0,0" />
-                            <Label Content="User-defined CCS-Adduct-InChIKey library" FontStyle="Italic" Margin="21,75,0,0" />
+                            <Label Content="User-defined InChIKey-Adduct-CCS text library" FontStyle="Italic" Margin="21,75,0,0" />
                             <Label Content="File path:" Margin="21,105,0,0" />
 
                             <TextBox Name="TextBox_CcsAdductInChIKeyDictionaryFilepath" 

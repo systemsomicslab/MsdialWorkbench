@@ -96,8 +96,13 @@ namespace Riken.Metabolomics.RawDataHandlerCommon.Writer {
                     //progressReports(counter, totalCount, bgWorker);
                 }
                 else {
-                    Console.Write("{0} / {1}", counter, totalCount);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("{0} / {1}", counter, totalCount);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("{0} / {1}", counter, totalCount);
+                    }
                 }
                 counter++;
             }
@@ -110,8 +115,13 @@ namespace Riken.Metabolomics.RawDataHandlerCommon.Writer {
                     //progressReports(counter, totalCount, bgWorker);
                 }
                 else {
-                    Console.Write("{0} / {1}", counter, totalCount);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("{0} / {1}", counter, totalCount);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("{0} / {1}", counter, totalCount);
+                    }
                 }
                 counter++;
             }

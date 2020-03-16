@@ -95,8 +95,13 @@ namespace Rfx.Riken.OsakaUniv
              }
              ,
              () => {
-                 if (param.IsRunSpectralDbSearch == true)
-                     mainWindowVM.MspDB = FileStorageUtility.GetMspDB(param);
+                 if (param.IsRunSpectralDbSearch == true) {
+                     string errorMessage = string.Empty;
+                     mainWindowVM.MspDB = FileStorageUtility.GetMspDB(param, out errorMessage);
+                     if (errorMessage != string.Empty) {
+                         MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                     }
+                 }
              }
              ,
              () =>

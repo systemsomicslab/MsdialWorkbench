@@ -110,7 +110,7 @@ namespace Rfx.Riken.OsakaUniv
             var results = new List<MsFinderValidationResultTemp>(); //[0] alignment ID [1] formula [2] inchikey [3] Ontology
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
-
+            var error = string.Empty;
             foreach (var rawfile in files) {
                 var idString = string.Empty;
                 var formulaString = "Unknown";
@@ -124,7 +124,11 @@ namespace Rfx.Riken.OsakaUniv
                 //idString = rawData.ScanNumber.ToString();
                 idString = rawData.Comment;
 
-                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
+
                 formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                 if (formulaResults.Count == 1) {
                     formulaString = formulaResults[0].Formula.FormulaString;
@@ -230,14 +234,17 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
-
+                var error = string.Empty;
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
                     if (rawData.InchiKey == null || rawData.InchiKey == string.Empty) rawData.InchiKey = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 1].Trim();
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
 
@@ -258,13 +265,19 @@ namespace Rfx.Riken.OsakaUniv
                 var databaseReported = 0;
                 var total = 0;
 
+                var error = string.Empty;
+
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
                     if (rawData.InchiKey == null || rawData.InchiKey == string.Empty) rawData.InchiKey = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 1].Trim();
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
+
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
 
                     for (int i = 0; i < formulaResults.Count; i++)
@@ -286,6 +299,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files)
                 {
@@ -293,7 +307,10 @@ namespace Rfx.Riken.OsakaUniv
                     if (rawData.InchiKey == null || rawData.InchiKey == string.Empty) rawData.InchiKey = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 1].Trim();
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
 
@@ -944,13 +961,17 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
                     if (rawData.InchiKey == null || rawData.InchiKey == string.Empty) rawData.InchiKey = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 1].Trim();
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
                     int formulaCount = 0; if (formulaResults != null && formulaResults.Count > 0) formulaCount = formulaResults.Count;
@@ -1058,6 +1079,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files)
                 {
@@ -1066,7 +1088,10 @@ namespace Rfx.Riken.OsakaUniv
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
                     if (rawData.IonMode != ionmode) continue;
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
                     int formulaCount = 0; if (formulaResults != null && formulaResults.Count > 0) formulaCount = formulaResults.Count;
@@ -1116,6 +1141,7 @@ namespace Rfx.Riken.OsakaUniv
             var ranks = new int[101];
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            var error = string.Empty;
 
             foreach (var rawfile in files) {
                 var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -1131,7 +1157,10 @@ namespace Rfx.Riken.OsakaUniv
 
                 ranks[0]++;
 
-                var formulaResults = FormulaResultParcer.FormulaResultFastReader(rawfile.FormulaFilePath);
+                var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
                 formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                 int formulaRanking = -1;
                 if (isCarbonFixed)
@@ -1165,6 +1194,7 @@ namespace Rfx.Riken.OsakaUniv
             using (var sw = new StreamWriter(exportFile, false, Encoding.ASCII)) {
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -1172,7 +1202,10 @@ namespace Rfx.Riken.OsakaUniv
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
                     if (rawData.IonMode != ionmode) continue;
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
                     int formulaCount = 0; if (formulaResults != null && formulaResults.Count > 0) formulaCount = formulaResults.Count;
@@ -1269,6 +1302,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
@@ -1277,7 +1311,10 @@ namespace Rfx.Riken.OsakaUniv
                     if (rawData.IonMode.ToString() != ionMode) continue;
                     //if (rawData.Ms2PeakNumber < 5) continue;
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
                     int formulaCount = 0; if (formulaResults != null && formulaResults.Count > 0) formulaCount = formulaResults.Count;
@@ -1418,13 +1455,17 @@ namespace Rfx.Riken.OsakaUniv
 
                 var files = mainWindowVM.AnalysisFiles;
                 var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+                var error = string.Empty;
 
                 foreach (var rawfile in files) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
                     if (rawData.InchiKey == null || rawData.InchiKey == string.Empty) rawData.InchiKey = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 1].Trim();
                     if (rawData.Formula == null || rawData.Formula == string.Empty) rawData.Formula = rawData.Name.Split(';')[rawData.Name.Split(';').Length - 2].Trim();
 
-                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath);
+                    var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
+                    if (error != string.Empty) {
+                        Console.WriteLine(error);
+                    }
                     formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
                     int formulaRanking = getFormulaRanking(rawData.Formula, formulaResults);
                     int formulaCount = 0; if (formulaResults != null && formulaResults.Count > 0) formulaCount = formulaResults.Count;

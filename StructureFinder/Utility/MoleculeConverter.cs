@@ -442,6 +442,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
                     structure.ResourceNumber = query.ResourceNumber;
                     structure.DatabaseQueries = databaseQueries;
                     structure.Retentiontime = query.Retentiontime;
+                    structure.AdductToCcs = query.AdductToCCS;
                     return structure;
                 }
                 else {

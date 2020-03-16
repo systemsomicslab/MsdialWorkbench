@@ -46,12 +46,13 @@ namespace Riken.Metabolomics.StructureFinder.Result
 
         private double rtSimilarityScore;
         private double riSimilarityScore;
+        private double ccsSimilarityScore;
 
         public FragmenterResult() { }
 
         #region // constructer from fragmenter functions
         public FragmenterResult(Structure structure, List<PeakFragmentPair> fragmentPics, 
-             float retentiontime, float retentionindex)
+             float retentiontime, float retentionindex, float ccs)
         {
             this.isSpectrumSearchResult = false;
             this.fragmentPics = fragmentPics;
@@ -71,6 +72,7 @@ namespace Riken.Metabolomics.StructureFinder.Result
 
             this.retentionTime = retentiontime;
             this.retentionIndex = retentionindex;
+            this.ccs = ccs;
 
             scoreInitialization();
         }
@@ -93,7 +95,7 @@ namespace Riken.Metabolomics.StructureFinder.Result
             this.resources = mspRecord.Links;
             this.retentionTime = mspRecord.RetentionTime;
             this.retentionIndex = mspRecord.RetentionIndex;
-            this.Ccs = mspRecord.CollisionCrossSection;
+            this.ccs = mspRecord.CollisionCrossSection;
 
             this.ontologyID = string.Empty;
             this.ontology = mspRecord.CompoundClass != string.Empty ? mspRecord.CompoundClass : mspRecord.Ontology;
@@ -109,7 +111,7 @@ namespace Riken.Metabolomics.StructureFinder.Result
             string ontology, string ontologyID,
             double retentionTime, double retentionIndex, double ccs,
             double totalScore, double totalHrLikelihood, double totalBcLikelihood, double totalMaLikelihood, double totalFlLikelihood, double totalBeLikelihood,
-            double substructureAssignmentScore, double databaseScore, double rtSimilarityScore, double riSimilarityScore)
+            double substructureAssignmentScore, double databaseScore, double rtSimilarityScore, double riSimilarityScore, double ccsSimilarityScore)
         {
             this.isSpectrumSearchResult = isSpectrumSearchResult;
             this.fragmentPics = fragmentPics;
@@ -143,6 +145,7 @@ namespace Riken.Metabolomics.StructureFinder.Result
 
             this.rtSimilarityScore = rtSimilarityScore;
             this.riSimilarityScore = riSimilarityScore;
+            this.CcsSimilarityScore = ccsSimilarityScore;
         }
         #endregion
 
@@ -383,6 +386,16 @@ namespace Riken.Metabolomics.StructureFinder.Result
 
             set {
                 ccs = value;
+            }
+        }
+
+        public double CcsSimilarityScore {
+            get {
+                return ccsSimilarityScore;
+            }
+
+            set {
+                ccsSimilarityScore = value;
             }
         }
         #endregion

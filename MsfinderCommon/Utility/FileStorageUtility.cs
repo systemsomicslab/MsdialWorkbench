@@ -9,8 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
+//using System.Windows;
+//using System.Windows.Media;
 
 namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class FileStorageUtility {
@@ -38,11 +38,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             }
 
             // getting ismarked property
-            var param = new AnalysisParamOfMsfinder();
-            foreach (var file in analysisFileBeanCollection) {
-                var rawdata = RawDataParcer.RawDataFileRapidReader(file.RawDataFilePath);
-                file.BgColor = rawdata.IsMarked ? Brushes.Gray : Brushes.White;
-            }
+            //var param = new AnalysisParamOfMsfinder();
+            //foreach (var file in analysisFileBeanCollection) {
+            //    var rawdata = RawDataParcer.RawDataFileRapidReader(file.RawDataFilePath);
+            //    file.BgColor = rawdata.IsMarked ? Brushes.Gray : Brushes.White;
+            //}
 
             // set formula files and structure folder paths
             foreach (var file in analysisFileBeanCollection) {
@@ -76,19 +76,19 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             var path = GetResourcesPath("ExistFormulaLib");
             var existFormulaDB = new List<ExistFormulaQuery>();
             Console.WriteLine(path);
-            try
-            {
+            try {
                 existFormulaDB = MessagePackMsFinderHandler.LoadFromFile<List<ExistFormulaQuery>>(path);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 Console.WriteLine("Error in GetExistFormulaDB to read messagepack file");
             }
-            if (existFormulaDB == null || existFormulaDB.Count == 0)
-            {
-                existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(path);
-                if (existFormulaDB == null || existFormulaDB.Count == 0)
-                {
+            if (existFormulaDB == null || existFormulaDB.Count == 0) {
+                var error = string.Empty;
+                existFormulaDB = ExistFormulaDbParcer.ReadExistFormulaDB(path, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
+                if (existFormulaDB == null || existFormulaDB.Count == 0) {
                     return null;
                 }
                 MessagePackMsFinderHandler.SaveToFile<List<ExistFormulaQuery>>(existFormulaDB, path);
@@ -99,26 +99,22 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         public static List<ExistStructureQuery> GetExistStructureDB() {
             var existStructureDB = new List<ExistStructureQuery>();
             var path = GetResourcesPath("ExistStructureLib");
-            try
-            {
+            try {
                 existStructureDB = MessagePackMsFinderHandler.LoadFromFile<List<ExistStructureQuery>>(path);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 Console.WriteLine("Error in GetExistStructureDB to read messagepack file");
             }
-            if (existStructureDB == null || existStructureDB.Count == 0)
-            {
+            if (existStructureDB == null || existStructureDB.Count == 0) {
                 existStructureDB = ExistStructureDbParcer.ReadExistStructureDB(path);
-                if (existStructureDB == null || existStructureDB.Count == 0)
-                {
+                if (existStructureDB == null || existStructureDB.Count == 0) {
                     return null;
                 }
                 MessagePackMsFinderHandler.SaveToFile<List<ExistStructureQuery>>(existStructureDB, path);
             }
             ExistStructureDbParcer.SetClassyfireOntologies(existStructureDB, GetResourcesPath("InchikeyClassyfireLib"));
             return existStructureDB;
-            
+
         }
 
         public static List<FragmentLibrary> GetEiFragmentDB() {
@@ -134,7 +130,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         }
 
         public static List<NeutralLoss> GetNeutralLossDB() {
-            var neutralLossDB = FragmentDbParser.GetNeutralLossDB(GetResourcesPath("NeutralLossLib"));
+            var error = string.Empty;
+            var neutralLossDB = FragmentDbParser.GetNeutralLossDB(GetResourcesPath("NeutralLossLib"), out error);
 
             if (neutralLossDB == null) {
                 return null;
@@ -144,20 +141,23 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             }
         }
 
-        public static bool IsLibrariesImported(AnalysisParamOfMsfinder param, 
-            List<ExistStructureQuery> eQueries, List<ExistStructureQuery> mQueries, List<ExistStructureQuery> uQueries) {
-
+        public static bool IsLibrariesImported(AnalysisParamOfMsfinder param,
+            List<ExistStructureQuery> eQueries, List<ExistStructureQuery> mQueries, List<ExistStructureQuery> uQueries, out string errorMessage) {
+            errorMessage = string.Empty;
             if (param.IsUsePredictedRtForStructureElucidation && param.IsUseRtInchikeyLibrary) {
                 var filepath = param.RtInChIKeyDictionaryFilepath;
+                
                 if (filepath == null || filepath == string.Empty) {
-                    MessageBox.Show("A library containing the list of retention time and InChIKey should be selected if you select the RT option for structure elucidation."
-                  , "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    errorMessage = "A library containing the list of retention time and InChIKey should be selected if you select the RT option for structure elucidation.";
+                    //  MessageBox.Show("A library containing the list of retention time and InChIKey should be selected if you select the RT option for structure elucidation."
+                    //, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
 
                 if (!System.IO.File.Exists(filepath)) {
-                    MessageBox.Show(System.IO.Path.GetFileName(filepath) + "is not found."
-                  , "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    errorMessage = System.IO.Path.GetFileName(filepath) + "is not found.";
+                  //  MessageBox.Show(System.IO.Path.GetFileName(filepath) + "is not found."
+                  //, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
 
@@ -165,6 +165,25 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 FileStorageUtility.SetRetentiontimeDataFromLibrary(mQueries, filepath);
                 FileStorageUtility.SetRetentiontimeDataFromLibrary(uQueries, filepath);
             }
+
+            if (param.IsUsePredictedCcsForStructureElucidation) {
+                var filepath = param.CcsAdductInChIKeyDictionaryFilepath;
+
+                if (filepath == null || filepath == string.Empty) {
+                    errorMessage = "A library containing the list of CCS, adduct type and InChIKey should be selected if you select the CCS option for structure elucidation.";
+                    return false;
+                }
+
+                if (!System.IO.File.Exists(filepath)) {
+                    errorMessage = System.IO.Path.GetFileName(filepath) + "is not found.";
+                    return false;
+                }
+
+                FileStorageUtility.SetCcsDataFromLibrary(eQueries, filepath);
+                FileStorageUtility.SetCcsDataFromLibrary(mQueries, filepath);
+                FileStorageUtility.SetCcsDataFromLibrary(uQueries, filepath);
+            }
+
             return true;
         }
 
@@ -200,8 +219,57 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             }
         }
 
+        public static void SetCcsDataFromLibrary(List<ExistStructureQuery> queries, string input) {
+
+            if (queries == null || queries.Count == 0) return;
+            var inchikey2AdductCcsPair = new Dictionary<string, List<string>>();
+            using (var sr = new StreamReader(input, Encoding.ASCII)) { // [0] InChIKey [1] Adduct [1] CCS
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line == string.Empty) continue;
+                    var lineArray = line.Split('\t');
+                    if (lineArray.Length < 3) continue;
+
+                    var inchikey = lineArray[0];
+                    var shortinchikey = inchikey.Split('-')[0].Trim();
+                    var adductString = lineArray[1];
+                    var adductObj = AdductIonParcer.GetAdductIonBean(adductString);
+                    if (!adductObj.FormatCheck) continue;
+                    var ccsString = lineArray[2];
+                    float ccs = 0.0F;
+                    if (float.TryParse(ccsString, out ccs) && shortinchikey.Length == 14) {
+
+                        var pairKey = String.Join("_", new string[] { adductObj.AdductIonName, ccsString });
+                        if (!inchikey2AdductCcsPair.ContainsKey(shortinchikey)) {
+                            inchikey2AdductCcsPair[shortinchikey] = new List<string>() { pairKey };
+                        }
+                        else {
+                            if (!inchikey2AdductCcsPair[shortinchikey].Contains(pairKey))
+                                inchikey2AdductCcsPair[shortinchikey].Add(pairKey);
+                        }
+                    }
+                }
+            }
+
+            foreach (var query in queries) {
+                var shortInChIkey = query.ShortInchiKey;
+                if (inchikey2AdductCcsPair.ContainsKey(shortInChIkey)) {
+                    var adductCcsPairs = inchikey2AdductCcsPair[shortInChIkey];
+                    foreach (var pair in adductCcsPairs) {
+                        var adduct = pair.Split('_')[0];
+                        var ccs = pair.Split('_')[1];
+                        if (query.AdductToCCS == null) query.AdductToCCS = new Dictionary<string, float>();
+                        query.AdductToCCS[adduct] = float.Parse(ccs);
+                    }
+                }
+            }
+        }
+
+
         public static List<ChemicalOntology> GetChemicalOntologyDB() {
-            var chemicalOntologies = ChemOntologyDbParser.Read(GetResourcesPath("ChemOntologyLib"));
+            var errorMessage = string.Empty;
+            var chemicalOntologies = ChemOntologyDbParser.Read(GetResourcesPath("ChemOntologyLib"), out errorMessage);
 
             if (chemicalOntologies == null) {
                 return null;
@@ -213,7 +281,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
 
 
         public static List<FragmentOntology> GetUniqueFragmentDB() {
-            var uniqueFragmentDB = FragmentDbParser.GetFragmentOntologyDB(GetResourcesPath("UniqueFragmentLib"));
+            var error = string.Empty;
+            var uniqueFragmentDB = FragmentDbParser.GetFragmentOntologyDB(GetResourcesPath("UniqueFragmentLib"), out error);
 
             if (uniqueFragmentDB == null) {
                 return null;
@@ -224,7 +293,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         }
 
         public static List<ProductIon> GetProductIonDB() {
-            var productIonDB = FragmentDbParser.GetProductIonDB(GetResourcesPath("ProductIonLib"));
+            var error = string.Empty;
+            var productIonDB = FragmentDbParser.GetProductIonDB(GetResourcesPath("ProductIonLib"), out error);
 
             if (productIonDB == null) {
                 return null;
@@ -309,17 +379,19 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 return mspDB;
         }
 
-        public static List<MspFormatCompoundInformationBean> GetMspDB(AnalysisParamOfMsfinder param) {
+        public static List<MspFormatCompoundInformationBean> GetMspDB(AnalysisParamOfMsfinder param, out string errorMessage) {
             var mspDB = new List<MspFormatCompoundInformationBean>();
-
+            errorMessage = string.Empty;
             if (param.IsUseUserDefinedSpectralDb) {
                 var userDefinedDbFilePath = param.UserDefinedSpectralDbFilePath;
                 if (userDefinedDbFilePath == null || userDefinedDbFilePath == string.Empty) {
-                    MessageBox.Show("Select your own MSP database, or uncheck the user-defined spectral DB option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    errorMessage = "Select your own MSP database, or uncheck the user-defined spectral DB option.";
+                    //MessageBox.Show("Select your own MSP database, or uncheck the user-defined spectral DB option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;
                 }
                 if (!File.Exists(userDefinedDbFilePath)) {
-                    MessageBox.Show(userDefinedDbFilePath + " file is not existed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    errorMessage = userDefinedDbFilePath + " file is not existed.";
+                    //MessageBox.Show(userDefinedDbFilePath + " file is not existed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;
                 }
 
@@ -344,7 +416,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             }
 
             if (mspDB.Count == 0) {
-                MessageBox.Show("No spectral record.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                errorMessage = "No spectral record.";
+                //MessageBox.Show("No spectral record.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 

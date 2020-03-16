@@ -57,10 +57,14 @@ namespace Rfx.Riken.OsakaUniv
             var dataStorageBean = mainWindowVM.DataStorageBean;
             var rawData = mainWindowVM.RawDataVM.RawData;
             var filePath = dataStorageBean.QueryFiles[fileID].FormulaFilePath;
+            var error = string.Empty;
 
             if (System.IO.File.Exists(filePath))
             {
-                dataStorageBean.FormualResults = FormulaResultParcer.FormulaResultReader(filePath);
+                dataStorageBean.FormualResults = FormulaResultParcer.FormulaResultReader(filePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
 
                 mainWindowVM.FormulaResultVMs = DataAccessUtility.GetFormulaVmList(dataStorageBean.FormualResults, rawData);
                 if (mainWindowVM.FormulaResultVMs != null && mainWindowVM.FormulaResultVMs.Count != 0) mainWindowVM.SelectedFormulaVM = mainWindowVM.FormulaResultVMs[0];

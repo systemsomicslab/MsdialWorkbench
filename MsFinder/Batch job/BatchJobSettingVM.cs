@@ -30,8 +30,10 @@ namespace Rfx.Riken.OsakaUniv
         protected override void executeCommand(object parameter)
         {
             base.executeCommand(parameter);
+            var errorMessage = string.Empty;
             if (!FileStorageUtility.IsLibrariesImported(this.param, 
-                this.mainWindowVM.ExistStructureDB, this.mainWindowVM.MineStructureDB, this.mainWindowVM.UserDefinedStructureDB)) {
+                this.mainWindowVM.ExistStructureDB, this.mainWindowVM.MineStructureDB, this.mainWindowVM.UserDefinedStructureDB, out errorMessage)) {
+                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

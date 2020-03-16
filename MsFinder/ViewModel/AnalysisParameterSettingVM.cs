@@ -217,8 +217,10 @@ namespace Rfx.Riken.OsakaUniv
             else
                 this.mainWindowVM.UserDefinedStructureDB = null;
 
+            var errorMessage = string.Empty;
             if (!FileStorageUtility.IsLibrariesImported(this.copyParam,
-                this.mainWindowVM.ExistStructureDB, this.mainWindowVM.MineStructureDB, this.mainWindowVM.UserDefinedStructureDB)) {
+                this.mainWindowVM.ExistStructureDB, this.mainWindowVM.MineStructureDB, this.mainWindowVM.UserDefinedStructureDB, out errorMessage)) {
+                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -229,10 +231,13 @@ namespace Rfx.Riken.OsakaUniv
             if (flgSpectrumDbCheck(this.param, this.copyParam)) //parse msp files
             { 
                 Mouse.OverrideCursor = Cursors.Wait;
-                var mspDB = FileStorageUtility.GetMspDB(this.copyParam);
+                var mspDB = FileStorageUtility.GetMspDB(this.copyParam, out errorMessage);
                 Mouse.OverrideCursor = null;
-
-                if (mspDB == null) return;
+                if (errorMessage != string.Empty) {
+                    MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                //if (mspDB == null) return;
                 this.mainWindowVM.MspDB = mspDB;
             }
 

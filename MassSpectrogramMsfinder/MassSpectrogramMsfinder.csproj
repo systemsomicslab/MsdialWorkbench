@@ -89,6 +89,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
       <Name>Common</Name>
@@ -101,9 +104,6 @@
       <Project>{2ec7d371-6a80-427b-a5be-fb4d7c5b19eb}</Project>
       <Name>StructureFinder</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

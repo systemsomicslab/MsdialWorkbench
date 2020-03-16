@@ -499,13 +499,7 @@ namespace Rfx.Riken.OsakaUniv
         private static bool queryCheck(MspFormatCompoundInformationBean mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType)
         {
             if (queries[0].IonMode != mspRecord.IonMode) return false;
-            //if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown") return true; //temp
-            //if (mspRecord.Comment.Contains("SPLASH")) return false; //temp
-            //if (mspRecord.CompoundClass.Contains("EBDS")) {
-            //    Console.WriteLine();
-            //}
             foreach (var query in queries) {
-                // please comment in this sentence after lipoquality spectral kit evaluation is finished
                 if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
                     return true;
                 }

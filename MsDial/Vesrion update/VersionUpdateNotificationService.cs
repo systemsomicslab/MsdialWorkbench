@@ -57,7 +57,7 @@ namespace Rfx.Riken.OsakaUniv
                 // TODO Show version update information in a popup
                 if (MessageBox.Show("A new MS-DIAL is available: " + vdd.LatestVersion + "\r\n" +
                     "Click 'Yes' if you want to go MS-DIAL website.", "Update notification", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes) {
-                        System.Diagnostics.Process.Start("http://prime.psc.riken.jp/Metabolomics_Software/index.html");
+                        System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/index.html");
                 }
 
             }

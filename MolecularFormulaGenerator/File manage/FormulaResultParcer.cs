@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
+//using System.Windows;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -16,8 +16,9 @@ namespace Rfx.Riken.OsakaUniv
         /// </summary>
         /// <param name="filePath">Add the FGT file path.</param>
         /// <returns></returns>
-        public static List<FormulaResult> FormulaResultReader(string filePath)
+        public static List<FormulaResult> FormulaResultReader(string filePath, out string error)
         {
+            error = string.Empty;
             var formulaResults = new List<FormulaResult>();
             var result = new FormulaResult();
             string wkstr;
@@ -78,7 +79,7 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (Regex.IsMatch(wkstr, "EXACTMASS:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.Formula.Mass = doubleValue; else { errorValue(); return null; } 
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.Formula.Mass = doubleValue; else { error = errorValue(); return null; } 
                     }
                     else if (Regex.IsMatch(wkstr, "ISSELECTED:", RegexOptions.IgnoreCase))
                     {
@@ -86,11 +87,11 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (Regex.IsMatch(wkstr, "ACCURATEMASS:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MatchedMass = doubleValue; else { errorValue(); return null; } 
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MatchedMass = doubleValue; else { error = errorValue(); return null; } 
                     }
                     else if (Regex.IsMatch(wkstr, "MASSDIFFERENCE:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MassDiff = doubleValue; else { errorValue(); return null; } 
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MassDiff = doubleValue; else { error = errorValue(); return null; } 
                     }
                     else if (Regex.IsMatch(wkstr, Regex.Escape("ISOTOPICINTENSITY[M+1]:"), RegexOptions.IgnoreCase))
                     {
@@ -110,15 +111,15 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (Regex.IsMatch(wkstr, "TOTALSCORE:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.TotalScore = doubleValue; else { errorValue(); return null; }
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.TotalScore = doubleValue; else { error = errorValue(); return null; }
                     }
                     else if (Regex.IsMatch(wkstr, "MASSDIFFSCORE:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MassDiffScore = doubleValue; else { errorValue(); return null; } 
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.MassDiffScore = doubleValue; else { error = errorValue(); return null; } 
                     }
                     else if (Regex.IsMatch(wkstr, "ISOTOPICSCORE:", RegexOptions.IgnoreCase))
                     {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.IsotopicScore = doubleValue; else { errorValue(); return null; } 
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.IsotopicScore = doubleValue; else { error = errorValue(); return null; } 
                     }
                     else if (Regex.IsMatch(wkstr, "PRODUCTIONSCORE:", RegexOptions.IgnoreCase))
                     {
@@ -236,7 +237,7 @@ namespace Rfx.Riken.OsakaUniv
                             if (intValue == 0) continue;
                             for (int i = 0; i < intValue; i++)
                             {
-                                if (!readProductIonArray(result.ProductIonResult, sr.ReadLine(), versionNum)) { return null; }
+                                if (!readProductIonArray(result.ProductIonResult, sr.ReadLine(), versionNum, out error)) { return null; }
                             }
                         }
                     }
@@ -248,7 +249,7 @@ namespace Rfx.Riken.OsakaUniv
                             if (intValue == 0) continue;
                             for (int i = 0; i < intValue; i++)
                             {
-                                if (!readNeutralLossArray(result.NeutralLossResult, sr.ReadLine(), versionNum)) { return null; }
+                                if (!readNeutralLossArray(result.NeutralLossResult, sr.ReadLine(), versionNum, out error)) { return null; }
                             }
                         }
                     }
@@ -258,7 +259,7 @@ namespace Rfx.Riken.OsakaUniv
                         if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue)) {
                             if (intValue == 0) continue;
                             for (int i = 0; i < intValue; i++) {
-                                if (!readAdductIonArray(result.AnnotatedIonResult, sr.ReadLine(), versionNum)) { return null; }
+                                if (!readAdductIonArray(result.AnnotatedIonResult, sr.ReadLine(), versionNum, out error)) { return null; }
                             }
                         }
                     }
@@ -268,7 +269,7 @@ namespace Rfx.Riken.OsakaUniv
                         if (int.TryParse(wkstr.Split(':')[1].Trim(), out intValue)) {
                             if (intValue == 0) continue;
                             for (int i = 0; i < intValue; i++) {
-                                if (!readIsotopicIonArray(result.AnnotatedIonResult, sr.ReadLine(), versionNum)) { return null; }
+                                if (!readIsotopicIonArray(result.AnnotatedIonResult, sr.ReadLine(), versionNum, out error)) { return null; }
                             }
                         }
                     }
@@ -287,7 +288,9 @@ namespace Rfx.Riken.OsakaUniv
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static List<FormulaResult> FormulaResultFastReader(string filePath) {
+        public static List<FormulaResult> FormulaResultFastReader(string filePath, out string error) {
+            error = string.Empty;
+            
             var formulaResults = new List<FormulaResult>();
             var result = new FormulaResult();
             string wkstr;
@@ -337,7 +340,7 @@ namespace Rfx.Riken.OsakaUniv
                         }
                     }
                     else if (Regex.IsMatch(wkstr, "TOTALSCORE:", RegexOptions.IgnoreCase)) {
-                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.TotalScore = doubleValue; else { errorValue(); return null; }
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) result.TotalScore = doubleValue; else { error = errorValue(); return null; }
                     }
                 }
                 formulaResults.Add(result); // remainder
@@ -357,23 +360,24 @@ namespace Rfx.Riken.OsakaUniv
             return cidlist;
         }
 
-        private static bool readNeutralLossArray(List<NeutralLoss> lossResult, string line, int versionNum)
+        private static bool readNeutralLossArray(List<NeutralLoss> lossResult, string line, int versionNum, out string error)
         {
+            error = string.Empty;
             string[] array = line.Split('\t');
-            if (array.Length < 9) { errorNeutralLoss(); return false; }
+            if (array.Length < 9) { error = errorNeutralLoss(); return false; }
 
             var neutralLoss = new NeutralLoss();
             double value;
 
 
             neutralLoss.Formula = FormulaStringParcer.OrganicElementsReader(array[0]);
-            if (double.TryParse(array[1], out value)) neutralLoss.Formula.Mass = value; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out value)) neutralLoss.PrecursorMz = value; else { errorValue(); return false; }
-            if (double.TryParse(array[3], out value)) neutralLoss.ProductMz = value; else { errorValue(); return false; }
-            if (double.TryParse(array[4], out value)) neutralLoss.PrecursorIntensity = value; else { errorValue(); return false; }
-            if (double.TryParse(array[5], out value)) neutralLoss.ProductIntensity = value; else { errorValue(); return false; }
-            if (double.TryParse(array[6], out value)) neutralLoss.MassLoss = value; else { errorValue(); return false; }
-            if (double.TryParse(array[7], out value)) neutralLoss.MassError = value; else { errorValue(); return false; }
+            if (double.TryParse(array[1], out value)) neutralLoss.Formula.Mass = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[2], out value)) neutralLoss.PrecursorMz = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[3], out value)) neutralLoss.ProductMz = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[4], out value)) neutralLoss.PrecursorIntensity = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[5], out value)) neutralLoss.ProductIntensity = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[6], out value)) neutralLoss.MassLoss = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[7], out value)) neutralLoss.MassError = value; else { error = errorValue(); return false; }
 
             if (versionNum == 1) {
                 neutralLoss.Comment = array[8];
@@ -396,19 +400,20 @@ namespace Rfx.Riken.OsakaUniv
             return true;
         }
 
-        private static bool readProductIonArray(List<ProductIon> productIons, string line, int versionNum)
+        private static bool readProductIonArray(List<ProductIon> productIons, string line, int versionNum, out string error)
         {
+            error = string.Empty;
             string[] array = line.Split('\t');
-            if (array.Length < 5) { errorProductIon(); return false; }
+            if (array.Length < 5) { error= errorProductIon(); return false; }
 
             var productIon = new ProductIon();
             double value;
 
             productIon.Formula = FormulaStringParcer.OrganicElementsReader(array[0]);
-            if (double.TryParse(array[1], out value)) productIon.Formula.Mass = value; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out value)) productIon.Mass = value; else { errorValue(); return false; }
-            if (double.TryParse(array[3], out value)) productIon.Intensity = value; else { errorValue(); return false; }
-            if (double.TryParse(array[4], out value)) productIon.MassDiff = value; else { errorValue(); return false; }
+            if (double.TryParse(array[1], out value)) productIon.Formula.Mass = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[2], out value)) productIon.Mass = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[3], out value)) productIon.Intensity = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[4], out value)) productIon.MassDiff = value; else { error = errorValue(); return false; }
             if (array.Length >= 6 && versionNum == 2) {
                 var inchikeys = array[5].Split(';');
                 foreach (var inchikey in inchikeys) {
@@ -427,7 +432,8 @@ namespace Rfx.Riken.OsakaUniv
             return true;
         }
 
-        private static bool readAdductIonArray(List<AnnotatedIon> adductIons, string line, int versionNum) {
+        private static bool readAdductIonArray(List<AnnotatedIon> adductIons, string line, int versionNum, out string error) {
+            error = string.Empty;
             string[] array = line.Split('\t');
             //if (array.Length < 5) { errorProductIon(); return false; }
 
@@ -435,8 +441,8 @@ namespace Rfx.Riken.OsakaUniv
             double value;
 
             adduct.AdductIon = AdductIonParcer.GetAdductIonBean(array[0]);
-            if (double.TryParse(array[1], out value)) adduct.AccurateMass = value; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out value)) adduct.LinkedAccurateMass = value; else { errorValue(); return false; }
+            if (double.TryParse(array[1], out value)) adduct.AccurateMass = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[2], out value)) adduct.LinkedAccurateMass = value; else { error = errorValue(); return false; }
             
 
             adductIons.Add(adduct);
@@ -445,7 +451,8 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        private static bool readIsotopicIonArray(List<AnnotatedIon> isotopicIons, string line, int versionNum) {
+        private static bool readIsotopicIonArray(List<AnnotatedIon> isotopicIons, string line, int versionNum, out string error) {
+            error = string.Empty;
             string[] array = line.Split('\t');
             //if (array.Length < 5) { errorProductIon(); return false; }
 
@@ -453,9 +460,9 @@ namespace Rfx.Riken.OsakaUniv
             double value;
             int intVal;
             isotope.IsotopeName = array[0];
-            if (double.TryParse(array[1], out value)) isotope.AccurateMass = value; else { errorValue(); return false; }
-            if (double.TryParse(array[2], out value)) isotope.LinkedAccurateMass = value; else { errorValue(); return false; }
-            if (int.TryParse(array[4], out intVal)) isotope.IsotopeWeightNumber = intVal; else { errorValue(); return false; }
+            if (double.TryParse(array[1], out value)) isotope.AccurateMass = value; else { error = errorValue(); return false; }
+            if (double.TryParse(array[2], out value)) isotope.LinkedAccurateMass = value; else { error = errorValue(); return false; }
+            if (int.TryParse(array[4], out intVal)) isotope.IsotopeWeightNumber = intVal; else { error = errorValue(); return false; }
 
             isotopicIons.Add(isotope);
 
@@ -463,34 +470,34 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        private static bool setFormulaElementNumber(Formula formula, string formulaElements)
-        {
-            string[] elementArray = formulaElements.Split(',');
-            int num;
+        //private static bool setFormulaElementNumber(Formula formula, string formulaElements)
+        //{
+        //    string[] elementArray = formulaElements.Split(',');
+        //    int num;
 
-            if (elementArray.Length != 11)
-            {
-                errorElement();
-                return false;
-            }
+        //    if (elementArray.Length != 11)
+        //    {
+        //        errorElement();
+        //        return false;
+        //    }
 
-            if (int.TryParse(elementArray[0], out num)) formula.Cnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[1], out num)) formula.Hnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[2], out num)) formula.Nnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[3], out num)) formula.Onum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[4], out num)) formula.Pnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[5], out num)) formula.Snum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[6], out num)) formula.Fnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[7], out num)) formula.Clnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[8], out num)) formula.Brnum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[9], out num)) formula.Inum = num; else { errorElement(); return false; }
-            if (int.TryParse(elementArray[10], out num)) formula.Sinum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[0], out num)) formula.Cnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[1], out num)) formula.Hnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[2], out num)) formula.Nnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[3], out num)) formula.Onum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[4], out num)) formula.Pnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[5], out num)) formula.Snum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[6], out num)) formula.Fnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[7], out num)) formula.Clnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[8], out num)) formula.Brnum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[9], out num)) formula.Inum = num; else { errorElement(); return false; }
+        //    if (int.TryParse(elementArray[10], out num)) formula.Sinum = num; else { errorElement(); return false; }
 
-            formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula);
-            formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula);
+        //    formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(formula);
+        //    formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(formula);
 
-            return true;
-        }
+        //    return true;
+        //}
 
         /// <summary>
         /// This method is now used in MS-FINDER program.
@@ -662,24 +669,28 @@ namespace Rfx.Riken.OsakaUniv
             return candidateOntologiesString;
         }
 
-        private static void errorElement()
+        private static string errorElement()
         {
-            MessageBox.Show("Bad format: Element number", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return "Bad format: Element number";
+            //MessageBox.Show("Bad format: Element number", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private static void errorValue()
+        private static string errorValue()
         {
-            MessageBox.Show("Bad format: Empty value exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return "Bad format: Empty value exists.";
+            //MessageBox.Show("Bad format: Empty value exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private static void errorProductIon()
+        private static string errorProductIon()
         {
-            MessageBox.Show("Bad format: Product ion array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return "Bad format: Product ion array.";
+            //MessageBox.Show("Bad format: Product ion array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private static void errorNeutralLoss()
+        private static string errorNeutralLoss()
         {
-            MessageBox.Show("Bad format: Neutral loss array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return "Bad format: Neutral loss array.";
+            //MessageBox.Show("Bad format: Neutral loss array.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public static FormulaResult GetFormulaResultTemplateForSpectralDbSearch()

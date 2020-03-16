@@ -101,8 +101,13 @@ namespace DatabaseParserConsoleApp {
                     }
 
                     counter++;
-                    Console.Write("{0} / {1} finished", counter, total);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("{0} / {1}", counter, total);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("{0} / {1}", counter, total);
+                    }
                 }
             }
 

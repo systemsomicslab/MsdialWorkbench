@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+//using System.Windows;
 
 namespace Rfx.Riken.OsakaUniv {
     public sealed class ChemOntologyDbParser {
 
-        public static List<ChemicalOntology> Read(string input) {
+        public static List<ChemicalOntology> Read(string input, out string error) {
 
-            var error = string.Empty;
+            error = string.Empty;
             var chemOntologies = new List<ChemicalOntology>();
             using (var sr = new StreamReader(input)) {
                 sr.ReadLine();
@@ -54,7 +54,7 @@ namespace Rfx.Riken.OsakaUniv {
             }
 
             if (error != string.Empty) {
-                MessageBox.Show(error, "Error in Chemical Ontology DB", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(error, "Error in Chemical Ontology DB", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 

@@ -473,7 +473,7 @@ namespace Rfx.Riken.OsakaUniv
                 var precursorMz = result.BasepeakMz;
                 if (result.Spectrum.Count > 0) precursorMz = (float)result.Spectrum.Max(n => n.Mz);
 
-                sw.WriteLine("PRECURSORMZ: " + result.BasepeakMz);
+                sw.WriteLine("PRECURSORMZ: " + precursorMz);
 
                 sw.WriteLine("PRECURSORTYPE: " + "[M-CH3]+.");
 

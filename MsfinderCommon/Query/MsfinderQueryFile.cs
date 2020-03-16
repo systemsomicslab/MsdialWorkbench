@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
+//using System.Windows.Media;
 
 namespace Riken.Metabolomics.MsfinderCommon.Query {
     /// <summary>
@@ -23,9 +23,9 @@ namespace Riken.Metabolomics.MsfinderCommon.Query {
         private string formulaFileName;
         private string structureFolderPath;
         private string structureFolderName;
-        private SolidColorBrush bgColor; // temp
+        //private SolidColorBrush bgColor; // temp
         public MsfinderQueryFile() {
-            this.bgColor = Brushes.White;
+            //this.bgColor = Brushes.White;
         }
 
         public string RawDataFilePath {
@@ -58,14 +58,14 @@ namespace Riken.Metabolomics.MsfinderCommon.Query {
             set { structureFolderName = value; }
         }
 
-        public SolidColorBrush BgColor {
-            get {
-                return bgColor;
-            }
+        //public SolidColorBrush BgColor {
+        //    get {
+        //        return bgColor;
+        //    }
 
-            set {
-                bgColor = value; OnPropertyChanged("BgColor");
-            }
-        }
+        //    set {
+        //        bgColor = value; OnPropertyChanged("BgColor");
+        //    }
+        //}
     }
 }

@@ -32,14 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MsdialGcmsProcess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\Release\MsdialGcmsProcess.dll</HintPath>
-    </Reference>
-    <Reference Include="MsdialLcmsProcess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\Release\MsdialLcmsProcess.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -89,6 +81,14 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
+      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
+      <Name>MsdialGcmsProcess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcmsProcess\MsdialLcmsProcess.csproj">
+      <Project>{a1826252-a661-419f-81f7-b5d872b3ae94}</Project>
+      <Name>MsdialLcmsProcess</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

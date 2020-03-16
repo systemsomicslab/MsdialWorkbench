@@ -364,7 +364,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             var alignmentSpots = alignmentResult.AlignmentPropertyBeanCollection;
             setAlignmentProperties(alignmentSpots, param);
 
-            definitionOfQuantMasses(alignmentResult, param, mspDB);
+            definitionOfQuantMasses(alignmentResult, files, param, mspDB);
 
             //aligned eic required fields---
             var alignedEics = new List<AlignedData>();
@@ -1049,7 +1049,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             }
         }
 
-        private static void definitionOfQuantMasses(AlignmentResultBean alignmentResult, AnalysisParamOfMsdialGcms param, List<MspFormatCompoundInformationBean> mspDB)
+        private static void definitionOfQuantMasses(AlignmentResultBean alignmentResult, ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, List<MspFormatCompoundInformationBean> mspDB)
         {
             var isReplaceMode = false;
             if (param.IsReplaceQuantmassByUserDefinedValue == true && mspDB != null && mspDB.Count > 0)
@@ -1069,8 +1069,15 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 }
                 if (isDetermined == true) continue;
 
+                var fileID = spot.RepresentativeFileID;
+                var ms1DecSeekpoint = spot.AlignedPeakPropertyBeanCollection[fileID].SeekPoint;
+                var filePath = files[fileID].AnalysisFilePropertyBean.DeconvolutionFilePath;
+                var ms1DecResult = DataStorageGcUtility.ReadMS1DecResult(filePath, ms1DecSeekpoint);
+                var spectrum = ms1DecResult.Spectrum;
+
                 var quantMassDict = new Dictionary<float, List<float>>();
                 var spotIntensityMax = spot.MaxValiable;
+                var repQuantMass = (float)Math.Round(spot.AlignedPeakPropertyBeanCollection[fileID].QuantMass, bin);
                 foreach (var peakProp in spot.AlignedPeakPropertyBeanCollection)
                 {
                     if (peakProp.PeakID < 0) continue;
@@ -1086,8 +1093,30 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 var maxQuant = 0.0F; var maxCount = 0;
                 foreach (var dict in quantMassDict)
                     if (dict.Value.Count > maxCount) { maxCount = dict.Value.Count; maxQuant = dict.Key; }
-                spot.QuantMass = quantMassDict[maxQuant].Average();
+
+                var quantMassCandidate = quantMassDict[maxQuant].Average();
+                var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, param.MassAccuracy, 10.0F);
+                if (isQuantMassExist) {
+                    spot.QuantMass = quantMassCandidate;
+                }
+                else {
+                    spot.QuantMass = repQuantMass;
+                }
             }
+        }
+
+        // spectrum should be ordered by m/z value
+        private static bool isQuantMassExistInSpectrum(float quantMass, List<Peak> spectrum, float bin, float threshold) {
+            var maxIntensity = spectrum.Max(n => n.Intensity);
+            foreach (var peak in spectrum) {
+                if (peak.Mz < quantMass - bin) continue;
+                if (peak.Mz > quantMass + bin) break;
+                var diff = Math.Abs(peak.Mz - quantMass);
+                if (diff <= bin && peak.Intensity > maxIntensity * threshold * 0.01) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         //private static List<Peak> getTrimedAndSmoothedPeaklist(List<RAW_Spectrum> spectrumList, float centralRT, 

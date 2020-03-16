@@ -40,8 +40,10 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 IsUseInternalExperimentalSpectralDb = false,
                 UserDefinedSpectralDbFilePath = input
             };
-
-            var storages = FileStorageUtility.GetMspDB(this.param);
+            var errorMessage = string.Empty;
+            var storages = FileStorageUtility.GetMspDB(this.param, out errorMessage);
+            if (errorMessage != string.Empty)
+                Console.WriteLine(errorMessage);
             var cStorages = new List<MspFormatCompoundInformationBean>();
             //cut less than 1% peaks and changed to relative abundances
             foreach (var storage in storages) {
@@ -198,8 +200,13 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                             break;
                         }
                     }
-                    Console.Write("Writing result finished: {0} / {1}", counter, rawdatas.Count);
-                    Console.SetCursorPosition(0, Console.CursorTop);
+                    if (!Console.IsOutputRedirected) {
+                        Console.Write("Writing result finished: {0} / {1}", counter, rawdatas.Count);
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                    }
+                    else {
+                        Console.WriteLine("Writing result finished: {0} / {1}", counter, rawdatas.Count);
+                    }
                 }
             }
         }

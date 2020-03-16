@@ -74,7 +74,8 @@ namespace Riken.Metabolomics.StructureFinder.Parser
             sw.WriteLine("SubstructureAssignmentScore: " + Math.Round(result.SubstructureAssignmentScore, 4)); //0 <= score <= 1 
             sw.WriteLine("RtSimilarityScore: " + Math.Round(result.RtSimilarityScore, 4)); //0 <= score <= 1 
             sw.WriteLine("RiSimilarityScore: " + Math.Round(result.RiSimilarityScore, 4)); //0 <= score <= 1 
-          
+            sw.WriteLine("CcsSimilarityScore: " + Math.Round(result.CcsSimilarityScore, 4)); //0 <= score <= 1 
+
 
             if (result.IsSpectrumSearchResult == true)
                 writeSpectrumDbSearchResult(sw, result);
@@ -177,6 +178,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
             var databaseScore = -1.0;
             var rtSimilarityScore = -1.0;
             var riSimilarityScore = -1.0;
+            var ccsSimilarityScore = -1.0;
             var bondEnergy = -1.0;
             var retentionTime = -1.0;
             var retentionIndex = -1.0;
@@ -202,7 +204,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                                 resources, ontology, ontologyID,
                                 retentionTime, retentionIndex, ccs,
                                 totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
-                                substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore);
+                                substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore, ccsSimilarityScore);
 
                             fragmenterResults.Add(result);
 
@@ -282,6 +284,9 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                     else if (Regex.IsMatch(wkstr, "RiSimilarityScore:", RegexOptions.IgnoreCase)) {
                         if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) riSimilarityScore = doubleValue; else riSimilarityScore = -1;
                     }
+                    else if (Regex.IsMatch(wkstr, "CcsSimilarityScore:", RegexOptions.IgnoreCase)) {
+                        if (double.TryParse(wkstr.Split(':')[1].Trim(), out doubleValue)) ccsSimilarityScore = doubleValue; else ccsSimilarityScore = -1;
+                    }
                     else if (Regex.IsMatch(wkstr, "Num Fragment \\(", RegexOptions.IgnoreCase)) {
                         intValue = 0;
                         
@@ -328,7 +333,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                     resources, ontology, ontologyID,
                     retentionTime, retentionIndex, ccs,
                     totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
-                    substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore);
+                    substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore, ccsSimilarityScore);
 
                 fragmenterResults.Add(result);
             }
@@ -372,6 +377,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
             var databaseScore = -1.0;
             var rtSimilarityScore = -1.0;
             var riSimilarityScore = -1.0;
+            var ccsSimilarityScore = -1.0;
             var bondEnergy = -1.0;
             var retentionTime = -1.0;
             var retentionIndex = -1.0;
@@ -395,7 +401,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                                 resources, ontology, ontologyID,
                                 retentionTime, retentionIndex, ccs,
                                 totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
-                                substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore);
+                                substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore, ccsSimilarityScore);
 
                             fragmenterResults.Add(result);
 
@@ -431,7 +437,7 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                     resources, ontology, ontologyID,
                     retentionTime, retentionIndex, ccs,
                     totalScore, totalHrLikelihood, totalBcLikelihood, totalMaLikelihood, totalFlLikelihood, totalBeLikelihood,
-                    substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore);
+                    substructureAssignmentScore, databaseScore, rtSimilarityScore, riSimilarityScore, ccsSimilarityScore);
 
                 fragmenterResults.Add(result);
             }

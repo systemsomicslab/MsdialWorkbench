@@ -124,6 +124,11 @@ namespace Rfx.Riken.OsakaUniv
             set { if (this.rawData.RetentionTime == value) return; this.rawData.RetentionTime = value; OnPropertyChanged("RetentionTime"); }
         }
 
+        public double Ccs {
+            get { return this.rawData.Ccs; }
+            set { if (this.rawData.Ccs == value) return; this.rawData.Ccs = value; OnPropertyChanged("Ccs"); }
+        }
+
         public int ScanNumber
         {
             get { return this.rawData.ScanNumber; }

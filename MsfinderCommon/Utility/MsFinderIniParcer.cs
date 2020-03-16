@@ -396,7 +396,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "RtInChIKeyDictionaryFilepath=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        param.RtSmilesDictionaryFilepath = ans;
+                        param.RtInChIKeyDictionaryFilepath = ans;
                     }
                     else if (Regex.IsMatch(line, "RtPredictionSummaryReport=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();

@@ -382,7 +382,11 @@ namespace Rfx.Riken.OsakaUniv {
         }
 
         private MspFormatCompoundInformationBean getMspFormatQuery(RawData rawData, MsfinderQueryFile file, int id) {
-            var formulaResults = FormulaResultParcer.FormulaResultFastReader(file.FormulaFilePath);
+            var error = string.Empty;
+            var formulaResults = FormulaResultParcer.FormulaResultFastReader(file.FormulaFilePath, out error);
+            if (error != string.Empty) {
+                Console.WriteLine(error);
+            }
             var sfdResults = new List<FragmenterResult>();
 
             if (formulaResults.Count > 0) {

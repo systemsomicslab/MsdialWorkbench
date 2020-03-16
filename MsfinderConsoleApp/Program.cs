@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Riken.Metabolomics.MsfinderConsoleApp
 {
@@ -55,6 +56,21 @@ namespace Riken.Metabolomics.MsfinderConsoleApp
             //    , "-o"
             //    , @"C:\Users\Hiroshi Tsugawa\Desktop\msfinder-generator\lysoPEs.txt"
             //};
+
+
+            //args = new string[] {
+            //    "mssearch"
+            //    , "-i"
+            //    , @"C:\msf"
+            //    , "-o"
+            //    , @"C:\msf\out"
+            //    , "-m"
+            //    , @"C:\msf\MSFINDER.INI"
+            //};
+            
+            //Console.WriteLine("IsInputRedirected:  {0}", Console.IsInputRedirected);
+            //Console.WriteLine("IsOutputRedirected: {0}", Console.IsOutputRedirected);
+            //Console.WriteLine("IsErrorRedirected:  {0}", Console.IsErrorRedirected);
 
             return MainProcess.Run(args);
         }

@@ -166,6 +166,26 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        public string CCS {
+            get {
+                var ccsTxt = string.Empty;
+                var ccs = this.fragmenterResult.Ccs;
+                if (ccs <= 0) return "No record";
+
+                if (ccs > 0) {
+                    ccsTxt += Math.Round(ccs, 3) + " (Ao^2) ";
+                    if (this.fragmenterResult.CcsSimilarityScore >= 0) {
+                        ccsTxt += " / Score: " + Math.Round(this.fragmenterResult.CcsSimilarityScore * 100, 2);
+                    }
+                    else {
+                        ccsTxt += " / Score: no records";
+                    }
+                }
+                return ccsTxt;
+            }
+        }
+
+
         public string PubChemCID
         {
             get 

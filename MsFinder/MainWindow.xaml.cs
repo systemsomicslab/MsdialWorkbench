@@ -697,21 +697,20 @@ namespace Rfx.Riken.OsakaUniv
             Mouse.OverrideCursor = null;
         }
 
-        private void MsfinderEvent_KeyUp(object sender, KeyEventArgs e) {
-            if (!checkFileImport()) return;
-            if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control) {
-                var fileId = this.mainWindowVM.SelectedRawFileId;
-                var rawdataVM = this.mainWindowVM.RawDataVM;
-                rawdataVM.IsMarked = true;
-                this.mainWindowVM.DataStorageBean.QueryFiles[fileId].BgColor = Brushes.Gray;
-            }
-            else if (e.Key == Key.Q && Keyboard.Modifiers == ModifierKeys.Control) {
-                var fileId = this.mainWindowVM.SelectedRawFileId;
-                var rawdataVM = this.mainWindowVM.RawDataVM;
-                rawdataVM.IsMarked = false;
-                this.mainWindowVM.DataStorageBean.QueryFiles[fileId].BgColor = Brushes.White;
-            }
-
-        }
+        //private void MsfinderEvent_KeyUp(object sender, KeyEventArgs e) {
+        //    if (!checkFileImport()) return;
+        //    if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control) {
+        //        var fileId = this.mainWindowVM.SelectedRawFileId;
+        //        var rawdataVM = this.mainWindowVM.RawDataVM;
+        //        rawdataVM.IsMarked = true;
+        //        this.mainWindowVM.DataStorageBean.QueryFiles[fileId].BgColor = Brushes.Gray;
+        //    }
+        //    else if (e.Key == Key.Q && Keyboard.Modifiers == ModifierKeys.Control) {
+        //        var fileId = this.mainWindowVM.SelectedRawFileId;
+        //        var rawdataVM = this.mainWindowVM.RawDataVM;
+        //        rawdataVM.IsMarked = false;
+        //        this.mainWindowVM.DataStorageBean.QueryFiles[fileId].BgColor = Brushes.White;
+        //    }
+        //}
     }
 }

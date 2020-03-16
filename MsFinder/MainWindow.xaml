@@ -5,7 +5,6 @@
         xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
         xmlns:massSpectrogram="clr-namespace:Rfx.Riken.OsakaUniv;assembly=MassSpectrogram"
         Loaded="MainWindow_Loaded"
-        KeyUp="MsfinderEvent_KeyUp"
         ContentRendered="Window_ContentRendered"
         Icon="Resources/MS-FINDER-Main-Icon.ico"
         Title="MS-FINDER" Height="780" Width="1280">
@@ -209,8 +208,9 @@
                     <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="5,25,0,0">
                         <Label Content="Name:" Height="25" />
                         <Label Content="Scan number:" Height="25"/>
-                        <Label Content="Retention time [min]:" Height="25"/>
-                        <Label Content="Precursor m/z [Da]:" Height="25"/>
+                        <Label Content="Retention time (min):" Height="25"/>
+                        <Label Content="CCS (Å^2):" Height="25"/>
+                        <Label Content="Precursor m/z:" Height="25"/>
                         <Label Content="Precursor type:" Height="25"/>
                         <Label Content="Ion mode:" Height="25"/>
                         <Label Content="Spectrum type:" Height="25"/>
@@ -220,7 +220,7 @@
                         <Label Content="SMILES:" Height="25" />
                         <Label Content="InChIKey:" Height="25"/>
                         <Label Content="Comment:" Height="25"/>
-                        <Label Content="Marked:" Height="25"/>
+                        <!--<Label Content="Marked:" Height="25"/>-->
                         <Label Content="MS1 peak number:" Height="25"/>
                         <Label Content="MS2 peak number:" Height="25"/>
                     </StackPanel>
@@ -235,6 +235,9 @@
                         <TextBox Name="TextBox_FileInformation_RetentionTime" 
                                  Text="{Binding Path=RawDataVM.RetentionTime, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
                                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <TextBox Name="TextBox_FileInformation_CCS" 
+                                 Text="{Binding Path=RawDataVM.Ccs, StringFormat=0.00, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                                  VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                         <ComboBox Name="ComboBox_FileInformation_PrecursorMz" ItemsSource="{Binding Path=RawDataVM.PrecursorList}" SelectedIndex="{Binding Path=RawDataVM.PrecursorMzId}" Height="25" Margin="0,0,5,0" />
                         <ComboBox Name="TextBox_FileInformation_PrecursorType" ItemsSource="{Binding Path=RawDataVM.PrecursorTypeList}" SelectedIndex="{Binding Path=RawDataVM.PrecursorTypeId}" Height="25" Margin="0,0,5,0" />
                         <ComboBox Name="ComboBox_FileInformation_IonMode" ItemsSource="{Binding Source={StaticResource IonMode}}" SelectedValue="{Binding Path=RawDataVM.IonMode}" Height="25" Margin="0,0,5,0" />
@@ -248,7 +251,7 @@
                         <TextBox Name="TextBox_FileInformation_InChIKey" Text="{Binding Path=RawDataVM.InchiKey, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
                         <TextBox Name="TextBox_FileInformation_Intensity" Text="{Binding Path=RawDataVM.Comment, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
                                   VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
-                        <TextBox Name="TextBox_FileInformation_IsMarked" Text="{Binding Path=RawDataVM.IsMarked, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />
+                        <!--<TextBox Name="TextBox_FileInformation_IsMarked" Text="{Binding Path=RawDataVM.IsMarked, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True }" VerticalContentAlignment="Center" Height="25" Margin="0,0,5,0" />-->
                         <TextBox Name="TextBox_FileInformation_Ms1PeakNumber" Text="{Binding Path=RawDataVM.Ms1PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
                         <TextBox Name="TextBox_FileInformation_Ms2PeakNumber" Text="{Binding Path=RawDataVM.Ms2PeakNum, Mode=OneWay}" Height="25" Style="{StaticResource ReadOnlyTextBox}" />
                     </StackPanel>
@@ -538,6 +541,7 @@
                                 <Label Content="SMILES: " Height="30" Margin="5,0,0,0" />
                                 <Label Content="Bond-dissociation energy: " Height="30" Margin="5,0,0,0" />
                                 <Label Content="Retention time / Score: " Height="30" Margin="5,0,0,0" />
+                                <Label Content="CCS / Score: " Height="30" Margin="5,0,0,0" />
                                 <Label Content="Fragmenter score: " Height="30" Margin="5,0,0,0" />
                                 <Label Content="Database score: " Height="30" Margin="5,0,0,0" />
                                 <Label Content="Substructure score: " Height="30" Margin="5,0,0,0" />
@@ -551,10 +555,11 @@
                                 <TextBox Name="TextBox_Structure_Smiles" Text="{Binding Path=SelectedFragmenterVM.Smiles, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                                 <TextBox Name="TextBox_Structure_BondEnergy" Text="{Binding Path=SelectedFragmenterVM.BondEnergy, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                                 <TextBox Name="TextBox_Structure_RetentionTime" Text="{Binding Path=SelectedFragmenterVM.RetentionTime, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                                <TextBox Name="TextBox_Structure_CCS" Text="{Binding Path=SelectedFragmenterVM.CCS, Mode=OneWay}" Height="30" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
                                 <TextBox Name="TextBox_Structure_FragmenterScore" Text="{Binding Path=SelectedFragmenterVM.FragmenterScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                                 <TextBox Name="TextBox_Structure_DatabaseScore" Text="{Binding Path=SelectedFragmenterVM.DatabaseScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
                                 <TextBox Name="TextBox_Structure_SubstructureScore" Text="{Binding Path=SelectedFragmenterVM.SubstructureScore, Mode=OneWay, StringFormat=F2}" Height="30" Style="{StaticResource ReadOnlyTextBox}" />
-                                <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=SelectedFragmenterVM.Resources, Mode=OneWay}" Height="220" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
+                                <TextBox Name="TextBox_Structure_Resources" Text="{Binding Path=SelectedFragmenterVM.Resources, Mode=OneWay}" Height="300" VerticalContentAlignment="Top" Margin="0,6,0,0" Style="{StaticResource ReadOnlyTextBox}" AcceptsReturn="True" />
                             </StackPanel>
                         </Grid>
                         
