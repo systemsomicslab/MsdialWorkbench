@@ -1609,44 +1609,68 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return startIndex;
         }
 
-        public static List<AdductIonInformationBean> GetAdductIonInformationList(IonMode ionMode) {
-            Uri fileUri;
-            if (ionMode == IonMode.Positive)
-                fileUri = new Uri("/Resources/AdductIonResource_Positive.txt", UriKind.Relative);
-            else
-                fileUri = new Uri("/Resources/AdductIonResource_Negative.txt", UriKind.Relative);
+        //public static List<AdductIonInformationBean> GetAdductIonInformationList(IonMode ionMode) {
+        //    //Uri fileUri;
+        //    //if (ionMode == IonMode.Positive)
+        //    //    fileUri = new Uri("/Resources/AdductIonResource_Positive.txt", UriKind.Relative);
+        //    //else
+        //    //    fileUri = new Uri("/Resources/AdductIonResource_Negative.txt", UriKind.Relative);
 
-            var info = Application.GetResourceStream(fileUri);
+        //    //var info = Application.GetResourceStream(fileUri);
 
-            List<AdductIonInformationBean> adductIonInformationBeanList = new List<AdductIonInformationBean>();
-            AdductIonInformationBean adductIonInformationBean = new AdductIonInformationBean();
+        //    var adductListString = string.Empty;
+        //    if (ionMode == IonMode.Positive)
+        //        adductListString = Properties.Resources.AdductIonResource_Positive;
+        //    else
+        //        adductListString = Properties.Resources.AdductIonResource_Negative;
+        //    var adductList = adductListString.Replace("\r\n", "\n").Split(new[] { '\n', '\r' });
 
-            bool checker = true;
+        //    List<AdductIonInformationBean> adductIonInformationBeanList = new List<AdductIonInformationBean>();
+        //    AdductIonInformationBean adductIonInformationBean = new AdductIonInformationBean();
 
-            using (var sr = new StreamReader(info.Stream)) {
-                string line;
-                string[] lineArray;
-                sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    line = sr.ReadLine();
-                    if (line == "") break;
-                    lineArray = line.Split('\t');
+        //    bool checker = true;
 
-                    adductIonInformationBean = new AdductIonInformationBean();
-                    adductIonInformationBean.AdductName = lineArray[0];
-                    adductIonInformationBean.Charge = int.Parse(lineArray[1]);
-                    adductIonInformationBean.AccurateMass = double.Parse(lineArray[2]);
-                    adductIonInformationBean.IonMode = ionMode;
+        //    for (int i = 1; i < adductList.Length; i++) {
+        //        var line = adductList[i];
+        //        if (line == "") break;
+        //        var lineArray = line.Split('\t');
 
-                    if (checker) { adductIonInformationBean.Included = true; checker = false; }
-                    else adductIonInformationBean.Included = false;
+        //        adductIonInformationBean = new AdductIonInformationBean();
+        //        adductIonInformationBean.AdductName = lineArray[0];
+        //        adductIonInformationBean.Charge = int.Parse(lineArray[1]);
+        //        adductIonInformationBean.AccurateMass = double.Parse(lineArray[2]);
+        //        adductIonInformationBean.IonMode = ionMode;
 
-                    adductIonInformationBeanList.Add(adductIonInformationBean);
-                }
-            }
+        //        if (checker) { adductIonInformationBean.Included = true; checker = false; }
+        //        else adductIonInformationBean.Included = false;
 
-            return adductIonInformationBeanList;
-        }
+        //        adductIonInformationBeanList.Add(adductIonInformationBean);
+        //    }
+
+        //    //using (var sr = new StreamReader(info.Stream)) {
+        //    //    string line;
+        //    //    string[] lineArray;
+        //    //    sr.ReadLine();
+        //    //    while (sr.Peek() > -1) {
+        //    //        line = sr.ReadLine();
+        //    //        if (line == "") break;
+        //    //        lineArray = line.Split('\t');
+
+        //    //        adductIonInformationBean = new AdductIonInformationBean();
+        //    //        adductIonInformationBean.AdductName = lineArray[0];
+        //    //        adductIonInformationBean.Charge = int.Parse(lineArray[1]);
+        //    //        adductIonInformationBean.AccurateMass = double.Parse(lineArray[2]);
+        //    //        adductIonInformationBean.IonMode = ionMode;
+
+        //    //        if (checker) { adductIonInformationBean.Included = true; checker = false; }
+        //    //        else adductIonInformationBean.Included = false;
+
+        //    //        adductIonInformationBeanList.Add(adductIonInformationBean);
+        //    //    }
+        //    //}
+
+        //    return adductIonInformationBeanList;
+        //}
 
         public static List<double[]> GetDriftChromatogramByScanRtMz(ObservableCollection<RAW_Spectrum> spectrumCollection,
            int scanID, float rt, float rtWidth, float mz, float mztol) {

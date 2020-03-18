@@ -17,9 +17,10 @@ namespace Msdial.Lcms.DataProcess {
 
         public static void Execute(ProjectPropertyBean projectProperty, RdamPropertyBean rdamProperty, 
             AnalysisFileBean analysisFile, AnalysisParametersBean param, IupacReferenceBean iupac,
-            List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> postIdentificationDB, 
+            List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> postIdentificationDB, out string error,
             Action<int> reportAction = null, CancellationToken token = new CancellationToken())
         {
+            error = string.Empty;
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
             System.Console.WriteLine(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath);
@@ -41,7 +42,8 @@ namespace Msdial.Lcms.DataProcess {
                     System.Diagnostics.Debug.WriteLine("Cannot open this file: " + analysisFile.AnalysisFilePropertyBean.AnalysisFilePath);
                     if (counter > 5)
                     {
-                        MessageBox.Show("Cannot open this file: " + analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        error = "Cannot open this file: " + analysisFile.AnalysisFilePropertyBean.AnalysisFilePath;
+                        //MessageBox.Show("Cannot open this file: " + analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }

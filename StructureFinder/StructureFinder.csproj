@@ -222,13 +222,13 @@
       <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
       <Name>Database</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
-      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
-      <Name>Mathematics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ClassyfireApi\ClassyfireApi.csproj">
       <Project>{0635c4d2-e5ed-4214-b5ff-99a6b53612ab}</Project>
       <Name>ClassyfireApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
+      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
+      <Name>Mathematics</Name>
     </ProjectReference>
     <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
       <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>

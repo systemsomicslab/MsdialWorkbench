@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
+//using System.Windows;
 
 namespace Riken.Metabolomics.RawDataHandler
 {
@@ -60,7 +60,8 @@ namespace Riken.Metabolomics.RawDataHandler
         public RAW_Measurement GetMeasurement()
         {
             if (this.isDataSupported == false) {
-                MessageBox.Show("Raw data format is not supported: " + this.extensionString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Console.WriteLine("Raw data format is not supported: " + this.extensionString);
+                //MessageBox.Show("Raw data format is not supported: " + this.extensionString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
             else {
@@ -105,7 +106,8 @@ namespace Riken.Metabolomics.RawDataHandler
             var version = 2;
             var errorString = string.Empty;
             if (this.isDataSupported == false) {
-                MessageBox.Show("Raw data format is not supported: " + this.extensionString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Console.WriteLine("Raw data format is not supported: " + this.extensionString);
+               // MessageBox.Show("Raw data format is not supported: " + this.extensionString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             else {
@@ -116,7 +118,8 @@ namespace Riken.Metabolomics.RawDataHandler
                     var iabf_Path = filepathHeader + ".ibf"; // store versions and pointers (accumulated ms1 and all spectra)
                     var measurement = GetMeasurement();
                     if (measurement == null) {
-                        MessageBox.Show("Raw data was not read correctly: " + filename, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Console.WriteLine("Raw data was not read correctly: " + filename);
+                        //MessageBox.Show("Raw data was not read correctly: " + filename, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     var writer = new RawDataWriter();

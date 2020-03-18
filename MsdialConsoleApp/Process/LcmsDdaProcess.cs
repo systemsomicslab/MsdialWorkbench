@@ -39,10 +39,10 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             projectProp = getFilePropertyDictionaryFromAnalysisFiles(projectProp, analysisFiles);
 
             //check adduct list
-            lcmsParam.AdductIonInformationBeanList = ResourceParser.ReadAdductList(projectProp.IonMode);
+            lcmsParam.AdductIonInformationBeanList = AdductResourceParser.GetAdductIonInformationList(projectProp.IonMode);
             ConfigParser.ReadAdductIonInfo(lcmsParam.AdductIonInformationBeanList, methodFile);
 
-            var iupacDB = ResourceParser.ReadIupcaReference();
+            var iupacDB = IupacResourceParser.GetIupacReferenceBean();
             var mspDB = new List<MspFormatCompoundInformationBean>();
             if (projectProp.LibraryFilePath != null && projectProp.LibraryFilePath != string.Empty)
             {
@@ -63,10 +63,14 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
 				}
             }
 
+            var error = string.Empty;
             if (projectProp.CompoundListInTargetModePath != null && projectProp.CompoundListInTargetModePath != string.Empty) {
                 if (!System.IO.File.Exists(projectProp.CompoundListInTargetModePath))
                     return fileNoExistError(projectProp.CompoundListInTargetModePath);
-                lcmsParam.CompoundListInTargetMode = TextLibraryParcer.CompoundListInTargetModeReader(projectProp.CompoundListInTargetModePath);
+                lcmsParam.CompoundListInTargetMode = TextLibraryParcer.CompoundListInTargetModeReader(projectProp.CompoundListInTargetModePath, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
             }
 
             if (targetMz > 0) {
@@ -119,7 +123,11 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             IupacReferenceBean iupacDB, AlignmentFileBean alignmentFile, string outputfolder, bool isProjectStore)
         {
             foreach (var file in analysisFiles) {
-                ProcessFile.Execute(projectProp, rdamProperty, file, lcmsParam, iupacDB, mspDB, txtDB, null);
+                var error = string.Empty;
+                ProcessFile.Execute(projectProp, rdamProperty, file, lcmsParam, iupacDB, mspDB, txtDB, out error, null);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
 
                 #region//export
                 var filepath = file.AnalysisFilePropertyBean.AnalysisFilePath;

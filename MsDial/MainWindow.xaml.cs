@@ -179,8 +179,8 @@ namespace Rfx.Riken.OsakaUniv
         private IupacReferenceBean iupacReference;
 
         //PCA bean
-        private PrincipalComponentAnalysisResult pcaBean;
-        private PcaResultWin pcaResultWin;
+        //private PrincipalComponentAnalysisResult pcaBean;
+        //private PcaResultWin pcaResultWin;
 
         //PLS result
         private MultivariateAnalysisResult multivariateAnalysisResult;
@@ -466,11 +466,11 @@ namespace Rfx.Riken.OsakaUniv
             set { iupacReference = value; }
         }
 
-        public PrincipalComponentAnalysisResult PcaBean
-        {
-            get { return pcaBean; }
-            set { pcaBean = value; }
-        }
+        //public PrincipalComponentAnalysisResult PcaBean
+        //{
+        //    get { return pcaBean; }
+        //    set { pcaBean = value; }
+        //}
 
         public MultivariateAnalysisResult MultivariateAnalysisResult {
             get { return multivariateAnalysisResult; }
@@ -828,7 +828,7 @@ namespace Rfx.Riken.OsakaUniv
             this.rdamProperty = new RdamPropertyBean();
             this.gcmsSpectrumList = new List<RAW_Spectrum>();
 
-            this.pcaBean = new PrincipalComponentAnalysisResult();
+            //this.pcaBean = new PrincipalComponentAnalysisResult();
             this.multivariateAnalysisResult = new MultivariateAnalysisResult();
             this.iupacReference = new IupacReferenceBean();
             this.msdialIniField = MsDialIniParcer.Read();
@@ -1432,7 +1432,7 @@ namespace Rfx.Riken.OsakaUniv
                 if (this.saveProperty.AnalysisParametersBean.IsotopeTrackingDictionary == null)
                     this.saveProperty.AnalysisParametersBean.IsotopeTrackingDictionary = new IsotopeTrackingDictionary();
 
-                var newAdducts = DataAccessLcUtility.GetAdductIonInformationList(this.saveProperty.ProjectPropertyBean.IonMode);
+                var newAdducts = AdductResourceParser.GetAdductIonInformationList(this.saveProperty.ProjectPropertyBean.IonMode);
                 var oldAdducts = this.saveProperty.AnalysisParametersBean.AdductIonInformationBeanList;
 
                 foreach (var nAdduct in newAdducts) {
@@ -5223,7 +5223,7 @@ namespace Rfx.Riken.OsakaUniv
             if (this.focusedAlignmentFileID >= 0)
                 if (MessageBox.Show("Continue without saving processed files?", "Question", MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.Cancel) return;
 
-            if (this.pcaResultWin != null) { this.pcaResultWin.Close(); this.pcaBean = null; }
+           // if (this.pcaResultWin != null) { this.pcaResultWin.Close(); this.pcaBean = null; }
 
             AlignmentViewDataAccessRefresh();
 

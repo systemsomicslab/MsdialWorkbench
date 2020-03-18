@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,15 +26,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MsdialGcmsProcess">
-      <HintPath>..\..\MS-DIAL\MsdialGcmsProcess\bin\Release\MsdialGcmsProcess.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -84,6 +81,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
+      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
+      <Name>MsdialGcmsProcess</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

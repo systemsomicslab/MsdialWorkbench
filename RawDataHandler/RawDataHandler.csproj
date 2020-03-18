@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -37,8 +37,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\AbfDataHandler.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
@@ -47,7 +45,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlignedEic.cs" />
@@ -55,10 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AgilentDataHandler\AgilentDataHandler.csproj">
       <Project>{6c95fa84-b202-4205-9bca-528e70fdddc8}</Project>
       <Name>AgilentDataHandler</Name>
@@ -66,6 +59,10 @@
     <ProjectReference Include="..\BrukerDataHandler\BrukerDataHandler.csproj">
       <Project>{b09e50be-8ee1-475d-8f56-4b0e70f49002}</Project>
       <Name>BrukerDataHandler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\MzmlDataHandler\MzmlDataHandler.csproj">
       <Project>{6cb09c73-2b50-4b1c-8a56-5d7e70764b5e}</Project>

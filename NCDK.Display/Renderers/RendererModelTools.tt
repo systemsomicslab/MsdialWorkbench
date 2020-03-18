@@ -1,0 +1,179 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".tt.cs" #>
+
+using NCDK.Numerics;
+using NCDK.Renderers.Colors;
+using NCDK.Renderers.Generators;
+using WPF = System.Windows;
+
+namespace NCDK.Renderers
+{
+<#
+    void P(string name, string type, string defaultValue, string comm)
+    {
+        var e_comm = comm;
+        var e_defaultValue = defaultValue.Replace("<", "{").Replace(">", "}");
+#>
+        public static readonly <#= type #> Default<#= name #> = <#= defaultValue #>;
+
+        /// <summary>
+        /// Get <#= e_comm #>. Default value is <#= e_defaultValue #>.
+        /// </summary>
+        /// <returns><#= e_comm #></returns>
+        public static <#= type #> Get<#= name #>(this RendererModel model)
+        {
+            const string key = "<#= name #>";
+            <#= type #> value;
+            if (model.Parameters.TryGetValue(key, out object v))
+                value = (<#= type #>)v;
+            else
+                model.Parameters[key] = value = Default<#= name #>;
+
+            return value;
+        }
+
+        /// <summary>
+        /// Set <#= e_comm #>.
+        /// </summary>
+        public static void Set<#= name #>(this RendererModel model, <#= type #> value)
+        {
+            const string key = "<#= name #>";
+            model.Parameters[key] = value;
+        }
+
+        public static bool Has<#= name #>(this RendererModel model)
+        {
+            const string key = "<#= name #>";
+            return model.Parameters.ContainsKey(key);
+        }
+
+<#
+    }
+#>
+
+    public static partial class RendererModelTools
+    {
+<#
+        P("SelectionColor", "WPF.Media.Color", "WPF.Media.Color.FromRgb(0x49, 0xdf, 0xff)", "the color of a selection");
+        P("ExternalHighlightColor", "WPF.Media.Color", "WPF.Media.Colors.Gray", "the color used to highlight external selections");
+        P("Padding", "double", "16", "padding between molecules in a grid or row");
+        P("ColorHash", "System.Collections.Generic.IDictionary<IChemObject, WPF.Media.Color>", "new System.Collections.Generic.Dictionary<IChemObject, WPF.Media.Color>()", "the color hash is used to color substructures");
+        P("TitleFontScale", "double", "0.8", "size of title font relative compared to atom symbols");
+        P("TitleColor", "WPF.Media.Color", "WPF.Media.Colors.Red", "color of title text");
+        P("MarkedOutput", "bool", "true", "if format supports it (e.g. SVG) should marked up elements (id and classes) be output.");
+
+        //
+        // Standard
+        //
+
+        P("AtomColor", "WPF.Media.Color", "WPF.Media.Colors.Black", "the color by which atom labels are drawn");
+        P("AtomColorer", "IAtomColorer", "new UniColor(WPF.Media.Color.FromRgb(0x44, 0x44, 0x44))", "<see cref=\"IAtomColorer\"/> used to draw elements");
+        P("Visibility", "SymbolVisibility", "NCDK.Renderers.Generators.Standards.SelectionVisibility.Disconnected(SymbolVisibility.IupacRecommendationsWithoutTerminalCarbon)", "defines which atoms have their symbol displayed");
+        P("StrokeRatio", "double", "1", "defines the ratio of the stroke to the width of the stroke of the font used to depict atom symbols");
+        P("BondSeparation", "double", "0.16", "defines the ratio of the separation between lines in double bonds as a percentage of length (<see cref=\"RendererModelTools.GetBondLength(RendererModel)\"/>)");
+        P("SymbolMarginRatio", "double", "2", "defines the margin between an atom symbol and a connected bond based on the stroke width");
+        P("WedgeRatio", "double", "6", "ratio of the wide end of wedge compared to the narrow end (stroke width)");
+        P("HashSpacing", "double", "5", "the preferred spacing between lines in hashed bonds");
+        P("WaveSpacing", "double", "5", "the spacing of waves (semi circles) drawn in wavy bonds with");
+        P("DashSection", "int", "8", "the number of sections to render in a dashed 'unknown' bond");
+        P("FancyBoldWedges", "bool", "true", "modify bold wedges to be flush with adjacent bonds");
+        P("FancyHashedWedges", "bool", "true", "modify hashed wedges to be flush when there is a single adjacent bond");
+        P("OuterGlowWidth", "double", "2", "the width of outer glow as a percentage of stroke width");
+        P("Highlighting", "HighlightStyle", "HighlightStyle.None", "the style of highlight used to emphasis atoms and bonds");
+        P("AnnotationColor", "WPF.Media.Color", "WPF.Media.Colors.Red", "the color of the atom numbers");
+        P("AnnotationDistance", "double", "0.25", "the distance of atom numbers from their parent atom as a percentage of bond length");
+        P("AnnotationFontScale", "double", "0.5", "annotation font size relative to element symbols");
+        P("SgroupBracketDepth", "double", "0.18", "relative to bond length how deep are brackets drawn");
+        P("SgroupFontScale", "double", "0.6", "scale Sgroup annotations relative to the normal font size (atom symbol)");
+        P("OmitMajorIsotopes", "bool", "false", "whether Major Isotopes e.g. 12C, 16O should be omitted");
+        P("ForceDelocalisedBondDisplay", "bool", "false", "indicate delocalised/aromatic bonds should always be rendered, even when there is a valid Kekule structure. Delocalised bonds will either be rendered as a dashed bond to the side or as a circle/donut/life buoy inside small rings. This depiction is used by default when a bond does not have an order assigned (e.g. null/unset), for example: c1cccc1. Turning this option on means all delocalised bonds will be rendered this way even when they have bond orders correctly assigned: e.g. c1ccccc1, [cH-]1cccc1. <br/><b>As recommended by IUPAC, their usage is discouraged and the Kekule representation is more clear.</b>");
+		P("DelocalisedDonutsBondDisplay", "bool", "true", "render small delocalised rings as bonds/life buoys? This can sometimes be misleading for fused rings but is commonly used.");
+
+        //
+        // BasicScene
+        //
+
+        P("ArrowHeadWidth", "double", "10", "the width of the head of arrows");
+        P("ShowTooltip", "bool", "false", "determines if tooltips are to be shown");
+        P("ShowMoleculeTitle", "bool", "false", "determines if the molecule's title is depicted");
+        P("ShowReactionTitle", "bool", "false", "determines if the reaction's title is depicted");
+        P("FitToScreen", "bool", "false", "If <see langword=\"true\"/>, the scale is set such that the diagram fills the whole screen");
+        P("Scale", "double", "1", "the scale is the factor to multiply model coordinates by to convert the coordinates to screen space coordinate, such that the entire structure fits the visible screen dimension");
+        P("BackgroundColor", "WPF.Media.Color", "WPF.Media.Colors.White", "the background color of the drawn image");
+        P("BondLength", "double", "40", "the length on the screen of a typical bond");
+        P("ForegroundColor", "WPF.Media.Color", "WPF.Media.Colors.Black", "the foreground color, with which objects are drawn");
+        P("UseAntiAliasing", "bool", "true", "if set to true, uses anti-aliasing for drawing");
+        P("Margin", "double", "10", "area on each of the four margins to keep empty");
+        P("UsedFontStyle", "Fonts.FontWeight", "Fonts.FontWeight.Normal", "the font style to use for text");
+        P("FontName", "string", "\"Arial\"", "font name to use for text");
+        P("ZoomFactor", "double", "1", "the zoom factor which is a user oriented parameter allowing the user to zoom in on parts of the molecule");
+
+        //
+        // Atom 
+        //
+
+        P("AtomColorByType", "bool", "false", "triggers atoms to be colored by type when set to true");
+        P("ShowExplicitHydrogens", "bool", "true", "boolean property that triggers explicit hydrogens to be drawn if set to true");
+        P("ShowImplicitHydrogens", "bool", "false", "indicates implicit hydrogens should be depicted");
+        P("AtomRadius", "double", "8", "magic number with unknown units that defines the radius around an atom, e.g. used for highlighting atoms");
+        P("CompactAtom", "bool", "false", "atoms to be drawn as  filled shapes");
+        P("KekuleStructure", "bool", "false", "whether structures should be drawn as Kekulé structures, thus giving each carbon element explicitly, instead of not displaying the element symbol. Example C-C-C instead of /\"");
+        P("CompactShape", "AtomShapeType", "AtomShapeType.Square", "Shape to be used when drawing atoms in compact mode, as defined by the <see cref=\"GetCompactAtom\"/> parameter");
+        P("ShowEndCarbons", "bool", "false", "show carbons with only one (non-hydrogen) neighbor to be drawn with an element symbol");
+        P("ShowAtomTypeNames", "bool", "false", "indicates atom type names should be given instead of element symbols");
+
+        // Atom number
+
+        P("AtomNumberTextColor", "WPF.Media.Color", "WPF.Media.Colors.Black", "color to draw the atom numbers with");
+        P("WillDrawAtomNumbers", "bool", "true", "indicating if atom numbers should be drawn, allowing this feature to be disabled temporarily");
+        P("AtomNumberColorer", "IAtomColorer", "new CDK2DAtomColors()", "the color scheme by which to color the atom numbers");
+        P("AtomNumberColorByType", "bool", "false", "indicate of the <see cref=\"GetAtomNumberColorer\"/> scheme will be used");
+        P("AtomNumberOffset", "Vector2", "Vector2.Zero", "offset vector in screen space coordinates where the atom number label will be placed");
+
+        //
+        // Bond
+        //
+
+        // FIXME: bond width should be defined in world, not screen coordinates
+        P("BondWidth", "double", "1", "the width on screen of a bond");
+        P("BondDistance", "double", "2", "the gap between double and triple bond lines on the screen");
+        P("DefaultBondColor", "WPF.Media.Color", "WPF.Media.Colors.Black", "the color to draw bonds if not other color is given");
+        P("WedgeWidth", "double", "2", "the width on screen of the fat end of a wedge bond");
+        P("TowardsRingCenterProportion", "double", "0.15", "the proportion to move in towards the ring center");
+
+        // Ring
+
+        P("ShowAromaticity", "bool", "true", "whether rings should be drawn with a circle if they are aromatic");
+        P("CDKStyleAromaticity", "bool", "false", "depicts aromaticity of rings in the original CDK style");
+        P("MaxDrawableAromaticRing", "int", "8", "the maximum ring size for which an aromatic ring should be drawn");
+        P("RingProportion", "double", "0.35", "the proportion of a ring bounds to use to draw the ring");
+
+        // 
+        // Reaction
+        // 
+
+        P("ShowReactionBoxes", "bool", "true", "indicates if boxes are drawn around the reaction");
+
+        //
+        // Mapping
+        //
+
+        P("AtomAtomMappingLineColor", "WPF.Media.Color", "WPF.Media.Colors.Gray", "the color on screen of an atom-atom mapping line");
+        P("MappingLineWidth", "double", "1", "the width on screen of an atom-atom mapping line");
+        P("ShowAtomAtomMapping", "bool", "true", "whether atom-atom mapping depiction can be temporarily disabled");
+
+        //
+        // Highlight
+        // 
+
+        P("HighlightRadius", "double", "10", "the atom radius on screen used to provide the highlight colors");
+        P("HighlightPalette", "NCDK.Renderers.Generators.IPalette", "NCDK.Renderers.Generators.HighlightGenerator.DefaultPalette", "color palette used to provide the highlight colors");
+
+        //
+        // Bounds
+        // 
+
+        P("BoundsColor", "WPF.Media.Color", "WPF.Media.Colors.LightGray", "the color of the box drawn at the bounds of a molecule, molecule set, or reaction");
+#>
+    }
+}

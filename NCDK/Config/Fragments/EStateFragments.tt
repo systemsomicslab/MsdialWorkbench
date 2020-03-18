@@ -1,0 +1,75 @@
+<#@ include file="..\..\..\EStateFragments.ttinclude" #>
+
+/* Copyright (c) 2006-2008 Rational Discovery LLC, Greg Landrum, and Julie Penzotti
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *    * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.
+ *    * Neither the name of Rational Discovery nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND Any EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR Any DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON Any
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, Strict LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN Any WAY OUT OF THE USE
+ * OF THIS SOFTWARE, Even IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+using NCDK.SMARTS;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace NCDK.Config.Fragments
+{
+    /// <summary>
+    /// A class representing the 79 E-state atom types in terms of SMARTS.
+    /// </summary>
+    /// <remarks>
+    /// These fragments were originally described in <token>cdk-cite-HALL1995</token> and were
+    /// converted into SMARTS forms by the <see href="http://www.rdkit.org">RDKit</see> project
+    /// </remarks>
+    // @cdk.module  standard
+    // @author  Greg Landrum
+    // @cdk.created 2008-07-22
+    // @cdk.keyword estate
+    // @cdk.keyword fragment
+    public static class EStateFragments
+    {
+        /// <summary>
+        /// The fragment names.
+        /// </summary>
+        public static IReadOnlyList<string> Names { get; } = new[] 
+        {
+            <# foreach (var s in EStateFragments.Names) { #>"<#= s #>", <# } #>
+
+        };
+
+        /// <summary>
+        /// The SMARTS patterns.
+        /// </summary>
+        public static IReadOnlyList<string> Smarts { get; } = new[] 
+        {
+            <# foreach (var s in EStateFragments.Smarts) { #>"<#= s #>", <# } #>
+
+        };
+
+        public static IReadOnlyList<SmartsPattern> Patterns { get; } = Smarts.Select(n => SmartsPattern.Create(n).SetPrepare(false)).ToArray();
+
+    }
+}

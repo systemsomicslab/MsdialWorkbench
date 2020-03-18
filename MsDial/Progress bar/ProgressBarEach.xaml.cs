@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel;
-
+using System.Windows;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -35,7 +35,11 @@ namespace Rfx.Riken.OsakaUniv
                 await Task.Run(() =>
                 {
                     Console.WriteLine("Run on this thread: " + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                    Msdial.Lcms.DataProcess.ProcessFile.Execute(projectProperty, rdamProperty, analysisFile, param, iupac, msp, post, i => ProgressChanged(i), this.cancellationToken);
+                    var error = string.Empty;
+                    Msdial.Lcms.DataProcess.ProcessFile.Execute(projectProperty, rdamProperty, analysisFile, param, iupac, msp, post, out error, i => ProgressChanged(i), this.cancellationToken);
+                    if (error != string.Empty) {
+                        MessageBox.Show(error);
+                    }
                 }, this.cancellationToken);
             }
             catch
@@ -51,12 +55,16 @@ namespace Rfx.Riken.OsakaUniv
                 await Task.Run(() =>
                 {
                     Console.WriteLine("Run on this thread: " + System.Threading.Thread.CurrentThread.ManagedThreadId);
-                    Msdial.Gcms.Dataprocess.ProcessFile.Execute(projectProperty, rdamProperty, file, param, msp, progress => ProgressChanged(progress));
+                    var error = string.Empty;
+                    Msdial.Gcms.Dataprocess.ProcessFile.Execute(projectProperty, rdamProperty, file, param, msp, progress => ProgressChanged(progress), out error);
+                    if (error != string.Empty) {
+                        MessageBox.Show(error);
+                    }
                 });
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show("error processing file: " + file.AnalysisFilePropertyBean.AnalysisFileName +
+                MessageBox.Show("error processing file: " + file.AnalysisFilePropertyBean.AnalysisFileName +
                     "\nMessage: " + ex.Message + "\n" + ex.Source +
                     "\n" + ex.TargetSite +
                     "\n" + ex.StackTrace);

@@ -21,7 +21,7 @@ namespace Rfx.Riken.OsakaUniv
     public partial class SaveDataTableAsTextWin : Window
     {
         private object target;
-        private PrincipalComponentAnalysisResult pcaBean;
+        //private PrincipalComponentAnalysisResult pcaBean;
         private PeakAreaBean peakAreaBean;
         private MS1DecResult ms1DecResult;
         private MultivariateAnalysisResult maResult;
@@ -42,11 +42,11 @@ namespace Rfx.Riken.OsakaUniv
             this.maResult = maResult;
         }
 
-        public SaveDataTableAsTextWin(PrincipalComponentAnalysisResult pcaBean)
-        {
-            InitializeComponent();
-            this.pcaBean = pcaBean;
-        }
+        //public SaveDataTableAsTextWin(PrincipalComponentAnalysisResult pcaBean)
+        //{
+        //    InitializeComponent();
+        //    this.pcaBean = pcaBean;
+        //}
 
         public SaveDataTableAsTextWin(object target, PeakAreaBean peakAreaBean)
         {
@@ -78,9 +78,10 @@ namespace Rfx.Riken.OsakaUniv
             string saveDataTableFormat = System.IO.Path.GetExtension(this.TextBox_ExportFilePath.Text);
             string saveDataTableFilePath = this.TextBox_ExportFilePath.Text;
 
-            if (this.pcaBean != null)
-                TableExportUtility.SavePcaTableAsTextFormat(saveDataTableFilePath, this.pcaBean);
-            else if (this.maResult != null)
+            //if (this.pcaBean != null)
+            //    TableExportUtility.SavePcaTableAsTextFormat(saveDataTableFilePath, this.pcaBean);
+            //else 
+            if (this.maResult != null)
                 TableExportUtility.SaveMultivariableResultTableAsTextFormat(saveDataTableFilePath, this.maResult);
             else if (this.peakAreaBean != null)
                 TableExportUtility.SaveChromatogramTableAsText(saveDataTableFilePath, this.target, this.peakAreaBean);

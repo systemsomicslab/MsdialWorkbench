@@ -177,7 +177,11 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
         {
             for (int i = 0; i < analysisFiles.Count; i++)
             {
-                ProcessFile.Execute(projectProp, rdamProperty, analysisFiles[i], gcmsParam, mspDB, null);
+                var error = string.Empty;
+                ProcessFile.Execute(projectProp, rdamProperty, analysisFiles[i], gcmsParam, mspDB, null, out error);
+                if (error != string.Empty) {
+                    Console.WriteLine(error);
+                }
 
                 //export
                 ResultExportForGC.ExportMs1DecResult(analysisFiles[i], outputfolder, mspDB);

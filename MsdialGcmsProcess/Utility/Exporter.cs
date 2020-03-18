@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Documents;
+//using System.Windows.Documents;
 
 namespace Rfx.Riken.OsakaUniv {
 	public class Exporter {

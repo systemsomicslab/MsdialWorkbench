@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Windows;
+//using System.Windows;
 
 namespace Msdial.Gcms.Dataprocess.Utility
 {
@@ -139,7 +139,8 @@ namespace Msdial.Gcms.Dataprocess.Utility
                 else {
 					Debug.WriteLine("Reading deconvolution file " + file + " (Legacy)", "INFO");
 					if (SHOW_WARNING) {
-						MessageBox.Show("The deconvolution file/s is/are outdated. Please reprocess your data.", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
+                        Console.WriteLine("The deconvolution file/s is/are outdated. Please reprocess your data.");
+						//MessageBox.Show("The deconvolution file/s is/are outdated. Please reprocess your data.", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
 						SHOW_WARNING = false;
 					}
 					return GCDecReaderLegacy.ReadAll(fs);

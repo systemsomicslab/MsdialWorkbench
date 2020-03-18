@@ -1,0 +1,220 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ output extension=".tt.cs" #>
+
+/* 
+ * Copyright (C) 2018  Kazuya Ujihara <ujihara.kazuya@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ * All we ask is that proper credit is given for our work, which includes
+ * - but is not limited to - adding the above copyright notice to the beginning
+ * of your source code files, and to any copyright notice that you may distribute
+ * with programs based on this work.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT Any WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+<#
+        var name_and_numbers = new List<NameAndNumber>();
+        {
+            var fn = Path.Combine(new FileInfo(this.Host.TemplateFile).Directory.FullName, "ElementTable.txt");
+            using (var reader = new StreamReader(fn))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.StartsWith("Number"))
+                        continue;
+                    var nn = NameAndNumber.Make(line);
+                    if (nn != null)
+                        name_and_numbers.Add(nn);
+                }
+            }
+            name_and_numbers.Add(new NameAndNumber(0, "R", "Unknown"));
+        }
+        var max_atomic_number = name_and_numbers.Select(n => n.Number).Max();
+        var nnarray = new NameAndNumber[max_atomic_number + 1];
+        foreach (var nn in name_and_numbers.Where(n => n.Symbol.Length < 3))        
+        {
+            nnarray[nn.Number] = nn;
+        }
+#>
+
+using System;
+using System.Collections.Generic;
+
+namespace NCDK
+{
+    public sealed class ChemicalElement
+    {
+        private readonly int atomicNumber;
+        private readonly string symbol;
+        private readonly string name;
+
+        public int AtomicNumber 
+        { 
+            get => atomicNumber; 
+            set => throw new InvalidOperationException(); 
+        }
+        
+        public string Symbol
+        {
+            get => symbol;
+            set => throw new InvalidOperationException(); 
+        }
+
+        public string Name => name;
+
+        public ChemicalElement()
+            : this(0, "*")
+        {
+        }
+        
+        public ChemicalElement(string symbol)
+            : this(0, symbol)
+        {
+        }
+
+        public ChemicalElement(int atomicNumber, string symbol, string name = "")
+        {
+            this.atomicNumber = atomicNumber;
+            this.symbol = symbol;
+            this.name = name;
+        }
+
+        public override string ToString()
+        {
+            return atomicNumber.ToString() + ":" + (symbol ?? "null");
+        }
+
+        public static ChemicalElement Of(int number)
+        {
+            if (!(number >= 0 && number <= <#= max_atomic_number #>))
+                throw new ArgumentException(nameof(number));
+            return elements[number];                
+        }
+
+        public static ChemicalElement OfSymbol(string symbol)
+        {
+            if (symbol == null)
+                return ChemicalElement.R;
+            if (!symbolToElementMap.TryGetValue(symbol, out ChemicalElement element))
+                return ChemicalElement.R;
+            return element;
+        }
+
+#if false
+        public static ChemicalElement Of(string id)
+        {
+            if (id == null)
+                return ChemicalElement.R;
+            id = id.ToUpperInvariant();
+            if (!textToElementMap.TryGetValue(id, out ChemicalElement element))
+                return ChemicalElement.R;
+            return element;               
+        }
+#endif
+
+<#
+        foreach (var nn in nnarray.Where(n => n != null))
+        {
+#>
+        public static ChemicalElement <#= nn.Symbol #> { get; } = new ChemicalElement(<#= nn.Number #>, "<#= nn.Symbol #>", "<#= nn.Name #>");
+<#
+        }    
+#>
+        
+        internal static readonly Dictionary<string, ChemicalElement> symbolToElementMap = new Dictionary<string, ChemicalElement>()
+            {
+<#
+        foreach (var nn in name_and_numbers)
+        {
+                var canonicalElement = nnarray[nn.Number].Symbol;
+#>
+                ["<#= nn.Symbol #>"] = <#= canonicalElement #>,
+<#            
+        }    
+#>
+            };
+
+        private static readonly Dictionary<string, ChemicalElement> textToElementMap = new Dictionary<string, ChemicalElement>()
+            {
+<#
+        foreach (var nn in name_and_numbers)
+        {
+                var canonicalElement = nnarray[nn.Number].Symbol;
+#>
+                ["<#= nn.Name.ToUpperInvariant() #>"] = <#= canonicalElement #>,
+                ["<#= nn.Symbol.ToUpperInvariant() #>"] = <#= canonicalElement #>,
+<#            
+        }    
+#>
+            };
+
+        private static readonly ChemicalElement[] elements = new ChemicalElement[]  { <# foreach (var nn in nnarray) { #><#= nn == null ? "null" : nn.Symbol #>, <# } #> };
+
+        public static IReadOnlyList<ChemicalElement> Values => elements;
+
+        private static readonly string[] symbols = new string[]  { <# foreach (var nn in nnarray) { #><#= nn == null ? "null" : "\"" + nn.Symbol + "\"" #>, <# } #> };
+
+        public static IReadOnlyList<string> Symbols => symbols;
+    }
+
+    public static class AtomicNumbers
+    {
+<#
+        foreach (var nn in nnarray.Where(n => n != null))
+        {
+#>
+        public const int <#= nn.Symbol #> = <#= nn.Number #>;
+        public const int <#= nn.Name #> = <#= nn.Number #>;
+<#
+        }
+#>
+    }
+}
+
+<#+
+    public class NameAndNumber
+    {
+        public int Number { get; set; }
+        public string Symbol { get; set; }
+        public string Name { get; set; }
+
+        public NameAndNumber()
+        {
+        }
+
+        public NameAndNumber(int number, string symbol, string name)
+        {
+            Number = number;
+            Symbol = symbol;
+            Name = name;
+        }
+
+        public static NameAndNumber Make(string line)
+        {
+            var ss = line.Split('\t');
+            var nn = new NameAndNumber();
+            nn.Number = int.Parse(ss[0]);
+            nn.Symbol = ss[1];
+            nn.Name = ss[2];
+            return nn;
+        }
+    }
+#>

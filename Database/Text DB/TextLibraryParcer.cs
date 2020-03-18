@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+//using System.Windows;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -11,8 +11,10 @@ namespace Rfx.Riken.OsakaUniv
     {
         private TextLibraryParcer() { }
 
-        public static List<TextFormatCompoundInformationBean> TextLibraryReader(string filePath)
+        public static List<TextFormatCompoundInformationBean> TextLibraryReader(string filePath, out string error)
         {
+            error = string.Empty;
+
             var textQueries = new List<TextFormatCompoundInformationBean>();
             var textQuery = new TextFormatCompoundInformationBean(); 
 
@@ -139,7 +141,8 @@ namespace Rfx.Riken.OsakaUniv
                 errorMessage += "Metabolite D\t400.000\t8.0\t[M+H]+\tAAAAAAAAAAAAA-BBBBBBBB\tC6H12O6\tCOCOCOCOC\tSugar\t210.2\r\n";
                 errorMessage += "Metabolite E\t500.000\t9.0\t[M+H]+\tAAAAAAAAAAAAA-BBBBBBBB\tC6H12O6\tCOCOCOCOC\tSugar\t210.2\r\n";
 
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = errorMessage;
+                //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 return null;
             }
@@ -151,8 +154,9 @@ namespace Rfx.Riken.OsakaUniv
             return textQueries;
         }
 
-        public static List<TextFormatCompoundInformationBean> TargetFormulaLibraryReader(string filePath)
+        public static List<TextFormatCompoundInformationBean> TargetFormulaLibraryReader(string filePath, out string error)
         {
+            error = string.Empty;
             var textQueries = new List<TextFormatCompoundInformationBean>();
             var textQuery = new TextFormatCompoundInformationBean();
 
@@ -279,7 +283,8 @@ namespace Rfx.Riken.OsakaUniv
                 errorMessage += "Formula D\t400.000\t8.0\t[M+2H]2+\tAAAAAAAAAAAAAAA-BBBBBBBBBB\tC6H12O6\tCOCOCOCOC\tSugar\t210.2\r\n";
                 errorMessage += "Formula E\t500.000\t9.0\t[M+H]+\tAAAAAAAAAAAAAAA-BBBBBBBBBB\tC6H12O6\tCOCOCOCOC\tSugar\t210.2\r\n";
 
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = errorMessage;
+                //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 return null;
             }
@@ -310,7 +315,9 @@ namespace Rfx.Riken.OsakaUniv
             return peaks;
         }
 
-        public static List<TextFormatCompoundInformationBean> StandardTextLibraryReader(string filePath) {
+        public static List<TextFormatCompoundInformationBean> StandardTextLibraryReader(string filePath, out string error) {
+            error = string.Empty;
+
             var textQueries = new List<TextFormatCompoundInformationBean>();
             var textQuery = new TextFormatCompoundInformationBean();
 
@@ -422,7 +429,8 @@ namespace Rfx.Riken.OsakaUniv
                 errorMessage += "Name D\t7.0\t0.1\t400.000\t0.01\t1000\ttrue\r\n";
                 errorMessage += "Name E\t10.0\t0.1\t500.000\t0.01\t1000\ttrue\r\n";
 
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = errorMessage;
+                //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 return null;
             }
@@ -430,7 +438,9 @@ namespace Rfx.Riken.OsakaUniv
             return textQueries;
         }
 
-        public static List<TextFormatCompoundInformationBean> CompoundListInTargetModeReader(string filePath) {
+        public static List<TextFormatCompoundInformationBean> CompoundListInTargetModeReader(string filePath, out string error) {
+            error = string.Empty;
+
             var textQueries = new List<TextFormatCompoundInformationBean>();
             var textQuery = new TextFormatCompoundInformationBean();
 
@@ -503,7 +513,8 @@ namespace Rfx.Riken.OsakaUniv
                 errorMessage += "Name B\t200.000\t0.01\\r\n";
                 errorMessage += "Name C\t300.000\t0.01\\r\n";
 
-                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = errorMessage;
+                //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 return null;
             }

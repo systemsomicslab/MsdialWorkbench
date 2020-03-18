@@ -1,0 +1,266 @@
+﻿<#@ include file="..\..\ChemObjectConfig.ttinclude" #>
+
+// .NET Framework port by Kazuya Ujihara
+// Copyright (C) 2016-2017  Kazuya Ujihara <ujihara.kazuya@gmail.com>
+
+/* Copyright (C) 2010  Egon Willighagen <egonw@users.sf.net>
+ *               2012  John May <jwmay@users.sf.net>
+ *
+ * Contact: cdk-devel@lists.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+using NCDK.Formula;
+using NCDK.Numerics;
+using NCDK.Stereo;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+<#
+string fn = Path.Combine(new FileInfo(this.Host.TemplateFile).Directory.FullName, filename);
+
+foreach (var ns in namespaces) 
+{
+#>
+namespace <#= ns.NS #>
+{
+    /// <summary>
+    /// A factory class to provide implementation independent <see cref="ICDKObject"/>s.
+    /// </summary>
+    /// <example>
+    /// <code>    
+    /// IChemObjectBuilder builder = ChemObjectBuilder.Instance;
+    /// IAtom a = builder.NewAtom();
+    /// IAtom c12 = builder.NewAtom("C");
+    /// IAtom c13 = builder.NewAtom(builder.NewIsotope("C", 13));
+    /// </code>
+    /// </example>
+    // @author        egonw
+    // @author        john may
+    // @cdk.module    data
+    public sealed class ChemObjectBuilder
+        : IChemObjectBuilder
+    {
+        public static IChemObjectBuilder Instance { get; } = new ChemObjectBuilder();
+        
+        private bool LegacyAtomContainer { get; set; }
+
+        internal ChemObjectBuilder()
+        {
+            var val = System.Environment.GetEnvironmentVariable("NCDKUseLegacyAtomContainer");
+            if (string.IsNullOrWhiteSpace(val))
+                LegacyAtomContainer = false;
+            else
+            {
+                val = val.Trim();
+                switch (val.ToUpperInvariant())
+                {
+                    case "T":
+                    case "TRUE":
+                    case "1":
+                        LegacyAtomContainer = true;
+                        break;
+                    case "F":
+                    case "FALSE":
+                    case "0":
+                        LegacyAtomContainer = false;
+                        break;
+                    default:
+                        throw new InvalidOperationException("Invalid value, expected true/false: " + val);
+                }
+            }
+
+			if (LegacyAtomContainer)
+				Trace.TraceError("[WARN] Using the old AtomContainer implementation.");
+        }
+
+        internal ChemObjectBuilder(bool legacyAtomContainer)
+        {
+            this.LegacyAtomContainer = legacyAtomContainer;
+        }
+
+#pragma warning disable CA1822
+        public T New<T>() where T : IAtomContainer, new() => new T();
+#pragma warning restore
+
+<#
+    WriteMain(fn);
+#>        
+    }
+}
+<#   
+}
+#>
+namespace NCDK
+{
+    public partial class Chem
+    {
+<#
+    WriteMain(fn, true);
+#>
+    }
+}
+
+<#+
+    const string ptn_type = @"\w+\??|\w+(((?'Open'<)[^<>]*)+((?'Close-Open'>))+)*(?(Open)(?!))";
+    const string ptn_id = "[A-Za-z_][A-Za-z_0-9]*";
+    Regex re = new Regex(
+          @"^(?<spaces>\s*)"
+        + @"(?<body>"
+            + @"(?<ret_type>" + ptn_type + ")" 
+            + @"\s+"
+            + @"(?<name>" + ptn_id + ")" + @"(?:\<\w+\>)?"
+            + @"\("
+            + @"("
+                + @"(?<param_type>" + ptn_type + ")"
+                + @"\s+"
+                + @"(?<param_name>" + ptn_id + ")" 
+                + @"("
+                    + @"\s*\,\s*"
+                    + @"(?<param_type>" + ptn_type + ")"
+                    + @"\s+"
+                    + @"(?<param_name>" + ptn_id + ")" 
+                + @")*"
+            + @")?"
+            + @"\)\s*"
+            + @"(?<where>where\s+(?<genericT>\w+)\s*\:\s*(?:" + ptn_type + "))?"
+        + @")"
+        + @"\s*\;"
+        ,
+        RegexOptions.Compiled);
+
+    const string filename = "../IChemObjectBuilder.cs";
+
+    List<string> initbuilder = new List<string>() 
+    {
+        "TetrahedralChirality",
+        "DoubleBondStereochemistry",
+    };
+
+    List<string> forcdkclass = new List<string>() 
+    {
+        "Atom",
+        "Bond",
+        "LonePair",
+        "SingleElectron",
+        "AtomContainer",
+        "Reaction",
+    };
+
+    void WriteMain(string fn, bool cdk = false)
+    {
+        using (var reader = new StreamReader(fn))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = line.Trim();
+                if (line == "public interface IChemObjectBuilder")
+                    break;
+            }
+            while ((line = reader.ReadLine()) != null)
+            {
+                var tline = line.Trim();
+                switch (tline)
+                {
+                    case "":
+                    case "{":
+                        continue;
+                    case "}":
+                        goto break_line_loop;
+                }
+                var match = re.Match(line);
+            
+                var ret_type = match.Groups["ret_type"].Value;
+                var func_name = match.Groups["name"].Value;
+                if (!func_name.StartsWith("New"))
+                    continue;
+                func_name = func_name.Substring(3);
+
+                if (cdk && !forcdkclass.Contains(func_name))
+                    continue;
+
+                string adv_func_name = null;
+                switch (func_name)
+                {
+                    case "AtomContainer":
+                        adv_func_name = "AtomContainer2";
+                        break;
+                }
+
+                Write(match.Groups["spaces"].Value);
+                Write("public ");
+                if (cdk)
+                {
+                    Write("static ");
+                }
+                Write(match.Groups["body"].Value);
+                Write(" => ");
+
+                if (!cdk && adv_func_name != null)
+                {
+                    Write("LegacyAtomContainer ? ");
+                    WriteNew(ret_type, func_name, match, cdk);
+                    Write(" : ");
+                    WriteNew(ret_type, adv_func_name, match, cdk);
+                }
+                else
+                {
+                    WriteNew(ret_type, func_name, match, cdk);
+                }
+
+                WriteLine(";");
+            }
+        break_line_loop:
+            ;
+        }
+    }
+
+    void WriteNew(string ret_type, string func_name, Match match, bool cdk = false)
+    {
+        Write("(");
+        Write(ret_type);
+        Write(")");
+
+        if (cdk)
+        {
+            Write("CDK.Builder.New");
+            Write(func_name);
+        }
+        else
+        {
+            Write("new ");
+            Write(func_name);
+        }
+
+        if (!string.IsNullOrEmpty(match.Groups["genericT"].Value))
+        {
+            Write("<");
+            Write(match.Groups["genericT"].Value);
+            Write(">");
+        }
+
+        Write("(");
+        Write(string.Join(", ", match.Groups["param_name"].Captures.Cast<Capture>().Select(n => n.Value)));
+        Write(")");
+
+        if (!cdk && initbuilder.Contains(func_name))
+        {
+            Write(" { Builder = this }");
+        }
+    }
+#>

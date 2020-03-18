@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin_msdial\Debug\</OutputPath>
+    <OutputPath>..\MsDial\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin_msdial\Release\</OutputPath>
+    <OutputPath>..\MsDial\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -79,7 +79,7 @@
       <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MS-Commons\Common\Common.csproj">
+    <ProjectReference Include="..\Common\Common.csproj">
       <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
       <Name>Common</Name>
     </ProjectReference>
@@ -126,19 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MS-DIAL.ico" />
-    <Content Include="Resource\AdductIonResource_Negative.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resource\AdductIonResource_Positive.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resource\IUPAC.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -1,0 +1,47 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".cs" #>
+
+namespace NCDK.Reactions.Types
+{
+<#
+        {
+            var source = new FileInfo(this.Host.TemplateFile).Directory;
+            foreach (var cs in source.GetFiles()               
+                .Where(fn => fn.Extension == ".cs")
+                .Where(fn =>
+                       fn.Name.Length > 0 
+                    && !fn.Name.StartsWith("Abstract", StringComparison.Ordinal)
+                    && !(fn.Name[0] == '$')))
+            {
+                string name = Path.GetFileNameWithoutExtension(cs.Name);
+                #>
+    /// <example>
+    /// <code>
+    /// var setOfReactants = ChemObjectBuilder.Instance.NewAtomContainerSet&lt;IAtomContainer&gt;();
+    /// setOfReactants.Add(molecular);
+    /// var type = new <#= name #>();
+    /// var param = new SetReactionCenter();
+    /// param.IsSetParameter = false;
+    /// var paramList = new[] { param };
+    /// type.ParameterList = paramList;
+    /// IReactionSet setOfReactions = type.Initiate(setOfReactants, null);
+    ///  </code>
+    ///
+    /// <para>We have the possibility to localize the reactive center. Good method if you
+    /// want to localize the reaction in a fixed point</para>
+    /// <code>atoms[0].IsReactiveCenter = true;</code>
+    /// <para>Moreover you must put the parameter true</para>
+    /// <para>If the reactive center is not localized then the reaction process will
+    /// try to find automatically the possible reactive center.</para>
+    /// </example>
+    public partial class <#= name #> {}
+<#
+            }
+        }
+#>
+}

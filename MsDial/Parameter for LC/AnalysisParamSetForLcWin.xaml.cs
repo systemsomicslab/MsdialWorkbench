@@ -209,46 +209,48 @@ namespace Rfx.Riken.OsakaUniv
 
         private List<AdductIonInformationBean> getAdductIonInformationList(IonMode ionMode)
         {
-            Uri fileUri;
-            if (ionMode == IonMode.Positive)
-                fileUri = new Uri("/Resources/AdductIonResource_Positive.txt", UriKind.Relative);
-            else
-                fileUri = new Uri("/Resources/AdductIonResource_Negative.txt", UriKind.Relative);
+            return AdductResourceParser.GetAdductIonInformationList(ionMode);
 
-            var info = Application.GetResourceStream(fileUri);
-            var adductList = new List<AdductIonInformationBean>();
-            var adduct = new AdductIonInformationBean();
+            //Uri fileUri;
+            //if (ionMode == IonMode.Positive)
+            //    fileUri = new Uri("/Resources/AdductIonResource_Positive.txt", UriKind.Relative);
+            //else
+            //    fileUri = new Uri("/Resources/AdductIonResource_Negative.txt", UriKind.Relative);
 
-            bool checker = true;
+            //var info = Application.GetResourceStream(fileUri);
+            //var adductList = new List<AdductIonInformationBean>();
+            //var adduct = new AdductIonInformationBean();
 
-            using (var sr = new StreamReader(info.Stream))
-            {
-                string line;
-                string[] lineArray;
-                sr.ReadLine();
-                while (sr.Peek() > -1)
-                {
-                    line = sr.ReadLine();
-                    if (line == "") break;
-                    lineArray = line.Split('\t');
+            //bool checker = true;
 
-                    var adductIon = AdductIonParcer.GetAdductIonBean(lineArray[0]);
+            //using (var sr = new StreamReader(info.Stream))
+            //{
+            //    string line;
+            //    string[] lineArray;
+            //    sr.ReadLine();
+            //    while (sr.Peek() > -1)
+            //    {
+            //        line = sr.ReadLine();
+            //        if (line == "") break;
+            //        lineArray = line.Split('\t');
 
-                    adduct = new AdductIonInformationBean();
-                    adduct.AdductName = adductIon.AdductIonName;
-                    adduct.Charge = adductIon.ChargeNumber;
-                    adduct.AccurateMass = adductIon.AdductIonAccurateMass;
-                    adduct.IonMode = adductIon.IonMode;
-                    adduct.Xmer = adductIon.AdductIonXmer;
+            //        var adductIon = AdductIonParcer.GetAdductIonBean(lineArray[0]);
 
-                    if (checker) { adduct.Included = true; checker = false; }
-                    else adduct.Included = false;
+            //        adduct = new AdductIonInformationBean();
+            //        adduct.AdductName = adductIon.AdductIonName;
+            //        adduct.Charge = adductIon.ChargeNumber;
+            //        adduct.AccurateMass = adductIon.AdductIonAccurateMass;
+            //        adduct.IonMode = adductIon.IonMode;
+            //        adduct.Xmer = adductIon.AdductIonXmer;
 
-                    adductList.Add(adduct);
-                }
-            }
+            //        if (checker) { adduct.Included = true; checker = false; }
+            //        else adduct.Included = false;
 
-            return adductList;
+            //        adductList.Add(adduct);
+            //    }
+            //}
+
+            //return adductList;
         }
 
         private void Click_DatabaseFilePathSelect(object sender, RoutedEventArgs e)

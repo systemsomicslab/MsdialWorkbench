@@ -1095,19 +1095,47 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                     if (dict.Value.Count > maxCount) { maxCount = dict.Value.Count; maxQuant = dict.Key; }
 
                 var quantMassCandidate = quantMassDict[maxQuant].Average();
-                var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, param.MassAccuracy, 10.0F);
+                var basepeakMz = 0.0;
+                var basepeakIntensity = 0.0;
+                var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, param.MassAccuracy, 10.0F, out basepeakMz, out basepeakIntensity);
                 if (isQuantMassExist) {
                     spot.QuantMass = quantMassCandidate;
                 }
                 else {
-                    spot.QuantMass = repQuantMass;
+
+                    var isSuitableQuantMassExist = false;
+                    foreach (var peak in spectrum) {
+                        if (peak.Mz < repQuantMass - bin) continue;
+                        if (peak.Mz > repQuantMass + bin) break;
+                        var diff = Math.Abs(peak.Mz - repQuantMass);
+                        if (diff <= bin && peak.Intensity > basepeakIntensity * 10.0 * 0.01) {
+                            isSuitableQuantMassExist = true;
+                            break;
+                        }
+                    }
+
+                    if (isSuitableQuantMassExist)
+                        spot.QuantMass = repQuantMass;
+                    else
+                        spot.QuantMass = (float)basepeakMz;
                 }
             }
         }
 
         // spectrum should be ordered by m/z value
-        private static bool isQuantMassExistInSpectrum(float quantMass, List<Peak> spectrum, float bin, float threshold) {
-            var maxIntensity = spectrum.Max(n => n.Intensity);
+        private static bool isQuantMassExistInSpectrum(float quantMass, List<Peak> spectrum, float bin, float threshold, 
+            out double basepeakMz, out double basepeakIntensity) {
+
+            basepeakMz = 0.0;
+            basepeakIntensity = 0.0;
+            foreach (var peak in spectrum) {
+                if (peak.Intensity > basepeakIntensity) {
+                    basepeakIntensity = peak.Intensity;
+                    basepeakMz = peak.Mz;
+                }
+            }
+
+            var maxIntensity = basepeakIntensity;
             foreach (var peak in spectrum) {
                 if (peak.Mz < quantMass - bin) continue;
                 if (peak.Mz > quantMass + bin) break;

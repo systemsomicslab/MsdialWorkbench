@@ -15,8 +15,9 @@ namespace Msdial.Gcms.Dataprocess {
         private ProcessFile() { }
 
         public static void Execute(ProjectPropertyBean projectProperty, RdamPropertyBean rdamProperty, AnalysisFileBean analysisFile, AnalysisParamOfMsdialGcms param, 
-            List<MspFormatCompoundInformationBean> mspDB, Action<int> reportAction = null)
+            List<MspFormatCompoundInformationBean> mspDB, Action<int> reportAction, out string error)
         {
+            error = string.Empty;
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
 
@@ -48,8 +49,10 @@ namespace Msdial.Gcms.Dataprocess {
 				} 
                 catch (Exception ex) {
                     ex.Message.ToString();
-					MessageBox.Show("We found an error reading the deconvolution files.\nThis is probably due to changes in the data format.\nPlease re-process your data.",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    error = "We found an error reading the deconvolution files.\nThis is probably due to changes in the data format.\nPlease re-process your data.";
+                    //Console.WriteLine(error);
+                    //MessageBox.Show("We found an error reading the deconvolution files.\nThis is probably due to changes in the data format.\nPlease re-process your data.",
+                    //    "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 
 				Identification.MainProcess(ms1DecResults, mspDB, param, analysisFile, reportAction);

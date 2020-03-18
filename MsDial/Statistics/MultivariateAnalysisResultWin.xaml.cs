@@ -217,11 +217,24 @@ namespace Rfx.Riken.OsakaUniv {
             var xAxisValues = new ObservableCollection<double>(this.MAResult.StatisticsObject.YVariables);
             var yAxisValues = new ObservableCollection<double>(this.MAResult.PredictedYs);
 
+            var brushes = convertRgbaToBrush(this.MAResult.StatisticsObject.YColors);
+
             var plotBean = new PairwisePlotBean("Predicted vs Experiment plot", xAxisTitle, yAxisTitle,
                 xAxisValues, yAxisValues, this.MAResult.StatisticsObject.YLabels,
-                this.MAResult.StatisticsObject.YColors, PairwisePlotDisplayLabel.None);
+                brushes, PairwisePlotDisplayLabel.None);
             var pairwiseUI = new PairwisePlotUI(plotBean);
             showPairwiseWin(pairwiseUI);
+        }
+
+        private ObservableCollection<SolidColorBrush> convertRgbaToBrush(ObservableCollection<byte[]> bytes) {
+            if (bytes == null) return null;
+            var brushes = new ObservableCollection<SolidColorBrush>();
+            foreach (var colorBytes in bytes) {
+                var colorprop = new Color() { R = colorBytes[0], G = colorBytes[1], B = colorBytes[2], A = colorBytes[3] };
+                var brush = new SolidColorBrush(colorprop);
+                brushes.Add(brush);
+            }
+            return brushes;
         }
 
         private void Show_ContributionPlot(object obj) {
@@ -274,9 +287,10 @@ namespace Rfx.Riken.OsakaUniv {
             var xAxisLoadings = new ObservableCollection<double>(this.MAResult.PPreds[0]);
             var yAxisLoadings = new ObservableCollection<double>(this.MAResult.PPredCoeffs[0]);
 
+            var brushes = convertRgbaToBrush(this.MAResult.StatisticsObject.XColors);
             var plotBean = new PairwisePlotBean("S-plot", "P loading", "P correlation",
                 xAxisLoadings, yAxisLoadings, this.MAResult.StatisticsObject.XLabels,
-                this.MAResult.StatisticsObject.XColors, PairwisePlotDisplayLabel.None);
+                brushes, PairwisePlotDisplayLabel.None);
 
             var pairwiseUI = new PairwisePlotUI(plotBean);
             showPairwiseWin(pairwiseUI);
@@ -427,10 +441,10 @@ namespace Rfx.Riken.OsakaUniv {
         }
 
         public PairwisePlotUI GetPairwisePlotUI(ObservableCollection<double> xValues, ObservableCollection<double> yValues, 
-            ObservableCollection<int> indexes, ObservableCollection<string> labels, ObservableCollection<SolidColorBrush> brushes,
+            ObservableCollection<int> indexes, ObservableCollection<string> labels, ObservableCollection<byte[]> colorByteList,
             string title, string xTitle, string yTitle, 
             PairwisePlotDisplayLabel display, double plotSize) {
-
+            var brushes = convertRgbaToBrush(colorByteList);
             var plotBean = new PairwisePlotBean(title, xTitle, yTitle,
                    xValues, yValues, labels, brushes, indexes, display);
 

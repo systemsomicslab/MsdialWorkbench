@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Resources;
+//using System.Windows;
+//using System.Windows.Resources;
 
 namespace Msdial.Lcms.Dataprocess.Utility
 {
@@ -24,8 +24,12 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
         public static List<PostIdentificatioinReferenceBean> GetTxtDbQueries(string filePath)
         {
+            var error = string.Empty;
             var postIdentificationReferenceBeanList = new List<PostIdentificatioinReferenceBean>();
-            var textFormatCompoundInformationBeanList = TextLibraryParcer.TextLibraryReader(filePath);
+            var textFormatCompoundInformationBeanList = TextLibraryParcer.TextLibraryReader(filePath, out error);
+            if (error != string.Empty) {
+                Console.WriteLine(error);
+            }
 
             if (textFormatCompoundInformationBeanList == null) return null;
 
@@ -53,7 +57,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
         public static List<PostIdentificatioinReferenceBean> GetTxtFormulaDbQueries(string filePath)
         {
             var targetFormulaLibrary = new List<PostIdentificatioinReferenceBean>();
-            var textFormulaDB = TextLibraryParcer.TargetFormulaLibraryReader(filePath);
+            var error = string.Empty;
+            var textFormulaDB = TextLibraryParcer.TargetFormulaLibraryReader(filePath, out error);
+            if (error != string.Empty) {
+                Console.WriteLine(error);
+            }
 
             if (textFormulaDB == null) return null;
 

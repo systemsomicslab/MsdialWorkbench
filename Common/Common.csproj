@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -63,12 +63,13 @@
   <ItemGroup>
     <Compile Include="Annotation info\LipidAnnotation.cs" />
     <Compile Include="Fragment\AnnotatedIon.cs" />
-    <Compile Include="LipoqualityQuantTree.cs" />
+    <Compile Include="Database\LipoqualityQuantTree.cs" />
     <Compile Include="MessagePack\AlignmentResultBeanMethods.cs" />
     <Compile Include="MessagePack\LargeListMessagePack.cs" />
     <Compile Include="MessagePack\MessagePackHandler.cs" />
     <Compile Include="MessagePack\MspMethods.cs" />
     <Compile Include="MessagePack\SavePropertyBeanMethods.cs" />
+    <Compile Include="Method\IEnumerableExtension.cs" />
     <Compile Include="Molecular spectrum networking\MolecularSpectrumNetworkingCommon.cs" />
     <Compile Include="Ontology\ChemicalOntology.cs" />
     <Compile Include="Database\AdductIonBean.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Query\FragmentSearcherQuery.cs" />
     <Compile Include="RawData\IonMobilitySpectrum.cs" />
     <Compile Include="RawData\Raw_Measurement.cs" />
-    <Compile Include="StandardCompound.cs" />
+    <Compile Include="Standard\StandardCompound.cs" />
     <Compile Include="Storage\PostIdentificatioinReferenceBean.cs" />
     <Compile Include="Storage\ProjectPropertyBean.cs" />
     <Compile Include="Storage\RdamFileContentBean.cs" />
@@ -136,9 +137,7 @@
   <ItemGroup>
     <Analyzer Include="..\..\ms-dial\packages\MessagePackAnalyzer.1.6.0\analyzers\dotnet\cs\MessagePackAnalyzer.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Standard\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

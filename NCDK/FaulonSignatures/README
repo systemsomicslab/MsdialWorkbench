@@ -1,0 +1,11 @@
+This project is a re-write of Jean-Loup Faulon's signature code for molecules, to make it toolkit independent. Signatures are ultimately canonical representations of whole molecules or atom valence environments. For example, the canonical signature for benzene might be as simple as: C(C(C(C1))C(C(C1))) where brackets denote branching and numbers indicate joining (as with SMILES).
+
+Signatures can be used as descriptors for atom or molecule environments, much like HOSE codes. They can also be used for structure enumeration.
+
+The library is released under an MIT licence. The project has a maven pom.xml, so normal maven build procedures should work.
+
+References:
+-The signature molecular descriptor. 1. Using extended valence sequences in QSAR and QSPR studies
+Faulon JL, Visco DP Jr, Pophale RS. J Chem Inf Comput Sci. 2003 May-Jun;43(3):707-20.
+-The Signature Molecular Descriptor. 4. Canonizing Molecules Using Extended Valence Sequences
+Jean-Loup Faulon, Michael J. Collins, and Robert D. Carr J. Chem. Inf. Comput. Sci., 2004, 44 (2), pp 427–436

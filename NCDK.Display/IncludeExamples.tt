@@ -1,0 +1,6 @@
+﻿<#@ include file="..\IncludeExamples.ttinclude" #>
+
+<#
+// Copyright (C) 2017  Kazuya Ujihara <ujihara.kazuya@gmail.com>
+// This file is under LGPL-2.1 
+#>

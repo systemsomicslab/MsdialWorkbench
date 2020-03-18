@@ -19,7 +19,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,86 +57,6 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [M-H]-	1	-1.007276
-        ///[M-H2O-H]-	1	-19.01839
-        ///[M+Na-2H]-	1	20.974666
-        ///[M+Cl]-	1	34.969402
-        ///[M+K-2H]-	1	36.948606
-        ///[M+FA-H]-	1	44.998201
-        ///[M+Hac-H]-	1	59.013851
-        ///[M+Br]-	1	78.918885
-        ///[M+TFA-H]-	1	112.985586
-        ///[2M-H]-	1	-1.007276
-        ///[2M+FA-H]-	1	44.998201
-        ///[2M+Hac-H]-	1	59.013851
-        ///[3M-H]-	1	1.007276
-        ///[M-2H]2-	2	-1.007276
-        ///[M-3H]3-	3	-1.007276
-        ///.
-        /// </summary>
-        internal static string AdductIonResource_Negative {
-            get {
-                return ResourceManager.GetString("AdductIonResource_Negative", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [M+H]+	1	1.007276
-        ///[M+NH4]+	1	18.033823
-        ///[M+Na]+	1	22.989218
-        ///[M+CH3OH+H]+	1	33.033489
-        ///[M+K]+	1	38.963158
-        ///[M+Li]+	1	7.01600455000
-        ///[M+ACN+H]+	1	42.033823
-        ///[M+H-H2O]+	1	-17.002191
-        ///[M+H-2H2O]+	1	-30.012756
-        ///[M+2Na-H]+	1	44.97116
-        ///[M+IsoProp+H]+	1	61.06534
-        ///[M+ACN+Na]+	1	64.015765
-        ///[M+2K-H]+	1	76.91904
-        ///[M+DMSO+H]+	1	79.02122
-        ///[M+2ACN+H]+	1	83.06037
-        ///[M+IsoProp+Na+H]+	1	84.05511
-        ///[2M+H]+	1	1.007276
-        ///[2M+NH4]+	1	18.033823
-        ///[2M+Na]+	1	22.989218
-        ///[2M+3H2O+2H]+	1	28.02312
-        ///[2M+K]+	1	38.963158
-        ///[2M+ACN+H]+	1	42. [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string AdductIonResource_Positive {
-            get {
-                return ResourceManager.GetString("AdductIonResource_Positive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 1	H	1	99.9885	1.00782503207
-        ///1	H	2	0.0115	2.01410177780
-        ///2	He	3	0.000134	3.01602931910
-        ///2	He	4	99.999866	4.00260325415
-        ///3	Li	6	7.59	6.01512279500
-        ///3	Li	7	92.41	7.01600455000
-        ///4	Be	9	100	9.01218220000
-        ///5	B	10	19.9	10.01293700000
-        ///5	B	11	80.1	11.00930540000
-        ///6	C	12	98.93	12.00000000000
-        ///6	C	13	1.07	13.00335483780
-        ///7	N	14	99.636	14.00307400480
-        ///7	N	15	0.364	15.00010889820
-        ///8	O	16	99.757	15.99491461956
-        ///8	O	17	0.038	16.99913170000
-        ///8	O	18	0.205	17.99916100000
-        ///9	F	19	100	18.99840322000
-        ///10	Ne	20	90.48	19.992440 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string IUPAC {
-            get {
-                return ResourceManager.GetString("IUPAC", resourceCulture);
             }
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
+//using System.Windows.Media;
 
 namespace Rfx.Riken.OsakaUniv {
 
@@ -39,8 +39,8 @@ namespace Rfx.Riken.OsakaUniv {
         public ObservableCollection<string> YLabels { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> XLabels { get; set; } = new ObservableCollection<string>();
 
-        public ObservableCollection<SolidColorBrush> YColors { get; set; } = new ObservableCollection<SolidColorBrush>();
-        public ObservableCollection<SolidColorBrush> XColors { get; set; } = new ObservableCollection<SolidColorBrush>();
+        public ObservableCollection<byte[]> YColors { get; set; } = new ObservableCollection<byte[]>(); // [0] R [1] G [2] B [3] A
+        public ObservableCollection<byte[]> XColors { get; set; } = new ObservableCollection<byte[]>(); // [0] R [1] G [2] B [3] A
 
         public ScaleMethod Scale { get; set; } = ScaleMethod.AutoScale;
         public TransformMethod Transform { get; set; } = TransformMethod.None;

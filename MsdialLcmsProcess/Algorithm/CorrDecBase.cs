@@ -1502,22 +1502,22 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
 
-        public static void CopyRawData(Dictionary<double, double[]> dict, double[] arr) {
-            Console.WriteLine("start copy method");
-            var output = "\t";
-            output = "\t" + string.Join("\t", arr);
-            Console.WriteLine("done 1");
-            output = output + "\n";
-            foreach (var key in dict.Keys) {
-                var dic1values = dict[key];
-                output = output + key + "\t";
-                output = output + string.Join("\t", dic1values);
-                output = output + "\n";
-            }
-            Console.WriteLine("done all methods");
-            System.Windows.Clipboard.SetText(output);
-            Console.WriteLine("done copy");
-        }
+        //public static void CopyRawData(Dictionary<double, double[]> dict, double[] arr) {
+        //    Console.WriteLine("start copy method");
+        //    var output = "\t";
+        //    output = "\t" + string.Join("\t", arr);
+        //    Console.WriteLine("done 1");
+        //    output = output + "\n";
+        //    foreach (var key in dict.Keys) {
+        //        var dic1values = dict[key];
+        //        output = output + key + "\t";
+        //        output = output + string.Join("\t", dic1values);
+        //        output = output + "\n";
+        //    }
+        //    Console.WriteLine("done all methods");
+        //    System.Windows.Clipboard.SetText(output);
+        //    Console.WriteLine("done copy");
+        //}
 
         #endregion
 

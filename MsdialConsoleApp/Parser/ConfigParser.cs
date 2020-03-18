@@ -186,8 +186,13 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                         param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd = (Rfx.Riken.OsakaUniv.RetentionTimeCorrection.ExtrapolationMethodEnd)Enum.Parse(typeof(Rfx.Riken.OsakaUniv.RetentionTimeCorrection.ExtrapolationMethodEnd), value, true);
                     return;
                 case "iSTD file":
-                    if (System.IO.File.Exists(value))
-                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParcer.StandardTextLibraryReader(value);
+                    if (System.IO.File.Exists(value)) {
+                        var error = string.Empty;
+                        param.RetentionTimeCorrectionCommon.StandardLibrary = TextLibraryParcer.StandardTextLibraryReader(value, out error);
+                        if (error != string.Empty) {
+                            Console.WriteLine(error);
+                        }
+                    }
                     return;
 
                 //Peak detection param

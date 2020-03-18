@@ -27,10 +27,10 @@ namespace Rfx.Riken.OsakaUniv
             var responses = new ObservableCollection<double>();
             var fileIDs = new ObservableCollection<int>();
             var fileNames = new ObservableCollection<string>();
-            var fileBrushs = new ObservableCollection<SolidColorBrush>();
+            var fileBrushs = new ObservableCollection<byte[]>();
             var metaboliteIDs = new ObservableCollection<int>();
             var metaboliteNames = new ObservableCollection<string>();
-            var metaboliteBrushs = new ObservableCollection<SolidColorBrush>();
+            var metaboliteBrushs = new ObservableCollection<byte[]>();
 
             for (int i = 0; i < files.Count; i++) {
                 var fileProp = files[i].AnalysisFilePropertyBean;
@@ -67,21 +67,23 @@ namespace Rfx.Riken.OsakaUniv
 
                 if (i != internalStandardID) {
                     var metName = metaboliteName == null || metaboliteName == string.Empty ? "Unknown" : metaboliteName;
+                    var brush = Brushes.DeepSkyBlue;
+                    var rgba = new byte[] { brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A };
 
                     if (isIdentified && !metName.Contains("Unknown") && !metName.Contains("w/o")) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
-                        metaboliteBrushs.Add(Brushes.DeepSkyBlue);
+                        metaboliteBrushs.Add(rgba);
                     }
                     if (isAnnotated && metName.Contains("w/o")) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
-                        metaboliteBrushs.Add(Brushes.DeepSkyBlue);
+                        metaboliteBrushs.Add(rgba);
                     }
                     if (isUnknown && metName.Contains("Unknown")) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
-                        metaboliteBrushs.Add(Brushes.DeepSkyBlue);
+                        metaboliteBrushs.Add(rgba);
                     }
                 }
             }
@@ -90,8 +92,11 @@ namespace Rfx.Riken.OsakaUniv
             var classnameToBytes = project.ClassnameToColorBytes;
             var classnameToBrushes = ConvertToSolidBrushDictionary(classnameToBytes);
             for (int i = 0; i < files.Count; i++) {
-                if (files[i].AnalysisFilePropertyBean.AnalysisFileIncluded)
-                    fileBrushs.Add(classnameToBrushes[files[i].AnalysisFilePropertyBean.AnalysisFileClass]);
+                if (files[i].AnalysisFilePropertyBean.AnalysisFileIncluded) {
+                    var brush = classnameToBrushes[files[i].AnalysisFilePropertyBean.AnalysisFileClass];
+                    var rgba = new byte[] { brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A };
+                    fileBrushs.Add(rgba);
+                }
             }
 
             if (fileNames.Count == 0 || metaboliteNames.Count == 0) {
@@ -454,6 +459,9 @@ namespace Rfx.Riken.OsakaUniv
                 case IonAbundanceUnit.NormalizedByQcPeakHeight: return "Peak height/QC peak";
                 case IonAbundanceUnit.NormalizedByTIC: return "Peak height/TIC";
                 case IonAbundanceUnit.NormalizedByMTIC: return "Peak height/MTIC";
+                case IonAbundanceUnit.Height: return "Height";
+                case IonAbundanceUnit.Area: return "Area";
+                case IonAbundanceUnit.Intensity: return "Intensity";
                 default: return "pmol/μL plasma";
             }
         }

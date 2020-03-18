@@ -16,7 +16,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Query {
     /// </summary>
     public enum SaveFileFormat { msp, mat, fgt, sfd, fdb, ndb, efd, esd, apf, anf, msd }
 
-    public class MsfinderQueryFile : ViewModelBase {
+    public class MsfinderQueryFile {
         private string rawDataFilePath;
         private string rawDataFileName;
         private string formulaFilePath;

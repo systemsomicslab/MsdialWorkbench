@@ -129,9 +129,13 @@ namespace Rfx.Riken.OsakaUniv {
 
             for (int i = 0; i < files.Count; i++)
             {
+                var error = string.Empty;
                 ProcessFile.Execute(projectPropertyBean, rdamPropertyBean, files[i], param
                     , iupac , mspFormatCompoundInformationBeanList
-                    , postIdentificationReferenceBeanList, null);
+                    , postIdentificationReferenceBeanList, out error, null);
+                if (error != string.Empty) {
+                    MessageBox.Show(error);
+                }
                 
                 this.currentProgress++;
             }

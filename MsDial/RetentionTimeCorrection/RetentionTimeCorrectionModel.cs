@@ -71,7 +71,11 @@ namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
             ofd.RestoreDirectory = true;
 
             if (ofd.ShowDialog() == true) {
-                var list = ConvertTextFormatToCompoundVM(TextLibraryParcer.StandardTextLibraryReader(ofd.FileName));
+                var error = string.Empty;
+                var list = ConvertTextFormatToCompoundVM(TextLibraryParcer.StandardTextLibraryReader(ofd.FileName, out error));
+                if (error != string.Empty) {
+                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 if (list == null || list.Count == 0) return InitializeStandardDataTable();
                 for (var i = list.Count; i < 100; i++) {
                     list.Add(new StandardCompoundVM() { ReferenceId = i });

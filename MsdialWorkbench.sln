@@ -137,6 +137,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticsTests", "Statisti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassSpectrogram", "MassSpectrogram\MassSpectrogram.csproj", "{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK", "NCDK\NCDK.csproj", "{7976AEFC-8382-47D3-BA50-55FA18BABADF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK.Display", "NCDK.Display\NCDK.Display.csproj", "{20E728F8-C648-4F96-AE56-B7A7A185D941}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -411,6 +415,14 @@ Global
 		{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7976AEFC-8382-47D3-BA50-55FA18BABADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -159,8 +159,8 @@ namespace Rfx.Riken.OsakaUniv
             }
 
             //Get IUPAC reference
-            setIupacReferenceBean(this.iupac);
-
+            this.mainWindow.IupacReference = IupacResourceParser.GetIupacReferenceBean();
+            //IupacResourceParser.SetIupacReferenceBean(this.iupac);
 
             if (this.projectProperty.Comment != null && this.projectProperty.Comment != string.Empty)
                 this.projectProperty.Comment = this.projectProperty.Comment.Replace("\r", "").Replace("\n", " ");
@@ -168,63 +168,63 @@ namespace Rfx.Riken.OsakaUniv
             return true;
         }
 
-        private void setIupacReferenceBean(IupacReferenceBean iupacReferenceBean)
-        {
-            Uri fileUri = new Uri("/Resources/IUPAC.txt", UriKind.Relative);
-            StreamResourceInfo info = Application.GetResourceStream(fileUri);
+        //private void setIupacReferenceBean(IupacReferenceBean iupacReferenceBean)
+        //{
+        //    Uri fileUri = new Uri("/Resources/IUPAC.txt", UriKind.Relative);
+        //    StreamResourceInfo info = Application.GetResourceStream(fileUri);
 
-            int iupacID = 0;
-            string elementName = "";
-            string line;
-            string[] lineArray;
+        //    int iupacID = 0;
+        //    string elementName = "";
+        //    string line;
+        //    string[] lineArray;
 
-            List<IupacElementPropertyBean> iupacElementPropertyBeanList = new List<IupacElementPropertyBean>();
-            IupacElementPropertyBean iupacElementPropertyBean = new IupacElementPropertyBean();
+        //    List<IupacElementPropertyBean> iupacElementPropertyBeanList = new List<IupacElementPropertyBean>();
+        //    IupacElementPropertyBean iupacElementPropertyBean = new IupacElementPropertyBean();
 
-            using (StreamReader sr = new StreamReader(info.Stream))
-            {
-                sr.ReadLine();
-                while (sr.Peek() > -1)
-                {
-                    line = sr.ReadLine();
-                    if (line == string.Empty) break;
+        //    using (StreamReader sr = new StreamReader(info.Stream))
+        //    {
+        //        sr.ReadLine();
+        //        while (sr.Peek() > -1)
+        //        {
+        //            line = sr.ReadLine();
+        //            if (line == string.Empty) break;
 
-                    lineArray = line.Split('\t');
+        //            lineArray = line.Split('\t');
 
-                    if (iupacID != int.Parse(lineArray[0]))
-                    {
-                        if (iupacID != 0) { iupacReferenceBean.IupacID_IupacElementPropertyBeanList[iupacID] = iupacElementPropertyBeanList; iupacReferenceBean.ElementName_IupacElementPropertyBeanList[elementName] = iupacElementPropertyBeanList; }
+        //            if (iupacID != int.Parse(lineArray[0]))
+        //            {
+        //                if (iupacID != 0) { iupacReferenceBean.IupacID_IupacElementPropertyBeanList[iupacID] = iupacElementPropertyBeanList; iupacReferenceBean.ElementName_IupacElementPropertyBeanList[elementName] = iupacElementPropertyBeanList; }
 
-                        iupacElementPropertyBeanList = new List<IupacElementPropertyBean>();
-                        iupacID = int.Parse(lineArray[0]);
-                        elementName = lineArray[1];
+        //                iupacElementPropertyBeanList = new List<IupacElementPropertyBean>();
+        //                iupacID = int.Parse(lineArray[0]);
+        //                elementName = lineArray[1];
 
-                        iupacElementPropertyBean = new IupacElementPropertyBean();
-                        iupacElementPropertyBean.AccurateMass = double.Parse(lineArray[4]);
-                        iupacElementPropertyBean.ElementName = elementName;
-                        iupacElementPropertyBean.IupacID = iupacID;
-                        iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                        iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+        //                iupacElementPropertyBean = new IupacElementPropertyBean();
+        //                iupacElementPropertyBean.AccurateMass = double.Parse(lineArray[4]);
+        //                iupacElementPropertyBean.ElementName = elementName;
+        //                iupacElementPropertyBean.IupacID = iupacID;
+        //                iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
+        //                iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
 
-                        iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
-                    }
-                    else
-                    {
-                        iupacElementPropertyBean = new IupacElementPropertyBean();
-                        iupacElementPropertyBean.AccurateMass = double.Parse(lineArray[4]);
-                        iupacElementPropertyBean.ElementName = elementName;
-                        iupacElementPropertyBean.IupacID = iupacID;
-                        iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                        iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+        //                iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
+        //            }
+        //            else
+        //            {
+        //                iupacElementPropertyBean = new IupacElementPropertyBean();
+        //                iupacElementPropertyBean.AccurateMass = double.Parse(lineArray[4]);
+        //                iupacElementPropertyBean.ElementName = elementName;
+        //                iupacElementPropertyBean.IupacID = iupacID;
+        //                iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
+        //                iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
 
-                        iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
-                    }
-                }
-                //reminder
-                iupacReferenceBean.IupacID_IupacElementPropertyBeanList[iupacID] = iupacElementPropertyBeanList;
-                iupacReferenceBean.ElementName_IupacElementPropertyBeanList[elementName] = iupacElementPropertyBeanList;
-            }
-        }
+        //                iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
+        //            }
+        //        }
+        //        //reminder
+        //        iupacReferenceBean.IupacID_IupacElementPropertyBeanList[iupacID] = iupacElementPropertyBeanList;
+        //        iupacReferenceBean.ElementName_IupacElementPropertyBeanList[elementName] = iupacElementPropertyBeanList;
+        //    }
+        //}
 
         private bool analystExperimentFileCheck(string filename)
         {

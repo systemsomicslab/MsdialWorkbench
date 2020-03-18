@@ -76,7 +76,11 @@ namespace Rfx.Riken.OsakaUniv
 
 			for (int i = 0; i < files.Count; i++) {
 				try {
-					ProcessFile.Execute(projectProperty, rdamPropertyBean, files[i], param, mspDB, null);
+                    var error = string.Empty;
+					ProcessFile.Execute(projectProperty, rdamPropertyBean, files[i], param, mspDB, null, out error);
+                    if (error != string.Empty) {
+                        MessageBox.Show(error);
+                    }
 					this.currentProgress++;
 			} catch (Exception ex) {
 				MessageBox.Show("error processing file: " + files[i].AnalysisFilePropertyBean.AnalysisFileName + 

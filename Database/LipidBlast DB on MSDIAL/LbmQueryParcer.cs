@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Resources;
+//using System.Windows;
+//using System.Windows.Resources;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -22,31 +22,48 @@ namespace Rfx.Riken.OsakaUniv
         public static List<LbmQuery> GetLbmQueries(bool isLabUseOnly)
         {
             var queries = new List<LbmQuery>();
-
-            var fileUri = new Uri("/Resources/LbmQueries.txt", UriKind.Relative);
-            var info = Application.GetResourceStream(fileUri);
-
-            using (StreamReader sr = new StreamReader(info.Stream))
-            {
-                sr.ReadLine();
-                while (sr.Peek() > -1)
-                {
-                    var line = sr.ReadLine();
-                    if (line == string.Empty) break;
-                    if (line[0] == '#') {
-                        if (isLabUseOnly == false)
-                            continue;
-                        else {
-                            if (line[1] == '#') continue;
-                            line = line.Substring(1);
-                        }
+            var lbmQueryString = Properties.Resources.LbmQueries;
+            //var fileUri = new Uri("/Resources/LbmQueries.txt", UriKind.Relative);
+            //var info = Application.GetResourceStream(fileUri);
+            var lbmQueries = lbmQueryString.Replace("\r\n", "\n").Split(new[] { '\n', '\r' });
+            for (int i = 1; i < lbmQueries.Length; i++) {
+                var line = lbmQueries[i];
+                if (line == string.Empty) break;
+                if (line[0] == '#') {
+                    if (isLabUseOnly == false)
+                        continue;
+                    else {
+                        if (line[1] == '#') continue;
+                        line = line.Substring(1);
                     }
-                    var lineArray = line.Split('\t');
-                    var query = getQuery(lineArray[0], lineArray[1], lineArray[2], lineArray[3]);
-
-                    queries.Add(query);
                 }
+                var lineArray = line.Split('\t');
+                var query = getQuery(lineArray[0], lineArray[1], lineArray[2], lineArray[3]);
+
+                queries.Add(query);
             }
+
+            //using (StreamReader sr = new StreamReader(info.Stream))
+            //{
+            //    sr.ReadLine();
+            //    while (sr.Peek() > -1)
+            //    {
+            //        var line = sr.ReadLine();
+            //        if (line == string.Empty) break;
+            //        if (line[0] == '#') {
+            //            if (isLabUseOnly == false)
+            //                continue;
+            //            else {
+            //                if (line[1] == '#') continue;
+            //                line = line.Substring(1);
+            //            }
+            //        }
+            //        var lineArray = line.Split('\t');
+            //        var query = getQuery(lineArray[0], lineArray[1], lineArray[2], lineArray[3]);
+
+            //        queries.Add(query);
+            //    }
+            //}
 
             return queries;
         }

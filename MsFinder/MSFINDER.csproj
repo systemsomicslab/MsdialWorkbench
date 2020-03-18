@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin_msfinder\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,7 +45,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin_msfinder\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,14 +62,6 @@
     <ApplicationIcon>Resources\MS-FINDER-Main-Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DataProcessing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\DataProcessing.dll</HintPath>
-    </Reference>
-    <Reference Include="Mathematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\Mathematics.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -406,9 +398,17 @@
       <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
       <Name>Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
+      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
+      <Name>DataProcessing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj">
       <Project>{68a6a63d-489a-4e21-84e1-afc885b9a95e}</Project>
       <Name>MassSpectrogramMsfinder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
+      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
+      <Name>Mathematics</Name>
     </ProjectReference>
     <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
       <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>

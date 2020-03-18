@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Riken.Metabolomics.Annotation;
-using System.Windows;
+//using System.Windows;
 using System.ComponentModel;
 
 namespace Riken.Metabolomics.Lipoquality {
@@ -12,17 +12,19 @@ namespace Riken.Metabolomics.Lipoquality {
 
         private LipoqualityRest() { }
 
-        public static void GoToLQDB(MspFormatCompoundInformationBean query, string lipidName) {
-
+        public static void GoToLQDB(MspFormatCompoundInformationBean query, string lipidName, out string error) {
+            error = string.Empty;
             var lipidinfo = LipoqualityDatabaseManagerUtility.ConvertMsdialLipidnameToLipidAnnotation(query, lipidName);
             if (lipidinfo == null) {
-                MessageBox.Show("Type 1 error: Lipid name format invalid", "Error", MessageBoxButton.OK);
+                error = "Type 1 error: Lipid name format invalid";
+                //MessageBox.Show("Type 1 error: Lipid name format invalid", "Error", MessageBoxButton.OK);
                 return;
             }
             
             var url = getLqUrl(lipidinfo);
             if (url == string.Empty) {
-                MessageBox.Show("Type 2 error: Lipid name format invalid", "Error", MessageBoxButton.OK);
+                error = "Type 2 error: Lipid name format invalid";
+                //MessageBox.Show("Type 2 error: Lipid name format invalid", "Error", MessageBoxButton.OK);
                 return;
             }
 

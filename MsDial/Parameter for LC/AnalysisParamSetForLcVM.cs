@@ -57,7 +57,7 @@ namespace Rfx.Riken.OsakaUniv
 
             this.adductIonVMs = new ObservableCollection<AdductIonInformationVM>();
             if (Param.AdductIonInformationBeanList == null) {
-                Param.AdductIonInformationBeanList = DataAccessLcUtility.GetAdductIonInformationList(ProjectProperty.IonMode);
+                Param.AdductIonInformationBeanList = AdductResourceParser.GetAdductIonInformationList(ProjectProperty.IonMode);
             }
 
             if (Param.QcAtLeastFilter == true) {

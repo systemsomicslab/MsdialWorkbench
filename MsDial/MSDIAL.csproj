@@ -43,7 +43,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin_msdial\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,7 +53,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin_msdial\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -103,7 +103,6 @@
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.1.1.0\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -381,9 +380,6 @@
     </Compile>
     <Compile Include="View\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Statistics\PcaResultWin.xaml.cs">
-      <DependentUpon>PcaResultWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="Normalization\LowessSpanSetVM.cs" />
     <Compile Include="Normalization\LowessSpanSetWin.xaml.cs">
@@ -723,10 +719,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Statistics\PcaResultWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Normalization\LowessSpanSetWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -891,6 +883,10 @@
       <Project>{a3ac4d50-9249-478d-be03-0465fd00ef2f}</Project>
       <Name>BarChart</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BinVestigateRestApi\BinVestigateRestApi.csproj">
+      <Project>{be12f796-ae0a-470b-877f-7d2614c6ff4f}</Project>
+      <Name>BinVestigateRestApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ChromatogramUI\Chromatogram.csproj">
       <Project>{6dced6bb-4107-40c9-a9ef-d60658c385c0}</Project>
       <Name>Chromatogram</Name>
@@ -922,10 +918,6 @@
     <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
       <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
       <Name>MolecularFormulaFinder</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BinVestigateRestApi\BinVestigateRestApi.csproj">
-      <Project>{be12f796-ae0a-470b-877f-7d2614c6ff4f}</Project>
-      <Name>BinVestigateRestApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
       <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
@@ -993,19 +985,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\AdductIonResource_Positive.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\MS1Reset.ico" />
     <Resource Include="Resources\MS2Reset.ico" />
     <Resource Include="Resources\PairwiseplotReset.ico" />
     <Resource Include="Resources\XicReset.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\AdductIonResource_Negative.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\IUPAC.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Deconvoluted.ico" />
@@ -1020,9 +1003,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\MS-DIAL.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\LbmQueries.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -1117,8 +1097,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)CytoscapeLocalBrowser" "$(TargetDir)CytoscapeLocalBrowser" /D/E/C/I/H/Y
-copy "$(ProjectDir)Resources\timsdata.dll" "$(TargetDir)"
-copy "$(ProjectDir)Resources\SQLite.Interop.dll" "$(TargetDir)"</PostBuildEvent>
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
