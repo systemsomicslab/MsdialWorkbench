@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DATE" xml:space="preserve">
-    <value>March. 15th, 2019</value>
+    <value>March. 20th, 2019</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="IsotopeButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -140,6 +140,6 @@
     <value>MS-FINDER ver. 3.32</value>
   </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/Metabolomics_Software/MS-FINDER/vdd.json</value>
+    <value>http://prime.psc.riken.jp/compms/msfinder/vdd.json</value>
   </data>
 </root>

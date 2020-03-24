@@ -61,7 +61,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to March.15th, 2020.
+        ///   Looks up a localized string similar to March.20th, 2020.
         /// </summary>
         internal static string DATE {
             get {
@@ -79,7 +79,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/Metabolomics_Software/MS-DIAL/vdd.json.
+        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vdd.json.
         /// </summary>
         internal static string VDD_URI {
             get {
@@ -88,7 +88,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MS-DIAL ver. 4.18.
+        ///   Looks up a localized string similar to MS-DIAL ver. 4.18-dev.
         /// </summary>
         internal static string VERSION {
             get {

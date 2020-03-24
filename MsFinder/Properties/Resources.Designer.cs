@@ -61,7 +61,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to March. 15th, 2019.
+        ///   Looks up a localized string similar to March. 20th, 2019.
         /// </summary>
         internal static string DATE {
             get {
@@ -120,7 +120,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/Metabolomics_Software/MS-FINDER/vdd.json.
+        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msfinder/vdd.json.
         /// </summary>
         internal static string VDD_URI {
             get {

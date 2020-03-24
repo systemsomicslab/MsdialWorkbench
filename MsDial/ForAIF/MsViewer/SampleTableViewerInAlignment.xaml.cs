@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Msdial.Lcms.Dataprocess.Utility;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -73,6 +72,7 @@ namespace Rfx.Riken.OsakaUniv
                 this.DataGrid_RawData.CommitEdit();
                 this.DataGrid_RawData.Items.Refresh();
                 selectedData.UpdateBackgroundColor();
+                this.SampleTableViewerInAlignmentVM.UpdateCentralRetentionInformation();
                 this.SampleTableViewerInAlignmentVM.IsPropertyChanged();
             }
         }
@@ -191,6 +191,40 @@ namespace Rfx.Riken.OsakaUniv
 
         public void IsPropertyChanged() {
             OnPropertyChanged("IsPropertyChanged");
+        }
+
+        public void UpdateCentralRetentionInformation() {
+            var isMobility = source[0].AlignedPeakPropertyBeanCollection.DriftTime > 0 ? true : false;
+            var isRi = source[0].AlignedPeakPropertyBeanCollection.RetentionIndex > 0 ? true : false;
+
+            var aveRt = 0.0;
+            var aveRi = 0.0;
+            var aveDt = 0.0;
+            foreach (var prop in source) {
+                var peakProp = prop.AlignedPeakPropertyBeanCollection;
+                if (isMobility) {
+                    aveDt += peakProp.DriftTime;
+                }
+                else {
+                    aveRt += peakProp.RetentionTime;
+                    if (isRi) {
+                        aveRi += peakProp.RetentionIndex;
+                    }
+                }
+            }
+
+            aveRt /= (double)source.Count;
+            aveRi /= (double)source.Count;
+            aveDt /= (double)source.Count;
+
+            if (isMobility) {
+                source[0].AlignedDriftSpotPropertyBean.CentralDriftTime = (float)aveDt;
+            }
+            else {
+                source[0].AlignmentProperty.CentralRetentionTime = (float)aveRt;
+                if (isRi)
+                    source[0].AlignmentProperty.CentralRetentionIndex = (float)aveRi;
+            }
         }
     }
 

@@ -224,6 +224,9 @@ namespace Rfx.Riken.OsakaUniv.ManualPeakMod
                     if(i + 1 < sPeaklist.Count)
                         peakAreaAboveZero += (sPeaklist[i][1] + sPeaklist[i + 1][1]) * (sPeaklist[i + 1][0] - sPeaklist[i][0]) * 0.5;
                 }
+                if (maxRt == 0.0) {
+                    maxRt = (minX + maxX) * 0.5;
+                }
                 var peakHeightFromBaseline = maxInt - Math.Min(sPeaklist[0][1], sPeaklist[sPeaklist.Count - 1][1]);
                 var noise = sample.PeakBean.EstimatedNoise;
                 var sn = peakHeightFromBaseline / noise;

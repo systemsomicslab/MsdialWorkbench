@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DATE" xml:space="preserve">
-    <value>March.15th, 2020</value>
+    <value>March.20th, 2020</value>
   </data>
   <data name="String1" xml:space="preserve">
     <value />
   </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/Metabolomics_Software/MS-DIAL/vdd.json</value>
+    <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-DIAL ver. 4.18</value>
+    <value>MS-DIAL ver. 4.18-dev</value>
   </data>
 </root>
