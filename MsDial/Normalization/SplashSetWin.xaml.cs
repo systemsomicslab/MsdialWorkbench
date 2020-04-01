@@ -57,7 +57,44 @@ namespace Rfx.Riken.OsakaUniv {
         }
 
         private void Datagrid_SplashProperty_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.V & Keyboard.Modifiers == ModifierKeys.Control) {
+                e.Handled = true;
 
+                var clipText = Clipboard.GetText().Replace("\r\n", "\n").Split('\n');
+                var clipTextList = new List<string[]>();
+
+                foreach (var clip in clipText) { clipTextList.Add(clip.Split('\t')); }
+
+                if (clipTextList.Count > 1) clipTextList.RemoveAt(clipTextList.Count - 1);
+
+                var startRow = this.Datagrid_SplashProperty.Items.IndexOf(this.Datagrid_SplashProperty.SelectedCells[0].Item);
+                double doubleValue;
+
+                if (clipTextList.Count > 1 && this.Datagrid_SplashProperty.SelectedCells[0].Column.DisplayIndex == 0) {
+                    for (int i = 0; i < clipTextList.Count; i++) {
+                        if (startRow + i > this.Datagrid_SplashProperty.Items.Count - 1) break;
+
+                        ((StandardCompound)this.Datagrid_SplashProperty.Items[startRow + i]).StandardName = clipTextList[i][0];
+
+                        if (clipTextList[i].Length > 1) {
+                            if (double.TryParse(clipTextList[i][1], out doubleValue)) {
+                                ((StandardCompound)this.Datagrid_SplashProperty.Items[startRow + i]).Concentration = doubleValue;
+                            }
+                        }
+                    }
+                }
+                else if(clipTextList.Count > 1 && this.Datagrid_SplashProperty.SelectedCells[0].Column.DisplayIndex == 1) {
+                    for (int i = 0; i < clipTextList.Count; i++) {
+                        if (startRow + i > this.Datagrid_SplashProperty.Items.Count - 1) break;
+                        if (double.TryParse(clipTextList[i][0], out doubleValue)) {
+                            ((StandardCompound)this.Datagrid_SplashProperty.Items[startRow + i]).Concentration = doubleValue;
+                        }
+                    }
+                }
+
+                this.Datagrid_SplashProperty.UpdateLayout();
+
+            }
         }
 
         private void MenuItem_AutoFill_Click(object sender, RoutedEventArgs e) {
@@ -67,7 +104,7 @@ namespace Rfx.Riken.OsakaUniv {
 
             for (int i = currentID; i < grid.Items.Count; i++) {
                 var propVM = (StandardCompound)grid.Items[i];
-                propVM.DilutionRate = currentItem.DilutionRate;
+                propVM.Concentration = currentItem.Concentration;
             }
 
             this.Datagrid_SplashProperty.CommitEdit();
@@ -79,7 +116,7 @@ namespace Rfx.Riken.OsakaUniv {
             var grid = this.Datagrid_SplashProperty;
             var currentItem = (StandardCompound)grid.CurrentItem;
 
-            Clipboard.SetText(currentItem.DilutionRate.ToString());
+            Clipboard.SetText(currentItem.Concentration.ToString());
         }
 
         private void MenuItem_Paste(object sender, RoutedEventArgs e) {
@@ -92,7 +129,7 @@ namespace Rfx.Riken.OsakaUniv {
 
             double volume = 0;
             if (double.TryParse(clipboardArrayList[0][0], out volume)) {
-                currentItem.DilutionRate = volume;
+                currentItem.Concentration = volume;
             }
         }
 
@@ -357,6 +394,9 @@ namespace Rfx.Riken.OsakaUniv {
                             }
                         }
                     }
+                    //view.Datagrid_SplashProperty.Items.Refresh();
+                    view.Datagrid_SplashProperty.CommitEdit();
+                    view.Datagrid_SplashProperty.CommitEdit();
                     view.Datagrid_SplashProperty.Items.Refresh();
                     Finish.RaiseCanExecuteChanged();
 

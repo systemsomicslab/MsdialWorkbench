@@ -385,12 +385,20 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
                         scanBeginFlg = false;
                         continue;
                     }
-                    else if (matchedFilterArray[i - 1] > matchedFilterArray[i] && matchedFilterArray[i] < matchedFilterArray[i + 1] && matchedFilterArray[i] >= 0) {
+                    else if (matchedFilterArray[i] >= 0 && matchedFilterArray[i - 1] > matchedFilterArray[i] && matchedFilterArray[i] < matchedFilterArray[i + 1]) {
                         regionMarkers.Add(new RegionMarker() { ID = regionMarkers.Count, ScanBegin = scanBegin, ScanEnd = i });
                         scanBegin = i + 1;
                         scanBeginFlg = true;
                         i++;
                     }
+                    //else if (matchedFilterArray[i] >= 0 && 
+                    //    ((matchedFilterArray[i - 1] >= matchedFilterArray[i] && matchedFilterArray[i] < matchedFilterArray[i + 1]) || 
+                    //    (matchedFilterArray[i - 1] > matchedFilterArray[i] && matchedFilterArray[i] <= matchedFilterArray[i + 1]))) {
+                    //    regionMarkers.Add(new RegionMarker() { ID = regionMarkers.Count, ScanBegin = scanBegin, ScanEnd = i });
+                    //    scanBegin = i + 1;
+                    //    scanBeginFlg = true;
+                    //    i++;
+                    //}
                 }
             }
 
@@ -415,8 +423,12 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
                 else if (spot.IdealSlopeValue > 0.9) model.Quality = ModelQuality.Middle;
                 else model.Quality = ModelQuality.Low;
 
-                if (model.Quality == ModelQuality.High || model.Quality == ModelQuality.Middle)
-                    ms2DecBins[scan].TotalSharpnessValue += spot.ShapenessValue;
+                if (model.Quality == ModelQuality.High || model.Quality == ModelQuality.Middle) {
+                    if (ms2DecBins[scan].TotalSharpnessValue < spot.ShapenessValue) {
+                        ms2DecBins[scan].TotalSharpnessValue = spot.ShapenessValue;
+                    }
+                    //ms2DecBins[scan].TotalSharpnessValue += spot.ShapenessValue;
+                }
 
                 ms2DecBins[scan].PeakSpots.Add(model);
             }

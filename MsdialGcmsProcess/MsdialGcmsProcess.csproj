@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MolecularFormulaFinder, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MS-FINDER\MolecularFormulaGenerator\bin\Release\MolecularFormulaFinder.dll</HintPath>
-    </Reference>
     <Reference Include="Splash">
       <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
@@ -91,6 +87,10 @@
       <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
       <Name>Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
+      <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
+      <Name>MolecularFormulaFinder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MsdialLcmsProcess\MsdialLcmsProcess.csproj">
       <Project>{a1826252-a661-419f-81f7-b5d872b3ae94}</Project>
       <Name>MsdialLcmsProcess</Name>
@@ -100,7 +100,9 @@
       <Name>RawDataHandler</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

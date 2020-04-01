@@ -111,7 +111,7 @@
 
             <DataGrid.Columns>
 
-                <DataGridTemplateColumn SortMemberPath="StandardName" Width="*" Header="Metabolite name" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="StandardName" Width="*" Header="Metabolite name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=StandardName}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
@@ -133,7 +133,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>-->
 
-                <DataGridTemplateColumn SortMemberPath="Concentration" Width="*" Header="Concentration" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="Concentration" Width="*" Header="Concentration" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Concentration}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
@@ -182,7 +182,7 @@
                 </DataGridTemplateColumn>-->
 
 
-                <DataGridTemplateColumn SortMemberPath="PeakID" Width="*" Header="Alignment ID" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="PeakID" Width="*" Header="Alignment ID" IsReadOnly="False" ClipboardContentBinding="{Binding Path=PeakID}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
 

@@ -497,11 +497,11 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         {
             MS2DecResult ms2DecResult = null;
 
-            //if (Math.Abs(peakAreaBean.AccurateMass - 900.8062) < 0.001 && Math.Abs(peakAreaBean.RtAtPeakTop - 10.564) < 0.01) {
+            //if (Math.Abs(peakAreaBean.AccurateMass - 357.12912) < 0.001 && Math.Abs(peakAreaBean.RtAtPeakTop - 8.013) < 0.01) {
             //    Console.WriteLine();
             //}
 
-			//first, the MS/MS spectrum at the scan point of peak top is stored.
+            //first, the MS/MS spectrum at the scan point of peak top is stored.
             var centroidedSpectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProp.DataTypeMS2, peakAreaBean.Ms2LevelDatapointNumber, param.CentroidMs2Tolerance, param.PeakDetectionBasedCentroid);
             var peaklistList = new List<List<double[]>>();
 

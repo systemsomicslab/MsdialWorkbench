@@ -85,5 +85,8 @@
     <Compile Include="Export\PrivateMethodTargetCompoundExport.cs" />
     <Compile Include="Utility\BasicUtility.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -437,26 +437,26 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 else {
 
-                    // temp
-                    var prop = alignedSpots[i];
-                    var isAnnotated = (prop.LibraryID >= 0 || prop.PostIdentificationLibraryID >= 0) 
-                        && !prop.MetaboliteName.StartsWith("w/o MS2")
-                        && !prop.MetaboliteName.StartsWith("RIKEN") ? true : false;
-                    var isZeroContain = false;
-                    foreach (var peakProp in prop.AlignedPeakPropertyBeanCollection) {
-                        if (peakProp.RetentionTime < 0.25) {
-                            isZeroContain = true;
-                            break;
-                        }
-                    }
+                    //// temp
+                    //var prop = alignedSpots[i];
+                    //var isAnnotated = (prop.LibraryID >= 0 || prop.PostIdentificationLibraryID >= 0) 
+                    //    && !prop.MetaboliteName.StartsWith("w/o MS2")
+                    //    && !prop.MetaboliteName.StartsWith("RIKEN") ? true : false;
+                    //var isZeroContain = false;
+                    //foreach (var peakProp in prop.AlignedPeakPropertyBeanCollection) {
+                    //    if (peakProp.RetentionTime < 0.25) {
+                    //        isZeroContain = true;
+                    //        break;
+                    //    }
+                    //}
 
                     var brushes = getSolidColarBrushForCompoundClass(alignedSpots[i].LibraryID, mspDB);
-                    if (isZeroContain && isAnnotated) {
-                        brushes = Brushes.Red;
-                    }
-                    else {
-                        brushes = Brushes.Black;
-                    }
+                    //if (isZeroContain && isAnnotated) {
+                    //    brushes = Brushes.Red;
+                    //}
+                    //else {
+                    //    brushes = Brushes.Black;
+                    //}
                     plotBrushCollection.Add(brushes);
                 }
 

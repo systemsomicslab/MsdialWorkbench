@@ -889,8 +889,12 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
                 else if (peak.IdealSlopeValue > 0.9) model.Quality = ModelQuality.Middle;
                 else model.Quality = ModelQuality.Low;
 
-                if (model.Quality == ModelQuality.High || model.Quality == ModelQuality.Middle)
-                    gcmsDecBins[scanBin].TotalSharpnessValue += peak.ShapenessValue;
+                if (model.Quality == ModelQuality.High || model.Quality == ModelQuality.Middle) {
+                    if (gcmsDecBins[scanBin].TotalSharpnessValue < peak.ShapenessValue) {
+                        gcmsDecBins[scanBin].TotalSharpnessValue = peak.ShapenessValue;
+                    }
+                    // gcmsDecBins[scanBin].TotalSharpnessValue += peak.ShapenessValue;
+                }
               
                 gcmsDecBins[scanBin].PeakSpots.Add(model);
             }
