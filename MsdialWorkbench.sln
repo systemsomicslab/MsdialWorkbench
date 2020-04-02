@@ -141,6 +141,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK", "NCDK\NCDK.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK.Display", "NCDK.Display\NCDK.Display.csproj", "{20E728F8-C648-4F96-AE56-B7A7A185D941}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlottingControls", "PlottingControls\PlottingControls.csproj", "{08F16435-0F57-4C49-8069-8D2ACE84C461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlottingControlsTests", "PlottingControlsTests\PlottingControlsTests.csproj", "{5DEFDED4-D43D-4370-85D1-9E780504E77D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -423,6 +427,14 @@ Global
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F16435-0F57-4C49-8069-8D2ACE84C461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F16435-0F57-4C49-8069-8D2ACE84C461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F16435-0F57-4C49-8069-8D2ACE84C461}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F16435-0F57-4C49-8069-8D2ACE84C461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEFDED4-D43D-4370-85D1-9E780504E77D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEFDED4-D43D-4370-85D1-9E780504E77D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEFDED4-D43D-4370-85D1-9E780504E77D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEFDED4-D43D-4370-85D1-9E780504E77D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
