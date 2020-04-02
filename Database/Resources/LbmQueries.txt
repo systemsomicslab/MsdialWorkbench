@@ -191,9 +191,9 @@ DGDG	[M+CH3COO]-	Negative	FALSE
 DGDG	[M+HCOO]-	Negative	FALSE
 EtherMGDG	[M+CH3COO]-	Negative	FALSE
 EtherMGDG	[M+HCOO]-	Negative	FALSE
-#EtherDGDG	[M+CH3COO]-	Negative	FALSE
-#EtherDGDG	[M+HCOO]-	Negative	FALSE
-#EtherSMGDG	[M-H]-	Negative	TRUE
+EtherDGDG	[M+CH3COO]-	Negative	FALSE
+EtherDGDG	[M+HCOO]-	Negative	FALSE
+EtherSMGDG	[M-H]-	Negative	TRUE
 #SMGDG	[M-H]-	Negative	TRUE
 SQDG	[M-H]-	Negative	FALSE
 SM	[M+CH3COO]-	Negative	TRUE
