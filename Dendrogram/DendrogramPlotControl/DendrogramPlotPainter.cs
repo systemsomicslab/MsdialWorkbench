@@ -26,6 +26,17 @@ namespace Msdial.Dendrogram
             drawingContext.Pop();
         }
 
+        static public void DrawForegraound(
+            DrawingContext drawingContext,
+            Point point1, Point point2
+        )
+        {
+            var rect = new Rect(point1, point2);
+            drawingContext.PushClip(new RectangleGeometry(rect));
+            drawingContext.DrawRectangle(rubberForeground, rubberBorder, rect);
+            drawingContext.Pop();
+        }
+
         static public void DrawTree(
             DrawingContext drawingContext,
             Graph tree, int root,
