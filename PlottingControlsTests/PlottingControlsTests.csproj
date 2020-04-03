@@ -61,6 +61,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dendrogram\DendrogramTest1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\DendrogramTest2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\DendrogramTest3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -72,6 +84,16 @@
     <Compile Include="Base\BaseTest.xaml.cs">
       <DependentUpon>BaseTest.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dendrogram\DendrogramTest1.xaml.cs">
+      <DependentUpon>DendrogramTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramTest2.xaml.cs">
+      <DependentUpon>DendrogramTest2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramTest3.xaml.cs">
+      <DependentUpon>DendrogramTest3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramTestVM.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -105,10 +127,27 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataStructure\DataStructure.csproj">
+      <Project>{71d91f75-4f08-4f35-86da-014a129e9a8e}</Project>
+      <Name>DataStructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
+      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
+      <Name>Mathematics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PlottingControls\PlottingControls.csproj">
       <Project>{08f16435-0f57-4c49-8069-8d2ace84c461}</Project>
       <Name>PlottingControls</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="data\testmatrix.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

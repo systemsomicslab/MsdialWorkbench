@@ -10,7 +10,11 @@
       Title="BaseTest">
 
     <Grid>
-        <Label Content="abc"/>
-        <plot:PlottingBase/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="PlottingBase"/>
+        <plot:PlottingBase Grid.Row="1"/>
     </Grid>
 </Page>

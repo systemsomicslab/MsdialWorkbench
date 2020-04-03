@@ -35,6 +35,9 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,7 +50,22 @@
   <ItemGroup>
     <Compile Include="Base\PlottingBase.cs" />
     <Compile Include="Base\PlottingBasePainter.cs" />
+    <Compile Include="Dendrogram\DendrogramControl.cs" />
+    <Compile Include="Dendrogram\DendrogramPainter.cs" />
+    <Compile Include="GraphAxis\CategoryHorizontalAxisControl.cs" />
+    <Compile Include="GraphAxis\CategoryHorizontalAxisPainter.cs" />
+    <Compile Include="GraphAxis\ContinuousVerticalAxisControl.cs" />
+    <Compile Include="GraphAxis\ContinuousVerticalAxisPainter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataStructure\DataStructure.csproj">
+      <Project>{71d91f75-4f08-4f35-86da-014a129e9a8e}</Project>
+      <Name>DataStructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

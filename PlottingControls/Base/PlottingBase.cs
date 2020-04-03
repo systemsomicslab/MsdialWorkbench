@@ -17,7 +17,7 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty XPositionsProperty = DependencyProperty.Register(
             "XPositions", typeof(IReadOnlyList<double>), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(new double[] { }, FrameworkPropertyMetadataOptions.AffectsRender)
         );
         public IReadOnlyList<double> YPositions
         {
@@ -26,7 +26,7 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty YPositionsProperty = DependencyProperty.Register(
             "YPositions", typeof(IReadOnlyList<double>), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(new double[] { }, FrameworkPropertyMetadataOptions.AffectsRender)
         );
         public double XDisplayMin
         {
@@ -35,7 +35,9 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty XDisplayMinProperty = DependencyProperty.Register(
             "XDisplayMin", typeof(double), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
         public double XDisplayMax
         {
@@ -44,7 +46,9 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty XDisplayMaxProperty = DependencyProperty.Register(
             "XDisplayMax", typeof(double), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(10d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
         public double YDisplayMin
         {
@@ -53,7 +57,9 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty YDisplayMinProperty = DependencyProperty.Register(
             "YDisplayMin", typeof(double), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
         public double YDisplayMax
         {
@@ -62,7 +68,9 @@ namespace PlottingControls.Base
         }
         public static readonly DependencyProperty YDisplayMaxProperty = DependencyProperty.Register(
             "YDisplayMax", typeof(double), typeof(PlottingBase),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(10d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
         #endregion
 
@@ -80,7 +88,7 @@ namespace PlottingControls.Base
             MouseLeftButtonDown += ResetDoubleClick;
         }
 
-        protected virtual void PlottingChart(DrawingContext drawingContext) { }
+        protected virtual void PlotChart(DrawingContext drawingContext) { }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
@@ -90,20 +98,34 @@ namespace PlottingControls.Base
             PlottingBasePainter.DrawBackground(
                 drawingContext, point, vector
             );
-            PlottingChart(drawingContext);
-            if (isZooming)
+            PlotChart(drawingContext);
+            if (isZooming && (!Xfreeze || !Yfreeze))
             {
+                var inip = initialPosition;
+                var curp = currentPosition;
+                if (Xfreeze)
+                {
+                    inip.X = 0;
+                    curp.X = ActualWidth;
+                }
+                if (Yfreeze)
+                {
+                    inip.Y = 0;
+                    curp.Y = ActualHeight;
+                }
                 PlottingBasePainter.DrawForegraound(
-                    drawingContext, initialPosition, currentPosition
+                    drawingContext, inip, curp
                 );
             }
         }
 
         #region mouse event
+        protected bool Xfreeze = false;
+        protected bool Yfreeze = false;
         private void UpdateGraphRange(Point p, Point q)
         {
-            UpdateGraphRangeX(p.X, q.X);
-            UpdateGraphRangeY(p.Y, q.Y);
+            if (!Xfreeze) UpdateGraphRangeX(p.X, q.X);
+            if (!Yfreeze) UpdateGraphRangeY(p.Y, q.Y);
         }
 
         private void UpdateGraphRangeX(double p, double q)
@@ -202,7 +224,11 @@ namespace PlottingControls.Base
         }
         protected void ZoomRightDragOnMouseLeave(object sender, MouseEventArgs e)
         {
-            isZooming = false;
+            if (isZooming)
+            {
+                isZooming = false;
+                InvalidateVisual();
+            }
         }
 
         protected void ZoomMouseWheel(object sender, MouseWheelEventArgs e)
@@ -223,15 +249,21 @@ namespace PlottingControls.Base
         {
             if (e.ClickCount == 2)
             {
-                var xValueMin = XPositions.Min();
-                var xValueMax = XPositions.Max();
-                var yValueMin = YPositions.Min();
-                var yValueMax = YPositions.Max();
+                if (!Xfreeze)
+                {
+                    var xValueMin = XPositions.Min();
+                    var xValueMax = XPositions.Max();
+                    XDisplayMin = xValueMin - (xValueMax - xValueMin) * 0.05;
+                    XDisplayMax = xValueMax + (xValueMax - xValueMin) * 0.05;
+                }
 
-                XDisplayMin = xValueMin - (xValueMax - xValueMin) * 0.05;
-                XDisplayMax = xValueMax + (xValueMax - xValueMin) * 0.05;
-                YDisplayMin = yValueMin;
-                YDisplayMax = yValueMax + (yValueMax - yValueMin) * 0.05;
+                if (!Yfreeze)
+                {
+                    var yValueMin = YPositions.Min();
+                    var yValueMax = YPositions.Max();
+                    YDisplayMin = yValueMin;
+                    YDisplayMax = yValueMax + (yValueMax - yValueMin) * 0.05;
+                }
             }
         }
         #endregion

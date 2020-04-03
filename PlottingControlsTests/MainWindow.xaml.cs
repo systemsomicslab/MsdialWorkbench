@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using PlottingControlsTests.Base;
+using PlottingControlsTests.Dendrogram;
 
 namespace PlottingControlsTests
 {
@@ -25,7 +26,13 @@ namespace PlottingControlsTests
         public MainWindow()
         {
             InitializeComponent();
-            ps = new List<(string name, Page page)> { ("PlottingBase", new BaseTest()) };
+            ps = new List<(string name, Page page)> {
+                ("PlottingBase", new BaseTest()),
+                ("Dendrogram1", new DendrogramTest1()),
+                ("Dendrogram2", new DendrogramTest2()),
+                ("Dendrogram3", new DendrogramTest3())
+
+            };
             navbar.ItemsSource = ps.Select(p => p.name);
         }
 
