@@ -103,11 +103,12 @@ namespace Rfx.Riken.OsakaUniv
                      }
                  }
              }
-             ,
-             () =>
-             {
-                 MoleculeImage.TryClassLoad();
-             });
+             //,
+             //() =>
+             //{
+             //    MoleculeImage.TryClassLoad();
+             //}
+             );
             e.Result = new object[] { mainwindow, mainWindowVM };
         }
 

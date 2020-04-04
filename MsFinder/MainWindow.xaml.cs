@@ -258,8 +258,7 @@ namespace Rfx.Riken.OsakaUniv
 
             RefreshUtility.ActualMsMsVsInSilicoMsMsUiRefresh(this, this.mainWindowVM);
 
-            if (this.TabItem_StructureImage.IsSelected == true)
-            {
+            if (this.TabItem_StructureImage.IsSelected == true) {
                 this.Image_Structure.Source = UiAccessUtility.GetSmilesAsImage(this.mainWindowVM.SelectedFragmenterVM, this.TabControl_Structure.ActualWidth, this.TabControl_Structure.ActualHeight);
             }
         }

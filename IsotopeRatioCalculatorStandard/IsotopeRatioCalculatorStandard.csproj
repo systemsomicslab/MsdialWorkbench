@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>IsotopeRatioCalculator</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
+  </ItemGroup>
+
+</Project>

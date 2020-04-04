@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>MsdialGcmsProcess</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Splash">
+      <HintPath>..\Assemblies\Splash.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

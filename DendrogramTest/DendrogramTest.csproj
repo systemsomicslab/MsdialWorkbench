@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DendrogramTest</RootNamespace>
     <AssemblyName>DendrogramTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -98,13 +100,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataStructure\DataStructure.csproj">
-      <Project>{71d91f75-4f08-4f35-86da-014a129e9a8e}</Project>
-      <Name>DataStructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
-      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
-      <Name>Mathematics</Name>
+    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
+      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
+      <Name>DataStructureStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dendrogram\Dendrogram.csproj">
       <Project>{a2e7e2d7-96bf-4cd7-9cfe-e9e7a446bdb1}</Project>
@@ -113,6 +111,10 @@
     <ProjectReference Include="..\GraphAxisControl\GraphAxisControl.csproj">
       <Project>{69ea43f9-032a-48e8-a233-779b1b353c76}</Project>
       <Name>GraphAxisControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

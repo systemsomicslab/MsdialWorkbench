@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon>MS-DIAL.ico</ApplicationIcon>
+    <AssemblyName>MsdialConsoleApp</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MS-DIAL.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MS-DIAL.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
+    <ProjectReference Include="..\IsotopeRatioCalculatorStandard\IsotopeRatioCalculatorStandard.csproj" />
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
+    <ProjectReference Include="..\MsdialCommonStandard\MsdialCommonStandard.csproj" />
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
+  </ItemGroup>
+
+</Project>

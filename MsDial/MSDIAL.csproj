@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MSDIAL</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -84,28 +84,6 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AbfDataHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\AbfDataHandler.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Accord.3.8.0\lib\net40\Accord.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Math, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Accord.Math.3.8.0\lib\net40\Accord.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Math.Core, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Accord.Math.3.8.0\lib\net40\Accord.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Statistics, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Accord.Statistics.3.8.0\lib\net40\Accord.Statistics.dll</HintPath>
-    </Reference>
-    <Reference Include="GongSolutions.Wpf.DragDrop, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\gong-wpf-dragdrop.1.1.0\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Splash">
       <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
@@ -118,7 +96,10 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -133,10 +114,6 @@
     <Reference Include="XamlToys">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\XamlToys.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -857,7 +834,6 @@
     <None Include="CytoscapeLocalBrowser\assembly\jquery-1.12.4.min.map" />
     <None Include="CytoscapeLocalBrowser\assembly\jquery-3.3.1.min.map" />
     <None Include="CytoscapeLocalBrowser\assembly\smiles-drawer.min.js.map" />
-    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -879,13 +855,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AbfDataHandlerStandard\AbfDataHandlerStandard.csproj">
+      <Project>{5a9a2a21-ec94-4869-8866-b5c52e57d79d}</Project>
+      <Name>AbfDataHandlerStandard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BarChart\BarChart.csproj">
       <Project>{a3ac4d50-9249-478d-be03-0465fd00ef2f}</Project>
       <Name>BarChart</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BinVestigateRestApi\BinVestigateRestApi.csproj">
-      <Project>{be12f796-ae0a-470b-877f-7d2614c6ff4f}</Project>
-      <Name>BinVestigateRestApi</Name>
+    <ProjectReference Include="..\BinVestigateRestApiStandard\BinVestigateRestApiStandard.csproj">
+      <Project>{56759084-f7c0-4aa6-ab4e-2f8e13927029}</Project>
+      <Name>BinVestigateRestApiStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\ChromatogramUI\Chromatogram.csproj">
       <Project>{6dced6bb-4107-40c9-a9ef-d60658c385c0}</Project>
@@ -895,29 +875,29 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
-      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
-      <Name>DataProcessing</Name>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataStructure\DataStructure.csproj">
-      <Project>{71d91f75-4f08-4f35-86da-014a129e9a8e}</Project>
-      <Name>DataStructure</Name>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
+      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
+      <Name>DataStructureStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IsotopeRatioCalculatorStandard\IsotopeRatioCalculatorStandard.csproj">
+      <Project>{550a1e94-87d0-4244-8e25-23c7a4321a9a}</Project>
+      <Name>IsotopeRatioCalculatorStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\MassSpectrogram\MassSpectrogram.csproj">
       <Project>{9adb8ed7-1d30-45bf-8ac5-a3ccf19afd65}</Project>
       <Name>MassSpectrogram</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
-      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
-      <Name>Mathematics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
-      <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
-      <Name>MolecularFormulaFinder</Name>
     </ProjectReference>
     <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
       <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
@@ -935,13 +915,13 @@
       <Project>{2b825c29-e91f-449c-a6a6-a2f88330cc0c}</Project>
       <Name>Heatmap</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IsotopeRatioCalculator\IsotopeRatioCalculator.csproj">
-      <Project>{1aa5e390-1f91-4ba3-9220-647ff7136435}</Project>
-      <Name>IsotopeRatioCalculator</Name>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Database\Database.csproj">
-      <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
-      <Name>Database</Name>
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
+      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
+      <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonaExport\MonaExport.csproj">
       <Project>{3232ef20-fadb-47c5-958f-4eab0eee2f91}</Project>
@@ -955,21 +935,21 @@
       <Project>{049645f4-4ea5-41a2-b369-22d23fb09040}</Project>
       <Name>MsdialCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
-      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
-      <Name>MsdialGcmsProcess</Name>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
+      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
+      <Name>MsdialGcmsProcessStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialLcmsProcess\MsdialLcmsProcess.csproj">
-      <Project>{a1826252-a661-419f-81f7-b5d872b3ae94}</Project>
-      <Name>MsdialLcmsProcess</Name>
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj">
+      <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
+      <Name>MsdialLcmsProcessStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MzmlDataHandler\MzmlDataHandler.csproj">
-      <Project>{6cb09c73-2b50-4b1c-8a56-5d7e70764b5e}</Project>
-      <Name>MzmlDataHandler</Name>
+    <ProjectReference Include="..\MzmlDataHandlerStandard\MzmlDataHandlerStandard.csproj">
+      <Project>{04beb995-aeaf-4ac4-bd07-ceb152f98523}</Project>
+      <Name>MzmlDataHandlerStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NetCdfDataHandler\NetCdfDataHandler.csproj">
-      <Project>{a648c094-ef6c-4191-991c-ecd1d78ef786}</Project>
-      <Name>NetCdfDataHandler</Name>
+    <ProjectReference Include="..\NetCdfDataHandlerStandard\NetCdfDataHandlerStandard.csproj">
+      <Project>{21671c52-76a6-4dd2-afcd-b7e8c3e7c191}</Project>
+      <Name>NetCdfDataHandlerStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\PairwisePlot\PairwisePlot.csproj">
       <Project>{9f9ccfc8-5b22-4bce-81b1-04c09ec717d2}</Project>
@@ -979,9 +959,9 @@
       <Project>{7c8bf853-6f34-4cbd-bec9-6d1aea199947}</Project>
       <Name>PathwayMap</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RawDataHandler\RawDataHandler.csproj">
-      <Project>{eba05b52-f0f8-4580-91bc-4f6f952fb48a}</Project>
-      <Name>RawDataHandler</Name>
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
+      <Project>{6c2831a2-f1dd-4fc6-a31b-6b9ee894298b}</Project>
+      <Name>RawDataHandlerStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1093,19 +1073,28 @@
   <ItemGroup>
     <Resource Include="Resources\Table.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Accord">
+      <Version>3.8.0</Version>
+    </PackageReference>
+    <PackageReference Include="Accord.Statistics">
+      <Version>3.8.0</Version>
+    </PackageReference>
+    <PackageReference Include="Extended.Wpf.Toolkit">
+      <Version>2.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="gong-wpf-dragdrop">
+      <Version>1.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)CytoscapeLocalBrowser" "$(TargetDir)CytoscapeLocalBrowser" /D/E/C/I/H/Y
 </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Accord.3.8.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.0\build\Accord.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,0 +1,49 @@
+﻿<Window x:Class="NCDK.MolViewer.AppearanceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NCDK.MolViewer"
+        mc:Ignorable="d"
+        Title="Appearance" WindowStyle="ToolWindow" Height="150" Width="300">
+    <Window.Resources>
+        <local:Power10Converter x:Key="Power10Converter"/>
+        <local:F2Converter x:Key="F2Converter"/>
+        <local:ColoringStyleToStringConverter x:Key="ColoringStyleToStringConverter"/>
+        <local:HighlightingStyleToStringConverter x:Key="HighlightingStyleToStringConverter"/>
+    </Window.Resources>
+    <StackPanel VerticalAlignment="Top">
+        <StackPanel>
+            <Grid>
+                <Label Content="Zoom:" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+                <TextBox Text="{Binding Zoom, Converter={StaticResource F2Converter}}" Width="46" TextAlignment="Right" HorizontalAlignment="Left" Margin="44,0,0,0" />
+                <Slider Value="{Binding Zoom, Converter={StaticResource Power10Converter}}" Margin="90,0,0,0" Maximum="2" Minimum="-2" />
+            </Grid>
+        </StackPanel>
+        <StackPanel>
+            <Grid>
+                <Label Content="Coloring:" HorizontalAlignment="Left" Width="58" />
+                <ComboBox Text="{Binding Coloring, Converter={StaticResource ColoringStyleToStringConverter}}" x:Name="coloring" Margin="63,0,0.333,0">
+                    <ComboBoxItem Content="COW"/>
+                    <ComboBoxItem Content="COT"/>
+                    <ComboBoxItem Content="BOW"/>
+                    <ComboBoxItem Content="BOT"/>
+                    <ComboBoxItem Content="WOB"/>
+                    <ComboBoxItem Content="COB"/>
+                    <ComboBoxItem Content="NOB"/>
+                </ComboBox>
+            </Grid>
+            <Grid>
+                <Label Content="Highlighting:" HorizontalAlignment="Left" Width="78" />
+                <ComboBox Text="{Binding Highlighting, Converter={StaticResource HighlightingStyleToStringConverter}}" x:Name="highlighting" Margin="83,0,0.333,0">
+                    <ComboBoxItem Content="None"/>
+                    <ComboBoxItem Content="Colored"/>
+                    <ComboBoxItem Content="OuterGlow"/>
+                </ComboBox>
+            </Grid>
+            <Grid>
+                <TextBox Text="{Binding HighlightingObjects}" x:Name="highlightings" />
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</Window>
