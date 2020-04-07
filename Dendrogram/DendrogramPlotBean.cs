@@ -14,7 +14,7 @@ namespace Msdial.Dendrogram
         #region Properties
         public string GraphTitle { get; }
         public ObservableCollection<string> LabelCollection { get; }
-        public Graph Dendrogram { get; }
+        public DirectedTree Dendrogram { get; }
         public int Root { get; }
         public IReadOnlyList<int> LeafIdxs => leafIdxs;
         public IReadOnlyList<double> XLeafPositions => LeafIdxs.Select(idx => XPositions[idx]).ToArray();
@@ -85,9 +85,9 @@ namespace Msdial.Dendrogram
         {
             this.GraphTitle = "Drawing dendrogram";
             this.LabelCollection = new ObservableCollection<string>();
-            this.Dendrogram = new Graph(0);
+            this.Dendrogram = new DirectedTree(0);
         }
-        public DendrogramPlotBean(string graphTitle, IEnumerable<string> labelCollection, Graph dendrogram, int root)
+        public DendrogramPlotBean(string graphTitle, IEnumerable<string> labelCollection, DirectedTree dendrogram, int root)
         {
             this.GraphTitle = graphTitle;
 
@@ -97,7 +97,7 @@ namespace Msdial.Dendrogram
             this.LabelCollection = new ObservableCollection<string>(
                 rank.Zip(labelCollection, Tuple.Create).OrderBy(p => p.Item1).Select(p => p.Item2)
             );
-            this.Dendrogram = new Graph(dendrogram.Select(es =>
+            this.Dendrogram = new DirectedTree(dendrogram.Select(es =>
                 new Edges(es.Select(e =>
                     new Edge(rank[e.From], rank[e.To], e.Distance)
                 ))
@@ -122,7 +122,7 @@ namespace Msdial.Dendrogram
             this.DisplayMaxY = this.ValueMaxY + (this.ValueMaxY - this.ValueMinY) * 0.05;
         }
 
-        private static int[] postOrdering(Graph dendrogram, int root)
+        private static int[] postOrdering(DirectedTree dendrogram, int root)
         {
             var rank = Enumerable.Repeat(-1, dendrogram.Count).ToArray();
             var counter = 0;
@@ -142,7 +142,7 @@ namespace Msdial.Dendrogram
             return rank;
         }
 
-        private static (List<double>, List<double>) getNodePosition(Graph dendrogram, int root, IReadOnlyList<int> leafIdxs)
+        private static (List<double>, List<double>) getNodePosition(DirectedTree dendrogram, int root, IReadOnlyList<int> leafIdxs)
         {
             var n = leafIdxs.Count;
             var xPosition = Enumerable.Repeat(0.0, n * 2 - 1).ToList();

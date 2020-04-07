@@ -13,13 +13,13 @@ namespace Msdial.Dendrogram
     public class DendrogramPlotControl : FrameworkElement
     {
         #region Property
-        public Graph Dendrogram
+        public DirectedTree Dendrogram
         {
-            get => (Graph)GetValue(DendrogramProperty);
+            get => (DirectedTree)GetValue(DendrogramProperty);
             set => SetValue(DendrogramProperty, value);
         }
         public static readonly DependencyProperty DendrogramProperty = DependencyProperty.Register(
-            "Dendrogram", typeof(Graph), typeof(DendrogramPlotControl),
+            "Dendrogram", typeof(DirectedTree), typeof(DendrogramPlotControl),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
         );
         public int Root

@@ -13,13 +13,13 @@ namespace PlottingControls.Dendrogram
     public class DendrogramControl : PlottingBase
     {
         #region Property
-        public Graph Dendrogram
+        public DirectedTree Dendrogram
         {
-            get => (Graph)GetValue(DendrogramProperty);
+            get => (DirectedTree)GetValue(DendrogramProperty);
             set => SetValue(DendrogramProperty, value);
         }
         public static readonly DependencyProperty DendrogramProperty = DependencyProperty.Register(
-            "Dendrogram", typeof(Graph), typeof(DendrogramControl),
+            "Dendrogram", typeof(DirectedTree), typeof(DendrogramControl),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
         );
         public int Root

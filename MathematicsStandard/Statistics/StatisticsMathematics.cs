@@ -1676,7 +1676,7 @@ namespace Rfx.Riken.OsakaUniv
             var clusters = new List<List<List<double>>>(n * 2 - 1);
             // var tree = new List<int>(n * 2 - 1);
             // var tree = new List<List<int>>(n * 2 - 1);
-            var tree = new Graph(n * 2 - 1);
+            var tree = new DirectedTree(n * 2 - 1);
             for(int i = 0; i < n; ++i)
             {
                 var vec = new List<double>(m);

@@ -39,7 +39,7 @@ namespace Msdial.Dendrogram
 
         static public void DrawTree(
             DrawingContext drawingContext,
-            Graph tree, int root,
+            DirectedTree tree, int root,
             IEnumerable<double> xPositions, IEnumerable<double> yPositions,
             Point point, Vector vector,
             double xMin, double xMax,

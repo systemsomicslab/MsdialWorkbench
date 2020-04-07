@@ -54,7 +54,7 @@ namespace Rfx.Riken.OsakaUniv {
         public ObservableCollection<double> Contributions { get; set; } = new ObservableCollection<double>();
 
         // hca
-        public Graph Dendrogram { get; set; }
+        public DirectedTree Dendrogram { get; set; }
         public int Root { get; set; }
         public double[,] DistanceMatrix { get; set; }
     }
