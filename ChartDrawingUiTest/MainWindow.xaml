@@ -3,62 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:chromatogram="clr-namespace:Rfx.Riken.OsakaUniv.ManualPeakMod;assembly=Chromatogram"
         xmlns:local="clr-namespace:ChartDrawingUiTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
     <Grid>
-
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="200" />
-            <RowDefinition Height="50" />
-        </Grid.RowDefinitions>
-       
-        <chromatogram:PeakModUC x:Name="chromPeakMod" Content="{Binding Path=ChromUC}"
-                                Grid.Row="0"
-            HorizontalAlignment="Stretch" 
-            VerticalAlignment="Stretch">
-            
-        </chromatogram:PeakModUC>
-
-        <WrapPanel Grid.Row="1" 
-                   Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5">
-
-            <Label Name="Label_ScanLeft" />
-            <Label Name="Label_ScanTop" />
-            <Label Name="Label_ScanRight" />
-
-            <Label Name="Label_ScanMinLeft" />
-            <Label Name="Label_ScanMinRight" />
-
-            <Label Name="Label_RtLeft" />
-            <Label Name="Label_RtTop" />
-            <Label Name="Label_RtRight" />
-
-            <Label Name="Label_RtMinLeft" />
-            <Label Name="Label_RtMinRight" />
-
-            <Label Name="Label_HeightLeftFromZero" />
-            <Label Name="Label_HeightRightFromZero" />
-            <Label Name="Label_HeightMinLeftFromZero" />
-            <Label Name="Label_HeightMinRightFromZero" />
-
-            <Label Name="Label_HeightFromZero" />
-            <Label Name="Label_HeightFromBaseline" />
-            <Label Name="Label_HeightFromParallelBaseline" />
-
-            <Label Name="Label_AreaFromZero" />
-            <Label Name="Label_AreaFromBaseline" />
-            <Label Name="Label_AreaFromParallelBaseline" />
-
-        </WrapPanel>
-
-        <Grid Grid.Row="3">
-            <Label  xml:space="preserve" 
-                    Content="Explanation: (1) use left click and hold to change peak edges; (2) right double click to newly generate a detected peak.&#10;
-                    (3)SHIFT key + Right click and dragging to determine the peak region; (4)CONTROL+SHIFT+Right double click to delete the peak." />
-        </Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
+        <ListView x:Name="navbar" Grid.Column="0" SelectionChanged="navbar_SelectionChanged"/>
+        <Frame x:Name="sampleFrame" Grid.Column="1"/>
     </Grid>
 </Window>

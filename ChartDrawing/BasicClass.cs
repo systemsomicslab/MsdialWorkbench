@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 
-namespace ChartDrawing
+namespace CompMs.Graphics.Core.Base
 {
     public enum ChartType { Line, Point, Chromatogram, MS, MSwithRef }
     public enum MarkerType { None, Circle, Square, Cross }
     public enum XaxisUnit { Minuites, Seconds }
     public enum Position { Left, Right, Top, Bottom }
+    
     public class MouseActionSetting
     {
         public bool CanMouseAction { get; set; } = true;
@@ -110,13 +110,15 @@ namespace ChartDrawing
         public int FontSize { get; set; } = 13;
     }
 
-    public class Series {
-        public float MaxY { get; set; }
-        public float MinY { get; set; }
-        public float MaxX { get; set; }
-        public float MinX { get; set; }
+    public class Series : IList<DataPoint>, IReadOnlyList<DataPoint>
+    {
+        public DataPoint this[int index] { get => ((IList<DataPoint>)Points)[index]; set => ((IList<DataPoint>)Points)[index] = value; }
+
+        public List<DataPoint> Points { get; set; } = new List<DataPoint>();
 
         public Legend Legend { get; set; }
+        public bool IsLabelVisible { get; set; } = false;
+
         public ChartType ChartType { get; set; }
         public MarkerType MarkerType { get; set; }
         public XaxisUnit XaxisUnit { get; set; }
@@ -126,23 +128,72 @@ namespace ChartDrawing
         public Pen Pen { get; set; } = new Pen(Brushes.Black, 1.0);
         public Typeface FontType { get; set; } = new Typeface("Caribri");
         public int FontSize { get; set; } = 13;
-
-        public List<XY> Points { get; set; } = new List<XY>();
-        public bool IsLabelVisible { get; set; } = false;
         public Accessory Accessory { get; set; }
 
-        public void SetValues() {
-            if (Points == null || Points.Count == 0) return;
-            MaxY = Points.Max(x => x.Y);
-            MinY = Points.Min(x => x.Y);
-            MaxX = Points.Max(x => x.X);
-            MinX = Points.Min(x => x.X);
+        public float MaxX => Points == null ? 0 : Points.Select(dp => dp.X).Max();
+        public float MinX => Points == null ? 0 : Points.Select(dp => dp.X).Min();
+        public float MaxY => Points == null ? 0 : Points.Select(dp => dp.Y).Max();
+        public float MinY => Points == null ? 0 : Points.Select(dp => dp.Y).Min();
+        public float MaxZ => Points == null ? 0 : Points.Select(dp => dp.Z).Max();
+        public float MinZ => Points == null ? 0 : Points.Select(dp => dp.Z).Min();
+
+        public int Count => ((IList<DataPoint>)Points).Count;
+
+        public bool IsReadOnly => ((IList<DataPoint>)Points).IsReadOnly;
+
+        public void Add(DataPoint item)
+        {
+            ((IList<DataPoint>)Points).Add(item);
         }
-        public void AddPoint(float x, float y){
-            Points.Add(new XY() { X = x, Y = y });
+
+        public void AddPoint(float x = 0, float y = 0, float z = 0, string s = null)
+        {
+            Points.Add(new DataPoint() { X = x, Y = y, Z = z, Label = s });
         }
-        public void AddPoint(float x, float y, string s) {
-            Points.Add(new XY() { X = x, Y = y, Label = s });
+
+        public void Clear()
+        {
+            ((IList<DataPoint>)Points).Clear();
+        }
+
+        public bool Contains(DataPoint item)
+        {
+            return ((IList<DataPoint>)Points).Contains(item);
+        }
+
+        public void CopyTo(DataPoint[] array, int arrayIndex)
+        {
+            ((IList<DataPoint>)Points).CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<DataPoint> GetEnumerator()
+        {
+            return ((IList<DataPoint>)Points).GetEnumerator();
+        }
+
+        public int IndexOf(DataPoint item)
+        {
+            return ((IList<DataPoint>)Points).IndexOf(item);
+        }
+
+        public void Insert(int index, DataPoint item)
+        {
+            ((IList<DataPoint>)Points).Insert(index, item);
+        }
+
+        public bool Remove(DataPoint item)
+        {
+            return ((IList<DataPoint>)Points).Remove(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            ((IList<DataPoint>)Points).RemoveAt(index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IList<DataPoint>)Points).GetEnumerator();
         }
     }
 
@@ -151,6 +202,14 @@ namespace ChartDrawing
         public string Label { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
+    }
+
+    public class DataPoint
+    {
+        public string Label { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
     }
 
     public class Accessory
@@ -194,26 +253,87 @@ namespace ChartDrawing
         }
     }
 
-    public class SeriesList
+    public class SeriesList : IList<Series>, IReadOnlyList<Series>
     {
-        public float MaxY { get; set; } = float.MinValue;
-        public float MinY { get; set; } = float.MaxValue;
-        public float MaxX { get; set; } = float.MinValue;
-        public float MinX { get; set; } = float.MaxValue;
-        public bool AreLegendsVisible { get; set; } = false;
-        public bool AreLabelsVisible { get; set; } = false;
-        public bool AreLegendsInGraphArea { get; set; } = true;
+        public Series this[int index] { get => ((IList<Series>)Series)[index]; set => ((IList<Series>)Series)[index] = value; }
+
         public List<Series> Series { get; set; } = new List<Series>();
-        public void SetValues() {
-            foreach(var s in Series) {
-                if (MaxY < s.MaxY) MaxY = s.MaxY;
-                if (MaxX < s.MaxX) MaxX = s.MaxX;
-                if (MinY > s.MinY) MinY = s.MinY;
-                if (MinX > s.MinX) MinX = s.MinX;
-                if (s.IsLabelVisible) AreLabelsVisible = true;
-                if (s.Legend != null && s.Legend.IsVisible == true) AreLegendsVisible = true;
-                if (s.Legend != null && s.Legend.InGraphicArea == false) AreLegendsInGraphArea = false;
-            }
+
+        public float MaxX => Series.Any() ? Series.Select(series => series.MaxX).Max() : float.MaxValue;
+        public float MinX => Series.Any() ? Series.Select(series => series.MinX).Min() : float.MinValue;
+        public float MaxY => Series.Any() ? Series.Select(series => series.MaxY).Max() : float.MaxValue;
+        public float MinY => Series.Any() ? Series.Select(series => series.MinY).Min() : float.MinValue;
+        public float MaxZ => Series.Any() ? Series.Select(series => series.MaxZ).Max() : float.MaxValue;
+        public float MinZ => Series.Any() ? Series.Select(series => series.MinZ).Min() : float.MinValue;
+        public bool AreLabelsVisible => Series != null && Series.All(series => series.IsLabelVisible);
+        public bool AreLegendsVisible => Series != null && Series.All(series => series.Legend != null && series.Legend.IsVisible);
+        public bool AreLegendsInGraphArea => Series == null || Series.All(series => series.Legend == null || series.Legend.InGraphicArea);
+
+        public int Count => ((IList<Series>)Series).Count;
+
+        public bool IsReadOnly => ((IList<Series>)Series).IsReadOnly;
+
+        public void Add(Series item)
+        {
+            ((IList<Series>)Series).Add(item);
         }
+
+        public void Clear()
+        {
+            ((IList<Series>)Series).Clear();
+        }
+
+        public bool Contains(Series item)
+        {
+            return ((IList<Series>)Series).Contains(item);
+        }
+
+        public void CopyTo(Series[] array, int arrayIndex)
+        {
+            ((IList<Series>)Series).CopyTo(array, arrayIndex);
+        }
+
+        public IEnumerator<Series> GetEnumerator()
+        {
+            return ((IList<Series>)Series).GetEnumerator();
+        }
+
+        public int IndexOf(Series item)
+        {
+            return ((IList<Series>)Series).IndexOf(item);
+        }
+
+        public void Insert(int index, Series item)
+        {
+            ((IList<Series>)Series).Insert(index, item);
+        }
+
+        public bool Remove(Series item)
+        {
+            return ((IList<Series>)Series).Remove(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            ((IList<Series>)Series).RemoveAt(index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IList<Series>)Series).GetEnumerator();
+        }
+    }
+
+    public interface IChartData
+    {
+        void UpdateGraphRange(Point p1, Point p2);
+        void Reset();
+    }
+
+    public interface IDrawingChart
+    {
+        void Draw(DrawingContext drawingContext, Point point, Size size, IChartData chartData);
+        void DrawBackground(DrawingContext drawingContext, Point point, Size size);
+        void DrawForeground(DrawingContext drawingContext, Point point, Size size);
     }
 }

@@ -7,7 +7,7 @@
     <ProjectGuid>{6131640B-30E6-4606-A394-BE953590F3E9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ChartDrawing</RootNamespace>
+    <RootNamespace>CompMs.Graphics</RootNamespace>
     <AssemblyName>ChartDrawing</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicClass.cs" />
+    <Compile Include="Default\DefaultControl.cs" />
     <Compile Include="Default\DefaultFE.cs" />
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
