@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Input;
 
 using PlottingControls.Base;
 using Common.DataStructure;
-using System.Windows.Media;
 
 namespace PlottingControls.Dendrogram
 {
@@ -34,7 +35,7 @@ namespace PlottingControls.Dendrogram
 
         public DendrogramControl() { }
 
-        protected override void PlotChart(DrawingContext drawingContext)
+        protected override void DrawChart(DrawingContext drawingContext)
         {
             var point = new Point(0, 0);
             var vector = new Vector(ActualWidth, ActualHeight);
@@ -47,6 +48,22 @@ namespace PlottingControls.Dendrogram
                     XDisplayMin, XDisplayMax,
                     YDisplayMin, YDisplayMax
                 );
+        }
+
+        protected override void ResetDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                    var xValueMin = XPositions.Min();
+                    var xValueMax = XPositions.Max();
+                    XDisplayMin = xValueMin - (xValueMax - xValueMin) * 0.05;
+                    XDisplayMax = xValueMax + (xValueMax - xValueMin) * 0.05;
+
+                    var yValueMin = YPositions.Min();
+                    var yValueMax = YPositions.Max();
+                    YDisplayMin = yValueMin;
+                    YDisplayMax = yValueMax + (yValueMax - yValueMin) * 0.05;
+            }
         }
     }
 }

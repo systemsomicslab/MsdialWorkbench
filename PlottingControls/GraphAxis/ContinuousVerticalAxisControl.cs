@@ -22,7 +22,7 @@ namespace PlottingControls.GraphAxis
             Xfreeze = true;
         }
 
-        protected override void PlotChart(DrawingContext drawingContext)
+        protected override void DrawChart(DrawingContext drawingContext)
         {
             ContinuousVerticalAxisPainter.Draw(
                 drawingContext,

@@ -28,6 +28,15 @@ namespace PlottingControls.Base
             "YPositions", typeof(IReadOnlyList<double>), typeof(PlottingBase),
             new FrameworkPropertyMetadata(new double[] { }, FrameworkPropertyMetadataOptions.AffectsRender)
         );
+        public IReadOnlyList<double> ZPositions
+        {
+            get => (IReadOnlyList<double>)GetValue(ZPositionsProperty);
+            set => SetValue(ZPositionsProperty, value);
+        }
+        public static readonly DependencyProperty ZPositionsProperty = DependencyProperty.Register(
+            "ZPositions", typeof(IReadOnlyList<double>), typeof(PlottingBase),
+            new FrameworkPropertyMetadata(new double[] { }, FrameworkPropertyMetadataOptions.AffectsRender)
+        );
         public double XDisplayMin
         {
             get => (double)GetValue(XDisplayMinProperty);
@@ -72,6 +81,28 @@ namespace PlottingControls.Base
                 FrameworkPropertyMetadataOptions.AffectsRender |
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
+        public double ZDisplayMin
+        {
+            get => (double)GetValue(ZDisplayMinProperty);
+            set => SetValue(ZDisplayMinProperty, value);
+        }
+        public static readonly DependencyProperty ZDisplayMinProperty = DependencyProperty.Register(
+            "ZDisplayMin", typeof(double), typeof(PlottingBase),
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+        );
+        public double ZDisplayMax
+        {
+            get => (double)GetValue(ZDisplayMaxProperty);
+            set => SetValue(ZDisplayMaxProperty, value);
+        }
+        public static readonly DependencyProperty ZDisplayMaxProperty = DependencyProperty.Register(
+            "ZDisplayMax", typeof(double), typeof(PlottingBase),
+            new FrameworkPropertyMetadata(10d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+        );
         #endregion
 
         public PlottingBase()
@@ -88,17 +119,13 @@ namespace PlottingControls.Base
             MouseLeftButtonDown += ResetDoubleClick;
         }
 
-        protected virtual void PlotChart(DrawingContext drawingContext) { }
-
-        protected override void OnRender(DrawingContext drawingContext)
+        protected virtual void DrawChart(DrawingContext drawingContext) { }
+        protected virtual void DrawBackground(DrawingContext drawingContext, Point p, Vector v)
         {
-            base.OnRender(drawingContext);
-            var point = new Point(0, 0);
-            var vector = new Vector(ActualWidth, ActualHeight);
-            PlottingBasePainter.DrawBackground(
-                drawingContext, point, vector
-            );
-            PlotChart(drawingContext);
+            PlottingBasePainter.DrawBackground(drawingContext, p, v);
+        }
+        protected virtual void DrawForeground(DrawingContext drawingContext, Point p, Vector v)
+        {
             if (isZooming && (!Xfreeze || !Yfreeze))
             {
                 var inip = initialPosition;
@@ -117,6 +144,16 @@ namespace PlottingControls.Base
                     drawingContext, inip, curp
                 );
             }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+            var point = new Point(0, 0);
+            var vector = new Vector(ActualWidth, ActualHeight);
+            DrawBackground(drawingContext, point, vector);
+            DrawChart(drawingContext);
+            DrawForeground(drawingContext, point, vector);
         }
 
         #region mouse event
@@ -245,24 +282,20 @@ namespace PlottingControls.Base
             UpdateGraphRange(new Point(xNextMin, yNextMin), new Point(xNextMax, yNextMax));
         }
 
-        protected void ResetDoubleClick(object sender, MouseButtonEventArgs e)
+        protected virtual void ResetDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
                 if (!Xfreeze)
                 {
-                    var xValueMin = XPositions.Min();
-                    var xValueMax = XPositions.Max();
-                    XDisplayMin = xValueMin - (xValueMax - xValueMin) * 0.05;
-                    XDisplayMax = xValueMax + (xValueMax - xValueMin) * 0.05;
+                    XDisplayMin = XPositions.Min();
+                    XDisplayMax = XPositions.Max();
                 }
 
                 if (!Yfreeze)
                 {
-                    var yValueMin = YPositions.Min();
-                    var yValueMax = YPositions.Max();
-                    YDisplayMin = yValueMin;
-                    YDisplayMax = yValueMax + (yValueMax - yValueMin) * 0.05;
+                    YDisplayMin = YPositions.Min();
+                    YDisplayMax = YPositions.Max();
                 }
             }
         }

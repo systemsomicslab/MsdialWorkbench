@@ -73,6 +73,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Heatmap\HeatmapTest1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Heatmap\HeatmapTest2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Heatmap\HeatmapTest3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,6 +106,16 @@
       <DependentUpon>DendrogramTest3.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dendrogram\DendrogramTestVM.cs" />
+    <Compile Include="Heatmap\HeatmapTest1.xaml.cs">
+      <DependentUpon>HeatmapTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\HeatmapTest2.xaml.cs">
+      <DependentUpon>HeatmapTest2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\HeatmapTest3.xaml.cs">
+      <DependentUpon>HeatmapTest3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\HeatmapTestVM.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -149,5 +171,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

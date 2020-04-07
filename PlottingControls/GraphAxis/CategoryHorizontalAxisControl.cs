@@ -12,7 +12,7 @@ namespace PlottingControls.GraphAxis
     {
         #region Property
         public double LongTick { get; set; } = 5;
-        public double Rotate { get; set; } = 0;
+        public double Rotate { get; set; } = 45;
 
         public IReadOnlyList<string> XLabels
         {
@@ -30,7 +30,7 @@ namespace PlottingControls.GraphAxis
             Yfreeze = true;
         }
 
-        protected override void PlotChart(DrawingContext drawingContext)
+        protected override void DrawChart(DrawingContext drawingContext)
         {
             if(XPositions != null)
                 CategoryHorizontalAxisPainter.Draw(

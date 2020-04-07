@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using PlottingControlsTests.Base;
 using PlottingControlsTests.Dendrogram;
+using PlottingControlsTests.Heatmap;
 
 namespace PlottingControlsTests
 {
@@ -30,8 +31,10 @@ namespace PlottingControlsTests
                 ("PlottingBase", new BaseTest()),
                 ("Dendrogram1", new DendrogramTest1()),
                 ("Dendrogram2", new DendrogramTest2()),
-                ("Dendrogram3", new DendrogramTest3())
-
+                ("Dendrogram3", new DendrogramTest3()),
+                ("Heatmap1", new HeatmapTest1()),
+                ("Heatmap2", new HeatmapTest2()),
+                ("Heatmap3", new HeatmapTest3()),
             };
             navbar.ItemsSource = ps.Select(p => p.name);
         }

@@ -54,8 +54,12 @@
     <Compile Include="Dendrogram\DendrogramPainter.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisControl.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisPainter.cs" />
+    <Compile Include="GraphAxis\CategoryVerticalAxisControl.cs" />
+    <Compile Include="GraphAxis\CategoryVerticalAxisPainter.cs" />
     <Compile Include="GraphAxis\ContinuousVerticalAxisControl.cs" />
     <Compile Include="GraphAxis\ContinuousVerticalAxisPainter.cs" />
+    <Compile Include="Heatmap\HeatmapControl.cs" />
+    <Compile Include="Heatmap\HeatmapPainter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
