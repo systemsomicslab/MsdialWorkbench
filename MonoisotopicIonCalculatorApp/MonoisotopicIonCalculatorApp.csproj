@@ -98,13 +98,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
-      <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
-      <Name>MolecularFormulaFinder</Name>
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
+      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
+      <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

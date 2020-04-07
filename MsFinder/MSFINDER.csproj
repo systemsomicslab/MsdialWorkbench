@@ -59,7 +59,7 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\MS-FINDER-Main-Icon.ico</ApplicationIcon>
+    <ApplicationIcon>msfinder_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -306,6 +306,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\msfinder_icon.png" />
+    <Resource Include="msfinder_icon.ico" />
     <Resource Include="Resources\FseaResultViewer.ico" />
     <Resource Include="Resources\NoStructureAssigned.png" />
     <Resource Include="Resources\SubstructureViewer.ico" />
@@ -434,10 +436,6 @@
       <Project>{1ddacbb2-ac43-40bd-b094-091458158523}</Project>
       <Name>PairwisePlotCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PubRestApi\PugRestApi.csproj">
-      <Project>{022d08c4-258f-4c9e-aac3-5720cd37b8c6}</Project>
-      <Name>PugRestApi</Name>
-    </ProjectReference>
     <ProjectReference Include="..\StructureFinderStandard\StructureFinderStandard.csproj">
       <Project>{0001b4ac-83ae-4011-b314-085c8d3f6157}</Project>
       <Name>StructureFinderStandard</Name>
@@ -454,11 +452,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\RawDataButton.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\MS-FINDER-Main-Icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

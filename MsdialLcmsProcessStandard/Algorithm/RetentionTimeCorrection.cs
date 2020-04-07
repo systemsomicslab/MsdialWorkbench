@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Rfx.Riken.OsakaUniv;
 using Msdial.Lcms.Dataprocess.Utility;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.RawData;
 using Rfx.Riken.OsakaUniv.RetentionTimeCorrection;
 

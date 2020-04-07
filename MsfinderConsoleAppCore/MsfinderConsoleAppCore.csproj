@@ -3,17 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <ApplicationIcon>MS-FINDER-Main-Icon.ico</ApplicationIcon>
+    <ApplicationIcon>msfinder_icon.ico</ApplicationIcon>
     <AssemblyName>MsfinderConsoleApp</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="MS-FINDER-Main-Icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="MS-FINDER-Main-Icon.ico" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ClassyfireApiStandard\ClassyfireApiStandard.csproj" />

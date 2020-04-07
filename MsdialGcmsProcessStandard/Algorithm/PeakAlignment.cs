@@ -2,9 +2,8 @@
 using Msdial.Gcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.AlignedDataHandler;
 using Riken.Metabolomics.RawData;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

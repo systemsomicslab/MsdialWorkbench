@@ -53,9 +53,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KeggApi\KeggApi.csproj">
-      <Project>{18a06e2b-94b4-4184-bc9f-6cc72dc82638}</Project>
-      <Name>KeggApi</Name>
+    <ProjectReference Include="..\KeggApiStandard\KeggApiStandard.csproj">
+      <Project>{a71720aa-193b-4a83-8f32-d76d975f5657}</Project>
+      <Name>KeggApiStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

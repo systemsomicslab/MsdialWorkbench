@@ -6,7 +6,6 @@
         xmlns:massSpectrogram="clr-namespace:Rfx.Riken.OsakaUniv;assembly=MassSpectrogram"
         Loaded="MainWindow_Loaded"
         ContentRendered="Window_ContentRendered"
-        Icon="Resources/MS-FINDER-Main-Icon.ico"
         Title="MS-FINDER" Height="780" Width="1280">
 
     <Window.Resources>

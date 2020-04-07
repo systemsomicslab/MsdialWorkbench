@@ -7,8 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using Riken.Metabolomics.RawDataHandler;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 using System.Diagnostics;
 
 namespace Msdial.Lcms.DataProcess

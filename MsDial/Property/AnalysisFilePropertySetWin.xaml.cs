@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
 using System.Collections.ObjectModel;
-using Riken.Metabolomics.AbfDataHandler;
+using CompMs.RawDataHandler.Abf;
 
 namespace Rfx.Riken.OsakaUniv
 {

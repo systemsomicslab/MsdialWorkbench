@@ -1,7 +1,7 @@
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.RawData;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

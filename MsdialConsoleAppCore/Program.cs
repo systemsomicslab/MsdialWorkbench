@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Msdial.Lcms.Dataprocess.Test;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 
 namespace Riken.Metabolomics.MsdialConsoleApp
 {

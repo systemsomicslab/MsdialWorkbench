@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.ComponentModel;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.RawData;
 using System.Windows;
 

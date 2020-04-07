@@ -11,7 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using Riken.Metabolomics.Annotation;
 using Riken.Metabolomics.RawData;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using System.Diagnostics;
 using Riken.Metabolomics.Lipidomics;
 
