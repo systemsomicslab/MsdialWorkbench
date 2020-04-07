@@ -74,6 +74,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Dendrogram\" />
     <Folder Include="MassSpectrum\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿using ChartDrawing;
-using Msdial.Gcms.Dataprocess.Algorithm;
+﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv.ManualPeakMod;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
+using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Chromatogram.ManualPeakModification;
 
 namespace Rfx.Riken.OsakaUniv {
     /// <summary>

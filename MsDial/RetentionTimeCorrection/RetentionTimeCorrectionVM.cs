@@ -10,7 +10,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
-using ChartDrawing;
+
+using CompMs.Graphics.Core.Base;
 
 namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
 {
@@ -474,7 +475,7 @@ namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
             drawing.Area.AxisX.MinorScaleEnabled = false;
             drawing.Area.AxisY.MinorScaleEnabled = false;
 
-            return new ChartDrawing.DefaultUC(drawing);
+            return new DefaultUC(drawing);
          }
 
         public StackPanel Set_EachRtDiffUC(ObservableCollection<AnalysisFileBean> files, AnalysisParametersBean param, RetentionTimeCorrectionParam rtParam,

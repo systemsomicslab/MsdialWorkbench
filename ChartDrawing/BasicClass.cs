@@ -146,9 +146,13 @@ namespace CompMs.Graphics.Core.Base
             ((IList<DataPoint>)Points).Add(item);
         }
 
-        public void AddPoint(float x = 0, float y = 0, float z = 0, string s = null)
+        public void AddPoint(float x = 0, float y = 0, float z = 0, string label = null)
         {
-            Points.Add(new DataPoint() { X = x, Y = y, Z = z, Label = s });
+            Points.Add(new DataPoint() { X = x, Y = y, Z = z, Label = label });
+        }
+        public void AddPoint(float x, float y, string label)
+        {
+            AddPoint(x, y, 0, label);
         }
 
         public void Clear()

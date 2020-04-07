@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Riken.Metabolomics.AlignedDataHandler;
 using Msdial.Lcms.Dataprocess.Utility;
-using ChartDrawing;
 using Rfx.Riken.OsakaUniv;
 
 namespace Rfx.Riken.OsakaUniv.ManualPeakMod

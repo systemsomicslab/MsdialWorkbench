@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Msdial.Lcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Algorithm;
-using ChartDrawing;
+// using ChartDrawing;
 using System.Windows.Media;
 using Rfx.Riken.OsakaUniv;
 using Rfx.Riken.OsakaUniv.RetentionTimeCorrection;
