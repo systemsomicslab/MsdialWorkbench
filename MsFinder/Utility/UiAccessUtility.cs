@@ -34,11 +34,12 @@ namespace Rfx.Riken.OsakaUniv
             var smiles = fragmenterVM.Smiles;
             if (smiles == null || smiles == string.Empty) return null;
 
-            var drawingImage = MoleculeImage.SmilesToImage(smiles, (int)width, (int)height);
+            //var drawingImage = MoleculeImage.SmilesToImage(smiles, (int)width, (int)height);
 
-            if (drawingImage == null) return null;
+            //if (drawingImage == null) return null;
+            return MoleculeImage.SmilesToMediaImageSource(smiles, (int)width, (int)height);
 
-            return MoleculeImage.ConvertDrawingImageToBitmap(drawingImage);
+            //return MoleculeImage.ConvertDrawingImageToBitmap(drawingImage);
         }
 
         public static MassSpectrogramViewModel GetMs2MassSpectrogramVM(MainWindowVM mainWindowVM)

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>Chromatogram</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -118,17 +118,17 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
-      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
-      <Name>DataProcessing</Name>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RawDataHandler\RawDataHandler.csproj">
-      <Project>{eba05b52-f0f8-4580-91bc-4f6f952fb48a}</Project>
-      <Name>RawDataHandler</Name>
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
+      <Project>{6c2831a2-f1dd-4fc6-a31b-6b9ee894298b}</Project>
+      <Name>RawDataHandlerStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

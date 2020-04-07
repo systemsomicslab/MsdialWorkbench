@@ -1,0 +1,81 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".tt.cs" #>
+
+<#
+    string className = "ChemObjectBox";
+
+    void P(string name, string type, string defaultValue, string backend)
+    {
+#>
+        public static readonly DependencyProperty <#= name #>Property =
+            DependencyProperty.Register(
+                "<#= name #>",
+                typeof(<#= type #>),
+                typeof(<#= className #>),
+                new FrameworkPropertyMetadata(
+                    (<#= type #>)(<#= defaultValue #>),
+                    new PropertyChangedCallback(On<#= name #>PropertyChanged)));
+
+        public <#= type #> <#= name #>
+        {
+            get { return (<#= type #>)GetValue(<#= name #>Property); }
+            set { SetValue(<#= name #>Property, value); }
+        }
+
+        private static void On<#= name #>PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is <#= className #> o)
+            {
+                <#= backend #>
+                o.UpdateVisual();
+            }
+        }
+<#
+    }
+#>
+
+using NCDK.Depict;
+using NCDK.Renderers;
+using NCDK.Renderers.Colors;
+using System.Collections.Generic;
+using System.Windows;
+using WPF = System.Windows;
+
+namespace NCDK.MolViewer
+{
+    public partial class ChemObjectBox : System.Windows.Controls.UserControl
+    {
+<#
+        P("ChemObject", "IChemObject", "null", 
+            "var value = (IChemObject)e.NewValue;" +
+            "var old = o._ChemObject;" +
+            "if (old != value) {" +
+            "    o._ChemObject = value;" +
+            "    o.ChemObjectChanged?.Invoke(d, new ChemObjectChangedEventArgs(old, value));" +
+            "}"
+            );
+
+        P("HighlightingObjects", "string", "\"\"", "o._HighlightObjects = (string)e.NewValue;");
+
+        P("AtomColorer", "IAtomColorer", "new UniColor(WPF.Media.Colors.Black)", "o.Generator.AtomColorer = (IAtomColorer)e.NewValue;");
+        P("BackgroundColor", "WPF.Media.Color", "WPF.Media.Colors.Transparent", "o.Generator.BackgroundColor = (WPF.Media.Color)e.NewValue;");
+        P("Highlighting", "HighlightStyle", "HighlightStyle.None", "o.Generator.Highlighting = (HighlightStyle)e.NewValue;");
+        P("OuterGlowWidth", "double", "RendererModelTools.DefaultOuterGlowWidth", "o.Generator.OuterGlowWidth = (double)e.NewValue;");
+        P("AlignMappedReaction", "bool", "true", "o.Generator.AlignMappedReaction = (bool)e.NewValue;");
+        P("AnnotateAtomNumbers", "bool", "false", "o.Generator.AnnotateAtomNumbers = (bool)e.NewValue;");
+        P("AnnotateAtomValues", "bool", "false", "o.Generator.AnnotateAtomValues = (bool)e.NewValue;");
+        P("AnnotateAtomMapNumbers", "bool", "false", "o.Generator.AnnotateAtomMapNumbers = (bool)e.NewValue;");
+        P("AtomMapColors", "IReadOnlyList<WPF.Media.Color>", "null", "o.Generator.AtomMapColors = (IReadOnlyList<WPF.Media.Color>)e.NewValue;");
+        P("AnnotationColor", "WPF.Media.Color", "RendererModelTools.DefaultAnnotationColor", "o.Generator.AnnotationColor = (WPF.Media.Color)e.NewValue;");
+        P("AnnotationFontScale", "double", "RendererModelTools.DefaultAnnotationFontScale", "o.Generator.AnnotationFontScale = (double)e.NewValue;");
+        P("TitleColor", "WPF.Media.Color", "RendererModelTools.DefaultTitleColor", "o.Generator.TitleColor = (WPF.Media.Color)e.NewValue;");
+        P("TitleFontScale", "double", "RendererModelTools.DefaultTitleFontScale", "o.Generator.TitleFontScale = (double)e.NewValue;");
+        P("SymbolVisibility", "SymbolVisibility", "RendererModelTools.DefaultVisibility", "o.Generator.SymbolVisibility = (SymbolVisibility)e.NewValue;");
+        
+        P("DepictionZoom", "double", "1", "o.Generator.Zoom = (double)e.NewValue;");
+        P("DepictionPadding", "double", "RendererModelTools.DefaultPadding", "o.Generator.Padding = (double)e.NewValue;");
+        P("DepictionMargin", "double", "RendererModelTools.DefaultMargin", "o.Generator.Margin = (double)e.NewValue;");
+        P("DepictionSize", "WPF.Size", "WPF.Size.Empty", "o.Generator.Size = (WPF.Size)e.NewValue;");
+#>
+    }
+}

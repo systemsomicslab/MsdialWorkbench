@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MSFINDER</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -64,6 +64,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -317,7 +318,6 @@
     <None Include="CytoscapeLocal\assembly\smiles-drawer.min.js.map" />
     <None Include="CytoscapeLocal\elements.json" />
     <None Include="CytoscapeLocal\style.json" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -390,41 +390,45 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Database\Database.csproj">
-      <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
-      <Name>Database</Name>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
-      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
-      <Name>DataProcessing</Name>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj">
       <Project>{68a6a63d-489a-4e21-84e1-afc885b9a95e}</Project>
       <Name>MassSpectrogramMsfinder</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
-      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
-      <Name>Mathematics</Name>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
-      <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
-      <Name>MolecularFormulaFinder</Name>
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
+      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
+      <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
-      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
-      <Name>MsdialGcmsProcess</Name>
+    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
+      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
+      <Name>MolViewer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialLcmsProcess\MsdialLcmsProcess.csproj">
-      <Project>{a1826252-a661-419f-81f7-b5d872b3ae94}</Project>
-      <Name>MsdialLcmsProcess</Name>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
+      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
+      <Name>MsdialGcmsProcessStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsfinderCommon\MsfinderCommon.csproj">
-      <Project>{3ae481e6-e44a-4f73-9430-5250d711b381}</Project>
-      <Name>MsfinderCommon</Name>
+    <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj">
+      <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
+      <Name>MsdialLcmsProcessStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsfinderCommonStandard\MsfinderCommonStandard.csproj">
+      <Project>{182c56f1-1714-47a8-b402-095e0762e851}</Project>
+      <Name>MsfinderCommonStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\PairwisePlotCommon\PairwisePlotCommon.csproj">
       <Project>{1ddacbb2-ac43-40bd-b094-091458158523}</Project>
@@ -434,9 +438,9 @@
       <Project>{022d08c4-258f-4c9e-aac3-5720cd37b8c6}</Project>
       <Name>PugRestApi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StructureFinder\StructureFinder.csproj">
-      <Project>{2ec7d371-6a80-427b-a5be-fb4d7c5b19eb}</Project>
-      <Name>StructureFinder</Name>
+    <ProjectReference Include="..\StructureFinderStandard\StructureFinderStandard.csproj">
+      <Project>{0001b4ac-83ae-4011-b314-085c8d3f6157}</Project>
+      <Name>StructureFinderStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -485,7 +489,11 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)CytoscapeLocal" "$(TargetDir)CytoscapeLocal" /D/E/C/I/H/Y</PostBuildEvent>

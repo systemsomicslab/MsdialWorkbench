@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>MzmlDataHandler</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\RawDataHandlerCommonStandard\RawDataHandlerCommonStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="zlib.net">
+      <HintPath>..\Assemblies\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

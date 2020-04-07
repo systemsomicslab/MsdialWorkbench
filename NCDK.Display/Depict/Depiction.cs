@@ -314,7 +314,10 @@ namespace NCDK.Depict
             }
 
             // create the image for rendering
-            var img = new RenderTargetBitmap((int)size.Width, (int)size.Height, dpiX, dpiY, pixelFormat);
+            //var img = new RenderTargetBitmap((int)size.Width, (int)size.Height, dpiX, dpiY, pixelFormat);
+            //var img = new RenderTargetBitmap((int)dpiX, (int)dpiY, dpiX, dpiY, pixelFormat);
+            //var img = new RenderTargetBitmap((int)size.Width, (int)size.Height, dpiX, dpiY, pixelFormat);
+            var img = new RenderTargetBitmap((int)(size.Width * dpiX / 96.0), (int)(size.Height * dpiY / 96.0), dpiX, dpiY, pixelFormat);
             img.Render(drawingVisual);
 
             return img;

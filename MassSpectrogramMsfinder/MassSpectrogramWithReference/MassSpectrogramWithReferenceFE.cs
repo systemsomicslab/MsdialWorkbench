@@ -236,7 +236,8 @@ namespace Rfx.Riken.OsakaUniv
 
                         Mouse.OverrideCursor = Cursors.Wait;
 
-                        var image = MoleculeImage.SmilesToImage(smiles, (int)halfDrawHeight, (int)halfDrawHeight);
+                        //var image = MoleculeImage.SmilesToImage(smiles, (int)halfDrawHeight, (int)halfDrawHeight);
+                        var image = MoleculeImage.SmilesToMediaImageSource(smiles, (int)halfDrawHeight, (int)halfDrawHeight);
                         imageShow(image);
 
                         Mouse.OverrideCursor = null;
@@ -976,7 +977,7 @@ namespace Rfx.Riken.OsakaUniv
 
         }
 
-        private void imageShow(System.Drawing.Image image)
+        private void imageShow(BitmapImage image)
         {
             if (this.visualCollection.Count > 1)
                 this.visualCollection.RemoveAt(1);
@@ -984,13 +985,15 @@ namespace Rfx.Riken.OsakaUniv
             var drawingVisual = new DrawingVisual();
             var drawingContext = drawingVisual.RenderOpen();
 
-            this.bitmapImage = MoleculeImage.ConvertDrawingImageToBitmap(image);
+            //this.bitmapImage = MoleculeImage.ConvertDrawingImageToBitmap(image);
+            this.bitmapImage = image;
 
             double xStart;
             if (this.massSpectrogramWithReferenceUI.CurrentMousePoint.X < this.ActualWidth * 0.5) xStart = this.massSpectrogramWithReferenceUI.CurrentMousePoint.X;
             else xStart = this.massSpectrogramWithReferenceUI.CurrentMousePoint.X - this.bitmapImage.Width;
 
             drawingContext.DrawImage(this.bitmapImage, new Rect(xStart, this.massSpectrogramWithReferenceUI.TopMargin, this.bitmapImage.Width, this.bitmapImage.Height));
+            //drawingContext.DrawImage(this.bitmapImage, new Rect(xStart, this.massSpectrogramWithReferenceUI.TopMargin, 200, 200));
             drawingContext.Close();
 
             this.visualCollection.Add(drawingVisual);

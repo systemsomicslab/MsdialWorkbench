@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rfx.Riken.OsakaUniv</RootNamespace>
     <AssemblyName>MassSpectrogram</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -92,17 +92,21 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MolecularFormulaGenerator\MolecularFormulaFinder.csproj">
-      <Project>{779b4b11-6d26-413a-ad62-717eeabb19eb}</Project>
-      <Name>MolecularFormulaFinder</Name>
+    <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
+      <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
+      <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StructureFinder\StructureFinder.csproj">
-      <Project>{2ec7d371-6a80-427b-a5be-fb4d7c5b19eb}</Project>
-      <Name>StructureFinder</Name>
+    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
+      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
+      <Name>MolViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StructureFinderStandard\StructureFinderStandard.csproj">
+      <Project>{0001b4ac-83ae-4011-b314-085c8d3f6157}</Project>
+      <Name>StructureFinderStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
