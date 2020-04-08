@@ -82,16 +82,6 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon MS_FINDER_Main_Icon {
-            get {
-                object obj = ResourceManager.GetObject("MS_FINDER_Main_Icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
         internal static System.Drawing.Icon NeutralLossButton {
             get {
                 object obj = ResourceManager.GetObject("NeutralLossButton", resourceCulture);

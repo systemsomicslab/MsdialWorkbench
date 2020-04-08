@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv.MsViewer;
 using Riken.Metabolomics.RawData;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 
 namespace Rfx.Riken.OsakaUniv
 {

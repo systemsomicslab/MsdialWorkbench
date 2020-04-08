@@ -8,7 +8,7 @@
             <RowDefinition Height="160" />
         </Grid.RowDefinitions>
 
-        <Image Source="/Resources/MS-FINDER-Main-Icon.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,10" />
+        <Image Source="/Resources/msfinder_icon.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,10" />
 
         <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Label Content="{Binding Version}" Margin="10,0,0,0" />

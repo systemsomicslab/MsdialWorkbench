@@ -101,17 +101,17 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mathematics\Mathematics.csproj">
-      <Project>{bcd79c45-18b1-4532-be67-aef871634c2c}</Project>
-      <Name>Mathematics</Name>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MsdialGcmsProcess\MsdialGcmsProcess.csproj">
-      <Project>{8bff0596-af83-40bc-9e6a-edc12c91a249}</Project>
-      <Name>MsdialGcmsProcess</Name>
+    <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj">
+      <Project>{ed56a430-b975-4073-b8a2-7115b4fd8fcc}</Project>
+      <Name>MsdialGcmsProcessStandard</Name>
     </ProjectReference>
     <ProjectReference Include="..\PairwisePlot\PairwisePlot.csproj">
       <Project>{1ddacbb2-ac43-40bd-b094-091458158523}</Project>

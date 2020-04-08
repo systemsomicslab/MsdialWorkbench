@@ -60,7 +60,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\MS-DIAL.ico</ApplicationIcon>
+    <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>107DA0F0B707D08190FF287D2E54E0784B24176B</ManifestCertificateThumbprint>
@@ -855,10 +855,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AbfDataHandlerStandard\AbfDataHandlerStandard.csproj">
-      <Project>{5a9a2a21-ec94-4869-8866-b5c52e57d79d}</Project>
-      <Name>AbfDataHandlerStandard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BarChart\BarChart.csproj">
       <Project>{a3ac4d50-9249-478d-be03-0465fd00ef2f}</Project>
       <Name>BarChart</Name>
@@ -943,14 +939,6 @@
       <Project>{f4b299d9-6dc4-4535-88c6-302c299a1aac}</Project>
       <Name>MsdialLcmsProcessStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MzmlDataHandlerStandard\MzmlDataHandlerStandard.csproj">
-      <Project>{04beb995-aeaf-4ac4-bd07-ceb152f98523}</Project>
-      <Name>MzmlDataHandlerStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NetCdfDataHandlerStandard\NetCdfDataHandlerStandard.csproj">
-      <Project>{21671c52-76a6-4dd2-afcd-b7e8c3e7c191}</Project>
-      <Name>NetCdfDataHandlerStandard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PairwisePlot\PairwisePlot.csproj">
       <Project>{9f9ccfc8-5b22-4bce-81b1-04c09ec717d2}</Project>
       <Name>PairwisePlot</Name>
@@ -974,9 +962,6 @@
     <Resource Include="Resources\Deconvoluted.ico" />
     <Resource Include="Resources\RawAndDeconvo.ico" />
     <Resource Include="Resources\RawChromatogram.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\MS-DIAL.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\CompoundSearchIcon.ico" />
@@ -1026,6 +1011,8 @@
     <Resource Include="Resources\SpotRelation.ico" />
     <Resource Include="Resources\Refresh.ico" />
     <Resource Include="Resources\CorrDec.ico" />
+    <Resource Include="msdial_icon.ico" />
+    <Resource Include="Resources\msdial_icon.png" />
     <Content Include="Resources\SQLite.Interop.dll" />
     <Resource Include="Resources\Lipoquality.ico" />
     <Resource Include="Resources\MolecularNetworking.ico" />

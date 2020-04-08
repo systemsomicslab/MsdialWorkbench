@@ -26,10 +26,9 @@ using edu.ucdavis.fiehnlab.MonaExport.ViewModels;
 using NSSplash.impl;
 using System.Threading.Tasks;
 using Riken.Metabolomics.RawData;
-using Riken.Metabolomics.RawDataHandler;
 using Msdial.Lcms.Dataprocess.Test;
 using System.ComponentModel.DataAnnotations;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.Lipoquality;
 using Riken.Metabolomics.Msdial.Pathway;
 

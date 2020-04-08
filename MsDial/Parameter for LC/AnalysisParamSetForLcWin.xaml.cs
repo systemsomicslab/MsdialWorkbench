@@ -16,7 +16,7 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Windows.Resources;
 using Msdial.Lcms.Dataprocess.Utility;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 
 namespace Rfx.Riken.OsakaUniv
 {

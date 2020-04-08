@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 
 namespace Rfx.Riken.OsakaUniv
 {

@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 
 namespace Rfx.Riken.OsakaUniv.MsViewer
 {

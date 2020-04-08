@@ -11,7 +11,6 @@
         xmlns:props="clr-namespace:Rfx.Riken.OsakaUniv.Properties"
         xmlns:mona="clr-namespace:edu.ucdavis.fiehnlab.MonaExport;assembly=MonaExport"  
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Icon="Resources/MS-DIAL.ico"
         KeyUp="RtMzPairwisePlotPeakViewUI_KeyUp"
         Title="ms-dial version" Height="800" Width="1280" Loaded="Window_Loaded" 
         Closing="Window_Closing" ContentRendered="Window_ContentRendered"

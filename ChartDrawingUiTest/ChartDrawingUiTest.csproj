@@ -119,17 +119,17 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DataProcessing\DataProcessing.csproj">
-      <Project>{1db7f2c1-d21c-4efb-a4ef-cbf042add2aa}</Project>
-      <Name>DataProcessing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
       <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
       <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
+      <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
+      <Name>DataProcessingStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

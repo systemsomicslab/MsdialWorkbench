@@ -124,13 +124,13 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{11f13aa9-0af3-4c22-8bae-347035070d2f}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Database\Database.csproj">
-      <Project>{0a529242-819b-45b0-9b47-06432dd406b2}</Project>
-      <Name>Database</Name>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

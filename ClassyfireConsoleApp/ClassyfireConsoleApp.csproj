@@ -52,9 +52,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassyfireApi\ClassyfireApi.csproj">
-      <Project>{0635c4d2-e5ed-4214-b5ff-99a6b53612ab}</Project>
-      <Name>ClassyfireApi</Name>
+    <ProjectReference Include="..\ClassyfireApiStandard\ClassyfireApiStandard.csproj">
+      <Project>{6ea1f526-fdb2-4c49-acb4-69e26abd44d8}</Project>
+      <Name>ClassyfireApiStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

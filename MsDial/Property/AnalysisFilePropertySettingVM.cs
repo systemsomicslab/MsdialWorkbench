@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using GongSolutions.Wpf.DragDrop;
-using Riken.Metabolomics.AbfDataHandler;
+using CompMs.RawDataHandler.Abf;
 
 namespace Rfx.Riken.OsakaUniv
 {

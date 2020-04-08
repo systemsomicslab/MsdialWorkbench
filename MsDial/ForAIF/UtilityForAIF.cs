@@ -2,7 +2,7 @@
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv.MsViewer;
-using Riken.Metabolomics.AlignedDataHandler;
+using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;

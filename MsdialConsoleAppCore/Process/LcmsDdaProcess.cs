@@ -4,7 +4,7 @@ using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.MsdialConsoleApp.Export;
 using Riken.Metabolomics.MsdialConsoleApp.Parser;
 using Riken.Metabolomics.MsdialConsoleApp.SaveProject;
-using Riken.Metabolomics.RawDataHandler;
+using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

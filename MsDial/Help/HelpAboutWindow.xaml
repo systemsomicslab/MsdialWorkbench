@@ -10,7 +10,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Image Source="/Resources/MS-DIAL.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,10" />
+        <Image Source="/Resources/msdial_icon.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,10" />
         
         <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Label Content="{Binding Version}" Margin="10,0,0,0" />
