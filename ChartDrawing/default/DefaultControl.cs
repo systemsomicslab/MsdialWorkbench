@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -8,19 +8,28 @@ namespace CompMs.Graphics.Core.Base
 {
     public class DefaultControl : FrameworkElement
     {
-        public IChartData Data
+        public IChartData ChartData
         {
-            get => (IChartData)GetValue(DataProperty);
-            set => SetValue(DataProperty, value);
+            get => (IChartData)GetValue(ChartDataProperty);
+            set => SetValue(ChartDataProperty, value);
         }
-        public static readonly DependencyProperty DataProperty = DependencyProperty.Register(
-            "Data", typeof(IChartData), typeof(DefaultControl),
-            new FrameworkPropertyMetadata(new DefaultChartData(), FrameworkPropertyMetadataOptions.AffectsRender) 
+        public static readonly DependencyProperty ChartDataProperty = DependencyProperty.Register(
+            "ChartData", typeof(IChartData), typeof(DefaultControl),
+            new FrameworkPropertyMetadata(null,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                new PropertyChangedCallback(OnDependencyPropertyChanged))
         );
         protected IDrawingChart drawingChart;
+        protected Matrix ToRelativePosition => new Matrix(1 / ActualWidth, 0, 0, 1 / ActualHeight, 0, 0);
         protected bool Xfreeze = false;
         protected bool Yfreeze = false;
         
+        private static void OnDependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // (d as FrameworkElement)?.InvalidateVisual();
+            Console.WriteLine("Dependency property changed.");
+        }
 
         public DefaultControl()
         {
@@ -40,7 +49,7 @@ namespace CompMs.Graphics.Core.Base
 
         protected virtual void DrawChart(DrawingContext drawingContext)
         {
-            drawingChart.Draw(drawingContext, new Point(0, 0), RenderSize, Data);
+            drawingChart.Draw(drawingContext, new Point(0, 0), RenderSize, ChartData);
         }
         protected virtual void DrawBackground(DrawingContext drawingContext)
         {
@@ -72,6 +81,7 @@ namespace CompMs.Graphics.Core.Base
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            Console.WriteLine("Rendered.");
             base.OnRender(drawingContext);
             var point = new Point(0, 0);
             DrawBackground(drawingContext);
@@ -80,6 +90,11 @@ namespace CompMs.Graphics.Core.Base
         }
 
         #region mouse event
+        void UpdateGraphRange(Point p1, Point p2)
+        {
+            var mat = ToRelativePosition;
+            ChartData?.UpdateGraphRange(p1 * mat, p2 * mat);
+        }
         protected bool isMoving = false;
         private Point previousPosition;
         protected void MoveLeftDragOnMouseDown(object sender, MouseButtonEventArgs e)
@@ -93,7 +108,7 @@ namespace CompMs.Graphics.Core.Base
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                Data.UpdateGraphRange(new Point(0, 0) - v, (Point)RenderSize - v);
+                UpdateGraphRange(new Point(0, 0) - v, (Point)RenderSize - v);
                 isMoving = false;
             }
         }
@@ -103,7 +118,7 @@ namespace CompMs.Graphics.Core.Base
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                Data.UpdateGraphRange(new Point(0, 0) - v, (Point)RenderSize - v);
+                UpdateGraphRange(new Point(0, 0) - v, (Point)RenderSize - v);
                 previousPosition = currentPosition;
             }
         }
@@ -124,9 +139,9 @@ namespace CompMs.Graphics.Core.Base
         {
             if (isZooming)
             {
-                Data.UpdateGraphRange(initialPosition, e.GetPosition(this));
+                isZooming = false;
+                UpdateGraphRange(initialPosition, e.GetPosition(this));
             }
-            isZooming = false;
         }
         protected void ZoomRightDragOnMouseMove(object sender, MouseEventArgs e)
         {
@@ -147,7 +162,7 @@ namespace CompMs.Graphics.Core.Base
 
         protected void ZoomMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var p = e.GetPosition((IInputElement)sender);
+            var p = e.GetPosition(this);
             var delta = e.Delta;
             var scale = 1 - 0.1 * Math.Sign(delta);
 
@@ -156,56 +171,16 @@ namespace CompMs.Graphics.Core.Base
             var yNextMin = p.Y * (1 - scale);
             var yNextMax = p.Y + (ActualHeight - p.Y) * scale;
 
-            Data.UpdateGraphRange(new Point(xNextMin, yNextMin), new Point(xNextMax, yNextMax));
+            UpdateGraphRange(new Point(xNextMin, yNextMin), new Point(xNextMax, yNextMax));
         }
 
         protected virtual void ResetDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
-                Data.Reset();
+                ChartData?.Reset();
             }
         }
         #endregion
-    }
-
-    class DefaultDrawingChart : IDrawingChart
-    {
-        protected static readonly Brush graphBackground = Brushes.WhiteSmoke;
-        protected static readonly Pen graphBorder = new Pen(Brushes.Black, 1);
-        protected static readonly Brush rubberForeground = new SolidColorBrush(Colors.DarkGray) { Opacity = 0.5 };
-        protected static readonly Pen rubberBorder = new Pen(Brushes.DarkGray, 1);
-
-        virtual public void Draw(DrawingContext drawingContext, Point point, Size size, IChartData chartData) { }
-        virtual public void DrawBackGround(DrawingContext drawingContext, Point point, Size size)
-        {
-            var rect = new Rect(point, size);
-            drawingContext.PushClip(new RectangleGeometry(rect));
-            drawingContext.DrawRectangle(graphBackground, graphBorder, rect);
-            drawingContext.Pop();
-        }
-        virtual public void DrawForeground(DrawingContext drawingContext, Point point, Size size)
-        {
-            var rect = new Rect(point, size);
-            drawingContext.PushClip(new RectangleGeometry(rect));
-            drawingContext.DrawRectangle(rubberForeground, rubberBorder, rect);
-            drawingContext.Pop();
-        }
-
-        void IDrawingChart.Draw(DrawingContext drawingContext, Point point, Size size, IChartData chartData)
-            => Draw(drawingContext, point, size, chartData);
-        void IDrawingChart.DrawBackground(DrawingContext drawingContext, Point point, Size size)
-            => DrawBackGround(drawingContext, point, size);
-        void IDrawingChart.DrawForeground(DrawingContext drawingContext, Point point, Size size)
-            => DrawForeground(drawingContext, point, size);
-    }
-
-    class DefaultChartData : IChartData
-    {
-        virtual public void Reset() { }
-        virtual public void UpdateGraphRange(Point p1, Point p2) { }
-
-        void IChartData.Reset() => Reset();
-        void IChartData.UpdateGraphRange(Point p1, Point p2) => UpdateGraphRange(p1, p2);
     }
 }

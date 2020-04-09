@@ -105,7 +105,7 @@ namespace Msdial.Dendrogram
 
             this.leafIdxs = new List<int>();
             for(int i = 0; i < dendrogram.Count; ++i)
-                if(this.Dendrogram[i].Count() == 1)
+                if(this.Dendrogram[i].Count() == 0)
                     leafIdxs.Add(i);
             (IEnumerable<double> xs, IEnumerable<double> ys) = getNodePosition(this.Dendrogram, this.Root, this.LeafIdxs);
             this.XPositions = xs.ToArray();

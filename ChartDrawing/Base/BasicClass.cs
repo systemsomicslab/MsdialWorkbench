@@ -327,17 +327,4 @@ namespace CompMs.Graphics.Core.Base
             return ((IList<Series>)Series).GetEnumerator();
         }
     }
-
-    public interface IChartData
-    {
-        void UpdateGraphRange(Point p1, Point p2);
-        void Reset();
-    }
-
-    public interface IDrawingChart
-    {
-        void Draw(DrawingContext drawingContext, Point point, Size size, IChartData chartData);
-        void DrawBackground(DrawingContext drawingContext, Point point, Size size);
-        void DrawForeground(DrawingContext drawingContext, Point point, Size size);
-    }
 }

@@ -8,13 +8,27 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Default1">
+    <Page.DataContext>
+        <local:DefaultVM/>
+    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Content="DefaultControl"
                Grid.Row="0"/>
-        <control:DefaultControl Grid.Row="1"/>
+        <control:DefaultControl x:Name="ChartData" ChartData="{Binding Data, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                Grid.Row="1"/>
+        <Slider Value="{Binding Data.DataMinX}"
+                Minimum="{Binding Data.LimitMinX}"
+                Maximum="{Binding Data.LimitMaxX}"
+                Grid.Row="2"/>
+        <Slider Value="{Binding Data.DataMaxX}"
+                Minimum="{Binding Data.LimitMinX}"
+                Maximum="{Binding Data.LimitMaxX}"
+                Grid.Row="3"/>
     </Grid>
 </Page>
