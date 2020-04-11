@@ -9,7 +9,7 @@ namespace CompMs.Common.Components
 
     public abstract class Time
     {
-        public double Value { get; set; }
+        public double Value { get; set; } = -1;
         public TimeType Type { get; set; }
         public TimeUnit Unit { get; set; }
 
@@ -21,19 +21,31 @@ namespace CompMs.Common.Components
 
         public override string ToString()
         {
-            var unit = Unit == TimeUnit.None ? "" : " " + Unit.ToString();
             switch (Type)
             {
                 case TimeType.RT:
-                    return "RT: " + Value + unit;
+                    return $"RT: {Value:F3} {GetUnitString()}";
                 case TimeType.RI:
-                    return "RI: " + Value + unit;
+                    return $"RI: {Value:F3} {GetUnitString()}";
                 case TimeType.Drift:
-                    return "Drift: " + Value + unit;
+                    return $"Drift: {Value:F3} {GetUnitString()}";
                 default:
-                    break;
+                    return "";
             }
-            return "RT: " + Value + " " + Unit;
+        }
+        public string GetUnitString()
+        {
+            switch (Unit)
+            {
+                case TimeUnit.Min:
+                    return "min";
+                case TimeUnit.Sec:
+                    return "sec";
+                case TimeUnit.None:
+                    return "";
+                default:
+                    return "";
+            }
         }
     }
 

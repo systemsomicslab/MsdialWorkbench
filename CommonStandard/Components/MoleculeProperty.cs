@@ -14,17 +14,10 @@ namespace CompMs.Common.Components
         #endregion
 
         public MoleculeProperty() { }
-        public MoleculeProperty(int id, double mz, RetentionTime rt) {
+        public MoleculeProperty(int id, double mz, Time time) {
             ID = id;
             PrecursorMz = mz;
-            Times = new Times() { Absolute = rt };            
-        }
-
-        public MoleculeProperty(int id, double mz, RetentionIndex ri)
-        {
-            ID = id;
-            PrecursorMz = mz;
-            Times = new Times() { Relative = ri, IsAbsolute = false };
+            Times = new Times(time);            
         }
     }
 }

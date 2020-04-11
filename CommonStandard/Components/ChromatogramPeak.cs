@@ -11,14 +11,13 @@ namespace CompMs.Common.Components
         public double Mass { get; set; }
         public double Intensity { get; set; }
         public Times Times { get; set; }
-    }
 
-    public class ListDouble
-    {
-        public double[] Values { get; set; }
-        public ListDouble(double v1, double v2, double v3, double v4)
-        {
-            Values = new double[4] { v1, v2, v3, v4 };
+        public ChromatogramPeak() { }
+        public ChromatogramPeak(int id, double mass, double intensity, Time time) {
+            ID = id;
+            Mass = mass;
+            Intensity = intensity;
+            Times = new Times(time);
         }
     }
 }
