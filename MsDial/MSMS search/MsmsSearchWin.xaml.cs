@@ -214,6 +214,9 @@ namespace Rfx.Riken.OsakaUniv
         private string getMetaboliteName(MspFormatCompoundInformationBean query) {
             if (this.targetOmics == TargetOmics.Lipidomics) {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(query);
+                if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
+                    return query.Name; // for others and splash etc in compoundclass
+                }
                 if (molecule.SublevelLipidName == molecule.LipidName) {
                     return molecule.SublevelLipidName;
                 }

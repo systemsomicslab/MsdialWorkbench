@@ -223,7 +223,7 @@ namespace Rfx.Riken.OsakaUniv
             OnPropertyChanged("EiSimilarityAlignmentFactor"); OnPropertyChanged("RetentionTimeAlignmentTolerance"); 
             OnPropertyChanged("EiSimilarityAlignmentCutOff"); OnPropertyChanged("AlignmentScoreCutOff");
             OnPropertyChanged("AlignmentReferenceFileID");OnPropertyChanged("TogetherWithAlignment"); OnPropertyChanged("RetentionIndexAlignmentTolerance");
-            OnPropertyChanged("IsForceInsertForGapFilling");
+            OnPropertyChanged("IsForceInsertForGapFilling"); OnPropertyChanged("IsRepresentativeQuantMassBasedOnBasePeakMz");
 
             //alignment filtering
             OnPropertyChanged("PeakCountFilter");
@@ -487,6 +487,11 @@ namespace Rfx.Riken.OsakaUniv
         public bool IsForceInsertForGapFilling {
             get { return this.param.IsForceInsertForGapFilling; }
             set { if (this.param.IsForceInsertForGapFilling == value) return; this.param.IsForceInsertForGapFilling = value; OnPropertyChanged("IsForceInsertForGapFilling"); }
+        }
+
+        public bool IsRepresentativeQuantMassBasedOnBasePeakMz {
+            get { return this.param.IsRepresentativeQuantMassBasedOnBasePeakMz; }
+            set { if (this.param.IsRepresentativeQuantMassBasedOnBasePeakMz == value) return; this.param.IsRepresentativeQuantMassBasedOnBasePeakMz = value; OnPropertyChanged("IsRepresentativeQuantMassBasedOnBasePeakMz"); }
         }
 
         #endregion

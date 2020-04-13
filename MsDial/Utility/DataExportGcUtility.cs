@@ -396,6 +396,7 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine("EI similarity factor\t" + param.EiSimilarityAlignmentFactor);
                 sw.WriteLine("Identification after alignment\t" + param.IsIdentificationOnlyPerformedForAlignmentFile);
                 sw.WriteLine("Gap filling by compulsion\t" + param.IsForceInsertForGapFilling);
+                sw.WriteLine("Basepeak mz selected as the representative quant mass\t" + param.IsRepresentativeQuantMassBasedOnBasePeakMz);
                 sw.WriteLine();
 
                 sw.WriteLine("#Filtering setting");

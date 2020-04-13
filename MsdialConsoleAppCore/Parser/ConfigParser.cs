@@ -113,12 +113,13 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 case "Retention time factor for alignment": if (float.TryParse(value, out f)) param.RetentionTimeAlignmentFactor = f; return;
                 case "EI similarity factor for alignment": if (float.TryParse(value, out f)) param.EiSimilarityAlignmentFactor = f; return;
                 case "Peak count filter": if (float.TryParse(value, out f)) param.PeakCountFilter = f; return;
-                case "QC at least filter": if (value == "TRUE" || value == "FALSE") param.QcAtLeastFilter = bool.Parse(value); return;
+                //case "QC at least filter": if (value == "TRUE" || value == "FALSE") param.QcAtLeastFilter = bool.Parse(value); return;
                 case "Remove feature based on peak height fold-change": if (value == "TRUE" || value == "FALSE") param.IsRemoveFeatureBasedOnPeakHeightFoldChange = bool.Parse(value); return;
                 case "Sample max / blank average": if (float.TryParse(value, out f)) param.SampleMaxOverBlankAverage = f; return;
                 case "Sample average / blank average": if (float.TryParse(value, out f)) param.SampleAverageOverBlankAverage = f; return;
                 case "Keep identified and annotated metabolites": if (value == "TRUE" || value == "FALSE") param.IsKeepIdentifiedMetaboliteFeatures = bool.Parse(value); return;
                 case "Replace true zero values with 1/2 of minimum peak height over all samples": if (value == "TRUE" || value == "FALSE") param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = bool.Parse(value); return;
+          
             }
         }
         #endregion

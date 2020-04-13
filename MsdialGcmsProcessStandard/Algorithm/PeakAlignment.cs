@@ -1058,6 +1058,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             var bin = 2; if (param.AccuracyType == AccuracyType.IsNominal) bin = 0;
             foreach (var spot in alignmentSpots)
             {
+                //Console.WriteLine("Spot ID {0}", spot.AlignmentID);
                 var isDetermined = false;
                 if (spot.LibraryID >= 0 && spot.LibraryID < mspDB.Count && isReplaceMode == true) {
                     var quantmass = mspDB[spot.LibraryID].QuantMass;
@@ -1097,6 +1098,17 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 var basepeakMz = 0.0;
                 var basepeakIntensity = 0.0;
                 var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, param.MassAccuracy, 10.0F, out basepeakMz, out basepeakIntensity);
+
+                //if (Math.Abs(basepeakMz - 489.2) < 0.25) {
+                //    Console.WriteLine();
+                //}
+                if (param.IsRepresentativeQuantMassBasedOnBasePeakMz) {
+                   // Console.WriteLine("Spot ID {0} and Quant mass {1}", spot.AlignmentID, basepeakMz);
+
+                    spot.QuantMass = (float)basepeakMz;
+                    continue;
+                }
+
                 if (isQuantMassExist) {
                     spot.QuantMass = quantMassCandidate;
                 }
@@ -1433,7 +1445,8 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 //    Debug.WriteLine(i);
                 //}
                 setBasicAlignmentProperties(alignmentSpots[i], i, param, out minInt, out maxInt, out fileIdOfMaxIntensity, out fileIdOfMaxSimilarityScore);
-                setRepresentativeFileID(alignmentSpots[i], fileIdOfMaxSimilarityScore, fileIdOfMaxIntensity);
+                if (!param.IsRepresentativeQuantMassBasedOnBasePeakMz)
+                    setRepresentativeFileID(alignmentSpots[i], fileIdOfMaxSimilarityScore, fileIdOfMaxIntensity);
                 setRepresentativeIdentificationResult(alignmentSpots[i]);
 
                 if (maxIntTotal < maxInt) maxIntTotal = maxInt;
