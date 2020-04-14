@@ -110,11 +110,11 @@ namespace CompMs.Graphics.Core.Base
         public int FontSize { get; set; } = 13;
     }
 
-    public class Series : IList<DataPoint>, IReadOnlyList<DataPoint>
+    public class Series : IList<XY>, IReadOnlyList<XY>
     {
-        public DataPoint this[int index] { get => ((IList<DataPoint>)Points)[index]; set => ((IList<DataPoint>)Points)[index] = value; }
+        public XY this[int index] { get => ((IList<XY>)Points)[index]; set => ((IList<XY>)Points)[index] = value; }
 
-        public List<DataPoint> Points { get; set; } = new List<DataPoint>();
+        public List<XY> Points { get; set; } = new List<XY>();
 
         public Legend Legend { get; set; }
         public bool IsLabelVisible { get; set; } = false;
@@ -130,74 +130,71 @@ namespace CompMs.Graphics.Core.Base
         public int FontSize { get; set; } = 13;
         public Accessory Accessory { get; set; }
 
-        public float MaxX => Points == null ? 0 : Points.Select(dp => dp.X).Max();
-        public float MinX => Points == null ? 0 : Points.Select(dp => dp.X).Min();
-        public float MaxY => Points == null ? 0 : Points.Select(dp => dp.Y).Max();
-        public float MinY => Points == null ? 0 : Points.Select(dp => dp.Y).Min();
-        public float MaxZ => Points == null ? 0 : Points.Select(dp => dp.Z).Max();
-        public float MinZ => Points == null ? 0 : Points.Select(dp => dp.Z).Min();
+        public float MaxX => Points == null ? 0 : Points.Select(xy => xy.X).Max();
+        public float MinX => Points == null ? 0 : Points.Select(xy => xy.X).Min();
+        public float MaxY => Points == null ? 0 : Points.Select(xy => xy.Y).Max();
+        public float MinY => Points == null ? 0 : Points.Select(xy => xy.Y).Min();
 
-        public int Count => ((IList<DataPoint>)Points).Count;
+        public IReadOnlyList<float> XList => Points?.Select(xy => xy.X).ToList();
+        public IReadOnlyList<float> YList => Points?.Select(xy => xy.Y).ToList();
 
-        public bool IsReadOnly => ((IList<DataPoint>)Points).IsReadOnly;
+        public int Count => ((IList<XY>)Points).Count;
 
-        public void Add(DataPoint item)
+        public bool IsReadOnly => ((IList<XY>)Points).IsReadOnly;
+
+        public void Add(XY item)
         {
-            ((IList<DataPoint>)Points).Add(item);
+            ((IList<XY>)Points).Add(item);
         }
 
-        public void AddPoint(float x = 0, float y = 0, float z = 0, string label = null)
+        public void AddPoint(float x = 0, float y = 0, string label = null)
         {
-            Points.Add(new DataPoint() { X = x, Y = y, Z = z, Label = label });
-        }
-        public void AddPoint(float x, float y, string label)
-        {
-            AddPoint(x, y, 0, label);
+            Points.Add(new XY() { X = x, Y = y, Label = label });
         }
 
         public void Clear()
         {
-            ((IList<DataPoint>)Points).Clear();
+            ((IList<XY>)Points).Clear();
         }
 
-        public bool Contains(DataPoint item)
+        public bool Contains(XY item)
         {
-            return ((IList<DataPoint>)Points).Contains(item);
+            return ((IList<XY>)Points).Contains(item);
         }
 
-        public void CopyTo(DataPoint[] array, int arrayIndex)
+        public void CopyTo(XY[] array, int arrayIndex)
         {
-            ((IList<DataPoint>)Points).CopyTo(array, arrayIndex);
+            ((IList<XY>)Points).CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<DataPoint> GetEnumerator()
+        public IEnumerator<XY> GetEnumerator()
         {
-            return ((IList<DataPoint>)Points).GetEnumerator();
+            return ((IList<XY>)Points).GetEnumerator();
         }
 
-        public int IndexOf(DataPoint item)
+        public int IndexOf(XY item)
         {
-            return ((IList<DataPoint>)Points).IndexOf(item);
+            return ((IList<XY>)Points).IndexOf(item);
         }
 
-        public void Insert(int index, DataPoint item)
+        public void Insert(int index, XY item)
         {
-            ((IList<DataPoint>)Points).Insert(index, item);
+            ((IList<XY>)Points).Insert(index, item);
         }
 
-        public bool Remove(DataPoint item)
+        public bool Remove(XY item)
         {
-            return ((IList<DataPoint>)Points).Remove(item);
+            return ((IList<XY>)Points).Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            ((IList<DataPoint>)Points).RemoveAt(index);
+            ((IList<XY>)Points).RemoveAt(index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IList<DataPoint>)Points).GetEnumerator();
+            return ((IList<XY>)Points).GetEnumerator();
         }
     }
 
@@ -206,14 +203,6 @@ namespace CompMs.Graphics.Core.Base
         public string Label { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-    }
-
-    public class DataPoint
-    {
-        public string Label { get; set; }
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Z { get; set; }
     }
 
     public class Accessory
@@ -267,8 +256,6 @@ namespace CompMs.Graphics.Core.Base
         public float MinX => Series.Any() ? Series.Select(series => series.MinX).Min() : float.MinValue;
         public float MaxY => Series.Any() ? Series.Select(series => series.MaxY).Max() : float.MaxValue;
         public float MinY => Series.Any() ? Series.Select(series => series.MinY).Min() : float.MinValue;
-        public float MaxZ => Series.Any() ? Series.Select(series => series.MaxZ).Max() : float.MaxValue;
-        public float MinZ => Series.Any() ? Series.Select(series => series.MinZ).Min() : float.MinValue;
         public bool AreLabelsVisible => Series != null && Series.All(series => series.IsLabelVisible);
         public bool AreLegendsVisible => Series != null && Series.All(series => series.Legend != null && series.Legend.IsVisible);
         public bool AreLegendsInGraphArea => Series == null || Series.All(series => series.Legend == null || series.Legend.InGraphicArea);

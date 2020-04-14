@@ -20,15 +20,14 @@
         </Grid.RowDefinitions>
         <Label Content="DefaultControl"
                Grid.Row="0"/>
-        <control:DefaultControl x:Name="ChartData" ChartData="{Binding Data, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                Grid.Row="1"/>
-        <Slider Value="{Binding Data.DataMinX}"
-                Minimum="{Binding Data.LimitMinX}"
-                Maximum="{Binding Data.LimitMaxX}"
+        <control:ChartControl x:Name="Chart" Grid.Row="1"/>
+        <Slider Value="{Binding MinX, ElementName=Chart}"
+                Minimum="{Binding MinX, ElementName=Chart, Mode=OneTime}"
+                Maximum="{Binding MaxX, ElementName=Chart, Mode=OneTime}"
                 Grid.Row="2"/>
-        <Slider Value="{Binding Data.DataMaxX}"
-                Minimum="{Binding Data.LimitMinX}"
-                Maximum="{Binding Data.LimitMaxX}"
+        <Slider Value="{Binding MaxX, ElementName=Chart}"
+                Minimum="{Binding MinX, ElementName=Chart, Mode=OneTime}"
+                Maximum="{Binding MaxX, ElementName=Chart, Mode=OneTime}"
                 Grid.Row="3"/>
     </Grid>
 </Page>
