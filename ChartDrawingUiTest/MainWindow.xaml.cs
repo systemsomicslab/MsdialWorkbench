@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ChartDrawingUiTest.Default;
+using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Chromatogram;
 
 namespace ChartDrawingUiTest
@@ -20,7 +21,11 @@ namespace ChartDrawingUiTest
             pageType = new Dictionary<string, Type>
             {
                 {"Default1", typeof(Default1) },
+                {"Dendrogram1", typeof(Dendrogram1) },
                 {"Chromatogram1", typeof(Chromatogram1) },
+                // {"DrawingTest1", typeof(DrawingTest1) },
+                // {"BindingTest1", typeof(BindingTest1) },
+                // {"ClipTest1", typeof(ClipTest1) },
             };
             names = pageType.Keys.ToList();
             pageMemo = new Dictionary<string, Page>();

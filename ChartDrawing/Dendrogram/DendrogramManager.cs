@@ -1,0 +1,93 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+
+using Common.DataStructure;
+using CompMs.Graphics.Core.Base;
+
+namespace CompMs.Graphics.Core.Dendrogram
+{
+    public class DendrogramManager : IChartManager
+    {
+        readonly Pen graphLine  = new Pen(Brushes.Black, 1);
+
+        /*
+        public Rect ElementArea
+        {
+            get => elementArea;
+            set => elementArea = value;
+        }
+        Rect elementArea;
+        public Transform TransformElement { get; set; } = Transform.Identity;
+        */
+
+        public Rect ChartArea { get; }
+
+        DendrogramElement dendrogramElement;
+
+        public DendrogramManager(DirectedTree tree, IReadOnlyList<double> xPositions, IReadOnlyList<double> yPositions)
+        {
+            dendrogramElement = new DendrogramElement(tree, xPositions, yPositions);
+            var area = dendrogramElement.ElementArea;
+            area.Inflate(area.Width * 0.05, 0);
+            area.Height *= 1.05;
+            ChartArea = area;
+        }
+
+        public Drawing CreateChart(Rect rect, Size size)
+        {
+            var geometry = dendrogramElement.GetGeometry(rect, size);
+            // geometry.Transform = new MatrixTransform(1, 0, 0, -1, -ElementArea.Left, ElementArea.Bottom);
+            geometry.Transform = new ScaleTransform(1, -1, 0, size.Height / 2);
+            var geometryDrawing = new GeometryDrawing(null, graphLine, geometry);
+            var drawingGroup = new DrawingGroup();
+            drawingGroup.Children.Add(geometryDrawing);
+            drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0, 0, size.Width, size.Height));
+            return drawingGroup;
+        }
+
+        public Point Translate(Point point, Rect area, Size size)
+        {
+            return new Point(point.X / size.Width * area.Width + area.X,
+                             (size.Height - point.Y) / size.Height * area.Height + area.Y);
+        }
+        public Vector Translate(Vector vector, Rect area, Size size)
+        {
+            return new Vector(vector.X / size.Width * area.Width,
+                              vector.Y / size.Height * - area.Height);
+        }
+        public Rect Translate(Rect rect, Rect area, Size size)
+        {
+            return new Rect(Translate(rect.TopLeft, area, size),
+                            Translate(rect.BottomRight, area, size));
+        }
+
+        /*
+        public Vector Move(Vector vector)
+        {
+            var vec = (Vector)TransformElement.Transform((Point)vector);
+            return new Matrix(elementArea.Width, 0, 0, elementArea.Height, 0, 0).Transform(vec);
+        }
+        public Rect Reset()
+        {
+            var area = dendrogramElement.ElementArea;
+            area.Height *= 1.05;
+            area.Inflate(area.Width * 0.05, 0);
+            return area;
+        }
+        public Rect UpdateRange(Rect rect)
+        {
+            var rateArea = TransformElement.TransformBounds(rect);
+            return new MatrixTransform(ElementArea.Width, 0, 0, ElementArea.Height, ElementArea.X, ElementArea.Y)
+                            .TransformBounds(rateArea);
+        }
+        public void SizeChanged(Size size)
+        {
+            // TransformElement = new ScaleTransform(1 / size.Width, - 1 / size.Height, 0, size.Height / 2);
+            TransformElement = new ScaleTransform(1 / size.Width, - 1 / size.Height);
+        }
+        */
+    }
+}

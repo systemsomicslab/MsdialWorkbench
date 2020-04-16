@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
 namespace Common.DataStructure
 {
@@ -228,7 +226,7 @@ namespace Common.DataStructure
         public DirectedTree(int n) : base(n) { }
         public DirectedTree(IEnumerable<Edges> g_) : base(g_) { }
 
-        int Root
+        public int Root
         {
             get
             {
@@ -237,7 +235,10 @@ namespace Common.DataStructure
             }
         }
 
-        bool IsValid
+        public IReadOnlyList<int> Leaves
+            => g.Select((edges, index) => (index, edges)).Where(p => p.edges.Count() == 0).Select(p => p.index).ToArray();
+
+        public bool IsValid
         {
             get
             {
@@ -245,8 +246,13 @@ namespace Common.DataStructure
                 foreach(var es in g)
                     foreach(var e in es)
                         ++count[e.To];
-                return count.Sum() == g.Count - 1 &&
-                       count.Where(c => c == 0).Count() == 0;
+                if (count.Sum() != g.Count - 1 || count.Where(c => c == 0).Count() != 1)
+                    return false;
+                var alived = new bool[g.Count];
+                var root = Array.IndexOf(count, 0);
+                alived[root] = true;
+                PreOrder(root, e => alived[e.To] = true);
+                return alived.All(b => b);
             }
         }
         
@@ -258,5 +264,33 @@ namespace Common.DataStructure
                     ++count[e.To];
             return Array.IndexOf(count, 0);
         }
+
+        public void PostOrder(int node, Action<Edge> f)
+        {
+            void dfs(int v)
+            {
+                foreach(var e in g[v])
+                {
+                    dfs(e.To);
+                    f(e);
+                }
+            }
+            dfs(node);
+        }
+        public void PostOrder(Action<Edge> f) => PostOrder(Root, f);
+
+        public void PreOrder(int node, Action<Edge> f)
+        {
+            void dfs(int v)
+            {
+                foreach(var e in g[v])
+                {
+                    f(e);
+                    dfs(e.To);
+                }
+            }
+            dfs(node);
+        }
+        public void PreOrder(Action<Edge> f) => PreOrder(Root, f);
     }
 }

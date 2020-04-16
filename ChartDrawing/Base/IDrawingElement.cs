@@ -28,7 +28,14 @@ namespace CompMs.Graphics.Core.Base
         public Geometry GetGeometry(Rect rect, Size size)
         {
             LineGeometry element = lineElement;
-            element.Transform = new MatrixTransform(size.Width / rect.Width, 0, 0, size.Height / rect.Height, rect.X, rect.Y);
+            var transforms = new TransformGroup();
+            // transforms.Children.Add(new TranslateTransform(-rect.X, -rect.Y));
+            transforms.Children.Add(new TranslateTransform(-rect.Left, -rect.Top));
+            transforms.Children.Add(new ScaleTransform(size.Width / rect.Width, size.Height / rect.Height));
+            // transforms.Children.Add(new ScaleTransform(10, 10));
+
+            // element.Transform = new MatrixTransform(size.Width / rect.Width, 0, 0, size.Height / rect.Height, rect.X, rect.Y);
+            element.Transform = transforms;
             return element;
         }
     }
@@ -101,7 +108,6 @@ namespace CompMs.Graphics.Core.Base
             foreach (var element in elements_)
             {
                 elements.Add(element);
-                if (area == null) area = element.ElementArea;
                 area.Union(element.ElementArea);
             }
         }
@@ -119,7 +125,6 @@ namespace CompMs.Graphics.Core.Base
         public void Add(IDrawingElement item)
         {
             ((ICollection<IDrawingElement>)elements).Add(item);
-            if (area == null) area = item.ElementArea;
             area.Union(item.ElementArea);
         }
 

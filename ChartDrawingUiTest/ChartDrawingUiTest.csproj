@@ -77,6 +77,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dendrogram\Dendrogram1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -101,6 +105,10 @@
     <Compile Include="Default\DrawingTest1.xaml.cs">
       <DependentUpon>DrawingTest1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dendrogram\Dendrogram1.xaml.cs">
+      <DependentUpon>Dendrogram1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramVM.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -152,6 +160,10 @@
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
       <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
       <Name>DataProcessingStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
+      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
+      <Name>DataStructureStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

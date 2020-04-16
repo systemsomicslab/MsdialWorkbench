@@ -20,9 +20,18 @@ namespace CompMs.Graphics.Core.Base
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
         );
         */
+        public IChartManager ChartManager
+        {
+            get => (IChartManager)GetValue(ChartManagerProperty);
+            set => SetValue(ChartManagerProperty, value);
+        }
+        public static readonly DependencyProperty ChartManagerProperty = DependencyProperty.Register(
+            nameof(ChartManager), typeof(IChartManager), typeof(ChartControl),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            );
         public Rect ChartDrawingArea
         {
-            get => new Rect(MinX, MaxX, MinY, MaxY);
+            get => new Rect(MinX, MinY, MaxX - MinX, MaxY - MinY);
             set
             {
                 MinX = value.Left;
@@ -31,23 +40,16 @@ namespace CompMs.Graphics.Core.Base
                 MaxY = value.Bottom;
             }
         }
-        public IChartFactory ChartFactory
-        {
-            get => (IChartFactory)GetValue(ChartFactoryProperty);
-            set => SetValue(ChartFactoryProperty, value);
-        }
-        public static readonly DependencyProperty ChartFactoryProperty = DependencyProperty.Register(
-            "ChartFactory", typeof(IChartFactory), typeof(ChartControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
-            );
         public double MinX
         {
             get => (double)GetValue(MinXProperty);
             set => SetValue(MinXProperty, value);
         }
         public static readonly DependencyProperty MinXProperty = DependencyProperty.Register(
-            "MinX", typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender, OnMinXChanged)
+            nameof(MinX), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender//, OnMinXChanged
+                )
             );
         public double MaxX
         {
@@ -55,8 +57,10 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(MaxXProperty, value);
         }
         public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(
-            "MaxX", typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(100d, FrameworkPropertyMetadataOptions.AffectsRender, OnMaxXChanged)
+            nameof(MaxX), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(100d,
+                FrameworkPropertyMetadataOptions.AffectsRender//, OnMaxXChanged
+                )
             );
         public double MinY
         {
@@ -64,8 +68,10 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(MinYProperty, value);
         }
         public static readonly DependencyProperty MinYProperty = DependencyProperty.Register(
-            "MinY", typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender, OnMinYChanged)
+            nameof(MinY), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender//, OnMinYChanged
+                )
             );
         public double MaxY
         {
@@ -73,10 +79,12 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(MaxYProperty, value);
         }
         public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(
-            "MaxY", typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(100d, FrameworkPropertyMetadataOptions.AffectsRender, OnMaxYChanged)
+            nameof(MaxY), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(100d, FrameworkPropertyMetadataOptions.AffectsRender//, OnMaxYChanged
+                )
             );
 
+        /*
         protected static void OnChartDrawingAreaChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var control = sender as ChartControl;
@@ -119,13 +127,15 @@ namespace CompMs.Graphics.Core.Base
             if (control != null && control.ChartFactory != null)
             {
                 var rect = control.ChartFactory.ElementArea;
-                control.ChartFactory.ElementArea = new Rect(new Point(rect.Right, (double)e.NewValue), rect.BottomLeft);
+                control.ChartFactory.ElementArea = new Rect(new Point(rect.Right, (double)e.NewValue), rect.TopLeft);
             }
         }
+        */
+
+        BackgroundManager background = new BackgroundManager();
 
         public ChartControl()
         {
-            ChartFactory = new DefaultChartFactory(RenderSize);
 
             MouseLeftButtonDown += MoveLeftDragOnMouseDown;
             MouseLeftButtonUp += MoveLeftDragOnMouseUp;
@@ -137,13 +147,25 @@ namespace CompMs.Graphics.Core.Base
             MouseLeave += ZoomRightDragOnMouseLeave;
             MouseWheel += ZoomMouseWheel;
             MouseLeftButtonDown += ResetDoubleClick;
-            SizeChanged += (s, e) => ChartFactory.SizeChanged(e.NewSize);
+            // SizeChanged += OnSizeChanged;
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            drawingContext.DrawDrawing(ChartFactory.CreateChart(RenderSize));
+            var drawing = new DrawingGroup();
+            Drawing back, chart;
+            if (background != null)
+            {
+                back = background.CreateChart(ChartDrawingArea, RenderSize);
+                drawing.Children.Add(back);
+            }
+            if (ChartManager != null)
+            {
+                chart = ChartManager.CreateChart(ChartDrawingArea, RenderSize);
+                drawing.Children.Add(chart);
+            }
+            drawingContext.DrawDrawing(drawing);
         }
 
         /*
@@ -163,21 +185,21 @@ namespace CompMs.Graphics.Core.Base
         }
         protected void MoveLeftDragOnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (isMoving)
+            if (isMoving && ChartManager != null)
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartFactory.Move(v));
+                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
                 isMoving = false;
             }
         }
         protected void MoveLeftDragOnMouseMove(object sender, MouseEventArgs e)
         {
-            if (isMoving)
+            if (isMoving && ChartManager != null)
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartFactory.Move(v));
+                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
                 previousPosition = currentPosition;
             }
         }
@@ -195,10 +217,13 @@ namespace CompMs.Graphics.Core.Base
         }
         protected void ZoomRightDragOnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (isZooming)
+            if (isZooming && ChartManager != null)
             {
                 isZooming = false;
-                ChartFactory.UpdateRange(new Rect(initialPosition, e.GetPosition(this)));
+                ChartDrawingArea = new Rect(
+                    ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
+                    ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
+                    );
             }
         }
         /*
@@ -220,47 +245,78 @@ namespace CompMs.Graphics.Core.Base
 
         protected void ZoomMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var p = e.GetPosition(this);
-            var delta = e.Delta;
-            var scale = 1 - 0.1 * Math.Sign(delta);
+            if (ChartManager != null)
+            {
+                var p = e.GetPosition(this);
+                var delta = e.Delta;
+                var scale = 1 - 0.1 * Math.Sign(delta);
 
-            var xNextMin = p.X * (1 - scale);
-            var xNextMax = p.X + (ActualWidth - p.X) * scale;
-            var yNextMin = p.Y * (1 - scale);
-            var yNextMax = p.Y + (ActualHeight - p.Y) * scale;
+                var xNextMin = p.X * (1 - scale);
+                var xNextMax = p.X + (ActualWidth - p.X) * scale;
+                var yNextMin = p.Y * (1 - scale);
+                var yNextMax = p.Y + (ActualHeight - p.Y) * scale;
 
-            ChartFactory.UpdateRange(new Rect(new Point(xNextMin, yNextMin), new Point(xNextMax, yNextMax)));
+                ChartDrawingArea = new Rect(
+                    ChartManager.Translate(new Point(xNextMin, yNextMin), ChartDrawingArea, RenderSize),
+                    ChartManager.Translate(new Point(xNextMax, yNextMax), ChartDrawingArea, RenderSize)
+                    );
+            }
         }
 
         protected virtual void ResetDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (e.ClickCount == 2 && ChartManager != null)
             {
-                ChartFactory.Reset();
+                ChartDrawingArea = ChartManager.ChartArea;
             }
         }
+
+        /*
+        protected virtual void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ChartManager?.SizeChanged(e.NewSize);
+        }
+        */
         #endregion
     }
 
-    class DefaultChartFactory : IChartFactory
+    class DefaultChartFactory : IChartManager
     {
-        public Rect ElementArea { get; set; }
-        public Transform TransformElement { get; set; } = Transform.Identity;
-        IChartFactory chartFactory;
+        // public Rect ElementArea { get; set; }
+        // public Transform TransformElement { get; set; } = Transform.Identity;
+        IChartManager chartManager;
 
-        public DefaultChartFactory(Size size)
+        public Rect ChartArea { get; }
+
+        public DefaultChartFactory()
         {
-            chartFactory = new BackgroundChartFactory(size);
+            chartManager = new BackgroundManager();
+            ChartArea = chartManager.ChartArea;
             //chartFactories.Add(new ForegroundChartFactory());
-            ElementArea = chartFactory.ElementArea;
+            // ElementArea = chartFactory.ElementArea;
         }
 
-        public Drawing CreateChart(Size size)
+        public Drawing CreateChart(Rect rect, Size size)
         {
             var drawingGroup = new DrawingGroup();
-            drawingGroup.Children.Add(chartFactory?.CreateChart(size));
+            drawingGroup.Children.Add(chartManager.CreateChart(rect, size));
             return drawingGroup;
         }
+
+        public Point Translate(Point point, Rect area, Size size)
+        {
+            return chartManager.Translate(point, area, size);
+        }
+        public Vector Translate(Vector vector, Rect area, Size size)
+        {
+            return chartManager.Translate(vector, area, size);
+        }
+        public Rect Translate(Rect rect, Rect area, Size size)
+        {
+            return chartManager.Translate(rect, area, size);
+        }
+
+        /*
         public Vector Move(Vector vector)
         {
              var vec = chartFactory.Move(vector);
@@ -278,5 +334,6 @@ namespace CompMs.Graphics.Core.Base
             return ElementArea;
         }
         public void SizeChanged(Size size) => chartFactory.SizeChanged(size);
+        */
     }
 }

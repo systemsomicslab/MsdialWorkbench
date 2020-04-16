@@ -52,13 +52,15 @@
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
-    <Compile Include="Base\IChartFactory.cs" />
-    <Compile Include="Default\DefaultControl.cs" />
+    <Compile Include="Base\IChartManager.cs" />
+    <Compile Include="Base\ChartControl.cs" />
     <Compile Include="Default\DefaultFE.cs" />
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dendrogram\DendrogramFactory.cs" />
+    <Compile Include="Dendrogram\DendrogramCoreControl.cs" />
+    <Compile Include="Dendrogram\DendrogramElement.cs" />
+    <Compile Include="Dendrogram\DendrogramManager.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
