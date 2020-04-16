@@ -63,6 +63,9 @@
     <Compile Include="Dendrogram\DendrogramManager.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
+    <Compile Include="Heatmap\HeatmapCoreControl.cs" />
+    <Compile Include="Heatmap\HeatmapElement.cs" />
+    <Compile Include="Heatmap\HeatmapManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
   </ItemGroup>

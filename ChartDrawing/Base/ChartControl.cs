@@ -162,9 +162,11 @@ namespace CompMs.Graphics.Core.Base
             }
             if (ChartManager != null)
             {
+                // chart = ChartManager.CreateChart(ChartDrawingArea, RenderSize);
                 chart = ChartManager.CreateChart(ChartDrawingArea, RenderSize);
                 drawing.Children.Add(chart);
             }
+            drawing.ClipGeometry = new RectangleGeometry(new Rect(RenderSize));
             drawingContext.DrawDrawing(drawing);
         }
 
@@ -177,7 +179,14 @@ namespace CompMs.Graphics.Core.Base
 
         #region mouse event
         protected bool isMoving = false;
-        private Point previousPosition;
+        // private Point previousPosition;
+        public Point previousPosition
+        {
+            get => (Point)GetValue(PreviousPositionProperty);
+            set => SetValue(PreviousPositionProperty, value);
+        }
+        static readonly DependencyProperty PreviousPositionProperty = DependencyProperty.Register(
+            nameof(previousPosition), typeof(Point), typeof(ChartControl));
         protected void MoveLeftDragOnMouseDown(object sender, MouseButtonEventArgs e)
         {
             isMoving = true;

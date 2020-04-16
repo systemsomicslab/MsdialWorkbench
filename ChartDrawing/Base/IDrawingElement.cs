@@ -53,7 +53,10 @@ namespace CompMs.Graphics.Core.Base
         public Geometry GetGeometry(Rect rect, Size size)
         {
             RectangleGeometry element = rectangleElement;
-            element.Transform = new MatrixTransform(size.Width / rect.Width, 0, 0, size.Height / rect.Height, rect.X, rect.Y);
+            var transforms = new TransformGroup();
+            transforms.Children.Add(new TranslateTransform(-rect.Left, -rect.Top));
+            transforms.Children.Add(new ScaleTransform(size.Width / rect.Width, size.Height / rect.Height));
+            element.Transform = transforms;
             return element;
         }
     }

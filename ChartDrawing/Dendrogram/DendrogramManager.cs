@@ -41,11 +41,7 @@ namespace CompMs.Graphics.Core.Dendrogram
             var geometry = dendrogramElement.GetGeometry(rect, size);
             // geometry.Transform = new MatrixTransform(1, 0, 0, -1, -ElementArea.Left, ElementArea.Bottom);
             geometry.Transform = new ScaleTransform(1, -1, 0, size.Height / 2);
-            var geometryDrawing = new GeometryDrawing(null, graphLine, geometry);
-            var drawingGroup = new DrawingGroup();
-            drawingGroup.Children.Add(geometryDrawing);
-            drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0, 0, size.Width, size.Height));
-            return drawingGroup;
+            return new GeometryDrawing(null, graphLine, geometry);
         }
 
         public Point Translate(Point point, Rect area, Size size)
