@@ -63,6 +63,12 @@
     <Compile Include="Dendrogram\DendrogramManager.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
+    <Compile Include="GraphAxis\CategoryHorizontalAxisCoreControl.cs" />
+    <Compile Include="GraphAxis\CategoryHorizontalAxisElement.cs" />
+    <Compile Include="GraphAxis\CategoryHorizontalAxisManager.cs" />
+    <Compile Include="GraphAxis\CategoryVerticalAxisElement.cs" />
+    <Compile Include="GraphAxis\CategoryVerticalAxisCoreControl.cs" />
+    <Compile Include="GraphAxis\CategoryVerticalAxisManager.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />
     <Compile Include="Heatmap\HeatmapElement.cs" />
     <Compile Include="Heatmap\HeatmapManager.cs" />

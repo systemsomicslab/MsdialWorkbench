@@ -22,8 +22,8 @@ namespace CompMs.Graphics.Core.Base
 
     public class BackgroundManager : IChartManager
     {
-        protected static readonly Brush graphBackground = Brushes.WhiteSmoke;
-        protected static readonly Pen graphBorder = new Pen(Brushes.Black, 1);
+        public Brush graphBackground { get; }
+        public Pen graphBorder { get; }
 
         IDrawingElement BackgroundElement;
 
@@ -32,8 +32,11 @@ namespace CompMs.Graphics.Core.Base
         // public Rect ElementArea { get; set; }
         // public Transform TransformElement { get; set; }
 
-        public BackgroundManager()
+        public BackgroundManager(): this(Brushes.WhiteSmoke, new Pen(Brushes.Black, 1)) { }
+        public BackgroundManager(Brush brush, Pen border)
         {
+            graphBackground = brush;
+            graphBorder = border;
             BackgroundElement = new AreaElement(ChartArea);
             // TransformElement = new ScaleTransform(ChartArea.Width / size.Width, ChartArea.Height / size.Height);
             // ElementArea = BackgroundElement.ElementArea;

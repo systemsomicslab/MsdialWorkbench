@@ -23,15 +23,17 @@ namespace ChartDrawingUiTest
             {
                 {"Default1", typeof(Default1) },
                 {"Dendrogram1", typeof(Dendrogram1) },
+                {"Dendrogram2", typeof(Dendrogram2) },
                 {"Heatmap1", typeof(Heatmap1) },
+                {"Heatmap2", typeof(Heatmap2) },
                 {"Chromatogram1", typeof(Chromatogram1) },
                 // {"DrawingTest1", typeof(DrawingTest1) },
                 // {"BindingTest1", typeof(BindingTest1) },
                 // {"ClipTest1", typeof(ClipTest1) },
             };
             names = pageType.Keys.ToList();
-            pageMemo = new Dictionary<string, Page>();
             navbar.ItemsSource = names;
+            pageMemo = new Dictionary<string, Page>();
             pageMemo[names[0]] = (Page)Activator.CreateInstance(pageType[names[0]]);
             sampleFrame.Navigate(pageMemo[names[0]]);
         }

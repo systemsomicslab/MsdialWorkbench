@@ -10,6 +10,10 @@ namespace CompMs.Graphics.Core.Heatmap
     class HeatmapManager : IChartManager
     {
         public Rect ChartArea { get; }
+        public IReadOnlyList<double> XPositions { get; }
+        public IReadOnlyList<double> YPositions { get; }
+        public GradientStopCollection Gsc { get; }
+
         List<(Color color, IDrawingElement element)> areas;
 
         public HeatmapManager(
@@ -23,16 +27,16 @@ namespace CompMs.Graphics.Core.Heatmap
 
             double[] XBounds, YBounds;
 
-            var XPositions = xPositions?.ToArray();
+            XPositions = xPositions?.ToArray();
             if (XPositions == null)
                 XPositions = Enumerable.Range(0, dataMatrix.GetLength(1)).Select(e => (double)e).ToArray();
             XBounds = new double[dataMatrix.GetLength(1) + 1];
-            for(int i = 1; i<XPositions.Length; ++i)
+            for(int i = 1; i<XPositions.Count; ++i)
                 XBounds[i] = (XPositions[i - 1] + XPositions[i]) / 2;
             if (XBounds.Length != 2)
             {
                 XBounds[0] = XPositions[0] * 2 - XBounds[1];
-                XBounds[XBounds.Length - 1] = XPositions[XPositions.Length - 1] * 2 - XBounds[XBounds.Length - 2];
+                XBounds[XBounds.Length - 1] = XPositions[XPositions.Count - 1] * 2 - XBounds[XBounds.Length - 2];
             }
             else
             {
@@ -40,16 +44,16 @@ namespace CompMs.Graphics.Core.Heatmap
                 XBounds[1] = XPositions[0] + 1;
             }
 
-            var YPositions = yPositions?.ToArray();
+            YPositions = yPositions?.ToArray();
             if (YPositions == null)
                 YPositions = Enumerable.Range(0, dataMatrix.GetLength(0)).Select(e => (double)e).ToArray();
             YBounds = new double[dataMatrix.GetLength(0) + 1];
-            for(int i = 1; i<YPositions.Length; ++i)
+            for(int i = 1; i<YPositions.Count; ++i)
                 YBounds[i] = (YPositions[i - 1] + YPositions[i]) / 2;
             if (YBounds.Length != 2)
             {
                 YBounds[0] = XPositions[0] * 2 - YBounds[1];
-                YBounds[YBounds.Length - 1] = YPositions[YPositions.Length - 1] * 2 - YBounds[YBounds.Length - 2];
+                YBounds[YBounds.Length - 1] = YPositions[YPositions.Count - 1] * 2 - YBounds[YBounds.Length - 2];
             }
             else
             {
@@ -58,8 +62,8 @@ namespace CompMs.Graphics.Core.Heatmap
             }
 
             var matrixAreas = new List<(double value, Rect area)>(dataMatrix.Length);
-            for(int i = 0; i<XPositions.Length; ++i)
-                for(int j = 0; j<YPositions.Length; ++j)
+            for(int i = 0; i<XPositions.Count; ++i)
+                for(int j = 0; j<YPositions.Count; ++j)
                     matrixAreas.Add((
                             dataMatrix[j, i],
                             new Rect(new Point(XBounds[i], YBounds[j]), new Point(XBounds[i + 1], YBounds[j + 1]))

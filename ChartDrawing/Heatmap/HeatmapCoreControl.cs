@@ -24,12 +24,15 @@ namespace CompMs.Graphics.Core.Heatmap
             var control = d as HeatmapCoreControl;
             if (control != null)
             {
-                control.ChartManager = new HeatmapManager(
+                var chartmanager = new HeatmapManager(
                     (double[,])e.NewValue, control.XPositions, control.YPositions, control.Gsc );
-                control.ChartDrawingArea = control.ChartManager.ChartArea;
+                control.ChartDrawingArea = chartmanager.ChartArea;
+                control.XPositions = chartmanager.XPositions;
+                control.YPositions = chartmanager.YPositions;
+                control.Gsc = chartmanager.Gsc;
+                control.ChartManager = chartmanager;
             }
         }
-
 
         public GradientStopCollection Gsc
         {

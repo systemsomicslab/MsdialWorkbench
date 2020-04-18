@@ -31,7 +31,7 @@ namespace CompMs.Graphics.Core.Base
             );
         public Rect ChartDrawingArea
         {
-            get => new Rect(MinX, MinY, MaxX - MinX, MaxY - MinY);
+            get => new Rect(MinX, MinY, Math.Max(0, MaxX - MinX), Math.Max(0, MaxY - MinY));
             set
             {
                 MinX = value.Left;
@@ -48,7 +48,8 @@ namespace CompMs.Graphics.Core.Base
         public static readonly DependencyProperty MinXProperty = DependencyProperty.Register(
             nameof(MinX), typeof(double), typeof(ChartControl),
             new FrameworkPropertyMetadata(0d,
-                FrameworkPropertyMetadataOptions.AffectsRender//, OnMinXChanged
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault//, OnMinXChanged
                 )
             );
         public double MaxX
@@ -59,7 +60,8 @@ namespace CompMs.Graphics.Core.Base
         public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(
             nameof(MaxX), typeof(double), typeof(ChartControl),
             new FrameworkPropertyMetadata(100d,
-                FrameworkPropertyMetadataOptions.AffectsRender//, OnMaxXChanged
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault//, OnMaxXChanged
                 )
             );
         public double MinY
@@ -70,7 +72,8 @@ namespace CompMs.Graphics.Core.Base
         public static readonly DependencyProperty MinYProperty = DependencyProperty.Register(
             nameof(MinY), typeof(double), typeof(ChartControl),
             new FrameworkPropertyMetadata(0d,
-                FrameworkPropertyMetadataOptions.AffectsRender//, OnMinYChanged
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault//, OnMinYChanged
                 )
             );
         public double MaxY
@@ -80,7 +83,9 @@ namespace CompMs.Graphics.Core.Base
         }
         public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(
             nameof(MaxY), typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(100d, FrameworkPropertyMetadataOptions.AffectsRender//, OnMaxYChanged
+            new FrameworkPropertyMetadata(100d,
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault//, OnMaxYChanged
                 )
             );
 
@@ -132,7 +137,7 @@ namespace CompMs.Graphics.Core.Base
         }
         */
 
-        BackgroundManager background = new BackgroundManager();
+        protected BackgroundManager background = new BackgroundManager();
 
         public ChartControl()
         {
@@ -198,7 +203,9 @@ namespace CompMs.Graphics.Core.Base
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
+                var suggested = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
+                if (ChartManager.ChartArea.Contains(suggested))
+                    ChartDrawingArea = suggested;
                 isMoving = false;
             }
         }
@@ -208,7 +215,9 @@ namespace CompMs.Graphics.Core.Base
             {
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
-                ChartDrawingArea = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
+                var suggested = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
+                if (ChartManager.ChartArea.Contains(suggested))
+                    ChartDrawingArea = suggested;
                 previousPosition = currentPosition;
             }
         }
@@ -265,10 +274,14 @@ namespace CompMs.Graphics.Core.Base
                 var yNextMin = p.Y * (1 - scale);
                 var yNextMax = p.Y + (ActualHeight - p.Y) * scale;
 
-                ChartDrawingArea = new Rect(
-                    ChartManager.Translate(new Point(xNextMin, yNextMin), ChartDrawingArea, RenderSize),
-                    ChartManager.Translate(new Point(xNextMax, yNextMax), ChartDrawingArea, RenderSize)
+                ChartDrawingArea = Rect.Intersect(
+                    ChartManager.Translate(
+                        new Rect(xNextMin, yNextMin, xNextMax - xNextMin, yNextMax - yNextMin),
+                        ChartDrawingArea, RenderSize
+                        ),
+                    ChartManager.ChartArea
                     );
+
             }
         }
 

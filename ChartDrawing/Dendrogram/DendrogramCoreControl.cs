@@ -21,15 +21,17 @@ namespace CompMs.Graphics.Core.Dendrogram
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 OnDendrogramChanged)
             );
-
         static void OnDendrogramChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as DendrogramCoreControl;
             if (control != null)
             {
-                control.ChartManager = new DendrogramManager(
+                var chartmanager = new DendrogramManager(
                     (DirectedTree)e.NewValue, control.XPositions, control.YPositions );
-                control.ChartDrawingArea = control.ChartManager.ChartArea;
+                control.ChartDrawingArea = chartmanager.ChartArea;
+                control.XPositions = chartmanager.XPositions;
+                control.YPositions = chartmanager.YPositions;
+                control.ChartManager = chartmanager;
             }
         }
 
@@ -52,9 +54,7 @@ namespace CompMs.Graphics.Core.Dendrogram
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
             );
 
-        
-        public DendrogramCoreControl(): base()
-        {
-        }
+        public IReadOnlyList<double> LeafPositions
+            => Dendrogram?.Leaves.OrderBy(i => i).Select(i => XPositions[i]).ToArray();
     }
 }

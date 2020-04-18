@@ -24,12 +24,40 @@ namespace CompMs.Graphics.Core.Dendrogram
         */
 
         public Rect ChartArea { get; }
+        public IReadOnlyList<double> XPositions { get; }
+        public IReadOnlyList<double> YPositions { get; }
 
         DendrogramElement dendrogramElement;
 
         public DendrogramManager(DirectedTree tree, IReadOnlyList<double> xPositions, IReadOnlyList<double> yPositions)
         {
-            dendrogramElement = new DendrogramElement(tree, xPositions, yPositions);
+            var root = tree.Root;
+            var XPositions_ = xPositions?.ToArray();
+            if (XPositions_ == null)
+            {
+                XPositions_ = new double[tree.Count];
+                var leaves = tree.Leaves.ToHashSet();
+                var leafId = 0;
+                tree.PostOrder(root, e =>
+                {
+                    if (leaves.Contains(e.To))
+                        XPositions_[e.To] = leafId++;
+                    else
+                        XPositions_[e.To] = tree[e.To].Average(z => XPositions_[z.To]);
+                });
+                XPositions_[root] = leaves.Contains(root) ? 0d : tree[root].Average(z => XPositions_[z.To]);
+            }
+            XPositions = XPositions_;
+
+            var YPositions_ = yPositions?.ToArray();
+            if(YPositions_ == null)
+            {
+                YPositions_ = new double[tree.Count];
+                tree.PostOrder(root, e => YPositions_[e.From] = YPositions_[e.To] + e.Distance);
+            }
+            YPositions = YPositions_;
+
+            dendrogramElement = new DendrogramElement(tree, XPositions, YPositions);
             var area = dendrogramElement.ElementArea;
             area.Inflate(area.Width * 0.05, 0);
             area.Height *= 1.05;

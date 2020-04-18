@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChartDrawingUiTest"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
     <Grid>
@@ -12,6 +13,15 @@
             <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
         <ListView x:Name="navbar" Grid.Column="0" SelectionChanged="navbar_SelectionChanged"/>
+        <!--
+        <TreeView x:Name="navbar" Grid.Column="0" SelectedItemChanged="navbar_SelectedItemChanged">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="local:ChartSample" ItemsSource="{Binding Samples}">
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        -->
         <Frame x:Name="sampleFrame" Grid.Column="1"/>
     </Grid>
 </Window>

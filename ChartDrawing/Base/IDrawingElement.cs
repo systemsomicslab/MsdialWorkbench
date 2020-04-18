@@ -84,13 +84,15 @@ namespace CompMs.Graphics.Core.Base
             origin = topleft;
             textElement = new FormattedText(
                 text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                new Typeface("Calibli"), 12, null, 96);
+                new Typeface("Calibli"), 12, null, 1);
         }
 
         public Geometry GetGeometry(Rect rect, Size size)
         {
             FormattedText text = textElement;
-            return textElement.BuildGeometry(origin * new Matrix(rect.Width / size.Width, 0, 0, rect.Height / size.Height, rect.X, rect.Y));
+            var point = new TranslateTransform(-rect.Left, -rect.Top).Transform(origin);
+            point = new ScaleTransform(size.Width / rect.Width, size.Height / rect.Height).Transform(point);
+            return textElement.BuildGeometry(point);
         }
     }
 
