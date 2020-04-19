@@ -12,8 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using Msdial.Dendrogram;
-using Msdial.Heatmap;
+using Common.DataStructure;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -31,49 +30,60 @@ namespace Rfx.Riken.OsakaUniv
 
     class HcaResultVM : ViewModelBase
     {
-        public DendrogramPlotBean YDendrogramPlotBean
+        public DirectedTree XDendrogram
         {
-            get => ydendrogramBean;
+            get => xDendrogram;
             set
             {
-                if (ydendrogramBean == value) return;
-                OnPropertyChanged("YDendrogramPlotBean");
+                if (xDendrogram == value) return;
+                xDendrogram = value;
+                OnPropertyChanged("XDendrogram");
             }
         }
 
-        public HeatmapBean HeatmapBean
+        public DirectedTree YDendrogram
         {
-            get => heatmapBean;
+            get => yDendrogram;
             set
             {
-                if (heatmapBean == value) return;
-                OnPropertyChanged("HeatmapBean");
+                if (yDendrogram == value) return;
+                yDendrogram = value;
+                OnPropertyChanged("YDendrogram");
             }
         }
+
+        public double[,] DataMatrix
+        {
+            get => dataMatrix;
+            set
+            {
+                if (dataMatrix == value) return;
+                dataMatrix = value;
+                OnPropertyChanged("DataMatrix");
+            }
+        }
+
+        public IReadOnlyList<string> XLabels { get; }
+        public IReadOnlyList<string> YLabels { get; }
 
         public HcaResultVM(MultivariateAnalysisResult result)
         {
-            ydendrogramBean = new DendrogramPlotBean("", result.StatisticsObject.YLabels, result.Dendrogram, result.Root);
-            var rank = ydendrogramBean.Rank;
-            var ylabels = rank.Zip(result.StatisticsObject.YLabels, Tuple.Create).OrderBy(p => p.Item1).Select(p => p.Item2);
-            var xsize = result.StatisticsObject.XDataMatrix.GetLength(1);
-            var ysize = result.StatisticsObject.XDataMatrix.GetLength(0);
-            var data = new double[ysize, xsize];
-            var yIdx = Enumerable.Range(0, result.StatisticsObject.YLabels.Count)
-                .Zip(rank, Tuple.Create).OrderBy(p => p.Item2)
-                .Select(p => p.Item1).ToArray();
-            for (var i = 0; i < xsize; ++i)
-            {
-                for(var j = 0; j < ysize; ++j)
-                {
-                    data[yIdx[j], i] = result.StatisticsObject.XDataMatrix[j, i];
-                }
-            }
-            heatmapBean = new HeatmapBean(data, ylabels, result.StatisticsObject.XLabels);
+            var transposeMatrix = new double[
+                result.StatisticsObject.XDataMatrix.GetLength(1),
+                result.StatisticsObject.XDataMatrix.GetLength(0)
+                ];
+            for (int i = 0; i < result.StatisticsObject.XDataMatrix.GetLength(0); ++i)
+                for (int j = 0; j < result.StatisticsObject.XDataMatrix.GetLength(1); ++j)
+                    transposeMatrix[j, i] = result.StatisticsObject.XDataMatrix[i, j];
+            DataMatrix = transposeMatrix;
+            XDendrogram = result.XDendrogram;
+            YDendrogram = result.YDendrogram;
+            XLabels = result.StatisticsObject.XLabels;
+            YLabels = result.StatisticsObject.YLabels;
         }
 
-        // private DendrogramPlotBean xdendrogramBean;
-        private DendrogramPlotBean ydendrogramBean;
-        private HeatmapBean heatmapBean;
+        private DirectedTree xDendrogram;
+        private DirectedTree yDendrogram;
+        private double[,] dataMatrix;
     }
 }

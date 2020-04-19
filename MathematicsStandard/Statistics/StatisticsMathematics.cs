@@ -1670,22 +1670,39 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static MultivariateAnalysisResult HierarchicalClusterAnalysis(StatisticsObject statObject) {
-            var n = statObject.XDataMatrix.GetLength(0); // number of files
-            var m = statObject.XDataMatrix.GetLength(1); // number of metabolites
+            var n = statObject.XDataMatrix.GetLength(0);
+            var m = statObject.XDataMatrix.GetLength(1);
+            var transposeMatrix = new double[m, n];
+            for (int i = 0; i < n; ++i) for (int j = 0; j < m; ++j)
+                    transposeMatrix[j, i] = statObject.XDataMatrix[i, j];
+            var result = new MultivariateAnalysisResult()
+            {
+                StatisticsObject = statObject,
+                MultivariateAnalysisOption = MultivariateAnalysisOption.Hca,
+                XDendrogram = ClusteringMatrix(statObject.XDataMatrix),
+                YDendrogram = ClusteringMatrix(transposeMatrix),
+                // Root = tree.Count - 1,
+                // DistanceMatrix = distMatrix
+            };
 
+            return result;
+        }
+
+        public static DirectedTree ClusteringMatrix(double[,] dataMatrix)
+        {
+            var n = dataMatrix.GetLength(0);
+            var m = dataMatrix.GetLength(1);
             var clusters = new List<List<List<double>>>(n * 2 - 1);
-            // var tree = new List<int>(n * 2 - 1);
-            // var tree = new List<List<int>>(n * 2 - 1);
+
             var tree = new DirectedTree(n * 2 - 1);
             for(int i = 0; i < n; ++i)
             {
                 var vec = new List<double>(m);
                 for(int j = 0; j < m; ++j)
                 {
-                    vec.Add(statObject.XDataMatrix[i, j]);
+                    vec.Add(dataMatrix[i, j]);
                 }
                 clusters.Add(new List<List<double>> { vec });
-                // tree.Add(-1);
             }
 
             var dists = new LinkedList<(double d, int i, int j)>();
@@ -1696,7 +1713,6 @@ namespace Rfx.Riken.OsakaUniv
                 for (int j = i + 1; j < n; ++j)
                 {
                     var d = CalculateWardDistance(clusters[i], clusters[j], CalculatePearsonCorrelationDistance);
-                    // CalculateWardDistance(clusters[i], clusters[j], CalculateEuclideanDistance);
                     dists.AddLast((d, i, j ));
                     distMatrix[i, j] = distMatrix[j, i] = d;
                 }
@@ -1712,8 +1728,6 @@ namespace Rfx.Riken.OsakaUniv
                 heights[n + k] = d;
                 tree.AddEdge(n + k, i, d - heights[i]);
                 tree.AddEdge(n + k, j, d - heights[j]);
-                // tree[n + k].Add(i);
-                // tree[n + k].Add(j);
                 existsParent[i] = existsParent[j] = true;
                 for (int l = 0; l < n + k; ++l)
                 {
@@ -1721,9 +1735,7 @@ namespace Rfx.Riken.OsakaUniv
                     {
                         dists.AddLast((
                             CalculateWardDistance(clusters[l], clusters[n + k], CalculatePearsonCorrelationDistance),
-                            // CalculateWardDistance(clusters[l], clusters[n + k], CalculateEuclideanDistance),
-                            l,
-                            n + k
+                            l, n + k
                         ));
                     }
                 }
@@ -1738,21 +1750,8 @@ namespace Rfx.Riken.OsakaUniv
                         dists.Remove(cur);
                     }
                 }
-                // Console.WriteLine("{0}, {1}", i, j);
             }
-
-            // tree.Select((es, idx) => string.Format("{0}: {1}", idx, String.Join(",", es))).ToList().ForEach(Console.WriteLine);
-
-            var result = new MultivariateAnalysisResult()
-            {
-                StatisticsObject = statObject,
-                MultivariateAnalysisOption = MultivariateAnalysisOption.Hca,
-                Dendrogram = tree,
-                Root = tree.Count - 1,
-                DistanceMatrix = distMatrix
-            };
-
-            return result;
+            return tree;
         }
 
         public static double CalculateWardDistance(IEnumerable<List<double>> xs, IEnumerable<List<double>> ys, Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc) {

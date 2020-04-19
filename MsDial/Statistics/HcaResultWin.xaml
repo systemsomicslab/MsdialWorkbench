@@ -4,82 +4,65 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
-        xmlns:dendrogramplot="clr-namespace:Msdial.Dendrogram;assembly=Dendrogram"
-        xmlns:heatmap="clr-namespace:Msdial.Heatmap;assembly=Heatmap"
-        xmlns:axis="clr-namespace:Msdial.AxisControl;assembly=GraphAxisControl"
+        xmlns:dendrogram="clr-namespace:CompMs.Graphics.Core.Dendrogram;assembly=ChartDrawing"
+        xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap;assembly=ChartDrawing"
+        xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis;assembly=ChartDrawing"
         mc:Ignorable="d"
         Title="HcaResultWin" Height="700" Width="950">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="3*"/>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <dendrogramplot:DendrogramPlotControl
-            Name="dendrogram"
-            Grid.Row="1" Grid.Column="1"
-            Margin="0,10,0,10" 
-            Dendrogram="{Binding YDendrogramPlotBean.Dendrogram}"
-            Root="{Binding YDendrogramPlotBean.Root}"
-            XPositions="{Binding YDendrogramPlotBean.XPositions}"
-            YPositions="{Binding YDendrogramPlotBean.YPositions}"
-            XDisplayMin="{Binding YDendrogramPlotBean.DisplayMinX}"
-            XDisplayMax="{Binding YDendrogramPlotBean.DisplayMaxX}"
-            YDisplayMin="{Binding YDendrogramPlotBean.DisplayMinY}"
-            YDisplayMax="{Binding YDendrogramPlotBean.DisplayMaxY}"
-            LeafIdxs="{Binding YDendrogramPlotBean.LeafIdxs, Mode=OneWay}"/>
-        <axis:ContinuousVerticalAxisControl
-            Grid.Row="1" Grid.Column="0"
-            Margin="0,10,0,10" 
-            Direction="Right"
-            YMin="{Binding YDisplayMin, ElementName=dendrogram}"
-            YMax="{Binding YDisplayMax, ElementName=dendrogram}" />
-        <heatmap:HeatmapControl
-            Name="heatmap"
-            Grid.Row="2" Grid.Column="1"
-            Margin="0,10,0,0"
-            ValueMin="{Binding HeatmapBean.ValueMin}"
-            ValueMax="{Binding HeatmapBean.ValueMax}"
-            XPositions="{Binding HeatmapBean.XPositions}"
-            YPositions="{Binding HeatmapBean.YPositions}"
-            XBorders="{Binding HeatmapBean.XBorders}"
-            YBorders="{Binding HeatmapBean.YBorders}"
-            XDisplayMin="{Binding HeatmapBean.XDisplayMin}"
-            XDisplayMax="{Binding HeatmapBean.XDisplayMax}"
-            YDisplayMin="{Binding HeatmapBean.YDisplayMin}"
-            YDisplayMax="{Binding HeatmapBean.YDisplayMax}"
-            DataMatrix="{Binding HeatmapBean.DataMatrix, Mode=OneWay}">
-        </heatmap:HeatmapControl>
-        <axis:CategoryVerticalAxisControl
+        <axis:CategoryVerticalAxisCoreControl
+            Labels="{Binding YLabels, Mode=OneTime}"
+            YPositions="{Binding YPositions, ElementName=heatmap, Mode=OneTime}"
+            MinY="{Binding MinY, ElementName=heatmap}"
+            MaxY="{Binding MaxY, ElementName=heatmap}"
             Grid.Row="2" Grid.Column="0"
-            Margin="0,10,0,0"
-            YLabels="{Binding HeatmapBean.YLabels}"
-            YPositions="{Binding YPositions, ElementName=heatmap}"
-            YMin="{Binding YDisplayMin, ElementName=heatmap}"
-            YMax="{Binding YDisplayMax, ElementName=heatmap}"
-            Rotate="30" />
-        <axis:CategoryHorizontalAxisControl
-            Grid.Row="3" Grid.Column="1"
-            XLabels="{Binding HeatmapBean.XLabels}"
-            XPositions="{Binding XPositions, ElementName=heatmap}"
-            XMin="{Binding XDisplayMin, ElementName=heatmap}"
-            XMax="{Binding XDisplayMax, ElementName=heatmap}"
-            Rotate="30" />
-        <heatmap:ColorbarControl
+            Margin="0,10,0,0"/>
+        <axis:CategoryHorizontalAxisCoreControl
+            Labels="{Binding XLabels}"
+            XPositions="{Binding XPositions, ElementName=heatmap, Mode=OneTime}"
+            MinX="{Binding MinX, ElementName=heatmap}"
+            MaxX="{Binding MaxX, ElementName=heatmap}"
+            Grid.Row="3" Grid.Column="1" />
+        <dendrogram:DendrogramCoreControl
+            Name="xdendrogram"
+            Dendrogram="{Binding XDendrogram, Mode=OneTime}"
+            Width="{Binding Width, ElementName=heatmap}"
+            Grid.Row="1" Grid.Column="1"
+            Margin="0,10,0,0" />
+        <dendrogram:DendrogramCoreControl
+            Name="ydendrogram"
+            Dendrogram="{Binding YDendrogram, Mode=OneTime}"
+            RenderTransformOrigin="0.5, 0.5"
+            Height="{Binding Height, ElementName=heatmap, Mode=OneWay}"
             Grid.Row="2" Grid.Column="2"
-            Brush="{Binding Brush, ElementName=heatmap}"
-            Margin="10,0,0,0"/>
-        <axis:ContinuousVerticalAxisControl
-            Grid.Row="2" Grid.Column="3"
-            Direction="Left"
-            YMin="{Binding ValueMin, ElementName=heatmap}"
-            YMax="{Binding ValueMax, ElementName=heatmap}" />
+            Margin="0,0,0,0">
+            <dendrogram:DendrogramCoreControl.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform X="28"/>
+                </TransformGroup>
+            </dendrogram:DendrogramCoreControl.RenderTransform>
+        </dendrogram:DendrogramCoreControl>
+        <heatmap:HeatmapCoreControl
+            Name="heatmap"
+            DataMatrix="{Binding DataMatrix, Mode=OneTime}"
+            MinX="{Binding MinX, ElementName=xdendrogram}"
+            MaxX="{Binding MaxX, ElementName=xdendrogram}"
+            MinY="{Binding MinX, ElementName=ydendrogram}"
+            MaxY="{Binding MaxX, ElementName=ydendrogram}"
+            Grid.Row="2" Grid.Column="1"
+            Margin="0,0,0,0" />
     </Grid>
 </Window>
