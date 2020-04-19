@@ -26,11 +26,14 @@ namespace CompMs.Graphics.Core.Dendrogram
             var control = d as DendrogramCoreControl;
             if (control != null)
             {
+                var dendrogram = (DirectedTree)e.NewValue;
                 var chartmanager = new DendrogramManager(
-                    (DirectedTree)e.NewValue, control.XPositions, control.YPositions );
+                    dendrogram, control.XPositions, control.YPositions );
                 control.ChartDrawingArea = chartmanager.ChartArea;
                 control.XPositions = chartmanager.XPositions;
                 control.YPositions = chartmanager.YPositions;
+                control.LeafPositions = dendrogram.Leaves.OrderBy(i => i).Select(i => control.XPositions[i]).ToArray();
+                control.LimitDrawingArea = chartmanager.ChartArea;
                 control.ChartManager = chartmanager;
             }
         }
@@ -55,6 +58,15 @@ namespace CompMs.Graphics.Core.Dendrogram
             );
 
         public IReadOnlyList<double> LeafPositions
-            => Dendrogram?.Leaves.OrderBy(i => i).Select(i => XPositions[i]).ToArray();
+        {
+            get => (IReadOnlyList<double>)GetValue(LeafPositionsProperty);
+            private set => SetValue(LeafPositionsPropertyKey, value);
+        }
+            // => Dendrogram?.Leaves.OrderBy(i => i).Select(i => XPositions[i]).ToArray();
+        private static readonly DependencyPropertyKey LeafPositionsPropertyKey = DependencyProperty.RegisterReadOnly(
+            nameof(LeafPositions), typeof(IReadOnlyList<double>), typeof(DendrogramCoreControl),
+            new FrameworkPropertyMetadata(null)
+            );
+        public static readonly DependencyProperty LeafPositionsProperty = LeafPositionsPropertyKey.DependencyProperty;
     }
 }

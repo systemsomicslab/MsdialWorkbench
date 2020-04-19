@@ -54,6 +54,9 @@
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
     <Compile Include="Base\ChartControl.cs" />
+    <Compile Include="Compound\Clustermap.xaml.cs">
+      <DependentUpon>Clustermap.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Default\DefaultFE.cs" />
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
@@ -76,6 +79,10 @@
     <Compile Include="Base\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Compound\Clustermap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Default\DefaultUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

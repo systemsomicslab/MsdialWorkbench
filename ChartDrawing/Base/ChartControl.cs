@@ -89,6 +89,61 @@ namespace CompMs.Graphics.Core.Base
                 )
             );
 
+        public Rect LimitDrawingArea
+        {
+            get => new Rect(LimitMinX, LimitMinY, Math.Max(0, LimitMaxX - LimitMinX), Math.Max(0, LimitMaxY - LimitMinY));
+            set
+            {
+                LimitMinX = value.Left;
+                LimitMaxX = value.Right;
+                LimitMinY = value.Top;
+                LimitMaxY = value.Bottom;
+            }
+        }
+        public double LimitMinX
+        {
+            get => (double)GetValue(LimitMinXProperty);
+            set => SetValue(LimitMinXProperty, value);
+        }
+        public static readonly DependencyProperty LimitMinXProperty = DependencyProperty.Register(
+            nameof(LimitMinX), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                )
+            );
+        public double LimitMaxX
+        {
+            get => (double)GetValue(LimitMaxXProperty);
+            set => SetValue(LimitMaxXProperty, value);
+        }
+        public static readonly DependencyProperty LimitMaxXProperty = DependencyProperty.Register(
+            nameof(LimitMaxX), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(100d,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                )
+            );
+        public double LimitMinY
+        {
+            get => (double)GetValue(LimitMinYProperty);
+            set => SetValue(LimitMinYProperty, value);
+        }
+        public static readonly DependencyProperty LimitMinYProperty = DependencyProperty.Register(
+            nameof(LimitMinY), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(0d,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                )
+            );
+        public double LimitMaxY
+        {
+            get => (double)GetValue(LimitMaxYProperty);
+            set => SetValue(LimitMaxYProperty, value);
+        }
+        public static readonly DependencyProperty LimitMaxYProperty = DependencyProperty.Register(
+            nameof(LimitMaxY), typeof(double), typeof(ChartControl),
+            new FrameworkPropertyMetadata(100d,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                )
+            );
         /*
         protected static void OnChartDrawingAreaChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -204,7 +259,7 @@ namespace CompMs.Graphics.Core.Base
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
                 var suggested = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
-                if (ChartManager.ChartArea.Contains(suggested))
+                if (LimitDrawingArea.Contains(suggested))
                     ChartDrawingArea = suggested;
                 isMoving = false;
             }
@@ -216,7 +271,7 @@ namespace CompMs.Graphics.Core.Base
                 var currentPosition = e.GetPosition(this);
                 var v = currentPosition - previousPosition;
                 var suggested = Rect.Offset(ChartDrawingArea, ChartManager.Translate(-v, ChartDrawingArea, RenderSize));
-                if (ChartManager.ChartArea.Contains(suggested))
+                if (LimitDrawingArea.Contains(suggested))
                     ChartDrawingArea = suggested;
                 previousPosition = currentPosition;
             }
@@ -279,7 +334,7 @@ namespace CompMs.Graphics.Core.Base
                         new Rect(xNextMin, yNextMin, xNextMax - xNextMin, yNextMax - yNextMin),
                         ChartDrawingArea, RenderSize
                         ),
-                    ChartManager.ChartArea
+                    LimitDrawingArea
                     );
 
             }
@@ -289,7 +344,7 @@ namespace CompMs.Graphics.Core.Base
         {
             if (e.ClickCount == 2 && ChartManager != null)
             {
-                ChartDrawingArea = ChartManager.ChartArea;
+                ChartDrawingArea = LimitDrawingArea;
             }
         }
 

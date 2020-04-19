@@ -15,6 +15,7 @@ namespace CompMs.Graphics.Core.Heatmap
         public GradientStopCollection Gsc { get; }
 
         List<(Color color, IDrawingElement element)> areas;
+        Dictionary<Color, Brush> brushMemo;
 
         public HeatmapManager(
             double[,] dataMatrix,
@@ -30,42 +31,44 @@ namespace CompMs.Graphics.Core.Heatmap
             XPositions = xPositions?.ToArray();
             if (XPositions == null)
                 XPositions = Enumerable.Range(0, dataMatrix.GetLength(1)).Select(e => (double)e).ToArray();
+            var xidcs = Enumerable.Range(0, XPositions.Count).OrderBy(i => XPositions[i]).ToArray();
             XBounds = new double[dataMatrix.GetLength(1) + 1];
-            for(int i = 1; i<XPositions.Count; ++i)
-                XBounds[i] = (XPositions[i - 1] + XPositions[i]) / 2;
+            for(int i = 1; i<xidcs.Length; ++i)
+                XBounds[i] = (XPositions[xidcs[i - 1]] + XPositions[xidcs[i]]) / 2;
             if (XBounds.Length != 2)
             {
-                XBounds[0] = XPositions[0] * 2 - XBounds[1];
-                XBounds[XBounds.Length - 1] = XPositions[XPositions.Count - 1] * 2 - XBounds[XBounds.Length - 2];
+                XBounds[0] = XPositions[xidcs[0]] * 2 - XBounds[1];
+                XBounds[XBounds.Length - 1] = XPositions[xidcs[xidcs.Length - 1]] * 2 - XBounds[XBounds.Length - 2];
             }
             else
             {
-                XBounds[0] = XPositions[0] - 1;
-                XBounds[1] = XPositions[0] + 1;
+                XBounds[0] = XPositions[xidcs[0]] - 1;
+                XBounds[1] = XPositions[xidcs[0]] + 1;
             }
 
             YPositions = yPositions?.ToArray();
             if (YPositions == null)
                 YPositions = Enumerable.Range(0, dataMatrix.GetLength(0)).Select(e => (double)e).ToArray();
+            var yidcs = Enumerable.Range(0, YPositions.Count).OrderBy(i => YPositions[i]).ToArray();
             YBounds = new double[dataMatrix.GetLength(0) + 1];
-            for(int i = 1; i<YPositions.Count; ++i)
-                YBounds[i] = (YPositions[i - 1] + YPositions[i]) / 2;
+            for(int i = 1; i<yidcs.Length; ++i)
+                YBounds[i] = (YPositions[yidcs[i - 1]] + YPositions[yidcs[i]]) / 2;
             if (YBounds.Length != 2)
             {
-                YBounds[0] = XPositions[0] * 2 - YBounds[1];
-                YBounds[YBounds.Length - 1] = YPositions[YPositions.Count - 1] * 2 - YBounds[YBounds.Length - 2];
+                YBounds[0] = YPositions[yidcs[0]] * 2 - YBounds[1];
+                YBounds[YBounds.Length - 1] = YPositions[yidcs[yidcs.Length - 1]] * 2 - YBounds[YBounds.Length - 2];
             }
             else
             {
-                YBounds[0] = YPositions[0] - 1;
-                YBounds[1] = YPositions[0] + 1;
+                YBounds[0] = YPositions[yidcs[0]] - 1;
+                YBounds[1] = YPositions[yidcs[0]] + 1;
             }
 
             var matrixAreas = new List<(double value, Rect area)>(dataMatrix.Length);
-            for(int i = 0; i<XPositions.Count; ++i)
-                for(int j = 0; j<YPositions.Count; ++j)
+            for(int i = 0; i<xidcs.Length; ++i)
+                for(int j = 0; j<yidcs.Length; ++j)
                     matrixAreas.Add((
-                            dataMatrix[j, i],
+                            dataMatrix[yidcs[j], xidcs[i]],
                             new Rect(new Point(XBounds[i], YBounds[j]), new Point(XBounds[i + 1], YBounds[j + 1]))
                         ));
             matrixAreas.Sort((a, b) => a.value.CompareTo(b.value));
@@ -79,12 +82,19 @@ namespace CompMs.Graphics.Core.Heatmap
             }
 
             areas = new List<(Color color, IDrawingElement element)>();
+            brushMemo = new Dictionary<Color, Brush>();
             {
                 Color cur;
                 int i = 0, j = 1;
                 while (i < matrixAreas.Count)
                 {
                     cur = getGradientColor(gsc, matrixAreas[i].value, rmin, rmax);
+                    if (!brushMemo.ContainsKey(cur))
+                    {
+                        brushMemo[cur] = new SolidColorBrush(cur);
+                        brushMemo[cur].Freeze();
+                    }
+
                     while (j < matrixAreas.Count && Color.AreClose(cur, getGradientColor(gsc, matrixAreas[j].value, rmin, rmax)))
                         ++j;
                     areas.Add((cur, new HeatmapElement(matrixAreas.GetRange(i, j - i).Select(e => e.area))));
@@ -101,7 +111,7 @@ namespace CompMs.Graphics.Core.Heatmap
             var drawingGroup = new DrawingGroup();
             foreach(var area in areas)
             {
-                var drawing = new GeometryDrawing(new SolidColorBrush(area.color), null, area.element.GetGeometry(rect, size));
+                var drawing = new GeometryDrawing(brushMemo[area.color], null, area.element.GetGeometry(rect, size));
                 drawingGroup.Children.Add(drawing);
             }
             return drawingGroup;

@@ -40,14 +40,16 @@ namespace CompMs.Graphics.Core.GraphAxis
 
         public int Limit
         {
-            get => limit;
-            set
-            {
-                limit = value;
-                Update(this);
-            }
+            get => (int)GetValue(LimitProperty);
+            set => SetValue(LimitProperty, value);
         }
-        int limit = -1;
+        public static readonly DependencyProperty LimitProperty = DependencyProperty.Register(
+            nameof(Limit), typeof(int), typeof(CategoryVerticalAxisCoreControl),
+            new FrameworkPropertyMetadata(-1,
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                OnLimitChanged)
+            );
+        static void OnLimitChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => Update(d);
 
         public CategoryVerticalAxisCoreControl() : base()
         {
@@ -62,6 +64,7 @@ namespace CompMs.Graphics.Core.GraphAxis
                 control.ChartManager = new CategoryVerticalAxisManager(
                     control.YPositions, control.Labels, control.Limit);
                 control.ChartDrawingArea = control.ChartManager.ChartArea;
+                control.LimitDrawingArea = control.ChartManager.ChartArea;
             }
         }
     }

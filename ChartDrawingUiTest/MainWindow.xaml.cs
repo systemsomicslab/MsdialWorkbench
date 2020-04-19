@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using ChartDrawingUiTest.Default;
 using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
+using ChartDrawingUiTest.Compound;
 using ChartDrawingUiTest.Chromatogram;
 
 namespace ChartDrawingUiTest
@@ -26,6 +27,8 @@ namespace ChartDrawingUiTest
                 {"Dendrogram2", typeof(Dendrogram2) },
                 {"Heatmap1", typeof(Heatmap1) },
                 {"Heatmap2", typeof(Heatmap2) },
+                {"Clustermap1", typeof(Clustermap1) },
+                {"Clustermap2", typeof(Clustermap2) },
                 {"Chromatogram1", typeof(Chromatogram1) },
                 // {"DrawingTest1", typeof(DrawingTest1) },
                 // {"BindingTest1", typeof(BindingTest1) },

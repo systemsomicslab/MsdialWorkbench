@@ -11,7 +11,7 @@ namespace CompMs.Graphics.Core.GraphAxis
     {
         public CategoryHorizontalAxisManager(IReadOnlyList<double> xPositions, IReadOnlyList<string> labels, int lim)
         {
-            axis = new CategoryHorizontalAxisTickElement(xPositions);
+            axis = new CategoryHorizontalAxisTickElement(xPositions, lim);
             label = new CategoryHorizontalAxisLabelElement(xPositions, labels, lim);
         }
 

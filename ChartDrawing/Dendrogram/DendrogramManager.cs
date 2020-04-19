@@ -53,9 +53,10 @@ namespace CompMs.Graphics.Core.Dendrogram
             if(YPositions_ == null)
             {
                 YPositions_ = new double[tree.Count];
-                tree.PostOrder(root, e => YPositions_[e.From] = YPositions_[e.To] + e.Distance);
+                tree.PreOrder(root, e => YPositions_[e.To] = YPositions_[e.From] + e.Distance);
             }
-            YPositions = YPositions_;
+            var maxy = YPositions_.Max();
+            YPositions = YPositions_.Select(pos => maxy - pos).ToArray();
 
             dendrogramElement = new DendrogramElement(tree, XPositions, YPositions);
             var area = dendrogramElement.ElementArea;

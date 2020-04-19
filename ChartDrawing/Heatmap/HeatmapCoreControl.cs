@@ -27,6 +27,7 @@ namespace CompMs.Graphics.Core.Heatmap
                 var chartmanager = new HeatmapManager(
                     (double[,])e.NewValue, control.XPositions, control.YPositions, control.Gsc );
                 control.ChartDrawingArea = chartmanager.ChartArea;
+                control.LimitDrawingArea = chartmanager.ChartArea;
                 control.XPositions = chartmanager.XPositions;
                 control.YPositions = chartmanager.YPositions;
                 control.Gsc = chartmanager.Gsc;

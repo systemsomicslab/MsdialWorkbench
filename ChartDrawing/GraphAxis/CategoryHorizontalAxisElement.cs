@@ -11,10 +11,12 @@ namespace CompMs.Graphics.Core.GraphAxis
     class CategoryHorizontalAxisTickElement : IDrawingElement
     {
         public double Ticksize { get; } = 5;
+        int limit;
 
         List<double> positions;
-        public CategoryHorizontalAxisTickElement(IReadOnlyList<double> xPositions)
+        public CategoryHorizontalAxisTickElement(IReadOnlyList<double> xPositions, int limit_ = -1)
         {
+            limit = limit_;
             positions = xPositions.ToList();
             positions.Sort();
             ElementArea = new Rect(new Point(xPositions.Min(), 0), new Point(xPositions.Max(), 100));
@@ -27,10 +29,19 @@ namespace CompMs.Graphics.Core.GraphAxis
             var geometryGroup = new GeometryGroup();
             geometryGroup.Children.Add(new LineGeometry(new Point(0, 0), new Point(size.Width, 0)));
             var inrange = positions.SkipWhile(p => p < rect.Left).TakeWhile(p => p <= rect.Right);
+            var n = inrange.Count();
+            var lim = limit == -1 ? n : limit;
+            if (lim == 0) return geometryGroup;
+            var pertext = (int)(n / Math.Min(n, lim));
+            var counter = 0;
+            var maxwidth = size.Width / Math.Min(n, lim);
             foreach(var pos in inrange)
             {
-                var x = (pos - rect.X) / rect.Width * size.Width;
-                geometryGroup.Children.Add(new LineGeometry(new Point(x, 0), new Point(x, Ticksize)));
+                if(counter++ % pertext == 0)
+                {
+                    var x = (pos - rect.X) / rect.Width * size.Width;
+                    geometryGroup.Children.Add(new LineGeometry(new Point(x, 0), new Point(x, Ticksize)));
+                }
             }
             return geometryGroup;
         }

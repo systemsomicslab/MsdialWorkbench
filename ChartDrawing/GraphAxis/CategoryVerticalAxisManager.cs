@@ -11,7 +11,7 @@ namespace CompMs.Graphics.Core.GraphAxis
     {
         public CategoryVerticalAxisManager(IReadOnlyList<double> yPositions, IReadOnlyList<string> labels, int lim)
         {
-            axis = new CategoryVerticalAxisTickElement(yPositions);
+            axis = new CategoryVerticalAxisTickElement(yPositions, lim);
             label = new CategoryVerticalAxisLabelElement(yPositions, labels, lim);
         }
 
