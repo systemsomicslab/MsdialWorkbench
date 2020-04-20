@@ -93,6 +93,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dendrogram\Dendrogram3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Heatmap\Heatmap1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -133,11 +137,15 @@
     <Compile Include="Default\DrawingTest1.xaml.cs">
       <DependentUpon>DrawingTest1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dendrogram\DendrogramVM2.cs" />
     <Compile Include="Dendrogram\Dendrogram1.xaml.cs">
       <DependentUpon>Dendrogram1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dendrogram\Dendrogram2.xaml.cs">
       <DependentUpon>Dendrogram2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\Dendrogram3.xaml.cs">
+      <DependentUpon>Dendrogram3.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dendrogram\DendrogramVM.cs" />
     <Compile Include="Heatmap\Heatmap1.xaml.cs">

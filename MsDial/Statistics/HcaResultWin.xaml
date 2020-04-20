@@ -4,65 +4,41 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
-        xmlns:dendrogram="clr-namespace:CompMs.Graphics.Core.Dendrogram;assembly=ChartDrawing"
-        xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap;assembly=ChartDrawing"
-        xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis;assembly=ChartDrawing"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:compound="clr-namespace:CompMs.Graphics.Compound;assembly=ChartDrawing"
         mc:Ignorable="d"
         Title="HcaResultWin" Height="700" Width="950">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="8*"/>
         </Grid.RowDefinitions>
-        <axis:CategoryVerticalAxisCoreControl
-            Labels="{Binding YLabels, Mode=OneTime}"
-            YPositions="{Binding YPositions, ElementName=heatmap, Mode=OneTime}"
-            MinY="{Binding MinY, ElementName=heatmap}"
-            MaxY="{Binding MaxY, ElementName=heatmap}"
-            Grid.Row="2" Grid.Column="0"
-            Margin="0,10,0,0"/>
-        <axis:CategoryHorizontalAxisCoreControl
-            Labels="{Binding XLabels}"
-            XPositions="{Binding XPositions, ElementName=heatmap, Mode=OneTime}"
-            MinX="{Binding MinX, ElementName=heatmap}"
-            MaxX="{Binding MaxX, ElementName=heatmap}"
-            Grid.Row="3" Grid.Column="1" />
-        <dendrogram:DendrogramCoreControl
-            Name="xdendrogram"
-            Dendrogram="{Binding XDendrogram, Mode=OneTime}"
-            Width="{Binding Width, ElementName=heatmap}"
-            Grid.Row="1" Grid.Column="1"
-            Margin="0,10,0,0" />
-        <dendrogram:DendrogramCoreControl
-            Name="ydendrogram"
-            Dendrogram="{Binding YDendrogram, Mode=OneTime}"
-            RenderTransformOrigin="0.5, 0.5"
-            Height="{Binding Height, ElementName=heatmap, Mode=OneWay}"
-            Grid.Row="2" Grid.Column="2"
-            Margin="0,0,0,0">
-            <dendrogram:DendrogramCoreControl.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="90"/>
-                    <TranslateTransform X="28"/>
-                </TransformGroup>
-            </dendrogram:DendrogramCoreControl.RenderTransform>
-        </dendrogram:DendrogramCoreControl>
-        <heatmap:HeatmapCoreControl
-            Name="heatmap"
-            DataMatrix="{Binding DataMatrix, Mode=OneTime}"
-            MinX="{Binding MinX, ElementName=xdendrogram}"
-            MaxX="{Binding MaxX, ElementName=xdendrogram}"
-            MinY="{Binding MinX, ElementName=ydendrogram}"
-            MaxY="{Binding MaxX, ElementName=ydendrogram}"
-            Grid.Row="2" Grid.Column="1"
-            Margin="0,0,0,0" />
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <ComboBox
+                Width="100" Margin="20, 20"
+                SelectedIndex="4"
+                SelectedValue="{Binding XNumberOfData, Mode=OneWayToSource}">
+                <sys:Int32>5</sys:Int32>
+                <sys:Int32>20</sys:Int32>
+                <sys:Int32>50</sys:Int32>
+                <sys:Int32>100</sys:Int32>
+                <sys:Int32>-1</sys:Int32>
+            </ComboBox>
+            <ComboBox
+                Width="100" Margin="20, 20"
+                SelectedIndex="4"
+                SelectedValue="{Binding YNumberOfData, Mode=OneWayToSource}">
+                <sys:Int32>5</sys:Int32>
+                <sys:Int32>20</sys:Int32>
+                <sys:Int32>50</sys:Int32>
+                <sys:Int32>100</sys:Int32>
+                <sys:Int32>-1</sys:Int32>
+            </ComboBox>
+        </StackPanel>
+        <compound:Clustermap
+            DataContext="{Binding}"
+            Margin="10,5,10,5"
+            Grid.Row="1"
+            />
     </Grid>
 </Window>

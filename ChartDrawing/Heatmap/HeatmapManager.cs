@@ -25,6 +25,10 @@ namespace CompMs.Graphics.Core.Heatmap
             )
         {
             if (dataMatrix.Length == 0) return;
+            if (dataMatrix.GetLength(1) != xPositions.Count)
+                xPositions = null;
+            if (dataMatrix.GetLength(0) != yPositions.Count)
+                yPositions = null;
 
             double[] XBounds, YBounds;
 
@@ -32,7 +36,7 @@ namespace CompMs.Graphics.Core.Heatmap
             if (XPositions == null)
                 XPositions = Enumerable.Range(0, dataMatrix.GetLength(1)).Select(e => (double)e).ToArray();
             var xidcs = Enumerable.Range(0, XPositions.Count).OrderBy(i => XPositions[i]).ToArray();
-            XBounds = new double[dataMatrix.GetLength(1) + 1];
+            XBounds = new double[XPositions.Count + 1];
             for(int i = 1; i<xidcs.Length; ++i)
                 XBounds[i] = (XPositions[xidcs[i - 1]] + XPositions[xidcs[i]]) / 2;
             if (XBounds.Length != 2)
@@ -50,7 +54,7 @@ namespace CompMs.Graphics.Core.Heatmap
             if (YPositions == null)
                 YPositions = Enumerable.Range(0, dataMatrix.GetLength(0)).Select(e => (double)e).ToArray();
             var yidcs = Enumerable.Range(0, YPositions.Count).OrderBy(i => YPositions[i]).ToArray();
-            YBounds = new double[dataMatrix.GetLength(0) + 1];
+            YBounds = new double[YPositions.Count + 1];
             for(int i = 1; i<yidcs.Length; ++i)
                 YBounds[i] = (YPositions[yidcs[i - 1]] + YPositions[yidcs[i]]) / 2;
             if (YBounds.Length != 2)
@@ -65,8 +69,8 @@ namespace CompMs.Graphics.Core.Heatmap
             }
 
             var matrixAreas = new List<(double value, Rect area)>(dataMatrix.Length);
-            for(int i = 0; i<xidcs.Length; ++i)
-                for(int j = 0; j<yidcs.Length; ++j)
+            for(int i = 0; i<dataMatrix.GetLength(1); ++i)
+                for(int j = 0; j<dataMatrix.GetLength(0); ++j)
                     matrixAreas.Add((
                             dataMatrix[yidcs[j], xidcs[i]],
                             new Rect(new Point(XBounds[i], YBounds[j]), new Point(XBounds[i + 1], YBounds[j + 1]))

@@ -30,9 +30,9 @@ namespace CompMs.Graphics.Core.GraphAxis
             geometryGroup.Children.Add(new LineGeometry(new Point(0, 0), new Point(size.Width, 0)));
             var inrange = positions.SkipWhile(p => p < rect.Left).TakeWhile(p => p <= rect.Right);
             var n = inrange.Count();
-            var lim = limit == -1 ? n : limit;
+            var lim = limit == -1 ? n : Math.Min(n, limit);
             if (lim == 0) return geometryGroup;
-            var pertext = (int)(n / Math.Min(n, lim));
+            var pertext = (int)(n / lim);
             var counter = 0;
             var maxwidth = size.Width / Math.Min(n, lim);
             foreach(var pos in inrange)
