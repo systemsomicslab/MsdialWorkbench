@@ -1679,8 +1679,8 @@ namespace Rfx.Riken.OsakaUniv
             {
                 StatisticsObject = statObject,
                 MultivariateAnalysisOption = MultivariateAnalysisOption.Hca,
-                XDendrogram = ClusteringMatrix(statObject.XDataMatrix),
-                YDendrogram = ClusteringMatrix(transposeMatrix),
+                XDendrogram = ClusteringWard2Distance(statObject.XDataMatrix, CalculatePearsonCorrelationDistance),
+                YDendrogram = ClusteringWard2Distance(transposeMatrix, CalculatePearsonCorrelationDistance),
                 // Root = tree.Count - 1,
                 // DistanceMatrix = distMatrix
             };
@@ -1688,7 +1688,10 @@ namespace Rfx.Riken.OsakaUniv
             return result;
         }
 
-        public static DirectedTree ClusteringMatrix(double[,] dataMatrix)
+        public static DirectedTree ClusteringWardDistance(
+            double[,] dataMatrix,
+            Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc
+            )
         {
             var n = dataMatrix.GetLength(0);
             var m = dataMatrix.GetLength(1);
@@ -1712,7 +1715,7 @@ namespace Rfx.Riken.OsakaUniv
                 distMatrix[i, i] = 0;
                 for (int j = i + 1; j < n; ++j)
                 {
-                    var d = CalculateWardDistance(clusters[i], clusters[j], CalculatePearsonCorrelationDistance);
+                    var d = CalculateWardDistance(clusters[i], clusters[j], distanceFunc);
                     dists.AddLast((d, i, j ));
                     distMatrix[i, j] = distMatrix[j, i] = d;
                 }
@@ -1734,7 +1737,7 @@ namespace Rfx.Riken.OsakaUniv
                     if (!existsParent[l])
                     {
                         dists.AddLast((
-                            CalculateWardDistance(clusters[l], clusters[n + k], CalculatePearsonCorrelationDistance),
+                            CalculateWardDistance(clusters[l], clusters[n + k], distanceFunc),
                             l, n + k
                         ));
                     }
@@ -1752,6 +1755,73 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
             return tree;
+        }
+
+        public static DirectedTree ClusteringWard2Distance(
+            double[,] dataMatrix,
+            Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc
+            )
+        {
+            var n = dataMatrix.GetLength(0);
+            var m = dataMatrix.GetLength(1);
+
+            var jagData = new List<List<double>>(n);
+            for (int i = 0; i < n; ++i)
+            {
+                var l = new List<double>(m);
+                for (int j = 0; j < m; ++j)
+                    l.Add(dataMatrix[i, j]);
+                jagData.Add(l);
+            }
+
+            var q = new PriorityQueue<(double, int, int)>((a, b) => a.CompareTo(b));
+            var memo = new Dictionary<(int, int), double>();
+            var nodes = new HashSet<int>(Enumerable.Range(0, n));
+            var ws = new List<int>(n * 2 - 1);
+            var heights = new List<double>(n * 2 - 1);
+            var result = new DirectedTree(n * 2 - 1);
+            var next = n;
+
+            for(int i = 0; i < n; ++i)
+            {
+                ws.Add(1);
+                heights.Add(0);
+                for(int j = i+1; j < n; ++j)
+                {
+                    var d = distanceFunc(jagData[i], jagData[j]);
+                    memo[(i, j)] = d * d;
+                    memo[(j, i)] = d * d;
+                    q.Push((d, i, j));
+                }
+            }
+            
+            while (q.Length > 0)
+            {
+                (double d, int i, int j) = q.Pop();
+                if (nodes.Contains(i) && nodes.Contains(j))
+                {
+                    result.AddEdge(next, i, d - heights[i]);
+                    result.AddEdge(next, j, d - heights[j]);
+                    heights.Add(d);
+                    ws.Add(ws[i] + ws[j]);
+
+                    nodes.Remove(i);
+                    nodes.Remove(j);
+                    foreach(var k in nodes)
+                    {
+                        var newd = memo[(i, k)] * (ws[i] + ws[k]) / (ws[i] + ws[j] + ws[k])
+                                 + memo[(j, k)] * (ws[j] + ws[k]) / (ws[i] + ws[j] + ws[k])
+                                 - memo[(i, j)] * ws[k] / (ws[i] + ws[j] + ws[k]);
+                        memo[(k, next)] = newd;
+                        memo[(next, k)] = newd;
+                        q.Push((Math.Sqrt(newd), k, next));
+                    }
+
+                    nodes.Add(next++);
+                }
+            }
+
+            return result;
         }
 
         public static double CalculateWardDistance(IEnumerable<List<double>> xs, IEnumerable<List<double>> ys, Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc) {
@@ -1786,7 +1856,8 @@ namespace Rfx.Riken.OsakaUniv
             }
             if(xx == 0 || yy == 0)
             {
-                throw new ArgumentException("Invalid data entered.");
+                // throw new ArgumentException("Invalid data entered.");
+                return 0;
             }
             return 1 - xy / Math.Sqrt(xx * yy);
         }
