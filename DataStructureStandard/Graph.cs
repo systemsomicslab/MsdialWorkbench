@@ -292,5 +292,35 @@ namespace Common.DataStructure
             dfs(node);
         }
         public void PreOrder(Action<Edge> f) => PreOrder(Root, f);
+
+        public void BfsEdge(int node, Action<Edge> f)
+        {
+            var q = new PriorityQueue<(double dist, Edge edge)>((a, b) => a.dist.CompareTo(b.dist));
+            q.Push((0, new Edge(-1, node, 0)));
+            while (q.Length != 0)
+            {
+                (double d, Edge e) = q.Pop();
+                f(e);
+
+                foreach(var v in g[e.To])
+                    q.Push((d + v.Distance, v));
+            }
+        }
+        public void BfsEdge(Action<Edge> f) => BfsEdge(Root, f);
+
+        public void BfsNode(int node, Action<int> f)
+        {
+            var q = new PriorityQueue<(double dist, int node)>((a, b) => a.dist.CompareTo(b.dist));
+            q.Push((0, node));
+            while (q.Length != 0)
+            {
+                (double d, int v) = q.Pop();
+                f(v);
+
+                foreach(var e in g[v])
+                    q.Push((d + e.Distance, e.To));
+            }
+        }
+        public void BfsNode(Action<int> f) => BfsNode(Root, f);
     }
 }
