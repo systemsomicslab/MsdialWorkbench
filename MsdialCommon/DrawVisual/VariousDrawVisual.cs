@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
 using System.Windows.Media;
 using Rfx.Riken.OsakaUniv;
 
@@ -13,9 +13,9 @@ namespace Msdial.Common.Utility
     {
         #region peak area and peak height plot for target mode
         public static DrawVisual GetDrawVisualIntensityPlot(List<AlignmentPropertyBean> spots) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Samples", "Ion intensity");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Samples", "Ion intensity");
             area.LabelSpace.Top = 15;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "Intensity plot over samples");
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Intensity plot over samples");
             var slist = new SeriesList();
             var numFiles = spots.Count;
             for (int i = 0; i < numFiles; i++) {
@@ -37,8 +37,8 @@ namespace Msdial.Common.Utility
             }
             //slist.SetValues();
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, 0, slist.MaxX + 1, 0);
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, 0, slist.MaxX + 1, 0);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
             drawing.Initialize();
             return drawing;
         }
@@ -49,10 +49,10 @@ namespace Msdial.Common.Utility
         public static void GetDrawVisualNormalizationPlot(AlignmentPropertyBean spot, IReadOnlyList<AnalysisFileBean> analysisFiles, Dictionary<int, int> fileIdOrderDict, string titleLabel,  string yaxis, out DrawVisual dv1, out DrawVisual dv2,
             out float qcOri, out float qcNorm, out float sampleOri, out float sampleNorm)
         {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Injection order", yaxis);
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Injection order", yaxis);
             area.LabelSpace.Top = 15;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, titleLabel);
-            var title2 = ChartDrawing.Utility.GetDefaultTitleV1(13, "Original intensity plot");
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, titleLabel);
+            var title2 = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Original intensity plot");
             var slist = new SeriesList();
             var slistOriginal = new SeriesList();
             var markerSize = new System.Windows.Size(3, 3);
@@ -199,12 +199,12 @@ namespace Msdial.Common.Utility
             }
             //slist.SetValues();
             dv1 = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(dv1, 0, slist.MaxX + 1, slist.MinY - 0.5f, slist.MaxY + 0.5f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(dv1, 0, slist.MaxX + 1, slist.MinY - 0.5f, slist.MaxY + 0.5f);
             dv1.Initialize();
 
             dv2 = new DrawVisual(area, title2, slistOriginal);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(dv2, 0, slistOriginal.MaxX + 1, slistOriginal.MinY - 0.5f, slistOriginal.MaxY + 0.5f);
-            // ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(dv2, 0, slistOriginal.MaxX + 1, slistOriginal.MinY - 0.5f, slistOriginal.MaxY + 0.5f);
+            // CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
             dv2.Initialize();
 
 

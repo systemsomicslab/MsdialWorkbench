@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Chromatogram.ManualPeakModification;
 
 namespace Rfx.Riken.OsakaUniv.ManualPeakMod
 {
@@ -30,7 +31,7 @@ namespace Rfx.Riken.OsakaUniv.ManualPeakMod
 
             rubberRectangleBorder = new Pen(rubberRectangleColor, 1.0);
             rubberRectangleBorder.Freeze();
-            rubberRectangleBackGround = ChartDrawing.Utility.CombineAlphaAndColor(0.25, rubberRectangleColor);
+            rubberRectangleBackGround = CompMs.Graphics.Core.Base.Utility.CombineAlphaAndColor(0.25, rubberRectangleColor);
             rubberRectangleBackGround.Freeze();
         }
 

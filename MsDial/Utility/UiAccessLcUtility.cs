@@ -1488,7 +1488,7 @@ namespace Rfx.Riken.OsakaUniv
                 return null;
         }
 
-        public static ChartDrawing.DrawVisual GetMs2ChromatogramDrawVisual(ObservableCollection<RAW_Spectrum> spectrumCollection, DriftSpotBean driftSpot, PeakAreaBean peakAreaBean, 
+        public static CompMs.Graphics.Core.Base.DrawVisual GetMs2ChromatogramDrawVisual(ObservableCollection<RAW_Spectrum> spectrumCollection, DriftSpotBean driftSpot, PeakAreaBean peakAreaBean, 
             MS2DecResult ms2decres, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean param)
         {
             //if (peakAreaBean.Ms2LevelDatapointNumber == -1) return null;
@@ -1542,7 +1542,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 peaklistlist.Add(peaklist);
             }
-            return ChartDrawing.Utility.GetChromatogramV1(peaklistlist);
+            return CompMs.Graphics.Core.Base.Utility.GetChromatogramV1(peaklistlist);
             
         }
 

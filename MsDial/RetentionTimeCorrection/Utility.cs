@@ -8,8 +8,9 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization;
 using Msdial.Lcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Algorithm;
-using ChartDrawing;
 using System.Windows.Media;
+
+using CompMs.Graphics.Core.Base;
 
 namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
 {
@@ -91,7 +92,7 @@ namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
                 slist.Series.Add(s);
             if(s2.Points.Count > 0)
                 slist.Series.Add(s2);
-            var drawing = new ChartDrawing.DrawVisual(area, title, slist);
+            var drawing = new DrawVisual(area, title, slist);
             SetDrawingMinAndMaxXY_constValue(drawing);
             SetDrawingMaxY_ratio(drawing, 0.05f);
             SetDrawingMinY_ratio(drawing, 0.05f);
@@ -358,26 +359,26 @@ namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
             #region XY axis setting in Draw Visual to set fixed max and min value
 
         public static void SetDrawingMinAndMaxXY_constValue(DrawVisual drawing, float minX = float.MinValue, float maxX = float.MinValue, float minY = float.MinValue, float maxY = float.MinValue) {
-            if (minX > float.MinValue) drawing.SeriesList.MinX = minX;
-            if (maxX > float.MinValue) drawing.SeriesList.MaxX = maxX;
-            if (minY > float.MinValue) drawing.SeriesList.MinY = minY;
-            if (maxY > float.MinValue) drawing.SeriesList.MaxY = maxY;
+            if (minX > float.MinValue) drawing.MinX = minX;
+            if (maxX > float.MinValue) drawing.MaxX = maxX;
+            if (minY > float.MinValue) drawing.MinY = minY;
+            if (maxY > float.MinValue) drawing.MaxY = maxY;
         }
 
         public static void SetDrawingMinX_ratio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MinX -= (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
+            drawing.MinX -= (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
         }
 
         public static void SetDrawingMinY_ratio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MinY -= (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
+            drawing.MinY -= (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
         }
 
         public static void SetDrawingMaxX_ratio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MaxX += (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
+            drawing.MaxX += (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
         }
 
         public static void SetDrawingMaxY_ratio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MaxY += (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
+            drawing.MaxY += (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
         }
         #endregion
 

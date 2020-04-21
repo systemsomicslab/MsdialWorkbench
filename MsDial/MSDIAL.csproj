@@ -600,6 +600,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="Resources\msdial_icon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
     <Page Include="Statistics\HcaResultWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -57,6 +57,54 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Chromatogram\Chromatogram1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compound\Clustermap1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compound\Clustermap2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Default\BindingTest1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Default\ClipTest1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Default\Default1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Default\DrawingTest1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\Dendrogram1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\Dendrogram2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\Dendrogram3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Heatmap\Heatmap1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Heatmap\Heatmap2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -65,6 +113,48 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Chromatogram\Chromatogram1.xaml.cs">
+      <DependentUpon>Chromatogram1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compound\Clustermap1.xaml.cs">
+      <DependentUpon>Clustermap1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compound\Clustermap2.xaml.cs">
+      <DependentUpon>Clustermap2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compound\ClusterVM1.cs" />
+    <Compile Include="Compound\ClusterVM2.cs" />
+    <Compile Include="Default\BindingTest1.xaml.cs">
+      <DependentUpon>BindingTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Default\ClipTest1.xaml.cs">
+      <DependentUpon>ClipTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Default\Default1.xaml.cs">
+      <DependentUpon>Default1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Default\DefaultVM.cs" />
+    <Compile Include="Default\DrawingTest1.xaml.cs">
+      <DependentUpon>DrawingTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramVM2.cs" />
+    <Compile Include="Dendrogram\Dendrogram1.xaml.cs">
+      <DependentUpon>Dendrogram1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\Dendrogram2.xaml.cs">
+      <DependentUpon>Dendrogram2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\Dendrogram3.xaml.cs">
+      <DependentUpon>Dendrogram3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramVM.cs" />
+    <Compile Include="Heatmap\Heatmap1.xaml.cs">
+      <DependentUpon>Heatmap1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\Heatmap2.xaml.cs">
+      <DependentUpon>Heatmap2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\HeatmapVM.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -117,6 +207,17 @@
       <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
       <Name>DataProcessingStandard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
+      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
+      <Name>DataStructureStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
+      <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
+      <Name>MathematicsStandard</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="data\testmatrix.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -11,8 +11,10 @@ using System.IO;
 using System.Windows.Interop;
 using System.Diagnostics;
 
+using CompMs.Graphics.Core.Base;
 
-namespace ChartDrawing
+
+namespace CompMs.Graphics.Chromatogram.ManualPeakModification
 {
     public class ChromatogramDetectedPeakProperty
     {
@@ -89,7 +91,7 @@ namespace ChartDrawing
             var flagRight = true;
             var flagFill = false;
 
-            var graphBrush = Utility.CombineAlphaAndColor(this.alpha, (SolidColorBrush)series.Brush);// Set Graph Brush
+            var graphBrush = Core.Base.Utility.CombineAlphaAndColor(this.alpha, (SolidColorBrush)series.Brush);// Set Graph Brush
 
             var rtwidth = series.Accessory.Chromatogram.RtRight - series.Accessory.Chromatogram.RtLeft;
             if (series.Accessory.Chromatogram.RtLeft >= 0 &&
@@ -748,7 +750,8 @@ namespace ChartDrawing
                 var point = ((LineSegment)seg).Point;
 
                 if (Math.Abs(point.X - mouseX) < size && Math.Abs(point.Y - mouseY) < size) {
-                    xy = series.Points[i + 1];
+                    xy.X = series.Points[i + 1].X;
+                    xy.Y = series.Points[i + 1].Y;
                     return true;
                 }
             }

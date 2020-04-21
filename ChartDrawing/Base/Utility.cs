@@ -1,35 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-namespace ChartDrawing
+
+namespace CompMs.Graphics.Core.Base
 {
     public class Utility
     {
         #region XY axis setting in Draw Visual to set fixed max and min value
         public static void SetDrawingMinAndMaxXYConstValue(DrawVisual drawing, float minX = float.MinValue, float maxX = float.MinValue, float minY = float.MinValue, float maxY = float.MinValue) {
-            if (minX > float.MinValue) drawing.SeriesList.MinX = minX;
-            if (maxX > float.MinValue) drawing.SeriesList.MaxX = maxX;
-            if (minY > float.MinValue) drawing.SeriesList.MinY = minY;
-            if (maxY > float.MinValue) drawing.SeriesList.MaxY = maxY;
+            if (minX > float.MinValue) drawing.MinX = minX;
+            if (maxX > float.MinValue) drawing.MaxX = maxX;
+            if (minY > float.MinValue) drawing.MinY = minY;
+            if (maxY > float.MinValue) drawing.MaxY = maxY;
         }
 
         public static void SetDrawingMinXRatio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MinX -= (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
+            drawing.MinX -= (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
         }
 
         public static void SetDrawingMinYRatio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MinY -= (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
+            drawing.MinY -= (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
         }
 
         public static void SetDrawingMaxXRatio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MaxX += (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
+            drawing.MaxX += (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * ratio;
         }
 
         public static void SetDrawingMaxYRatio(DrawVisual drawing, float ratio) {
-            drawing.SeriesList.MaxY += (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
+            drawing.MaxY += (drawing.SeriesList.MaxY - drawing.SeriesList.MinY) * ratio;
         }
         #endregion
 

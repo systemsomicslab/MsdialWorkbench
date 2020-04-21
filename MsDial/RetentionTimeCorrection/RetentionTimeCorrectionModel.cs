@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
-using ChartDrawing;
+
 namespace Rfx.Riken.OsakaUniv.RetentionTimeCorrection
 {
 

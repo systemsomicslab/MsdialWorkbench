@@ -221,7 +221,7 @@ namespace Msdial.Dendrogram
             }
         }
 
-        void drawGraph(double drawWidth, double drawHeight, Graph tree, int root)
+        void drawGraph(double drawWidth, double drawHeight, DirectedTree tree, int root)
         {
             var xMin = this.dendrogramPlotBean.DisplayMinX;
             var xMax = this.dendrogramPlotBean.DisplayMaxX;

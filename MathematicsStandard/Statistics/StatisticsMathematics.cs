@@ -1670,22 +1670,42 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static MultivariateAnalysisResult HierarchicalClusterAnalysis(StatisticsObject statObject) {
-            var n = statObject.XDataMatrix.GetLength(0); // number of files
-            var m = statObject.XDataMatrix.GetLength(1); // number of metabolites
+            var n = statObject.XDataMatrix.GetLength(0);
+            var m = statObject.XDataMatrix.GetLength(1);
+            var transposeMatrix = new double[m, n];
+            for (int i = 0; i < n; ++i) for (int j = 0; j < m; ++j)
+                    transposeMatrix[j, i] = statObject.XDataMatrix[i, j];
+            var result = new MultivariateAnalysisResult()
+            {
+                StatisticsObject = statObject,
+                MultivariateAnalysisOption = MultivariateAnalysisOption.Hca,
+                XDendrogram = ClusteringWard2Distance(statObject.XDataMatrix, CalculatePearsonCorrelationDistance),
+                YDendrogram = ClusteringWard2Distance(transposeMatrix, CalculatePearsonCorrelationDistance),
+                // Root = tree.Count - 1,
+                // DistanceMatrix = distMatrix
+            };
 
+            return result;
+        }
+
+        public static DirectedTree ClusteringWardDistance(
+            double[,] dataMatrix,
+            Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc
+            )
+        {
+            var n = dataMatrix.GetLength(0);
+            var m = dataMatrix.GetLength(1);
             var clusters = new List<List<List<double>>>(n * 2 - 1);
-            // var tree = new List<int>(n * 2 - 1);
-            // var tree = new List<List<int>>(n * 2 - 1);
-            var tree = new Graph(n * 2 - 1);
+
+            var tree = new DirectedTree(n * 2 - 1);
             for(int i = 0; i < n; ++i)
             {
                 var vec = new List<double>(m);
                 for(int j = 0; j < m; ++j)
                 {
-                    vec.Add(statObject.XDataMatrix[i, j]);
+                    vec.Add(dataMatrix[i, j]);
                 }
                 clusters.Add(new List<List<double>> { vec });
-                // tree.Add(-1);
             }
 
             var dists = new LinkedList<(double d, int i, int j)>();
@@ -1695,8 +1715,7 @@ namespace Rfx.Riken.OsakaUniv
                 distMatrix[i, i] = 0;
                 for (int j = i + 1; j < n; ++j)
                 {
-                    var d = CalculateWardDistance(clusters[i], clusters[j], CalculatePearsonCorrelationDistance);
-                    // CalculateWardDistance(clusters[i], clusters[j], CalculateEuclideanDistance);
+                    var d = CalculateWardDistance(clusters[i], clusters[j], distanceFunc);
                     dists.AddLast((d, i, j ));
                     distMatrix[i, j] = distMatrix[j, i] = d;
                 }
@@ -1712,18 +1731,14 @@ namespace Rfx.Riken.OsakaUniv
                 heights[n + k] = d;
                 tree.AddEdge(n + k, i, d - heights[i]);
                 tree.AddEdge(n + k, j, d - heights[j]);
-                // tree[n + k].Add(i);
-                // tree[n + k].Add(j);
                 existsParent[i] = existsParent[j] = true;
                 for (int l = 0; l < n + k; ++l)
                 {
                     if (!existsParent[l])
                     {
                         dists.AddLast((
-                            CalculateWardDistance(clusters[l], clusters[n + k], CalculatePearsonCorrelationDistance),
-                            // CalculateWardDistance(clusters[l], clusters[n + k], CalculateEuclideanDistance),
-                            l,
-                            n + k
+                            CalculateWardDistance(clusters[l], clusters[n + k], distanceFunc),
+                            l, n + k
                         ));
                     }
                 }
@@ -1738,19 +1753,73 @@ namespace Rfx.Riken.OsakaUniv
                         dists.Remove(cur);
                     }
                 }
-                // Console.WriteLine("{0}, {1}", i, j);
+            }
+            return tree;
+        }
+
+        public static DirectedTree ClusteringWard2Distance(
+            double[,] dataMatrix,
+            Func<IEnumerable<double>, IEnumerable<double>, double> distanceFunc
+            )
+        {
+            var n = dataMatrix.GetLength(0);
+            var m = dataMatrix.GetLength(1);
+
+            var jagData = new List<List<double>>(n);
+            for (int i = 0; i < n; ++i)
+            {
+                var l = new List<double>(m);
+                for (int j = 0; j < m; ++j)
+                    l.Add(dataMatrix[i, j]);
+                jagData.Add(l);
             }
 
-            // tree.Select((es, idx) => string.Format("{0}: {1}", idx, String.Join(",", es))).ToList().ForEach(Console.WriteLine);
+            var q = new PriorityQueue<(double, int, int)>((a, b) => a.CompareTo(b));
+            var memo = new Dictionary<(int, int), double>();
+            var nodes = new HashSet<int>(Enumerable.Range(0, n));
+            var ws = new List<int>(n * 2 - 1);
+            var heights = new List<double>(n * 2 - 1);
+            var result = new DirectedTree(n * 2 - 1);
+            var next = n;
 
-            var result = new MultivariateAnalysisResult()
+            for(int i = 0; i < n; ++i)
             {
-                StatisticsObject = statObject,
-                MultivariateAnalysisOption = MultivariateAnalysisOption.Hca,
-                Dendrogram = tree,
-                Root = tree.Count - 1,
-                DistanceMatrix = distMatrix
-            };
+                ws.Add(1);
+                heights.Add(0);
+                for(int j = i+1; j < n; ++j)
+                {
+                    var d = distanceFunc(jagData[i], jagData[j]);
+                    memo[(i, j)] = d * d;
+                    memo[(j, i)] = d * d;
+                    q.Push((d, i, j));
+                }
+            }
+            
+            while (q.Length > 0)
+            {
+                (double d, int i, int j) = q.Pop();
+                if (nodes.Contains(i) && nodes.Contains(j))
+                {
+                    result.AddEdge(next, i, d - heights[i]);
+                    result.AddEdge(next, j, d - heights[j]);
+                    heights.Add(d);
+                    ws.Add(ws[i] + ws[j]);
+
+                    nodes.Remove(i);
+                    nodes.Remove(j);
+                    foreach(var k in nodes)
+                    {
+                        var newd = memo[(i, k)] * (ws[i] + ws[k]) / (ws[i] + ws[j] + ws[k])
+                                 + memo[(j, k)] * (ws[j] + ws[k]) / (ws[i] + ws[j] + ws[k])
+                                 - memo[(i, j)] * ws[k] / (ws[i] + ws[j] + ws[k]);
+                        memo[(k, next)] = newd;
+                        memo[(next, k)] = newd;
+                        q.Push((Math.Sqrt(newd), k, next));
+                    }
+
+                    nodes.Add(next++);
+                }
+            }
 
             return result;
         }
@@ -1787,7 +1856,8 @@ namespace Rfx.Riken.OsakaUniv
             }
             if(xx == 0 || yy == 0)
             {
-                throw new ArgumentException("Invalid data entered.");
+                // throw new ArgumentException("Invalid data entered.");
+                return 0;
             }
             return 1 - xy / Math.Sqrt(xx * yy);
         }
