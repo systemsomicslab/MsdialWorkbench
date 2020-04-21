@@ -170,7 +170,7 @@ namespace Common.DataStructure
             ((IList<Edges>)g).Add(item);
         }
 
-        public void AddEdge(int from, int to, double distance)
+        public void AddEdge(int from, int to, double distance = 0d)
         {
             g[from].Add(new Edge(from, to, distance));
         }

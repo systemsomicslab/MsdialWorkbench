@@ -27,8 +27,7 @@ namespace CompMs.Graphics.Core.Dendrogram
             if (control != null)
             {
                 var dendrogram = (DirectedTree)e.NewValue;
-                var chartmanager = new DendrogramManager(
-                    dendrogram, control.XPositions, control.YPositions );
+                var chartmanager = new DendrogramManager(dendrogram, null, null);
                 control.ChartDrawingArea = chartmanager.ChartArea;
                 control.XPositions = chartmanager.XPositions;
                 control.YPositions = chartmanager.YPositions;

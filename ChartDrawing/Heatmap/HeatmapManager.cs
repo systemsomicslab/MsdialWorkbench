@@ -25,9 +25,9 @@ namespace CompMs.Graphics.Core.Heatmap
             )
         {
             if (dataMatrix.Length == 0) return;
-            if (dataMatrix.GetLength(1) != xPositions.Count)
+            if (xPositions != null && dataMatrix.GetLength(1) != xPositions.Count)
                 xPositions = null;
-            if (dataMatrix.GetLength(0) != yPositions.Count)
+            if (yPositions != null && dataMatrix.GetLength(0) != yPositions.Count)
                 yPositions = null;
 
             double[] XBounds, YBounds;

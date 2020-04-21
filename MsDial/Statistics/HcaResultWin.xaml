@@ -9,19 +9,30 @@
         mc:Ignorable="d"
         Title="HcaResultWin" Height="700" Width="950">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="8*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MaxWidth="250"/>
+            <ColumnDefinition Width="1*" MaxWidth="100"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Vertical">
+            <TextBlock>
+                 Number of data: X axis
+            </TextBlock>
+            <TextBlock>
+                 Number of data: Y axis
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Vertical">
             <ComboBox
                 Width="100" Margin="20, 20"
                 SelectedIndex="4"
                 SelectedValue="{Binding XNumberOfData, Mode=OneWayToSource}">
                 <sys:Int32>5</sys:Int32>
-                <sys:Int32>20</sys:Int32>
+                <sys:Int32>10</sys:Int32>
                 <sys:Int32>50</sys:Int32>
                 <sys:Int32>100</sys:Int32>
+                <sys:Int32>500</sys:Int32>
+                <sys:Int32>1000</sys:Int32>
                 <sys:Int32>-1</sys:Int32>
             </ComboBox>
             <ComboBox
@@ -29,16 +40,18 @@
                 SelectedIndex="4"
                 SelectedValue="{Binding YNumberOfData, Mode=OneWayToSource}">
                 <sys:Int32>5</sys:Int32>
-                <sys:Int32>20</sys:Int32>
+                <sys:Int32>10</sys:Int32>
                 <sys:Int32>50</sys:Int32>
                 <sys:Int32>100</sys:Int32>
+                <sys:Int32>500</sys:Int32>
+                <sys:Int32>1000</sys:Int32>
                 <sys:Int32>-1</sys:Int32>
             </ComboBox>
         </StackPanel>
         <compound:Clustermap
             DataContext="{Binding}"
             Margin="10,5,10,5"
-            Grid.Row="1"
+            Grid.Column="2"
             />
     </Grid>
 </Window>
