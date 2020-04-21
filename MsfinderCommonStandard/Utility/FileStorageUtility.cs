@@ -16,10 +16,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class FileStorageUtility {
         public static string GetResourcesPath(string file) {
             var sb = new StringBuilder();
-            var currentDir = Directory.GetCurrentDirectory();
+            //var currentDir = Directory.GetCurrentDirectory();
+            var currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
             //sb.Append(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath));
             sb.Append(currentDir);
-            sb.Append("\\Resources").Append("\\");
+            sb.Append("Resources").Append("\\");
 
             var filename = string.Empty;
             switch (file) {

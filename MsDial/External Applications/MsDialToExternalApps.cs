@@ -159,6 +159,13 @@ namespace Rfx.Riken.OsakaUniv
             process.StartInfo.FileName = iniField.MsfinderFilePath;
             process.StartInfo.Arguments = msdialTempDir;
             process.Start();
+
+            //System.Diagnostics.Process.Start("notepad.exe", @"""C:\Users\hiroshi.tsugawa\Desktop\1.txt""");
+            //var pInfo = new ProcessStartInfo() {
+            //    FileName = iniField.MsfinderFilePath,
+            //    Arguments = msdialTempDir
+            //};
+            //Process.Start(pInfo);
         }
 
         public static void SendToMsFinderProgramSelectedAlignmentSpots(MainWindow mainWindow, string folderPath, IEnumerable<AlignmentPropertyBean> targets)

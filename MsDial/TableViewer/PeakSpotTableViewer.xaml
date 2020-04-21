@@ -26,7 +26,7 @@
                 <TextBox Name="NumRows" Text="{Binding Path=Settings.NumRows, Mode=OneWay}" Margin="110,5,5,5" Width="35" Height="16" BorderThickness="0" IsReadOnly="True" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <Button Name="Button_MsFinderExport" Command="{Binding ChangetToMsFinderExportWindow}" Background="Transparent" BorderThickness="0" Margin="5,0,0,2" Height="25" Width="25" VerticalAlignment="Bottom" HorizontalAlignment="Left">
                     <Button.Content>
-                        <Image Source="../Resources/MS-FINDER-Main-Icon.ico" />
+                        <Image Source="../Resources/msfinder_icon.ico" />
                     </Button.Content>
                     <ToolTipService.ToolTip>
                         <ToolTip Content="Export to MS-FINDER" />

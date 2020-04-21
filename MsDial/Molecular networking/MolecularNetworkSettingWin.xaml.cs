@@ -796,8 +796,8 @@ namespace Rfx.Riken.OsakaUniv {
             var rootObj = (RootObject)arg[1];
 
             var json = JsonConvert.SerializeObject(rootObj, Formatting.Indented);
-            var curDir = Directory.GetCurrentDirectory();
-            var exportpath = curDir + "/CytoscapeLocalBrowser/data/elements.js";
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var exportpath = curDir + "CytoscapeLocalBrowser/data/elements.js";
             using (StreamWriter sw = new StreamWriter(exportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }
@@ -1265,9 +1265,9 @@ namespace Rfx.Riken.OsakaUniv {
             var rootObj = (RootObject)arg[1];
 
             var json = JsonConvert.SerializeObject(rootObj, Formatting.Indented);
-            var curDir = Directory.GetCurrentDirectory();
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
 
-            var exportpath = curDir + "/CytoscapeLocalBrowser/data/elements.js";
+            var exportpath = curDir + "CytoscapeLocalBrowser/data/elements.js";
             using (StreamWriter sw = new StreamWriter(exportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }

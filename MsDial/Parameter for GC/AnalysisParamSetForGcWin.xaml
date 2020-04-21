@@ -238,7 +238,7 @@
                         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="20, 25, 0,0">
                             <Label Content="Accurate MS:" Height="30" VerticalContentAlignment="Center"/>
                             <Label Content="Mass slice width:" Height="30" VerticalContentAlignment="Center"/>
-                            <Label Content="Mass accuracy:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="Mass accuracy for centroiding:" Height="30" VerticalContentAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="0, 25, 0,0">
