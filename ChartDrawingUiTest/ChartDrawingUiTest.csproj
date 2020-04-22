@@ -75,19 +75,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Default\BindingTest1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Default\ClipTest1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Default\Default1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Default\DrawingTest1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -134,19 +122,10 @@
     </Compile>
     <Compile Include="Compound\ClusterVM1.cs" />
     <Compile Include="Compound\ClusterVM2.cs" />
-    <Compile Include="Default\BindingTest1.xaml.cs">
-      <DependentUpon>BindingTest1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Default\ClipTest1.xaml.cs">
-      <DependentUpon>ClipTest1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Default\Default1.xaml.cs">
       <DependentUpon>Default1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Default\DefaultVM.cs" />
-    <Compile Include="Default\DrawingTest1.xaml.cs">
-      <DependentUpon>DrawingTest1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dendrogram\DendrogramVM2.cs" />
     <Compile Include="Dendrogram\Dendrogram1.xaml.cs">
       <DependentUpon>Dendrogram1.xaml</DependentUpon>

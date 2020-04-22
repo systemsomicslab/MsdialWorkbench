@@ -63,8 +63,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathwayMap", "PathwayMap\Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfExporter", "PdfExporter\PdfExporter.csproj", "{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticsTestApp", "StatisticsTestApp\StatisticsTestApp.csproj", "{B08317F3-227B-4C66-B2F7-B30CCF84842D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticsTests", "StatisticsTests\StatisticsTests.csproj", "{BE80842B-9747-4BFC-A5B4-1845051AA1D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassSpectrogram", "MassSpectrogram\MassSpectrogram.csproj", "{9ADB8ED7-1D30-45BF-8AC5-A3CCF19AFD65}"
@@ -245,10 +243,6 @@ Global
 		{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{227E13A4-6C2F-4BFD-8597-0DA0F77AB642}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B08317F3-227B-4C66-B2F7-B30CCF84842D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B08317F3-227B-4C66-B2F7-B30CCF84842D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B08317F3-227B-4C66-B2F7-B30CCF84842D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B08317F3-227B-4C66-B2F7-B30CCF84842D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE80842B-9747-4BFC-A5B4-1845051AA1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BE80842B-9747-4BFC-A5B4-1845051AA1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE80842B-9747-4BFC-A5B4-1845051AA1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -362,7 +356,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
