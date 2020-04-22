@@ -978,7 +978,7 @@ namespace Rfx.Riken.OsakaUniv
 				{
                     this.MenuItem_PrincipalComponentAnalysis.IsEnabled = true;
                     this.MenuItem_PartialLeastSquares.IsEnabled = true;
-                    //this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = false;
+                    this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = true;
                     this.isNormalized = true;
                     OnPropertyChanged("isNormalized");
                     BarChartDisplayMode = BarChartDisplayMode.NormalizedHeight;
@@ -987,7 +987,7 @@ namespace Rfx.Riken.OsakaUniv
 				{
                     this.MenuItem_PrincipalComponentAnalysis.IsEnabled = false;
                     this.MenuItem_PartialLeastSquares.IsEnabled = false;
-                    //this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = false;
+                    this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = false;
 
                     this.isNormalized = false;
                     OnPropertyChanged("isNormalized");
@@ -999,7 +999,7 @@ namespace Rfx.Riken.OsakaUniv
 			{
                 this.MenuItem_PrincipalComponentAnalysis.IsEnabled = false;
                 this.MenuItem_PartialLeastSquares.IsEnabled = false;
-                //this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = false;
+                this.MenuItem_HierarchicalClusteringAnalysis.IsEnabled = false;
                 this.isNormalized = false;
                 OnPropertyChanged("isNormalized");
                 this.MenuItem_PathwayMapper.IsEnabled = false;
