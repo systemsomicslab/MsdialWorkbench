@@ -47,7 +47,7 @@
 
             <DataGrid.Columns>
 
-                <DataGridTemplateColumn SortMemberPath="AlignmentID" Width="85" Header="Alignment ID" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="ID" Width="85" Header="Alignment ID" IsReadOnly="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=ID}" VerticalContentAlignment="Center" IsReadOnly="True" />
@@ -55,7 +55,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn SortMemberPath="CentralAccurateMass" Width="1*" Header="Precursor m/z" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="MZ" Width="1*" Header="Precursor m/z" IsReadOnly="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=MZ}" VerticalContentAlignment="Center" IsReadOnly="True" />
@@ -63,7 +63,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn SortMemberPath="CentralRetentionTime" Width="1*" Header="Retention time" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="RT" Width="1*" Header="Retention time" IsReadOnly="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=RT, StringFormat=0.000}" VerticalContentAlignment="Center" IsReadOnly="True" />
@@ -71,7 +71,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn SortMemberPath="AdductIonName" Width="1*" Header="Adduct ion name" IsReadOnly="False">
+                <DataGridTemplateColumn SortMemberPath="Adduct" Width="1*" Header="Adduct ion name" IsReadOnly="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 

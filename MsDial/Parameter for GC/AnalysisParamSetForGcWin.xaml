@@ -622,7 +622,7 @@
 
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -728,7 +728,7 @@
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="3*" />
                                     <ColumnDefinition Width="2*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
@@ -739,6 +739,7 @@
                                     <Label Content="EI similarity factor:" Height="30" VerticalContentAlignment="Center"/>
                                     <Label Content="Identification after alignment:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
                                     <Label Content="Gap filling by compulsion:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
+                                    <Label Content="Choose base peak's m/z for rep. quant mass:" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
 
                                 </StackPanel>
 
@@ -785,6 +786,15 @@
                                           IsChecked="{Binding Path=IsForceInsertForGapFilling}" Margin="5,15,0,0">
                                         <ToolTipService.ToolTip>
                                             <ToolTip Content="Ad hoc peak area is forcibly detected within +- 5 data points even if there is no local maximum. " />
+                                        </ToolTipService.ToolTip>
+                                    </CheckBox>
+
+                                    <CheckBox Name="CheckBox_IsRepresentativeQuantMassBasedOnBasePeakMz" Grid.Row="2" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Center" 
+                                          IsChecked="{Binding Path=IsRepresentativeQuantMassBasedOnBasePeakMz}" Margin="5,15,0,0">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Content="The m/z value of base peak in EI-MS is used for the representative quant mass. " />
                                         </ToolTipService.ToolTip>
                                     </CheckBox>
 

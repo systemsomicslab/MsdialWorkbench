@@ -116,6 +116,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassyfireConsoleApp", "ClassyfireConsoleApp\ClassyfireConsoleApp.csproj", "{F6484267-B235-4CC5-8AC8-96A676219D51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructureTest", "DataStructureTest\DataStructureTest.csproj", "{B0E8E6D7-39B8-4B1F-BBC0-B05337672129}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardTests", "CommonStandardTests\CommonStandardTests.csproj", "{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -351,6 +352,10 @@ Global
 		{B0E8E6D7-39B8-4B1F-BBC0-B05337672129}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0E8E6D7-39B8-4B1F-BBC0-B05337672129}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0E8E6D7-39B8-4B1F-BBC0-B05337672129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

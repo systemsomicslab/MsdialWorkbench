@@ -7,8 +7,9 @@ namespace CompMs.Common.Interfaces
 {
     public interface ITimes
     {
-        Time Absolute { get; set; }
-        Time Relative { get; set; }
-        bool IsAbsolute { get; set; }
+        Time RT { get; set; }
+        Time RI { get; set; }
+        Time Drift { get; set; }
+        TimeType MainType { get; set; }
     }
 }

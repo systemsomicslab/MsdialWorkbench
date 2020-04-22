@@ -1607,12 +1607,12 @@ namespace Rfx.Riken.OsakaUniv
 
                 //filter by identified, annotated, unknowns, ccs
                 var identified = false; var annotated = false; var ccsMatched = false;
-                if (spot.MetaboliteName.IndexOf("w/o MS2:", 0) >= 0) annotated = true;
-                if ((spot.LibraryID >= 0 || spot.PostIdentificationLibraryID >= 0) && spot.MetaboliteName.IndexOf("w/o MS2:", 0) < 0) identified = true;
+                if (spot.MetaboliteName != null && spot.MetaboliteName.IndexOf("w/o MS2:", 0) >= 0) annotated = true;
+                if (spot.MetaboliteName != null && (spot.LibraryID >= 0 || spot.PostIdentificationLibraryID >= 0) && spot.MetaboliteName.IndexOf("w/o MS2:", 0) < 0) identified = true;
                 if (spot.IsCcsMatch) ccsMatched = true;
-                if (spot.MetaboliteName.Contains("PC") && !spot.MetaboliteName.Contains("w/o")) {
-                    Console.WriteLine();
-                }
+                //if (spot.MetaboliteName.Contains("PC") && !spot.MetaboliteName.Contains("w/o")) {
+                //    Console.WriteLine();
+                //}
 
                 var annotationChecker = true;
                 if (!identifiedFilter && !annotatedFilter && !UnknownFilter && !CcsFilter) {

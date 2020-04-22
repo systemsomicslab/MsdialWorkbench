@@ -88,7 +88,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MS-DIAL ver. 4.18.
+        ///   Looks up a localized string similar to MS-DIAL ver. 4.20.
         /// </summary>
         internal static string VERSION {
             get {

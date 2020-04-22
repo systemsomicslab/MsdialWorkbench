@@ -157,6 +157,7 @@ namespace Rfx.Riken.OsakaUniv
         private bool togetherWithAlignment;
         [DataMember]
         private bool isForceInsertForGapFilling;
+        private bool isRepresentativeQuantMassBasedOnBasePeakMz;
 
         //filtering for alignment results
         [DataMember]
@@ -1221,6 +1222,17 @@ namespace Rfx.Riken.OsakaUniv
 
             set {
                 isOnlyTopHitReport = value;
+            }
+        }
+
+        [Key(100)]
+        public bool IsRepresentativeQuantMassBasedOnBasePeakMz {
+            get {
+                return isRepresentativeQuantMassBasedOnBasePeakMz;
+            }
+
+            set {
+                isRepresentativeQuantMassBasedOnBasePeakMz = value;
             }
         }
 
