@@ -1,8 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
+using Rfx.Riken.OsakaUniv;
 
-namespace Rfx.Riken.OsakaUniv.MessagePack
+namespace CompMs.Common.MessagePack
 {
     public static class AlignmentResultBeanMethods
     {

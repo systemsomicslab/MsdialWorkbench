@@ -3,13 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Common</AssemblyName>
+    <RootNamespace>CompMs.Common</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="DataObj\**" />
-    <EmbeddedResource Remove="DataObj\**" />
-    <None Remove="DataObj\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="1.7.3.7" />

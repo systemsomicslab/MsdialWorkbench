@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {

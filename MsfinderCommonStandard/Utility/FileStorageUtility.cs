@@ -1,5 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
-using Rfx.Riken.OsakaUniv.MessagePack;
+﻿using CompMs.Common.MessagePack;
+using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.MsfinderCommon.Query;
 using Riken.Metabolomics.StructureFinder.Parser;
 using System;
@@ -8,9 +8,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-//using System.Windows;
-//using System.Windows.Media;
 
 namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class FileStorageUtility {

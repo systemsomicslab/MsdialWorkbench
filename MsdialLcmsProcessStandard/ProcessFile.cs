@@ -9,6 +9,7 @@ using System.ComponentModel;
 using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.RawData;
 using System.Windows;
+using CompMs.Common.MessagePack;
 
 namespace Msdial.Lcms.DataProcess {
     public sealed class ProcessFile

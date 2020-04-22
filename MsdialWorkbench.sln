@@ -71,8 +71,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK", "NCDK\NCDK.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCDK.Display", "NCDK.Display\NCDK.Display.csproj", "{20E728F8-C648-4F96-AE56-B7A7A185D941}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbfDataHandlerStandard", "AbfDataHandlerStandard\AbfDataHandlerStandard.csproj", "{5A9A2A21-EC94-4869-8866-B5C52E57D79D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandard", "CommonStandard\CommonStandard.csproj", "{EB161441-A663-485F-8CD6-D1D5794F7AD9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinVestigateRestApiStandard", "BinVestigateRestApiStandard\BinVestigateRestApiStandard.csproj", "{56759084-F7C0-4AA6-AB4E-2F8E13927029}"
@@ -116,7 +114,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassyfireConsoleApp", "ClassyfireConsoleApp\ClassyfireConsoleApp.csproj", "{F6484267-B235-4CC5-8AC8-96A676219D51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructureTest", "DataStructureTest\DataStructureTest.csproj", "{B0E8E6D7-39B8-4B1F-BBC0-B05337672129}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonStandardTests", "CommonStandardTests\CommonStandardTests.csproj", "{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandardTests", "CommonStandardTests\CommonStandardTests.csproj", "{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -260,10 +259,6 @@ Global
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20E728F8-C648-4F96-AE56-B7A7A185D941}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A9A2A21-EC94-4869-8866-B5C52E57D79D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A9A2A21-EC94-4869-8866-B5C52E57D79D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A9A2A21-EC94-4869-8866-B5C52E57D79D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A9A2A21-EC94-4869-8866-B5C52E57D79D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB161441-A663-485F-8CD6-D1D5794F7AD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB161441-A663-485F-8CD6-D1D5794F7AD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB161441-A663-485F-8CD6-D1D5794F7AD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -361,7 +356,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal

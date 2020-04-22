@@ -1,4 +1,5 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.MessagePack;
+using Msdial.Lcms.Dataprocess.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -191,7 +192,7 @@ namespace Rfx.Riken.OsakaUniv
                     this.mainWindow.MspDB = DatabaseLcUtility.GetMspDbQueries(this.libraryFilePath, this.mainWindow.IupacReference);
                 } else if(Path.GetExtension(this.libraryFilePath) == ".msp2")
                 {
-                    this.mainWindow.MspDB = MessagePack.MspMethods.LoadMspFromFile(this.libraryFilePath);
+                    this.mainWindow.MspDB = MspMethods.LoadMspFromFile(this.libraryFilePath);
                 }
                 else
                 {

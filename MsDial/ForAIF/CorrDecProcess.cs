@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {

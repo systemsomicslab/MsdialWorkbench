@@ -31,6 +31,7 @@ using System.ComponentModel.DataAnnotations;
 using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.Lipoquality;
 using Riken.Metabolomics.Msdial.Pathway;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {

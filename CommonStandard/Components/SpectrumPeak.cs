@@ -11,6 +11,8 @@ namespace CompMs.Common.Components
         public double Intensity { get; set; }
         public string Comment { get; set; }
 
+        public double Resolution { get; set; }
+
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, string comment = null) {
             Mass = mass;

@@ -1,4 +1,5 @@
-﻿using Msdial.Gcms.Dataprocess.Algorithm;
+﻿using CompMs.Common.MessagePack;
+using Msdial.Gcms.Dataprocess.Algorithm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

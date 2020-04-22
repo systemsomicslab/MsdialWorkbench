@@ -14,6 +14,7 @@ using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System.Diagnostics;
 using Riken.Metabolomics.Lipidomics;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {

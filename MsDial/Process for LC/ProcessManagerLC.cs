@@ -9,6 +9,7 @@ using System.Windows;
 using Msdial.Lcms.DataProcess;
 using Msdial.Lcms.Dataprocess.Utility;
 using System.Linq;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {

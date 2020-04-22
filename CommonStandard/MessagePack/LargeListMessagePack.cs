@@ -5,8 +5,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using MessagePack.LZ4;
 
-namespace Rfx.Riken.OsakaUniv
-{
+namespace CompMs.Common.MessagePack {
     public static class LargeListMessagePack
     {
         public static int OffsetCutoff = 1073741824;

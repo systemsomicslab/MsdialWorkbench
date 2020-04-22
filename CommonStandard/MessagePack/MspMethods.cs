@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Rfx.Riken.OsakaUniv;
+using System.Collections.Generic;
 
-namespace Rfx.Riken.OsakaUniv.MessagePack
-{
+namespace CompMs.Common.MessagePack {
 
     public static class MspMethods
     {

@@ -117,7 +117,7 @@ namespace CompMs.Common.Components.Tests
         }
 
         // Comparing all time property and m/z value
-        public int GetPropertySimilarity(IMoleculeProperty prop1, IMoleculeProperty prop2)
+        public int GetPropertySimilarity(IMSScanProperty prop1, IMSScanProperty prop2)
         {
             int score = -1;
             if (Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz) < 1) score += 1;
