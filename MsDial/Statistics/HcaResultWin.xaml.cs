@@ -73,7 +73,7 @@ namespace Rfx.Riken.OsakaUniv
             {
                 if (xNumberOfData == value) return;
                 xNumberOfData = value;
-                SetDataLimit(Math.Max, XNumberOfData, YNumberOfData);
+                SetDataLimit(Enumerable.Average, XNumberOfData, YNumberOfData);
                 OnPropertyChanged(String.Empty);
             }
         }
@@ -84,7 +84,7 @@ namespace Rfx.Riken.OsakaUniv
             {
                 if (yNumberOfData == value) return;
                 yNumberOfData = value;
-                SetDataLimit(Math.Max, XNumberOfData, YNumberOfData);
+                SetDataLimit(Enumerable.Average, XNumberOfData, YNumberOfData);
                 OnPropertyChanged(String.Empty);
             }
         }
@@ -102,7 +102,7 @@ namespace Rfx.Riken.OsakaUniv
             YLabels = result.StatisticsObject.XLabels;
         }
 
-        public void SetDataLimit( Func<double, double, double> agg, int x_ = -1, int y_ = -1)
+        public void SetDataLimit( Func<IEnumerable<double>, double> agg, int x_ = -1, int y_ = -1)
         {
             var m = result.StatisticsObject.XDataMatrix.GetLength(0);
             var n = result.StatisticsObject.XDataMatrix.GetLength(1);
@@ -172,14 +172,16 @@ namespace Rfx.Riken.OsakaUniv
                 ydendrogram.AddEdge(ymap[e.From], ymap[e.To], e.Distance);
             });
 
+            var transposedmatrix = transpose(result.StatisticsObject.XDataMatrix);
+            var scaledmatrix = MinMaxScaling(transposedmatrix);
             var groupedmatrix = new List<double>[y, x];
             for (int i = 0; i < x; ++i) for (int j = 0; j < y; ++j)
                     groupedmatrix[j, i] = new List<double>();
             for (int i = 0; i < m; ++i) for (int j = 0; j < n; ++j)
-                    groupedmatrix[ymap[ygroups[j]], xmap[xgroups[i]]].Add(result.StatisticsObject.XDataMatrix[i, j]);
+                    groupedmatrix[ymap[ygroups[j]], xmap[xgroups[i]]].Add(scaledmatrix[j, i]);
             var aggedmatrix = new double[y, x];
             for (int i = 0; i < x; ++i) for (int j = 0; j < y; ++j)
-                    aggedmatrix[j, i] = groupedmatrix[j, i].Aggregate((acc, e) => agg(acc, e));
+                    aggedmatrix[j, i] = agg(groupedmatrix[j, i]);
 
             XDendrogram = xdendrogram;
             YDendrogram = ydendrogram;
@@ -203,6 +205,32 @@ namespace Rfx.Riken.OsakaUniv
                 for (int j = 0; j < n; ++j)
                     transposeMatrix[j, i] = matrix[i, j];
             return transposeMatrix;
+        }
+
+        private double[,] MinMaxScaling(double[,] matrix)
+        {
+            var m = matrix.GetLength(0);
+            var n = matrix.GetLength(1);
+
+            var result = new double[m, n];
+            for(int i = 0; i < m; ++i)
+            {
+                var max = double.MinValue;
+                var min = double.MaxValue;
+                for (int j = 0; j < n; ++j)
+                {
+                    max = Math.Max(max, matrix[i, j]);
+                    min = Math.Min(min, matrix[i, j]);
+                }
+                if (min == max)
+                    for (int j = 0; j < n; ++j)
+                        result[i, j] = 0;
+                else
+                    for (int j = 0; j < n; ++j)
+                        result[i, j] = (matrix[i, j] - min) / (max - min);
+            }
+
+            return result;
         }
 
         private DirectedTree xDendrogram;
