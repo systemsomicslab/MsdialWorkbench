@@ -204,7 +204,7 @@ namespace CompMs.Graphics.Core.Base
             MouseRightButtonDown += ZoomRightDragOnMouseDown;
             MouseRightButtonUp += ZoomRightDragOnMouseUp;
             // MouseMove += ZoomRightDragOnMouseMove;
-            MouseLeave += ZoomRightDragOnMouseLeave;
+            // MouseLeave += ZoomRightDragOnMouseLeave;
             MouseWheel += ZoomMouseWheel;
             MouseLeftButtonDown += ResetDoubleClick;
             // SizeChanged += OnSizeChanged;
@@ -293,9 +293,12 @@ namespace CompMs.Graphics.Core.Base
             if (isZooming && ChartManager != null)
             {
                 isZooming = false;
-                ChartDrawingArea = new Rect(
-                    ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
-                    ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
+                ChartDrawingArea = Rect.Intersect(
+                    new Rect(
+                        ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
+                        ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
+                        ),
+                    LimitDrawingArea
                     );
             }
         }
@@ -308,6 +311,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
         */
+        /*
         protected void ZoomRightDragOnMouseLeave(object sender, MouseEventArgs e)
         {
             if (isZooming)
@@ -315,6 +319,7 @@ namespace CompMs.Graphics.Core.Base
                 isZooming = false;
             }
         }
+        */
 
         protected void ZoomMouseWheel(object sender, MouseWheelEventArgs e)
         {

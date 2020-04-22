@@ -26,6 +26,7 @@ namespace ChartDrawingUiTest
                 {"Dendrogram1", typeof(Dendrogram1) },
                 {"Dendrogram2", typeof(Dendrogram2) },
                 {"Dendrogram3", typeof(Dendrogram3) },
+                {"DigraphView1", typeof(DigraphView1) },
                 {"Heatmap1", typeof(Heatmap1) },
                 {"Heatmap2", typeof(Heatmap2) },
                 {"Clustermap1", typeof(Clustermap1) },
