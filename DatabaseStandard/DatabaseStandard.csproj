@@ -28,4 +28,8 @@
     <EmbeddedResource Include="Resources\IUPAC.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
+  </ItemGroup>
+
 </Project>

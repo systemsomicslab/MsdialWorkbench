@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:CompMs.Graphics.Compound"
              xmlns:dendrogram="clr-namespace:CompMs.Graphics.Core.Dendrogram"
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap"
              xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600">
     <Grid>
@@ -23,7 +25,11 @@
         <dendrogram:DendrogramCoreControl
             x:Name="XDendrogramControl"
             Dendrogram="{Binding XDendrogram}"
-            Grid.Column="1" Grid.Row="0"/>
+            Grid.Column="1" Grid.Row="0">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </dendrogram:DendrogramCoreControl>
         <dendrogram:DendrogramCoreControl
             x:Name="YDendrogramControl"
             Dendrogram="{Binding YDendrogram}"
@@ -34,6 +40,9 @@
                     <TranslateTransform X="{Binding ActualHeight, ElementName=YDendrogramControl}"/>
                 </TransformGroup>
             </dendrogram:DendrogramCoreControl.LayoutTransform>
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
         </dendrogram:DendrogramCoreControl>
         <axis:CategoryHorizontalAxisCoreControl
             x:Name="XAxisControl"
@@ -68,6 +77,10 @@
             LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWayToSource}"
             LimitMinY="{Binding LimitMinX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
             LimitMaxY="{Binding LimitMaxX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
-            Grid.Column="1" Grid.Row="1"/>
+            Grid.Column="1" Grid.Row="1">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </heatmap:HeatmapCoreControl>
     </Grid>
 </UserControl>
