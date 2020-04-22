@@ -82,6 +82,12 @@ namespace ChartDrawingUiTest.Dendrogram
             Dendrogram.AddEdge(9, 8, 2);
             Dendrogram.AddEdge(9, 5, 9);
             Dendrogram.AddEdge(10, 9, 3);
+
+            Labels = new List<string>
+            {
+                "0", "1", "2", "3", "4", "5",
+                "6(0,2)", "7(3,4)", "8(6,7)", "9(1,8,5)", "10(9)"
+            };
         }
 
         #region private member
