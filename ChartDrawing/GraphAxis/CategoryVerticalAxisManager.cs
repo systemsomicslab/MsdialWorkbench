@@ -35,16 +35,38 @@ namespace CompMs.Graphics.Core.GraphAxis
 
         public Point Translate(Point point, Rect area, Size size)
         {
-            return new Point(0, point.Y / size.Height * area.Height + area.Y);
+            return new Point(
+                (size.Width - point.X) / size.Width * area.Width + area.X,
+                point.Y / size.Height * area.Height + area.Y
+                );
         }
         public Vector Translate(Vector vector, Rect area, Size size)
         {
-            return new Vector(0, vector.Y / size.Height * area.Height);
+            return new Vector(
+                - vector.X / size.Width * area.Width,
+                vector.Y / size.Height * area.Height
+                );
         }
         public Rect Translate(Rect rect, Rect area, Size size)
         {
             return new Rect(Translate(rect.TopLeft, area, size),
                             Translate(rect.BottomRight, area, size));
+        }
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point(
+                (1 - (point.X - area.X) / area.Width) * size.Width,
+                (point.Y - area.Y) / area.Height * size.Height
+                );
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(
+                - vector.X / area.Width * size.Width,
+                vector.Y / area.Height * size.Height
+                );
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
         }
     }
 }

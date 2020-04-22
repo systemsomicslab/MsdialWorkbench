@@ -293,13 +293,21 @@ namespace CompMs.Graphics.Core.Base
             if (isZooming && ChartManager != null)
             {
                 isZooming = false;
-                ChartDrawingArea = Rect.Intersect(
-                    new Rect(
-                        ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
-                        ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
-                        ),
-                    LimitDrawingArea
+                var newarea = new Rect(
+                    ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
+                    ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
                     );
+                if (newarea.Width == 0)
+                {
+                    newarea.X = ChartDrawingArea.X;
+                    newarea.Width = ChartDrawingArea.Width;
+                }
+                if (newarea.Height == 0)
+                {
+                    newarea.Y = ChartDrawingArea.Y;
+                    newarea.Height = ChartDrawingArea.Height;
+                }
+                ChartDrawingArea = Rect.Intersect(newarea, LimitDrawingArea);
             }
         }
         /*
@@ -396,6 +404,15 @@ namespace CompMs.Graphics.Core.Base
         public Rect Translate(Rect rect, Rect area, Size size)
         {
             return chartManager.Translate(rect, area, size);
+        }
+        public Point Inverse(Point point, Rect area, Size size){
+            return chartManager.Inverse(point, area, size);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return chartManager.Inverse(vector, area, size);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return chartManager.Inverse(rect, area, size);
         }
 
         /*

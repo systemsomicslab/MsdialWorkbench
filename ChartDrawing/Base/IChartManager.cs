@@ -17,6 +17,9 @@ namespace CompMs.Graphics.Core.Base
         Point Translate(Point point, Rect area, Size size);
         Vector Translate(Vector vector, Rect area, Size size);
         Rect Translate(Rect rect, Rect area, Size size);
+        Point Inverse(Point point, Rect area, Size size);
+        Vector Inverse(Vector vector, Rect area, Size size);
+        Rect Inverse(Rect rect, Rect area, Size size);
     }
 
 
@@ -67,6 +70,18 @@ namespace CompMs.Graphics.Core.Base
         {
             return new Rect(Translate(rect.TopLeft, area, size),
                             Translate(rect.BottomRight, area, size));
+        }
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point((point.X - area.X) / area.Width * size.Width,
+                             (point.Y - area.Y) / area.Height * size.Height);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(vector.X / area.Width * size.Width,
+                              vector.Y / area.Height * size.Height);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
         }
 
         /*
@@ -127,6 +142,18 @@ namespace CompMs.Graphics.Core.Base
                             Translate(rect.BottomRight, area, size));
         }
 
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point((point.X - area.X) / area.Width * size.Width,
+                             (point.Y - area.Y) / area.Height * size.Height);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(vector.X / area.Width * size.Width,
+                              vector.Y / area.Height * size.Height);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
+        }
         /*
         public Vector Move(Vector vector) { return new Vector(0, 0); }
         public Rect UpdateRange(Rect rect) { return new Rect(0, 0, 1, 1); }

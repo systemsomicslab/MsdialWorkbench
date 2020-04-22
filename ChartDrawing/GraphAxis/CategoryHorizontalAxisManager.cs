@@ -44,5 +44,15 @@ namespace CompMs.Graphics.Core.GraphAxis
             return new Rect(Translate(rect.TopLeft, area, size),
                             Translate(rect.BottomRight, area, size));
         }
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point((point.X - area.X) / area.Width * size.Width, 0);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(vector.X / area.Width * size.Width, 0);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
+        }
     }
 }

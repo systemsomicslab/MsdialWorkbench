@@ -60,6 +60,8 @@
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
     <Compile Include="Base\ChartControl.cs" />
+    <Compile Include="Behavior\DataLabelAdorner.cs" />
+    <Compile Include="Behavior\DataLabelBehavior.cs" />
     <Compile Include="Behavior\RubberAdorner.cs" />
     <Compile Include="Behavior\RubberBehavior.cs" />
     <Compile Include="Compound\Clustermap.xaml.cs">
