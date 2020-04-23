@@ -61,9 +61,9 @@ namespace CompMs.Graphics.Core.Behavior
 
         void ShowDataLabelOnMove(object sender, MouseEventArgs e)
         {
-            if (XPositions == null)
+            if (XPositions == null || XPositions.Count < Labels.Count)
                 XPositions = new double[Labels.Count];
-            if (YPositions == null)
+            if (YPositions == null || YPositions.Count < Labels.Count)
                 YPositions = new double[Labels.Count];
             var point = AssociatedObject.ChartManager.Translate(
                 e.GetPosition(AssociatedObject),
