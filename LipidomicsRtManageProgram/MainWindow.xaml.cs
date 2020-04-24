@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 using RDotNet;
 using Riken.Metabolomics.Lipidomics;
 using System.IO;
-using Rfx.Riken.OsakaUniv.MessagePack;
+using CompMs.Common.MessagePack;
 
 namespace Lipidomics.Retentiontime.Manager {
     /// <summary>

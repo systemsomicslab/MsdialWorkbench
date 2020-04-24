@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using CompMs.Common.Spectrum;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Enum;
 
 namespace CompMs.Common.Components.Tests
 {
@@ -68,7 +69,7 @@ namespace CompMs.Common.Components.Tests
         #region Set values
         public void SetDemoScan()
         {
-            DemoMsSpectrum = new MSScanProperty(0, 100, new RetentionTime(10));
+            DemoMsSpectrum = new MSScanProperty(0, 100, new RetentionTime(10), IonMode.Positive);
             DemoMsSpectrum.PrecursorMz = 100;
             DemoMsSpectrum.Spectrum = new List<SpectrumPeak>();
             DemoMsSpectrum.AddPeak(100, 10);

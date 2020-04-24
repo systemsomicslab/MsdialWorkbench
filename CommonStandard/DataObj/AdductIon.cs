@@ -10,7 +10,7 @@ namespace CompMs.Common.DataObj {
     /// This is the storage of adduct ion information.
     /// </summary>
     [MessagePackObject]
-    public class AdductIon
+    public class AdductType
     {
         private double adductIonAccurateMass;
         private int adductIonXmer;
@@ -22,7 +22,7 @@ namespace CompMs.Common.DataObj {
         private double m2Intensity;
         private bool isRadical;
 
-        public AdductIon()
+        public AdductType()
         {
             adductIonAccurateMass = -1;
             adductIonName = string.Empty;
@@ -109,11 +109,11 @@ namespace CompMs.Common.DataObj {
     /// </summary>
     [MessagePackObject]
     public class AdductDiff {
-        private AdductIon posAdduct;
-        private AdductIon negAdduct;
+        private AdductType posAdduct;
+        private AdductType negAdduct;
         private double diff; // pos - neg
 
-        public AdductDiff(AdductIon posAdduct, AdductIon negAdduct) {
+        public AdductDiff(AdductType posAdduct, AdductType negAdduct) {
             this.posAdduct = posAdduct;
             this.negAdduct = negAdduct;
             this.diff = posAdduct.AdductIonAccurateMass - negAdduct.AdductIonAccurateMass;
@@ -121,7 +121,7 @@ namespace CompMs.Common.DataObj {
 
         #region // properties
         [Key(0)]
-        public AdductIon PosAdduct {
+        public AdductType PosAdduct {
             get {
                 return posAdduct;
             }
@@ -132,7 +132,7 @@ namespace CompMs.Common.DataObj {
         }
 
         [Key(1)]
-        public AdductIon NegAdduct {
+        public AdductType NegAdduct {
             get {
                 return negAdduct;
             }
