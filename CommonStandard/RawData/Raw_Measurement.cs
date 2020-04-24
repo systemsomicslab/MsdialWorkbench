@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Riken.Metabolomics.RawData
-{
+namespace CompMs.Common.DataObj {
     public enum ScanPolarity
     {
         Undefined, Positive, Negative, Alternating
@@ -29,41 +28,41 @@ namespace Riken.Metabolomics.RawData
         GCMS, DDA, SWATH, ALLIONS, IONMOBILITY, IM_DDA, IM_ALLIONS, IM_SWATH 
     }
 
-    public class RAW_Measurement {
-        public RAW_SourceFileInfo SourceFileInfo { get; set; }
-        public RAW_Sample Sample { get; set; }
+    public class RawMeasurement {
+        public RawSourceFileInfo SourceFileInfo { get; set; }
+        public RawSample Sample { get; set; }
         public MeasurmentMethod Method { get; set; }
-        public Raw_CalibrationInfo CalibrantInfo { get; set; }
-        public List<RAW_Chromatogram> ChromatogramList { get; set; }
-        public List<RAW_Spectrum> SpectrumList { get; set; }
-        public List<RAW_Spectrum> AccumulatedSpectrumList { get; set; }
+        public RawCalibrationInfo CalibrantInfo { get; set; }
+        public List<RawChromatogram> ChromatogramList { get; set; }
+        public List<RawSpectrum> SpectrumList { get; set; }
+        public List<RawSpectrum> AccumulatedSpectrumList { get; set; }
 
-        public RAW_Measurement()
+        public RawMeasurement()
         {
-            SourceFileInfo = new RAW_SourceFileInfo();
-            Sample = new RAW_Sample();
-            CalibrantInfo = new Raw_CalibrationInfo();
+            SourceFileInfo = new RawSourceFileInfo();
+            Sample = new RawSample();
+            CalibrantInfo = new RawCalibrationInfo();
 
-            ChromatogramList = new List<RAW_Chromatogram>();
-            SpectrumList = new List<RAW_Spectrum>();
-            AccumulatedSpectrumList = new List<RAW_Spectrum>();
+            ChromatogramList = new List<RawChromatogram>();
+            SpectrumList = new List<RawSpectrum>();
+            AccumulatedSpectrumList = new List<RawSpectrum>();
         }
     }
 
-    public class RAW_SourceFileInfo
+    public class RawSourceFileInfo
     {
         public string Id { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
     }
 
-    public class RAW_Sample
+    public class RawSample
     {
         public string Id { get; set; }
         public string Name { get; set; }
     }
 
-    public class Raw_CalibrationInfo {
+    public class RawCalibrationInfo {
         public bool IsAgilentIM { get; set; } = false;
         public bool IsBrukerIM { get; set; } = false;
         public bool IsWatersIM { get; set; } = false;
@@ -75,25 +74,25 @@ namespace Riken.Metabolomics.RawData
         public double WatersExponent { get; set; } = -1.0;
     }
 
-    public struct RAW_ChromatogramElement
+    public struct RawChromatogramElement
     {
         public double RtInMin;
         public double Intensity;
     }
 
-    public class RAW_Chromatogram
+    public class RawChromatogram
     {
         public int Index { get; set; }
         public string Id { get; set; }
         public int DefaultArrayLength { get; set; }
 
         public bool IsSRM { get; set; }
-        public RAW_PrecursorIon Precursor { get; set; }
-        public RAW_ProductIon Product { get; set; }
+        public RawPrecursorIon Precursor { get; set; }
+        public RawProductIon Product { get; set; }
 
-        public RAW_ChromatogramElement[] Chromatogram { get; set; }
+        public RawChromatogramElement[] Chromatogram { get; set; }
 
-        public RAW_Chromatogram()
+        public RawChromatogram()
         {
             this.Index = 0;
             this.Id = null;
@@ -105,7 +104,7 @@ namespace Riken.Metabolomics.RawData
         }
     }
 
-    public class RAW_Spectrum
+    public class RawSpectrum
     {
         public int Index { get; set; }
         public string Id { get; set; }
@@ -133,12 +132,12 @@ namespace Riken.Metabolomics.RawData
 
         public double CollisionEnergy { get; set; } // for MSE, all ions
 
-        public RAW_PrecursorIon Precursor { get; set; }
-        public RAW_ProductIon Product { get; set; }
+        public RawPrecursorIon Precursor { get; set; }
+        public RawProductIon Product { get; set; }
 
-        public RAW_PeakElement[] Spectrum { get; set; }
+        public RawPeakElement[] Spectrum { get; set; }
 
-        public RAW_Spectrum()
+        public RawSpectrum()
         {
             this.Index = 0;
             this.Id = null;
@@ -162,11 +161,11 @@ namespace Riken.Metabolomics.RawData
             this.ScanWindowUpperLimit = 0;
             this.Precursor = null;
             this.Product = null;
-            this.Spectrum = new RAW_PeakElement[] { };
+            this.Spectrum = new RawPeakElement[] { };
         }
     }
 
-    public class RAW_PrecursorIon
+    public class RawPrecursorIon
     {
         public double SelectedIonMz { get; set; }
         public double IsolationTargetMz { get; set; }
@@ -176,7 +175,7 @@ namespace Riken.Metabolomics.RawData
         public double CollisionEnergy { get; set; }
         public Units CollisionEnergyUnit { get; set; }
 
-        public RAW_PrecursorIon()
+        public RawPrecursorIon()
         {
             this.SelectedIonMz = 0;
             this.IsolationTargetMz = 0;
@@ -194,13 +193,13 @@ namespace Riken.Metabolomics.RawData
         }
     }
 
-    public class RAW_ProductIon
+    public class RawProductIon
     {
         public double IsolationTargetMz { get; set; }
         public double IsolationWindowLowerOffset { get; set; }
         public double IsolationWindowUpperOffset { get; set; }
 
-        public RAW_ProductIon()
+        public RawProductIon()
         {
             this.IsolationTargetMz = 0;
             this.IsolationWindowLowerOffset = 0;
@@ -213,7 +212,7 @@ namespace Riken.Metabolomics.RawData
         }
     }
 
-    public struct RAW_PeakElement
+    public struct RawPeakElement
     {
         public double Mz;
         public double Intensity;

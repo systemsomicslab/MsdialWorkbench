@@ -2,7 +2,6 @@
 using Msdial.Gcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Gcms.Dataprocess.Algorithm
 {
@@ -508,7 +508,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             }
         }
 
-        private static List<double[]> getRiCorrectedPeaklist(List<RAW_Spectrum> spectrumList, 
+        private static List<double[]> getRiCorrectedPeaklist(List<RawSpectrum> spectrumList, 
             AlignedData alignedData, AlignmentPropertyBean alignmentProp, AnalysisParamOfMsdialGcms param,
             Dictionary<int, float> carbonRtDict, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff) {
 
@@ -583,7 +583,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
         }
 
         private static void recalculationByQuantMass(int fileID, AlignedPeakPropertyBean peakProperty, MS1DecResult ms1DecResult, 
-            List<RAW_Spectrum> spectrumList, AlignmentPropertyBean spotProperty, AnalysisParamOfMsdialGcms param, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff)
+            List<RawSpectrum> spectrumList, AlignmentPropertyBean spotProperty, AnalysisParamOfMsdialGcms param, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff)
         {
             //test code
             #region
@@ -807,13 +807,13 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             #endregion
         }
 
-        private static void gapFilling(int fileID, List<RAW_Spectrum> spectrumList, AlignedPeakPropertyBean alignedPeakProperty, 
+        private static void gapFilling(int fileID, List<RawSpectrum> spectrumList, AlignedPeakPropertyBean alignedPeakProperty, 
             AlignmentPropertyBean alignmentSpot, AnalysisParamOfMsdialGcms param, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff)
         {
             gapfillingVS1(fileID, spectrumList, alignedPeakProperty, alignmentSpot, param, fiehnRiCoeff, revFiehnRiCoeff);
         }
 
-        private static void gapfillingVS1(int fileID, List<RAW_Spectrum> spectrumList, AlignedPeakPropertyBean alignedPeakProperty, 
+        private static void gapfillingVS1(int fileID, List<RawSpectrum> spectrumList, AlignedPeakPropertyBean alignedPeakProperty, 
             AlignmentPropertyBean alignmentSpot, AnalysisParamOfMsdialGcms param, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff) {
             var centralRT = alignmentSpot.CentralRetentionTime;
             var centralRI = alignmentSpot.CentralRetentionIndex;

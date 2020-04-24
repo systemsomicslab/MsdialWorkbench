@@ -1,6 +1,6 @@
-﻿using Msdial.Gcms.Dataprocess.Algorithm;
+﻿using CompMs.Common.DataObj;
+using Msdial.Gcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Algorithm;
-using Riken.Metabolomics.RawData;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -151,12 +151,12 @@ namespace Rfx.Riken.OsakaUniv {
 		}
 
 		//export a Raw spectrum collection
-		public static void export(ObservableCollection<RAW_Spectrum> spectra, string fileName) {
+		public static void export(ObservableCollection<RawSpectrum> spectra, string fileName) {
 			using (var fs = new StreamWriter(path + fileName)) {
 				fs.WriteLine("Scan#\tRT(min)\tMS Level\tNumber of Peaks\tPolarity\tPrecursor MZ\tBase Peak MZ\tBase Peak Int\tLowest MZ\tHighest MZ\tMin Intensity\tTIC\tSpectrum");
 
-				foreach (RAW_Spectrum spec in spectra) {
-					var specList = new List<RAW_PeakElement>(spec.Spectrum);
+				foreach (RawSpectrum spec in spectra) {
+					var specList = new List<RawPeakElement>(spec.Spectrum);
 					fs.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}",
 							spec.ScanNumber,
 							spec.ScanStartTime,

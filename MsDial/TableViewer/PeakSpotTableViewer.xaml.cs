@@ -8,11 +8,11 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
-using Riken.Metabolomics.RawData;
 using System.Windows.Forms.DataVisualization.Charting;
 using Msdial.Lcms.Dataprocess.Utility;
 using Msdial.Gcms.Dataprocess.Utility;
 using Msdial.Gcms.Dataprocess.Algorithm;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -587,13 +587,13 @@ namespace Rfx.Riken.OsakaUniv
 
         #region constructor
         // Ion mobility
-        public PeakSpotRow(int id, PeakAreaBean pab, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
+        public PeakSpotRow(int id, PeakAreaBean pab, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             PeakAreaBean = pab;
             PeakID = id;
             Image = getBitmapImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
         }
 
-        public PeakSpotRow(int id, PeakAreaBean pab, DriftSpotBean dsb, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
+        public PeakSpotRow(int id, PeakAreaBean pab, DriftSpotBean dsb, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             PeakAreaBean = pab;
             DriftSpotBean = dsb;
             PeakID = id;
@@ -630,14 +630,14 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         // LC
-        public PeakSpotRow(PeakAreaBean pab, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
+        public PeakSpotRow(PeakAreaBean pab, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             PeakAreaBean = pab;
             PeakID = pab.PeakID;
             Image = getBitmapImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
         }
 
         //GC
-        public PeakSpotRow(List<RAW_Spectrum> spectrumCollectionGC, MS1DecResult ms1DecResult,
+        public PeakSpotRow(List<RawSpectrum> spectrumCollectionGC, MS1DecResult ms1DecResult,
             ProjectPropertyBean projectPropertyBean, AnalysisParamOfMsdialGcms analysisParamGC) {
             PeakID = ms1DecResult.Ms1DecID;
             Ms1DecRes = ms1DecResult;
@@ -646,12 +646,12 @@ namespace Rfx.Riken.OsakaUniv
         #endregion
 
         // Ion mobility
-        private BitmapSource getBitmapImageForLC(PeakAreaBean peakSpot, DriftSpotBean driftSpot, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean project, AnalysisParametersBean param) {
+        private BitmapSource getBitmapImageForLC(PeakAreaBean peakSpot, DriftSpotBean driftSpot, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean project, AnalysisParametersBean param) {
             var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakSpot, driftSpot, param, project);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
         }
 
-        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakSpot, DriftSpotBean driftSpot, AnalysisParametersBean param, ProjectPropertyBean projectPropertyBean) {
             float targetMz = peakSpot.AccurateMass;
             float targetRt = peakSpot.RtAtPeakTop;
@@ -687,12 +687,12 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         // LC
-        private BitmapSource getBitmapImageForLC(PeakAreaBean peakAreaBean, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
+        private BitmapSource getBitmapImageForLC(PeakAreaBean peakAreaBean, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakAreaBean, analysisParametersBean, projectPropertyBean);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
         }
 
-        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean) {
+        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean) {
             float targetMz = peakAreaBean.AccurateMass;
             float targetRt = peakAreaBean.RtAtPeakTop;
             float targetLeftRt = peakAreaBean.RtAtLeftPeakEdge;
@@ -709,12 +709,12 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         // GC
-        private BitmapSource getBitmapImageForGC(MS1DecResult ms1dec, List<RAW_Spectrum> spectrumCollectionGC, AnalysisParamOfMsdialGcms analysisParamGC) {
+        private BitmapSource getBitmapImageForGC(MS1DecResult ms1dec, List<RawSpectrum> spectrumCollectionGC, AnalysisParamOfMsdialGcms analysisParamGC) {
             var chromatogramXicVM = getChromatogramXicVM(spectrumCollectionGC, ms1dec, analysisParamGC);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
         }
 
-        private static ChromatogramXicViewModel getChromatogramXicVM(List<RAW_Spectrum> spectrumList, MS1DecResult ms1dec, AnalysisParamOfMsdialGcms param) {
+        private static ChromatogramXicViewModel getChromatogramXicVM(List<RawSpectrum> spectrumList, MS1DecResult ms1dec, AnalysisParamOfMsdialGcms param) {
             float targetMz = ms1dec.BasepeakMz;
             float targetRt = ms1dec.RetentionTime;
             float targetLeftRt = (float)ms1dec.BasepeakChromatogram[0].RetentionTime;

@@ -7,9 +7,9 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.ComponentModel;
 using CompMs.RawDataHandler.Core;
-using Riken.Metabolomics.RawData;
 using System.Windows;
 using CompMs.Common.MessagePack;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.DataProcess {
     public sealed class ProcessFile
@@ -25,8 +25,8 @@ namespace Msdial.Lcms.DataProcess {
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
             System.Console.WriteLine(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath);
-            var spectrumCollection = new ObservableCollection<RAW_Spectrum>();
-            var accumulatedMs1SpecCollection = new ObservableCollection<RAW_Spectrum>();
+            var spectrumCollection = new ObservableCollection<RawSpectrum>();
+            var accumulatedMs1SpecCollection = new ObservableCollection<RawSpectrum>();
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt))
             {
                 var raw_measurment = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);

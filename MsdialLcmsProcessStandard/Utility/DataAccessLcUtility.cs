@@ -1,6 +1,5 @@
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.Dataprocess.Utility
 {
@@ -17,17 +17,17 @@ namespace Msdial.Lcms.Dataprocess.Utility
     {
         private DataAccessLcUtility() { }
 
-        public static ObservableCollection<RAW_Spectrum> GetRdamSpectrumCollection(RawDataAccess rawDataAccess)
+        public static ObservableCollection<RawSpectrum> GetRdamSpectrumCollection(RawDataAccess rawDataAccess)
         {
             var mes = rawDataAccess.GetMeasurement();
             if (mes == null) return null;
             if (mes.SpectrumList == null) return null;
-            else return new ObservableCollection<RAW_Spectrum>(mes.SpectrumList);
+            else return new ObservableCollection<RawSpectrum>(mes.SpectrumList);
         }
 
         // more secure access
-        public static ObservableCollection<RAW_Spectrum> GetRdamSpectrumCollection(ProjectPropertyBean projectProperty, RdamPropertyBean rdamProperty, AnalysisFileBean analysisFile) {
-            ObservableCollection<RAW_Spectrum> spectrumCollection;
+        public static ObservableCollection<RawSpectrum> GetRdamSpectrumCollection(ProjectPropertyBean projectProperty, RdamPropertyBean rdamProperty, AnalysisFileBean analysisFile) {
+            ObservableCollection<RawSpectrum> spectrumCollection;
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
@@ -43,22 +43,22 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return spectrumCollection;
         }
 
-        public static RAW_Measurement GetRawDataMeasurement(RawDataAccess rawDataAccess) {
+        public static RawMeasurement GetRawDataMeasurement(RawDataAccess rawDataAccess) {
             var mes = rawDataAccess.GetMeasurement();
             return mes;
         }
 
-        public static ObservableCollection<RAW_Spectrum> GetAllSpectrumCollection(RAW_Measurement mes) {
+        public static ObservableCollection<RawSpectrum> GetAllSpectrumCollection(RawMeasurement mes) {
             if (mes == null) return null;
             if (mes.SpectrumList == null) return null;
-            else return new ObservableCollection<RAW_Spectrum>(mes.SpectrumList);
+            else return new ObservableCollection<RawSpectrum>(mes.SpectrumList);
         }
 
-        public static ObservableCollection<RAW_Spectrum> GetAccumulatedMs1SpectrumCollection(RAW_Measurement mes) {
+        public static ObservableCollection<RawSpectrum> GetAccumulatedMs1SpectrumCollection(RawMeasurement mes) {
             if (mes == null) return null;
             if (mes.AccumulatedSpectrumList == null) return null;
             if (mes.AccumulatedSpectrumList.Count == 0) return null;
-            else return new ObservableCollection<RAW_Spectrum>(mes.AccumulatedSpectrumList);
+            else return new ObservableCollection<RawSpectrum>(mes.AccumulatedSpectrumList);
         }
 
         public static List<double[]> GetChromatogramPeaklist(AnalysisFileBean file, float rtBegin, float rtEnd, float targetMz, float mzTolerance, IonMode ionmode, RdamPropertyBean rdamProperty)
@@ -70,14 +70,14 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
             using (var rawDataAccess = new RawDataAccess(filepath, measurementID, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 var mes = rawDataAccess.GetMeasurement();
-                var spectrumCollection = new ObservableCollection<RAW_Spectrum>(mes.SpectrumList);
+                var spectrumCollection = new ObservableCollection<RawSpectrum>(mes.SpectrumList);
                 peaklist = getMs1Peaklist(spectrumCollection, targetMz, mzTolerance, rtBegin, rtEnd, ionmode);
             }
 
             return peaklist;
         }
 
-        public static List<double[]> GetTicPeaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean)
+        public static List<double[]> GetTicPeaklist(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean)
         {
             var peaklist = new List<double[]>();
             if (projectPropertyBean.MethodType == MethodType.ddMSMS || projectPropertyBean.SeparationType == SeparationType.IonMobility)
@@ -91,11 +91,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        private static List<double[]> getTicPeaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
+        private static List<double[]> getTicPeaklist(ObservableCollection<RawSpectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             double sum = 0, maxIntensityMz, maxMass;
 
             int ms1LevelId = 0, experimentNumber = experimentID_AnalystExperimentInformationBean.Count, counter;
@@ -124,11 +124,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        private static List<double[]> getTicPeaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, IonMode ionmode)
+        private static List<double[]> getTicPeaklist(ObservableCollection<RawSpectrum> spectrumCollection, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
             var lastScanId = -1;
@@ -169,7 +169,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetMs1Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd)
+        public static List<double[]> GetMs1Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd)
         {
             var peaklist = new List<double[]>();
 
@@ -191,7 +191,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetMs1PeaklistAsBPC(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd)
+        public static List<double[]> GetMs1PeaklistAsBPC(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd)
         {
             var peaklist = new List<double[]>();
             if (projectPropertyBean.MethodType == MethodType.ddMSMS || projectPropertyBean.SeparationType == SeparationType.IonMobility)
@@ -205,11 +205,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetMs1PeaklistAsBPC(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static List<double[]> GetMs1PeaklistAsBPC(ObservableCollection<RawSpectrum> spectrumCollection, 
             ProjectPropertyBean projectPropertyBean, float ms1Tolerance) {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = projectPropertyBean.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -254,7 +254,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
 
 
-        public static ObservableCollection<double[]> GetAccumulatedMS1SpectrumFromDriftArrays(ObservableCollection<RAW_Spectrum> spectrumCollection, int scan) {
+        public static ObservableCollection<double[]> GetAccumulatedMS1SpectrumFromDriftArrays(ObservableCollection<RawSpectrum> spectrumCollection, int scan) {
 
             var rSpec = spectrumCollection[scan];
             var scanID = rSpec.ScanNumber;
@@ -277,13 +277,13 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return aSpecta;
         }
 
-        private static List<double[]> getMs1Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        private static List<double[]> getMs1Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, 
             float focusedMass, float ms1Tolerance, float retentionTimeBegin,
             float retentionTimeEnd, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -479,7 +479,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
         }
 
-        public static double GetIonAbundanceOfMzInSpectrum(RAW_PeakElement[] massSpectra, 
+        public static double GetIonAbundanceOfMzInSpectrum(RawPeakElement[] massSpectra, 
             float mz, float mztol, out double basepeakMz, out double basepeakIntensity) {
             var startIndex = GetMs1StartIndex(mz, mztol, massSpectra);
             double sum = 0, maxIntensityMz = 0.0, maxMass = mz;
@@ -502,11 +502,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return sum;
         }
 
-        private static List<double[]> getMs1Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
+        private static List<double[]> getMs1Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz, maxMass;
 
@@ -549,12 +549,12 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        private static List<double[]> getMs1PeaklistAsBPC(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        private static List<double[]> getMs1PeaklistAsBPC(ObservableCollection<RawSpectrum> spectrumCollection, 
             float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -598,11 +598,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        private static List<double[]> getMs1PeaklistAsBPC(ObservableCollection<RAW_Spectrum> spectrumCollection, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
+        private static List<double[]> getMs1PeaklistAsBPC(ObservableCollection<RawSpectrum> spectrumCollection, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz, maxMass;
 
@@ -660,7 +660,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static float[] GetMs1Range(ObservableCollection<RAW_Spectrum> spectrumCollection, IonMode ionmode)
+        public static float[] GetMs1Range(ObservableCollection<RawSpectrum> spectrumCollection, IonMode ionmode)
         {
             float minMz = float.MaxValue, maxMz = float.MinValue;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -677,7 +677,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return new float[] { minMz, maxMz };
         }
 
-        public static int GetMs1StartIndex(float focusedMass, float ms1Tolerance, RAW_PeakElement[] massSpectra)
+        public static int GetMs1StartIndex(float focusedMass, float ms1Tolerance, RawPeakElement[] massSpectra)
         {
             if (massSpectra == null || massSpectra.Length == 0) return 0;
             float targetMass = focusedMass - ms1Tolerance;
@@ -839,7 +839,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
         }
 
         public static int GetMs2DatapointNumber(int startPoint, int endPoint, float accurateMass,
-            AnalysisParametersBean param, ObservableCollection<RAW_Spectrum> spectrumCollection, IonMode ionmode)
+            AnalysisParametersBean param, ObservableCollection<RawSpectrum> spectrumCollection, IonMode ionmode)
         {
             var maxIntensity = double.MinValue;
             var maxID = -1;
@@ -907,7 +907,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
         }
 
-        public static int GetMs2DatapointNumberFromRt(ObservableCollection<RAW_Spectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean, float rt, float mz)
+        public static int GetMs2DatapointNumberFromRt(ObservableCollection<RawSpectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean, float rt, float mz)
         {
             int ms1LevelId = -1;
             int ms2LevelId = -1;
@@ -923,7 +923,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
         }
 
 
-        public static List<int> GetMs2DatapointNumberFromRtAif(ObservableCollection<RAW_Spectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean, float rt) {
+        public static List<int> GetMs2DatapointNumberFromRtAif(ObservableCollection<RawSpectrum> spectrumCollection, Dictionary<int, AnalystExperimentInformationBean> experimentID_AnalystExperimentInformationBean, float rt) {
             int ms1LevelId = 0;
             var ms2LevelIdList = new List<int>();
             foreach (var value in experimentID_AnalystExperimentInformationBean) { if (value.Value.MsType == MsType.SCAN) { ms1LevelId = value.Key; } if (value.Value.CheckDecTarget == 1) { ms2LevelIdList.Add(value.Key); } }
@@ -937,7 +937,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return ms2LevelDatapointNumberList;
         }
 
-        public static int GetMs1DatapointNumberFromRetentionTime(ObservableCollection<RAW_Spectrum> spectrumCollection, float rt, int ms1levelId, List<int> ms2levelIdList, int numExperimentId) {
+        public static int GetMs1DatapointNumberFromRetentionTime(ObservableCollection<RawSpectrum> spectrumCollection, float rt, int ms1levelId, List<int> ms2levelIdList, int numExperimentId) {
             int id = ms1levelId;
             float maxRtDiff = 1.0f;
             float rtDiff = maxRtDiff;
@@ -952,7 +952,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return id;
         }
 
-        public static int GetRawSpectrumObjectsStartIndex(int targetScan, ObservableCollection<RAW_Spectrum> rawSpectrumObjects, bool isAccumulatedSpectra) {
+        public static int GetRawSpectrumObjectsStartIndex(int targetScan, ObservableCollection<RawSpectrum> rawSpectrumObjects, bool isAccumulatedSpectra) {
             int startIndex = 0, endIndex = rawSpectrumObjects.Count - 1;
             int counter = 0;
 
@@ -1096,13 +1096,13 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
         }
 
-        public static ObservableCollection<double[]> GetCentroidMassSpectra(ObservableCollection<RAW_Spectrum> spectrumCollection, DataType dataType, 
+        public static ObservableCollection<double[]> GetCentroidMassSpectra(ObservableCollection<RawSpectrum> spectrumCollection, DataType dataType, 
             int msScanPoint, float massBin, bool peakDetectionBasedCentroid)
         {
             var spectra = new ObservableCollection<double[]>();
             var centroidedSpectra = new ObservableCollection<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             if (msScanPoint < 0) return new ObservableCollection<double[]>();
 
@@ -1125,11 +1125,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
                 return spectra;
         }
 
-        public static ObservableCollection<double[]> GetProfileMassSpectra(ObservableCollection<RAW_Spectrum> spectrumCollection, int msScanPoint)
+        public static ObservableCollection<double[]> GetProfileMassSpectra(ObservableCollection<RawSpectrum> spectrumCollection, int msScanPoint)
         {
             var spectra = new ObservableCollection<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             if (msScanPoint < 0) return new ObservableCollection<double[]>();
 
@@ -1142,11 +1142,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
         }
 
         // for DIA
-        public static List<double[]> GetMs2Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, int focusedScanNumber, int ms1LevelId, int ms2LevelId, int experimentCycleNumber, int startScanNum, int endScanNum, double focusedMass, AnalysisParametersBean analysisParametersBean)
+        public static List<double[]> GetMs2Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, int focusedScanNumber, int ms1LevelId, int ms2LevelId, int experimentCycleNumber, int startScanNum, int endScanNum, double focusedMass, AnalysisParametersBean analysisParametersBean)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             float massTolerance = analysisParametersBean.CentroidMs2Tolerance;
             double sum;
@@ -1183,15 +1183,15 @@ namespace Msdial.Lcms.Dataprocess.Utility
         }
 
         // for DIA
-        public static List<List<double[]>> GetMs2Peaklistlist(ObservableCollection<RAW_Spectrum> spectrumCollection, int ms1LevelId, int ms2LevelId, int experimentCycleNumber, int startScanNum, int endScanNum, List<double> focusedMassList, AnalysisParametersBean analysisParametersBean)
+        public static List<List<double[]>> GetMs2Peaklistlist(ObservableCollection<RawSpectrum> spectrumCollection, int ms1LevelId, int ms2LevelId, int experimentCycleNumber, int startScanNum, int endScanNum, List<double> focusedMassList, AnalysisParametersBean analysisParametersBean)
         {
             var peaklistlist = new List<List<double[]>>();
             foreach(var i in focusedMassList)
             {
                 peaklistlist.Add(new List<double[]>());
             }
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             float massTolerance = analysisParametersBean.CentroidMs2Tolerance;
             double sum;
@@ -1235,12 +1235,12 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
         // returns a list of arrays with the following info:
         //		[scan#, RT, m/z, intensity]
-        public static List<double[]> GetMs2Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static List<double[]> GetMs2Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, 
             double precursorMz, double productMz, float startRt, float endRt, AnalysisParametersBean analysisParametersBean, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             float massTolerance = analysisParametersBean.CentroidMs2Tolerance;
@@ -1283,11 +1283,11 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
 		// returns a list of arrays with the following info:
 		//		[scan#, RT, m/z, intensity]
-		public static List<double[]> GetMs2Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection, int focusedScanNumber, int ms2LevelId, int experimentCycleNumber, float startRt, float endRt, double focusedMass, AnalysisParametersBean analysisParametersBean)
+		public static List<double[]> GetMs2Peaklist(ObservableCollection<RawSpectrum> spectrumCollection, int focusedScanNumber, int ms2LevelId, int experimentCycleNumber, float startRt, float endRt, double focusedMass, AnalysisParametersBean analysisParametersBean)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             float massTolerance = analysisParametersBean.CentroidMs2Tolerance;
             double sum;
@@ -1325,7 +1325,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
         // accumulating RT window
         // returns a list of arrays with the following info:
         // [scan#, RT, m/z, intensity]
-        public static List<List<double[]>> GetAccumulatedMs2Peaklist(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<List<double[]>> GetAccumulatedMs2Peaklist(ObservableCollection<RawSpectrum> spectrumCollection,
             List<double[]> ms2spectrum, float startRt, float endRt, AnalysisParametersBean analysisParametersBean, IonMode ionmode)
         {
             int binMultiplyFactor = 1000;
@@ -1337,8 +1337,8 @@ namespace Msdial.Lcms.Dataprocess.Utility
                 peaklistlist.Add(new List<double[]>());
             }
 
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
@@ -1423,7 +1423,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return startIndex;
         }
 
-        public static int GetMs2StartIndex(double targetMass, RAW_PeakElement[] massSpectra)
+        public static int GetMs2StartIndex(double targetMass, RawPeakElement[] massSpectra)
         {
             if (massSpectra == null || massSpectra.Length == 0) return 0;
             int startIndex = 0, endIndex = massSpectra.Length - 1;
@@ -1489,7 +1489,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return startIndex;
         }
 
-        public static int GetRtStartIndex(double targetRt, ObservableCollection<RAW_Spectrum> spectrumCollection)
+        public static int GetRtStartIndex(double targetRt, ObservableCollection<RawSpectrum> spectrumCollection)
         {
             int startIndex = 0, endIndex = spectrumCollection.Count - 1;
 
@@ -1509,14 +1509,14 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return startIndex;
         }
 
-        public static ObservableCollection<double[]> GetMsMsSpectra(ObservableCollection<RAW_Spectrum> spectrumCollection, int scanNumber)
+        public static ObservableCollection<double[]> GetMsMsSpectra(ObservableCollection<RawSpectrum> spectrumCollection, int scanNumber)
         {
             if (scanNumber < 0) return new ObservableCollection<double[]>();
 
             var masslist = new ObservableCollection<double[]>();
 
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             spectrum = spectrumCollection[scanNumber];
             massSpectra = spectrum.Spectrum;
@@ -1572,7 +1572,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return startIndex;
         }
 
-        private static int GetScanStartIndexByRt(float targetRt, ObservableCollection<RAW_Spectrum> spectrumCollection) {
+        private static int GetScanStartIndexByRt(float targetRt, ObservableCollection<RawSpectrum> spectrumCollection) {
             int startIndex = 0, endIndex = spectrumCollection.Count - 1;
 
             int counter = 0;
@@ -1672,7 +1672,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
         //    return adductIonInformationBeanList;
         //}
 
-        public static List<double[]> GetDriftChromatogramByScanRtMz(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<double[]> GetDriftChromatogramByScanRtMz(ObservableCollection<RawSpectrum> spectrumCollection,
            int scanID, float rt, float rtWidth, float mz, float mztol) {
 
             var driftBinToPeak = new Dictionary<int, double[]>();
@@ -1744,7 +1744,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetDriftChromatogramByRtMz(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<double[]> GetDriftChromatogramByRtMz(ObservableCollection<RawSpectrum> spectrumCollection,
            float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
 
             var startID = GetScanStartIndexByRt(rt - rtWidth * 0.5F, spectrumCollection);
@@ -1794,7 +1794,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> CalcAccumulatedMs2Spectra(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<double[]> CalcAccumulatedMs2Spectra(ObservableCollection<RawSpectrum> spectrumCollection,
         PeakAreaBean pSpot, DriftSpotBean dSpot, double mzTol)
         {
             var rt = pSpot.RtAtPeakTop;
@@ -1893,7 +1893,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetAccumulatedMs2Spectra(Rfx.Riken.OsakaUniv.IonMobility.Spectra spectra, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<double[]> GetAccumulatedMs2Spectra(Rfx.Riken.OsakaUniv.IonMobility.Spectra spectra, ObservableCollection<RawSpectrum> spectrumCollection,
             DriftSpotBean driftSpot, PeakAreaBean peakSpot, AnalysisParametersBean param, ProjectPropertyBean project)
         {
             if (spectra.SpectrumDic.ContainsKey(driftSpot.Ms1LevelDatapointNumber))
@@ -1908,7 +1908,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
         }
 
-        public static List<double[]> GetAccumulatedMs2Spectra(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<double[]> GetAccumulatedMs2Spectra(ObservableCollection<RawSpectrum> spectrumCollection,
             DriftSpotBean driftSpot, PeakAreaBean peakSpot, AnalysisParametersBean param, ProjectPropertyBean project)
         { 
             var massSpectrum = DataAccessLcUtility.CalcAccumulatedMs2Spectra(spectrumCollection, peakSpot, driftSpot, param.CentroidMs1Tolerance);
@@ -1922,7 +1922,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
 
 
         // List<List<[driftTime, AccumulatedIntensity]> (mz<[driftTime, intensity]>)
-        public static List<List<double[]>> GetAccumulatedMs2PeakListList(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static List<List<double[]>> GetAccumulatedMs2PeakListList(ObservableCollection<RawSpectrum> spectrumCollection,
              PeakAreaBean pSpot, List<double[]> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode)
         {
             var ms2peaklistlist = new List<List<double[]>>();

@@ -1,4 +1,4 @@
-﻿using Riken.Metabolomics.RawData;
+﻿using CompMs.Common.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -54,8 +54,8 @@ namespace Rfx.Riken.OsakaUniv
         private ObservableCollection<EicDisplayQueryVM> eicDisplaySettingBeanCollection;
         private ChromatogramTicEicViewModel chromatogramTicEicViewModel;
 
-        private ObservableCollection<RAW_Spectrum> lcmsSpectrumCollection;
-        private List<RAW_Spectrum> gcmsSpectrumList;
+        private ObservableCollection<RawSpectrum> lcmsSpectrumCollection;
+        private List<RawSpectrum> gcmsSpectrumList;
         private ProjectPropertyBean projectPropertyBean;
         private List<SolidColorBrush> solidColorBrushList;
         

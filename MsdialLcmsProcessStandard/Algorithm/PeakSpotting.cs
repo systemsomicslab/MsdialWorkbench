@@ -1,6 +1,6 @@
 ﻿using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
+using CompMs.Common.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,7 +26,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <param name="analysisParametersBean"></param>
         /// <param name="projectPropertyBean"></param>
         /// <returns></returns>
-        public static ObservableCollection<PeakAreaBean> GetPeakAreaBeanCollection(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static ObservableCollection<PeakAreaBean> GetPeakAreaBeanCollection(ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean analysisParametersBean,
             ProjectPropertyBean projectPropertyBean, Action<int> reportAction = null)
         {
@@ -74,8 +74,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         #region Ion mobility data processing
         public static ObservableCollection<PeakAreaBean> GetPeakAreaBeanCollectionAtIonMobilityData(
-            ObservableCollection<RAW_Spectrum> accumulatedMs1Spectrum,
-            ObservableCollection<RAW_Spectrum> allSpectrum,
+            ObservableCollection<RawSpectrum> accumulatedMs1Spectrum,
+            ObservableCollection<RawSpectrum> allSpectrum,
             AnalysisParametersBean param,
             ProjectPropertyBean project, Action<int> reportAction) {
 
@@ -87,8 +87,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         //peak spotting for ion mobility data analysis
         private static ObservableCollection<PeakAreaBean> getPeakAreaBeanCollectionOnIonMobilityData(
-            ObservableCollection<RAW_Spectrum> accumulatedMs1Spectrum,
-            ObservableCollection<RAW_Spectrum> allSpectrum,
+            ObservableCollection<RawSpectrum> accumulatedMs1Spectrum,
+            ObservableCollection<RawSpectrum> allSpectrum,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction) {
             var peaklist = new List<double[]>();
             var peakAreaBeanListList = new List<List<PeakAreaBean>>();
@@ -145,7 +145,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
 
-        private static List<PeakAreaBean> executePeakDetectionOnDriftTimeAxis(List<PeakAreaBean> peakAreaBeanList, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static List<PeakAreaBean> executePeakDetectionOnDriftTimeAxis(List<PeakAreaBean> peakAreaBeanList, ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean param, ProjectPropertyBean projectProp) {
             var newSpots = new List<PeakAreaBean>();
             foreach (var peakSpot in peakAreaBeanList) {
@@ -175,7 +175,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         private static List<DriftSpotBean> getPeakAreaBeanListOnDriftTimeAxis(List<double[]> peaklist,
             PeakAreaBean peakSpot,
-            ObservableCollection<RAW_Spectrum> spectrumCollection,
+            ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean param, float focusedMass,
             ProjectPropertyBean projectProp) {
 
@@ -285,7 +285,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         #region TargetMass (Search Standard compound, or etc)
         // for target m/z
-        public static ObservableCollection<PeakAreaBean> GetPeakAreaBeanCollectionTargetMass(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static ObservableCollection<PeakAreaBean> GetPeakAreaBeanCollectionTargetMass(ObservableCollection<RawSpectrum> spectrumCollection,
              AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean,
               float focusedMass, float ms1Tol, Action<int> reportAction) {
 
@@ -303,7 +303,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         #region Data dependent MS/MS acquisition
         //managing peak spotting functions based on mass slice method
-        private static ObservableCollection<PeakAreaBean> getPeakAreaBeanCollectionOnDataDependentAcqusitiion(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static ObservableCollection<PeakAreaBean> getPeakAreaBeanCollectionOnDataDependentAcqusitiion(ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction)
         {
             var peaklist = new List<double[]>();
@@ -363,7 +363,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
       
         private static List<PeakAreaBean> recalculatePeakAreaByBasePeakMzAndMs1MassTolerance(List<PeakAreaBean> peakSpots, 
-            ProjectPropertyBean projectProp, ObservableCollection<RAW_Spectrum> spectrumCollection,
+            ProjectPropertyBean projectProp, ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean param) {
 
             var recalculatedPeakspots = new List<PeakAreaBean>();
@@ -563,7 +563,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static List<PeakAreaBean> getPeakAreaBeanListOnDataDependentAcqusitiion(List<double[]> peaklist, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean param, 
+            ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean param, 
             float focusedMass, ProjectPropertyBean projectPropertyBean)
         {
             var smoothedPeaklist = DataAccessLcUtility.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
@@ -603,8 +603,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             return peakAreaBeanList;
         }
 
-        private static List<PeakAreaBean> getPeakAreaBeanListOnIonMobilityData(List<double[]> peaklist, ObservableCollection<RAW_Spectrum> accumulatedMs1Spectrum,
-            ObservableCollection<RAW_Spectrum> allSpectrum, AnalysisParametersBean param, float focusedMass, ProjectPropertyBean projectProp) {
+        private static List<PeakAreaBean> getPeakAreaBeanListOnIonMobilityData(List<double[]> peaklist, ObservableCollection<RawSpectrum> accumulatedMs1Spectrum,
+            ObservableCollection<RawSpectrum> allSpectrum, AnalysisParametersBean param, float focusedMass, ProjectPropertyBean projectProp) {
 
             var smoothedPeaklist = DataAccessLcUtility.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
             //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(param.MinimumDatapoints,
@@ -664,7 +664,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         #endregion
 
         #region Data independent MS/MS acquisition
-        private static ObservableCollection<PeakAreaBean> getPeakAreaBeanCollectionOnDataIndependentAcqusitiion(ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, Action<int> reportAction)
+        private static ObservableCollection<PeakAreaBean> getPeakAreaBeanCollectionOnDataIndependentAcqusitiion(ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, Action<int> reportAction)
         {
             var peaklist = new List<double[]>();
             var peakAreaBeanListList = new List<List<PeakAreaBean>>();
@@ -758,7 +758,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         #endregion
 
         #region Target m/z peak picking in DDA project
-        private static ObservableCollection<PeakAreaBean> getTargetPeakAreaBeanCollectionOnDDA(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static ObservableCollection<PeakAreaBean> getTargetPeakAreaBeanCollectionOnDDA(ObservableCollection<RawSpectrum> spectrumCollection,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, float focusedMass, float ms1Tol, Action<int> reportAction) {
         
             var peaklist = new List<double[]>();
@@ -794,7 +794,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         #endregion
 
         #region Target m/z peak picking in DIA project
-        private static ObservableCollection<PeakAreaBean> getTargetPeakAreaBeanCollectionOnDIA(ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tol, Action<int> reportAction) {
+        private static ObservableCollection<PeakAreaBean> getTargetPeakAreaBeanCollectionOnDIA(ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, float focusedMass, float ms1Tol, Action<int> reportAction) {
             var peaklist = new List<double[]>();
             var peakAreaBeanListList = new List<List<PeakAreaBean>>();
             var peakAreaBeanList = new List<PeakAreaBean>();
@@ -908,7 +908,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static List<PeakAreaBean> getPeakAreaBeanProperties(List<PeakAreaBean> peakAreaBeanList,
-            ProjectPropertyBean projectProperty, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+            ProjectPropertyBean projectProperty, ObservableCollection<RawSpectrum> spectrumCollection, 
             AnalysisParametersBean param)
         {
             peakAreaBeanList = peakAreaBeanList.OrderBy(n => n.RtAtPeakTop).ThenBy(n => n.AccurateMass).ToList();
@@ -941,7 +941,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static void setIsotopicIonInformation(PeakAreaBean peakAreaBean, ProjectPropertyBean projectProperty, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean param)
+            ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean param)
         {
             var specID = peakAreaBean.Ms1LevelDatapointNumber;
             var tol = param.CentroidMs1Tolerance;

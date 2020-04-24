@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Rfx.Riken.OsakaUniv;
 using Msdial.Lcms.Dataprocess.Algorithm;
-using Riken.Metabolomics.RawData;
 using Msdial.Lcms.Dataprocess.Utility;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Common.Export
 {
@@ -69,7 +69,7 @@ namespace Msdial.Common.Export
         }
 
         public static void WriteSpectrumFromPeakSpot(StreamWriter sw, ProjectPropertyBean projectProp, List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param,
-            MS2DecResult ms2DecResult, PeakAreaBean pab, ObservableCollection<RAW_Spectrum> lcmsSpectra, AnalysisFileBean file, bool isMsp = false)
+            MS2DecResult ms2DecResult, PeakAreaBean pab, ObservableCollection<RawSpectrum> lcmsSpectra, AnalysisFileBean file, bool isMsp = false)
         {
             var name = pab.MetaboliteName;
             if (name == string.Empty) name = "Unknown";

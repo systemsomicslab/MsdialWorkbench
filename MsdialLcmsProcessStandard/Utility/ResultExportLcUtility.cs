@@ -1,7 +1,7 @@
-﻿using Msdial.Lcms.Dataprocess.Algorithm;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.Lipidomics;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,7 +36,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
         }
 
 
-        public static void WriteProfileMsp(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean) {
+        public static void WriteProfileMsp(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean) {
             var massSpectra = DataAccessLcUtility.GetMsMsSpectra(spectrumCollection, peakAreaBean.Ms2LevelDatapointNumber);
 
             var metabolitename = "Unknown";
@@ -61,7 +61,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteProfileMsp(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakSpot, DriftSpotBean driftSpot) {
+        public static void WriteProfileMsp(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot, DriftSpotBean driftSpot) {
             var massSpectra = DataAccessLcUtility.GetMsMsSpectra(spectrumCollection, driftSpot.Ms2LevelDatapointNumber);
 
             var metabolitename = "Unknown";
@@ -84,7 +84,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteCentroidMsp(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean, DataType datatype,
+        public static void WriteCentroidMsp(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean, DataType datatype,
             AnalysisParametersBean param) {
             ObservableCollection<double[]> massSpectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, datatype,
                 peakAreaBean.Ms2LevelDatapointNumber, param.CentroidMs2Tolerance, param.PeakDetectionBasedCentroid);
@@ -107,7 +107,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteCentroidMsp(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakSpot,
+        public static void WriteCentroidMsp(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot,
             DriftSpotBean driftSpot, DataType datatype,
            AnalysisParametersBean param) {
             ObservableCollection<double[]> massSpectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, datatype,
@@ -210,7 +210,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
         }
 
 
-        public static void WriteCentroidMgf(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, DataType datatype,
+        public static void WriteCentroidMgf(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, DataType datatype,
             PeakAreaBean peakAreaBean, AnalysisParametersBean param) {
             var massSpectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, datatype, peakAreaBean.Ms2LevelDatapointNumber, 
                 param.CentroidMs2Tolerance, param.PeakDetectionBasedCentroid);
@@ -245,7 +245,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteCentroidMgf(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean project, PeakAreaBean peakspot,
+        public static void WriteCentroidMgf(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean project, PeakAreaBean peakspot,
             DriftSpotBean driftspot, AnalysisParametersBean param) {
             var massSpectra = DataAccessLcUtility.GetAccumulatedMs2Spectra(spectrumCollection, driftspot, peakspot,
                 param, project);
@@ -282,7 +282,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteProfileMgf(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean) {
+        public static void WriteProfileMgf(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean) {
             var massSpectra = DataAccessLcUtility.GetMsMsSpectra(spectrumCollection, peakAreaBean.Ms2LevelDatapointNumber);
 
             sw.WriteLine("BEGIN IONS");
@@ -316,7 +316,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteProfileMgf(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakSpot, DriftSpotBean driftspot) {
+        public static void WriteProfileMgf(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot, DriftSpotBean driftspot) {
             var massSpectra = DataAccessLcUtility.GetMsMsSpectra(spectrumCollection, driftspot.Ms2LevelDatapointNumber);
 
             sw.WriteLine("BEGIN IONS");
@@ -466,7 +466,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteProfileTxt(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static void WriteProfileTxt(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
             PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots, List<MspFormatCompoundInformationBean> mspDB, 
             List<PostIdentificatioinReferenceBean> textDB, AnalysisParametersBean param, float isotopeExportMax) {
             var ms1Spectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, peakAreaBean.Ms1LevelDatapointNumber);
@@ -478,7 +478,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteCentroidTxt(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots,
+        public static void WriteCentroidTxt(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots,
             List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> textDB, AnalysisParametersBean param, ProjectPropertyBean projectProperty, float isotopeExportMax) {
             var ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataType, peakAreaBean.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, true);
             var msmsSpectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataTypeMS2, peakAreaBean.Ms2LevelDatapointNumber, param.CentroidMs2Tolerance, true);
@@ -490,7 +490,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
         }
 
 
-        public static void WriteMs2decResultAsTxt(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, FileStream fs, List<long> seekpointList, PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots,
+        public static void WriteMs2decResultAsTxt(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, FileStream fs, List<long> seekpointList, PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots,
             List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> textDB, AnalysisParametersBean param, ProjectPropertyBean projectProperty, float isotopeExportMax, bool isConsoleApp = false) {
             var ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataType, peakAreaBean.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, true);
             var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peakAreaBean.PeakID);
@@ -509,7 +509,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteMs2decResultAsTxt(StreamWriter sw, ObservableCollection<RAW_Spectrum> accumulatedSpectra, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void WriteMs2decResultAsTxt(StreamWriter sw, ObservableCollection<RawSpectrum> accumulatedSpectra, ObservableCollection<RawSpectrum> spectrumCollection, 
             FileStream fs, List<long> seekpointList, PeakAreaBean peakAreaBean, ObservableCollection<PeakAreaBean> peakSpots, DriftSpotBean driftSpot, List<DriftSpotBean> driftSpots,
             List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> textDB, AnalysisParametersBean param, ProjectPropertyBean projectProperty, float isotopeExportMax, bool isConsoleApp = false) {
            
@@ -3511,7 +3511,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             }
         }
 
-        public static void WriteProfileAsMat(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void WriteProfileAsMat(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakAreaBean, List<MspFormatCompoundInformationBean> mspDB, float isotopeExportMax) {
             var ms1Spectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, peakAreaBean.Ms1LevelDatapointNumber);
             var isotopes = getIsotopicIonSpectra(ms1Spectra, peakAreaBean.AccurateMass, isotopeExportMax);
@@ -3553,7 +3553,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteProfileAsMat(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static void WriteProfileAsMat(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
            PeakAreaBean peakSpot, DriftSpotBean driftSpot, List<MspFormatCompoundInformationBean> mspDB, float isotopeExportMax) {
             var ms1Spectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, driftSpot.Ms1LevelDatapointNumber);
             var isotopes = getIsotopicIonSpectra(ms1Spectra, driftSpot.AccurateMass, isotopeExportMax);
@@ -3597,7 +3597,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteMs2DecAsMat(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void WriteMs2DecAsMat(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection, 
             FileStream fs, List<long> seekpointList, PeakAreaBean peakAreaBean,
             List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param, 
             ProjectPropertyBean projectProperty, float isotopeExportMax) {
@@ -3644,7 +3644,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
-        public static void WriteMs2DecAsMat(StreamWriter sw, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static void WriteMs2DecAsMat(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
           FileStream fs, List<long> seekpointList, PeakAreaBean peakSpot, DriftSpotBean driftSpot,
           List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param,
           ProjectPropertyBean projectProperty, float isotopeExportMax) {

@@ -9,10 +9,9 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using CompMs.RawDataHandler.Core;
-using Riken.Metabolomics.RawData;
 using Rfx.Riken.OsakaUniv;
 using Msdial.Lcms.Dataprocess.Utility;
-
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
@@ -139,7 +138,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         
-        private static List<float[]> getTargetPeaks(ObservableCollection<RAW_Spectrum> spectrumCollection, int datapointId, float IntensityThreshold, bool isCentroid = true) {
+        private static List<float[]> getTargetPeaks(ObservableCollection<RawSpectrum> spectrumCollection, int datapointId, float IntensityThreshold, bool isCentroid = true) {
             var targetPeaks = new List<float[]>();
             var spectra = spectrumCollection[datapointId];
             if (isCentroid)

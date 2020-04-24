@@ -22,7 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using Riken.Metabolomics.RawData;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv {
     /// <summary>
@@ -615,7 +615,7 @@ namespace Rfx.Riken.OsakaUniv {
         }
 
         private Node getPeakSpotNodeForLC(PeakAreaBean spot, List<MspFormatCompoundInformationBean> mspDB, MS2DecResult ms2Dec, List<double[]> massSpectra, 
-            ProjectPropertyBean projectProp, ObservableCollection<RAW_Spectrum> specCollection, AnalysisParametersBean param, double maxValue, double minValue) {
+            ProjectPropertyBean projectProp, ObservableCollection<RawSpectrum> specCollection, AnalysisParametersBean param, double maxValue, double minValue) {
             var node = new Node() {
                 //classes = "blue b_white hits",
                 data = new NodeData() {

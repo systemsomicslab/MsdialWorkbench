@@ -1,6 +1,6 @@
-﻿using Msdial.Gcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Gcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
         private const double initialProgress = 0.0;
         private const double progressMax = 30.0;
 
-        public static List<PeakAreaBean> GetPeakSpots(List<RAW_Spectrum> spectrumList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
+        public static List<PeakAreaBean> GetPeakSpots(List<RawSpectrum> spectrumList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
         {
             var peaklist = new List<double[]>();
             var detectedPeaksList = new List<List<PeakAreaBean>>();
@@ -68,7 +68,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             return detectedPeaks;
         }
 
-        private static List<PeakAreaBean> getPeakAreaBeanList(List<double[]> peaklist, List<RAW_Spectrum> spectrumList, AnalysisParamOfMsdialGcms param, float focusedMass)
+        private static List<PeakAreaBean> getPeakAreaBeanList(List<double[]> peaklist, List<RawSpectrum> spectrumList, AnalysisParamOfMsdialGcms param, float focusedMass)
         {
             var smoothedPeaklist = DataAccessGcUtility.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
 
@@ -156,7 +156,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             return false;
         }
 
-        private static List<PeakAreaBean> getPeakAreaBeanProperties(List<PeakAreaBean> peakAreaBeanList, List<RAW_Spectrum> spectrumList, AnalysisParamOfMsdialGcms param)
+        private static List<PeakAreaBean> getPeakAreaBeanProperties(List<PeakAreaBean> peakAreaBeanList, List<RawSpectrum> spectrumList, AnalysisParamOfMsdialGcms param)
         {
             peakAreaBeanList = peakAreaBeanList.OrderBy(n => n.RtAtPeakTop).ThenBy(n => n.AccurateMass).ToList();
 
@@ -175,7 +175,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             return peakAreaBeanList.OrderBy(n => n.PeakID).ToList();
         }
 
-        private static void setIsotopicIonInformation(PeakAreaBean peakAreaBean, List<RAW_Spectrum> spectrumList, AnalysisParamOfMsdialGcms param)
+        private static void setIsotopicIonInformation(PeakAreaBean peakAreaBean, List<RawSpectrum> spectrumList, AnalysisParamOfMsdialGcms param)
         {
             var specID = peakAreaBean.Ms1LevelDatapointNumber;
             var tol = param.MassAccuracy; if (param.AccuracyType == AccuracyType.IsNominal) tol = 0.5F;

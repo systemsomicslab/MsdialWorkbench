@@ -10,7 +10,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Riken.Metabolomics.Annotation;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System.Diagnostics;
 using Riken.Metabolomics.Lipidomics;
