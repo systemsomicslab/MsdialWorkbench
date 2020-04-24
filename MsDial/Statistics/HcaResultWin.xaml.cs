@@ -73,7 +73,7 @@ namespace Rfx.Riken.OsakaUniv
             {
                 if (xNumberOfData == value) return;
                 xNumberOfData = value;
-                SetDataLimit(Enumerable.Average, XNumberOfData, YNumberOfData);
+                SetDataLimit(XNumberOfData, YNumberOfData);
                 OnPropertyChanged(String.Empty);
             }
         }
@@ -84,7 +84,7 @@ namespace Rfx.Riken.OsakaUniv
             {
                 if (yNumberOfData == value) return;
                 yNumberOfData = value;
-                SetDataLimit(Enumerable.Average, XNumberOfData, YNumberOfData);
+                SetDataLimit(XNumberOfData, YNumberOfData);
                 OnPropertyChanged(String.Empty);
             }
         }
@@ -102,6 +102,147 @@ namespace Rfx.Riken.OsakaUniv
             YLabels = result.StatisticsObject.XLabels;
         }
 
+        public void SetDataLimit(int x_ = -1, int y_ = -1)
+        {
+            var datamatrix = result.StatisticsObject.XDataMatrix;
+            var transposed = transpose(datamatrix);
+            var scaled = MinMaxScaling(transposed);
+            var m = scaled.GetLength(1);
+            var n = scaled.GetLength(0);
+            var x = x_ == -1 ? m : Math.Min(x_, m);
+            var y = y_ == -1 ? n : Math.Min(y_, n);
+
+            var xvars = new double[m];
+            for (int i = 0; i < m; i++)
+            {
+                double z = 0, z2 = 0;
+                for (int j = 0; j < n; j++)
+                {
+                    z += scaled[j, i];
+                    z2 += scaled[j, i] * scaled[j, i];
+                }
+                xvars[i] = z2 / n - (z / n) * (z / n);
+            }
+            var xleaves = xvars.Select((v, i) => (v, i))
+                               .OrderBy(p => -p.v)
+                               .Take(x)
+                               .Select(p => p.i)
+                               .ToHashSet();
+            var xcontains = new bool[result.XDendrogram.Count];
+            var xroot = result.XDendrogram.Root;
+            result.XDendrogram.PostOrder(xroot, e =>
+                xcontains[e.To] = xleaves.Contains(e.To) ||
+                                  result.XDendrogram[e.To]
+                                        .Any(e_ => xcontains[e_.To])
+            );
+            xcontains[xroot] = xleaves.Contains(xroot) ||
+                               result.XDendrogram[xroot]
+                                     .Any(e_ => xcontains[e_.To]);
+            var xmap = new int[result.XDendrogram.Count];
+            var cnt = 0;
+            for (int i = 0; i < result.XDendrogram.Count; i++)
+            {
+                if (xcontains[i])
+                {
+                    xmap[i] = cnt++;
+                }
+            }
+            var xdendrogram = new DirectedTree(cnt);
+            result.XDendrogram.PreOrder(xroot, e =>
+            {
+                if (xcontains[e.To])
+                {
+                    xdendrogram.AddEdge(xmap[e.From], xmap[e.To], e.Distance);
+                }
+            });
+
+            var yvars = new double[n];
+            for (int i = 0; i < n; i++)
+            {
+                double z = 0, z2 = 0;
+                for (int j = 0; j < m; j++)
+                {
+                    z += scaled[i, j];
+                    z2 += scaled[i, j] * scaled[i, j];
+                }
+                yvars[i] = z2 / m - (z / m) * (z / m);
+            }
+            var yleaves = yvars.Select((v, i) => (v, i))
+                               .OrderBy(p => -p.v)
+                               .Take(y)
+                               .Select(p => p.i)
+                               .ToHashSet();
+            var ycontains = new bool[result.YDendrogram.Count];
+            var yroot = result.YDendrogram.Root;
+            result.YDendrogram.PostOrder(yroot, e =>
+                ycontains[e.To] = yleaves.Contains(e.To) ||
+                                  result.YDendrogram[e.To]
+                                        .Any(e_ => ycontains[e_.To])
+            );
+            ycontains[yroot] = yleaves.Contains(yroot) ||
+                               result.YDendrogram[yroot]
+                                     .Any(e_ => ycontains[e_.To]);
+            var ymap = new int[result.YDendrogram.Count];
+            cnt = 0;
+            for (int i = 0; i < result.YDendrogram.Count; i++)
+            {
+                if (ycontains[i])
+                {
+                    ymap[i] = cnt++;
+                }
+            }
+            var ydendrogram = new DirectedTree(cnt);
+            result.YDendrogram.PreOrder(yroot, e =>
+            {
+                if (ycontains[e.To])
+                {
+                    ydendrogram.AddEdge(ymap[e.From], ymap[e.To], e.Distance);
+                }
+            });
+
+            var mappedmatrix = new double[y, x];
+            for (int i = 0; i < m; i++)
+            {
+                if (!xcontains[i])
+                {
+                    continue;
+                }
+                for (int j = 0; j < n; j++)
+                {
+                    if (!ycontains[j])
+                    {
+                        continue;
+                    }
+                    mappedmatrix[ymap[j], xmap[i]] = scaled[j, i];
+                }
+            }
+
+            var xLabels = new string[x];
+            for (int i = 0; i < result.StatisticsObject.YLabels.Count; i++)
+            {
+                if (xcontains[i])
+                {
+                    xLabels[xmap[i]] = result.StatisticsObject.YLabels[i];
+                }
+            }
+            var yLabels = new string[y];
+            for (int i = 0; i < result.StatisticsObject.XLabels.Count; i++)
+            {
+                if (ycontains[i])
+                {
+                    yLabels[ymap[i]] = result.StatisticsObject.XLabels[i];
+                }
+            }
+
+
+            XDendrogram = xdendrogram;
+            YDendrogram = ydendrogram;
+            DataMatrix = mappedmatrix;
+            XLabels = xLabels;
+            YLabels = yLabels;
+        }
+
+        /*
         public void SetDataLimit( Func<IEnumerable<double>, double> agg, int x_ = -1, int y_ = -1)
         {
             var m = result.StatisticsObject.XDataMatrix.GetLength(0);
@@ -195,6 +336,7 @@ namespace Rfx.Riken.OsakaUniv
             else
                 YLabels = new String[] { };
         }
+        */
 
         private double[,] transpose(double[,] matrix)
         {

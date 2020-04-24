@@ -89,6 +89,19 @@ namespace CompMs.Graphics.Core.Dendrogram
                             Translate(rect.BottomRight, area, size));
         }
 
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point((point.X - area.X) / area.Width * size.Width,
+                             (1 - (point.Y - area.Y) / area.Height) * size.Height);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(vector.X / area.Width * size.Width,
+                              - vector.Y / area.Height * size.Height);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
+        }
+
         /*
         public Vector Move(Vector vector)
         {

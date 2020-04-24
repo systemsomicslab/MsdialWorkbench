@@ -137,6 +137,19 @@ namespace CompMs.Graphics.Core.Heatmap
                             Translate(rect.BottomRight, area, size));
         }
 
+        public Point Inverse(Point point, Rect area, Size size){
+            return new Point((point.X - area.X) / area.Width * size.Width,
+                             (point.Y - area.Y) / area.Height * size.Height);
+        }
+        public Vector Inverse(Vector vector, Rect area, Size size){
+            return new Vector(vector.X / area.Width * size.Width,
+                              vector.Y / area.Height * size.Height);
+        }
+        public Rect Inverse(Rect rect, Rect area, Size size){
+            return new Rect(Inverse(rect.TopLeft, area, size),
+                            Inverse(rect.BottomRight, area, size));
+        }
+
         static (double, double) roundValues(double min, double max)
         {
             var d = Math.Pow(10, Math.Floor(Math.Log10(max - min)));

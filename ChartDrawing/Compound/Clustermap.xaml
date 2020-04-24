@@ -53,7 +53,13 @@
             MaxX="{Binding MaxX, ElementName=XDendrogramControl}"
             LimitMinX="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
             LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
-            Grid.Column="1" Grid.Row="3"/>
+            Grid.Column="1" Grid.Row="3">
+            <i:Interaction.Behaviors>
+                <behavior:DataLabelBehavior
+                    Labels="{Binding Labels, ElementName=XAxisControl}"
+                    XPositions="{Binding XPositions, ElementName=XAxisControl}"/>
+            </i:Interaction.Behaviors>
+        </axis:CategoryHorizontalAxisCoreControl>
         <axis:CategoryVerticalAxisCoreControl
             x:Name="YAxisControl"
             Labels="{Binding YLabels}"
@@ -63,7 +69,13 @@
             MaxY="{Binding MaxX, ElementName=YDendrogramControl}"
             LimitMinY="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
             LimitMaxY="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
-            Grid.Column="0" Grid.Row="1"/>
+            Grid.Column="0" Grid.Row="1">
+            <i:Interaction.Behaviors>
+                <behavior:DataLabelBehavior
+                    Labels="{Binding Labels, ElementName=YAxisControl}"
+                    YPositions="{Binding YPositions, ElementName=YAxisControl}"/>
+            </i:Interaction.Behaviors>
+        </axis:CategoryVerticalAxisCoreControl>
         <heatmap:HeatmapCoreControl
             x:Name="HeatmapControl"
             DataMatrix="{Binding DataMatrix}"
