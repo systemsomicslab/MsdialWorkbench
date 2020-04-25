@@ -1788,7 +1788,15 @@ namespace Rfx.Riken.OsakaUniv
                 heights.Add(0);
                 for(int j = i+1; j < n; ++j)
                 {
-                    var d = distanceFunc(jagData[i], jagData[j]);
+                    double d;
+                    try
+                    {
+                        d = distanceFunc(jagData[i], jagData[j]);
+                    }
+                    catch (ArgumentException)
+                    {
+                        d = 0;
+                    }
                     memo[(i, j)] = d * d;
                     memo[(j, i)] = d * d;
                     q.Push((d, i, j));
@@ -1856,8 +1864,8 @@ namespace Rfx.Riken.OsakaUniv
             }
             if(xx == 0 || yy == 0)
             {
-                // throw new ArgumentException("Invalid data entered.");
-                return 0;
+                throw new ArgumentException("Invalid data entered.");
+                // return 0;
             }
             return 1 - xy / Math.Sqrt(xx * yy);
         }
