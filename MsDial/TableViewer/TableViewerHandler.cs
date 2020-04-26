@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Text;
-using Riken.Metabolomics.RawData;
 using Msdial.Lcms.Dataprocess.Utility;
 
 namespace Rfx.Riken.OsakaUniv

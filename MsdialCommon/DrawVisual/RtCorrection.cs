@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Msdial.Lcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Algorithm;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
 using System.Windows.Media;
 using Rfx.Riken.OsakaUniv;
 using Rfx.Riken.OsakaUniv.RetentionTimeCorrection;
@@ -22,8 +22,8 @@ namespace Msdial.Common.Utility
 
         #region Demonstration data 
         public static DrawVisual GetDemoData(RetentionTimeCorrectionParam param, float usersetting) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1();
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "Demo");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1();
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Demo");
             area.LabelSpace.Top = 13;
 
             var refVal = new List<double>() { 2, 4, 6, 8, 10 };
@@ -86,10 +86,10 @@ namespace Msdial.Common.Utility
                 slist.Series.Add(s);
             if (s2.Points.Count > 0)
                 slist.Series.Add(s2);
-            var drawing = new ChartDrawing.DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing);
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
-            ChartDrawing.Utility.SetDrawingMinYRatio(drawing, 0.05f);
+            var drawing = new DrawVisual(area, title, slist);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinYRatio(drawing, 0.05f);
             drawing.Initialize();
             return drawing;
         }
@@ -97,9 +97,9 @@ namespace Msdial.Common.Utility
 
         #region Retention time difference, overlayed 
         public static DrawVisual GetDrawVisualOverlayedRtDiff(List<AnalysisFileBean> analysisFiles, AnalysisParametersBean param) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1();
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1();
             area.LabelSpace.Top = 15;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1();
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1();
             var slist = new SeriesList();
             var numFiles = analysisFiles.Count;
             var targetId = 0; var maxCount = 0;
@@ -130,9 +130,9 @@ namespace Msdial.Common.Utility
             }
 
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX));
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
-            ChartDrawing.Utility.SetDrawingMinYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX));
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinYRatio(drawing, 0.05f);
             drawing.Initialize();
             return drawing;
         }
@@ -144,10 +144,10 @@ namespace Msdial.Common.Utility
         #region Retention time difference, each sample
         public static DrawVisual GetDrawingSingleRtDiff(AnalysisFileBean analysisFile, AnalysisParametersBean param, RetentionTimeCorrectionParam rtParam, 
             List<CommonStdData> detectedStdList,  RtDiffLabel label, SolidColorBrush brush, float ymin, float ymax) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Retention time (min)", "RT diff (sec)");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Retention time (min)", "RT diff (sec)");
             area.LabelSpace.Top = 20;
             area.LabelSpace.Bottom = 5;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "RetentionTime difference: " + analysisFile.AnalysisFilePropertyBean.AnalysisFileName);
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "RetentionTime difference: " + analysisFile.AnalysisFilePropertyBean.AnalysisFileName);
             var slist = new SeriesList();
 
             var s = new Series() {
@@ -169,9 +169,9 @@ namespace Msdial.Common.Utility
             SetLabelRtDiffV1(analysisFile, slist, rtParam, detectedStdList, label, brush);
 
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX));
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
-            ChartDrawing.Utility.SetDrawingMinYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, param.RetentionTimeBegin, Math.Min(param.RetentionTimeEnd, drawing.SeriesList.MaxX));
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinYRatio(drawing, 0.05f);
             
             drawing.Initialize();
             return drawing;
@@ -238,9 +238,9 @@ namespace Msdial.Common.Utility
 
         #region Intensity plot
         public static DrawVisual GetDrawVisualEachCompoundIntensityPlot(ObservableCollection<AnalysisFileBean> analysisFiles, CommonStdData commonStd, Dictionary<string, SolidColorBrush> brushDict) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Sample ID", "Absolute Intensity");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Sample ID", "Absolute Intensity");
             area.LabelSpace.Top = 15;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "Peak Height: " + commonStd.Reference.MetaboliteName);
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Peak Height: " + commonStd.Reference.MetaboliteName);
             var slist = new SeriesList();
             for (var i = 0; i < commonStd.PeakAreaList.Count; i++) {
                 var brush = brushDict[analysisFiles[i].AnalysisFilePropertyBean.AnalysisFileClass];
@@ -255,8 +255,8 @@ namespace Msdial.Common.Utility
                 slist.Series.Add(point);
             }
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, 0, analysisFiles.Count + 1, 0);
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, 0, analysisFiles.Count + 1, 0);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
             drawing.Initialize();
             return drawing;
         }
@@ -264,9 +264,9 @@ namespace Msdial.Common.Utility
 
         #region overlayed EIC, left side (original RT)
         public static DrawVisual GetDrawVisualOverlayedEIC(ObservableCollection<AnalysisFileBean> analysisFiles, CommonStdData commonStd, AnalysisParametersBean param, Dictionary<string, SolidColorBrush> brushDict) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Retention Time [min]", "Absolute Intensity");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Retention Time [min]", "Absolute Intensity");
             area.Margin.Top = 25;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "Original EIC");
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Original EIC");
             var slist = new SeriesList();
             var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
             var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
@@ -293,8 +293,8 @@ namespace Msdial.Common.Utility
                     slist.Series.Add(point);
             }
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
 
             drawing.Initialize();
             return drawing;
@@ -304,9 +304,9 @@ namespace Msdial.Common.Utility
 
         #region overlayed EIC, right side (corrected RT)
         public static DrawVisual GetDrawVisualOverlayedCorrectedEIC(ObservableCollection<AnalysisFileBean> analysisFiles, CommonStdData commonStd, AnalysisParametersBean param, Dictionary<string, SolidColorBrush> brushDict) {
-            var area = ChartDrawing.Utility.GetDefaultAreaV1("Retention Time [min]", "Absolute Intensity");
+            var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Retention Time [min]", "Absolute Intensity");
             area.Margin.Top = 25;
-            var title = ChartDrawing.Utility.GetDefaultTitleV1(13, "Corrected EIC");
+            var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, "Corrected EIC");
             var slist = new SeriesList();
             var commonStdExists = commonStd.RetentionTimeList.Where(x => x > 0);
             var minRTtmp = commonStdExists.Count() > 0 ? commonStdExists.Min() : 100;
@@ -334,8 +334,8 @@ namespace Msdial.Common.Utility
                     slist.Series.Add(point);
             }
             var drawing = new DrawVisual(area, title, slist);
-            ChartDrawing.Utility.SetDrawingMinAndMaxXYConstValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
-            ChartDrawing.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMinAndMaxXYConstValue(drawing, (float)(minRTrange), (float)(maxRT + rtTol), 0);
+            CompMs.Graphics.Core.Base.Utility.SetDrawingMaxYRatio(drawing, 0.05f);
 
             drawing.Initialize();
             return drawing;

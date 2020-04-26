@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using System.Threading.Tasks;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Microsoft.Win32;
 
@@ -185,9 +185,9 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
-            drawing.SeriesList.MaxX += diff;
-            drawing.SeriesList.MinX -= diff;
-            drawing.SeriesList.MinY = 0f;
+            drawing.MaxX += diff;
+            drawing.MinX -= diff;
+            drawing.MinY = 0f;
             drawing.Initialize();
             return drawing;
         }
@@ -214,10 +214,10 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
-            drawing.SeriesList.MaxX += diff;
-            drawing.SeriesList.MinX -= diff;
-            drawing.SeriesList.MaxY = 100f;
-            drawing.SeriesList.MinY = 0f;
+            drawing.MaxX += diff;
+            drawing.MinX -= diff;
+            drawing.MaxY = 100f;
+            drawing.MinY = 0f;
             drawing.Initialize();
             return drawing;
         }

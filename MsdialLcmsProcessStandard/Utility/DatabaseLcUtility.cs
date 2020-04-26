@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 //using System.Windows;
 //using System.Windows.Resources;
 
@@ -83,6 +84,10 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
 
             return targetFormulaLibrary;
+        }
+
+        public async Task<List<MspFormatCompoundInformationBean>> GetMspDbQueriesAsync(string filePath, IupacReferenceBean iupac, LipidQueryBean lipidQueryBean) {
+            return await Task.Run(() => GetMspDbQueries(filePath, iupac, lipidQueryBean));
         }
 
         public static List<MspFormatCompoundInformationBean> GetMspDbQueries(string filePath, IupacReferenceBean iupac, LipidQueryBean lipidQueryBean)

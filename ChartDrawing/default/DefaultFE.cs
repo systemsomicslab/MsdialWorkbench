@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Input;
 
-namespace ChartDrawing
+namespace CompMs.Graphics.Core.Base
 {
     public class ActionContainer{
         // Point for Mouse Event

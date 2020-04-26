@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Msdial.Lcms.Dataprocess.Scoring;
-using Riken.Metabolomics.RawData;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
@@ -32,7 +32,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <param name="mspFormatCompoundInformationBeanList"></param>
         /// <param name="analysisParametersBean"></param>
         /// <param name="projectPropertyBean"></param>
-        public static void CompoundIdentification(List<string> files, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static void CompoundIdentification(List<string> files, ObservableCollection<RawSpectrum> spectrumCollection,
             List<PeakAreaBean> peakAreaBeanList, List<MspFormatCompoundInformationBean> mspFormatCompoundInformationBeanList,
             AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, Action<int> reportAction) {
             if (mspFormatCompoundInformationBeanList == null || mspFormatCompoundInformationBeanList.Count == 0) return;
@@ -44,7 +44,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 peakAreaBeanList = getRefinedPeakAreaBeanListForMspSearchResult(peakAreaBeanList);
         }
 
-        private static void MainProcess(string file, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static void MainProcess(string file, ObservableCollection<RawSpectrum> spectrumCollection,
             List<PeakAreaBean> peakAreaBeanList, List<MspFormatCompoundInformationBean> mspFormatCompoundInformationBeanList,
             AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean, Action<int> reportAction, int AifId) { 
             var seekpointList = new List<long>();

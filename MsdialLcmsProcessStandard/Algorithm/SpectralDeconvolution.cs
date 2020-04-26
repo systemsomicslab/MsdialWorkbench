@@ -1,6 +1,6 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,7 +30,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// 2) Store the result of MS2Dec.
         /// The result of MS2Dec will be stored as binary. So seek pointers will be set in the header section.
         /// </summary>
-        public static void WriteMS2DecResult(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void WriteMS2DecResult(ObservableCollection<RawSpectrum> spectrumCollection, 
             AnalysisFilePropertyBean analysisFile, 
             ObservableCollection<PeakAreaBean> peakAreaCollection, 
             AnalysisParametersBean analysisParameters, 
@@ -87,7 +87,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static void writeMS2DecResult(FileStream fs, List<long> seekPointer, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, ObservableCollection<PeakAreaBean> peakSpots, 
+            ObservableCollection<RawSpectrum> spectrumCollection, ObservableCollection<PeakAreaBean> peakSpots, 
             DataSummaryBean summary, ProjectPropertyBean project, 
             AnalysisParametersBean param, 
             IupacReferenceBean iupac,
@@ -246,7 +246,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 		/// There is no specific source code here.
 		/// Just to convert raw MS/MS spectra to MS2Dec class.
 		/// </summary>
-		private static MS2DecResult getMS2DecResultOnDataDependentAcquisition(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+		private static MS2DecResult getMS2DecResultOnDataDependentAcquisition(ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakAreaBean, AnalysisParametersBean param, 
             ProjectPropertyBean projectPropertyBean, DataSummaryBean dataSummaryBean)
         {
@@ -307,7 +307,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             return ms2DecResult;
         }
 
-        private static MS2DecResult getMS2DecResultOnDriftAxisDataDependentAcquisition(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static MS2DecResult getMS2DecResultOnDriftAxisDataDependentAcquisition(ObservableCollection<RawSpectrum> spectrumCollection,
         DriftSpotBean driftSpot, AnalysisParametersBean param,
         ProjectPropertyBean projectPropertyBean, DataSummaryBean dataSummaryBean) {
             var ms2DecResult = new MS2DecResult();
@@ -363,7 +363,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
 
-        private static MS2DecResult getMS2DecResultOnDriftAxisDataIndependentAcquisition(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static MS2DecResult getMS2DecResultOnDriftAxisDataIndependentAcquisition(ObservableCollection<RawSpectrum> spectrumCollection,
         DriftSpotBean driftSpot, PeakAreaBean peakSpot, AnalysisParametersBean param,
         ProjectPropertyBean projectPropertyBean, Rfx.Riken.OsakaUniv.IonMobility.Spectra spectra, DataSummaryBean dataSummary)
         {
@@ -492,7 +492,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// To reduce computational time and to make the matrix calculation easy, 
         /// the retention time range to be considered is restricted to approximately 3 times of peak width of the target peak feature.
         /// </summary>
-        private static MS2DecResult getMS2DecResultOnDataIndependentAcquisition(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        private static MS2DecResult getMS2DecResultOnDataIndependentAcquisition(ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakAreaBean, AnalysisParametersBean param, ProjectPropertyBean projectProp, DataSummaryBean dataSummary, int AifFlag)
         {
             MS2DecResult ms2DecResult = null;

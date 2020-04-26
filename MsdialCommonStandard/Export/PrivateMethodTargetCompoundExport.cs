@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Common.Export
 {
@@ -275,14 +275,14 @@ namespace Msdial.Common.Export
             }
         }
 
-        private static List<Peak> getMassSpectrogramBean(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static List<Peak> getMassSpectrogramBean(ObservableCollection<RawSpectrum> spectrumCollection,
             int msScanPoint, float massBin, bool peakDetectionBasedCentroid, DataType dataType) {
             if (msScanPoint < 0) return null;
 
             ObservableCollection<double[]> masslist = new ObservableCollection<double[]>();
             ObservableCollection<double[]> centroidedMassSpectra = new ObservableCollection<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             spectrum = spectrumCollection[msScanPoint];
             massSpectra = spectrum.Spectrum;

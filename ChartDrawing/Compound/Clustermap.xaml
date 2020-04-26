@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="CompMs.Graphics.Compound.Clustermap"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:CompMs.Graphics.Compound"
+             xmlns:dendrogram="clr-namespace:CompMs.Graphics.Core.Dendrogram"
+             xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap"
+             xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <dendrogram:DendrogramCoreControl
+            x:Name="XDendrogramControl"
+            Dendrogram="{Binding XDendrogram}"
+            Grid.Column="1" Grid.Row="0">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </dendrogram:DendrogramCoreControl>
+        <dendrogram:DendrogramCoreControl
+            x:Name="YDendrogramControl"
+            Dendrogram="{Binding YDendrogram}"
+            Grid.Column="2" Grid.Row="1">
+            <dendrogram:DendrogramCoreControl.LayoutTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="90"/>
+                    <TranslateTransform X="{Binding ActualHeight, ElementName=YDendrogramControl}"/>
+                </TransformGroup>
+            </dendrogram:DendrogramCoreControl.LayoutTransform>
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </dendrogram:DendrogramCoreControl>
+        <axis:CategoryHorizontalAxisCoreControl
+            x:Name="XAxisControl"
+            Labels="{Binding XLabels}"
+            XPositions="{Binding LeafPositions, ElementName=XDendrogramControl}"
+            Limit="{Binding XLabelLimit}"
+            MinX="{Binding MinX, ElementName=XDendrogramControl}"
+            MaxX="{Binding MaxX, ElementName=XDendrogramControl}"
+            LimitMinX="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
+            LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
+            Grid.Column="1" Grid.Row="3">
+            <i:Interaction.Behaviors>
+                <behavior:DataLabelBehavior
+                    Labels="{Binding Labels, ElementName=XAxisControl}"
+                    XPositions="{Binding XPositions, ElementName=XAxisControl}"/>
+            </i:Interaction.Behaviors>
+        </axis:CategoryHorizontalAxisCoreControl>
+        <axis:CategoryVerticalAxisCoreControl
+            x:Name="YAxisControl"
+            Labels="{Binding YLabels}"
+            YPositions="{Binding LeafPositions, ElementName=YDendrogramControl}"
+            Limit="{Binding YLabelLimit}"
+            MinY="{Binding MinX, ElementName=YDendrogramControl}"
+            MaxY="{Binding MaxX, ElementName=YDendrogramControl}"
+            LimitMinY="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
+            LimitMaxY="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
+            Grid.Column="0" Grid.Row="1">
+            <i:Interaction.Behaviors>
+                <behavior:DataLabelBehavior
+                    Labels="{Binding Labels, ElementName=YAxisControl}"
+                    YPositions="{Binding YPositions, ElementName=YAxisControl}"/>
+            </i:Interaction.Behaviors>
+        </axis:CategoryVerticalAxisCoreControl>
+        <heatmap:HeatmapCoreControl
+            x:Name="HeatmapControl"
+            DataMatrix="{Binding DataMatrix}"
+            XPositions="{Binding LeafPositions, ElementName=XDendrogramControl}"
+            YPositions="{Binding LeafPositions, ElementName=YDendrogramControl}"
+            MinX="{Binding MinX, ElementName=XDendrogramControl}"
+            MaxX="{Binding MaxX, ElementName=XDendrogramControl}"
+            MinY="{Binding MinX, ElementName=YDendrogramControl}"
+            MaxY="{Binding MaxX, ElementName=YDendrogramControl}"
+            LimitMinX="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWayToSource}"
+            LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWayToSource}"
+            LimitMinY="{Binding LimitMinX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
+            LimitMaxY="{Binding LimitMaxX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
+            Grid.Column="1" Grid.Row="1">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </heatmap:HeatmapCoreControl>
+    </Grid>
+</UserControl>

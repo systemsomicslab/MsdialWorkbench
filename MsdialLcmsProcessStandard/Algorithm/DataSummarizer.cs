@@ -1,6 +1,6 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,7 +23,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <param name="projectPropertyBean"></param>
         /// <param name="peakAreaBeanCollection"></param>
         /// <param name="analysisParametersBean"></param>
-        public static void SetDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean,
+        public static void SetDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean,
             ObservableCollection<PeakAreaBean> peakAreaBeanCollection, AnalysisParametersBean analysisParametersBean)
         {
             if (peakAreaBeanCollection == null || peakAreaBeanCollection.Count == 0) return;
@@ -36,7 +36,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             if (projectPropertyBean.MethodType == MethodType.diMSMS) setModelPeakDataSummary(dataSummaryBean, spectrumCollection, projectPropertyBean, peakAreaBeanCollection, analysisParametersBean);
         }
 
-        private static void setBasicDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean param)
+        private static void setBasicDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean param)
         {
             int minScanNumber = (int)spectrumCollection[0].ScanNumber, maxScanNumber = (int)spectrumCollection[spectrumCollection.Count - 1].ScanNumber;
             float minRT = (float)spectrumCollection[0].ScanStartTime, maxRT = (float)spectrumCollection[spectrumCollection.Count - 1].ScanStartTime;
@@ -141,7 +141,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         }
 
-        private static void setModelPeakDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, ObservableCollection<PeakAreaBean> peakAreaBeanCollection, AnalysisParametersBean analysisParametersBean)
+        private static void setModelPeakDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, ObservableCollection<PeakAreaBean> peakAreaBeanCollection, AnalysisParametersBean analysisParametersBean)
         {
             int candidateID;
             var shapnessValueList = new List<float[]>();

@@ -1,6 +1,6 @@
-﻿using Msdial.Gcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Gcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +22,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
         /// <param name="projectPropertyBean"></param>
         /// <param name="peakAreaList"></param>
         /// <param name="param"></param>
-        public static DataSummaryBean GetDataSummary(List<RAW_Spectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param)
+        public static DataSummaryBean GetDataSummary(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param)
         {
             var summary = new DataSummaryBean();
             if (peakAreaList == null || peakAreaList.Count == 0) return summary;
@@ -34,7 +34,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             return summary;
         }
 
-        private static void setBasicDataSummary(DataSummaryBean dataSummary, List<RAW_Spectrum> spectrumList)
+        private static void setBasicDataSummary(DataSummaryBean dataSummary, List<RawSpectrum> spectrumList)
         {
             int minScanNumber = (int)spectrumList[0].ScanNumber, maxScanNumber = (int)spectrumList[spectrumList.Count - 1].ScanNumber;
             float minRT = (float)spectrumList[0].ScanStartTime, maxRT = (float)spectrumList[spectrumList.Count - 1].ScanStartTime;
@@ -128,7 +128,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
 
         }
 
-        private static void setModelPeakDataSummary(DataSummaryBean dataSummary, List<RAW_Spectrum> spectrumList, List<PeakAreaBean> peakAreaBeanList, AnalysisParamOfMsdialGcms param)
+        private static void setModelPeakDataSummary(DataSummaryBean dataSummary, List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaBeanList, AnalysisParamOfMsdialGcms param)
         {
             int candidateID;
             var shapnessValueList = new List<float[]>();

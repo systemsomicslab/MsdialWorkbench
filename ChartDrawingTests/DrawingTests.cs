@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,12 +39,12 @@ namespace ChartDrawing.Tests
             var list = getTestMS();
             var title = new Title() { Label = "Test figure" };
             var drawing = new DrawVisual(area, title, list, true);
-            drawing.SeriesList.MaxX *= 1.1f;
-            if (drawing.SeriesList.MinX < 100)
-                drawing.SeriesList.MinX = 0;
+            drawing.MaxX *= 1.1f;
+            if (drawing.MinX < 100)
+                drawing.MinX = 0;
 
             else {
-                drawing.SeriesList.MinX -= 50f;
+                drawing.MinX -= 50f;
             }
             drawing.Initialize();
             var dv = drawing.GetChart();
@@ -69,14 +69,14 @@ namespace ChartDrawing.Tests
             var title = new Title() { Label = "Test figure" };
             var drawing = new DrawVisual(area, title, list, true);
 
-            if (drawing.SeriesList.MinX < 100)
-                drawing.SeriesList.MinX = 0;
+            if (drawing.MinX < 100)
+                drawing.MinX = 0;
 
             else {
-                drawing.SeriesList.MinX -= 50f;
+                drawing.MinX -= 50f;
             }
             drawing.Initialize();
-            if (drawing.SeriesList.MinX < 0) drawing.SeriesList.MinX = 0;
+            if (drawing.SeriesList.MinX < 0) drawing.MinX = 0;
             var dv = drawing.GetChart();
 
             drawing.SaveDrawingAsEmf(dv, @"C:\Users\tipputa\Desktop\drawingTest\image3.emf");

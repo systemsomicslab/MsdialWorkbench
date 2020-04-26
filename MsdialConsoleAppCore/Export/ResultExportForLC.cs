@@ -1,7 +1,7 @@
-﻿using Msdial.Lcms.Dataprocess.Algorithm;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,8 +14,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Export
     public sealed class ResultExportForLC {
         private ResultExportForLC() { }
 
-        public static void ExportMs2DecResult(AnalysisFileBean file, string outputFolder, ObservableCollection<RAW_Spectrum> accumulatedSpectra,
-            ObservableCollection<RAW_Spectrum> spectrumCollection, List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> txtDB,
+        public static void ExportMs2DecResult(AnalysisFileBean file, string outputFolder, ObservableCollection<RawSpectrum> accumulatedSpectra,
+            ObservableCollection<RawSpectrum> spectrumCollection, List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> txtDB,
             AnalysisParametersBean param, ProjectPropertyBean projectProperty) {
             var outputfile = outputFolder + "\\" + file.AnalysisFilePropertyBean.AnalysisFileName + ".msdial";
             Console.WriteLine("Exporting peak list data: {0}", outputfile);

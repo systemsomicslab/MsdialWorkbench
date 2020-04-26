@@ -12,7 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Chromatogram.ManualPeakModification;
 
 namespace Rfx.Riken.OsakaUniv.ManualPeakMod
 {

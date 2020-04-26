@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Rfx.Riken.OsakaUniv;
 using Msdial.Lcms.Dataprocess.Utility;
 using CompMs.RawDataHandler.Core;
-using Riken.Metabolomics.RawData;
 using Rfx.Riken.OsakaUniv.RetentionTimeCorrection;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
@@ -28,7 +28,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
 
-        public static RetentionTimeCorrectionBean DetectStdPeaks(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, 
+        public static RetentionTimeCorrectionBean DetectStdPeaks(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, 
             List<TextFormatCompoundInformationBean> iStdLib, AnalysisFilePropertyBean property, RetentionTimeCorrectionParam rtParam) {
             System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
             var stdList = GetStdPair(spectrumCollection, projectProperty, param, iStdLib);
@@ -38,7 +38,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = originalRTs.ToList() };
         }
 
-        private static List<StandardPair> GetStdPair(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, List<TextFormatCompoundInformationBean> iStdLib) {            
+        private static List<StandardPair> GetStdPair(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, List<TextFormatCompoundInformationBean> iStdLib) {            
             var targetList = new List<StandardPair>();
             foreach (var i in iStdLib) {
                 var startMass = i.AccurateMass;

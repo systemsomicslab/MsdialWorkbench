@@ -1,7 +1,6 @@
 ﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Msdial.Gcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using CompMs.RawDataHandler.Core;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -39,7 +39,7 @@ namespace Rfx.Riken.OsakaUniv
             return new PairwisePlotBean(graphTitle, xAxisTitle, yAxisTitle, xAxisRtDatapointCollection, yAxisMzDatapointCollection, peakAreaBeanCollection, ms1DecResults, plotBrushCollection, PairwisePlotDisplayLabel.None);
         }
 
-        public static ChromatogramXicViewModel GetChromatogramXicVM(List<RAW_Spectrum> spectrumList, float targetMz, float targetRt, AnalysisParamOfMsdialGcms param, string chromTitle)
+        public static ChromatogramXicViewModel GetChromatogramXicVM(List<RawSpectrum> spectrumList, float targetMz, float targetRt, AnalysisParamOfMsdialGcms param, string chromTitle)
         {
             var smoothedPeaklist = DataAccessGcUtility.GetSmoothedPeaklist(DataAccessGcUtility.GetMs1SlicePeaklist(spectrumList, targetMz, param.MassAccuracy, param.RetentionTimeBegin, param.RetentionTimeEnd, param.IonMode), param.SmoothingMethod, param.SmoothingLevel);
             var chromatogramBean = new ChromatogramBean(true, Brushes.Blue, 1, chromTitle, targetMz, param.MassSliceWidth, new ObservableCollection<double[]>(smoothedPeaklist));
@@ -48,7 +48,7 @@ namespace Rfx.Riken.OsakaUniv
             return new ChromatogramXicViewModel(chromatogramBean, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None, ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, 0, graphTitle, targetMz, param.MassAccuracy, targetRt, true);
         }
 
-        public static MassSpectrogramViewModel GetRawMs1MassSpectrogramVM(List<RAW_Spectrum> spectrumList, float targetMz, float targetRt, int msScanPoint, AnalysisParamOfMsdialGcms param)
+        public static MassSpectrogramViewModel GetRawMs1MassSpectrogramVM(List<RawSpectrum> spectrumList, float targetMz, float targetRt, int msScanPoint, AnalysisParamOfMsdialGcms param)
         {
             if (msScanPoint < 0) return null;
 
@@ -60,7 +60,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpectrogramBean, MassSpectrogramIntensityMode.Relative, msScanPoint, targetRt, targetMz, graphTitle);
         }
 
-        public static MassSpectrogramViewModel GetRawMs1MassSpectrogramVM(List<RAW_Spectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param)
+        public static MassSpectrogramViewModel GetRawMs1MassSpectrogramVM(List<RawSpectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param)
         {
             float targetRt = ms1DecResult.RetentionTime;
             int msScanPoint = ms1DecResult.ScanNumber;
@@ -75,7 +75,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpectrogramBean, null, MassSpectrogramIntensityMode.Absolute, msScanPoint, targetRt, graphTitle);
         }
 
-        public static MassSpectrogramViewModel GetReversibleSpectrumVM(List<RAW_Spectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param, ReversibleMassSpectraView reversibleMassSpectraView, List<MspFormatCompoundInformationBean> mspDB)
+        public static MassSpectrogramViewModel GetReversibleSpectrumVM(List<RawSpectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param, ReversibleMassSpectraView reversibleMassSpectraView, List<MspFormatCompoundInformationBean> mspDB)
         {
             float targetRt = ms1DecResult.RetentionTime;
             int msScanPoint = ms1DecResult.ScanNumber;
@@ -138,7 +138,7 @@ namespace Rfx.Riken.OsakaUniv
 			return new MassSpectrogramViewModel(massSpectrogramBean, null, MassSpectrogramIntensityMode.Absolute, msScanPoint, targetRt, graphTitle);
         }
 
-        public static ChromatogramMrmViewModel GetDeconvolutedChromatogramVM(List<RAW_Spectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList)
+        public static ChromatogramMrmViewModel GetDeconvolutedChromatogramVM(List<RawSpectrum> spectrumList, MS1DecResult ms1DecResult, AnalysisParamOfMsdialGcms param, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList)
         {
             if (ms1DecResult.ScanNumber < 0) return null;
 
@@ -240,7 +240,7 @@ namespace Rfx.Riken.OsakaUniv
             return new ChromatogramMrmViewModel(chromatograms, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None, ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, -1, -1, "EI chromatograms ", -1, "", "", "", "", -1, -1, ms1DecResult.RetentionTime, null, -1, -1);
         }
 
-        public static ChromatogramTicEicViewModel GetChromatogramTicViewModel(List<RAW_Spectrum> spectrumList, AnalysisFileBean file, AnalysisParamOfMsdialGcms param)
+        public static ChromatogramTicEicViewModel GetChromatogramTicViewModel(List<RawSpectrum> spectrumList, AnalysisFileBean file, AnalysisParamOfMsdialGcms param)
         {
             if (spectrumList == null || spectrumList.Count == 0) return null;
 
@@ -256,7 +256,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static ChromatogramTicEicViewModel GetChromatogramEicViewModel(ObservableCollection<ExtractedIonChromatogramDisplaySettingBean> eicChromatograms, 
-            AnalysisFileBean file, AnalysisParamOfMsdialGcms param, List<SolidColorBrush> solidColorBrushList, List<RAW_Spectrum> spectrumList)
+            AnalysisFileBean file, AnalysisParamOfMsdialGcms param, List<SolidColorBrush> solidColorBrushList, List<RawSpectrum> spectrumList)
         {
             if (spectrumList == null || spectrumList.Count == 0) return null;
 
@@ -282,7 +282,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static ChromatogramTicEicViewModel GetMultiFilesEicsOfTargetPeak(AlignmentPropertyBean alignedSpot, ObservableCollection<AnalysisFileBean> files, int focusedFileID, 
-            List<RAW_Spectrum> focusedSpectra, RdamPropertyBean rdamProperty, AnalysisParamOfMsdialGcms param, ProjectPropertyBean project)
+            List<RawSpectrum> focusedSpectra, RdamPropertyBean rdamProperty, AnalysisParamOfMsdialGcms param, ProjectPropertyBean project)
         {
             if (focusedSpectra == null || focusedSpectra.Count == 0) return null;
             var chromatogramBeanCollection = new ObservableCollection<ChromatogramBean>();
@@ -317,7 +317,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static ChromatogramTicEicViewModel GetChromatogramBpcViewModel(ObservableCollection<ExtractedIonChromatogramDisplaySettingBean> eicChromatograms, 
-            AnalysisFileBean file, AnalysisParamOfMsdialGcms param, List<SolidColorBrush> solidColorBrushList, List<RAW_Spectrum> spectrumList)
+            AnalysisFileBean file, AnalysisParamOfMsdialGcms param, List<SolidColorBrush> solidColorBrushList, List<RawSpectrum> spectrumList)
         {
             if (spectrumList == null || spectrumList.Count == 0) return null;
 
@@ -344,7 +344,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static ChromatogramTicEicViewModel GetChromatogramBpcViewModel(
            AnalysisFileBean file, AnalysisParamOfMsdialGcms param, 
-           List<RAW_Spectrum> spectrumList) {
+           List<RawSpectrum> spectrumList) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
 
             ObservableCollection<ChromatogramBean> chromatogramBeanCollection = new ObservableCollection<ChromatogramBean>();
@@ -360,7 +360,7 @@ namespace Rfx.Riken.OsakaUniv
         public static ChromatogramTicEicViewModel GetChromatogramTicBpcHighestEicViewModel(
           AnalysisFileBean file, AnalysisParamOfMsdialGcms param,
           List<PeakAreaBean> peakspots,
-          List<RAW_Spectrum> spectrumList) {
+          List<RawSpectrum> spectrumList) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
 
             ObservableCollection<ChromatogramBean> chromatogramBeanCollection = new ObservableCollection<ChromatogramBean>();
@@ -439,7 +439,7 @@ namespace Rfx.Riken.OsakaUniv
                 plotBrushCollection, PairwisePlotDisplayLabel.None) { RetentionUnit = retentionUnit };
         }
 
-        private static MassSpectrogramBean getMassSpectrogramBean(List<RAW_Spectrum> spectrumList, int msScanPoint, AnalysisParamOfMsdialGcms param)
+        private static MassSpectrogramBean getMassSpectrogramBean(List<RawSpectrum> spectrumList, int msScanPoint, AnalysisParamOfMsdialGcms param)
         {
             if (msScanPoint < 0) return null;
 
@@ -447,8 +447,8 @@ namespace Rfx.Riken.OsakaUniv
             var centroidedMassSpectra = new ObservableCollection<double[]>();
             var massSpectraDisplayLabelCollection = new ObservableCollection<MassSpectrogramDisplayLabel>();
             
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             spectrum = spectrumList[msScanPoint];
             massSpectra = spectrum.Spectrum;

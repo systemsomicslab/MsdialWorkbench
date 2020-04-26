@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BCDev.XamlToys;
 using System.IO;
 using Rfx.Riken.OsakaUniv;
-using System.Windows.Interop;
-using System.Diagnostics;
 
-namespace ChartDrawing
+namespace CompMs.Graphics.Core.Base
 {
     public interface IDrawVisual
     {
@@ -90,10 +87,10 @@ namespace ChartDrawing
 
         public virtual void InitializeElements() {
             if (SeriesList.Series.Count == 0) { Initialize(); return; }
-            foreach (var s in SeriesList.Series) {
-                s.SetValues();
-            }
-            SeriesList.SetValues();
+            // foreach (var s in SeriesList.Series) {
+            //     s.SetValues();
+            // }
+            // SeriesList.SetValues();
             Initialize();
         }
 

@@ -207,7 +207,6 @@ namespace Rfx.Riken.OsakaUniv
             }
             return i;
         }
-
         private static int searchRightEdgeCandidate(int i, List<double[]> datapoints, List<double[]> peaklist, List<double[]> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist, 
             double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise) {
             var peaktopCheck = false;
@@ -231,7 +230,6 @@ namespace Rfx.Riken.OsakaUniv
             }
             return i;
         }
-
         private static void searchRealLeftEdge(int i, List<double[]> datapoints, List<double[]> peaklist, List<double[]> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist) {
             //search real left edge within 5 data points
             for (int j = 0; j <= 5; j++) {

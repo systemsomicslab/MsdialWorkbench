@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 using MessagePack;
-using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using MessagePack.LZ4;
 
-namespace Rfx.Riken.OsakaUniv
-{
+namespace CompMs.Common.MessagePack {
     public static class LargeListMessagePack
     {
         public static int OffsetCutoff = 1073741824;

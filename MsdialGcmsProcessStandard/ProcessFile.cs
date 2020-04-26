@@ -1,13 +1,13 @@
 ﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Msdial.Gcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using CompMs.Common.MessagePack;
 
 namespace Msdial.Gcms.Dataprocess {
 	public sealed class ProcessFile

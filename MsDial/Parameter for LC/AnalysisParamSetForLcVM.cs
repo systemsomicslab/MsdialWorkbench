@@ -1,4 +1,5 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.MessagePack;
+using Msdial.Lcms.Dataprocess.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -129,7 +131,7 @@ namespace Rfx.Riken.OsakaUniv
             AdductIonInformationViewModelCollection = updateAdductCollection;
         }
 
-        protected override void executeCommand(object parameter)
+        protected async override void executeCommand(object parameter)
         {
             base.executeCommand(parameter);
 
@@ -145,7 +147,7 @@ namespace Rfx.Riken.OsakaUniv
                 message.Label_MessageTitle.Text = "Loading libraries..";
             message.Show();
 
-            if (ClosingMethod() == true)
+            if (await ClosingMethod() == true)
             {
                 message.Close();
                 window.DialogResult = true;
@@ -157,7 +159,7 @@ namespace Rfx.Riken.OsakaUniv
             Mouse.OverrideCursor = null;
         }
 
-        private bool ClosingMethod()
+        private async Task<bool> ClosingMethod()
         {
             if (adductIonVMs[0].AdductIonInformationBean.Included == false)
             {
@@ -190,7 +192,7 @@ namespace Rfx.Riken.OsakaUniv
                     this.mainWindow.MspDB = DatabaseLcUtility.GetMspDbQueries(this.libraryFilePath, this.mainWindow.IupacReference);
                 } else if(Path.GetExtension(this.libraryFilePath) == ".msp2")
                 {
-                    this.mainWindow.MspDB = MessagePack.MspMethods.LoadMspFromFile(this.libraryFilePath);
+                    this.mainWindow.MspDB = MspMethods.LoadMspFromFile(this.libraryFilePath);
                 }
                 else
                 {
@@ -210,7 +212,12 @@ namespace Rfx.Riken.OsakaUniv
                     System.IO.SearchOption.TopDirectoryOnly).Length == 1)
                 {
                     ProjectProperty.LibraryFilePath = System.IO.Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", System.IO.SearchOption.TopDirectoryOnly)[0];
-                    this.mainWindow.MspDB = DatabaseLcUtility.GetMspDbQueries(ProjectProperty.LibraryFilePath, this.mainWindow.IupacReference, this.mainWindow.AnalysisParamForLC.LipidQueryBean);
+
+                    //this.mainWindow.MspDB = DatabaseLcUtility.GetMspDbQueries(ProjectProperty.LibraryFilePath, this.mainWindow.IupacReference, this.mainWindow.AnalysisParamForLC.LipidQueryBean);
+                    var source = await Task.Run(() =>
+                        DatabaseLcUtility.GetMspDbQueries(ProjectProperty.LibraryFilePath, this.mainWindow.IupacReference, this.mainWindow.AnalysisParamForLC.LipidQueryBean)
+                    );
+                    this.mainWindow.MspDB = source;
                 }
             }
 

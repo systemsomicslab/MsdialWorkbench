@@ -1,6 +1,6 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,7 +20,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
         private List<AdductIon> searchedAdducts;
 
         public void Run(AnalysisFileBean file, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection,
+            ObservableCollection<RawSpectrum> spectrumCollection,
             List<PeakAreaBean> peakSpots, List<MspFormatCompoundInformationBean> mspDB,
             List<PostIdentificatioinReferenceBean> postIdentDB,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction) {
@@ -251,7 +251,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
         // the purpose is to group the ions which are recognized as the same metabolite
         private void characterAssigner(FileStream fs, List<long> seekPoints,
             List<PeakAreaBean> peakSpots, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, List<MspFormatCompoundInformationBean> mspDB,
+            ObservableCollection<RawSpectrum> spectrumCollection, List<MspFormatCompoundInformationBean> mspDB,
             List<PostIdentificatioinReferenceBean> postIdentDB,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, ref int lastGroupID) {
             if (peakSpots == null || peakSpots.Count == 0) return;
@@ -348,7 +348,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
         // if a peak (at least 10% relative abundance) in MS/MS is found in MS1 spectrum,
         // the peak of MS1 is assigned as "Found in upper MSMS"
         private void assignLinksBasedOnPartialMatchingOfMS1MS2(FileStream fs, List<long> seekPoints, 
-            List<PeakAreaBean> peakSpots, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+            List<PeakAreaBean> peakSpots, ObservableCollection<RawSpectrum> spectrumCollection, 
             AnalysisParametersBean param, ProjectPropertyBean projectProp) {
             
             for (int i = peakSpots.Count - 1; i >= 0; i--) {
@@ -387,7 +387,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
         // currently, only pure peaks are evaluated by this way.
         private void assignLinksBasedOnChromatogramCorrelation(List<PeakAreaBean> peakSpots, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, AnalysisParametersBean param, ProjectPropertyBean projectProp) {
+            ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean param, ProjectPropertyBean projectProp) {
             foreach (var peak in peakSpots.Where(n => n.IsotopeWeightNumber == 0)) {
                 if (peak.PeakPureValue < 0.9) continue;
                 if (peak.IsotopeWeightNumber != 0) continue;

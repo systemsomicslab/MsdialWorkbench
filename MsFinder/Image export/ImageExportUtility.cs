@@ -1,5 +1,5 @@
 ﻿using BCDev.XamlToys;
-using ChartDrawing;
+using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -304,9 +304,9 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
-            drawing.SeriesList.MaxX += diff;
-            drawing.SeriesList.MinX -= diff;
-            drawing.SeriesList.MinY = 0f;
+            drawing.MaxX += diff;
+            drawing.MinX -= diff;
+            drawing.MinY = 0f;
             drawing.Initialize();
             return drawing;
         }
@@ -336,10 +336,10 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
-            drawing.SeriesList.MaxX += diff;
-            drawing.SeriesList.MinX -= diff;
-            drawing.SeriesList.MaxY = 100f;
-            drawing.SeriesList.MinY = 0f;
+            drawing.MaxX += diff;
+            drawing.MinX -= diff;
+            drawing.MaxY = 100f;
+            drawing.MinY = 0f;
             drawing.Initialize();
             return drawing;
         }

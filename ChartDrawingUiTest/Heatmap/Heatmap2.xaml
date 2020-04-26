@@ -1,0 +1,70 @@
+﻿<Page x:Class="ChartDrawingUiTest.Heatmap.Heatmap2"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
+      xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis;assembly=ChartDrawing"
+      xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Heatmap2">
+    <Page.DataContext>
+        <local:HeatmapVM/>
+    </Page.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="9*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Width="2" HorizontalAlignment="Stretch"/>
+        <GridSplitter Grid.Row="1" Grid.Column="2" Height="2" HorizontalAlignment="Stretch"/>
+        <axis:CategoryVerticalAxisCoreControl
+            YPositions="{Binding YPositions, ElementName=HeatmapCoreControl}"
+            MinY="{Binding MinY, ElementName=HeatmapCoreControl, Mode=TwoWay}"
+            MaxY="{Binding MaxY, ElementName=HeatmapCoreControl, Mode=TwoWay}"
+            Margin="5, 5, 0, 0"
+            Grid.Column="0" Grid.Row="0">
+            <axis:CategoryVerticalAxisCoreControl.Labels>
+                <x:Array Type="{x:Type sys:String}">
+                    <sys:String>1</sys:String>
+                    <sys:String>2</sys:String>
+                    <sys:String>3</sys:String>
+                    <sys:String>4</sys:String>
+                </x:Array>
+            </axis:CategoryVerticalAxisCoreControl.Labels>
+        </axis:CategoryVerticalAxisCoreControl>
+        <axis:CategoryHorizontalAxisCoreControl
+            XPositions="{Binding XPositions, ElementName=HeatmapCoreControl}"
+            MinX="{Binding MinX, ElementName=HeatmapCoreControl, Mode=TwoWay}"
+            MaxX="{Binding MaxX, ElementName=HeatmapCoreControl, Mode=TwoWay}"
+            Margin="0, 0, 10, 5"
+            Grid.Column="2" Grid.Row="2">
+            <axis:CategoryHorizontalAxisCoreControl.Labels>
+                <x:Array Type="{x:Type sys:String}">
+                    <sys:String>fooooooooooooooo</sys:String>
+                    <sys:String>baaaaaaaaaaaaaar</sys:String>
+                    <sys:String>hooooooooooooooo</sys:String>
+                </x:Array>
+            </axis:CategoryHorizontalAxisCoreControl.Labels>
+        </axis:CategoryHorizontalAxisCoreControl>
+        <heatmap:HeatmapCoreControl
+            x:Name="HeatmapCoreControl"
+            DataMatrix="{Binding DataMatrix}"
+            Margin="0, 5, 10, 0"
+            Grid.Column="2" Grid.Row="0">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </heatmap:HeatmapCoreControl>
+    </Grid>
+</Page>

@@ -415,8 +415,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
 
         private void tempFolderInitialize()
         {
-            var currentDir = Directory.GetCurrentDirectory();
-            tempSdfDirect = currentDir + "\\TEMP_SDF";
+            var currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            tempSdfDirect = currentDir + "TEMP_SDF";
             //tempSdfDirect = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\TEMP_SDF";
             if (System.IO.Directory.Exists(tempSdfDirect))
             {

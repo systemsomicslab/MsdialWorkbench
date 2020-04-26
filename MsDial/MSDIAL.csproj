@@ -60,7 +60,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>msdial_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\msdial_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>107DA0F0B707D08190FF287D2E54E0784B24176B</ManifestCertificateThumbprint>
@@ -600,6 +600,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="Resources\msdial_icon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
     <Page Include="Statistics\HcaResultWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -899,18 +903,6 @@
       <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
       <Name>ChartDrawing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dendrogram\Dendrogram.csproj">
-      <Project>{a2e7e2d7-96bf-4cd7-9cfe-e9e7a446bdb1}</Project>
-      <Name>Dendrogram</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GraphAxisControl\GraphAxisControl.csproj">
-      <Project>{69ea43f9-032a-48e8-a233-779b1b353c76}</Project>
-      <Name>GraphAxisControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Heatmap\Heatmap.csproj">
-      <Project>{2b825c29-e91f-449c-a6a6-a2f88330cc0c}</Project>
-      <Name>Heatmap</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
       <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
       <Name>MathematicsStandard</Name>
@@ -967,9 +959,6 @@
     <Resource Include="Resources\CompoundSearchIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\MS-DIAL.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
@@ -1011,8 +1000,9 @@
     <Resource Include="Resources\SpotRelation.ico" />
     <Resource Include="Resources\Refresh.ico" />
     <Resource Include="Resources\CorrDec.ico" />
-    <Resource Include="msdial_icon.ico" />
+    <Resource Include="Resources\msdial_icon.ico" />
     <Resource Include="Resources\msdial_icon.png" />
+    <Resource Include="Resources\msfinder_icon.ico" />
     <Content Include="Resources\SQLite.Interop.dll" />
     <Resource Include="Resources\Lipoquality.ico" />
     <Resource Include="Resources\MolecularNetworking.ico" />
@@ -1053,9 +1043,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\BinVestigate.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\MS-FINDER-Main-Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Table.png" />

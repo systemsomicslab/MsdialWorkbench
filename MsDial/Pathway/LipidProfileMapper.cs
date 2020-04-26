@@ -24,8 +24,8 @@ namespace Rfx.Riken.OsakaUniv {
             var barChartDisplayMode = mainWindow.BarChartDisplayMode;
             var isBoxPlot = mainWindow.ProjectProperty.IsBoxPlotForAlignmentResult;
 
-            var curDir = Directory.GetCurrentDirectory();
-            var exportfolder = curDir + "/CytoscapeLocalBrowser/lipidgraphs";
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var exportfolder = curDir + "CytoscapeLocalBrowser/lipidgraphs";
             if (!System.IO.Directory.Exists(exportfolder)) {
                 var di = System.IO.Directory.CreateDirectory(exportfolder);
             }

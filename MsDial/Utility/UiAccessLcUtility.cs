@@ -1,7 +1,6 @@
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
 using CompMs.RawDataHandler.Core;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -627,7 +627,7 @@ namespace Rfx.Riken.OsakaUniv
             else return new SolidColorBrush(Color.FromArgb(180, (byte)255, (byte)0, (byte)0));
         }
 
-        public static ChromatogramXicViewModel GetChromatogramXicViewModel(ObservableCollection<RAW_Spectrum> accumulatedSpectra, ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static ChromatogramXicViewModel GetChromatogramXicViewModel(ObservableCollection<RawSpectrum> accumulatedSpectra, ObservableCollection<RawSpectrum> spectrumCollection,
             PeakAreaBean peakAreaBean, AnalysisParametersBean param, AnalysisFilePropertyBean file,
             ProjectPropertyBean project)
         {
@@ -656,7 +656,7 @@ namespace Rfx.Riken.OsakaUniv
                 0, graphTitle, targetMz, param.CentroidMs1Tolerance, targetRt, peakAreaBean.RtAtLeftPeakEdge, peakAreaBean.RtAtRightPeakEdge, true);
         }
 
-        public static ChromatogramXicViewModel GetChromatogramXicViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static ChromatogramXicViewModel GetChromatogramXicViewModel(ObservableCollection<RawSpectrum> spectrumCollection, 
             DriftSpotBean driftSpot, ObservableCollection<PeakAreaBean> peakSpots, AnalysisParametersBean param,
             AnalysisFilePropertyBean fileProp, ProjectPropertyBean projectProperty) {
 
@@ -684,8 +684,8 @@ namespace Rfx.Riken.OsakaUniv
                 driftSpot.DriftTimeAtLeftPeakEdge, driftSpot.DriftTimeAtRightPeakEdge, true, xTitle);
         }
 
-        public static MassSpectrogramViewModel GetMs1MassSpectrogramViewModel(ObservableCollection<RAW_Spectrum> accumulatedMs1Spectra, // this is used for ion mobility data access. In conventional LC-MS data processing, this object should be null.
-            ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakAreaBean, 
+        public static MassSpectrogramViewModel GetMs1MassSpectrogramViewModel(ObservableCollection<RawSpectrum> accumulatedMs1Spectra, // this is used for ion mobility data access. In conventional LC-MS data processing, this object should be null.
+            ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakAreaBean, 
             AnalysisParametersBean param, ProjectPropertyBean project)
         {
             float targetRt = peakAreaBean.RtAtPeakTop;
@@ -714,7 +714,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpec, MassSpectrogramIntensityMode.Relative, msScanPoint, targetRt, targetMz, graphTitle);
         }
 
-        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, MS2DecResult deconvolutionResultBean, 
             ReversibleMassSpectraView reversibleMassSpectraView, ProjectPropertyBean projectPropertyBean, 
             List<MspFormatCompoundInformationBean> mspFormatCompoundInformationBeanList)
@@ -745,7 +745,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpectrogramBean, referenceSpectraBean, MassSpectrogramIntensityMode.Relative, msScanPoint, targetRt, graphTitle);
         }
 
-        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection,
             DriftSpotBean driftSpot, AnalysisParametersBean analysisParametersBean, MS2DecResult deconvolutionResultBean,
             ReversibleMassSpectraView reversibleMassSpectraView, ProjectPropertyBean projectPropertyBean,
             List<MspFormatCompoundInformationBean> mspFormatCompoundInformationBeanList)
@@ -777,7 +777,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static MassSpectrogramViewModel GetMs2MassspectrogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection,
             DriftSpotBean driftSpot, PeakAreaBean peakAreaBean,AnalysisParametersBean param, ProjectPropertyBean project, MS2DecResult deconvolutionResultBean,
             ReversibleMassSpectraView reversibleMassSpectraView,
             List<MspFormatCompoundInformationBean> mspFormatCompoundInformationBeanList)
@@ -894,7 +894,7 @@ namespace Rfx.Riken.OsakaUniv
             
         }
 
-        public static MassSpectrogramBean GetMs2RawMassspectrogram(ObservableCollection<RAW_Spectrum> lcmsSpectrumCollection,
+        public static MassSpectrogramBean GetMs2RawMassspectrogram(ObservableCollection<RawSpectrum> lcmsSpectrumCollection,
             DriftSpotBean driftSpot, PeakAreaBean peakSpot,AnalysisParametersBean param, ProjectPropertyBean project)
         {
             var centroidedSpectra = DataAccessLcUtility.GetAccumulatedMs2Spectra(lcmsSpectrumCollection, driftSpot, peakSpot, param, project);
@@ -914,7 +914,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        public static MassSpectrogramViewModel GetMs2RawMassspectrogramWithRefViewModel(ObservableCollection<RAW_Spectrum> lcmsSpectrumCollection,
+        public static MassSpectrogramViewModel GetMs2RawMassspectrogramWithRefViewModel(ObservableCollection<RawSpectrum> lcmsSpectrumCollection,
             DriftSpotBean driftSpot, PeakAreaBean peakSpot,
             List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param, ProjectPropertyBean project)
         {
@@ -933,7 +933,7 @@ namespace Rfx.Riken.OsakaUniv
             
         }
 
-        public static MassSpectrogramViewModel GetMs2RawMassspectrogramWithAccumulateViewModel(ObservableCollection<RAW_Spectrum> lcmsSpectrumCollection, 
+        public static MassSpectrogramViewModel GetMs2RawMassspectrogramWithAccumulateViewModel(ObservableCollection<RawSpectrum> lcmsSpectrumCollection, 
             DriftSpotBean driftSpot, PeakAreaBean peakSpot, AnalysisParametersBean param, ProjectPropertyBean project)
         {
             MassSpectrogramBean massSpectrogramBean = GetMs2RawMassspectrogram(lcmsSpectrumCollection, driftSpot, peakSpot, param, project);
@@ -946,7 +946,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        public static MassSpectrogramViewModel GetMs2RawMassspectrogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static MassSpectrogramViewModel GetMs2RawMassspectrogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection,
            DriftSpotBean driftSpot, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean) {
             float targetRt = driftSpot.DriftTimeAtPeakTop;
             int msScanPoint = driftSpot.Ms2LevelDatapointNumber;
@@ -965,7 +965,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpectrogramBean, null, MassSpectrogramIntensityMode.Absolute, msScanPoint, targetRt, graphTitle);
         }
 
-        public static MassSpectrogramViewModel GetMs2RawMassspectrogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static MassSpectrogramViewModel GetMs2RawMassspectrogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, ProjectPropertyBean projectPropertyBean)
         {
             float targetRt = peakAreaBean.RtAtPeakTop;
@@ -1018,7 +1018,7 @@ namespace Rfx.Riken.OsakaUniv
             return new MassSpectrogramViewModel(massSpectrogramBean, null, MassSpectrogramIntensityMode.Absolute, msScanPoint, targetRt, graphTitle);
         }
 
-        public static ChromatogramTicEicViewModel GetChromatogramTicViewModel(ObservableCollection<RAW_Spectrum> RAW_SpectrumCollection, 
+        public static ChromatogramTicEicViewModel GetChromatogramTicViewModel(ObservableCollection<RawSpectrum> RAW_SpectrumCollection, 
             AnalysisFileBean analysisFileBean, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean)
         {
             if (RAW_SpectrumCollection == null || RAW_SpectrumCollection.Count == 0) return null;
@@ -1037,7 +1037,7 @@ namespace Rfx.Riken.OsakaUniv
         public static ChromatogramTicEicViewModel GetChromatogramEicViewModel(ObservableCollection<ExtractedIonChromatogramDisplaySettingBean> extractedIonChromatogramDisplaySettingBeanCollection, 
             ProjectPropertyBean projectPropertyBean, AnalysisFileBean analysisFileBean,
             AnalysisParametersBean analysisParametersBean, List<SolidColorBrush> solidColorBrushList, 
-            ObservableCollection<RAW_Spectrum> RAW_SpectrumCollection)
+            ObservableCollection<RawSpectrum> RAW_SpectrumCollection)
         {
             if (RAW_SpectrumCollection == null || RAW_SpectrumCollection.Count == 0) return null;
 
@@ -1063,7 +1063,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         public static ChromatogramTicEicViewModel GetMultiFilesEicsOfTargetPeak(AlignmentPropertyBean alignedSpot, ObservableCollection<AnalysisFileBean> files, 
-            int focusedFileID, ObservableCollection<RAW_Spectrum> focusedSpectra, ProjectPropertyBean projectPropety, RdamPropertyBean rdamProperty, 
+            int focusedFileID, ObservableCollection<RawSpectrum> focusedSpectra, ProjectPropertyBean projectPropety, RdamPropertyBean rdamProperty, 
             AnalysisParametersBean param)
         {
             if (focusedSpectra == null || focusedSpectra.Count == 0) return null;
@@ -1101,7 +1101,7 @@ namespace Rfx.Riken.OsakaUniv
             ObservableCollection<ExtractedIonChromatogramDisplaySettingBean> extractedIonChromatogramDisplaySettingBeanCollection, 
             ProjectPropertyBean projectPropertyBean, AnalysisFileBean analysisFileBean, 
             AnalysisParametersBean analysisParametersBean, List<SolidColorBrush> solidColorBrushList, 
-            ObservableCollection<RAW_Spectrum> RAW_SpectrumCollection)
+            ObservableCollection<RawSpectrum> RAW_SpectrumCollection)
         {
             if (RAW_SpectrumCollection == null || RAW_SpectrumCollection.Count == 0) return null;
 
@@ -1129,7 +1129,7 @@ namespace Rfx.Riken.OsakaUniv
         public static ChromatogramTicEicViewModel GetChromatogramBpcViewModel(
            ProjectPropertyBean project, AnalysisFileBean file,
            AnalysisParametersBean param,
-           ObservableCollection<RAW_Spectrum> spectrumlist) {
+           ObservableCollection<RawSpectrum> spectrumlist) {
             if (spectrumlist == null || spectrumlist.Count == 0) return null;
 
             var chromatogramBeanCollection = new ObservableCollection<ChromatogramBean>();
@@ -1151,7 +1151,7 @@ namespace Rfx.Riken.OsakaUniv
         public static ChromatogramTicEicViewModel GetChromatogramTicBpcHighestEicViewModel(
           ProjectPropertyBean project, AnalysisFileBean file,
           AnalysisParametersBean param,
-          ObservableCollection<RAW_Spectrum> spectrumlist) {
+          ObservableCollection<RawSpectrum> spectrumlist) {
             if (spectrumlist == null || spectrumlist.Count == 0) return null;
 
             var peakspots = file.PeakAreaBeanCollection;
@@ -1204,7 +1204,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModel(ObservableCollection<RawSpectrum> spectrumCollection, 
             ProjectPropertyBean projectPropertyBean, PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, 
             Dictionary<int, AnalystExperimentInformationBean> analystExperimentInformationBean, 
             MS2DecResult deconvolutionResultBean, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList)
@@ -1312,7 +1312,7 @@ namespace Rfx.Riken.OsakaUniv
             return new ChromatogramMrmViewModel(chromatogramBeanCollection, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None, ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, -1, -1, "MS2 chromatograms ", -1, "", "", "", "", -1, -1, peakAreaBean.RtAtPeakTop, null, -1, -1);
         }
 
-        public static ChromatogramMrmViewModel GetMs2ChromatogramIonMobilityViewModel(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static ChromatogramMrmViewModel GetMs2ChromatogramIonMobilityViewModel(ObservableCollection<RawSpectrum> spectrumCollection,
             ProjectPropertyBean projectPropertyBean, PeakAreaBean peakAreaBean, DriftSpotBean driftSpot, AnalysisParametersBean analysisParametersBean,
             MS2DecResult deconvolutionResultBean, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList)
         {
@@ -1488,7 +1488,7 @@ namespace Rfx.Riken.OsakaUniv
                 return null;
         }
 
-        public static ChartDrawing.DrawVisual GetMs2ChromatogramDrawVisual(ObservableCollection<RAW_Spectrum> spectrumCollection, DriftSpotBean driftSpot, PeakAreaBean peakAreaBean, 
+        public static CompMs.Graphics.Core.Base.DrawVisual GetMs2ChromatogramDrawVisual(ObservableCollection<RawSpectrum> spectrumCollection, DriftSpotBean driftSpot, PeakAreaBean peakAreaBean, 
             MS2DecResult ms2decres, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean param)
         {
             //if (peakAreaBean.Ms2LevelDatapointNumber == -1) return null;
@@ -1542,11 +1542,11 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 peaklistlist.Add(peaklist);
             }
-            return ChartDrawing.Utility.GetChromatogramV1(peaklistlist);
+            return CompMs.Graphics.Core.Base.Utility.GetChromatogramV1(peaklistlist);
             
         }
 
-        private static MassSpectrogramBean getMassSpectrogramBean(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static MassSpectrogramBean getMassSpectrogramBean(ObservableCollection<RawSpectrum> spectrumCollection,
             int msScanPoint, float massBin, 
             bool peakDetectionBasedCentroid,
             //bool isIonMobility, 
@@ -1557,8 +1557,8 @@ namespace Rfx.Riken.OsakaUniv
             var masslist = new ObservableCollection<double[]>();
             var centroidedMassSpectra = new ObservableCollection<double[]>();
             var massSpectraDisplayLabelCollection = new ObservableCollection<MassSpectrogramDisplayLabel>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             spectrum = spectrumCollection[msScanPoint];
             massSpectra = spectrum.Spectrum;
@@ -1587,7 +1587,7 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        private static MassSpectrogramBean getAccumulatedMs1Spectrum(ObservableCollection<RAW_Spectrum> accumulatedSpectra,
+        private static MassSpectrogramBean getAccumulatedMs1Spectrum(ObservableCollection<RawSpectrum> accumulatedSpectra,
             int scanNumber, float massBin,
             bool peakDetectionBasedCentroid,
             DataType dataType) {
@@ -1598,8 +1598,8 @@ namespace Rfx.Riken.OsakaUniv
             var masslist = new ObservableCollection<double[]>();
             var centroidedMassSpectra = new ObservableCollection<double[]>();
             var massSpectraDisplayLabelCollection = new ObservableCollection<MassSpectrogramDisplayLabel>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             //var scanNumber = convertOriginalScanIdToAccumulatedSpectraScanNumberInIonmobilityProject(originalScanID, accumulatedSpectra);
             //if (scanNumber == -1) return null;
@@ -1630,7 +1630,7 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        private static int convertOriginalScanIdToAccumulatedSpectraScanNumberInIonmobilityProject(int originalScanID, ObservableCollection<RAW_Spectrum> accumulatedSpectra) {
+        private static int convertOriginalScanIdToAccumulatedSpectraScanNumberInIonmobilityProject(int originalScanID, ObservableCollection<RawSpectrum> accumulatedSpectra) {
             var startIndex = DataAccessLcUtility.GetRawSpectrumObjectsStartIndex(originalScanID, accumulatedSpectra, true);
             for (int i = startIndex; i < accumulatedSpectra.Count; i++) {
                 var spectrum = accumulatedSpectra[i];

@@ -1,6 +1,6 @@
-﻿using Msdial.Lcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -391,7 +391,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <summary>
         /// This program performs the interpolation, i.e. gap-filling, for missing values.
         /// </summary>
-        public static void GapFillingMethod(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        public static void GapFillingMethod(ObservableCollection<RawSpectrum> spectrumCollection,
             AlignmentPropertyBean alignmentProperty, AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param,
             float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth)
         {
@@ -399,7 +399,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         centralRT, centralMZ, rtTol, mzTol, averagePeakWidth);
         }
 
-        private static void gapfillingOld(ObservableCollection<RAW_Spectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty, AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param, float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth) {
+        private static void gapfillingOld(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty, AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param, float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth) {
             if (mzTol < 0.005) mzTol = 0.005F;
             if (averagePeakWidth < 0.2) averagePeakWidth = 0.2F;
 
@@ -785,7 +785,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             #endregion
         }
 
-        private static void gapfillingVS1(ObservableCollection<RAW_Spectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty,
+        private static void gapfillingVS1(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty,
             AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param, 
             float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth) {
             if (mzTol < 0.005) mzTol = 0.005F;
@@ -974,7 +974,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             }
         }
 
-        private static void gapfillingVS2(ObservableCollection<RAW_Spectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty, 
+        private static void gapfillingVS2(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignmentProperty, 
             AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param, 
             float centralRT, float centralMZ, float rtTol, float mzTol, float averagePeakWidth) {
             if (mzTol < 0.005) mzTol = 0.005F;
@@ -2910,14 +2910,14 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <summary>
         /// This program performs the interpolation, i.e. gap-filling, for missing values.
         /// </summary>
-        public static void GapFillingMethod(ObservableCollection<RAW_Spectrum> spectrumCollection, AlignmentPropertyBean alignedProp,
+        public static void GapFillingMethod(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignedProp,
             AlignedDriftSpotPropertyBean driftSpotProp, AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param,
             float centralRt, float centralDt, float centralMZ, float dtTol, float mzTol, float averagePeakWidth) {
             gapfillingVS2(spectrumCollection, alignedProp, driftSpotProp, alignedPeakProperty, projectProperty, param,
                         centralRt, centralDt, centralMZ, dtTol, mzTol, averagePeakWidth);
         }
 
-        private static void gapfillingVS2(ObservableCollection<RAW_Spectrum> spectrumCollection, AlignmentPropertyBean alignedProp, AlignedDriftSpotPropertyBean alignmentProperty,
+        private static void gapfillingVS2(ObservableCollection<RawSpectrum> spectrumCollection, AlignmentPropertyBean alignedProp, AlignedDriftSpotPropertyBean alignmentProperty,
             AlignedPeakPropertyBean alignedPeakProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param,
             float centralRT, float centralDT, float centralMZ, float dtTol, float mzTol, float averagePeakWidth) {
 
