@@ -35,7 +35,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
 
     public sealed class PeakDetection {
         private PeakDetection() { }
-
+        // below is a global peak detection method for gcms/lcms data preprocessing
         public static List<PeakDetectionResult> PeakDetectionVS1(double minimumDatapointCriteria, double minimumAmplitudeCriteria, List<ChromatogramPeak> peaklist) {
             var results = new List<PeakDetectionResult>();
             #region

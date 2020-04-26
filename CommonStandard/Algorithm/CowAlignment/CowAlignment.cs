@@ -59,14 +59,13 @@ namespace CompMs.Common.Algorithm.CowAlignment {
 
         /// <summary>
         /// This is the alignment program of correlation optimized warping. (see Nielsen et.al. J. Chromatogr. A 805, 17–35 (1998).)
-        /// This program returns the chromatogram information as the list of double[], [0]scan number, [1]retention time, [2]m/z, [3]intensity.
+        /// This program returns the chromatogram information as the list of ChromatogramPeak containing scan number, retention time, m/z, intensity.
         /// As long as you use 'Constant' enum as the borderlimit, you do not have to mind maxSlack (second arg).
         /// Now I'm making some border limits but please do not use others except for 'Constant' yet.
         /// The first argument, minSlack, should be 1 or 2 as long as ODS columns or GC are used.
         /// The second argument is please the same as the first argument.
         /// The third argument, segment size, should be set to the data point number of detected peaks (recommended).
         /// The sample chromatogram will be aligned to the reference chromatogram.
-        /// The double array should be [0]scan, [1]retention time, [2]m/z, and [3]intensity.
         /// The border limit please should be set to constant.
         /// </summary>
         /// <param name="minSlack"></param>

@@ -12,7 +12,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
 
         /// <summary>
         /// This is the base line correction method. This method will return the baseline corrected peak list (list of double arrays).
-        /// The first arg, List<double[]> peaklist, should be the list of double arrays including [0]scan number, [1]retention time, [2]m/z, and [3]intensity.
+        /// The first arg, List<ChromatogramPeak> peaklist, should be the list of ChromatogramPeak including scan number, retention time, m/z, and intensity.
         /// The second arg, bandWidth, is the decision criteria to get local minimum in the chromatogram. (Recommended 3 - 5)
         /// The third arg, segment number  is the parameter to segment chromatogram so that the baseline correction is performed in each segmented range.
         /// The detail is described in MS-DIAL papaer.

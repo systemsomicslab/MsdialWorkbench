@@ -16,4 +16,8 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Lipidomics\" />
+  </ItemGroup>
+
 </Project>

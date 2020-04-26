@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 namespace CompMs.Common.Algorithm.ChromSmoothing {
     /// <summary>
     /// Now I'm preparing six smoothing methods but do not use LowessFilter and LowessFilter since I do not test them yet.
-    /// These methods will return the list of array, i.e. chromatogram information. Each array includes peak information as [0]scan number [1]retention time [2]m/z [3]intensity.
-    /// The first argument of all smoothing methods should be raw chromatogram (list of array as described above.).
+    /// These methods will return the list of ChromatogramPeak, i.e. chromatogram information. 
+    /// Each ChromatogramPeak includes peak information as [0]scan number [1]retention time [2]m/z [3]intensity.
+    /// The first argument of all smoothing methods should be raw chromatogram (list of ChromatogramPeak as described above.).
     /// The second argument of all smoothing methods is the number of data points which are used for the smoothing.
     /// </summary>
     public sealed class Smoothing

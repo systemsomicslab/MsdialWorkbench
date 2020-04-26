@@ -20,6 +20,7 @@ namespace CompMs.Common.DataObj {
     /// <summary>
     /// 'IsotopicPeak.cs' and 'Isotope.cs' are the storage of isotope calculation result for a fomula.
     /// The detail of the properties such as M+1, M+2, etc is stored in this class.
+    /// Relative intensity is standardized to 100 as the maximum
     /// </summary>
     public class IsotopicPeak {
         public double RelativeAbundance { get; set; }
