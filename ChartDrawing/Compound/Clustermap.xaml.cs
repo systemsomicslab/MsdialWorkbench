@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 using Common.DataStructure;
+using CompMs.Graphics.Core.Command;
 
 namespace CompMs.Graphics.Compound
 {
@@ -15,10 +17,26 @@ namespace CompMs.Graphics.Compound
         public Clustermap()
         {
             InitializeComponent();
-            DataContext = this;
+            SavePngCmd = new SavePngCommand() { Element = this };
+            // DataContext = this;
+            ContextMenu.DataContext = this;
         }
 
-        public double[,] DataMatrix
+        public ICommand SavePngCmd { get; set; }
+        /*
+        public ICommand SavePngCmd
+        {
+            get => (ICommand) GetValue(SavePngCmdProperty);
+            set => SetValue(SavePngCmdProperty, value);
+        }
+        public static readonly DependencyProperty SavePngCmdProperty = DependencyProperty.Register(
+            nameof(SavePngCmd), typeof(ICommand), typeof(Clustermap),
+            new FrameworkPropertyMetadata(default(ICommand),
+                FrameworkPropertyMetadataOptions.AffectsRender)
+            );
+            */
+
+    public double[,] DataMatrix
         {
             get => (double[,])GetValue(DataMatrixProperty);
             set => SetValue(DataMatrixProperty, value);

@@ -9,18 +9,27 @@
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap"
              xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior"
+             xmlns:command="clr-namespace:CompMs.Graphics.Core.Command"
              mc:Ignorable="d" 
+             Name="ClustermapControl"
              d:DesignHeight="600" d:DesignWidth="600">
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Save png image"
+                      Command="{Binding SavePngCmd}"
+                      />
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MaxWidth="100"/>
             <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*" MaxWidth="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="3*" MaxHeight="200"/>
             <RowDefinition Height="8*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*" MaxHeight="100"/>
         </Grid.RowDefinitions>
         <dendrogram:DendrogramCoreControl
             x:Name="XDendrogramControl"

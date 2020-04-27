@@ -64,6 +64,7 @@
     <Compile Include="Behavior\DataLabelBehavior.cs" />
     <Compile Include="Behavior\RubberAdorner.cs" />
     <Compile Include="Behavior\RubberBehavior.cs" />
+    <Compile Include="Command\SavePngCommand.cs" />
     <Compile Include="Compound\Clustermap.xaml.cs">
       <DependentUpon>Clustermap.xaml</DependentUpon>
     </Compile>

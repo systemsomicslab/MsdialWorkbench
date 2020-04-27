@@ -293,16 +293,14 @@ namespace CompMs.Graphics.Core.Base
             if (isZooming && ChartManager != null)
             {
                 isZooming = false;
-                var newarea = new Rect(
-                    ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
-                    ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
-                    );
-                if (newarea.Width == 0)
+                var selectedArea = new Rect(initialPosition, e.GetPosition(this));
+                var newarea = ChartManager.Translate(selectedArea, ChartDrawingArea, RenderSize);
+                if (selectedArea.Width <= 10)
                 {
                     newarea.X = ChartDrawingArea.X;
                     newarea.Width = ChartDrawingArea.Width;
                 }
-                if (newarea.Height == 0)
+                if (selectedArea.Height <= 10)
                 {
                     newarea.Y = ChartDrawingArea.Y;
                     newarea.Height = ChartDrawingArea.Height;
