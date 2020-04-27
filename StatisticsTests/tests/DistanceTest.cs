@@ -25,7 +25,7 @@ namespace Msdial.StatisticsTests
     }
 
     [TestClass]
-    public class CalculatePearsonDistanceTest
+    public class UnsafeCalculatePearsonDistanceTest
     {
         [TestMethod]
         [DataTestMethod]
@@ -35,15 +35,61 @@ namespace Msdial.StatisticsTests
         [DataRow(new double[] { 2, 6, 3}, new double[] { 1, 2, 3}, 0.759807769)]
         [DataRow(new double[] { -1, -2, -3}, new double[] { -2, -6, -3}, 0.759807769)]
         [DataRow(new double[] { -2, -6, -3}, new double[] { -1, -2, -3}, 0.759807769)]
+        [DataRow(new double[] { 2, 6, 3}, new double[] { -1, -2, -3}, 1.2401922307076307)]
+        [DataRow(new double[] { -2, -6, -3}, new double[] { 1, 2, 3}, 1.2401922307076307)]
         public void ValidCaseTest(double[] xs, double[] ys, double expected)
         {
-            var result = StatisticsMathematics.CalculatePearsonCorrelationDistance(xs, ys);
+            var result = StatisticsMathematics.UnsafeCalculatePearsonCorrelationDistance(xs, ys);
             Console.WriteLine(result);
             Assert.AreEqual(expected, result, 0.0000001);
         }
         
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [DataTestMethod]
+        [DataRow(new double[] { 0, 0, 0}, new double[] { 1, 2, 3})]
+        [DataRow(new double[] { 1, 2, 3}, new double[] { 0, 0, 0})]
+        [DataRow(new double[] { 0, 0, 0}, new double[] { 0, 0, 0})]
+        public void InputZerosTest(double[] xs, double[] ys)
+        {
+            var result = StatisticsMathematics.UnsafeCalculatePearsonCorrelationDistance(xs, ys);
+            Console.WriteLine(result);
+            Assert.AreEqual(result, double.PositiveInfinity);
+        }
+
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow(new double[] { 1, 1, 1}, new double[] { 1, 2, 3})]
+        [DataRow(new double[] { 1, 2, 3}, new double[] { 10, 10, 10})]
+        [DataRow(new double[] { 8, 8, 8}, new double[] { 0, 0, 0})]
+        public void InputSameElementsTest(double[] xs, double[] ys)
+        {
+            var result = StatisticsMathematics.UnsafeCalculatePearsonCorrelationDistance(xs, ys);
+            Console.WriteLine(result);
+            Assert.AreEqual(double.PositiveInfinity, result);
+        }
+
+    }
+  
+    [TestClass]
+    public class CalculatePearsonDistanceTest
+    {
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow(new double[] { 1, 2, 3, 4, 5}, new double[] { 2, 3, 4, 5, 6})]
+        [DataRow(new double[] { 2, 3, 4, 5, 6}, new double[] { 1, 2, 3, 4, 5})]
+        [DataRow(new double[] { 1, 2, 3}, new double[] { 2, 6, 3})]
+        [DataRow(new double[] { 2, 6, 3}, new double[] { 1, 2, 3})]
+        [DataRow(new double[] { -1, -2, -3}, new double[] { -2, -6, -3})]
+        [DataRow(new double[] { -2, -6, -3}, new double[] { -1, -2, -3})]
+        public void ValidCaseTest(double[] xs, double[] ys)
+        {
+            var result = StatisticsMathematics.CalculatePearsonCorrelationDistance(xs, ys);
+            var expected = StatisticsMathematics.UnsafeCalculatePearsonCorrelationDistance(xs, ys);
+            Console.WriteLine(result);
+            Assert.AreEqual(expected, result, 0.0000001);
+        }
+        
+        [TestMethod]
         [DataTestMethod]
         [DataRow(new double[] { 0, 0, 0}, new double[] { 1, 2, 3})]
         [DataRow(new double[] { 1, 2, 3}, new double[] { 0, 0, 0})]
@@ -52,8 +98,20 @@ namespace Msdial.StatisticsTests
         {
             var result = StatisticsMathematics.CalculatePearsonCorrelationDistance(xs, ys);
             Console.WriteLine(result);
+            Assert.AreEqual(1, result);
         }
 
+        [TestMethod]
+        [DataTestMethod]
+        [DataRow(new double[] { 1, 1, 1}, new double[] { 1, 2, 3})]
+        [DataRow(new double[] { 1, 2, 3}, new double[] { 10, 10, 10})]
+        [DataRow(new double[] { 8, 8, 8}, new double[] { 0, 0, 0})]
+        public void InputSameElementsTest(double[] xs, double[] ys)
+        {
+            var result = StatisticsMathematics.CalculatePearsonCorrelationDistance(xs, ys);
+            Console.WriteLine(result);
+            Assert.AreEqual(1, result);
+        }
     }
   
     [TestClass]
@@ -85,14 +143,14 @@ namespace Msdial.StatisticsTests
         }
         
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         [DataTestMethod]
         [DataRow(new double[] { 0, 0, 0}, new double[] { 0, 0, 0})]
         [DataRow(new double[] { 1, 1, 1}, new double[] { 2, 3, 4})]
         [DataRow(new double[] { 2, 3, 4}, new double[] { 1, 1, 1})]
         public void SameValuesAllTest(double[] xs, double[] ys)
         {
-            StatisticsMathematics.CalculateSpearmanCorrelationDistance(xs, ys);
+            var result = StatisticsMathematics.CalculateSpearmanCorrelationDistance(xs, ys);
+            Assert.AreEqual(1, result);
         }
     }
 
