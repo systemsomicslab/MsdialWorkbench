@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 using CompMs.Graphics.Core.Command;
 
 namespace CompMs.Graphics.Compound

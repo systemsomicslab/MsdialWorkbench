@@ -124,10 +124,6 @@
       <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
       <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
-      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
-      <Name>DataStructureStandard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj">
       <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
       <Name>MathematicsStandard</Name>

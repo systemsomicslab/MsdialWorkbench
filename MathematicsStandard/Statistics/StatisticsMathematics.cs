@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 //using System.Windows.Media;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 
 namespace Rfx.Riken.OsakaUniv
 {

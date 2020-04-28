@@ -105,9 +105,9 @@
       <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
       <Name>CommonMVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj">
-      <Project>{5e5e4a91-1aa2-4a3c-8cea-0da67b6b5d4c}</Project>
-      <Name>DataStructureStandard</Name>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
+      <Name>CommonStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

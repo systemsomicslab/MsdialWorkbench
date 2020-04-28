@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 
 namespace DataStructureTest
 {

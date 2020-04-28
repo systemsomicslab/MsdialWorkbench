@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 using CompMs.Graphics.Compound;
 using Rfx.Riken.OsakaUniv;
 

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 using Rfx.Riken.OsakaUniv;
 
 namespace ChartDrawingUiTest.Dendrogram

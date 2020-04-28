@@ -107,8 +107,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialConsoleAppCore", "Msd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsfinderConsoleAppCore", "MsfinderConsoleAppCore\MsfinderConsoleAppCore.csproj", "{F59D72CB-8A4A-420C-AA54-65C9B350E8C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataStructureStandard", "DataStructureStandard\DataStructureStandard.csproj", "{5E5E4A91-1AA2-4A3C-8CEA-0DA67B6B5D4C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MolViewer", "MolViewer\MolViewer.csproj", "{6D6E44EC-A467-461F-AF6B-83A9D575EF76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassyfireConsoleApp", "ClassyfireConsoleApp\ClassyfireConsoleApp.csproj", "{F6484267-B235-4CC5-8AC8-96A676219D51}"
@@ -331,10 +329,6 @@ Global
 		{F59D72CB-8A4A-420C-AA54-65C9B350E8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F59D72CB-8A4A-420C-AA54-65C9B350E8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F59D72CB-8A4A-420C-AA54-65C9B350E8C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E5E4A91-1AA2-4A3C-8CEA-0DA67B6B5D4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E5E4A91-1AA2-4A3C-8CEA-0DA67B6B5D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E5E4A91-1AA2-4A3C-8CEA-0DA67B6B5D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E5E4A91-1AA2-4A3C-8CEA-0DA67B6B5D4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D6E44EC-A467-461F-AF6B-83A9D575EF76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D6E44EC-A467-461F-AF6B-83A9D575EF76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D6E44EC-A467-461F-AF6B-83A9D575EF76}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -356,7 +350,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal

@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\DataStructureStandard\DataStructureStandard.csproj" />
   </ItemGroup>
 
 </Project>
