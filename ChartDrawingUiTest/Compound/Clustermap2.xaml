@@ -14,6 +14,11 @@
     <Grid>
         <compound:Clustermap
             DataContext="{Binding}"
+            XDendrogram="{Binding XDendrogram}"
+            YDendrogram="{Binding YDendrogram}"
+            DataMatrix="{Binding DataMatrix}"
+            XLabels="{Binding XLabels}"
+            YLabels="{Binding YLabels}"
             Margin="10"/>
     </Grid>
 </Page>

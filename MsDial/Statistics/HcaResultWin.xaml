@@ -79,7 +79,11 @@
             </ComboBox>
         </Grid>
         <compound:Clustermap
-            DataContext="{Binding}"
+            DataMatrix="{Binding DataMatrix}"
+            XDendrogram="{Binding XDendrogram}"
+            YDendrogram="{Binding YDendrogram}"
+            XLabels="{Binding XLabels}"
+            YLabels="{Binding YLabels}"
             Margin="5.975,5,10,5"
             Grid.Column="1" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"
             />

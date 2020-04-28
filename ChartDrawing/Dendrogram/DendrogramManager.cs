@@ -31,6 +31,9 @@ namespace CompMs.Graphics.Core.Dendrogram
 
         public DendrogramManager(DirectedTree tree, IReadOnlyList<double> xPositions, IReadOnlyList<double> yPositions)
         {
+            if (xPositions != null && xPositions.Count != tree.Count) xPositions = null;
+            if (yPositions != null && yPositions.Count != tree.Count) yPositions = null;
+
             var root = tree.Root;
             var XPositions_ = xPositions?.ToArray();
             if (XPositions_ == null)
@@ -54,9 +57,10 @@ namespace CompMs.Graphics.Core.Dendrogram
             {
                 YPositions_ = new double[tree.Count];
                 tree.PreOrder(root, e => YPositions_[e.To] = YPositions_[e.From] + e.Distance);
+                var maxy = YPositions_.Max();
+                YPositions_ = YPositions_.Select(pos => maxy - pos).ToArray();
             }
-            var maxy = YPositions_.Max();
-            YPositions = YPositions_.Select(pos => maxy - pos).ToArray();
+            YPositions = YPositions_;
 
             dendrogramElement = new DendrogramElement(tree, XPositions, YPositions);
             var area = dendrogramElement.ElementArea;
