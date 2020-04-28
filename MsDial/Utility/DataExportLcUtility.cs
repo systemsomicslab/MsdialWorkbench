@@ -10,10 +10,10 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Riken.Metabolomics.Annotation;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System.Diagnostics;
 using Riken.Metabolomics.Lipidomics;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -2287,7 +2287,18 @@ namespace Rfx.Riken.OsakaUniv
             var mspDB = mainWindow.MspDB;
             var param = mainWindow.AnalysisParamForLC;
 
-            var name = param.IsIonMobility ? driftProperty.MetaboliteName : alignmentProperty.MetaboliteName;
+            var name = param.IsIonMobility
+                ? driftProperty.MetaboliteName
+                : alignmentProperty.MetaboliteName;
+
+            //var name = string.Empty;
+            //if (param.IsIonMobility) {
+            //    name = driftProperty.MetaboliteName;
+            //}
+            //else {
+            //    name = alignmentProperty.MetaboliteName;
+            //}
+
             if (name == string.Empty || name.Contains("w/o")) name = "Unknown";
             var adduct = param.IsIonMobility ? driftProperty.AdductIonName : alignmentProperty.AdductIonName;
             if ((adduct == null || adduct == string.Empty) && mainWindow.ProjectProperty.IonMode == IonMode.Positive) adduct = "[M+H]+";

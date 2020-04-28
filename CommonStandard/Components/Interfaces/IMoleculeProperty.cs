@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 
 namespace CompMs.Common.Interfaces
 {
     public interface IMoleculeProperty
     {
-        int ID { get; set; }
-        double PrecursorMz { get; set; }
-        Times Times { get; set; }
+        string MoleculeName { get; set; }
+        Formula Formula { get; set; }
+        string Ontology { get; set; }
+        string SMILES { get; set; }
+        string InChIKey { get; set; }
     }
 }

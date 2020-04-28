@@ -48,7 +48,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Label Content="Mass accuracy" FontStyle="Italic" Margin="10,0,0,0" />
+                        <Label Content="Mass accuracy (centroid parameter)" FontStyle="Italic" Margin="10,0,0,0" />
 
                         <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
                             <Label Content="MS1 tolerance:" Height="30" VerticalContentAlignment="Center"/>

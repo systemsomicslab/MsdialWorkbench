@@ -25,12 +25,13 @@ using System.Text;
 using edu.ucdavis.fiehnlab.MonaExport.ViewModels;
 using NSSplash.impl;
 using System.Threading.Tasks;
-using Riken.Metabolomics.RawData;
 using Msdial.Lcms.Dataprocess.Test;
 using System.ComponentModel.DataAnnotations;
 using CompMs.RawDataHandler.Core;
 using Riken.Metabolomics.Lipoquality;
 using Riken.Metabolomics.Msdial.Pathway;
+using CompMs.Common.MessagePack;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -124,10 +125,10 @@ namespace Rfx.Riken.OsakaUniv
 
         //Rdam property
         private RawDataAccess rawDataAccess;
-        private RAW_Measurement rawMeasurement;
-        private ObservableCollection<RAW_Spectrum> lcmsSpectrumCollection;
-        private ObservableCollection<RAW_Spectrum> accumulatedMs1Specra;
-        private List<RAW_Spectrum> gcmsSpectrumList;
+        private RawMeasurement rawMeasurement;
+        private ObservableCollection<RawSpectrum> lcmsSpectrumCollection;
+        private ObservableCollection<RawSpectrum> accumulatedMs1Specra;
+        private List<RawSpectrum> gcmsSpectrumList;
 
         //Deconvolution file stream property
         private FileStream peakViewDecFS;
@@ -330,13 +331,13 @@ namespace Rfx.Riken.OsakaUniv
             set { analysisFiles = value; }
         }
 
-        public ObservableCollection<RAW_Spectrum> LcmsSpectrumCollection
+        public ObservableCollection<RawSpectrum> LcmsSpectrumCollection
         {
             get { return lcmsSpectrumCollection; }
             set { lcmsSpectrumCollection = value; }
         }
 
-        public List<RAW_Spectrum> GcmsSpectrumList
+        public List<RawSpectrum> GcmsSpectrumList
         {
             get { return gcmsSpectrumList; }
             set { gcmsSpectrumList = value; }
@@ -823,9 +824,9 @@ namespace Rfx.Riken.OsakaUniv
             this.targetFormulaLibrary = new List<PostIdentificatioinReferenceBean>();
             this.alignmentFiles = new ObservableCollection<AlignmentFileBean>();
 
-            this.lcmsSpectrumCollection = new ObservableCollection<RAW_Spectrum>();
+            this.lcmsSpectrumCollection = new ObservableCollection<RawSpectrum>();
             this.rdamProperty = new RdamPropertyBean();
-            this.gcmsSpectrumList = new List<RAW_Spectrum>();
+            this.gcmsSpectrumList = new List<RawSpectrum>();
 
             //this.pcaBean = new PrincipalComponentAnalysisResult();
             this.multivariateAnalysisResult = new MultivariateAnalysisResult();
@@ -1844,10 +1845,13 @@ namespace Rfx.Riken.OsakaUniv
 
             if (window.ShowDialog() == true) {
 
+                Mouse.OverrideCursor = Cursors.Wait;
                 this.hcaResultWin = new HcaResultWin(this.multivariateAnalysisResult);
                 this.hcaResultWin.Owner = this;
                 this.hcaResultWin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 this.hcaResultWin.Show();
+
+                Mouse.OverrideCursor = null;
             }
         }
 
@@ -6425,7 +6429,7 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        public ObservableCollection<RAW_Spectrum> AccumulatedMs1Specra {
+        public ObservableCollection<RawSpectrum> AccumulatedMs1Specra {
             get {
                 return accumulatedMs1Specra;
             }
@@ -6435,7 +6439,7 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        public RAW_Measurement RawMeasurement {
+        public RawMeasurement RawMeasurement {
             get {
                 return rawMeasurement;
             }

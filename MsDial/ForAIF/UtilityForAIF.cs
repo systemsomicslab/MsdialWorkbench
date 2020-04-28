@@ -3,7 +3,6 @@ using Msdial.Lcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv.MsViewer;
 using CompMs.RawDataHandler.Core;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -160,7 +160,7 @@ namespace Rfx.Riken.OsakaUniv
             process.Start();
         }
 
-        private static ObservableCollection<double[]> getMs1SpectrumCollection(ObservableCollection<RAW_Spectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakAreaBean, ExportspectraType spectrumType) {
+        private static ObservableCollection<double[]> getMs1SpectrumCollection(ObservableCollection<RawSpectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakAreaBean, ExportspectraType spectrumType) {
             var ms1Spectrum = new ObservableCollection<double[]>();
 
             if (spectrumType != ExportspectraType.profile && projectProperty.DataType == DataType.Profile) ms1Spectrum = DataAccessLcUtility.GetCentroidMassSpectra(LcmsSpectrumCollection, projectProperty.DataType, peakAreaBean.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, param.PeakDetectionBasedCentroid);
@@ -169,7 +169,7 @@ namespace Rfx.Riken.OsakaUniv
             return ms1Spectrum;
         }
 
-        private static ObservableCollection<double[]> getMs2SpectrumCollection(ObservableCollection<RAW_Spectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakAreaBean,
+        private static ObservableCollection<double[]> getMs2SpectrumCollection(ObservableCollection<RawSpectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakAreaBean,
             MS2DecResult ms2DecRes, ExportspectraType spectrumType, int id) {
             var ms2Spectrum = new ObservableCollection<double[]>();
 
@@ -189,7 +189,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         // raw
-        public static void msAnnotationTagExport(ObservableCollection<RAW_Spectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakArea, MS2DecResult ms2DecRes,
+        public static void msAnnotationTagExport(ObservableCollection<RawSpectrum> LcmsSpectrumCollection, ProjectPropertyBean projectProperty, AnalysisParametersBean param, PeakAreaBean peakArea, MS2DecResult ms2DecRes,
             List<MspFormatCompoundInformationBean> mspDB, ExportspectraType spectrumType, int id, string filePath, AnalysisFileBean file) {
             var ms1Spectrum = getMs1SpectrumCollection(LcmsSpectrumCollection, projectProperty, param, peakArea, spectrumType);
             var ms2Spectrum = getMs2SpectrumCollection(LcmsSpectrumCollection, projectProperty, param, peakArea, ms2DecRes, spectrumType, id);
@@ -614,15 +614,15 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
             return new MassSpectrogramViewModel(massSpectrogramBean, MassSpectrogramIntensityMode.Absolute, peakAreaBean.Ms2LevelDatapointNumberList[id], targetRt, peakAreaBean.AccurateMass, graphTitle);
         }
 
-        private static MassSpectrogramBean getMassSpectrogramBean(ObservableCollection<RAW_Spectrum> spectrumCollection,
+        private static MassSpectrogramBean getMassSpectrogramBean(ObservableCollection<RawSpectrum> spectrumCollection,
      int msScanPoint, float massBin, bool peakDetectionBasedCentroid, DataType dataType) {
             if (msScanPoint < 0) return null;
 
             ObservableCollection<double[]> masslist = new ObservableCollection<double[]>();
             ObservableCollection<double[]> centroidedMassSpectra = new ObservableCollection<double[]>();
             ObservableCollection<MassSpectrogramDisplayLabel> massSpectraDisplayLabelCollection = new ObservableCollection<MassSpectrogramDisplayLabel>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
 
             spectrum = spectrumCollection[msScanPoint];
             massSpectra = spectrum.Spectrum;
@@ -736,7 +736,7 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
 
         #region Chromatogram viewer 
         //PeakSpot
-        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModelForMsViewer(ObservableCollection<RAW_Spectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, 
+        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModelForMsViewer(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, 
             PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, Dictionary<int, AnalystExperimentInformationBean> analystExperimentInformationBean, 
             MS2DecResult deconvolutionResultBean, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList, int id) {
 

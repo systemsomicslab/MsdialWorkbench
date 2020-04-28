@@ -1000,7 +1000,9 @@
                                         <RowDefinition Height="40" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraRaw" Checked="ToggleButton_MeasurmentReferenceSpectraRaw_Checked" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraRaw" Checked="ToggleButton_MeasurmentReferenceSpectraRaw_Checked" 
+                                                  Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Transparent" 
+                                                  BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
                                         <ToggleButton.Content>
                                             <Image Source="Resources/RawChromatogram.ico" />
                                         </ToggleButton.Content>
@@ -1008,7 +1010,9 @@
                                             <ToolTip Content="Show centroid spectra vs. reference spectra" />
                                         </ToolTipService.ToolTip>
                                     </ToggleButton>
-                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraDeconvoluted" Checked="ToggleButton_MeasurmentReferenceSpectraDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                    <ToggleButton Name="ToggleButton_MeasurmentReferenceSpectraDeconvoluted" 
+                                                  Checked="ToggleButton_MeasurmentReferenceSpectraDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" 
+                                                  Margin="50,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
                                         <ToggleButton.Content>
                                             <Image Source="Resources/Deconvoluted.ico" />
                                         </ToggleButton.Content>
@@ -1017,7 +1021,8 @@
                                         </ToolTipService.ToolTip>
                                     </ToggleButton>
 
-                                    <Button Name="Button_CompoundSearchPeakViewer" Click="buttonClick_CompoundSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                    <Button Name="Button_CompoundSearchPeakViewer" Click="buttonClick_CompoundSearchPeakViewer" 
+                                            Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/CompoundSearchIcon.ico" />
                                         </Button.Content>
@@ -1026,9 +1031,9 @@
                                         </ToolTipService.ToolTip>
                                     </Button>
 
-                                    <Button Name="Button_MsFinderSearchPeakViewer" Click="buttonClick_MsFinderSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                    <Button Name="Button_MsFinderSearchPeakViewer" Click="buttonClick_MsFinderSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Transparent" BorderBrush="Gray" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
-                                            <Image Source="Resources/MS-FINDER-Main-Icon.ico" />
+                                            <Image Source="Resources/msfinder_icon.ico" />
                                         </Button.Content>
                                         <ToolTipService.ToolTip>
                                             <ToolTip Content="MS-FINDER search" />
@@ -1037,7 +1042,7 @@
 
                                     <Button Name="Button_MolecularNetworkPeakViewer" Click="buttonClick_MolecularNetworkPeakViewer" Grid.Row="0" 
                                             Height="30" Width="30" Margin="170,5,5,5" 
-                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                            Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/MolecularNetworking.ico" />
                                         </Button.Content>
@@ -1046,7 +1051,8 @@
                                         </ToolTipService.ToolTip>
                                     </Button>
 
-                                    <Button Name="Button_BinVestigateSearchPeakViewer" Click="buttonClick_BinVestigateSearchPeakViewer" Grid.Row="0" Height="30" Width="30" Margin="210,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                    <Button Name="Button_BinVestigateSearchPeakViewer" Click="buttonClick_BinVestigateSearchPeakViewer" Grid.Row="0"
+                                            Height="30" Width="30" Margin="210,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/BinVestigate.ico" />
                                         </Button.Content>
@@ -1057,7 +1063,7 @@
 
                                     <Button Name="Button_LipoqualityDbSearchPeakViewer" Click="buttonClick_LipoqualityDbSearchPeakViewer" 
                                             Grid.Row="0" Height="30" Width="30" Margin="250,5,5,5" 
-                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left"
+                                            Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left"
                                             IsEnabled="True">
                                         <Button.Content>
                                             <Image Source="Resources/Lipoquality.ico" />
@@ -1084,7 +1090,8 @@
                                         <RowDefinition Height="40" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRaw" Checked="ToggleButton_MsMsChromatogramRaw_Checked" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRaw" Checked="ToggleButton_MsMsChromatogramRaw_Checked" 
+                                                  Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
                                         <ToggleButton.Content>
                                             <Image Source="Resources/RawChromatogram.ico" />
                                         </ToggleButton.Content>
@@ -1092,7 +1099,8 @@
                                             <ToolTip Content="Show raw chromatograms (product ion chromatograms)" />
                                         </ToolTipService.ToolTip>
                                     </ToggleButton>
-                                    <ToggleButton Name="ToggleButton_MsMsChromatogramDeconvoluted" Checked="ToggleButton_MsMsChromatogramDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramDeconvoluted" Checked="ToggleButton_MsMsChromatogramDeconvoluted_Checked" 
+                                                  Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
                                         <ToggleButton.Content>
                                             <Image Source="Resources/Deconvoluted.ico" />
                                         </ToggleButton.Content>
@@ -1100,7 +1108,8 @@
                                             <ToolTip Content="Show deconvoluted chromatograms (product ion chromatograms)" />
                                         </ToolTipService.ToolTip>
                                     </ToggleButton>
-                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRawAndDeconvoluted" Checked="ToggleButton_MsMsChromatogramRawAndDeconvoluted_Checked" Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
+                                    <ToggleButton Name="ToggleButton_MsMsChromatogramRawAndDeconvoluted" Checked="ToggleButton_MsMsChromatogramRawAndDeconvoluted_Checked" 
+                                                  Grid.Row="0" Height="30" Width="30" Margin="90,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left" >
                                         <ToggleButton.Content>
                                             <Image Source="Resources/RawAndDeconvo.ico" />
                                         </ToggleButton.Content>
@@ -1143,7 +1152,8 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
-                                    <Button Name="Button_CompoundSearchAlignmentViewer" Click="buttonClick_CompoundSearchAlignmentViewer" Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                    <Button Name="Button_CompoundSearchAlignmentViewer" Click="buttonClick_CompoundSearchAlignmentViewer"
+                                            Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/CompoundSearchIcon.ico" />
                                         </Button.Content>
@@ -1152,9 +1162,9 @@
                                         </ToolTipService.ToolTip>
                                     </Button>
 
-                                    <Button Name="Button_MsFinderSearchAlignmentViewer" Click="buttonClick_MsFinderSearchAlignmentViewer" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                    <Button Name="Button_MsFinderSearchAlignmentViewer" Click="buttonClick_MsFinderSearchAlignmentViewer" Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
-                                            <Image Source="Resources/MS-FINDER-Main-Icon.ico" />
+                                            <Image Source="Resources/msfinder_icon.ico" />
                                         </Button.Content>
                                         <ToolTipService.ToolTip>
                                             <ToolTip Content="MS-FINDER search" />
@@ -1163,7 +1173,7 @@
 
                                     <Button Name="Button_MolecularNetworkAlignmentViewer" Click="buttonClick_MolecularNetworkAlignmentViewer" Grid.Row="0" 
                                             Height="30" Width="30" Margin="90,5,5,5" 
-                                            Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                            Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/MolecularNetworking.ico" />
                                         </Button.Content>
@@ -1173,7 +1183,7 @@
                                     </Button>
 
                                     <Button Name="Button_BinVestigateSearchAlignmentViewer" Click="buttonClick_BinVestigateSearchAlignmentViewer" 
-                                            Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Gray" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+                                            Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
                                         <Button.Content>
                                             <Image Source="Resources/BinVestigate.ico" />
                                         </Button.Content>
@@ -1184,7 +1194,7 @@
 
                                     <Button Name="Button_LipoqualityDbSearchAlignmentViewer" Click="buttonClick_LipoqualityDbSearchAlignmentViewer" 
                                             Grid.Row="0" Height="30" Width="30" Margin="170,5,5,5" 
-                                            Background="Gray" BorderBrush="Black" BorderThickness="0" 
+                                            Background="Transparent" BorderBrush="Black" BorderThickness="0" 
                                             HorizontalAlignment="Left" IsEnabled="True">
                                         <Button.Content>
                                             <Image Source="Resources/Lipoquality.ico" />

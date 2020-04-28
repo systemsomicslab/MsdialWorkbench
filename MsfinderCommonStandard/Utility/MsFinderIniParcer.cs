@@ -15,14 +15,14 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             param.LipidQueryBean = new LipidQueryBean() { LbmQueries = FileStorageUtility.GetLbmQueries() };
 
             //var iniPath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\MSFINDER.INI";
-            var iniPath = Directory.GetCurrentDirectory() + "\\MSFINDER.INI";
+            var iniPath = System.AppDomain.CurrentDomain.BaseDirectory + "MSFINDER.INI";
             if (filepath != null)
                 iniPath = filepath;
 
             if (!System.IO.File.Exists(iniPath)) { Write(param); }
 
             //var iniLipidPath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\LipidQueries.INI";
-            var iniLipidPath = Directory.GetCurrentDirectory() + "\\LipidQueries.INI";
+            var iniLipidPath = System.AppDomain.CurrentDomain.BaseDirectory + "LipidQueries.INI";
             if (!System.IO.File.Exists(iniLipidPath)) { WriteLipidINI(param); }
 
             using (var sr = new StreamReader(iniPath, Encoding.ASCII)) {
@@ -625,7 +625,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         {
             if (output == "") {
                 //output = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\MSFINDER.INI";
-                output = Directory.GetCurrentDirectory() + "\\MSFINDER.INI";
+                output = System.AppDomain.CurrentDomain.BaseDirectory + "MSFINDER.INI";
             }
 
             using (StreamWriter sw = new StreamWriter(output, false, Encoding.ASCII))
@@ -815,7 +815,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         public static void WriteLipidINI(AnalysisParamOfMsfinder param, string output = "") {
             if (output == "") {
                 //output = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\LipidQueries.INI";
-                output = Directory.GetCurrentDirectory() + "\\LipidQueries.INI";
+                output = System.AppDomain.CurrentDomain.BaseDirectory + "LipidQueries.INI";
             }
 
             using (StreamWriter sw = new StreamWriter(output, false, Encoding.ASCII)) {

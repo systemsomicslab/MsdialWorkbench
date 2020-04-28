@@ -1,4 +1,5 @@
-﻿using Msdial.Gcms.Dataprocess.Utility;
+﻿using CompMs.Common.MessagePack;
+using Msdial.Gcms.Dataprocess.Utility;
 using Msdial.Lcms.Dataprocess.Utility;
 using Rfx.Riken.OsakaUniv;
 using System;

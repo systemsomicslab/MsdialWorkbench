@@ -47,7 +47,7 @@
                 </Button>
                 <Button Name="Button_MsFinderExport" Command="{Binding ChangetToMsFinderExportWindow}" Background="Transparent" BorderThickness="0" Margin="65,0,0,2" Height="25" Width="25" VerticalAlignment="Bottom" HorizontalAlignment="Left">
                     <Button.Content>
-                        <Image Source="../Resources/MS-FINDER-Main-Icon.ico" />
+                        <Image Source="../Resources/msfinder_icon.ico" />
                     </Button.Content>
                     <ToolTipService.ToolTip>
                         <ToolTip Content="Export to MS-FINDER" />

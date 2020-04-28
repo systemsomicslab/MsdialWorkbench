@@ -14,8 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Msdial.Lcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv.MsViewer;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -112,7 +112,7 @@ namespace Rfx.Riken.OsakaUniv
         #endregion
         public ProjectPropertyBean ProjectProperty { get; set; }
         public AnalysisParametersBean Param { get; set; }
-        public ObservableCollection<RAW_Spectrum> Spectrum { get; set; }
+        public ObservableCollection<RawSpectrum> Spectrum { get; set; }
         public MsDialIniField MsDialIniField { get; set; }
         public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; set; }
         public AnalysisFileBean AnalysisFile { get; set; }
@@ -120,7 +120,7 @@ namespace Rfx.Riken.OsakaUniv
         public List<SolidColorBrush> SolidColorBrushList { get { return solidColorBrushList; } }
         public List<MspFormatCompoundInformationBean> MspDB { get; set; }
 
-        public AifViewControlCommonProperties(ProjectPropertyBean projectProperty, ObservableCollection<AnalysisFileBean> analysisFiles, AnalysisParametersBean param, ObservableCollection<RAW_Spectrum> spectrum, MsDialIniField msFinderFilePath,
+        public AifViewControlCommonProperties(ProjectPropertyBean projectProperty, ObservableCollection<AnalysisFileBean> analysisFiles, AnalysisParametersBean param, ObservableCollection<RawSpectrum> spectrum, MsDialIniField msFinderFilePath,
             AnalysisFileBean analysisFile, List<MspFormatCompoundInformationBean> mspDB) {
             ProjectProperty = projectProperty;
             Param = param;

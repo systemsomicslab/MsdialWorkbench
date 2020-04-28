@@ -1,4 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.Common.MessagePack;
+using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

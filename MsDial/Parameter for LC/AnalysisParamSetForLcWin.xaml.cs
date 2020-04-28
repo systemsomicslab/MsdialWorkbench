@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Resources;
 using Msdial.Lcms.Dataprocess.Utility;
 using CompMs.RawDataHandler.Core;
+using CompMs.Common.MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -397,6 +398,10 @@ namespace Rfx.Riken.OsakaUniv
                     var files = this.mainWindow.AnalysisFiles;
                     param.FileidToCcsCalibrantData = null;
                     setCalibrateInformation(param, files);
+                }
+
+                if (param.Ms2MassRangeBegin == 0 && param.Ms2MassRangeEnd == 0) {
+                    param.Ms2MassRangeEnd = 2000;
                 }
 
                 ((AnalysisParamSetForLcVM)this.DataContext).Param = param;

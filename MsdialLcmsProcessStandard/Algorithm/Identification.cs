@@ -9,8 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Msdial.Lcms.Dataprocess.Scoring;
-using Riken.Metabolomics.RawData;
 using System.Diagnostics;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
@@ -62,7 +62,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// <param name="mspDB"></param>
         /// <param name="param"></param>
         /// <param name="projectProp"></param>
-        public static void CompoundIdentification(string file, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void CompoundIdentification(string file, ObservableCollection<RawSpectrum> spectrumCollection, 
             List<PeakAreaBean> peakAreas, List<MspFormatCompoundInformationBean> mspDB, 
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction)
         {
@@ -101,7 +101,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             //       mspFormatCompoundInformationBeanList = mspFormatCompoundInformationBeanList.OrderBy(n => n.Id).ToList();
         }
 
-        public static void executeConventionalIdentificationProcess(FileStream fs, List<long> seekpointList, ObservableCollection<RAW_Spectrum> spectrumCollection, 
+        public static void executeConventionalIdentificationProcess(FileStream fs, List<long> seekpointList, ObservableCollection<RawSpectrum> spectrumCollection, 
             PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction) {
             //var ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProp.DataType, peakAreas[i].Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, param.PeakDetectionBasedCentroid);
             var ms1Spectra = new ObservableCollection<double[]>();
@@ -118,7 +118,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         public static void executeIonMobilityIdentificationProcess(FileStream fs, List<long> seekpointList, 
-            ObservableCollection<RAW_Spectrum> spectrumCollection, PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB, 
+            ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB, 
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction) {
 
             //Debug.WriteLine(peakSpot.MasterPeakID);

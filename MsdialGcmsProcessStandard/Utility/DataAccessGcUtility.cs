@@ -1,6 +1,5 @@
 ﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.DataObj;
 
 namespace Msdial.Gcms.Dataprocess.Utility
 {
@@ -16,7 +16,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
         private DataAccessGcUtility() { }
 
         #region raw data access
-        public static List<RAW_Spectrum> GetRdamSpectrumList(RawDataAccess rawDataAccess)
+        public static List<RawSpectrum> GetRdamSpectrumList(RawDataAccess rawDataAccess)
         {
             var mes = rawDataAccess.GetMeasurement();
             if (mes == null) return null;
@@ -45,11 +45,11 @@ namespace Msdial.Gcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetTicPeaklist(List<RAW_Spectrum> spectrumList, IonMode ionmode)
+        public static List<double[]> GetTicPeaklist(List<RawSpectrum> spectrumList, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             double sum = 0, maxIntensityMz, maxMass;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
@@ -74,11 +74,11 @@ namespace Msdial.Gcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetMs1PeaklistAsBPC(List<RAW_Spectrum> spectrumList, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, IonMode ionmode)
+        public static List<double[]> GetMs1PeaklistAsBPC(List<RawSpectrum> spectrumList, float focusedMass, float ms1Tolerance, float retentionTimeBegin, float retentionTimeEnd, IonMode ionmode)
         {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz, maxMass;
 
@@ -112,10 +112,10 @@ namespace Msdial.Gcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static List<double[]> GetMs1PeaklistAsBPC(List<RAW_Spectrum> spectrumList, float ms1Tolerance, IonMode ionmode) {
+        public static List<double[]> GetMs1PeaklistAsBPC(List<RawSpectrum> spectrumList, float ms1Tolerance, IonMode ionmode) {
             var peaklist = new List<double[]>();
-            RAW_Spectrum spectrum;
-            RAW_PeakElement[] massSpectra;
+            RawSpectrum spectrum;
+            RawPeakElement[] massSpectra;
             int startIndex = 0;
             double sum = 0, maxIntensityMz, maxMass;
 
@@ -147,7 +147,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
         #endregion
 
         #region // for survey MS1 scan data
-        public static float[] GetMs1ScanRange(List<RAW_Spectrum> spectrumList, IonMode ionmode)
+        public static float[] GetMs1ScanRange(List<RawSpectrum> spectrumList, IonMode ionmode)
         {
             float minMz = float.MaxValue, maxMz = float.MinValue;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -162,7 +162,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
             return new float[] { minMz, maxMz };
         }
 
-        public static List<Peak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RAW_Spectrum> spectrumList, float centralRt, float rtBegin, float rtEnd,
+        public static List<Peak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RawSpectrum> spectrumList, float centralRt, float rtBegin, float rtEnd,
             float quantMass, AnalysisParamOfMsdialGcms param) {
             var peaklist = new List<Peak>();
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -260,7 +260,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
         }
 
 
-        public static List<double[]> GetMs1SlicePeaklist(List<RAW_Spectrum> spectrumList, float focusedMass, float sliceWidth, 
+        public static List<double[]> GetMs1SlicePeaklist(List<RawSpectrum> spectrumList, float focusedMass, float sliceWidth, 
             float rtBegin, float rtEnd, IonMode ionmode)
         {
             if (spectrumList == null) return null;
@@ -298,7 +298,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
             return peaklist;
         }
 
-        public static int GetMs1StartIndex(float focusedMass, float ms1Tolerance, RAW_PeakElement[] massSpectra)
+        public static int GetMs1StartIndex(float focusedMass, float ms1Tolerance, RawPeakElement[] massSpectra)
         {
             if (massSpectra == null || massSpectra.Length == 0) return 0;
             float targetMass = focusedMass - ms1Tolerance;
@@ -505,7 +505,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
 
         #region // for centroiding
 
-        public static List<double[]> GetCentroidMasasSpectra(List<RAW_Spectrum> spectrumList, DataType dataType, int msScanPoint, float massBin, float amplitudeThresh, float mzBegin, float mzEnd)
+        public static List<double[]> GetCentroidMasasSpectra(List<RawSpectrum> spectrumList, DataType dataType, int msScanPoint, float massBin, float amplitudeThresh, float mzBegin, float mzEnd)
         {
             if (msScanPoint < 0) return new List<double[]>();
 

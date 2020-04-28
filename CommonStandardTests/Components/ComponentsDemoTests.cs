@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using CompMs.Common.Spectrum;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Enum;
 
 namespace CompMs.Common.Components.Tests
 {
@@ -68,7 +69,7 @@ namespace CompMs.Common.Components.Tests
         #region Set values
         public void SetDemoScan()
         {
-            DemoMsSpectrum = new MSScanProperty(0, 100, new RetentionTime(10));
+            DemoMsSpectrum = new MSScanProperty(0, 100, new RetentionTime(10), IonMode.Positive);
             DemoMsSpectrum.PrecursorMz = 100;
             DemoMsSpectrum.Spectrum = new List<SpectrumPeak>();
             DemoMsSpectrum.AddPeak(100, 10);
@@ -117,7 +118,7 @@ namespace CompMs.Common.Components.Tests
         }
 
         // Comparing all time property and m/z value
-        public int GetPropertySimilarity(IMoleculeProperty prop1, IMoleculeProperty prop2)
+        public int GetPropertySimilarity(IMSScanProperty prop1, IMSScanProperty prop2)
         {
             int score = -1;
             if (Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz) < 1) score += 1;

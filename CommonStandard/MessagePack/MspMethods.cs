@@ -1,15 +1,7 @@
-﻿using System;
+﻿using Rfx.Riken.OsakaUniv;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Rfx.Riken.OsakaUniv;
 
-
-namespace Rfx.Riken.OsakaUniv.MessagePack
-{
+namespace CompMs.Common.MessagePack {
 
     public static class MspMethods
     {

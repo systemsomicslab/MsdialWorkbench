@@ -10042,7 +10042,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                                     var averageIntensity = 0.0;
                                     countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                                    if (foundCount >= 3) {
+                                    if (foundCount >= 2) {
                                         var molecule = getCeramideoxMoleculeObjAsLevel2("SL", LbmClass.SL, "m", sphCarbon, sphDouble,
                                             acylCarbon, acylDouble, acylOxidized, averageIntensity);
                                         candidates.Add(molecule);
@@ -10065,6 +10065,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
 
 
                                 var query2 = new List<Peak> {
+                                new Peak() { Mz = acylLoss, Intensity = 1.0 },
                                 new Peak() { Mz = acylH2OLoss, Intensity = 1.0 },
                                 new Peak() { Mz = sph3, Intensity = 1.0 },
                                 };
@@ -10112,16 +10113,18 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var acylLoss = theoreticalMz - acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * acylOxidized;
+                            var acylamideLoss = acylLoss - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = acylLoss, Intensity = 1.0 },
+                                new Peak() { Mz = acylamideLoss, Intensity = 1.0 },
                                 };
 
                             var foundCount = 0;
                             var averageIntensity = 0.0;
                             countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount == 1) { // now I set 2 as the correct level
+                            if (foundCount >= 1) { // now I set 2 as the correct level
                                 var molecule = getCeramideoxMoleculeObjAsLevel2("SL", LbmClass.SL, "m", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, acylOxidized, averageIntensity);
                                 candidates.Add(molecule);

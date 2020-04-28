@@ -61,8 +61,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility
 		public static void WriteAdductPositiveResources(List<AdductIon> adducts)
         {
             //var mainDirectory = Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
-            var mainDirectory = Directory.GetCurrentDirectory();
-            var filePath = Directory.GetFiles(mainDirectory + "\\Resources", "*." + SaveFileFormat.apf, SearchOption.TopDirectoryOnly)[0];
+            var mainDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            var filePath = Directory.GetFiles(mainDirectory + "Resources", "*." + SaveFileFormat.apf, SearchOption.TopDirectoryOnly)[0];
 
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
             {
@@ -76,8 +76,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility
         public static void WriteAdductNegativeResources(List<AdductIon> adducts)
         {
             //var mainDirectory = Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
-            var mainDirectory = Directory.GetCurrentDirectory();
-            var filePath = Directory.GetFiles(mainDirectory + "\\Resources", "*." + SaveFileFormat.anf, SearchOption.TopDirectoryOnly)[0];
+            var mainDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            var filePath = Directory.GetFiles(mainDirectory + "Resources", "*." + SaveFileFormat.anf, SearchOption.TopDirectoryOnly)[0];
 
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
             {

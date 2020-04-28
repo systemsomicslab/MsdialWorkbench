@@ -1,8 +1,8 @@
-﻿using Msdial.Gcms.Dataprocess.Utility;
+﻿using CompMs.Common.DataObj;
+using Msdial.Gcms.Dataprocess.Utility;
 using NSSplash;
 using NSSplash.impl;
 using Rfx.Riken.OsakaUniv;
-using Riken.Metabolomics.RawData;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -159,7 +159,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
 		/// <summary>
 		/// Gcmses the MS 1 dec results.
 		/// </summary>
-        public static List<MS1DecResult> GcmsMS1DecResults(List<RAW_Spectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
+        public static List<MS1DecResult> GcmsMS1DecResults(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
         {
             peakAreaList = peakAreaList.OrderBy(n => n.ScanNumberAtPeakTop).ThenBy(n => n.AccurateMass).ToList();
 
@@ -231,7 +231,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
 			return ms1DecResults;
         }
 
-        public static void ReplaceQuantmassByUserdefinedValue(List<RAW_Spectrum> spectrumList, List<MS1DecResult> ms1DecResults, 
+        public static void ReplaceQuantmassByUserdefinedValue(List<RawSpectrum> spectrumList, List<MS1DecResult> ms1DecResults, 
             AnalysisParamOfMsdialGcms param, List<MspFormatCompoundInformationBean> mspDB) {
             if (ms1DecResults != null && mspDB != null) {
                 foreach (var result in ms1DecResults) {
@@ -351,7 +351,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             return ms1DecResult;
         }
 
-        public static void RecalculateMs1decResultByDefinedQuantmass(MS1DecResult ms1DecResult, List<RAW_Spectrum> spectrumList,
+        public static void RecalculateMs1decResultByDefinedQuantmass(MS1DecResult ms1DecResult, List<RawSpectrum> spectrumList,
             float quantMass, AnalysisParamOfMsdialGcms param) {
 
             ms1DecResult.BasepeakMz = quantMass;
@@ -457,7 +457,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             }
         }
 
-        private static List<List<Peak>> getMs1Chromatograms(List<RAW_Spectrum> spectrumList, ModelChromVector modelChromVector, GcmsDecBin[] gcmsDecBins, int chromScanOfPeakTop, AnalysisParamOfMsdialGcms param)
+        private static List<List<Peak>> getMs1Chromatograms(List<RawSpectrum> spectrumList, ModelChromVector modelChromVector, GcmsDecBin[] gcmsDecBins, int chromScanOfPeakTop, AnalysisParamOfMsdialGcms param)
         {
             var rdamScan = gcmsDecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.MassAccuracy; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
@@ -558,7 +558,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             return Ms1DecPattern.C;
         }
 
-        private static List<ModelChromatogram> getModelChromatograms(List<RAW_Spectrum> spectrumList, 
+        private static List<ModelChromatogram> getModelChromatograms(List<RawSpectrum> spectrumList, 
             List<PeakAreaBean> peakAreaList, GcmsDecBin[] gcmsDecBinArray, double[] matchedFilterArray, Dictionary<int, int> rdamToChromDict, AnalysisParamOfMsdialGcms param)
         {
             var regionMarkers = getRegionMarkers(matchedFilterArray);
@@ -594,7 +594,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
         /// 1. This source code is for making a 'model (artificial)' chromatogram which will be used as a 'template' for a least square method in chromatogram deconvolution.
         /// 2. This idea is very similar to the original method of AMDIS: Stein, S. E. Journal of the American Society for Mass Spectrometry, 1999, 10, 770-781. 
         /// </summary>
-        private static ModelChromatogram getModelChromatogram(List<RAW_Spectrum> spectrumList, List<PeakAreaBean> peakAreas, GcmsDecBin[] gcmsDecBins, Dictionary<int, int> rdamToChromDict, AnalysisParamOfMsdialGcms param)
+        private static ModelChromatogram getModelChromatogram(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreas, GcmsDecBin[] gcmsDecBins, Dictionary<int, int> rdamToChromDict, AnalysisParamOfMsdialGcms param)
         {
             if (peakAreas == null || peakAreas.Count == 0) return null;
             var maxSharpnessValue = peakAreas.Max(n => n.ShapenessValue * n.IntensityAtPeakTop);
@@ -701,7 +701,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             return modelChrom;
         }
 
-        private static List<Peak> getTrimedAndSmoothedPeaklist(List<RAW_Spectrum> spectrumList, int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, GcmsDecBin[] gcmsDecBins, float focusedMass, AnalysisParamOfMsdialGcms param)
+        private static List<Peak> getTrimedAndSmoothedPeaklist(List<RawSpectrum> spectrumList, int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, GcmsDecBin[] gcmsDecBins, float focusedMass, AnalysisParamOfMsdialGcms param)
         {
             var peaklist = new List<Peak>();
 
@@ -823,7 +823,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             return regionMarkers;
         }
 
-        private static Dictionary<int, int> getRdamAndMs1chromatogramScanDictionary(List<RAW_Spectrum> spectrumList, IonMode ionmode)
+        private static Dictionary<int, int> getRdamAndMs1chromatogramScanDictionary(List<RawSpectrum> spectrumList, IonMode ionmode)
         {
             var rdamToChromDictionary = new Dictionary<int, int>();
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -866,7 +866,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
 			return matchedFilterArray;
         }
 
-        private static GcmsDecBin[] getGcmsBinArray(List<RAW_Spectrum> spectrumList, List<PeakAreaBean> peakAreaList, Dictionary<int, int> rdamScanDict, IonMode ionMode)
+        private static GcmsDecBin[] getGcmsBinArray(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaList, Dictionary<int, int> rdamScanDict, IonMode ionMode)
         {
             var ms1SpectrumList = getMs1SpectrumList(spectrumList, ionMode);
             var gcmsDecBins = new GcmsDecBin[ms1SpectrumList.Count];
@@ -902,9 +902,9 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             return gcmsDecBins;
         }
 
-        private static List<RAW_Spectrum> getMs1SpectrumList(List<RAW_Spectrum> spectrumList, IonMode ionMode)
+        private static List<RawSpectrum> getMs1SpectrumList(List<RawSpectrum> spectrumList, IonMode ionMode)
         {
-            var ms1SpectrumList = new List<RAW_Spectrum>();
+            var ms1SpectrumList = new List<RawSpectrum>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             for (int i = 0; i < spectrumList.Count; i++)

@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
-using Riken.Metabolomics.RawData;
 using Msdial.Lcms.Dataprocess.Utility;
 
 namespace Rfx.Riken.OsakaUniv

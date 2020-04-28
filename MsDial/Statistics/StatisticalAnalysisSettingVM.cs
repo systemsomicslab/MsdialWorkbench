@@ -576,8 +576,11 @@ namespace Rfx.Riken.OsakaUniv
                 this.mainWindow.AnalysisParamForGC.IsUnknownImportedInStatistics = this.isUnknownImportedInStatistics;
             }
 
+            Mouse.OverrideCursor = Cursors.Wait;
             MsDialStatistics.HierarchicalClusteringAnalysis(this.mainWindow, this.scale, this.transform, 
                 this.isIdentifiedImportedInStatistics, this.isAnnotatedImportedInStatistics, this.isUnknownImportedInStatistics);
+            Mouse.OverrideCursor = null;
+
             this.window.DialogResult = true;
             this.window.Close();
         }

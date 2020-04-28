@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CompMs.Common.MessagePack;
+using Microsoft.Win32;
 using Msdial.Gcms.Dataprocess.Utility;
 using System;
 using System.Collections.Generic;

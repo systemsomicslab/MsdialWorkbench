@@ -22,7 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using Riken.Metabolomics.RawData;
+using CompMs.Common.DataObj;
 
 namespace Rfx.Riken.OsakaUniv {
     /// <summary>
@@ -615,7 +615,7 @@ namespace Rfx.Riken.OsakaUniv {
         }
 
         private Node getPeakSpotNodeForLC(PeakAreaBean spot, List<MspFormatCompoundInformationBean> mspDB, MS2DecResult ms2Dec, List<double[]> massSpectra, 
-            ProjectPropertyBean projectProp, ObservableCollection<RAW_Spectrum> specCollection, AnalysisParametersBean param, double maxValue, double minValue) {
+            ProjectPropertyBean projectProp, ObservableCollection<RawSpectrum> specCollection, AnalysisParametersBean param, double maxValue, double minValue) {
             var node = new Node() {
                 //classes = "blue b_white hits",
                 data = new NodeData() {
@@ -796,8 +796,8 @@ namespace Rfx.Riken.OsakaUniv {
             var rootObj = (RootObject)arg[1];
 
             var json = JsonConvert.SerializeObject(rootObj, Formatting.Indented);
-            var curDir = Directory.GetCurrentDirectory();
-            var exportpath = curDir + "/CytoscapeLocalBrowser/data/elements.js";
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            var exportpath = curDir + "CytoscapeLocalBrowser/data/elements.js";
             using (StreamWriter sw = new StreamWriter(exportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }
@@ -1265,9 +1265,9 @@ namespace Rfx.Riken.OsakaUniv {
             var rootObj = (RootObject)arg[1];
 
             var json = JsonConvert.SerializeObject(rootObj, Formatting.Indented);
-            var curDir = Directory.GetCurrentDirectory();
+            var curDir = System.AppDomain.CurrentDomain.BaseDirectory;
 
-            var exportpath = curDir + "/CytoscapeLocalBrowser/data/elements.js";
+            var exportpath = curDir + "CytoscapeLocalBrowser/data/elements.js";
             using (StreamWriter sw = new StreamWriter(exportpath, false, Encoding.ASCII)) {
                 sw.WriteLine("var dataElements =\r\n" + json.ToString() + "\r\n;");
             }
