@@ -1595,7 +1595,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
         }
 
-        private static AdductIon getAdductObj(AdductIon adductIon, IonMode ionMode) {
+        private static Rfx.Riken.OsakaUniv.AdductIon getAdductObj(Rfx.Riken.OsakaUniv.AdductIon adductIon, IonMode ionMode) {
             if (adductIon != null && adductIon.FormatCheck) return adductIon;
             if (ionMode == IonMode.Positive) {
                 return AdductIonParcer.GetAdductIonBean("[M+H]+");

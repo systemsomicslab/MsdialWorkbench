@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AdductIonResource_Negative.txt" />
+    <None Remove="Resources\AdductIonResource_Positive.txt" />
+    <None Remove="Resources\IUPAC.txt" />
+    <None Remove="Resources\LbmQueries.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AdductIonResource_Negative.txt" />
+    <EmbeddedResource Include="Resources\AdductIonResource_Positive.txt" />
+    <EmbeddedResource Include="Resources\IUPAC.txt" />
+    <EmbeddedResource Include="Resources\LbmQueries.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Accord.Statistics" Version="3.8.0" />
     <PackageReference Include="MessagePack" Version="1.7.3.7" />
     <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
@@ -14,10 +29,6 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Lipidomics\" />
   </ItemGroup>
 
 </Project>

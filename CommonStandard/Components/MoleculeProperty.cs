@@ -9,7 +9,7 @@ namespace CompMs.Common.Components
     public class MoleculeProperty: IMoleculeProperty
     {
         #region Properties
-        public string MoleculeName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public Formula Formula { get; set; } = new Formula();
         public string Ontology { get; set; } = string.Empty;
         public string SMILES { get; set; } = string.Empty;
@@ -18,7 +18,7 @@ namespace CompMs.Common.Components
 
         public MoleculeProperty() { }
         public MoleculeProperty(string name, Formula formula, string ontology, string smiles, string inchikey) {
-            MoleculeName = name;
+            Name = name;
             Formula = formula;
             Ontology = ontology;
             SMILES = smiles;

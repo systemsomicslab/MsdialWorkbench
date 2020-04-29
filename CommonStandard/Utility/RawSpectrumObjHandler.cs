@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace CompMs.Common.Utility {
             if (scanID < 0 || rawSpectrumList == null || scanID > rawSpectrumList.Count - 1) return null;
             var spectrum = rawSpectrumList[scanID].Spectrum;
             var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
-            var massDiffBase = AtomMassDiff.C13_C12;
+            var massDiffBase = MassDiffDictionary.C13_C12;
             var maxIsotopeRange = (double)maxIsotopes;
             var isotopes = new List<IsotopicPeak>();
             for (int i = 0; i < maxIsotopes; i++) {

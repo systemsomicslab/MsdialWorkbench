@@ -83,7 +83,7 @@ namespace CompMs.Common.Components.Tests
             for (var i = 1; i < 10; i++)
             {
                 var mspRecord = new MspRecord();
-                mspRecord.ID = i;
+                mspRecord.ScanID = i;
                 mspRecord.PrecursorMz = 10 * i;
                 // mspRecord.Times = new Times(new RetentionTime(10));
                 mspRecord.Times = new Times() { RT = new RetentionTime(i * 0.1), RI = new RetentionIndex(i * 0.1 / 5), Drift = new DriftTime(3), MainType = TimeType.RT };
@@ -145,7 +145,7 @@ namespace CompMs.Common.Components.Tests
             if (DemoMsSpectrum != null)
             {
                 Debug.Print("Show MS spectrum");
-                Debug.Print($"ID: {DemoMsSpectrum.ID}, mz: ${DemoMsSpectrum.PrecursorMz:F3}, {DemoMsSpectrum.Times.GetRepresentativeTime().ToString()}");
+                Debug.Print($"ID: {DemoMsSpectrum.ScanID}, mz: ${DemoMsSpectrum.PrecursorMz:F3}, {DemoMsSpectrum.Times.GetRepresentativeTime().ToString()}");
                 Debug.Print($"Num Peaks: {DemoMsSpectrum.Spectrum.Count}");
                 foreach (var peak in DemoMsSpectrum.Spectrum)
                 {

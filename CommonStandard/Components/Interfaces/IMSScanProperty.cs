@@ -8,7 +8,7 @@ namespace CompMs.Common.Interfaces
 {
     public interface IMSScanProperty
     {
-        int ID { get; set; }
+        int ScanID { get; set; }
         double PrecursorMz { get; set; }
         IonMode IonMode { get; set; }
         Times Times { get; set; }

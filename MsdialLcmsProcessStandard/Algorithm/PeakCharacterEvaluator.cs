@@ -17,7 +17,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
         private const double initialProgress = 80.0;
         private const double progressMax = 20.0;
 
-        private List<AdductIon> searchedAdducts;
+        private List<Rfx.Riken.OsakaUniv.AdductIon> searchedAdducts;
 
         public void Run(AnalysisFileBean file, 
             ObservableCollection<RawSpectrum> spectrumCollection,
@@ -284,8 +284,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
             var isAcetateAdduct = false;
             var isFormateAdduct = false;
 
-            AdductIon acetateAdduct = null;
-            AdductIon formateAdduct = null;
+            Rfx.Riken.OsakaUniv.AdductIon acetateAdduct = null;
+            Rfx.Riken.OsakaUniv.AdductIon formateAdduct = null;
 
             foreach (var adduct in searchedAdducts) {
                 if (Math.Abs(adduct.AdductIonAccurateMass - 44.998201) < 0.01) {
@@ -648,7 +648,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
         }
 
         private void searchedAdductInitialize(AnalysisParametersBean param, ProjectPropertyBean projectProp) {
-            this.searchedAdducts = new List<AdductIon>();
+            this.searchedAdducts = new List<Rfx.Riken.OsakaUniv.AdductIon>();
             for (int i = 0; i < param.AdductIonInformationBeanList.Count; i++) {
                 if (param.AdductIonInformationBeanList[i].Included)
                     searchedAdducts.Add(AdductIonParcer.GetAdductIonBean(param.AdductIonInformationBeanList[i].AdductName));

@@ -6,7 +6,7 @@ using System.Text;
 namespace CompMs.Common.Interfaces {
     public interface IMoleculeMsProperty : IMSScanProperty, IMoleculeProperty { // especially used for library record
         // Molecule ion metadata
-        AdductType AdductType { get; set; } 
+        AdductIon AdductType { get; set; } 
         double CollisionCrossSection { get; set; }
     }
 }

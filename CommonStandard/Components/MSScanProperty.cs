@@ -8,7 +8,7 @@ namespace CompMs.Common.Components
 {
     public class MSScanProperty: IMSScanProperty
     {
-        public int ID { get; set; }
+        public int ScanID { get; set; }
         public double PrecursorMz { get; set; }
         public IonMode IonMode { get; set; }
         public Times Times { get; set; }
@@ -17,7 +17,7 @@ namespace CompMs.Common.Components
         public MSScanProperty() { }
         public MSScanProperty(int id, double precursorMz, Time time, IonMode ionmode)
         {
-            ID = id;
+            ScanID = id;
             PrecursorMz = precursorMz;
             Times = new Times(time);
             IonMode = ionmode;
