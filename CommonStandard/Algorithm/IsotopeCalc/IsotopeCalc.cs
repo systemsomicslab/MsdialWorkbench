@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Mathematics.Basic;
 
 namespace CompMs.Common.Algorithm.IsotopeCalc {

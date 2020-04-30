@@ -1,4 +1,4 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj.Property;
 using System;
 using System.Collections.Generic;
 using System.Text;

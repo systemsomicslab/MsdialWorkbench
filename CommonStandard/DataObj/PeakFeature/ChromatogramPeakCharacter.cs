@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CompMs.Common.DataObj.Property;
 
-namespace CompMs.Common.DataObj {
+namespace CompMs.Common.DataObj.PeakFeature {
     public class ChromatogramPeakCharacter {
         // ion feature
         public AdductIon AdductType { get; set; } = new AdductIon();

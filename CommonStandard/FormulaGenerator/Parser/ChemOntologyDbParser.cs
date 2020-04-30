@@ -1,4 +1,4 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj.Ion;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using System;

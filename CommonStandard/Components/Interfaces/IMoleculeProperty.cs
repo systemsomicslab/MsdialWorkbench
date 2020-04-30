@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 
 namespace CompMs.Common.Interfaces
 {

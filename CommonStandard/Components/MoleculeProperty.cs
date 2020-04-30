@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Interfaces;
 
 namespace CompMs.Common.Components

@@ -1,10 +1,11 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.Common.DataObj {
+namespace CompMs.Common.DataObj.Ion {
     /// <summary>
     /// This class is the storage of each neutral loss information used in MS-FINDER program.
     /// </summary>

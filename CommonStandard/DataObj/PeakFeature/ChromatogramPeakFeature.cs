@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using MessagePack;
@@ -6,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompMs.Common.DataObj {
+namespace CompMs.Common.DataObj.PeakFeature {
     public class ChromatogramPeakFeature: IChromatogramPeakFeature {
 
         // basic property of IChromatogramPeakFeature

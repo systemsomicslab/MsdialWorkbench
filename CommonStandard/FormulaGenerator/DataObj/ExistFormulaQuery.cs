@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using MessagePack;
 
 namespace CompMs.Common.FormulaGenerator.DataObj {

@@ -8,9 +8,10 @@ using Accord.Statistics.Testing;
 using Accord.Statistics.Analysis;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
-using CompMs.Common.DataObj;
 using CompMs.Common.Parameter;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Ion;
 
 namespace CompMs.Common.FormulaGenerator.Function {
     

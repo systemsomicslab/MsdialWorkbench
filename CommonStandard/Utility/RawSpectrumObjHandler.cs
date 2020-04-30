@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;

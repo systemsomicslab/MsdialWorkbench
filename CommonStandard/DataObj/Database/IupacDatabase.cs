@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompMs.Common.DataObj {
+namespace CompMs.Common.DataObj.Database {
     /// <summary>
     /// This is the storage of IUPAC queries described in 'IUPAC.txt' of Resources folder of MSDIAL assembry.
     /// Each chemical element such as C, N, O, S has the generic list of IupacChemicalElement.cs.
