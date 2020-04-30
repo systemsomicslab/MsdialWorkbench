@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Core.Dendrogram

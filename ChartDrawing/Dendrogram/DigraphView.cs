@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 
 namespace CompMs.Graphics.Dendrogram
 {

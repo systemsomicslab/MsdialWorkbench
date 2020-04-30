@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 //using System.Windows.Media;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 
 namespace Rfx.Riken.OsakaUniv {
     public class MultivariateAnalysisResult {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-using Common.DataStructure;
+using CompMs.Common.DataStructure;
 using Rfx.Riken.OsakaUniv;
 
 namespace ChartDrawingUiTest.Dendrogram

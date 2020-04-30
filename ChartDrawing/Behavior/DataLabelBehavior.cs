@@ -23,8 +23,14 @@ namespace CompMs.Graphics.Core.Behavior
         }
         public static readonly DependencyProperty LabelsProperty = DependencyProperty.Register(
             nameof(Labels), typeof(IReadOnlyList<string>), typeof(DataLabelBehavior),
-            new PropertyMetadata(default)
+            new PropertyMetadata(default, OnLabelsUpdate)
             );
+        private static void OnLabelsUpdate(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = d as DataLabelBehavior;
+            if (behavior == null) return;
+            behavior.ResetMemo();
+        }
         public IReadOnlyList<double> XPositions
         {
             get => (IReadOnlyList<double>)GetValue(XPositionsProperty);
@@ -114,6 +120,11 @@ namespace CompMs.Graphics.Core.Behavior
                 current = null;
                 idx = -1;
             }
+        }
+
+        public void ResetMemo()
+        {
+            memo = new Dictionary<int, DataLabelAdorner>();
         }
 
         static double hypotSq(double dx, double dy){

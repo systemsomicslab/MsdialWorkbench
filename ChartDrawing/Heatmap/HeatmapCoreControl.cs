@@ -82,8 +82,8 @@ namespace CompMs.Graphics.Core.Heatmap
             var chartmanager = new HeatmapManager(DataMatrix, XPositions, YPositions, Gsc);
             ChartDrawingArea = chartmanager.ChartArea;
             LimitDrawingArea = chartmanager.ChartArea;
-            XPositions = chartmanager.XPositions;
-            YPositions = chartmanager.YPositions;
+            // XPositions = chartmanager.XPositions;
+            // YPositions = chartmanager.YPositions;
             Gsc = chartmanager.Gsc;
             ChartManager = chartmanager;
         }
