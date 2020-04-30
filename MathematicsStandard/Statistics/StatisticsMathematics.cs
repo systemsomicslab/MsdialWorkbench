@@ -1788,7 +1788,8 @@ namespace Rfx.Riken.OsakaUniv
                 heights.Add(0);
                 for(int j = i+1; j < n; ++j)
                 {
-                    var d = distanceFunc(jagData[i], jagData[j]);
+                    double d;
+                    d = distanceFunc(jagData[i], jagData[j]);
                     memo[(i, j)] = d * d;
                     memo[(j, i)] = d * d;
                     q.Push((d, i, j));
@@ -1843,23 +1844,29 @@ namespace Rfx.Riken.OsakaUniv
             return Math.Sqrt(xs.Zip(ys, (x, y) => Math.Pow(x - y, 2)).Sum());
         }
 
+        public static double UnsafeCalculatePearsonCorrelationDistance(IEnumerable<double> xs, IEnumerable<double> ys)
+        {
+            var n = xs.Count();
+            double xm = 0, ym = 0, xx = 0, yy = 0, xy = 0;
+            foreach((double x, double y) in xs.Zip(ys, Tuple.Create))
+            {
+                xm += x;
+                ym += y;
+                xx += x * x;
+                yy += y * y;
+                xy += x * y;
+            }
+            if (xx == xm * xm / n || yy == ym * ym / n)
+                return double.PositiveInfinity;
+            return 1 - (xy - xm * ym / n) / Math.Sqrt((xx - xm * xm / n) * (yy - ym * ym / n));
+        }
+
         public static double CalculatePearsonCorrelationDistance(IEnumerable<double> xs, IEnumerable<double> ys)
         {
-            var xMean = xs.Average();
-            var yMean = ys.Average();
-            double xx = 0, yy = 0, xy = 0;
-            foreach((double dx, double dy) in xs.Zip(ys, (x, y) => Tuple.Create(x-xMean,y-yMean)))
-            {
-                xx += dx * dx;
-                yy += dy * dy;
-                xy += dx * dy;
-            }
-            if(xx == 0 || yy == 0)
-            {
-                // throw new ArgumentException("Invalid data entered.");
-                return 0;
-            }
-            return 1 - xy / Math.Sqrt(xx * yy);
+            var result = UnsafeCalculatePearsonCorrelationDistance(xs, ys);
+            if (double.IsPositiveInfinity(result))
+                return 1;
+            return result;
         }
 
         public static double CalculateSpearmanCorrelationDistance(IEnumerable<double> xs, IEnumerable<double> ys)

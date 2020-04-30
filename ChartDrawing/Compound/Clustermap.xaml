@@ -9,22 +9,56 @@
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap"
              xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior"
+             xmlns:command="clr-namespace:CompMs.Graphics.Core.Command"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600">
-    <Grid>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem
+                Header="Save png image"
+                Command="{Binding SavePngCmd}"
+                />
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <Grid DataContext="{Binding
+          RelativeSource={RelativeSource AncestorType={x:Type local:Clustermap}}}"
+          >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MaxWidth="100"/>
             <ColumnDefinition Width="8*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*" MaxWidth="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="3*" MaxHeight="200"/>
             <RowDefinition Height="8*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*" MaxHeight="100"/>
         </Grid.RowDefinitions>
+        <heatmap:HeatmapCoreControl
+            x:Name="HeatmapControl"
+            DataMatrix="{Binding DataMatrix}"
+            XPositions="{Binding XPositions, Mode=OneWay}"
+            YPositions="{Binding YPositions, Mode=OneWay}"
+            MinX="{Binding MinX, Mode=TwoWay}"
+            MaxX="{Binding MaxX, Mode=TwoWay}"
+            MinY="{Binding MinY, Mode=TwoWay}"
+            MaxY="{Binding MaxY, Mode=TwoWay}"
+            LimitMinX="{Binding LimitMinX, Mode=OneWayToSource}"
+            LimitMaxX="{Binding LimitMaxX, Mode=OneWayToSource}"
+            LimitMinY="{Binding LimitMinY, Mode=OneWayToSource}"
+            LimitMaxY="{Binding LimitMaxY, Mode=OneWayToSource}"
+            Grid.Column="1" Grid.Row="1">
+            <i:Interaction.Behaviors>
+                <behavior:RubberBehavior/>
+            </i:Interaction.Behaviors>
+        </heatmap:HeatmapCoreControl>
         <dendrogram:DendrogramCoreControl
             x:Name="XDendrogramControl"
-            Dendrogram="{Binding XDendrogram}"
+            Dendrogram="{Binding XDendrogram, Mode=OneWay}"
+            LeafPositions="{Binding XPositions, Mode=OneWayToSource}"
+            MinX="{Binding MinX, Mode=TwoWay}"
+            MaxX="{Binding MaxX, Mode=TwoWay}"
+            LimitMinX="{Binding LimitMinX, Mode=TwoWay}"
+            LimitMaxX="{Binding LimitMaxX, Mode=TwoWay}"
             Grid.Column="1" Grid.Row="0">
             <i:Interaction.Behaviors>
                 <behavior:RubberBehavior/>
@@ -32,7 +66,12 @@
         </dendrogram:DendrogramCoreControl>
         <dendrogram:DendrogramCoreControl
             x:Name="YDendrogramControl"
-            Dendrogram="{Binding YDendrogram}"
+            Dendrogram="{Binding YDendrogram, Mode=OneWay}"
+            LeafPositions="{Binding YPositions, Mode=OneWayToSource}"
+            MinX="{Binding MinY, Mode=TwoWay}"
+            MaxX="{Binding MaxY, Mode=TwoWay}"
+            LimitMinX="{Binding LimitMinY, Mode=TwoWay}"
+            LimitMaxX="{Binding LimitMaxY, Mode=TwoWay}"
             Grid.Column="2" Grid.Row="1">
             <dendrogram:DendrogramCoreControl.LayoutTransform>
                 <TransformGroup>
@@ -46,13 +85,13 @@
         </dendrogram:DendrogramCoreControl>
         <axis:CategoryHorizontalAxisCoreControl
             x:Name="XAxisControl"
-            Labels="{Binding XLabels}"
-            XPositions="{Binding LeafPositions, ElementName=XDendrogramControl}"
-            Limit="{Binding XLabelLimit}"
-            MinX="{Binding MinX, ElementName=XDendrogramControl}"
-            MaxX="{Binding MaxX, ElementName=XDendrogramControl}"
-            LimitMinX="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
-            LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
+            Labels="{Binding XLabels, Mode=OneWay}"
+            XPositions="{Binding XPositions, Mode=OneWay}"
+            Limit="{Binding XLabelLimit, Mode=OneWay}"
+            MinX="{Binding MinX, Mode=TwoWay}"
+            MaxX="{Binding MaxX, Mode=TwoWay}"
+            LimitMinX="{Binding LimitMinX, Mode=TwoWay}"
+            LimitMaxX="{Binding LimitMaxX, Mode=TwoWay}"
             Grid.Column="1" Grid.Row="3">
             <i:Interaction.Behaviors>
                 <behavior:DataLabelBehavior
@@ -62,13 +101,13 @@
         </axis:CategoryHorizontalAxisCoreControl>
         <axis:CategoryVerticalAxisCoreControl
             x:Name="YAxisControl"
-            Labels="{Binding YLabels}"
-            YPositions="{Binding LeafPositions, ElementName=YDendrogramControl}"
-            Limit="{Binding YLabelLimit}"
-            MinY="{Binding MinX, ElementName=YDendrogramControl}"
-            MaxY="{Binding MaxX, ElementName=YDendrogramControl}"
-            LimitMinY="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWay}"
-            LimitMaxY="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWay}"
+            Labels="{Binding YLabels, Mode=OneWay}"
+            YPositions="{Binding YPositions, Mode=OneWay}"
+            Limit="{Binding YLabelLimit, Mode=OneWay}"
+            MinY="{Binding MinY, Mode=TwoWay}"
+            MaxY="{Binding MaxY, Mode=TwoWay}"
+            LimitMinY="{Binding LimitMinY, Mode=TwoWay}"
+            LimitMaxY="{Binding LimitMaxY, Mode=TwoWay}"
             Grid.Column="0" Grid.Row="1">
             <i:Interaction.Behaviors>
                 <behavior:DataLabelBehavior
@@ -76,23 +115,5 @@
                     YPositions="{Binding YPositions, ElementName=YAxisControl}"/>
             </i:Interaction.Behaviors>
         </axis:CategoryVerticalAxisCoreControl>
-        <heatmap:HeatmapCoreControl
-            x:Name="HeatmapControl"
-            DataMatrix="{Binding DataMatrix}"
-            XPositions="{Binding LeafPositions, ElementName=XDendrogramControl}"
-            YPositions="{Binding LeafPositions, ElementName=YDendrogramControl}"
-            MinX="{Binding MinX, ElementName=XDendrogramControl}"
-            MaxX="{Binding MaxX, ElementName=XDendrogramControl}"
-            MinY="{Binding MinX, ElementName=YDendrogramControl}"
-            MaxY="{Binding MaxX, ElementName=YDendrogramControl}"
-            LimitMinX="{Binding LimitMinX, ElementName=XDendrogramControl, Mode=OneWayToSource}"
-            LimitMaxX="{Binding LimitMaxX, ElementName=XDendrogramControl, Mode=OneWayToSource}"
-            LimitMinY="{Binding LimitMinX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
-            LimitMaxY="{Binding LimitMaxX, ElementName=YDendrogramControl, Mode=OneWayToSource}"
-            Grid.Column="1" Grid.Row="1">
-            <i:Interaction.Behaviors>
-                <behavior:RubberBehavior/>
-            </i:Interaction.Behaviors>
-        </heatmap:HeatmapCoreControl>
     </Grid>
 </UserControl>

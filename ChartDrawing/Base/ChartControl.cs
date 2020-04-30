@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -100,6 +101,8 @@ namespace CompMs.Graphics.Core.Base
                 LimitMaxY = value.Bottom;
             }
         }
+
+        [Bindable(true)]
         public double LimitMinX
         {
             get => (double)GetValue(LimitMinXProperty);
@@ -107,8 +110,8 @@ namespace CompMs.Graphics.Core.Base
         }
         public static readonly DependencyProperty LimitMinXProperty = DependencyProperty.Register(
             nameof(LimitMinX), typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(0d,
-                FrameworkPropertyMetadataOptions.AffectsRender
+            new FrameworkPropertyMetadata(0d//,
+                // FrameworkPropertyMetadataOptions.AffectsRender
                 )
             );
         public double LimitMaxX
@@ -118,8 +121,8 @@ namespace CompMs.Graphics.Core.Base
         }
         public static readonly DependencyProperty LimitMaxXProperty = DependencyProperty.Register(
             nameof(LimitMaxX), typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(100d,
-                FrameworkPropertyMetadataOptions.AffectsRender
+            new FrameworkPropertyMetadata(100d//,
+                //FrameworkPropertyMetadataOptions.AffectsRender
                 )
             );
         public double LimitMinY
@@ -129,8 +132,8 @@ namespace CompMs.Graphics.Core.Base
         }
         public static readonly DependencyProperty LimitMinYProperty = DependencyProperty.Register(
             nameof(LimitMinY), typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(0d,
-                FrameworkPropertyMetadataOptions.AffectsRender
+            new FrameworkPropertyMetadata(0d//,
+                //FrameworkPropertyMetadataOptions.AffectsRender
                 )
             );
         public double LimitMaxY
@@ -140,8 +143,8 @@ namespace CompMs.Graphics.Core.Base
         }
         public static readonly DependencyProperty LimitMaxYProperty = DependencyProperty.Register(
             nameof(LimitMaxY), typeof(double), typeof(ChartControl),
-            new FrameworkPropertyMetadata(100d,
-                FrameworkPropertyMetadataOptions.AffectsRender
+            new FrameworkPropertyMetadata(100d//,
+                //FrameworkPropertyMetadataOptions.AffectsRender
                 )
             );
         /*
@@ -239,7 +242,8 @@ namespace CompMs.Graphics.Core.Base
 
         #region mouse event
         protected bool isMoving = false;
-        // private Point previousPosition;
+        private Point previousPosition;
+        /*
         public Point previousPosition
         {
             get => (Point)GetValue(PreviousPositionProperty);
@@ -247,6 +251,7 @@ namespace CompMs.Graphics.Core.Base
         }
         static readonly DependencyProperty PreviousPositionProperty = DependencyProperty.Register(
             nameof(previousPosition), typeof(Point), typeof(ChartControl));
+            */
         protected void MoveLeftDragOnMouseDown(object sender, MouseButtonEventArgs e)
         {
             isMoving = true;
@@ -293,16 +298,14 @@ namespace CompMs.Graphics.Core.Base
             if (isZooming && ChartManager != null)
             {
                 isZooming = false;
-                var newarea = new Rect(
-                    ChartManager.Translate(initialPosition, ChartDrawingArea, RenderSize),
-                    ChartManager.Translate(e.GetPosition(this), ChartDrawingArea, RenderSize)
-                    );
-                if (newarea.Width == 0)
+                var selectedArea = new Rect(initialPosition, e.GetPosition(this));
+                var newarea = ChartManager.Translate(selectedArea, ChartDrawingArea, RenderSize);
+                if (selectedArea.Width <= 10)
                 {
                     newarea.X = ChartDrawingArea.X;
                     newarea.Width = ChartDrawingArea.Width;
                 }
-                if (newarea.Height == 0)
+                if (selectedArea.Height <= 10)
                 {
                     newarea.Y = ChartDrawingArea.Y;
                     newarea.Height = ChartDrawingArea.Height;

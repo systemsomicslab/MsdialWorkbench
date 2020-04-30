@@ -16,15 +16,16 @@ namespace CompMs.Graphics.Core.Heatmap
         }
         public static readonly DependencyProperty DataMatrixProperty = DependencyProperty.Register(
             nameof(DataMatrix), typeof(double[,]), typeof(HeatmapCoreControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnDataMatrixChanged)
+            new FrameworkPropertyMetadata(null, ResetManager)
         );
 
+        /*
         static void OnDataMatrixChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as HeatmapCoreControl;
             if (control != null)
             {
-                var chartmanager = new HeatmapManager((double[,])e.NewValue, null, null, control.Gsc );
+                var chartmanager = new HeatmapManager((double[,])e.NewValue, control.XPositions, control.YPositions, control.Gsc );
                 control.ChartDrawingArea = chartmanager.ChartArea;
                 control.LimitDrawingArea = chartmanager.ChartArea;
                 control.XPositions = chartmanager.XPositions;
@@ -33,6 +34,7 @@ namespace CompMs.Graphics.Core.Heatmap
                 control.ChartManager = chartmanager;
             }
         }
+        */
 
         public GradientStopCollection Gsc
         {
@@ -41,7 +43,7 @@ namespace CompMs.Graphics.Core.Heatmap
         }
         public static readonly DependencyProperty GscProperty = DependencyProperty.Register(
             nameof(Gsc), typeof(LinearGradientBrush), typeof(HeatmapCoreControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(null, ResetManager)
         );
 
         public IReadOnlyList<double> XPositions
@@ -51,7 +53,7 @@ namespace CompMs.Graphics.Core.Heatmap
         }
         public static readonly DependencyProperty XPositionsProperty = DependencyProperty.Register(
             nameof(XPositions), typeof(IReadOnlyList<double>), typeof(HeatmapCoreControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(null, ResetManager)
             );
         public IReadOnlyList<double> YPositions
         {
@@ -60,7 +62,30 @@ namespace CompMs.Graphics.Core.Heatmap
         }
         public static readonly DependencyProperty YPositionsProperty = DependencyProperty.Register(
             nameof(YPositions), typeof(IReadOnlyList<double>), typeof(HeatmapCoreControl),
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(null, ResetManager)
             );
+
+        static void ResetManager(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as ChartControl;
+            if (control != null) control.ChartManager = null;
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            if (ChartManager == null) UpdateManager();
+            base.OnRender(drawingContext);
+        }
+
+        private void UpdateManager()
+        {
+            var chartmanager = new HeatmapManager(DataMatrix, XPositions, YPositions, Gsc);
+            ChartDrawingArea = chartmanager.ChartArea;
+            LimitDrawingArea = chartmanager.ChartArea;
+            XPositions = chartmanager.XPositions;
+            YPositions = chartmanager.YPositions;
+            Gsc = chartmanager.Gsc;
+            ChartManager = chartmanager;
+        }
     }
 }

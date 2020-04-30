@@ -24,11 +24,9 @@ namespace CompMs.Graphics.Core.Heatmap
             GradientStopCollection gsc = null
             )
         {
-            if (dataMatrix.Length == 0) return;
-            if (xPositions != null && dataMatrix.GetLength(1) != xPositions.Count)
-                xPositions = null;
-            if (yPositions != null && dataMatrix.GetLength(0) != yPositions.Count)
-                yPositions = null;
+            if (dataMatrix == null || dataMatrix.Length == 0) return;
+            if (xPositions != null && dataMatrix.GetLength(1) != xPositions.Count) xPositions = null;
+            if (yPositions != null && dataMatrix.GetLength(0) != yPositions.Count) yPositions = null;
 
             double[] XBounds, YBounds;
 
@@ -113,6 +111,7 @@ namespace CompMs.Graphics.Core.Heatmap
         public Drawing CreateChart(Rect rect, Size size)
         {
             var drawingGroup = new DrawingGroup();
+            if (areas == null) return drawingGroup;
             foreach(var area in areas)
             {
                 var drawing = new GeometryDrawing(brushMemo[area.color], null, area.element.GetGeometry(rect, size));
