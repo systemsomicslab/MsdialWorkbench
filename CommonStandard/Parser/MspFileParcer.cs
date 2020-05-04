@@ -168,8 +168,8 @@ namespace CompMs.Common.Parser {
                                 continue;
                             }
                         }
-                        mspField.Times = new Times() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = TimeType.RT
+                        mspField.ChromXs = new ChromXs() {
+                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
                         };
                         mspFields.Add(mspField);
                         mspField = new MoleculeMsReference();
@@ -342,8 +342,8 @@ namespace CompMs.Common.Parser {
                                 continue;
                             }
                         }
-                        mspField.Times = new Times() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = TimeType.RT
+                        mspField.ChromXs = new ChromXs() {
+                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
                         };
                         mspFields.Add(mspField);
                         mspField = new MoleculeMsReference();
@@ -526,7 +526,7 @@ namespace CompMs.Common.Parser {
             sw.WriteLine("NAME: " + record.Name);
             sw.WriteLine("PRECURSORMZ: " + record.PrecursorMz);
             sw.WriteLine("PRECURSORTYPE: " + adducttype);
-            sw.WriteLine("RETENTIONTIME: " + record.Times.RT);
+            sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT);
             sw.WriteLine("FORMULA: " + record.Formula);
             sw.WriteLine("SMILES: " + record.SMILES);
             sw.WriteLine("INCHIKEY: " + record.InChIKey);

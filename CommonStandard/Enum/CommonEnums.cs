@@ -29,4 +29,30 @@ namespace CompMs.Common.Enum {
     public enum PeakLinkFeatureEnum {
         SameFeature, Isotope, Adduct, ChromSimilar, FoundInUpperMsMs, CorrelSimilar
     }
+    public enum ProcessOption { All, IdentificationPlusAlignment, Alignment };
+    public enum BlankFiltering { SampleMaxOverBlankAve, SampleAveOverBlankAve }
+    public enum MultivariateAnalysisOption { Pca, Plsda, Plsr, Oplsda, Oplsr, Hca }
+    public enum IonMobilityType { Tims, Dtims, Twims, CCS }
+    public enum AccuracyType { IsNominal, IsAccurate }
+
+    public enum SmoothingMethod {
+        SimpleMovingAverage,
+        LinearWeightedMovingAverage,
+        SavitzkyGolayFilter,
+        BinomialFilter,
+        LowessFilter,
+        LoessFilter
+    }
+
+    public enum ScaleMethod {
+        None, MeanCenter, ParetoScale, AutoScale
+    }
+
+    public enum TransformMethod {
+        None, Log10, QuadRoot
+    }
+
+    public enum DeconvolutionType { One, Both }
+
+    public enum CoverRange { CommonRange, ExtendedRange, ExtremeRange }
 }

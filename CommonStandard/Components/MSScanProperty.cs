@@ -11,15 +11,15 @@ namespace CompMs.Common.Components
         public int ScanID { get; set; }
         public double PrecursorMz { get; set; }
         public IonMode IonMode { get; set; }
-        public Times Times { get; set; }
+        public ChromXs ChromXs { get; set; }
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         
         public MSScanProperty() { }
-        public MSScanProperty(int id, double precursorMz, Time time, IonMode ionmode)
+        public MSScanProperty(int id, double precursorMz, ChromX time, IonMode ionmode)
         {
             ScanID = id;
             PrecursorMz = precursorMz;
-            Times = new Times(time);
+            ChromXs = new ChromXs(time);
             IonMode = ionmode;
         }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MessagePack;
 
 namespace CompMs.Common.DataObj.Property {
     public class IsotopeProperty {
@@ -23,10 +24,15 @@ namespace CompMs.Common.DataObj.Property {
     /// The detail of the properties such as M+1, M+2, etc is stored in this class.
     /// Relative intensity is standardized to 100 as the maximum
     /// </summary>
+    [MessagePackObject]
     public class IsotopicPeak {
+        [Key(0)]
         public double RelativeAbundance { get; set; }
+        [Key(1)]
         public double Mass { get; set; }
+        [Key(2)]
         public double MassDifferenceFromMonoisotopicIon { get; set; }
+        [Key(3)]
         public string Comment { get; set; } = string.Empty;
     }
 

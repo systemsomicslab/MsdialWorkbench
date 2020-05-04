@@ -11,7 +11,7 @@ namespace CompMs.Common.Interfaces
         int ScanID { get; set; }
         double PrecursorMz { get; set; }
         IonMode IonMode { get; set; }
-        Times Times { get; set; }
+        ChromXs ChromXs { get; set; }
         List<SpectrumPeak> Spectrum { get; set; }
         void AddPeak(double mass, double intensity, string comment = null);
     }

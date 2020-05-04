@@ -10,14 +10,14 @@ namespace CompMs.Common.Components
         public int ID { get; set; }
         public double Mass { get; set; }
         public double Intensity { get; set; }
-        public Times Times { get; set; }
+        public ChromXs ChromXs { get; set; }
 
         public ChromatogramPeak() { }
-        public ChromatogramPeak(int id, double mass, double intensity, Time time) {
+        public ChromatogramPeak(int id, double mass, double intensity, ChromX time) {
             ID = id;
             Mass = mass;
             Intensity = intensity;
-            Times = new Times(time);
+            ChromXs = new ChromXs(time);
         }
     }
 }

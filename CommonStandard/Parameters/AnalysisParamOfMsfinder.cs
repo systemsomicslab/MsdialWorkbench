@@ -9,7 +9,6 @@ using System.Text;
 namespace CompMs.Common.Parameter {
     
     public enum FseaNonsignificantDef { OntologySpace, ReverseSpectrum, LowAbundantIons }
-    public enum CoverRange { CommonRange, ExtendedRange, ExtremeRange }
     /// <summary>
     /// This is the storage of analysis parameters used in MS-FINDER program.
     /// </summary>

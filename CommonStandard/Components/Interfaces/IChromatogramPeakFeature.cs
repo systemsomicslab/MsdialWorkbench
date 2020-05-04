@@ -10,13 +10,14 @@ namespace CompMs.Common.Interfaces {
         int ChromScanIdLeft { get; set; }
         int ChromScanIdTop { get; set; }
         int ChromScanIdRight { get; set; }
-        Times TimesLeft { get; set; }
-        Times TimesTop { get; set; }
-        Times TimesRight { get; set; }
-        float PeakHeightLeft { get; set; }
-        float PeakHeightTop { get; set; }
-        float PeakHeightRight { get; set; }
-        float PeakAreaAboveZero { get; set; }
-        float PeakAreaAboveBaseline { get; set; }
+        ChromXs ChromXsLeft { get; set; }
+        ChromXs ChromXsTop { get; set; }
+        ChromXs ChromXsRight { get; set; }
+        double PeakHeightLeft { get; set; }
+        double PeakHeightTop { get; set; }
+        double PeakHeightRight { get; set; }
+        double PeakAreaAboveZero { get; set; }
+        double PeakAreaAboveBaseline { get; set; }
+        double PeakWidth(ChromXType type);
     }
 }

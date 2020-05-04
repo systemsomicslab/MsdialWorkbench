@@ -23,7 +23,7 @@ namespace CompMs.Common.Parser {
             var queries = new List<LbmQuery>();
             //var lbmQueryString = Properties.Resources.LbmQueries;
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "Common.Resources.LbmQueries.txt";
+            var resourceName = "CompMs.Common.Resources.LbmQueries.txt";
             var lbmQueryString = string.Empty;
             using (var stream = assembly.GetManifestResourceStream(resourceName)) {
                 using (var reader = new StreamReader(stream)) {

@@ -1,20 +1,25 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.Components
 {
-    public enum TimeType { RT, RI, Drift }
-    public enum TimeUnit { Min, Sec, None }
+    public enum ChromXType { RT, RI, Drift, Mz }
+    public enum ChromXUnit { Min, Sec, None, Mz }
 
-    public abstract class Time
+    [MessagePackObject]
+    public abstract class ChromX
     {
+        [Key(0)]
         public double Value { get; set; } = -1;
-        public TimeType Type { get; set; }
-        public TimeUnit Unit { get; set; }
+        [Key(1)]
+        public ChromXType Type { get; set; }
+        [Key(2)]
+        public ChromXUnit Unit { get; set; }
 
-        public Time() { }
-        public Time(double val)
+        public ChromX() { }
+        public ChromX(double val)
         {
             Value = val;
         }
@@ -23,12 +28,14 @@ namespace CompMs.Common.Components
         {
             switch (Type)
             {
-                case TimeType.RT:
+                case ChromXType.RT:
                     return $"RT: {Value:F3} {GetUnitString()}";
-                case TimeType.RI:
+                case ChromXType.RI:
                     return $"RI: {Value:F3} {GetUnitString()}";
-                case TimeType.Drift:
+                case ChromXType.Drift:
                     return $"Drift: {Value:F3} {GetUnitString()}";
+                case ChromXType.Mz:
+                    return $"Mz: {Value:F3} {GetUnitString()}";
                 default:
                     return "";
             }
@@ -37,46 +44,56 @@ namespace CompMs.Common.Components
         {
             switch (Unit)
             {
-                case TimeUnit.Min:
+                case ChromXUnit.Min:
                     return "min";
-                case TimeUnit.Sec:
+                case ChromXUnit.Sec:
                     return "sec";
-                case TimeUnit.None:
+                case ChromXUnit.None:
                     return "";
+                case ChromXUnit.Mz:
+                    return "m/z";
                 default:
                     return "";
             }
         }
     }
 
-    public class RetentionTime : Time
+    public class RetentionTime : ChromX
     {
         public RetentionTime() { }
-        public RetentionTime(double retentionTime, TimeUnit unit = TimeUnit.Min) : base(retentionTime)
+        public RetentionTime(double retentionTime, ChromXUnit unit = ChromXUnit.Min) : base(retentionTime)
         {
-            Type = TimeType.RT;
+            Type = ChromXType.RT;
             Unit = unit;
         }
     }
 
-    public class RetentionIndex : Time
+    public class RetentionIndex : ChromX
     {
         public RetentionIndex() { }
-        public RetentionIndex(double retentionIndex, TimeUnit unit = TimeUnit.None) : base(retentionIndex)
+        public RetentionIndex(double retentionIndex, ChromXUnit unit = ChromXUnit.None) : base(retentionIndex)
         {
-            Type = TimeType.RI;
+            Type = ChromXType.RI;
             Unit = unit;
         }
     }
 
-    public class DriftTime : Time
+    public class DriftTime : ChromX
     {
         public DriftTime() { }
-        public DriftTime(double driftTime, TimeUnit unit = TimeUnit.None) : base(driftTime)
+        public DriftTime(double driftTime, ChromXUnit unit = ChromXUnit.None) : base(driftTime)
         {
-            Type = TimeType.Drift;
+            Type = ChromXType.Drift;
             Unit = unit;
         }
 
+    }
+
+    public class MzValue : ChromX {
+        public MzValue() { }
+        public MzValue(double mz, ChromXUnit unit = ChromXUnit.Mz) : base(mz) {
+            Type = ChromXType.Mz;
+            Unit = unit;
+        }
     }
 }

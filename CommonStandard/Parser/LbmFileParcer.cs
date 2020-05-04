@@ -253,8 +253,8 @@ namespace CompMs.Common.Parser {
                             }
                         }
 
-                        mspRecord.Times = new Times() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = TimeType.RT
+                        mspRecord.ChromXs = new ChromXs() {
+                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
                         };
                         if (queryCheck(mspRecord, tQueries, ionMode, solventType, collisionType))
                         {
@@ -496,8 +496,8 @@ namespace CompMs.Common.Parser {
                                 continue;
                             }
                         }
-                        mspRecord.Times = new Times() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = TimeType.RT
+                        mspRecord.ChromXs = new ChromXs() {
+                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
                         };
                         mspDB.Add(mspRecord);
                         counter++;
@@ -517,7 +517,16 @@ namespace CompMs.Common.Parser {
 
         private static bool queryCheck(MoleculeMsReference mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType)
         {
-            if (queries[0].IonMode != mspRecord.IonMode) return false;
+            //if (queries[0].IonMode != mspRecord.IonMode) return false;
+            if (mspRecord.IonMode != ionMode) return false;
+            if (ionMode == IonMode.Negative) {
+                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.AdductIonName == "[M+HCOO]-") {
+                    return false;
+                } 
+                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.AdductIonName == "[M+CH3COO]-") {
+                    return false;
+                }
+            }
             foreach (var query in queries) {
                 if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
                     return true;

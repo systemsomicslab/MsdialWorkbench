@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="Hca Setting" Height="250" Width="400">
+        Title="HCA Setting" Height="250" Width="400">
     <i:Interaction.Behaviors>
         <CommonMVVM:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
     </i:Interaction.Behaviors>

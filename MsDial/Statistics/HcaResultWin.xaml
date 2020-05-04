@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:compound="clr-namespace:CompMs.Graphics.Compound;assembly=ChartDrawing"
         mc:Ignorable="d"
-        Title="HcaResultWin" Height="700" Width="950">
+        Title="HCA result" Height="700" Width="950">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>

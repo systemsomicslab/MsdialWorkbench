@@ -2,92 +2,119 @@
 using System.Collections.Generic;
 using System.Text;
 using CompMs.Common.Interfaces;
+using MessagePack;
 
 namespace CompMs.Common.Components
 {
-    public class Times: ITimes
+    [MessagePackObject]
+    public class ChromXs: IChromXs
     {
-        public Time RT { get; set; }
-        public Time RI { get; set; }
-        public Time Drift { get; set; }
-        public TimeType MainType { get; set; } = TimeType.RT;
-        public Times () { }
-        public Times(Time time)
+        [Key(0)]
+        public ChromX RT { get; set; }
+        [Key(1)]
+        public ChromX RI { get; set; }
+        [Key(2)]
+        public ChromX Drift { get; set; }
+        [Key(3)]
+        public ChromX Mz { get; set; }
+        [Key(4)]
+        public ChromXType MainType { get; set; } = ChromXType.RT;
+        public ChromXs () { }
+        public ChromXs(ChromX chromX)
         {
-            switch (time.Type)
+            switch (chromX.Type)
             {
-                case TimeType.RT:
-                    RT = time;
+                case ChromXType.RT:
+                    RT = chromX;
                     break;
-                case TimeType.RI:
-                    RI = time;
+                case ChromXType.RI:
+                    RI = chromX;
                     break;
-                case TimeType.Drift:
-                    Drift = time;
+                case ChromXType.Drift:
+                    Drift = chromX;
+                    break;
+                case ChromXType.Mz:
+                    Mz = chromX;
                     break;
                 default:
                     break;
             }
-            MainType = time.Type;
+            MainType = chromX.Type;
         }
 
-        public Time GetRepresentativeTime()
+        public ChromX GetRepresentativeXAxis()
         {
             switch (MainType)
             {
-                case TimeType.RT:
+                case ChromXType.RT:
                     return RT;
-                case TimeType.RI:
+                case ChromXType.RI:
                     return RI;
-                case TimeType.Drift:
+                case ChromXType.Drift:
                     return Drift;
+                case ChromXType.Mz:
+                    return Mz;
                 default:
                     return null;
             }
         }
 
+        [Key(5)]
         public double Value { 
             get
             {
                 switch (MainType)
                 {
-                    case TimeType.RT:
+                    case ChromXType.RT:
                         return RT.Value;
-                    case TimeType.RI:
+                    case ChromXType.RI:
                         return RI.Value;
-                    case TimeType.Drift:
+                    case ChromXType.Drift:
                         return Drift.Value;
+                    case ChromXType.Mz:
+                        return Mz.Value;
                     default:
                         return -1;
                 }
             }
         }
 
-        public TimeUnit Unit
+        [Key(6)]
+        public ChromXUnit Unit
         {
             get
             {
                 switch (MainType)
                 {
-                    case TimeType.RT:
+                    case ChromXType.RT:
                         return RT.Unit;
-                    case TimeType.RI:
+                    case ChromXType.RI:
                         return RI.Unit;
-                    case TimeType.Drift:
+                    case ChromXType.Drift:
                         return Drift.Unit;
+                    case ChromXType.Mz:
+                        return Mz.Unit;
                     default:
-                        return TimeUnit.None;
+                        return ChromXUnit.None;
                 }
             }
         }
 
-        public TimeType Type
+        [Key(7)]
+        public ChromXType Type
         {
             get
             {
                 return MainType;
             }
         }
+
+        public bool HasTimeInfo() {
+            if (RT == null && RI == null && Drift == null) return false;
+            if (RT.Value < 0 && RI.Value < 0 && Drift.Value < 0) return false;
+            return true;
+        }
+
         public bool HasAbsolute()
         {
             if (RT == null) return false;
