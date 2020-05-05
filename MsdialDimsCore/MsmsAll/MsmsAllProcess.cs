@@ -43,8 +43,15 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 mspDB = MspFileParcer.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
-                mspDB = LbmFileParcer.Read(param.MspFilePath, lbmQueries, 
-                    param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
+                var extension = System.IO.Path.GetExtension(param.MspFilePath);
+                if (extension == ".lbm2") {
+                    mspDB = LbmFileParcer.ReadSerializedObjectLibrary(param.MspFilePath, lbmQueries,
+                        param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
+                }
+                else {
+                    mspDB = LbmFileParcer.Read(param.MspFilePath, lbmQueries,
+                        param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
+                }
             }
 
             if (mspDB != null) mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();

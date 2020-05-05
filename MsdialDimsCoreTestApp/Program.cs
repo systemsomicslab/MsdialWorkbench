@@ -9,12 +9,12 @@ namespace MsdialDimsCoreTestApp {
         static void Main(string[] args) {
 
             // just to make lbm2 file
-            // var queries = LbmFileParcer.Read(@"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\MSDIAL-LipidDB-Test-AritaM-replaced-vs2.lbm");
-            // MoleculeMsRefMethods.SaveMspToFile(queries, @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\MSDIAL_LipidDB_Test.lbm2");
+            //var queries = LbmFileParcer.Read(@"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\MSDIAL-LipidDB-Test-AritaM-replaced-vs2.lbm");
+            //MoleculeMsRefMethods.SaveMspToFile(queries, @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\MSDIAL_LipidDB_Test.lbm2");
 
             // testfiles
             var filepath = @"D:\PROJECT for MSMSALL\remsall\ABF\704_Egg2 Egg Yolk.abf";
-            var lbmFile = @"D:\PROJECT for MSMSALL\remsall\ABF\MSDIAL_LipidDB_Test.lbm";
+            var lbmFile = @"D:\PROJECT for MSMSALL\remsall\ABF\MSDIAL_LipidDB_Test.lbm2";
             var param = new MsdialDimsParameter() {
                 IonMode = CompMs.Common.Enum.IonMode.Negative,
                 MspFilePath = lbmFile, 

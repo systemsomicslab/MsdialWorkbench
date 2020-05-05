@@ -8,6 +8,7 @@ namespace CompMs.Common.Components
     public enum ChromXType { RT, RI, Drift, Mz }
     public enum ChromXUnit { Min, Sec, None, Mz }
 
+    [Union(0, typeof(ChromXs))]
     [MessagePackObject]
     public abstract class ChromX
     {
