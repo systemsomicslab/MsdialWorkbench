@@ -16,5 +16,7 @@ namespace CompMs.Common.MessagePack {
         {
             return MessagePackDefaultHandler.LoadLargerListFromFile<MspFormatCompoundInformationBean>(path);
         }
+
+
     }
 }

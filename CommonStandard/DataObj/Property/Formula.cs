@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompMs.Common.DataObj {
+namespace CompMs.Common.DataObj.Property {
     public sealed class AtomMass {
         private AtomMass() { }
 

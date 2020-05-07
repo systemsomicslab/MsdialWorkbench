@@ -1362,7 +1362,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         {
 
             alignSpots = alignSpots.OrderBy(n => n.CentralRetentionTime).ToList();
-            var searchedAdducts = new List<AdductIon>();
+            var searchedAdducts = new List<Rfx.Riken.OsakaUniv.AdductIon>();
             for (int i = 0; i < param.AdductIonInformationBeanList.Count; i++) {
                 if (param.AdductIonInformationBeanList[i].Included)
                     searchedAdducts.Add(AdductIonParcer.GetAdductIonBean(param.AdductIonInformationBeanList[i].AdductName));
@@ -1522,7 +1522,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static void adductSearcher(AlignmentPropertyBean spot, List<AlignmentPropertyBean> searchedSpots,
-            List<AdductIon> searchedAdducts, AnalysisParametersBean param, IonMode ionMode)
+            List<Rfx.Riken.OsakaUniv.AdductIon> searchedAdducts, AnalysisParametersBean param, IonMode ionMode)
         {
             var flg = false;
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.AdductAndIsotopeMassTolerance); //based on m/z 200
@@ -1567,7 +1567,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         }
 
         private static void adductSearcherWithIdentifiedInfo(AlignmentPropertyBean spot, List<AlignmentPropertyBean> searchedSpots, 
-            List<AdductIon> searchedAdducts, AnalysisParametersBean param, IonMode ionMode)
+            List<Rfx.Riken.OsakaUniv.AdductIon> searchedAdducts, AnalysisParametersBean param, IonMode ionMode)
         {
             var centralAdduct = AdductIonParcer.GetAdductIonBean(spot.AdductIonName);
             var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(spot.CentralAccurateMass, centralAdduct.AdductIonAccurateMass,

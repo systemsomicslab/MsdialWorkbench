@@ -8,6 +8,6 @@ namespace CompMs.Common.Interfaces
     public interface IChromatogramPeak : ISpectrumPeak
     {
         int ID { get; set; }
-        Times Times { get; set; }
+        ChromXs ChromXs { get; set; }
     }
 }
