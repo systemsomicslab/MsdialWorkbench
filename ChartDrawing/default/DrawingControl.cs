@@ -17,10 +17,7 @@ namespace CompMs.Graphics.Base
                 FrameworkPropertyMetadataOptions.AffectsRender)
             );
 
-        public DrawingControl()
-        {
-            MouseWheel += (s, e) => Console.WriteLine("control mouse wheel called.");
-        }
+        public DrawingControl() { }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
