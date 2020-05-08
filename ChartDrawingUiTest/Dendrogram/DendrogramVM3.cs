@@ -17,18 +17,6 @@ namespace ChartDrawingUiTest.Dendrogram
 {
     public class DendrogramVM3 : ViewModelBase
     {
-        public DrawingImage XDendrogram
-        {
-            get => xDendrogram;
-            set => SetProperty(ref xDendrogram, value);
-            
-        }
-        public DrawingImage YDendrogram
-        {
-            get => yDendrogram;
-            set => SetProperty(ref yDendrogram, value);
-            
-        }
         public DrawingDendrogram XDrawingDendrogram
         {
             get => xDrawingDendrogram;
@@ -60,22 +48,8 @@ namespace ChartDrawingUiTest.Dendrogram
             }
         }
 
-        private DrawingImage xDendrogram;
-        private DrawingImage yDendrogram;
         private DrawingDendrogram xDrawingDendrogram;
         private DrawingDendrogram yDrawingDendrogram;
-
-        void OnDrawingDendrogramChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "XDrawingDendrogram")
-            {
-                XDendrogram = new DrawingImage(XDrawingDendrogram.CreateChart());
-            }
-            else if(e.PropertyName == "YDrawingDendrogram")
-            {
-                YDendrogram = new DrawingImage(YDrawingDendrogram.CreateChart());
-            }
-        }
 
         public DendrogramVM3()
         {
@@ -88,15 +62,11 @@ namespace ChartDrawingUiTest.Dendrogram
                 Tree = result.XDendrogram,
                 Series = Utility.CalculateTreeCoordinate(result.XDendrogram),
             };
-            XDendrogram = new DrawingImage(XDrawingDendrogram.CreateChart());
             YDrawingDendrogram = new DrawingDendrogram()
             {
                 Tree = result.YDendrogram,
                 Series = Utility.CalculateTreeCoordinate(result.YDendrogram),
             };
-            YDendrogram = new DrawingImage(YDrawingDendrogram.CreateChart());
-
-            PropertyChanged += OnDrawingDendrogramChanged;
         }
 
         private StatisticsObject getStatObject(string path)

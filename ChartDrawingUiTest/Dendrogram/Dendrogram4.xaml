@@ -13,9 +13,7 @@
     </Page.DataContext>
     <Grid>
         <chart:DefaultControl
-            Chart="{Binding XDendrogram}"
-            ChartHeight="{Binding XDrawingDendrogram.Height, Mode=OneWayToSource}"
-            ChartWidth="{Binding XDrawingDendrogram.Width, Mode=OneWayToSource}"
+            DrawingChart="{Binding XDrawingDendrogram}"
             Margin="5"/>
     </Grid>
 </Page>
