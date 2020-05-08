@@ -5,10 +5,11 @@ using System.Windows.Media;
 
 namespace CompMs.Graphics.Core.Base
 {
-    internal interface IDrawingChart
+    public interface IDrawingChart
     {
         Size RenderSize { get; set; }
         Rect ChartArea { get; set; }
+        Rect InitialArea { get; set; }
 
         Drawing CreateChart();
 

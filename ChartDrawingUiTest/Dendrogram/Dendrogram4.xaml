@@ -15,6 +15,7 @@
         <chart:DefaultControl
             Chart="{Binding XDendrogram}"
             ChartHeight="{Binding XDrawingDendrogram.Height, Mode=OneWayToSource}"
-            ChartWidth="{Binding XDrawingDendrogram.Width, Mode=OneWayToSource}"/>
+            ChartWidth="{Binding XDrawingDendrogram.Width, Mode=OneWayToSource}"
+            Margin="5"/>
     </Grid>
 </Page>

@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
+    <Compile Include="Base\DrawingChartBase.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
     <Compile Include="Base\ChartControl.cs" />
