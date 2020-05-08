@@ -1,6 +1,6 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:CompMs.Graphics.Base">
+                    xmlns:local="clr-namespace:CompMs.Graphics.Base"
     <Style TargetType="{x:Type local:DefaultControl}">
         <Setter Property="Template">
             <Setter.Value>
@@ -9,10 +9,8 @@
                             Background="WhiteSmoke"
                             BorderBrush="Black"
                             BorderThickness="1">
-                        <Image
-                            Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                            Stretch="None"
-                            VerticalAlignment="Bottom"/>
+                        <local:DrawingControl Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
+                        </local:DrawingControl>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

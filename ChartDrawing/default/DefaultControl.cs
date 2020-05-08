@@ -12,13 +12,13 @@ namespace CompMs.Graphics.Base
 {
     public class DefaultControl : Control
     {
-        public DrawingImage Chart
+        public Drawing Chart
         {
-            get => (DrawingImage)GetValue(ChartProperty);
+            get => (Drawing)GetValue(ChartProperty);
             set => SetValue(ChartProperty, value);
         }
         public static readonly DependencyProperty ChartProperty = DependencyProperty.Register(
-            nameof(Chart), typeof(DrawingImage), typeof(DefaultControl),
+            nameof(Chart), typeof(Drawing), typeof(DefaultControl),
             new FrameworkPropertyMetadata(default,
                 FrameworkPropertyMetadataOptions.AffectsRender)
             );
@@ -69,13 +69,13 @@ namespace CompMs.Graphics.Base
             if (control == null) return;
             {
                 if (e.OldValue is DrawingChartBase drawingChart)
-                    drawingChart.PropertyChanged -= (_s, _e) => control.Chart = new DrawingImage(drawingChart.CreateChart());
+                    drawingChart.PropertyChanged -= (_s, _e) => control.Chart = drawingChart.CreateChart();
             }
             {
                 if (e.NewValue is DrawingChartBase drawingChart)
                 {
-                    drawingChart.PropertyChanged += (_s, _e) => control.Chart = new DrawingImage(drawingChart.CreateChart());
-                    control.Chart = new DrawingImage(drawingChart.CreateChart());
+                    drawingChart.PropertyChanged += (_s, _e) => control.Chart = drawingChart.CreateChart();
+                    control.Chart = drawingChart.CreateChart();
                 }
             }
         }
