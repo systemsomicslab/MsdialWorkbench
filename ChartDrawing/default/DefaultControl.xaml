@@ -14,6 +14,7 @@
                         <local:DrawingControl Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
                             <i:Interaction.Behaviors>
                                 <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                                <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
                             </i:Interaction.Behaviors>
                         </local:DrawingControl>
                     </Border>

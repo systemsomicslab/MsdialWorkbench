@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="Base\DrawingChartBase.cs" />
+    <Compile Include="Behavior\ResetZoomBehavior.cs" />
     <Compile Include="Default\DrawingControl.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
