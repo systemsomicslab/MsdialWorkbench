@@ -12,8 +12,17 @@
         <local:DendrogramVM3/>
     </Page.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <chart:DefaultControl
             DrawingChart="{Binding XDrawingDendrogram}"
-            Margin="5"/>
+            Margin="5"
+            Grid.Column="0"/>
+        <chart:DefaultControl
+            DrawingChart="{Binding YDrawingDendrogram}"
+            Margin="5"
+            Grid.Column="1"/>
     </Grid>
 </Page>
