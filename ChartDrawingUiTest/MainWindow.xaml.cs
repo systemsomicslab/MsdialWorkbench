@@ -30,6 +30,7 @@ namespace ChartDrawingUiTest
                 {"DigraphView1", typeof(DigraphView1) },
                 {"Heatmap1", typeof(Heatmap1) },
                 {"Heatmap2", typeof(Heatmap2) },
+                {"Heatmap3", typeof(Heatmap3) },
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
                 {"Chromatogram1", typeof(Chromatogram1) },
