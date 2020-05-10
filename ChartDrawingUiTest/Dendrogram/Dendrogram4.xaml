@@ -16,13 +16,25 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
         <chart:DefaultControl
             DrawingChart="{Binding XDrawingDendrogram}"
-            Margin="5"
-            Grid.Column="0"/>
+            Margin="5, 5, 5, 0"
+            Grid.Column="0" Grid.Row="0"/>
         <chart:DefaultControl
             DrawingChart="{Binding YDrawingDendrogram}"
-            Margin="5"
-            Grid.Column="1"/>
+            Margin="5, 5, 5, 0"
+            Grid.Column="1" Grid.Row="0"/>
+        <chart:DefaultControl
+            DrawingChart="{Binding XDrawingHorizontalAxis}"
+            Margin="5, 0, 5, 2"
+            Grid.Column="0" Grid.Row="1"/>
+        <chart:DefaultControl
+            DrawingChart="{Binding YDrawingHorizontalAxis}"
+            Margin="5, 0, 5, 2"
+            Grid.Column="1" Grid.Row="1"/>
     </Grid>
 </Page>
