@@ -97,6 +97,7 @@
     <Compile Include="GraphAxis\CategoryVerticalAxisCoreControl.cs" />
     <Compile Include="GraphAxis\CategoryVerticalAxisManager.cs" />
     <Compile Include="GraphAxis\DrawingCategoryHorizontalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingCategoryVerticalAxis.cs" />
     <Compile Include="Heatmap\DrawingHeatmap.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />
     <Compile Include="Heatmap\HeatmapElement.cs" />

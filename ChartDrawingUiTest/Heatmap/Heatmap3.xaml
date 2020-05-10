@@ -12,17 +12,25 @@
         <local:HeatmapVM2/>
     </Page.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <chart:DefaultControl
             DrawingChart="{Binding DrawingHeatmap}"
-            Margin="5, 5, 5, 0"
-            Grid.Row="0"/>
+            Margin="0, 5, 5, 0"
+            Grid.Row="0" Grid.Column="1"/>
         <chart:DefaultControl
             DrawingChart="{Binding DrawingHorizontalAxis}"
-            Margin="5, 0, 5, 2"
-            Grid.Row="1"/>
+            Margin="0, 0, 5, 2"
+            Grid.Row="1" Grid.Column="1"/>
+        <chart:DefaultControl
+            DrawingChart="{Binding DrawingVerticalAxis}"
+            Margin="2, 5, 0, 0"
+            Grid.Row="0" Grid.Column="0"/>
     </Grid>
 </Page>

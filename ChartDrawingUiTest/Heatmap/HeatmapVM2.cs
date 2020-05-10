@@ -46,33 +46,73 @@ namespace ChartDrawingUiTest.Heatmap
                 }
             }
         }
+        public DrawingCategoryVerticalAxis DrawingVerticalAxis
+        {
+            get => drawingVerticalAxis;
+            set
+            {
+                var tmp = drawingVerticalAxis;
+                if (SetProperty(ref drawingVerticalAxis, value))
+                {
+                    if (tmp != null)
+                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged("DrawingVerticalAxis");
+                    if (drawingVerticalAxis != null)
+                        drawingVerticalAxis.PropertyChanged += (s, e) => OnPropertyChanged("DrawingVerticalAxis");
+                }
+            }
+        }
         public double X
         {
             get => x;
             set => SetProperty(ref x, value);
+        }
+        public double Y
+        {
+            get => y;
+            set => SetProperty(ref y, value);
         }
         public double Width
         {
             get => width;
             set => SetProperty(ref width, value);
         }
+        public double Height
+        {
+            get => height;
+            set => SetProperty(ref height, value);
+        }
         public double InitialX
         {
             get => initialX;
             set => SetProperty(ref initialX, value);
+        }
+        public double InitialY
+        {
+            get => initialY;
+            set => SetProperty(ref initialY, value);
         }
         public double InitialWidth
         {
             get => initialWidth;
             set => SetProperty(ref initialWidth, value);
         }
+        public double InitialHeight
+        {
+            get => initialHeight;
+            set => SetProperty(ref initialHeight, value);
+        }
 
         private DrawingHeatmap drawingHeatmap;
         private DrawingCategoryHorizontalAxis drawingHorizontalAxis;
+        private DrawingCategoryVerticalAxis drawingVerticalAxis;
         private double x;
+        private double y;
         private double width;
+        private double height;
         private double initialX;
+        private double initialY;
         private double initialWidth;
+        private double initialHeight;
 
         void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -81,15 +121,25 @@ namespace ChartDrawingUiTest.Heatmap
             {
                 case "DrawingHeatmap":
                     X = DrawingHeatmap.ChartArea.X;
+                    Y = DrawingHeatmap.ChartArea.Y;
                     Width = DrawingHeatmap.ChartArea.Width;
+                    Height = DrawingHeatmap.ChartArea.Height;
                     InitialX = DrawingHeatmap.InitialArea.X;
+                    InitialY = DrawingHeatmap.InitialArea.Y;
                     InitialWidth = DrawingHeatmap.InitialArea.Width;
+                    InitialHeight = DrawingHeatmap.InitialArea.Height;
                     break;
                 case "DrawingHorizontalAxis":
                     X = DrawingHorizontalAxis.ChartArea.X;
                     Width = DrawingHorizontalAxis.ChartArea.Width;
                     OnPropertyChanged("InitialX");
                     OnPropertyChanged("InitialWidth");
+                    break;
+                case "DrawingVerticalAxis":
+                    Y = DrawingVerticalAxis.ChartArea.Y;
+                    Height = DrawingVerticalAxis.ChartArea.Height;
+                    OnPropertyChanged("InitialY");
+                    OnPropertyChanged("InitialHeight");
                     break;
                 case "X":
                     area = DrawingHeatmap.ChartArea;
@@ -99,6 +149,14 @@ namespace ChartDrawingUiTest.Heatmap
                     area.X = X;
                     DrawingHorizontalAxis.ChartArea = area;
                     break;
+                case "Y":
+                    area = DrawingHeatmap.ChartArea;
+                    area.Y = Y;
+                    DrawingHeatmap.ChartArea = area;
+                    area = DrawingVerticalAxis.ChartArea;
+                    area.Y = Y;
+                    DrawingVerticalAxis.ChartArea = area;
+                    break;
                 case "Width":
                     area = DrawingHeatmap.ChartArea;
                     area.Width = Width;
@@ -107,15 +165,33 @@ namespace ChartDrawingUiTest.Heatmap
                     area.Width = Width;
                     DrawingHorizontalAxis.ChartArea = area;
                     break;
+                case "Height":
+                    area = DrawingHeatmap.ChartArea;
+                    area.Height = Height;
+                    DrawingHeatmap.ChartArea = area;
+                    area = DrawingVerticalAxis.ChartArea;
+                    area.Height = Height;
+                    DrawingVerticalAxis.ChartArea = area;
+                    break;
                 case "InitialX":
                     area = DrawingHorizontalAxis.InitialArea;
                     area.X = InitialX;
                     DrawingHorizontalAxis.InitialArea = area;
                     break;
+                case "InitialY":
+                    area = DrawingVerticalAxis.InitialArea;
+                    area.Y = InitialY;
+                    DrawingVerticalAxis.InitialArea = area;
+                    break;
                 case "InitialWidth":
                     area = DrawingHorizontalAxis.InitialArea;
                     area.Width = InitialWidth;
                     DrawingHorizontalAxis.InitialArea = area;
+                    break;
+                case "InitialHeight":
+                    area = DrawingVerticalAxis.InitialArea;
+                    area.Height = InitialHeight;
+                    DrawingVerticalAxis.InitialArea = area;
                     break;
             }
         }
@@ -137,6 +213,12 @@ namespace ChartDrawingUiTest.Heatmap
             {
                 XPositions = DrawingHeatmap.XPositions,
                 Labels = result.StatisticsObject.YLabels,
+                NLabel = 10,
+            };
+            DrawingVerticalAxis = new DrawingCategoryVerticalAxis()
+            {
+                YPositions = DrawingHeatmap.YPositions,
+                Labels = result.StatisticsObject.XLabels,
                 NLabel = 10,
             };
             PropertyChanged += OnChartPropertyChanged;
