@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ChartDrawingUiTest.Default;
+using ChartDrawingUiTest.LineChart;
 using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
 using ChartDrawingUiTest.Compound;
@@ -23,12 +24,15 @@ namespace ChartDrawingUiTest
             pageType = new Dictionary<string, Type>
             {
                 {"Default1", typeof(Default1) },
+                {"LineChart1", typeof(LineChart1) },
                 {"Dendrogram1", typeof(Dendrogram1) },
                 {"Dendrogram2", typeof(Dendrogram2) },
                 {"Dendrogram3", typeof(Dendrogram3) },
+                {"Dendrogram4", typeof(Dendrogram4) },
                 {"DigraphView1", typeof(DigraphView1) },
                 {"Heatmap1", typeof(Heatmap1) },
                 {"Heatmap2", typeof(Heatmap2) },
+                {"Heatmap3", typeof(Heatmap3) },
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
                 {"Chromatogram1", typeof(Chromatogram1) },

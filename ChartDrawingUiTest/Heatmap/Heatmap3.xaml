@@ -1,0 +1,41 @@
+﻿<Page x:Class="ChartDrawingUiTest.Heatmap.Heatmap3"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
+      mc:Ignorable="d" 
+      xmlns:chart="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Heatmap3">
+    <Page.DataContext>
+        <local:HeatmapVM2/>
+    </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary Source="/ChartDrawing;component/GraphAxis/GraphAxisResource.xaml"/>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <chart:DefaultControl
+            DrawingChart="{Binding DrawingHeatmap}"
+            Margin="0, 5, 5, 0"
+            Grid.Row="0" Grid.Column="1"/>
+        <chart:DefaultControl
+            Style="{StaticResource ResourceKey=CategoryHorizontalAxis}"
+            DrawingChart="{Binding DrawingHorizontalAxis}"
+            Margin="0, 0, 5, 2"
+            Grid.Row="1" Grid.Column="1"/>
+        <chart:DefaultControl
+            Style="{StaticResource ResourceKey=CategoryVerticalAxis}"
+            DrawingChart="{Binding DrawingVerticalAxis}"
+            Margin="2, 5, 0, 0"
+            Grid.Row="0" Grid.Column="0"/>
+    </Grid>
+</Page>
