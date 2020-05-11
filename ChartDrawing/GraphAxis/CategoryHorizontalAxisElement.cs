@@ -32,9 +32,8 @@ namespace CompMs.Graphics.Core.GraphAxis
             var n = inrange.Count();
             var lim = limit == -1 ? n : Math.Min(n, limit);
             if (lim == 0) return geometryGroup;
-            var pertext = (int)(n / lim);
+            var pertext = (n + lim - 1) / lim;
             var counter = 0;
-            var maxwidth = size.Width / Math.Min(n, lim);
             foreach(var pos in inrange)
             {
                 if(counter++ % pertext == 0)
@@ -78,17 +77,18 @@ namespace CompMs.Graphics.Core.GraphAxis
             var geometryGroup = new GeometryGroup();
             var intexts = texts.SkipWhile(p => p.xpos < rect.Left).TakeWhile(p => p.xpos <= rect.Right);
             var n = intexts.Count();
-            if (n == 0) return geometryGroup;
-            var lim = limit == -1 ? n : limit;
-            var pertext = (int)(n / Math.Min(n, lim));
+            var lim = limit == -1 ? n : Math.Min(n, limit);
+            if (lim == 0) return geometryGroup;
+            var pertext = (n + lim - 1) / lim;
             var counter = 0;
-            var maxwidth = size.Width / Math.Min(n, lim);
+            var maxwidth = size.Width / (lim + 2);
             foreach(var text in intexts)
             {
                 if(counter++ % pertext == 0)
                 {
                     var x = (text.xpos - rect.X) / rect.Width * size.Width;
                     text.text.MaxTextWidth = maxwidth;
+                    text.text.MaxTextHeight = size.Height * 0.8;
                     var height = text.text.Height;
                     var width = text.text.Width;
                     var geotext = text.text.BuildGeometry(new Point(x - width / 2, 0));

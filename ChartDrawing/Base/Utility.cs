@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
+
+using CompMs.Common.DataStructure;
 
 namespace CompMs.Graphics.Core.Base
 {
@@ -215,6 +218,31 @@ namespace CompMs.Graphics.Core.Base
 
             return dValue > 0 ? System.Math.Floor(dValue * dCoef) / dCoef :
                                 System.Math.Ceiling(dValue * dCoef) / dCoef;
+        }
+        #endregion
+
+        #region Tree calculation
+        public static List<XY> CalculateTreeCoordinate(DirectedTree tree)
+        {
+            if (tree.Count == 0) return new List<XY>();
+            var xys = Enumerable.Range(0, tree.Count).Select(_ => new XY()).ToList();
+            var root = tree.Root;
+            var leaves = new HashSet<int>(tree.Leaves);
+            var counter = 0;
+            tree.PostOrder(root, e => 
+                xys[e.To].X = tree[e.To].Count() == 0 ? counter++
+                                                      : tree[e.To].Select(e_ => xys[e_.To].X).Average()
+            );
+            xys[root].X = tree[root].Count() == 0 ? counter++
+                                                  : tree[root].Select(e_ => xys[e_.To].X).Average();
+            tree.PreOrder(root, e => xys[e.To].Y = xys[e.From].Y + (float)e.Distance);
+            var ymax = xys.Max(xy => xy.Y);
+            foreach (var xy in xys)
+            {
+                xy.Y = ymax - xy.Y;
+            }
+
+            return xys;
         }
         #endregion
     }
