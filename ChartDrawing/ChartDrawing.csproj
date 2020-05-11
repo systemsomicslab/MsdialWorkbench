@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="Base\DrawingChartBase.cs" />
+    <Compile Include="Behavior\DataLabelBehavior2.cs" />
     <Compile Include="Behavior\MoveChartBehavior.cs" />
     <Compile Include="Behavior\ResetZoomBehavior.cs" />
     <Compile Include="Behavior\ZoomChartBehavior.cs" />
@@ -133,6 +134,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GraphAxis\GraphAxisResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

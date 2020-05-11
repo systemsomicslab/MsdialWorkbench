@@ -11,24 +11,29 @@
     <Page.DataContext>
         <local:HeatmapVM2/>
     </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary Source="/ChartDrawing;component/GraphAxis/GraphAxisResource.xaml"/>
+    </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="100"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <chart:DefaultControl
             DrawingChart="{Binding DrawingHeatmap}"
             Margin="0, 5, 5, 0"
             Grid.Row="0" Grid.Column="1"/>
         <chart:DefaultControl
+            Style="{StaticResource ResourceKey=CategoryHorizontalAxis}"
             DrawingChart="{Binding DrawingHorizontalAxis}"
             Margin="0, 0, 5, 2"
             Grid.Row="1" Grid.Column="1"/>
         <chart:DefaultControl
+            Style="{StaticResource ResourceKey=CategoryVerticalAxis}"
             DrawingChart="{Binding DrawingVerticalAxis}"
             Margin="2, 5, 0, 0"
             Grid.Row="0" Grid.Column="0"/>
