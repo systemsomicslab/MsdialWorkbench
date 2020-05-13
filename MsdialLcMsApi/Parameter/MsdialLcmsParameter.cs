@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Parameter;
+﻿using CompMs.Common.Components;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Text;

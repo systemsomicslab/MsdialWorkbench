@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;

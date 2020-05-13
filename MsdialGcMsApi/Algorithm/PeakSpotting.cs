@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -14,7 +15,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> Run(List<RawSpectrum> spectrumList, MsdialGcmsParameter param, Action<int> reportAction) {
-            return CoreProcess.Execute3DFeatureDetection(spectrumList, param, param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min, reportAction);
+            return CoreProcess.Execute3DFeatureDetection(spectrumList, param, param.RetentionTimeBegin, param.RetentionTimeEnd, 
+                ChromXType.RT, ChromXUnit.Min, reportAction);
         }
     }
 }

@@ -23,6 +23,11 @@ namespace CompMs.MsdialCore.Algorithm {
         public List<ChromatogramPeakFeature> Execute3DFeatureDetection(List<RawSpectrum> spectrumList, ParameterBase param,
             float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit,
             Action<int> reportAction) {
+            var isTargetedMode = param.CompoundListInTargetMode.IsNotEmptyOrNull();
+            if (isTargetedMode) {
+                return Execute3DFeatureDetectionTargetMode(spectrumList, param, chromBegin, chromEnd, type, unit, reportAction);
+            }
+
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
 
             float[] mzRange = DataAccess.GetMs1Range(spectrumList, param.IonMode);
@@ -34,17 +39,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (focusedMass < param.MassRangeBegin) { focusedMass += massStep; continue; }
                 if (focusedMass > param.MassRangeEnd) break;
 
-                //get EIC chromatogram
-                var peaklist = DataAccess.GetMs1Peaklist(spectrumList, focusedMass, param.MassSliceWidth, param.IonMode, type, unit, chromBegin, chromEnd);
-                if (peaklist.Count == 0) { focusedMass += massStep; progressReports(focusedMass, endMass, reportAction); continue; }
-
-                //get peak detection result
-                var chromPeakFeatures = GetChromatogramPeakFeatures(peaklist, param, type, unit);
-                if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) { focusedMass += massStep; progressReports(focusedMass, endMass, reportAction); continue; }
-                SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, spectrumList, peaklist, param);
-
-                //filtering out noise peaks considering smoothing effects and baseline effects
-                chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
+                var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumList, focusedMass, param, type, unit, chromBegin, chromEnd);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) { focusedMass += massStep; progressReports(focusedMass, endMass, reportAction); continue; }
 
                 //removing peak spot redundancies among slices
@@ -61,6 +56,44 @@ namespace CompMs.MsdialCore.Algorithm {
             cmbinedFeatures = GetOtherChromPeakFeatureProperties(cmbinedFeatures, spectrumList, param);
 
             return cmbinedFeatures;
+        }
+
+        public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(List<RawSpectrum> spectrumList, ParameterBase param,
+            float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit,
+            Action<int> reportAction) {
+            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
+            var targetedScans = param.CompoundListInTargetMode;
+            if (!targetedScans.IsNotEmptyOrNull()) return null;
+            foreach (var targetComp in targetedScans) {
+                var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumList, (float)targetComp.PrecursorMz, param, type, unit, chromBegin, chromEnd);
+                if (chromPeakFeatures.IsNotEmptyOrNull())
+                    chromPeakFeaturesList.Add(chromPeakFeatures);
+            }
+
+            var cmbinedFeatures = GetCombinedChromPeakFeatures(chromPeakFeaturesList);
+            cmbinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, spectrumList, param, type, unit);
+            cmbinedFeatures = GetOtherChromPeakFeatureProperties(cmbinedFeatures, spectrumList, param);
+
+            return cmbinedFeatures;
+        }
+
+        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<RawSpectrum> spectrumList, float focusedMass, 
+            ParameterBase param, ChromXType type, ChromXUnit unit, float chromBegin, float chromEnd) {
+
+            //get EIC chromatogram
+            var peaklist = DataAccess.GetMs1Peaklist(spectrumList, focusedMass, param.MassSliceWidth, param.IonMode, type, unit, chromBegin, chromEnd);
+            if (peaklist.Count == 0) return null;
+
+            //get peak detection result
+            var chromPeakFeatures = GetChromatogramPeakFeatures(peaklist, param, type, unit);
+            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
+            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, spectrumList, peaklist, param);
+
+            //filtering out noise peaks considering smoothing effects and baseline effects
+            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
+            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
+
+            return chromPeakFeatures;
         }
 
         private void progressReports(float focusedMass, float endMass, Action<int> reportAction) {
