@@ -17,7 +17,6 @@ namespace CompMs.MsdialCore.MSDec {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
-
         public int MsDecID { get; set; }
         public float ModelPeakMz { get; set; }
         public float ModelPeakHeight { get; set; }

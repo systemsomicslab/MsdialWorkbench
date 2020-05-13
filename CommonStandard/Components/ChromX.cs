@@ -6,7 +6,7 @@ using System.Text;
 namespace CompMs.Common.Components
 {
     public enum ChromXType { RT, RI, Drift, Mz }
-    public enum ChromXUnit { Min, Sec, None, Mz }
+    public enum ChromXUnit { Min, Sec, Msec, Mz, None }
 
     [Union(0, typeof(ChromXs))]
     [MessagePackObject]
@@ -53,6 +53,8 @@ namespace CompMs.Common.Components
                     return "";
                 case ChromXUnit.Mz:
                     return "m/z";
+                case ChromXUnit.Msec:
+                    return "msec";
                 default:
                     return "";
             }

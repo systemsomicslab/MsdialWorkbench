@@ -93,7 +93,7 @@ namespace CompMs.MsdialCore.Parameter {
         public float CentroidMs2Tolerance { get; set; } = 0.025F;
         public int MaxChargeNumber { get; set; } = 2;
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
-
+        public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
 
 
         // alignment base
@@ -128,8 +128,10 @@ namespace CompMs.MsdialCore.Parameter {
         // deconvolution
         public float SigmaWindowValue { get; set; } = 0.5F;
         public float AmplitudeCutoff { get; set; } = 0;
+        public float AveragePeakWidth { get; set; } = 30;
         public bool RemoveAfterPrecursor { get; set; } = true;
         public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
+        public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
 
 
         // Post-alignment and filtering

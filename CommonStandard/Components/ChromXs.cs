@@ -20,6 +20,26 @@ namespace CompMs.Common.Components
         [Key(4)]
         public ChromXType MainType { get; set; } = ChromXType.RT;
         public ChromXs () { }
+        public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            switch (type) {
+                case ChromXType.RT:
+                    RT = new RetentionTime(value, unit);
+                    break;
+                case ChromXType.RI:
+                    RI = new RetentionIndex(value, unit);
+                    break;
+                case ChromXType.Drift:
+                    Drift = new DriftTime(value, unit);
+                    break;
+                case ChromXType.Mz:
+                    Mz = new MzValue(value, unit);
+                    break;
+                default:
+                    break;
+            }
+            MainType = type;
+        }
+
         public ChromXs(ChromX chromX)
         {
             switch (chromX.Type)

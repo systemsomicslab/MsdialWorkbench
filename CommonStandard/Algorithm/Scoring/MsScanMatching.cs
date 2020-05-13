@@ -27,6 +27,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             return true;
         }
 
+        // maybe, the methodology for annotation should be separated on the basis of omics platforms including metabolomics, lipidomics, and proteomics
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
             MsRefSearchParameterBase param,
             TargetOmics targetOmics = TargetOmics.Metablomics) {

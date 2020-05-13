@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using MessagePack;
 
@@ -22,6 +23,8 @@ namespace CompMs.Common.Components
         public int Charge { get; set; }
         [Key(5)]
         public bool IsotopeFrag { get; set; }
+        [Key(6)]
+        public PeakQuality PeakQuality { get; set; }
 
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, string comment = null) {

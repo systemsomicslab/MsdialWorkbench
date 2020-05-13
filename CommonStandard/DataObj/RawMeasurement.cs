@@ -106,12 +106,12 @@ namespace CompMs.Common.DataObj {
 
     public class RawSpectrum
     {
-        public int Index { get; set; }
-        public string Id { get; set; }
-        public int ScanNumber { get; set; }
+        public int Index { get; set; } // for raw data parser
+        public string Id { get; set; } // for raw data parser
+        public int ScanNumber { get; set; } // for index accessing rawspectrum object
         public int DriftScanNumber { get; set; }
         public int DefaultArrayLength { get; set; }
-        public int OriginalIndex { get; set; } // for ionmobility
+        public int OriginalIndex { get; set; } // for ionmobility. The accumulated MS1 object should have this to access original scan nmuber
 
         public int MsLevel { get; set; }
         public ScanPolarity ScanPolarity { get; set; }

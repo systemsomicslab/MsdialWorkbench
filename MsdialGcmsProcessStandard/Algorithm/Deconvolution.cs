@@ -350,7 +350,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             
             return ms1DecResult;
         }
-
+        
         public static void RecalculateMs1decResultByDefinedQuantmass(MS1DecResult ms1DecResult, List<RawSpectrum> spectrumList,
             float quantMass, AnalysisParamOfMsdialGcms param) {
 

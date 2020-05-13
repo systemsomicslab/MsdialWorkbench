@@ -488,7 +488,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                     var minOriginalRightID = maxID + minDatapoint;
                     if (minOriginalRightID > sPeaklist.Count - 1) minOriginalRightID = sPeaklist.Count - 1;
                     for (int i = maxID; i < sPeaklist.Count; i++) {
-                        var diff = Math.Abs(sPeaklist[i][1] - spot.RtAtLeftPeakEdge);
+                        var diff = Math.Abs(sPeaklist[i][1] - spot.RtAtRightPeakEdge);
                         if (diff < minOriginalRightRtDiff) {
                             minOriginalRightRtDiff = diff;
                             minOriginalRightID = i;

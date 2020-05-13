@@ -55,4 +55,5 @@ namespace CompMs.Common.Enum {
     public enum DeconvolutionType { One, Both }
 
     public enum CoverRange { CommonRange, ExtendedRange, ExtremeRange }
+    public enum PeakQuality { Ideal, Saturated, Leading, Tailing }
 }
