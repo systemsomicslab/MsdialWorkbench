@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,13 +53,15 @@ namespace CompMs.Graphics.Base
             if (chart != null)
             {
                 chart.SizeChanged += OnChartSizeChanged;
-                DrawingChart.RenderSize = new Size(chart.ActualWidth, chart.ActualHeight);
+                if (DrawingChart != null)
+                    DrawingChart.RenderSize = chart.RenderSize;
             }
         }
 
         void OnChartSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            DrawingChart.RenderSize = e.NewSize;
+            if (DrawingChart != null)
+                DrawingChart.RenderSize = e.NewSize;
         }
 
         static void OnDrawingChartPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -74,6 +75,8 @@ namespace CompMs.Graphics.Base
             {
                 if (e.NewValue is DrawingChartBase drawingChart)
                 {
+                    if (control.chart != null)
+                        drawingChart.RenderSize = control.chart.RenderSize;
                     drawingChart.PropertyChanged += (_s, _e) => control.Chart = drawingChart.CreateChart();
                     control.Chart = drawingChart.CreateChart();
                 }

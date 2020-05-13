@@ -41,7 +41,6 @@ namespace CompMs.Graphics.Core.LineChart
                     return new GeometryDrawing();
                 element = new LineChartElement(XPositions, YPositions);
                 var area = element.ElementArea;
-                Console.WriteLine($"{area.Width}, {area.Height}");
                 area.Inflate(0, area.Height * 0.05);
                 InitialArea = area;
             }
