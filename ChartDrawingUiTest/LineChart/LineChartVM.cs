@@ -47,12 +47,41 @@ namespace ChartDrawingUiTest.LineChart
         }
         private DrawingContinuousVerticalAxis drawingYAxis;
 
+        public DrawingContinuousHorizontalAxis DrawingXAxis
+        {
+            get => drawingXAxis;
+            set
+            {
+                var tmp = drawingXAxis;
+                if (SetProperty(ref drawingXAxis, value))
+                {
+                    if (tmp != null)
+                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged(nameof(DrawingXAxis));
+                    if (drawingXAxis != null)
+                        drawingXAxis.PropertyChanged += (s, e) => OnPropertyChanged(nameof(DrawingXAxis));
+                }
+            }
+        }
+        private DrawingContinuousHorizontalAxis drawingXAxis;
+
+        public double X
+        {
+            get => x;
+            set => SetProperty(ref x, value);
+        }
+        private double x;
         public double Y
         {
             get => y;
             set => SetProperty(ref y, value);
         }
         private double y;
+        public double Width
+        {
+            get => width;
+            set => SetProperty(ref width, value);
+        }
+        private double width;
         public double Height
         {
             get => height;
@@ -66,12 +95,32 @@ namespace ChartDrawingUiTest.LineChart
             switch (e.PropertyName)
             {
                 case "DrawingLineChart":
+                    X = DrawingLineChart.ChartArea.X;
                     Y = DrawingLineChart.ChartArea.Y;
+                    Width = DrawingLineChart.ChartArea.Width;
                     Height = DrawingLineChart.ChartArea.Height;
+                    break;
+                case "DrawingXAxis":
+                    X = DrawingXAxis.ChartArea.X;
+                    Width = DrawingXAxis.ChartArea.Width;
                     break;
                 case "DrawingYAxis":
                     Y = DrawingYAxis.ChartArea.Y;
                     Height = DrawingYAxis.ChartArea.Height;
+                    break;
+                case "X":
+                    if (DrawingLineChart != null)
+                    {
+                        area = DrawingLineChart.ChartArea;
+                        area.X = X;
+                        DrawingLineChart.ChartArea = area;
+                    }
+                    if (DrawingYAxis != null)
+                    {
+                        area = DrawingXAxis.ChartArea;
+                        area.X = X;
+                        DrawingXAxis.ChartArea = area;
+                    }
                     break;
                 case "Y":
                     if (DrawingLineChart != null)
@@ -85,6 +134,20 @@ namespace ChartDrawingUiTest.LineChart
                         area = DrawingYAxis.ChartArea;
                         area.Y = Y;
                         DrawingYAxis.ChartArea = area;
+                    }
+                    break;
+                case "Width":
+                    if (DrawingLineChart != null)
+                    {
+                        area = DrawingLineChart.ChartArea;
+                        area.Width = Width;
+                        DrawingLineChart.ChartArea = area;
+                    }
+                    if (DrawingXAxis != null)
+                    {
+                        area = DrawingXAxis.ChartArea;
+                        area.Width = Width;
+                        DrawingXAxis.ChartArea = area;
                     }
                     break;
                 case "Height":
@@ -113,6 +176,11 @@ namespace ChartDrawingUiTest.LineChart
             {
                 XPositions = xs,
                 YPositions = ys,
+            };
+            DrawingXAxis = new DrawingContinuousHorizontalAxis()
+            {
+                MinX = xs.Min(),
+                MaxX = xs.Max(),
             };
             DrawingYAxis = new DrawingContinuousVerticalAxis()
             {
