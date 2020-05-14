@@ -11,8 +11,33 @@
     <Page.DataContext>
         <local:LineChartVM/>
     </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary Source="/ChartDrawing;component/GraphAxis/GraphAxisResource.xaml"/>
+    </Page.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MaxWidth="30"/>
+            <ColumnDefinition Width="2*" MaxWidth="80"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="15*"/>
+        </Grid.ColumnDefinitions>
         <chart:DefaultControl DrawingChart="{Binding DrawingLineChart}"
-                              Margin="5"/>
+                              Margin="0,5,5,5"
+                              Grid.Column="3"/>
+            <TextBlock FontSize="18"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center">
+                <Italic>Y Axis</Italic>
+                <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="-90"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        <chart:DefaultControl DrawingChart="{Binding DrawingYAxis}"
+                              Style="{StaticResource ResourceKey=ContinuousVerticalAxis}"
+                              Margin="5,5,0,5"
+                              Grid.Column="1"/>
+        <GridSplitter HorizontalAlignment="Stretch"
+                      Width="2" Margin="0,5"
+                      Grid.Column="2"/>
     </Grid>
 </Page>

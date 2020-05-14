@@ -7,21 +7,17 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DefaultControl}">
-                    <Border Background="WhiteSmoke"
-                            BorderBrush="Black"
-                            BorderThickness="1">
-                        <local:DrawingControl x:Name="PART_Chart" Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
-                            <i:Interaction.Behaviors>
-                                <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:MoveChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:ZoomChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:DataLabelBehavior2 DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                             XPositions="{Binding DrawingChart.XPositions, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                             Labels="{Binding DrawingChart.Labels, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
-                            </i:Interaction.Behaviors>
-                        </local:DrawingControl>
-                    </Border>
+                    <local:DrawingControl x:Name="PART_Chart" Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
+                        <i:Interaction.Behaviors>
+                            <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:MoveChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:ZoomChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:DataLabelBehavior2 DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                         XPositions="{Binding DrawingChart.XPositions, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                         Labels="{Binding DrawingChart.Labels, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                        </i:Interaction.Behaviors>
+                    </local:DrawingControl>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -30,21 +26,33 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DefaultControl}">
-                    <Border Background="WhiteSmoke"
-                            BorderBrush="Black"
-                            BorderThickness="1">
-                        <local:DrawingControl x:Name="PART_Chart" Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
-                            <i:Interaction.Behaviors>
-                                <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:MoveChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:ZoomChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                                <behavior:DataLabelBehavior2 DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=Oneway}"
-                                                             YPositions="{Binding DrawingChart.YPositions, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-                                                             Labels="{Binding DrawingChart.Labels, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
-                            </i:Interaction.Behaviors>
-                        </local:DrawingControl>
-                    </Border>
+                    <local:DrawingControl x:Name="PART_Chart" Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
+                        <i:Interaction.Behaviors>
+                            <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:MoveChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:ZoomChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                            <behavior:DataLabelBehavior2 DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=Oneway}"
+                                                         YPositions="{Binding DrawingChart.YPositions, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                         Labels="{Binding DrawingChart.Labels, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                        </i:Interaction.Behaviors>
+                    </local:DrawingControl>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type local:DefaultControl}" x:Key="ContinuousVerticalAxis">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:DefaultControl}">
+                    <local:DrawingControl x:Name="PART_Chart" Source="{Binding Chart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}">
+                        <i:Interaction.Behaviors>
+                            <behavior:WheelZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                            <behavior:ResetZoomBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                            <behavior:MoveChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                            <behavior:ZoomChartBehavior DrawingChart="{Binding DrawingChart, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"/>
+                        </i:Interaction.Behaviors>
+                    </local:DrawingControl>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
