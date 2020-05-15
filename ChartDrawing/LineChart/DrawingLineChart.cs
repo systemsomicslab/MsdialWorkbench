@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -28,9 +29,22 @@ namespace CompMs.Graphics.Core.LineChart
         LineChartElement element;
         readonly Pen graphLine = new Pen(Brushes.Black, 1);
 
+        void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "XPositions":
+                case "YPositions":
+                    element = null;
+                    break;
+            }
+        }
+
         public DrawingLineChart() : base()
         {
             graphLine.Freeze();
+
+            PropertyChanged += OnChartPropertyChanged;
         }
 
         public override Drawing CreateChart()

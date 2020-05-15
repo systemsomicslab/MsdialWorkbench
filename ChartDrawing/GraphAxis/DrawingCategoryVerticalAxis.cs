@@ -37,6 +37,8 @@ namespace CompMs.Graphics.Core.GraphAxis
         public DrawingCategoryVerticalAxis()
         {
             axisPen.Freeze();
+
+            PropertyChanged += OnAxisPropertyChanged;
         }
 
         void OnAxisPropertyChanged(object sender, PropertyChangedEventArgs e)

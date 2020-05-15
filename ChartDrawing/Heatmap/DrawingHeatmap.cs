@@ -43,11 +43,26 @@ namespace CompMs.Graphics.Core.Heatmap
         List<(Color color, IDrawingElement element)> areas;
         Dictionary<Color, Brush> brushMemo;
 
+        void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "DataMatrix":
+                case "XPositions":
+                case "YPositions":
+                case "Gsc":
+                    areas = null;
+                    break;
+            }
+        }
+
         public DrawingHeatmap()
         {
             Gsc = new GradientStopCollection();
             Gsc.Add(new GradientStop(Colors.Blue, 0));
             Gsc.Add(new GradientStop(Colors.Red, 1));
+
+            PropertyChanged += OnChartPropertyChanged;
         }
 
         public override Drawing CreateChart()

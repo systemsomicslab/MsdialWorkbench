@@ -29,6 +29,8 @@ namespace CompMs.Graphics.Core.GraphAxis
         public DrawingContinuousHorizontalAxis()
         {
             axisPen.Freeze();
+
+            PropertyChanged += OnAxisPropertyChanged;
         }
 
         void OnAxisPropertyChanged(object sender, PropertyChangedEventArgs e)
