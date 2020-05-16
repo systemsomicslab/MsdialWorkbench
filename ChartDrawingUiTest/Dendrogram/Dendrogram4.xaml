@@ -8,6 +8,9 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Dendrogram4">
+    <Page.Resources>
+        <ResourceDictionary Source="/ChartDrawing;component/GraphAxis/GraphAxisResource.xaml"/>
+    </Page.Resources>
     <Page.DataContext>
         <local:DendrogramVM3/>
     </Page.DataContext>
@@ -30,10 +33,12 @@
             Grid.Column="1" Grid.Row="0"/>
         <chart:DefaultControl
             DrawingChart="{Binding XDrawingHorizontalAxis}"
+            Style="{StaticResource CategoryHorizontalAxis}"
             Margin="5, 0, 5, 2"
             Grid.Column="0" Grid.Row="1"/>
         <chart:DefaultControl
             DrawingChart="{Binding YDrawingHorizontalAxis}"
+            Style="{StaticResource CategoryHorizontalAxis}"
             Margin="5, 0, 5, 2"
             Grid.Column="1" Grid.Row="1"/>
     </Grid>

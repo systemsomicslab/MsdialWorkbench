@@ -9,32 +9,24 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Core.GraphAxis
 {
-    public class DrawingCategoryHorizontalAxis : DrawingChartBase
+    public class DrawingContinuousHorizontalAxis : DrawingChartBase
     {
-        public IReadOnlyList<double> XPositions
+        public double MinX
         {
-            get => xPositions;
-            set => SetProperty(ref xPositions, value as List<double> ?? new List<double>(value));
+            get => minX;
+            set => SetProperty(ref minX, value);
         }
-        private List<double> xPositions;
-
-        public IReadOnlyList<string> Labels
+        private double minX;
+        public double MaxX
         {
-            get => labels;
-            set => SetProperty(ref labels, value as List<string> ?? new List<string>(value));
+            get => maxX;
+            set => SetProperty(ref maxX, value);
         }
-        private List<string> labels;
-
-        public int NLabel
-        {
-            get => nLabel;
-            set => SetProperty(ref nLabel, value);
-        }
-        private int nLabel = -1;
+        private double maxX;
 
         readonly Pen axisPen = new Pen(Brushes.Black, 2);
 
-        public DrawingCategoryHorizontalAxis()
+        public DrawingContinuousHorizontalAxis()
         {
             axisPen.Freeze();
 
@@ -45,27 +37,24 @@ namespace CompMs.Graphics.Core.GraphAxis
         {
             switch (e.PropertyName)
             {
-                case "XPositions":
-                case "NLabel":
+                case "MinX":
+                case "MaxX":
                     axis = null;
-                    label = null;
-                    break;
-                case "Labels":
                     label = null;
                     break;
             }
 
         }
 
-        CategoryHorizontalAxisTickElement axis;
-        CategoryHorizontalAxisLabelElement label;
+        ContinuousHorizontalAxisTickElement axis;
+        ContinuousHorizontalAxisLabelElement label;
 
         public override Drawing CreateChart()
         {
             var drawingGroup = new DrawingGroup();
             if (axis == null)
             {
-                axis = new CategoryHorizontalAxisTickElement(XPositions, NLabel);
+                axis = new ContinuousHorizontalAxisTickElement(MinX, MaxX);
                 if (axis == null) return drawingGroup;
                 InitialArea = axis.ElementArea;
             }
@@ -76,11 +65,11 @@ namespace CompMs.Graphics.Core.GraphAxis
                 );
             if (label == null)
             {
-                label = new CategoryHorizontalAxisLabelElement(XPositions, Labels, NLabel);
+                label = new ContinuousHorizontalAxisLabelElement(MinX, MaxX);
                 if (label == null) return drawingGroup;
             }
-            var labelgeometry = label.GetGeometry(ChartArea, new Size(RenderSize.Width, Math.Max(1, RenderSize.Height - axis.Ticksize - 3)));
-            labelgeometry.Transform = new TranslateTransform(0, axis.Ticksize + 3);
+            var labelgeometry = label.GetGeometry(ChartArea, new Size(RenderSize.Width, Math.Max(1, RenderSize.Height - axis.LongTicksize - 3)));
+            labelgeometry.Transform = new TranslateTransform(0, axis.LongTicksize + 3);
             drawingGroup.Children.Add(new GeometryDrawing(Brushes.Black, null,labelgeometry));
             return drawingGroup;
         }

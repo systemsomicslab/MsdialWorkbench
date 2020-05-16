@@ -4,31 +4,32 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Media;
 
-using CompMs.Graphics.Core.LineChart;
+using CompMs.Graphics.Core.Scatter;
 using CompMs.Graphics.Core.GraphAxis;
 using Rfx.Riken.OsakaUniv;
 
-namespace ChartDrawingUiTest.LineChart
+namespace ChartDrawingUiTest.Scatter
 {
-    internal class LineChartVM : ViewModelBase
+    internal class ScatterVM : ViewModelBase
     {
-        public DrawingLineChart DrawingLineChart
+        public DrawingScatter DrawingScatter
         {
-            get => drawingLineChart;
+            get => drawingScatter;
             set
             {
-                var tmp = drawingLineChart;
-                if (SetProperty(ref drawingLineChart, value))
+                var tmp = drawingScatter;
+                if (SetProperty(ref drawingScatter, value))
                 {
                     if (tmp != null)
-                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged("DrawingLineChart");
-                    if (drawingLineChart != null)
-                        drawingLineChart.PropertyChanged += (s, e) => OnPropertyChanged("DrawingLineChart");
+                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged("DrawingScatter");
+                    if (drawingScatter != null)
+                        drawingScatter.PropertyChanged += (s, e) => OnPropertyChanged("DrawingScatter");
                 }
             }
         }
-        private DrawingLineChart drawingLineChart;
+        private DrawingScatter drawingScatter;
 
         public DrawingContinuousVerticalAxis DrawingYAxis
         {
@@ -94,11 +95,11 @@ namespace ChartDrawingUiTest.LineChart
             Rect area;
             switch (e.PropertyName)
             {
-                case "DrawingLineChart":
-                    X = DrawingLineChart.ChartArea.X;
-                    Y = DrawingLineChart.ChartArea.Y;
-                    Width = DrawingLineChart.ChartArea.Width;
-                    Height = DrawingLineChart.ChartArea.Height;
+                case "DrawingScatter":
+                    X = DrawingScatter.ChartArea.X;
+                    Y = DrawingScatter.ChartArea.Y;
+                    Width = DrawingScatter.ChartArea.Width;
+                    Height = DrawingScatter.ChartArea.Height;
                     break;
                 case "DrawingXAxis":
                     X = DrawingXAxis.ChartArea.X;
@@ -109,11 +110,11 @@ namespace ChartDrawingUiTest.LineChart
                     Height = DrawingYAxis.ChartArea.Height;
                     break;
                 case "X":
-                    if (DrawingLineChart != null)
+                    if (DrawingScatter != null)
                     {
-                        area = DrawingLineChart.ChartArea;
+                        area = DrawingScatter.ChartArea;
                         area.X = X;
-                        DrawingLineChart.ChartArea = area;
+                        DrawingScatter.ChartArea = area;
                     }
                     if (DrawingYAxis != null)
                     {
@@ -123,11 +124,11 @@ namespace ChartDrawingUiTest.LineChart
                     }
                     break;
                 case "Y":
-                    if (DrawingLineChart != null)
+                    if (DrawingScatter != null)
                     {
-                        area = DrawingLineChart.ChartArea;
+                        area = DrawingScatter.ChartArea;
                         area.Y = Y;
-                        DrawingLineChart.ChartArea = area;
+                        DrawingScatter.ChartArea = area;
                     }
                     if (DrawingYAxis != null)
                     {
@@ -137,11 +138,11 @@ namespace ChartDrawingUiTest.LineChart
                     }
                     break;
                 case "Width":
-                    if (DrawingLineChart != null)
+                    if (DrawingScatter != null)
                     {
-                        area = DrawingLineChart.ChartArea;
+                        area = DrawingScatter.ChartArea;
                         area.Width = Width;
-                        DrawingLineChart.ChartArea = area;
+                        DrawingScatter.ChartArea = area;
                     }
                     if (DrawingXAxis != null)
                     {
@@ -151,11 +152,11 @@ namespace ChartDrawingUiTest.LineChart
                     }
                     break;
                 case "Height":
-                    if (DrawingLineChart != null)
+                    if (DrawingScatter != null)
                     {
-                        area = DrawingLineChart.ChartArea;
+                        area = DrawingScatter.ChartArea;
                         area.Height = Height;
-                        DrawingLineChart.ChartArea = area;
+                        DrawingScatter.ChartArea = area;
                     }
                     if (DrawingYAxis != null)
                     {
@@ -168,14 +169,15 @@ namespace ChartDrawingUiTest.LineChart
         }
 
 
-        public LineChartVM()
+        public ScatterVM()
         {
             var xs = Enumerable.Range(0, 20).Select(x => (double)x).ToArray();
             var ys = xs.Select(x => Math.Pow(10-x, 5)).ToArray();
-            DrawingLineChart = new DrawingLineChart()
+            DrawingScatter = new DrawingScatter()
             {
                 XPositions = xs,
                 YPositions = ys,
+                PointBrush = Brushes.DeepPink
             };
             DrawingXAxis = new DrawingContinuousHorizontalAxis()
             {

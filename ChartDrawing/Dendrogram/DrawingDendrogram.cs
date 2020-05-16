@@ -27,12 +27,25 @@ namespace CompMs.Graphics.Core.Dendrogram
         }
         List<XY> series;
 
+        void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Tree":
+                case "Series":
+                    element = null;
+                    break;
+            }
+        }
+
         DendrogramElement element = null;
         readonly Pen graphLine = new Pen(Brushes.Black, 1);
 
         public DrawingDendrogram() : base()
         {
             graphLine.Freeze();
+
+            PropertyChanged += OnChartPropertyChanged;
         }
 
         public override Drawing CreateChart()

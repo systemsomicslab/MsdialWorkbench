@@ -7,9 +7,10 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Core.LineChart
+
+namespace CompMs.Graphics.Core.Scatter
 {
-    public class DrawingLineChart : DrawingChartBase
+    public class DrawingScatter : DrawingChartBase
     {
         public IReadOnlyList<double> XPositions
         {
@@ -25,9 +26,21 @@ namespace CompMs.Graphics.Core.LineChart
 
         }
         List<double> yPositions;
+        public double Size
+        {
+            get => size;
+            set => SetProperty(ref size, value);
 
-        LineChartElement element;
-        readonly Pen graphLine = new Pen(Brushes.Black, 1);
+        }
+        double size = 8;
+        public Brush PointBrush
+        {
+            get => brush;
+            set => SetProperty(ref brush, value);
+        }
+        Brush brush = Brushes.Black;
+
+        ScatterElement element;
 
         void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -35,15 +48,14 @@ namespace CompMs.Graphics.Core.LineChart
             {
                 case "XPositions":
                 case "YPositions":
+                case "Size":
                     element = null;
                     break;
             }
         }
 
-        public DrawingLineChart() : base()
+        public DrawingScatter() : base()
         {
-            graphLine.Freeze();
-
             PropertyChanged += OnChartPropertyChanged;
         }
 
@@ -53,9 +65,9 @@ namespace CompMs.Graphics.Core.LineChart
             {
                 if (XPositions == null || YPositions == null)
                     return new GeometryDrawing();
-                element = new LineChartElement(XPositions, YPositions);
+                element = new ScatterElement(XPositions, YPositions, Size);
                 var area = element.ElementArea;
-                area.Inflate(0, area.Height * 0.05);
+                area.Inflate(area.Width * 0.05, area.Height * 0.05);
                 InitialArea = area;
             }
             if (ChartArea == default)
@@ -67,7 +79,7 @@ namespace CompMs.Graphics.Core.LineChart
             transforms.Children.Add(geometry.Transform);
             transforms.Children.Add(new ScaleTransform(1, -1, 0, RenderSize.Height / 2));
             geometry.Transform = transforms;
-            return new GeometryDrawing(null, graphLine, geometry);
+            return new GeometryDrawing(PointBrush, null, geometry);
         }
 
         public override Point RealToImagine(Point point)

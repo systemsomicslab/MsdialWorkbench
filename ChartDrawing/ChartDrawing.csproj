@@ -97,8 +97,12 @@
     <Compile Include="GraphAxis\CategoryVerticalAxisElement.cs" />
     <Compile Include="GraphAxis\CategoryVerticalAxisCoreControl.cs" />
     <Compile Include="GraphAxis\CategoryVerticalAxisManager.cs" />
+    <Compile Include="GraphAxis\ContinuousHorizontalAxisElement.cs" />
+    <Compile Include="GraphAxis\ContinuousVerticalAxisElement.cs" />
     <Compile Include="GraphAxis\DrawingCategoryHorizontalAxis.cs" />
     <Compile Include="GraphAxis\DrawingCategoryVerticalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingContinuousHorizontalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingContinuousVerticalAxis.cs" />
     <Compile Include="Heatmap\DrawingHeatmap.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />
     <Compile Include="Heatmap\HeatmapElement.cs" />
@@ -107,6 +111,8 @@
     <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
+    <Compile Include="Scatter\DrawingScatter.cs" />
+    <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Compound\Clustermap.xaml">
