@@ -111,6 +111,8 @@
     <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
+    <Compile Include="Scatter\DrawingScatter.cs" />
+    <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Compound\Clustermap.xaml">
