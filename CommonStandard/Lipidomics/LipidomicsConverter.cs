@@ -4579,18 +4579,5 @@ namespace CompMs.Common.Lipidomics {
                 default: return "Unassigned lipid";
             }
         }
-
-        public static void AsciiToSerializedObject(string input, string output) {
-            var queries = LbmFileParcer.Read(input);
-            MoleculeMsRefMethods.SaveMspToFile(queries, output);
-            //MessagePackHandler.SaveToFile<List<MspFormatCompoundInformationBean>>(queries, output);
-        }
-
-        public static List<MoleculeMsReference> SerializedObjectToMspQeries(string input) {
-            //var queries = MessagePackHandler.LoadFromFile<List<MspFormatCompoundInformationBean>>(input);
-            var queries = MoleculeMsRefMethods.LoadMspFromFile(input);
-            return queries;
-        }
-
     }
 }

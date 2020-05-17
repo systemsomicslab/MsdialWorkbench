@@ -122,17 +122,36 @@ namespace Msdial.Common.Export
                 //if (spot.AlignmentID > 200) break;
 
                 VariousDrawVisual.GetDrawVisualNormalizationPlot(spot, analysisFiles, fileIdOrderDict, "Normalized intensities plot", "log (ion intensity)", out var dv1, out var dv2,
-                    out float qcOriCV, out float qcNormCV, out float sampleOriCV, out float sampleNormCV );
+                    out float qcOriCV, out float qcNormCV, out float sampleOriCV, out float sampleNormCV, out float logQcOri, out float logQcNorm, out float logSampleOri, out float logSampleNorm);
                 dv1.ChangeChartArea(width2, height2);
                 dv2.ChangeChartArea(width2, height2);
                 exporter.AddPage();
                 exporter.DrawTextToPage("ID: " + spot.AlignmentID + ", " + spot.MetaboliteName, 40, 20, 15);
-                exporter.DrawTextToPage("QC CV: " + qcNormCV+"%", 40 + width2, 60, 13);
-                exporter.DrawTextToPage("Sample CV: " + sampleNormCV + "%", 40 + width2, 80, 13);
-                exporter.DrawTextToPage("QC CV: " + qcOriCV + "%", 40 + width2, 340, 13);
-                exporter.DrawTextToPage("Sample CV: " + sampleOriCV + "%", 40 + width2, 360, 13);
+
+                exporter.DrawTextToPage("Non-transformed", 40 + width2, 60, 13);
+                exporter.DrawTextToPage("QC CV: " + qcNormCV + "%", 40 + width2, 80, 13);
+                exporter.DrawTextToPage("Sample CV: " + sampleNormCV + "%", 40 + width2, 100, 13);
+
+                exporter.DrawTextToPage("Log-transformed", 40 + width2, 140, 13);
+                exporter.DrawTextToPage("QC CV: " + logQcNorm + "%", 40 + width2, 160, 13);
+                exporter.DrawTextToPage("Sample CV: " + logSampleNorm + "%", 40 + width2, 180, 13);
+
+
+                exporter.DrawTextToPage("Non-transformed", 40 + width2, 340, 13);
+                exporter.DrawTextToPage("QC CV: " + qcOriCV + "%", 40 + width2, 360, 13);
+                exporter.DrawTextToPage("Sample CV: " + sampleOriCV + "%", 40 + width2, 380, 13);
+
+                exporter.DrawTextToPage("Log-transformed", 40 + width2, 420, 13);
+                exporter.DrawTextToPage("QC CV: " + logQcOri + "%", 40 + width2, 440, 13);
+                exporter.DrawTextToPage("Sample CV: " + logSampleOri + "%", 40 + width2, 460, 13);
+
+                //exporter.DrawTextToPage("QC CV: " + qcNormCV+"%", 40 + width2, 60, 13);
+                //exporter.DrawTextToPage("Sample CV: " + sampleNormCV + "%", 40 + width2, 80, 13);
+                //exporter.DrawTextToPage("QC CV: " + qcOriCV + "%", 40 + width2, 340, 13);
+                //exporter.DrawTextToPage("Sample CV: " + sampleOriCV + "%", 40 + width2, 360, 13);
                 exporter.DrawFigureFromDrawVisual(dv1.GetChart(), 20, 20, width2, height2, dpiX, dpiY);
                 exporter.DrawFigureFromDrawVisual(dv2.GetChart(), 20, 300, width2, height2, dpiX, dpiY);
+                
                 // GC.Collect();
                 //GC.WaitForPendingFinalizers();
                 isCollected = true;
@@ -151,15 +170,30 @@ namespace Msdial.Common.Export
             if (tempSpots.Count > 0) {
                 foreach (var spot in tempSpots.OrderBy(n => n.AlignmentID)) {
                     VariousDrawVisual.GetDrawVisualNormalizationPlot(spot, analysisFiles, fileIdOrderDict, "Normalized intensities plot", "log (ion intensity)", out var dv1, out var dv2,
-                    out float qcOriCV, out float qcNormCV, out float sampleOriCV, out float sampleNormCV);
+                    out float qcOriCV, out float qcNormCV, out float sampleOriCV, out float sampleNormCV, out float logQcOri, out float logQcNorm, out float logSampleOri, out float logSampleNorm);
                     dv1.ChangeChartArea(width2, height2);
                     dv2.ChangeChartArea(width2, height2);
                     exporter.AddPage();
                     exporter.DrawTextToPage("ID: " + spot.AlignmentID + ", " + spot.MetaboliteName, 40, 20, 15);
-                    exporter.DrawTextToPage("QC CV: " + qcNormCV + "%", 40 + width2, 60, 13);
-                    exporter.DrawTextToPage("Sample CV: " + sampleNormCV + "%", 40 + width2, 80, 13);
-                    exporter.DrawTextToPage("QC CV: " + qcOriCV + "%", 40 + width2, 340, 13);
-                    exporter.DrawTextToPage("Sample CV: " + sampleOriCV + "%", 40 + width2, 360, 13);
+                    
+                    exporter.DrawTextToPage("Non-transformed", 40 + width2, 60, 13);
+                    exporter.DrawTextToPage("QC CV: " + qcNormCV + "%", 40 + width2, 80, 13);
+                    exporter.DrawTextToPage("Sample CV: " + sampleNormCV + "%", 40 + width2, 100, 13);
+
+                    exporter.DrawTextToPage("Log-transformed", 40 + width2, 140, 13);
+                    exporter.DrawTextToPage("QC CV: " + logQcNorm + "%", 40 + width2, 160, 13);
+                    exporter.DrawTextToPage("Sample CV: " + logSampleNorm + "%", 40 + width2, 180, 13);
+
+
+                    exporter.DrawTextToPage("Non-transformed", 40 + width2, 340, 13);
+                    exporter.DrawTextToPage("QC CV: " + qcOriCV + "%", 40 + width2, 360, 13);
+                    exporter.DrawTextToPage("Sample CV: " + sampleOriCV + "%", 40 + width2, 380, 13);
+
+                    exporter.DrawTextToPage("Log-transformed", 40 + width2, 420, 13);
+                    exporter.DrawTextToPage("QC CV: " + logQcOri + "%", 40 + width2, 440, 13);
+                    exporter.DrawTextToPage("Sample CV: " + logSampleOri + "%", 40 + width2, 460, 13);
+
+
                     exporter.DrawFigureFromDrawVisual(dv1.GetChart(), 20, 20, width2, height2, dpiX, dpiY);
                     exporter.DrawFigureFromDrawVisual(dv2.GetChart(), 20, 300, width2, height2, dpiX, dpiY);
                 }

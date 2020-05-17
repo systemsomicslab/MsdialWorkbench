@@ -46,8 +46,10 @@ namespace Msdial.Common.Utility
         #endregion
 
         #region Normalization results
-        public static void GetDrawVisualNormalizationPlot(AlignmentPropertyBean spot, IReadOnlyList<AnalysisFileBean> analysisFiles, Dictionary<int, int> fileIdOrderDict, string titleLabel,  string yaxis, out DrawVisual dv1, out DrawVisual dv2,
-            out float qcOri, out float qcNorm, out float sampleOri, out float sampleNorm)
+        public static void GetDrawVisualNormalizationPlot(AlignmentPropertyBean spot, IReadOnlyList<AnalysisFileBean> analysisFiles, Dictionary<int, int> fileIdOrderDict, 
+            string titleLabel,  string yaxis, out DrawVisual dv1, out DrawVisual dv2,
+            out float qcOri, out float qcNorm, out float sampleOri, out float sampleNorm,
+            out float logQcOri, out float logQcNorm, out float logSampleOri, out float logSampleNorm)
         {
             var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Injection order", yaxis);
             area.LabelSpace.Top = 15;
@@ -88,6 +90,8 @@ namespace Msdial.Common.Utility
             var qcNormAve = BasicMathematics.Mean(qcNormArr);
             var qcOriStd = BasicMathematics.Stdev(qcArr);
             var qcNormStd = BasicMathematics.Stdev(qcNormArr);
+
+
             qcOri = (float)(Math.Round(qcOriStd / qcOriAve * 100,2));
             qcNorm = (float)(Math.Round(qcNormStd / qcNormAve * 100, 2));
 
@@ -100,6 +104,16 @@ namespace Msdial.Common.Utility
             sampleOri = (float)(Math.Round(sampleOriStd / sampleOriAve * 100, 2));
             sampleNorm = (float)(Math.Round(sampleNormStd / sampleNormAve * 100, 2));
 
+            var logQcArr = qcArr.Select(x => Math.Log10(x)).ToArray();
+            var logQcNormArr = qcNormArr.Select(x => Math.Log10(x)).ToArray();
+            var logSampleArr = sampleArr.Select(x => Math.Log10(x)).ToArray();
+            var logSampleNormArr = sampleNormArr.Select(x => Math.Log10(x)).ToArray();
+
+            logQcOri = (float)Math.Round(Math.Sqrt(Math.Pow(10, Math.Log(10) * Math.Pow(BasicMathematics.Stdev(logQcArr), 2)) - 1) * 100, 2);
+            logQcNorm = (float)Math.Round(Math.Sqrt(Math.Pow(10, Math.Log(10) * Math.Pow(BasicMathematics.Stdev(logQcNormArr), 2)) - 1) * 100, 2);
+
+            logSampleOri = (float)Math.Round(Math.Sqrt(Math.Pow(10, Math.Log(10) * Math.Pow(BasicMathematics.Stdev(logSampleArr), 2)) - 1) * 100, 2);
+            logSampleNorm = (float)Math.Round(Math.Sqrt(Math.Pow(10, Math.Log(10) * Math.Pow(BasicMathematics.Stdev(logSampleNormArr), 2)) - 1) * 100, 2);
 
             var brush = Utility.MsdialDataHandleUtility.MsdialDefaultSolidColorBrushList[0];
             Series s = new Series()

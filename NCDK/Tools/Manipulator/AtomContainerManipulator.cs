@@ -631,47 +631,51 @@ namespace NCDK.Tools.Manipulator
             {
                 switch (stereo)
                 {
-                    case ITetrahedralChirality tc:
-                        {
-                            var focus = tc.Focus;
-                            var carriers = tc.Carriers.ToArray();
+                    case ITetrahedralChirality tc: {
+                        var focus = tc.Focus;
+                        var carriers = tc.Carriers.ToArray();
+                        // in sulfoxide - the implicit part of the tetrahedral centre
+                        // is a lone pair
 
-                            // in sulfoxide - the implicit part of the tetrahedral centre
-                            // is a lone pair
+                        if (hNeighbor == null || hNeighbor.Count == 0) {
+                            stereos.Add(stereo);
 
-                            if (hNeighbor.TryGetValue(focus, out IAtom hydrogen))
-                            {
-                                ReplaceAtom(carriers, focus, hydrogen);
-                                stereos.Add(new TetrahedralChirality(focus, carriers, tc.Stereo));
-                            }
-                            else
-                            {
-                                stereos.Add(stereo);
-                            }
                         }
-                        break;
-                    case ExtendedTetrahedral tc:
-                        {
-                            var focus = tc.Focus;
-                            var carriers = tc.Carriers.ToArray();
+                        else if (hNeighbor.TryGetValue(focus, out IAtom hydrogen)) {
+                            ReplaceAtom(carriers, focus, hydrogen);
+                            stereos.Add(new TetrahedralChirality(focus, carriers, tc.Stereo));
+                        }
+                        else {
+                            stereos.Add(stereo);
+                        }
+                    }
+                    break; 
+                    case ExtendedTetrahedral tc: {
+                        var focus = tc.Focus;
+                        var carriers = tc.Carriers.ToArray();
+                        var ends = ExtendedTetrahedral.FindTerminalAtoms(atomContainer, focus);
 
-                            var ends = ExtendedTetrahedral.FindTerminalAtoms(atomContainer, focus);
+                        if (!hNeighbor.ContainsKey(ends[0]) || !hNeighbor.ContainsKey(ends[1])) {
+                            stereos.Add(stereo);
+                        }
+                        else {
+
                             var h1 = hNeighbor[ends[0]];
                             var h2 = hNeighbor[ends[1]];
-                            if (h1 != null || h2 != null)
-                            {
+                            if (h1 != null || h2 != null) {
                                 if (h1 != null)
                                     ReplaceAtom(carriers, ends[0], h1);
                                 if (h2 != null)
                                     ReplaceAtom(carriers, ends[1], h2);
                                 stereos.Add(new ExtendedTetrahedral(focus, carriers, tc.Configure));
                             }
-                            else
-                            {
+                            else {
                                 stereos.Add(stereo);
                             }
                         }
-                        break;
+
+                    }
+                    break;
                     default:
                         stereos.Add(stereo);
                         break;

@@ -1,6 +1,9 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Lipidomics;
+using CompMs.Common.MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,158 +24,32 @@ namespace CompMs.Common.Parser {
         /// This is the MSP file parcer.
         /// Each MS/MS information will be stored in MspFormatCompoundInformationBean.cs.
         /// </summary>
-        /// <param name="databaseFilepath"></param>
+        /// <param name="filepath"></param>
         /// <returns></returns>
-        public static List<MoleculeMsReference> MspFileReader(string databaseFilepath)
+        public static List<MoleculeMsReference> MspFileReader(string filepath)
         {
             var mspFields = new List<MoleculeMsReference>();
-            var mspField = new MoleculeMsReference();
-            var mspPeak = new SpectrumPeak();
-            string wkstr;
-            int counter = 0, pairCount = 0;
-
-            using (StreamReader sr = new StreamReader(databaseFilepath, Encoding.ASCII))
+            var counter = 0;
+            using (StreamReader sr = new StreamReader(filepath, Encoding.ASCII))
             {
-                float rt = 0, preMz = 0, ri = 0, intensity = 0;
-
                 while (sr.Peek() > -1)
                 {
-                    wkstr = sr.ReadLine();
-                    if (Regex.IsMatch(wkstr, "^NAME:.*", RegexOptions.IgnoreCase))
-                    {
-                        mspField.ScanID = counter;
-                        mspField.Name = getMspFieldValue(wkstr);
+                    var wkstr = sr.ReadLine();
+                    var isRecordStarted = wkstr.StartsWith("NAME:");
+                    if (isRecordStarted) {
+                        
+                        var mspField = new MoleculeMsReference() { ScanID = counter };
 
-                        while (sr.Peek() > -1)
-                        {
+                        ReadMspField(wkstr, out string titleName, out string titleValue); // read Name field
+                        SetMspField(mspField, titleName, titleValue, sr);
+
+                        while (sr.Peek() > -1) {
                             wkstr = sr.ReadLine();
-                            if (wkstr == string.Empty || String.IsNullOrWhiteSpace(wkstr)) break;
-                            if (Regex.IsMatch(wkstr, "COMMENT.*:.*", RegexOptions.IgnoreCase)) {
-                                mspField.Comment = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "FORMULA:.*", RegexOptions.IgnoreCase)) {
-                                var formulaString = getMspFieldValue(wkstr);
-                                if (formulaString != null && formulaString != string.Empty)
-                                    mspField.Formula = FormulaStringParcer.OrganicElementsReader(formulaString);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "IONMODE:.*", RegexOptions.IgnoreCase) ||
-                                Regex.IsMatch(wkstr, "ion_mode:.*", RegexOptions.IgnoreCase) ||
-                                Regex.IsMatch(wkstr, "Ionization:.*", RegexOptions.IgnoreCase)) {
-                                var ionmodeString = getMspFieldValue(wkstr);
-                                if (ionmodeString == "Negative" ||
-                                    ionmodeString.Contains("N")) mspField.IonMode = IonMode.Negative;
-                                else mspField.IonMode = IonMode.Positive;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "SMILES:.*", RegexOptions.IgnoreCase)) {
-                                mspField.SMILES = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "InChIKey:.*", RegexOptions.IgnoreCase)) {
-                                mspField.InChIKey = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "COMPOUNDCLASS:.*", RegexOptions.IgnoreCase)) {
-                                mspField.CompoundClass = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "Ontology:.*", RegexOptions.IgnoreCase)) {
-                                mspField.Ontology = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "RETENTIONTIME:.*", RegexOptions.IgnoreCase) ||
-                                Regex.IsMatch(wkstr, "Retention_time:.*", RegexOptions.IgnoreCase)) {
-                                var rtString = getMspFieldValue(wkstr);
-                                rt = -1;
-                                float.TryParse(rtString, out rt);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "COLLISIONENERGY:.*", RegexOptions.IgnoreCase)){ 
-
-                                var collisionenergy = -1.0F;
-                                if (float.TryParse(getMspFieldValue(wkstr), out collisionenergy)) mspField.CollisionEnergy = collisionenergy;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "RT:.*", RegexOptions.IgnoreCase)) {
-                                var rtString = getMspFieldValue(wkstr);
-                                rt = -1;
-                                float.TryParse(rtString, out rt);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "RETENTIONINDEX:.*", RegexOptions.IgnoreCase) ||
-                                Regex.IsMatch(wkstr, "Retention_index:.*", RegexOptions.IgnoreCase)) {
-                                var rtString = getMspFieldValue(wkstr);
-                                ri = -1;
-                                float.TryParse(rtString, out ri);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "RI:.*", RegexOptions.IgnoreCase)) {
-                                var rtString = getMspFieldValue(wkstr);
-                                ri = -1;
-                                float.TryParse(rtString, out ri);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "PRECURSORMZ:.*", RegexOptions.IgnoreCase) || Regex.IsMatch(wkstr, "precursor_m/z:.*", RegexOptions.IgnoreCase)) {
-                                var fieldString = getMspFieldValue(wkstr);
-                                if (float.TryParse(fieldString, out preMz)) mspField.PrecursorMz = preMz;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "CollisionCrossSection:.*", RegexOptions.IgnoreCase) || Regex.IsMatch(wkstr, "CCS:.*", RegexOptions.IgnoreCase)) {
-                                var fieldString = getMspFieldValue(wkstr);
-                                if (float.TryParse(fieldString, out preMz)) mspField.CollisionCrossSection = preMz;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "PRECURSORTYPE:.*", RegexOptions.IgnoreCase) ||
-                                Regex.IsMatch(wkstr, "Precursor_type:.*", RegexOptions.IgnoreCase)) {
-                                var fieldString = getMspFieldValue(wkstr);
-                                mspField.AdductType = AdductIonParser.GetAdductIonBean(fieldString);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "Links:.*", RegexOptions.IgnoreCase)) {
-                                mspField.Links = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            //else if (Regex.IsMatch(wkstr, "Intensity:.*", RegexOptions.IgnoreCase)) {
-                            //    var fieldString = getMspFieldValue(wkstr);
-                            //    if (float.TryParse(fieldString, out intensity)) mspField.Intensity = intensity; else mspField.Intensity = -1;
-                            //    continue;
-                            //}
-                            else if (Regex.IsMatch(wkstr, "SCANNUMBER:.*", RegexOptions.IgnoreCase)) {
-                                var fieldString = getMspFieldValue(wkstr);
-                                mspField.Comment += fieldString;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "INSTRUMENTTYPE:.*", RegexOptions.IgnoreCase)) {
-                                mspField.InstrumentType = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "INSTRUMENT:.*", RegexOptions.IgnoreCase)) {
-                                mspField.InstrumentModel = getMspFieldValue(wkstr);
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "QuantMass:.*", RegexOptions.IgnoreCase)) {
-                                float quantmass = -1;
-                                var fieldString = getMspFieldValue(wkstr);
-                                if (float.TryParse(fieldString, out quantmass))
-                                    mspField.QuantMass = quantmass;
-                                else
-                                    mspField.QuantMass = -1;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "Num Peaks:.*", RegexOptions.IgnoreCase)) {
-                                var peakNum = 0;
-                                mspField.Spectrum = ReadSpectrum(sr, wkstr, out peakNum);
-                               // mspField.PeakNumber = mspField.MzIntensityCommentBeanList.Count;
-                                continue;
-                            }
+                            ReadMspField(wkstr, out string fieldName, out string fieldValue);
+                            var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
+                            if (isSpecRetrieved) break;
                         }
-                        mspField.ChromXs = new ChromXs() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
-                        };
                         mspFields.Add(mspField);
-                        mspField = new MoleculeMsReference();
                         counter++;
                     }
                 }
@@ -181,220 +58,582 @@ namespace CompMs.Common.Parser {
             return mspFields;
         }
 
-        private static string getMspFieldValue(string wkstr) {
-            return wkstr.Substring(wkstr.Split(':')[0].Length + 1).Trim();
-        }
-
-        public static List<MoleculeMsReference> FiehnGcmsMspReader(Stream stream)
-        {
+        public static List<MoleculeMsReference> MonaMspReader(string filepath) {
             var mspFields = new List<MoleculeMsReference>();
-            var mspField = new MoleculeMsReference();
-            var mspPeak = new SpectrumPeak();
-            string wkstr;
-            int counter = 0, pairCount = 0;
+            var counter = 0;
+            using (StreamReader sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var wkstr = sr.ReadLine();
+                    var isRecordStarted = wkstr.StartsWith("NAME:");
+                    if (isRecordStarted) {
 
-            using (var sr = new StreamReader(stream))
-            {
-                float rt = 0, preMz = 0, ri = 0;
-                int num;
-                string numChar, letterChar;
-                bool mzFill;
+                        var mspField = new MoleculeMsReference() { ScanID = counter };
 
-                while (sr.Peek() > -1)
-                {
-                    wkstr = sr.ReadLine();
-                    if (Regex.IsMatch(wkstr, "^Name:.*", RegexOptions.IgnoreCase))
-                    {
-                        mspField.Name = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
-                        mspField.IonMode = IonMode.Positive;
-                        mspField.ScanID = counter;
-                        while (sr.Peek() > -1)
-                        {
+                        ReadMspField(wkstr, out string titleName, out string titleValue); // read Name field
+                        SetMspField(mspField, titleName, titleValue, sr);
+
+                        while (sr.Peek() > -1) {
                             wkstr = sr.ReadLine();
-                            if (wkstr == string.Empty) break;
-                            if (Regex.IsMatch(wkstr, "BinId:.*", RegexOptions.IgnoreCase))
-                            {
-                                num = counter;
-                                if (int.TryParse(wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim(), out num))
-                                    mspField.BinId = num;
-                                else
-                                    mspField.BinId = -1;
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "InChIKey:.*", RegexOptions.IgnoreCase))
-                            {
-                                mspField.InChIKey = wkstr.Split(':')[1].Trim();
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "InChI Key:.*", RegexOptions.IgnoreCase))
-                            {
-                                mspField.InChIKey = wkstr.Split(':')[1].Trim();
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "RI:.*", RegexOptions.IgnoreCase))
-                            {
-                                ri = -1; rt = -1;
-                                if (float.TryParse(wkstr.Split(':')[1].Trim(), out ri)) {
-                                    rt = (float)(ri * 0.001 / 60.0);
-                                }
-                                continue;
-                            }
-                            else if (Regex.IsMatch(wkstr, "Num Peaks:.*", RegexOptions.IgnoreCase))
-                            {
-                                if (int.TryParse(wkstr.Split(':')[1].Trim(), out num))
-                                {
-                                    if (num == 0) continue; 
+                            ReadMspField(wkstr, out string fieldName, out string fieldValue);
+                            var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
 
-                                    pairCount = 0;
-                                    mspPeak = new SpectrumPeak();
-
-                                    while (pairCount < num)
-                                    {
-                                        wkstr = sr.ReadLine();
-                                        numChar = string.Empty;
-                                        mzFill = false;
-                                        for (int i = 0; i < wkstr.Length; i++)
-                                        {
-                                            if (char.IsNumber(wkstr[i]) || wkstr[i] == '.')
-                                            {
-                                                numChar += wkstr[i];
-
-                                                if (i == wkstr.Length - 1 && wkstr[i] != '"')
-                                                {
-                                                    if (mzFill == false)
-                                                    {
-                                                        if (numChar != string.Empty)
-                                                        {
-                                                            mspPeak.Mass = float.Parse(numChar);
-                                                            mzFill = true;
-                                                            numChar = string.Empty;
-                                                        }
-                                                    }
-                                                    else if (mzFill == true)
-                                                    {
-                                                        if (numChar != string.Empty)
-                                                        {
-                                                            mspPeak.Intensity = float.Parse(numChar);
-                                                            mzFill = false;
-                                                            numChar = string.Empty;
-
-                                                            if (mspPeak.Comment == null)
-                                                                mspPeak.Comment = mspPeak.Mass.ToString();
-                                                            mspField.Spectrum.Add(mspPeak);
-                                                            mspPeak = new SpectrumPeak();
-                                                            pairCount++;
-                                                        }
-                                                    }
-                                                }
+                            if (fieldName.ToLower().StartsWith("comment")) {
+                                for (int i = 0; i < mspField.Comment.Length; i++) {
+                                    var charvalue = mspField.Comment[i];
+                                    if (charvalue == 'S' && i + 7 <= mspField.Comment.Length - 1) {
+                                        var integWord = charvalue.ToString() + mspField.Comment[i + 1].ToString() + mspField.Comment[i + 2].ToString()
+                                            + mspField.Comment[i + 3].ToString() + mspField.Comment[i + 4].ToString()
+                                            + mspField.Comment[i + 5].ToString() + mspField.Comment[i + 6].ToString();
+                                        if (integWord == "SMILES=") {
+                                            var smilesString = string.Empty;
+                                            for (int j = i + 7; j < mspField.Comment.Length; j++) {
+                                                if (mspField.Comment[j] == '"') break;
+                                                smilesString += mspField.Comment[j];
                                             }
-                                            else if (wkstr[i] == '"')
-                                            {
-                                                i++;
-                                                letterChar = string.Empty;
-
-                                                while (wkstr[i] != '"')
-                                                {
-                                                    letterChar += wkstr[i];
-                                                    i++;
-                                                }
-                                                if (!letterChar.Contains("_f_"))
-                                                    mspField.Spectrum[mspField.Spectrum.Count - 1].Comment = letterChar;
-                                                else
-                                                {
-                                                    mspField.Spectrum[mspField.Spectrum.Count - 1].Comment = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[0];
-                                                   // mspField.Spectrum[mspField.Spectrum.Count - 1].Frag = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[1];
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                if (mzFill == false)
-                                                {
-                                                    if (numChar != string.Empty)
-                                                    {
-                                                        mspPeak.Mass = float.Parse(numChar);
-                                                        mzFill = true;
-                                                        numChar = string.Empty;
-                                                    }
-                                                }
-                                                else if (mzFill == true)
-                                                {
-                                                    if (numChar != string.Empty)
-                                                    {
-                                                        mspPeak.Intensity = float.Parse(numChar);
-                                                        mzFill = false;
-                                                        numChar = string.Empty;
-
-                                                        if (mspPeak.Comment == null)
-                                                            mspPeak.Comment = mspPeak.Mass.ToString();
-
-                                                        mspField.Spectrum.Add(mspPeak);
-                                                        mspPeak = new SpectrumPeak();
-                                                        pairCount++;
-                                                    }
-                                                }
-                                            }
+                                            mspField.SMILES = smilesString;
                                         }
-                                    }
 
-                                    mspField.Spectrum = mspField.Spectrum.OrderBy(n => n.Mass).ToList();
+                                    }
                                 }
-                                continue;
                             }
+
+                            if (isSpecRetrieved) break;
                         }
-                        mspField.ChromXs = new ChromXs() {
-                            RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
-                        };
                         mspFields.Add(mspField);
-                        mspField = new MoleculeMsReference();
                         counter++;
                     }
                 }
             }
+
             return mspFields;
         }
 
-        public static List<SpectrumPeak> ReadSpectrum(StreamReader sr, string numPeakField, out int peaknum)
-        {
-            peaknum = 0;
+        /// <summary>
+        /// This is the parcer of .LBM (Lipid Blast Msp) file including LipidBlast MS/MSs.
+        /// Each MS/MS information of LBM file has some fields including 'IONMODE', 'SOLVENTTYPE (now HCOOH or CH3COOH)', 'COMPOUNDCLASS', and 'COLLISIONTYPE (now CID only. in future, I will add HCD tag.)', 
+        /// to pick up what the user wants to identify.
+        /// The LBM format is basically following the MSP format but the above fields should be required additionally.
+        /// The LBM file should be included in the MS-DIAL folder and the list of LBM queries should be stored in LbmQuery.cs.
+        /// 1. first the LbmQueryParcer.cs will pick up all queries of LipidBlast from the LbmQueries.txt of Resources floder of MS-DIAL assembry.
+        /// 2. The users can select what the user wants to see in LbmDbSetWin.xaml and the isSelected property will be changed to True.
+        /// 3. The LipidBlast MS/MS of the true queries will be picked up by LbmFileParcer.cs. 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="queries"></param>
+        /// <param name="ionMode"></param>
+        /// <param name="solventType"></param>
+        /// <param name="collisionType"></param>
+        /// <returns></returns>
+        public static List<MoleculeMsReference> LbmFileReader(string file, List<LbmQuery> queries,
+            IonMode ionMode, SolventType solventType, CollisionType collisionType) {
+            var tQueries = getTrueQueries(queries);
+            if (tQueries.Count == 0) return null;
+
+            var mspDB = new List<MoleculeMsReference>();
+            var counter = 0;
+            using (StreamReader sr = new StreamReader(file, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var wkstr = sr.ReadLine();
+                    var isRecordStarted = wkstr.StartsWith("NAME:");
+                    if (isRecordStarted) {
+
+                        var mspField = new MoleculeMsReference();
+
+                        ReadMspField(wkstr, out string titleName, out string titleValue); // read Name field
+                        SetMspField(mspField, titleName, titleValue, sr);
+
+                        while (sr.Peek() > -1) {
+                            wkstr = sr.ReadLine();
+                            ReadMspField(wkstr, out string fieldName, out string fieldValue);
+                            var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
+                            if (isSpecRetrieved) break;
+                        }
+
+                        if (queryCheck(mspField, tQueries, ionMode, solventType, collisionType)) {
+                            mspDB.Add(mspField);
+                            counter++;
+                        }
+                    }
+                }
+            }
+
+            return mspDB;
+        }
+
+        public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
+            IonMode ionMode, SolventType solventType, CollisionType collisionType) {
+            var tQueries = getTrueQueries(queries);
+            if (tQueries.Count == 0) return null;
+
+            var usedMspDB = new List<MoleculeMsReference>();
+            var mspDB = ReadSerializedMspObject(file);
+        
+            var counter = 0;
+            foreach (var mspRecord in mspDB) {
+                if (queryCheck(mspRecord, tQueries, ionMode, solventType, collisionType)) {
+                    mspRecord.ScanID = counter;
+                    usedMspDB.Add(mspRecord);
+                    counter++;
+                }
+            }
+            return usedMspDB;
+        }
+
+        public static void AsciiMspToSerializedMspObj(string input, string output) {
+            var queries = MspFileReader(input);
+            MoleculeMsRefMethods.SaveMspToFile(queries, output);
+        }
+
+        public static List<MoleculeMsReference> ReadSerializedMspObject(string input) {
+            var queries = MoleculeMsRefMethods.LoadMspFromFile(input);
+            return queries;
+        }
+
+        private static bool queryCheck(MoleculeMsReference mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+            //if (queries[0].IonMode != mspRecord.IonMode) return false;
+            if (mspRecord.IonMode != ionMode) return false;
+            if (ionMode == IonMode.Negative) {
+                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.AdductIonName == "[M+HCOO]-") {
+                    return false;
+                }
+                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.AdductIonName == "[M+CH3COO]-") {
+                    return false;
+                }
+            }
+            foreach (var query in queries) {
+                if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
+                    return true;
+                }
+                if (query.LbmClass.ToString() == mspRecord.CompoundClass) {
+                    if (query.AdductType.AdductIonName == mspRecord.AdductType.AdductIonName) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool queryCheck(MoleculeMsReference mspRecord, List<LbmQuery> queries) {
+            foreach (var query in queries) {
+                if (query.LbmClass.ToString() == mspRecord.CompoundClass) {
+                    if (query.AdductType.AdductIonName == mspRecord.AdductType.AdductIonName) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static List<LbmQuery> getTrueQueries(List<LbmQuery> queries) {
+            var tQueries = new List<LbmQuery>();
+
+            foreach (var query in queries) {
+                if (query.IsSelected == true) tQueries.Add(query);
+            }
+
+            return tQueries;
+        }
+
+
+
+        public static void ReadMspField(string wkstr, out string fieldName, out string fieldValue) {
+            fieldName = wkstr.Split(':')[0];
+            fieldValue = wkstr.Substring(fieldName.Length + 1).Trim();
+        }
+
+        public static bool SetMspField(MoleculeMsReference mspObj, string fieldName, string fieldValue, StreamReader sr, bool isFiehnDB = false) {
+            if (!fieldValue.IsNotEmptyOrNull()) return false;
+            switch (fieldName.ToLower()) {
+                // string
+                case "name": mspObj.Name = fieldValue;  return false;
+                case "binid": mspObj.BinId = int.TryParse(fieldValue, out int binid) ? binid : -1;  return false;
+
+                case "comment": 
+                case "comments": 
+                    mspObj.Comment = fieldValue; 
+                    return false;
+
+                case "formula": mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue);  return false;
+                case "smiles": mspObj.SMILES = fieldValue;  return false;
+                case "ontology": mspObj.Ontology = fieldValue;  return false;
+                case "compoundclass": mspObj.CompoundClass = fieldValue;  return false;
+               
+                case "inchi key":
+                case "inchi_key":
+                case "inchikey": mspObj.InChIKey = fieldValue;  return false;
+
+                case "retentiontime": 
+                case "retention_time": 
+                case "rt": 
+                    if (float.TryParse(fieldValue, out float rt)) mspObj.ChromXs.RT = new RetentionTime(rt); 
+                     return false;
+
+                case "retentionindex":
+                case "retention_index":
+                case "ri":
+                    if (float.TryParse(fieldValue, out float ri)) {
+                        mspObj.ChromXs.RI = new RetentionIndex(ri);
+                        if (isFiehnDB) {
+                            mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
+                        }
+                    }
+                   
+                     return false;
+
+                case "ionmode": 
+                case "ion_mode":
+                case "ionization": 
+                    mspObj.IonMode = fieldValue.ToLower().Contains("n") ? IonMode.Negative : IonMode.Positive; 
+                     return false;
+
+                case "collision_energy":
+                case "collisionenergy": mspObj.CollisionEnergy = float.TryParse(fieldValue, out float ce) ? ce : -1;  return false;
+
+                case "precursormz":
+                case "precursor_mz":
+                case "precursor_m/z":
+                    mspObj.PrecursorMz = float.TryParse(fieldValue, out float premz) ? premz : -1;  return false;
+                case "quantmass": mspObj.QuantMass = float.TryParse(fieldValue, out float quantmass) ? quantmass : -1;  return false;
+
+                case "collisioncrosssection":
+                case "ccs":
+                    mspObj.CollisionCrossSection = float.TryParse(fieldValue, out float ccs) ? ccs : -1;  return false;
+
+                case "precursortype":
+                case "precursor_type":
+                    mspObj.AdductType = AdductIonParser.GetAdductIonBean(fieldValue);
+                    mspObj.IonMode = mspObj.IonMode;
+                     return false;
+
+                case "DB#":
+                case "links": mspObj.Links = fieldValue;  return false;
+                case "instrument": mspObj.InstrumentModel = fieldValue;  return false;
+                case "instrumenttype": mspObj.InstrumentType = fieldValue;  return false;
+
+                case "scannumber":
+                    if (mspObj.Comment == string.Empty) mspObj.Comment = "scannumber=" + fieldValue;
+                    else mspObj.Comment += "; scannumber=" + fieldValue;
+                    return false;
+                case "num peaks":
+                case "numpeaks":
+                case "num_peaks":
+                    mspObj.Spectrum = ReadSpectrum(sr, fieldValue);
+                    return true;
+            }
+            return false;
+        }
+
+        //public static List<MoleculeMsReference> FiehnGcmsMspReader(Stream stream)
+        //{
+        //    var mspFields = new List<MoleculeMsReference>();
+        //    var mspField = new MoleculeMsReference();
+        //    var mspPeak = new SpectrumPeak();
+        //    string wkstr;
+        //    int counter = 0, pairCount = 0;
+
+        //    using (var sr = new StreamReader(stream))
+        //    {
+        //        float rt = 0, preMz = 0, ri = 0;
+        //        int num;
+        //        string numChar, letterChar;
+        //        bool mzFill;
+
+        //        while (sr.Peek() > -1)
+        //        {
+        //            wkstr = sr.ReadLine();
+        //            if (Regex.IsMatch(wkstr, "^Name:.*", RegexOptions.IgnoreCase))
+        //            {
+        //                mspField.Name = wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim();
+        //                mspField.IonMode = IonMode.Positive;
+        //                mspField.ScanID = counter;
+        //                while (sr.Peek() > -1)
+        //                {
+        //                    wkstr = sr.ReadLine();
+        //                    if (wkstr == string.Empty) break;
+        //                    if (Regex.IsMatch(wkstr, "BinId:.*", RegexOptions.IgnoreCase))
+        //                    {
+        //                        num = counter;
+        //                        if (int.TryParse(wkstr.Substring(wkstr.Split(':')[0].Length + 2).Trim(), out num))
+        //                            mspField.BinId = num;
+        //                        else
+        //                            mspField.BinId = -1;
+        //                        continue;
+        //                    }
+        //                    else if (Regex.IsMatch(wkstr, "InChIKey:.*", RegexOptions.IgnoreCase))
+        //                    {
+        //                        mspField.InChIKey = wkstr.Split(':')[1].Trim();
+        //                        continue;
+        //                    }
+        //                    else if (Regex.IsMatch(wkstr, "InChI Key:.*", RegexOptions.IgnoreCase))
+        //                    {
+        //                        mspField.InChIKey = wkstr.Split(':')[1].Trim();
+        //                        continue;
+        //                    }
+        //                    else if (Regex.IsMatch(wkstr, "RI:.*", RegexOptions.IgnoreCase))
+        //                    {
+        //                        ri = -1; rt = -1;
+        //                        if (float.TryParse(wkstr.Split(':')[1].Trim(), out ri)) {
+        //                            rt = (float)(ri * 0.001 / 60.0);
+        //                        }
+        //                        continue;
+        //                    }
+        //                    else if (Regex.IsMatch(wkstr, "Num Peaks:.*", RegexOptions.IgnoreCase))
+        //                    {
+        //                        if (int.TryParse(wkstr.Split(':')[1].Trim(), out num))
+        //                        {
+        //                            if (num == 0) continue; 
+
+        //                            pairCount = 0;
+        //                            mspPeak = new SpectrumPeak();
+
+        //                            while (pairCount < num)
+        //                            {
+        //                                wkstr = sr.ReadLine();
+        //                                numChar = string.Empty;
+        //                                mzFill = false;
+        //                                for (int i = 0; i < wkstr.Length; i++)
+        //                                {
+        //                                    if (char.IsNumber(wkstr[i]) || wkstr[i] == '.')
+        //                                    {
+        //                                        numChar += wkstr[i];
+
+        //                                        if (i == wkstr.Length - 1 && wkstr[i] != '"')
+        //                                        {
+        //                                            if (mzFill == false)
+        //                                            {
+        //                                                if (numChar != string.Empty)
+        //                                                {
+        //                                                    mspPeak.Mass = float.Parse(numChar);
+        //                                                    mzFill = true;
+        //                                                    numChar = string.Empty;
+        //                                                }
+        //                                            }
+        //                                            else if (mzFill == true)
+        //                                            {
+        //                                                if (numChar != string.Empty)
+        //                                                {
+        //                                                    mspPeak.Intensity = float.Parse(numChar);
+        //                                                    mzFill = false;
+        //                                                    numChar = string.Empty;
+
+        //                                                    if (mspPeak.Comment == null)
+        //                                                        mspPeak.Comment = mspPeak.Mass.ToString();
+        //                                                    mspField.Spectrum.Add(mspPeak);
+        //                                                    mspPeak = new SpectrumPeak();
+        //                                                    pairCount++;
+        //                                                }
+        //                                            }
+        //                                        }
+        //                                    }
+        //                                    else if (wkstr[i] == '"')
+        //                                    {
+        //                                        i++;
+        //                                        letterChar = string.Empty;
+
+        //                                        while (wkstr[i] != '"')
+        //                                        {
+        //                                            letterChar += wkstr[i];
+        //                                            i++;
+        //                                        }
+        //                                        if (!letterChar.Contains("_f_"))
+        //                                            mspField.Spectrum[mspField.Spectrum.Count - 1].Comment = letterChar;
+        //                                        else
+        //                                        {
+        //                                            mspField.Spectrum[mspField.Spectrum.Count - 1].Comment = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[0];
+        //                                           // mspField.Spectrum[mspField.Spectrum.Count - 1].Frag = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[1];
+        //                                        }
+
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        if (mzFill == false)
+        //                                        {
+        //                                            if (numChar != string.Empty)
+        //                                            {
+        //                                                mspPeak.Mass = float.Parse(numChar);
+        //                                                mzFill = true;
+        //                                                numChar = string.Empty;
+        //                                            }
+        //                                        }
+        //                                        else if (mzFill == true)
+        //                                        {
+        //                                            if (numChar != string.Empty)
+        //                                            {
+        //                                                mspPeak.Intensity = float.Parse(numChar);
+        //                                                mzFill = false;
+        //                                                numChar = string.Empty;
+
+        //                                                if (mspPeak.Comment == null)
+        //                                                    mspPeak.Comment = mspPeak.Mass.ToString();
+
+        //                                                mspField.Spectrum.Add(mspPeak);
+        //                                                mspPeak = new SpectrumPeak();
+        //                                                pairCount++;
+        //                                            }
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+
+        //                            mspField.Spectrum = mspField.Spectrum.OrderBy(n => n.Mass).ToList();
+        //                        }
+        //                        continue;
+        //                    }
+        //                }
+        //                mspField.ChromXs = new ChromXs() {
+        //                    RT = new RetentionTime(rt), RI = new RetentionIndex(ri), Drift = new DriftTime(-1), MainType = ChromXType.RT
+        //                };
+        //                mspFields.Add(mspField);
+        //                mspField = new MoleculeMsReference();
+        //                counter++;
+        //            }
+        //        }
+        //    }
+        //    return mspFields;
+        //}
+
+        //public static List<SpectrumPeak> ReadSpectrum(StreamReader sr, string numPeakField, out int peaknum)
+        //{
+        //    peaknum = 0;
+        //    var mspPeaks = new List<SpectrumPeak>();
+
+        //    if (int.TryParse(numPeakField.Split(':')[1].Trim(), out peaknum))
+        //    {
+        //        if (peaknum == 0) { return mspPeaks; }
+
+        //        var pairCount = 0;
+        //        var mspPeak = new SpectrumPeak();
+
+        //        while (pairCount < peaknum)
+        //        {
+        //            var wkstr = sr.ReadLine();
+        //            if (wkstr == null) break;
+        //            if (wkstr == string.Empty) break;
+        //            var numChar = string.Empty;
+        //            var mzFill = false;
+                    
+        //            for (int i = 0; i < wkstr.Length; i++)
+        //            {
+        //                if (char.IsNumber(wkstr[i]) || wkstr[i] == '.')
+        //                {
+        //                    numChar += wkstr[i];
+
+        //                    if (i == wkstr.Length - 1 && wkstr[i] != '"')
+        //                    {
+        //                        if (mzFill == false)
+        //                        {
+        //                            if (numChar != string.Empty)
+        //                            {
+        //                                mspPeak.Mass = float.Parse(numChar);
+        //                                mzFill = true;
+        //                                numChar = string.Empty;
+        //                            }
+        //                        }
+        //                        else if (mzFill == true)
+        //                        {
+        //                            if (numChar != string.Empty)
+        //                            {
+        //                                mspPeak.Intensity = float.Parse(numChar);
+        //                                mzFill = false;
+        //                                numChar = string.Empty;
+
+        //                                if (mspPeak.Comment == null)
+        //                                    mspPeak.Comment = mspPeak.Mass.ToString();
+        //                                mspPeaks.Add(mspPeak);
+        //                                mspPeak = new SpectrumPeak();
+        //                                pairCount++;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                else if (wkstr[i] == '"')
+        //                {
+        //                    i++;
+        //                    var letterChar = string.Empty;
+
+        //                    while (wkstr[i] != '"')
+        //                    {
+        //                        letterChar += wkstr[i];
+        //                        i++;
+        //                    }
+        //                    if (!letterChar.Contains("_f_"))
+        //                        mspPeaks[mspPeaks.Count - 1].Comment = letterChar;
+        //                    else
+        //                    {
+        //                        mspPeaks[mspPeaks.Count - 1].Comment = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[0];
+        //                        //mspPeaks[mspPeaks.Count - 1].Frag = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[1];
+        //                    }
+
+        //                }
+        //                else
+        //                {
+        //                    if (mzFill == false)
+        //                    {
+        //                        if (numChar != string.Empty)
+        //                        {
+        //                            mspPeak.Mass = float.Parse(numChar);
+        //                            mzFill = true;
+        //                            numChar = string.Empty;
+        //                        }
+        //                    }
+        //                    else if (mzFill == true)
+        //                    {
+        //                        if (numChar != string.Empty)
+        //                        {
+        //                            mspPeak.Intensity = float.Parse(numChar);
+        //                            mzFill = false;
+        //                            numChar = string.Empty;
+
+        //                            if (mspPeak.Comment == null)
+        //                                mspPeak.Comment = mspPeak.Mass.ToString();
+
+        //                            mspPeaks.Add(mspPeak);
+        //                            mspPeak = new SpectrumPeak();
+        //                            pairCount++;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        mspPeaks = mspPeaks.OrderBy(n => n.Mass).ToList();
+        //    }
+
+        //    return mspPeaks;
+        //}
+
+        public static List<SpectrumPeak> ReadSpectrum(StreamReader sr, string numPeakField) {
             var mspPeaks = new List<SpectrumPeak>();
 
-            if (int.TryParse(numPeakField.Split(':')[1].Trim(), out peaknum))
-            {
+            if (int.TryParse(numPeakField.Trim(), out int peaknum)) {
                 if (peaknum == 0) { return mspPeaks; }
 
                 var pairCount = 0;
                 var mspPeak = new SpectrumPeak();
 
-                while (pairCount < peaknum)
-                {
+                while (pairCount < peaknum) {
                     var wkstr = sr.ReadLine();
                     if (wkstr == null) break;
                     if (wkstr == string.Empty) break;
                     var numChar = string.Empty;
                     var mzFill = false;
-                    
-                    for (int i = 0; i < wkstr.Length; i++)
-                    {
-                        if (char.IsNumber(wkstr[i]) || wkstr[i] == '.')
-                        {
+
+                    for (int i = 0; i < wkstr.Length; i++) {
+                        if (char.IsNumber(wkstr[i]) || wkstr[i] == '.') {
                             numChar += wkstr[i];
 
-                            if (i == wkstr.Length - 1 && wkstr[i] != '"')
-                            {
-                                if (mzFill == false)
-                                {
-                                    if (numChar != string.Empty)
-                                    {
+                            if (i == wkstr.Length - 1 && wkstr[i] != '"') {
+                                if (mzFill == false) {
+                                    if (numChar != string.Empty) {
                                         mspPeak.Mass = float.Parse(numChar);
                                         mzFill = true;
                                         numChar = string.Empty;
                                     }
                                 }
-                                else if (mzFill == true)
-                                {
-                                    if (numChar != string.Empty)
-                                    {
+                                else if (mzFill == true) {
+                                    if (numChar != string.Empty) {
                                         mspPeak.Intensity = float.Parse(numChar);
                                         mzFill = false;
                                         numChar = string.Empty;
@@ -408,40 +647,32 @@ namespace CompMs.Common.Parser {
                                 }
                             }
                         }
-                        else if (wkstr[i] == '"')
-                        {
+                        else if (wkstr[i] == '"') {
                             i++;
                             var letterChar = string.Empty;
 
-                            while (wkstr[i] != '"')
-                            {
+                            while (wkstr[i] != '"') {
                                 letterChar += wkstr[i];
                                 i++;
                             }
                             if (!letterChar.Contains("_f_"))
                                 mspPeaks[mspPeaks.Count - 1].Comment = letterChar;
-                            else
-                            {
+                            else {
                                 mspPeaks[mspPeaks.Count - 1].Comment = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[0];
                                 //mspPeaks[mspPeaks.Count - 1].Frag = letterChar.Split(new string[] { "_f_" }, StringSplitOptions.None)[1];
                             }
 
                         }
-                        else
-                        {
-                            if (mzFill == false)
-                            {
-                                if (numChar != string.Empty)
-                                {
+                        else {
+                            if (mzFill == false) {
+                                if (numChar != string.Empty) {
                                     mspPeak.Mass = float.Parse(numChar);
                                     mzFill = true;
                                     numChar = string.Empty;
                                 }
                             }
-                            else if (mzFill == true)
-                            {
-                                if (numChar != string.Empty)
-                                {
+                            else if (mzFill == true) {
+                                if (numChar != string.Empty) {
                                     mspPeak.Intensity = float.Parse(numChar);
                                     mzFill = false;
                                     numChar = string.Empty;

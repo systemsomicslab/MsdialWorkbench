@@ -45,11 +45,11 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
                 var extension = System.IO.Path.GetExtension(param.MspFilePath);
                 if (extension == ".lbm2") {
-                    mspDB = LbmFileParcer.ReadSerializedObjectLibrary(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParcer.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
                 else {
-                    mspDB = LbmFileParcer.Read(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParcer.LbmFileReader(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
             }

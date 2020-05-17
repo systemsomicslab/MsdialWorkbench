@@ -128,10 +128,6 @@
       <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
       <Name>CommonStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
-      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
-      <Name>DatabaseStandard</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
