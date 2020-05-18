@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -57,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
+    <Compile Include="Base\DrawingChartBase.cs" />
+    <Compile Include="Behavior\DataLabelBehavior2.cs" />
+    <Compile Include="Behavior\MoveChartBehavior.cs" />
+    <Compile Include="Behavior\ResetZoomBehavior.cs" />
+    <Compile Include="Behavior\ZoomChartBehavior.cs" />
+    <Compile Include="Default\DrawingControl.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
     <Compile Include="Base\ChartControl.cs" />
@@ -64,6 +73,7 @@
     <Compile Include="Behavior\DataLabelBehavior.cs" />
     <Compile Include="Behavior\RubberAdorner.cs" />
     <Compile Include="Behavior\RubberBehavior.cs" />
+    <Compile Include="Behavior\WheelZoomBehavior.cs" />
     <Compile Include="Command\SavePngCommand.cs" />
     <Compile Include="Compound\Clustermap.xaml.cs">
       <DependentUpon>Clustermap.xaml</DependentUpon>
@@ -73,9 +83,12 @@
       <DependentUpon>DefaultUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dendrogram\DendrogramCoreControl.cs" />
+    <Compile Include="Default\DefaultControl.cs" />
     <Compile Include="Dendrogram\DendrogramElement.cs" />
     <Compile Include="Dendrogram\DendrogramManager.cs" />
     <Compile Include="Dendrogram\DigraphView.cs" />
+    <Compile Include="Base\IDrawingChart.cs" />
+    <Compile Include="Dendrogram\DrawingDendrogram.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisCoreControl.cs" />
@@ -84,11 +97,22 @@
     <Compile Include="GraphAxis\CategoryVerticalAxisElement.cs" />
     <Compile Include="GraphAxis\CategoryVerticalAxisCoreControl.cs" />
     <Compile Include="GraphAxis\CategoryVerticalAxisManager.cs" />
+    <Compile Include="GraphAxis\ContinuousHorizontalAxisElement.cs" />
+    <Compile Include="GraphAxis\ContinuousVerticalAxisElement.cs" />
+    <Compile Include="GraphAxis\DrawingCategoryHorizontalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingCategoryVerticalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingContinuousHorizontalAxis.cs" />
+    <Compile Include="GraphAxis\DrawingContinuousVerticalAxis.cs" />
+    <Compile Include="Heatmap\DrawingHeatmap.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />
     <Compile Include="Heatmap\HeatmapElement.cs" />
     <Compile Include="Heatmap\HeatmapManager.cs" />
+    <Compile Include="LineChart\DrawingLineChart.cs" />
+    <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
+    <Compile Include="Scatter\DrawingScatter.cs" />
+    <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Compound\Clustermap.xaml">
@@ -116,6 +140,22 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GraphAxis\GraphAxisResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Default\DefaultControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
