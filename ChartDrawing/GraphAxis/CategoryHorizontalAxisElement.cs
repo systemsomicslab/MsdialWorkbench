@@ -81,7 +81,7 @@ namespace CompMs.Graphics.Core.GraphAxis
             if (lim == 0) return geometryGroup;
             var pertext = (n + lim - 1) / lim;
             var counter = 0;
-            var maxwidth = size.Width / (lim + 2);
+            var maxwidth = size.Width / (lim + 1);
             foreach(var text in intexts)
             {
                 if(counter++ % pertext == 0)

@@ -9,32 +9,24 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Core.GraphAxis
 {
-    public class DrawingCategoryHorizontalAxis : DrawingChartBase
+    public class DrawingContinuousVerticalAxis : DrawingChartBase
     {
-        public IReadOnlyList<double> XPositions
+        public double MinY
         {
-            get => xPositions;
-            set => SetProperty(ref xPositions, value as List<double> ?? new List<double>(value));
+            get => minY;
+            set => SetProperty(ref minY, value);
         }
-        private List<double> xPositions;
-
-        public IReadOnlyList<string> Labels
+        private double minY;
+        public double MaxY
         {
-            get => labels;
-            set => SetProperty(ref labels, value as List<string> ?? new List<string>(value));
+            get => maxY;
+            set => SetProperty(ref maxY, value);
         }
-        private List<string> labels;
-
-        public int NLabel
-        {
-            get => nLabel;
-            set => SetProperty(ref nLabel, value);
-        }
-        private int nLabel = -1;
+        private double maxY;
 
         readonly Pen axisPen = new Pen(Brushes.Black, 2);
 
-        public DrawingCategoryHorizontalAxis()
+        public DrawingContinuousVerticalAxis()
         {
             axisPen.Freeze();
 
@@ -45,27 +37,24 @@ namespace CompMs.Graphics.Core.GraphAxis
         {
             switch (e.PropertyName)
             {
-                case "XPositions":
-                case "NLabel":
+                case "MinY":
+                case "MaxY":
                     axis = null;
-                    label = null;
-                    break;
-                case "Labels":
                     label = null;
                     break;
             }
 
         }
 
-        CategoryHorizontalAxisTickElement axis;
-        CategoryHorizontalAxisLabelElement label;
+        ContinuousVerticalAxisTickElement axis;
+        ContinuousVerticalAxisLabelElement label;
 
         public override Drawing CreateChart()
         {
             var drawingGroup = new DrawingGroup();
             if (axis == null)
             {
-                axis = new CategoryHorizontalAxisTickElement(XPositions, NLabel);
+                axis = new ContinuousVerticalAxisTickElement(MinY, MaxY);
                 if (axis == null) return drawingGroup;
                 InitialArea = axis.ElementArea;
             }
@@ -76,24 +65,21 @@ namespace CompMs.Graphics.Core.GraphAxis
                 );
             if (label == null)
             {
-                label = new CategoryHorizontalAxisLabelElement(XPositions, Labels, NLabel);
+                label = new ContinuousVerticalAxisLabelElement(MinY, MaxY);
                 if (label == null) return drawingGroup;
             }
-            var labelgeometry = label.GetGeometry(ChartArea, new Size(RenderSize.Width, Math.Max(1, RenderSize.Height - axis.Ticksize - 3)));
-            labelgeometry.Transform = new TranslateTransform(0, axis.Ticksize + 3);
+            var labelgeometry = label.GetGeometry(ChartArea, new Size(Math.Max(1, RenderSize.Width - axis.LongTicksize - 3), RenderSize.Height));
             drawingGroup.Children.Add(new GeometryDrawing(Brushes.Black, null,labelgeometry));
             return drawingGroup;
         }
 
         public override Point RealToImagine(Point point)
         {
-            var p = base.RealToImagine(point);
-            return new Point(p.X, 0);
+            return new Point(0, (ChartArea.Bottom - point.Y / RenderSize.Height * ChartArea.Height));
         }
         public override Point ImagineToReal(Point point)
         {
-            var p = base.ImagineToReal(point);
-            return new Point(p.X, 0);
+            return new Point(0, (ChartArea.Bottom - point.Y) / ChartArea.Height * RenderSize.Height);
         }
     }
 }
