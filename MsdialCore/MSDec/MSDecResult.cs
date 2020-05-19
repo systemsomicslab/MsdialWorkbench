@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.MSDec {
         public string Splash { get; set; }
         public long SeekPoint { get; set; }
 
-        public List<float> ModelMasses { get; set; }
+        public List<float> ModelMasses { get; set; } = new List<float>();
         public float ModelPeakPurity { get; set; }
         public float ModelPeakQuality { get; set; }
         public float SignalNoiseRatio { get; set; }
@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.MSDec {
 
         // annotation info for gcms project
         public int MspID { get; set; } // representative msp id
-        public List<int> MspIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
-        public MsScanMatchResult MspBasedMatchResult { get; set; }
+        public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
+        public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
     }
 }

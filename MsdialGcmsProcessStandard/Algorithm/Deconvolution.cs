@@ -159,7 +159,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
 		/// <summary>
 		/// Gcmses the MS 1 dec results.
 		/// </summary>
-        public static List<MS1DecResult> GcmsMS1DecResults(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
+        public static List<MS1DecResult> GetMS1DecResults(List<RawSpectrum> spectrumList, List<PeakAreaBean> peakAreaList, AnalysisParamOfMsdialGcms param, Action<int> reportAction)
         {
             peakAreaList = peakAreaList.OrderBy(n => n.ScanNumberAtPeakTop).ThenBy(n => n.AccurateMass).ToList();
 

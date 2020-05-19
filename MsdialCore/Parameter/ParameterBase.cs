@@ -129,6 +129,7 @@ namespace CompMs.MsdialCore.Parameter {
         public float SigmaWindowValue { get; set; } = 0.5F;
         public float AmplitudeCutoff { get; set; } = 0;
         public float AveragePeakWidth { get; set; } = 30;
+        public float KeptIsotopeRange { get; set; } = 5;
         public bool RemoveAfterPrecursor { get; set; } = true;
         public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;

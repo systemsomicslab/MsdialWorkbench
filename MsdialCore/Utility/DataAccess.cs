@@ -14,6 +14,7 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace CompMs.MsdialCore.Utility {
@@ -229,7 +230,6 @@ namespace CompMs.MsdialCore.Utility {
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, float chromBegin = float.MinValue, float chromEnd = float.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
-            double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel == 1)) {
@@ -237,27 +237,64 @@ namespace CompMs.MsdialCore.Utility {
                 if (chromX < chromBegin) continue;
                 if (chromX > chromEnd) break;
                 var massSpectra = spectrum.Spectrum;
-                var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
-
+                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
-                for (int j = startIndex; j < massSpectra.Length; j++) {
-                    if (massSpectra[j].Mz < targetMass - ms1Tolerance) continue;
-                    else if (targetMass - ms1Tolerance <= massSpectra[j].Mz && massSpectra[j].Mz <= targetMass + ms1Tolerance) {
-                        sum += massSpectra[j].Intensity;
-                        if (maxIntensityMz < massSpectra[j].Intensity) {
-                            maxIntensityMz = massSpectra[j].Intensity;
-                            maxMass = massSpectra[j].Mz;
-                        }
-                    }
-                    else if (massSpectra[j].Mz > targetMass + ms1Tolerance) break;
-                }
-
-                peaklist.Add(new ChromatogramPeak() {  ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = maxMass, Intensity = sum });
+                RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() {  ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
             return peaklist;
         }
-      
+
+        public static void RetrieveBinnedMzIntensity(RawPeakElement[] peaks, double targetMz, double mzTol, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
+            var startIndex = SearchCollection.LowerBound(peaks, new RawPeakElement() { Mz = targetMz - mzTol }, (a, b) => a.Mz.CompareTo(b.Mz));
+            summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
+            for (int i = startIndex; i < peaks.Length; i++) {
+                var peak = peaks[i];
+                if (peak.Mz < targetMz - mzTol) continue;
+                else if (Math.Abs(peak.Mz - targetMz) < mzTol) {
+                    summedIntensity += peak.Intensity;
+                    if (basepeakIntensity < peak.Intensity) {
+                        basepeakIntensity = peak.Intensity;
+                        basepeakMz = peak.Mz;
+                    }
+                }
+                else if (peak.Mz > targetMz + mzTol) break;
+            }
+        }
+
+        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(List<RawSpectrum> spectrumList, double precursorMz,
+            int startScanID, int endScanID, List<double> productMzList, ParameterBase param,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            var chromPeakslist = new List<List<ChromatogramPeak>>();
+
+            foreach (var productMz in productMzList) {
+                var chromPeaks = GetMs2Peaklist(spectrumList, precursorMz, productMz, startScanID, endScanID, param, type, unit);
+                chromPeakslist.Add(chromPeaks);
+            }
+            return chromPeakslist;
+        }
+
+        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList, 
+            double precursorMz, double productMz, int startID, int endID, ParameterBase param, ChromXType type, ChromXUnit unit) {
+            var chromPeaks = new List<ChromatogramPeak>();
+            for (int i = startID; i <= endID; i++) {
+                var spec = spectrumList[i];
+                if (spec.MsLevel == 2 && spec.Precursor != null) {
+                    var specPreMz = spec.Precursor.IsolationTargetMz;
+                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
+                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
+                    if (specPreMz - lowerOffset <= precursorMz && precursorMz < specPreMz + upperOffset) {
+                        RetrieveBinnedMzIntensity(spec.Spectrum, productMz, param.CentroidMs2Tolerance, 
+                            out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                        var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
+                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.ScanNumber;
+                        chromPeaks.Add(new ChromatogramPeak() { ID = id, ChromXs = chromX, Mass = basepeakMz, Intensity = summedIntensity });
+                    }
+                }
+            }
+            return chromPeaks;
+        }
 
         public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RawSpectrum> spectrumList, float centralRt, float rtBegin, float rtEnd,
             float quantMass, ParameterBase param) {
@@ -516,7 +553,7 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // get spectrum
-        public static List<SpectrumPeak> GetCentroidMasasSpectra(List<RawSpectrum> spectrumList, DataType dataType, 
+        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, DataType dataType, 
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
