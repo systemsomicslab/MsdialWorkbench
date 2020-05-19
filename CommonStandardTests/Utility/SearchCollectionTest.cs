@@ -5,12 +5,19 @@ using CompMs.Common.Utility;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CompMs.Common.Utility.Tests
 {
     [TestClass]
     public class SearchCollectionTest
     {
+        internal struct SampleStruct
+        {
+            public double X;
+            public double Y;
+        }
+
         [TestMethod]
         public void LowerBoundBaseTest()
         {
@@ -128,6 +135,23 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
+        public void LowerBoundStructTest()
+        {
+            var lst = new List<SampleStruct>();
+            for(int i = 0; i<10; i++)
+            {
+                lst.Add(new SampleStruct() { X = -i, Y = i });
+            }
+            var value = new SampleStruct() { X = 0, Y = 3 };
+            var expected = 3;
+            var actual = SearchCollection.LowerBound(lst, value, (a, b) => a.Y.CompareTo(b.Y));
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.LowerBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b.Y));
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void UpperBoundBaseTest()
         {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
@@ -199,6 +223,23 @@ namespace CompMs.Common.Utility.Tests
             Assert.AreEqual(expected, actual);
 
             actual = SearchCollection.UpperBound(arr, value);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void UpperBoundStructTest()
+        {
+            var lst = new List<SampleStruct>();
+            for(int i = 0; i<10; i++)
+            {
+                lst.Add(new SampleStruct() { X = -i, Y = i });
+            }
+            var value = new SampleStruct() { X = 0, Y = 3 };
+            var expected = 4;
+            var actual = SearchCollection.UpperBound(lst, value, (a, b) => a.Y.CompareTo(b.Y));
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.UpperBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b.Y));
             Assert.AreEqual(expected, actual);
         }
     }
