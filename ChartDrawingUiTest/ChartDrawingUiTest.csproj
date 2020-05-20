@@ -63,6 +63,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Compound\LineAndScatterVM.cs" />
+    <Compile Include="Compound\LineAndScatter.xaml.cs">
+      <DependentUpon>LineAndScatter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Scatter\Scatter1.xaml.cs">
       <DependentUpon>Scatter1.xaml</DependentUpon>
     </Compile>
@@ -76,6 +80,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Compound\Clustermap2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compound\LineAndScatter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
