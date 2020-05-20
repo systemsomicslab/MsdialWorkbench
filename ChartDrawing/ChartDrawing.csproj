@@ -65,6 +65,7 @@
     <Compile Include="Behavior\MoveChartBehavior.cs" />
     <Compile Include="Behavior\ResetZoomBehavior.cs" />
     <Compile Include="Behavior\ZoomChartBehavior.cs" />
+    <Compile Include="Compound\ChartWithAxisControl.cs" />
     <Compile Include="Default\DrawingControl.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
@@ -115,7 +116,15 @@
     <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Compound\ChartWithAxisControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Compound\Clustermap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Default\DefaultControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
