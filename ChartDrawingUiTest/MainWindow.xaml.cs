@@ -26,6 +26,7 @@ namespace ChartDrawingUiTest
             {
                 {"Default1", typeof(Default1) },
                 {"LineChart1", typeof(LineChart1) },
+                {"LineChart2", typeof(LineChart2) },
                 {"Scatter1", typeof(Scatter1) },
                 {"Dendrogram1", typeof(Dendrogram1) },
                 {"Dendrogram2", typeof(Dendrogram2) },
@@ -37,6 +38,7 @@ namespace ChartDrawingUiTest
                 {"Heatmap3", typeof(Heatmap3) },
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
+                {"LineAndScatter1", typeof(LineAndScatter1) },
                 {"Chromatogram1", typeof(Chromatogram1) },
                 // {"DrawingTest1", typeof(DrawingTest1) },
                 // {"BindingTest1", typeof(BindingTest1) },

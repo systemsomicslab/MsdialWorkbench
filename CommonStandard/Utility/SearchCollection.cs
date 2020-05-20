@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CompMs.Common.DataStructure
+namespace CompMs.Common.Utility
 {
     public class SearchCollection
     {
