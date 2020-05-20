@@ -26,6 +26,7 @@ namespace ChartDrawingUiTest
             {
                 {"Default1", typeof(Default1) },
                 {"LineChart1", typeof(LineChart1) },
+                {"LineChart2", typeof(LineChart2) },
                 {"Scatter1", typeof(Scatter1) },
                 {"Dendrogram1", typeof(Dendrogram1) },
                 {"Dendrogram2", typeof(Dendrogram2) },
