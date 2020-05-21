@@ -96,9 +96,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ChromatogramUI\Chromatogram.csproj">
       <Project>{6dced6bb-4107-40c9-a9ef-d60658c385c0}</Project>
       <Name>Chromatogram</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonMVVM\CommonMVVM.csproj">
+      <Project>{d7bc52de-cdf0-4f78-b23e-ef2434d14029}</Project>
+      <Name>CommonMVVM</Name>
     </ProjectReference>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
       <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>

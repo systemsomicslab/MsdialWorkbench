@@ -12,8 +12,6 @@ namespace MsdialDimsCoreUiTestApp
         public MainWindow()
         {
             InitializeComponent();
-            var vm = new MainWindowVM();
-            this.ChartArea.Children.Add(new ChromatogramXicUI(vm.ChromatogramXicViewModel));
         }
     }
 }
