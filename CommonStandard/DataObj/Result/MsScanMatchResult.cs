@@ -47,9 +47,9 @@ namespace CompMs.Common.DataObj.Result {
 
         // Checker
         [Key(15)]
-        public bool IsMs1Match { get; set; }
+        public bool IsPrecursorMzMatch { get; set; }
         [Key(16)]
-        public bool IsMs2Match { get; set; }
+        public bool IsSpectrumMatch { get; set; }
         [Key(17)]
         public bool IsRtMatch { get; set; }
         [Key(23)]

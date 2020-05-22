@@ -54,29 +54,65 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         private static void SetChromPeakFeatureSummary(ChromatogramPeaksDataSummary summary, List<ChromatogramPeakFeature> chromPeakFeatures) {
-            if (!chromPeakFeatures.IsNotEmptyOrNull()) return;
+            if (chromPeakFeatures.IsEmptyOrNull()) return;
 
             var peakWidthArray = chromPeakFeatures.Select(feature => feature.PeakWidth()).OrderBy(item => item).ToArray();
             var peakHeightArray = chromPeakFeatures.Select(feature => feature.PeakHeightTop).OrderBy(item => item).ToArray();
             var peaktopRtArray = chromPeakFeatures.Select(feature => feature.ChromXs.Value).OrderBy(item => item).ToArray();
         
-            summary.MinPeakWidth = (float)peakWidthArray[0];
-            summary.AveragePeakWidth = (float)peakWidthArray.Average();
-            summary.MedianPeakWidth = (float)BasicMathematics.Median(peakWidthArray);
-            summary.MaxPeakWidth = (float)peakWidthArray[peakWidthArray.Length - 1];
-            summary.StdevPeakWidth = (float)BasicMathematics.Stdev(peakWidthArray);
+            summary.MinPeakWidthOnRtAxis = (float)peakWidthArray[0];
+            summary.AveragePeakWidthOnRtAxis = (float)peakWidthArray.Average();
+            summary.MedianPeakWidthOnRtAxis = (float)BasicMathematics.Median(peakWidthArray);
+            summary.MaxPeakWidthOnRtAxis = (float)peakWidthArray[peakWidthArray.Length - 1];
+            summary.StdevPeakWidthOnRtAxis = (float)BasicMathematics.Stdev(peakWidthArray);
 
-            summary.MinPeakHeight = (float)peakHeightArray[0];
-            summary.AveragePeakHeight = (float)peakHeightArray.Average();
-            summary.MedianPeakHeight = (float)BasicMathematics.Median(peakHeightArray);
-            summary.MaxPeakHeight = (float)peakHeightArray[peakHeightArray.Length - 1];
-            summary.StdevPeakHeight = (float)BasicMathematics.Stdev(peakHeightArray);
+            summary.MinPeakHeightOnRtAxis = (float)peakHeightArray[0];
+            summary.AveragePeakHeightOnRtAxis = (float)peakHeightArray.Average();
+            summary.MedianPeakHeightOnRtAxis = (float)BasicMathematics.Median(peakHeightArray);
+            summary.MaxPeakHeightOnRtAxis = (float)peakHeightArray[peakHeightArray.Length - 1];
+            summary.StdevPeakHeightOnRtAxis = (float)BasicMathematics.Stdev(peakHeightArray);
 
             summary.MinPeakTopRT = (float)peaktopRtArray[0];
             summary.AverageminPeakTopRT = (float)peaktopRtArray.Average();
             summary.MedianminPeakTopRT = (float)BasicMathematics.Median(peaktopRtArray);
             summary.MaxPeakTopRT = (float)peaktopRtArray[peaktopRtArray.Length - 1];
             summary.StdevPeakTopRT = (float)BasicMathematics.Stdev(peaktopRtArray);
+
+            if (!chromPeakFeatures[0].DriftChromFeatures.IsEmptyOrNull()) {
+                var dtPeakWidths = new List<double>();
+                var dtPeakHeights = new List<double>();
+                var PeaktopDts = new List<double>();
+                foreach (var rtChromPeak in chromPeakFeatures) {
+                    foreach (var dtChromPeak in rtChromPeak.DriftChromFeatures.OrEmptyIfNull()) {
+                        dtPeakWidths.Add(dtChromPeak.PeakWidth());
+                        dtPeakHeights.Add(dtChromPeak.PeakHeightTop);
+                        PeaktopDts.Add(dtChromPeak.ChromXs.Value);
+                    }
+                }
+
+                var dtPeakWidthArray = dtPeakWidths.OrderBy(n => n).ToArray();
+                var dtPeakHeightArray = dtPeakHeights.OrderBy(n => n).ToArray();
+                var PeaktopDtArray = PeaktopDts.OrderBy(n => n).ToArray();
+
+
+                summary.MinPeakWidthOnDtAxis = (float)dtPeakWidthArray[0];
+                summary.AveragePeakWidthOnDtAxis = (float)dtPeakWidthArray.Average();
+                summary.MedianPeakWidthOnDtAxis = (float)BasicMathematics.Median(dtPeakWidthArray);
+                summary.MaxPeakWidthOnDtAxis = (float)dtPeakWidthArray[dtPeakWidthArray.Length - 1];
+                summary.StdevPeakWidthOnDtAxis = (float)BasicMathematics.Stdev(dtPeakWidthArray);
+
+                summary.MinPeakHeightOnDtAxis = (float)dtPeakHeightArray[0];
+                summary.AveragePeakHeightOnDtAxis = (float)dtPeakHeightArray.Average();
+                summary.MedianPeakHeightOnDtAxis = (float)BasicMathematics.Median(dtPeakHeightArray);
+                summary.MaxPeakHeightOnDtAxis = (float)dtPeakHeightArray[dtPeakHeightArray.Length - 1];
+                summary.StdevPeakHeightOnDtAxis = (float)BasicMathematics.Stdev(dtPeakHeightArray);
+
+                summary.MinPeakTopDT = (float)PeaktopDtArray[0];
+                summary.AverageminPeakTopDT = (float)PeaktopDtArray.Average();
+                summary.MedianminPeakTopDT = (float)BasicMathematics.Median(PeaktopDtArray);
+                summary.MaxPeakTopDT = (float)PeaktopDtArray[PeaktopDtArray.Length - 1];
+                summary.StdevPeakTopDT = (float)BasicMathematics.Stdev(PeaktopDtArray);
+            }
         }
     }
 }

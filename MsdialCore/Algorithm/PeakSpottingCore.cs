@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm {
         public List<ChromatogramPeakFeature> Execute3DFeatureDetection(List<RawSpectrum> spectrumList, ParameterBase param,
             float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit,
             Action<int> reportAction) {
-            var isTargetedMode = param.CompoundListInTargetMode.IsNotEmptyOrNull();
+            var isTargetedMode = !param.CompoundListInTargetMode.IsEmptyOrNull();
             if (isTargetedMode) {
                 return Execute3DFeatureDetectionTargetMode(spectrumList, param, chromBegin, chromEnd, type, unit, reportAction);
             }
@@ -63,10 +63,10 @@ namespace CompMs.MsdialCore.Algorithm {
             Action<int> reportAction) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var targetedScans = param.CompoundListInTargetMode;
-            if (!targetedScans.IsNotEmptyOrNull()) return null;
+            if (targetedScans.IsEmptyOrNull()) return null;
             foreach (var targetComp in targetedScans) {
                 var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumList, (float)targetComp.PrecursorMz, param, type, unit, chromBegin, chromEnd);
-                if (chromPeakFeatures.IsNotEmptyOrNull())
+                if (!chromPeakFeatures.IsEmptyOrNull())
                     chromPeakFeaturesList.Add(chromPeakFeatures);
             }
 
@@ -258,7 +258,7 @@ namespace CompMs.MsdialCore.Algorithm {
             feature.MS1RawSpectrumIdTop = accSpecList[peaklist[chromTopID].ID].OriginalIndex;
             feature.MS1RawSpectrumIdRight = accSpecList[peaklist[chromRightID].ID].OriginalIndex;
 
-            feature.MS2RawSpectrumID = -1; // at this moment, zero is inserted
+            feature.MS2RawSpectrumID = -1; // at this moment, zero must be inserted for deconvolution process
 
         }
 

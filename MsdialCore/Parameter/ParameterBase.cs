@@ -31,6 +31,7 @@ namespace CompMs.MsdialCore.Parameter {
         public TargetOmics TargetOmics { get; set; } = TargetOmics.Metablomics;
         public Ionization Ionization { get; set; } = Ionization.ESI;
         public SeparationType SeparationType { get; set; } = SeparationType.Chromatography;
+        public bool IsAIF { get; set; } = false;
 
 
 

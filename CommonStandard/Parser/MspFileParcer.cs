@@ -244,7 +244,7 @@ namespace CompMs.Common.Parser {
         }
 
         public static bool SetMspField(MoleculeMsReference mspObj, string fieldName, string fieldValue, StreamReader sr, bool isFiehnDB = false) {
-            if (!fieldValue.IsNotEmptyOrNull()) return false;
+            if (fieldValue.IsEmptyOrNull()) return false;
             switch (fieldName.ToLower()) {
                 // string
                 case "name": mspObj.Name = fieldValue;  return false;

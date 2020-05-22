@@ -12,7 +12,7 @@ namespace CompMs.Common.Extension {
             return collection ?? Enumerable.Empty<T>();
         }
 
-        public static bool IsNotEmptyOrNull<T>(this IEnumerable<T> collection) {
+        public static bool IsEmptyOrNull<T>(this IEnumerable<T> collection) {
             return collection != null && collection.Count() > 0;
         }
     }
