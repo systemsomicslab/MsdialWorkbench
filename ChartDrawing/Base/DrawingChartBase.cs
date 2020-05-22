@@ -10,49 +10,127 @@ namespace CompMs.Graphics.Core.Base
 {
     public class DrawingChartBase : IDrawingChart, INotifyPropertyChanged
     {
+        #region Property
         public Size RenderSize
         {
-            get => new Size(width, height);
-            set
-            {
-                SetProperty(ref width, value.Width);
-                SetProperty(ref height, value.Height);
-                OnPropertyChanged("Height");
-                OnPropertyChanged("Width");
-            }
+            get => renderSize;
+            set => SetProperty(ref renderSize, value);
         }
-        public double Height
-        {
-            get => height;
-            set
-            {
-                SetProperty(ref height, value);
-                OnPropertyChanged("RenderSize");
-            }
-        }
-        double height;
-        public double Width
-        {
-            get => width;
-            set
-            {
-                SetProperty(ref width, value);
-                OnPropertyChanged("RenderSize");
-            }
-        }
-        double width;
+        
         public Rect ChartArea
         {
             get => chartArea;
             set => SetProperty(ref chartArea, value);
         }
-        Rect chartArea;
+
+        public double ChartX
+        {
+            get => ChartArea.X;
+            set
+            {
+                if (ChartArea.X == value) return;
+                ChartArea = new Rect(value, ChartArea.Y, ChartArea.Width, ChartArea.Height);
+                OnPropertyChanged("ChartX");
+                OnPropertyChanged("ChartArea");
+            }
+        }
+
+        public double ChartY
+        {
+            get => ChartArea.Y;
+            set
+            {
+                if (ChartArea.Y == value) return;
+                ChartArea = new Rect(ChartArea.X, value, ChartArea.Width, ChartArea.Height);
+                OnPropertyChanged("ChartY");
+                OnPropertyChanged("ChartArea");
+            }
+        }
+
+        public double ChartWidth
+        {
+            get => ChartArea.Width;
+            set
+            {
+                if (ChartArea.Width == value) return;
+                ChartArea = new Rect(ChartArea.X, ChartArea.Y, value, ChartArea.Height);
+                OnPropertyChanged("ChartWidth");
+                OnPropertyChanged("ChartArea");
+            }
+        }
+
+        public double ChartHeight
+        {
+            get => ChartArea.Height;
+            set
+            {
+                if (ChartArea.Height == value) return;
+                ChartArea = new Rect(ChartArea.X, ChartArea.Y, ChartArea.Width, value);
+                OnPropertyChanged("ChartHeight");
+                OnPropertyChanged("ChartArea");
+            }
+        }
+
         public Rect InitialArea
         {
             get => initialArea;
             set => SetProperty(ref initialArea, value);
         }
+
+        public double InitialX
+        {
+            get => InitialArea.X;
+            set
+            {
+                if (InitialArea.X == value) return;
+                InitialArea = new Rect(value, InitialArea.Y, InitialArea.Width, InitialArea.Height);
+                OnPropertyChanged("InitialX");
+                OnPropertyChanged("InitialArea");
+            }
+        }
+
+        public double InitialY
+        {
+            get => InitialArea.Y;
+            set
+            {
+                if (InitialArea.Y == value) return;
+                InitialArea = new Rect(InitialArea.X, value, InitialArea.Width, InitialArea.Height);
+                OnPropertyChanged("InitialY");
+                OnPropertyChanged("InitialArea");
+            }
+        }
+
+        public double InitialWidth
+        {
+            get => InitialArea.Width;
+            set
+            {
+                if (InitialArea.Width == value) return;
+                InitialArea = new Rect(InitialArea.X, InitialArea.Y, value, InitialArea.Height);
+                OnPropertyChanged("InitialWidth");
+                OnPropertyChanged("InitialArea");
+            }
+        }
+
+        public double InitialHeight
+        {
+            get => InitialArea.Height;
+            set
+            {
+                if (InitialArea.Height == value) return;
+                InitialArea = new Rect(InitialArea.X, InitialArea.Y, InitialArea.Width, value);
+                OnPropertyChanged("InitialHeight");
+                OnPropertyChanged("InitialArea");
+            }
+        }
+        #endregion
+
+        #region field
+        Size renderSize;
+        Rect chartArea;
         Rect initialArea;
+        #endregion
 
         public virtual Drawing CreateChart()
         {
@@ -75,6 +153,7 @@ namespace CompMs.Graphics.Core.Base
                 );
         }
 
+        #region notify property change
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -83,12 +162,13 @@ namespace CompMs.Graphics.Core.Base
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyname = null)
             => OnPropertyChanged(new PropertyChangedEventArgs(propertyname));
 
-        protected bool SetProperty<T, U>(ref U property, T value, [CallerMemberName] string propertyname = null) where T : U
+        protected bool SetProperty<T>(ref T property, T value, [CallerMemberName] string propertyname = null)
         {
             if (value.Equals(property)) return false;
             property = value;
             OnPropertyChanged(propertyname);
             return true;
-        }       
+        }
+        #endregion
     }
 }
