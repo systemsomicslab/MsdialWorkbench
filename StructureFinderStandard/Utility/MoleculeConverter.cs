@@ -186,7 +186,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             var dbQueryStrings = getDabaseQueries(param.DatabaseQuery);
 
 
-            using (var fr = new FileStream(sdfFile, FileMode.Open)) {
+            using (var fr = new FileStream(sdfFile, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 var imr = new EnumerableSDFReader(fr, ChemObjectBuilder.Instance);
                 foreach (var container in imr) {
                     if (container == null)

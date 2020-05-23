@@ -216,21 +216,21 @@ namespace Rfx.Riken.OsakaUniv
             return result;
         }
 
-        private　WebResponse getWebResponse(WebRequest req)
-        {
+        private WebResponse getWebResponse(WebRequest req) {
             WebResponse res = null;
 
-            try
-            {
+            try {
                 res = req.GetResponse();
             }
-            catch (WebException ex) 
-            {
+            catch (WebException ex) {
                 Console.WriteLine("at getWebResponse: status {0}, message {1}", ex.Status, ex.Message);
                 res = null;
             }
-            finally 
-            {
+            catch (System.OperationCanceledException ex) {
+                Console.WriteLine("at getWebResponse: status {0}, message {1}", ex.HResult, ex.Message);
+                res = null;
+            }
+            finally {
             }
             return res;
         }
