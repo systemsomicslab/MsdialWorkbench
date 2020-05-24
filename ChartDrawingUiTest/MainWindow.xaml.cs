@@ -39,6 +39,7 @@ namespace ChartDrawingUiTest
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
                 {"LineAndScatter1", typeof(LineAndScatter1) },
+                {"LineAndScatter2", typeof(LineAndScatter2) },
                 {"Chromatogram1", typeof(Chromatogram1) },
                 // {"DrawingTest1", typeof(DrawingTest1) },
                 // {"BindingTest1", typeof(BindingTest1) },
