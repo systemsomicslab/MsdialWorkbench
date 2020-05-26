@@ -142,10 +142,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200210_addLipidLibrary\DGTSetcNeg\";
-            var testFilename = @"DGTS_FA_Neg_16-0-18-3.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200525_AAHFA\";
+            var testFilename = @"AAHFA4_0_26_0.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"DGTS-LDGTS_lib.txt";
+            var reffile = testFolder + @"FAHFA_[M-H]-.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);

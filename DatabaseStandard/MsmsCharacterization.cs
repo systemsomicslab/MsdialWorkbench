@@ -1,4 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.Common.Components;
+using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -5738,23 +5739,40 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                                 if ((double)(sn2Carbon / sn2Double) < 3) break;
                             }
 
-                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-SN1(HFA)-H]-
-                            var NL_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[M - SN2-H]-
+                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-(ExtraFA)-H]-
+                            var NL_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[ExtraFA]-
+                            var aahfaFrag1 = NL_SN1 - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
 
                             var query = new List<Peak>
                                         {
                                         new Peak() { Mz = NL_SN1, Intensity = 10.0 },
                                         new Peak() { Mz = NL_SN2, Intensity = 1.0 },
                                         };
+                            var query2 = new List<Peak>
+                                        {
+                                        new Peak() { Mz = aahfaFrag1, Intensity = 10.0 },
+                                        };
 
                             var foundCount = 0;
+                            var foundCount2 = 0;
                             var averageIntensity = 0.0;
+                            var averageIntensity2 = 0.0;
                             countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+                            countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
                             if (foundCount >= 2)
                             {
-                                var molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                var molecule = new LipidMolecule();
+                                if (foundCount2 == 1)
+                                {
+                                    molecule = getFahfaMoleculeObjAsLevel2_0("AAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                        sn2Carbon, sn2Double, averageIntensity2);
+                                }
+                                else
+                                {
+                                    molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
+                                }
                                 candidates.Add(molecule);
                             }
                         }

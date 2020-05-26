@@ -128,9 +128,9 @@
       <Project>{6edc27b3-4a32-4a20-99f9-035cddf9104f}</Project>
       <Name>MathematicsStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PairwisePlot\PairwisePlot.csproj">
+    <ProjectReference Include="..\PairwisePlotCommon\PairwisePlotCommon.csproj">
       <Project>{1ddacbb2-ac43-40bd-b094-091458158523}</Project>
-      <Name>PairwisePlot</Name>
+      <Name>PairwisePlotCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
