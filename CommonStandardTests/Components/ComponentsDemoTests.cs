@@ -83,10 +83,10 @@ namespace CompMs.Common.Components.Tests
             for (var i = 1; i < 10; i++)
             {
                 var mspRecord = new MspRecord();
-                mspRecord.ID = i;
+                mspRecord.ScanID = i;
                 mspRecord.PrecursorMz = 10 * i;
                 // mspRecord.Times = new Times(new RetentionTime(10));
-                mspRecord.Times = new Times() { RT = new RetentionTime(i * 0.1), RI = new RetentionIndex(i * 0.1 / 5), Drift = new DriftTime(3), MainType = TimeType.RT };
+                mspRecord.ChromXs = new ChromXs() { RT = new RetentionTime(i * 0.1), RI = new RetentionIndex(i * 0.1 / 5), Drift = new DriftTime(3), MainType = ChromXType.RT };
                 mspRecord.AddPeak(10 * i, 5);
                 mspRecord.AddPeak(10 * i, 15);
                 mspRecord.AddPeak(10 * i, 25);
@@ -122,15 +122,15 @@ namespace CompMs.Common.Components.Tests
         {
             int score = -1;
             if (Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz) < 1) score += 1;
-            if (prop1.Times.HasAbsolute() && prop2.Times.HasAbsolute())
-                if (Math.Abs(prop1.Times.RT.Value - prop2.Times.RT.Value) < 1)
+            if (prop1.ChromXs.HasAbsolute() && prop2.ChromXs.HasAbsolute())
+                if (Math.Abs(prop1.ChromXs.RT.Value - prop2.ChromXs.RT.Value) < 1)
                     score += 1;
-            if (prop1.Times.HasRelative() && prop2.Times.HasRelative())
-                if (Math.Abs(prop1.Times.RI.Value - prop2.Times.RI.Value) < 1)
+            if (prop1.ChromXs.HasRelative() && prop2.ChromXs.HasRelative())
+                if (Math.Abs(prop1.ChromXs.RI.Value - prop2.ChromXs.RI.Value) < 1)
                     score += 1;
-            if (prop1.Times.HasDrift() && prop2.Times.HasDrift())
+            if (prop1.ChromXs.HasDrift() && prop2.ChromXs.HasDrift())
             {
-                if (Math.Abs(prop1.Times.Drift.Value - prop2.Times.Drift.Value) < 1)
+                if (Math.Abs(prop1.ChromXs.Drift.Value - prop2.ChromXs.Drift.Value) < 1)
                 {
                     score += 1;
                 }
@@ -145,7 +145,7 @@ namespace CompMs.Common.Components.Tests
             if (DemoMsSpectrum != null)
             {
                 Debug.Print("Show MS spectrum");
-                Debug.Print($"ID: {DemoMsSpectrum.ID}, mz: ${DemoMsSpectrum.PrecursorMz:F3}, {DemoMsSpectrum.Times.GetRepresentativeTime().ToString()}");
+                Debug.Print($"ID: {DemoMsSpectrum.ScanID}, mz: ${DemoMsSpectrum.PrecursorMz:F3}, {DemoMsSpectrum.ChromXs.GetRepresentativeXAxis().ToString()}");
                 Debug.Print($"Num Peaks: {DemoMsSpectrum.Spectrum.Count}");
                 foreach (var peak in DemoMsSpectrum.Spectrum)
                 {
@@ -161,7 +161,7 @@ namespace CompMs.Common.Components.Tests
                 Debug.Print($"Num Peaks: {DemoChromatogram.Count}");
                 foreach (var peak in DemoChromatogram)
                 {
-                    Debug.Print($"ID: {peak.ID}\tmz: {peak.Mass:F2}\tint: {peak.Intensity:F1}\t{peak.Times.GetRepresentativeTime().ToString()}");
+                    Debug.Print($"ID: {peak.ID}\tmz: {peak.Mass:F2}\tint: {peak.Intensity:F1}\t{peak.ChromXs.GetRepresentativeXAxis().ToString()}");
                     if (counter++ > 10) return;
                 }
             }

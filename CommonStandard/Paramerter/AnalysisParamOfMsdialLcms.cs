@@ -452,8 +452,8 @@ namespace Rfx.Riken.OsakaUniv
             MultivariateAnalysisOption = MultivariateAnalysisOption.Plsda;
 
             IsIdentifiedImportedInStatistics = true;
-            IsAnnotatedImportedInStatistics = true;
-            IsUnknownImportedInStatistics = true;
+            IsAnnotatedImportedInStatistics = false;
+            IsUnknownImportedInStatistics = false;
 
             //Mrmprobs
             mpMs1Tolerance = 0.005F;

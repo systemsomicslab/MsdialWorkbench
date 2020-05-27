@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.FormulaGenerator.DataObj {
-    public sealed class AtomMassDiff {
-        private AtomMassDiff() { }
+    public sealed class MassDiffDictionary {
+        private MassDiffDictionary() { }
 
         public static double C13_C12 = 1.003354838;
         public static double H2_H1 = 1.006276746;

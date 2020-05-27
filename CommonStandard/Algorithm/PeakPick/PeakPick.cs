@@ -16,9 +16,9 @@ namespace CompMs.Common.Algorithm.PeakPick {
         public float IntensityAtPeakTop { get; set; } = -1.0F;
         public float IntensityAtRightPeakEdge { get; set; } = -1.0F;
         public float IntensityAtLeftPeakEdge { get; set; } = -1.0F;
-        public float RtAtPeakTop { get; set; } = -1.0F;
-        public float RtAtRightPeakEdge { get; set; } = -1.0F;
-        public float RtAtLeftPeakEdge { get; set; } = -1.0F;
+        public float ChromXAxisAtPeakTop { get; set; } = -1.0F;
+        public float ChromXAxisAtRightPeakEdge { get; set; } = -1.0F;
+        public float ChromXAxisAtLeftPeakEdge { get; set; } = -1.0F;
         public float AmplitudeOrderValue { get; set; } = -1.0F;
         public float AmplitudeScoreValue { get; set; } = -1.0F;
         public float SymmetryValue { get; set; } = -1.0F;
@@ -36,7 +36,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
     public sealed class PeakDetection {
         private PeakDetection() { }
         // below is a global peak detection method for gcms/lcms data preprocessing
-        public static List<PeakDetectionResult> PeakDetectionVS1(double minimumDatapointCriteria, double minimumAmplitudeCriteria, List<ChromatogramPeak> peaklist) {
+        public static List<PeakDetectionResult> PeakDetectionVS1(List<ChromatogramPeak> peaklist, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
             var results = new List<PeakDetectionResult>();
             #region
 
@@ -86,7 +86,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i > nextPeakCheckReminder + 2) nextPeakCheck = false;
                 if (isPeakStarted(i, ssPeaklist, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, results, nextPeakCheck)) {
                     datapoints = new List<double[]>();
-                    datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].Times.Value, peaklist[i].Mass, peaklist[i].Intensity,
+                    datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
                         firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
                     i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise);
@@ -218,7 +218,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     if (i + j + 1 > ssPeaklist.Count - 1) break;
                     if (ssPeaklist[i + j].Intensity <= ssPeaklist[i + j + 1].Intensity) break;
                     if (ssPeaklist[i + j].Intensity > ssPeaklist[i + j + 1].Intensity) {
-                        datapoints.Add(new double[] { peaklist[i + j + 1].ID, peaklist[i + j + 1].Times.Value, peaklist[i + j + 1].Mass,
+                        datapoints.Add(new double[] { peaklist[i + j + 1].ID, peaklist[i + j + 1].ChromXs.Value, peaklist[i + j + 1].Mass,
                                     peaklist[i + j + 1].Intensity, firstDiffPeaklist[i + j + 1], secondDiffPeaklist[i + j + 1] });
                         rightCheck = true;
                         trackcounter++;
@@ -237,7 +237,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i + 1 == ssPeaklist.Count - 1) break;
 
                 i++;
-                datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].Times.Value, peaklist[i].Mass, peaklist[i].Intensity,
+                datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
                             firstDiffPeaklist[i], secondDiffPeaklist[i] });
                 if (peaktopCheck == false &&
                     (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i] < 0) || (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i + 1] < 0) &&
@@ -259,7 +259,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i - j - 1 < 0) break;
                 if (ssPeaklist[i - j].Intensity <= ssPeaklist[i - j - 1].Intensity) break;
                 if (ssPeaklist[i - j].Intensity > ssPeaklist[i - j - 1].Intensity)
-                    datapoints.Insert(0, new double[] { peaklist[i - j - 1].ID, peaklist[i - j - 1].Times.Value,
+                    datapoints.Insert(0, new double[] { peaklist[i - j - 1].ID, peaklist[i - j - 1].ChromXs.Value,
                                 peaklist[i - j - 1].Mass, peaklist[i - j - 1].Intensity, firstDiffPeaklist[i - j - 1], secondDiffPeaklist[i - j - 1] });
             }
         }
@@ -366,7 +366,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 var intensity = ssPeaklist[i].Intensity - baseline[i].Intensity;
                 if (intensity < 0) intensity = 0;
                 baselineCorrectedPeaklist.Add(new ChromatogramPeak { 
-                    ID = peaklist[i].ID, Times = peaklist[i].Times, Mass = peaklist[i].Mass, Intensity = intensity });
+                    ID = peaklist[i].ID, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = intensity });
 
                 if (peaklist[i].Intensity > maxChromIntensity) maxChromIntensity = peaklist[i].Intensity;
                 if (peaklist[i].Intensity < minChromIntensity) minChromIntensity = peaklist[i].Intensity;
@@ -536,9 +536,9 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 IntensityAtPeakTop = (float)datapoints[peakTopId][3],
                 IntensityAtRightPeakEdge = (float)datapoints[datapoints.Count - 1][3],
                 PeakPureValue = (float)peakPureValue,
-                RtAtLeftPeakEdge = (float)datapoints[0][1],
-                RtAtPeakTop = (float)datapoints[peakTopId][1],
-                RtAtRightPeakEdge = (float)datapoints[datapoints.Count - 1][1],
+                ChromXAxisAtLeftPeakEdge = (float)datapoints[0][1],
+                ChromXAxisAtPeakTop = (float)datapoints[peakTopId][1],
+                ChromXAxisAtRightPeakEdge = (float)datapoints[datapoints.Count - 1][1],
                 ScanNumAtLeftPeakEdge = (int)datapoints[0][0],
                 ScanNumAtPeakTop = (int)datapoints[peakTopId][0],
                 ScanNumAtRightPeakEdge = (int)datapoints[datapoints.Count - 1][0],

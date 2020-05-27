@@ -104,11 +104,11 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     if (correctedIntensity < 0) correctedIntensity = 0;
                     if (peaklist[j].Intensity - correctedIntensity > 0)
                         correctedPeaklist.Add(new ChromatogramPeak { 
-                            ID = peaklist[j].ID, Times = peaklist[j].Times, Mass = peaklist[j].Mass, Intensity = peaklist[j].Intensity - correctedIntensity 
+                            ID = peaklist[j].ID, ChromXs = peaklist[j].ChromXs, Mass = peaklist[j].Mass, Intensity = peaklist[j].Intensity - correctedIntensity 
                         });
                     else
                         correctedPeaklist.Add(new ChromatogramPeak {
-                            ID = peaklist[j].ID, Times = peaklist[j].Times, Mass = peaklist[j].Mass, Intensity = 0
+                            ID = peaklist[j].ID, ChromXs = peaklist[j].ChromXs, Mass = peaklist[j].Mass, Intensity = 0
                         });
                 }
 
@@ -119,14 +119,14 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     if (peaklist[peaklist.Count - 1].Intensity - correctedIntensity > 0)
                         correctedPeaklist.Add(new ChromatogramPeak {
                             ID = peaklist[peaklist.Count - 1].ID, 
-                            Times = peaklist[peaklist.Count - 1].Times, 
+                            ChromXs = peaklist[peaklist.Count - 1].ChromXs, 
                             Mass = peaklist[peaklist.Count - 1].Mass,
                             Intensity = peaklist[peaklist.Count - 1].Intensity - correctedIntensity }
                         );
                     else
                         correctedPeaklist.Add(new ChromatogramPeak {
                             ID = peaklist[peaklist.Count - 1].ID,
-                            Times = peaklist[peaklist.Count - 1].Times,
+                            ChromXs = peaklist[peaklist.Count - 1].ChromXs,
                             Mass = peaklist[peaklist.Count - 1].Mass,
                             Intensity = 0
                         });

@@ -115,6 +115,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructureTest", "DataSt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonStandardTests", "CommonStandardTests\CommonStandardTests.csproj", "{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCore", "MsdialCore\MsdialCore.csproj", "{B39EB5F8-713A-49CC-B0E9-B4040687CB81}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCore", "MsdialDimsCore\MsdialDimsCore.csproj", "{1D3CE027-CDD7-446E-A190-AE99A129CEB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialDimsCoreTestApp", "MsdialDimsCoreTestApp\MsdialDimsCoreTestApp.csproj", "{B28A486E-7061-44E0-9CA9-A41B49B5790E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -345,12 +351,24 @@ Global
 		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{629337F8-F6E7-41F2-8DF7-FEBA23AF1222}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39EB5F8-713A-49CC-B0E9-B4040687CB81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B39EB5F8-713A-49CC-B0E9-B4040687CB81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B39EB5F8-713A-49CC-B0E9-B4040687CB81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B39EB5F8-713A-49CC-B0E9-B4040687CB81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
