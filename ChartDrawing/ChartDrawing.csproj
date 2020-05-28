@@ -71,9 +71,9 @@
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />
     <Compile Include="Base\ChartControl.cs" />
-    <Compile Include="Behavior\DataLabelAdorner.cs" />
+    <Compile Include="Adorner\DataLabelAdorner.cs" />
     <Compile Include="Behavior\DataLabelBehavior.cs" />
-    <Compile Include="Behavior\RubberAdorner.cs" />
+    <Compile Include="Adorner\RubberAdorner.cs" />
     <Compile Include="Behavior\RubberBehavior.cs" />
     <Compile Include="Behavior\WheelZoomBehavior.cs" />
     <Compile Include="Command\SavePngCommand.cs" />
@@ -113,9 +113,9 @@
     <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
-    <Compile Include="Scatter\DataPoint.cs" />
+    <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\DrawingScatter.cs" />
-    <Compile Include="Scatter\DrawingVisualDataPoint.cs" />
+    <Compile Include="Base\DrawingVisualDataPoint.cs" />
     <Compile Include="Scatter\ScatterChart.cs" />
     <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 
-namespace CompMs.Graphics.Scatter
+namespace CompMs.Graphics.Core.Base
 {
     public class DataPoint : INotifyPropertyChanged
     {
@@ -32,6 +32,11 @@ namespace CompMs.Graphics.Scatter
         public DataPoint()
         {
             ID = member_id++;
+        }
+
+        public override string ToString()
+        {
+            return $"X={X} Y={Y} Type={Type} ID={ID}";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

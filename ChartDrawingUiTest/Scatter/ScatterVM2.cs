@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Scatter;
 
 namespace ChartDrawingUiTest.Scatter

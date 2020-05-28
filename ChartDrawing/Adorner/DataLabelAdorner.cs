@@ -8,9 +8,9 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Core.Behavior
+namespace CompMs.Graphics.Core.Adorner
 {
-    internal class DataLabelAdorner : Adorner
+    internal class DataLabelAdorner : System.Windows.Documents.Adorner
     {
         public DataLabelAdorner(
             UIElement adornedElement,

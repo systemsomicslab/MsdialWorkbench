@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace CompMs.Graphics.Scatter
+namespace CompMs.Graphics.Core.Base
 {
     public class DrawingVisualDataPoint : DrawingVisual
     {
