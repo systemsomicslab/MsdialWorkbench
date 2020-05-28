@@ -60,8 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BasicClass.cs" />
+    <Compile Include="Base\DataSeries.cs" />
     <Compile Include="Base\DrawingChartBase.cs" />
     <Compile Include="Base\DrawingChartGroup.cs" />
+    <Compile Include="Base\DrawingVisualDataSeries.cs" />
     <Compile Include="Behavior\DataLabelBehavior2.cs" />
     <Compile Include="Behavior\MoveChartBehavior.cs" />
     <Compile Include="Behavior\ResetZoomBehavior.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Heatmap\HeatmapElement.cs" />
     <Compile Include="Heatmap\HeatmapManager.cs" />
     <Compile Include="LineChart\DrawingLineChart.cs" />
+    <Compile Include="LineChart\LineChart.cs" />
     <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />

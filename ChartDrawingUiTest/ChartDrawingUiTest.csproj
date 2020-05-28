@@ -74,7 +74,11 @@
     <Compile Include="LineChart\LineChart2.xaml.cs">
       <DependentUpon>LineChart2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LineChart\LineChart3.xaml.cs">
+      <DependentUpon>LineChart3.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LineChart\LineChartVM2.cs" />
+    <Compile Include="LineChart\LineChartVM3.cs" />
     <Compile Include="Scatter\Scatter1.xaml.cs">
       <DependentUpon>Scatter1.xaml</DependentUpon>
     </Compile>
@@ -144,6 +148,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LineChart\LineChart2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LineChart\LineChart3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
