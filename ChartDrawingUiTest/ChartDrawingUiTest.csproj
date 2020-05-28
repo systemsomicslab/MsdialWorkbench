@@ -78,7 +78,11 @@
     <Compile Include="Scatter\Scatter1.xaml.cs">
       <DependentUpon>Scatter1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Scatter\Scatter2.xaml.cs">
+      <DependentUpon>Scatter2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Scatter\ScatterVM.cs" />
+    <Compile Include="Scatter\ScatterVM2.cs" />
     <Page Include="Chromatogram\Chromatogram1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -204,6 +208,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Scatter\Scatter1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Scatter\Scatter2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
