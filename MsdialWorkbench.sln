@@ -119,7 +119,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCore", "MsdialCore\Ms
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCore", "MsdialDimsCore\MsdialDimsCore.csproj", "{1D3CE027-CDD7-446E-A190-AE99A129CEB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialDimsCoreTestApp", "MsdialDimsCoreTestApp\MsdialDimsCoreTestApp.csproj", "{B28A486E-7061-44E0-9CA9-A41B49B5790E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTestApp", "MsdialDimsCoreTestApp\MsdialDimsCoreTestApp.csproj", "{B28A486E-7061-44E0-9CA9-A41B49B5790E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialDimsCoreUiTestApp", "MsdialDimsCoreUiTestApp\MsdialDimsCoreUiTestApp.csproj", "{8BDFBF53-884D-447D-ABA8-9D408A7F982E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -363,12 +365,16 @@ Global
 		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal
