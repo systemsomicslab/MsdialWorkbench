@@ -5,7 +5,13 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
+
+using CompMs.Graphics.Core.Adorner;
+using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Scatter
 {
@@ -45,7 +51,7 @@ namespace CompMs.Graphics.Scatter
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public IList<Brush> Brushes  
+        public IList<Brush> Brushes
         {
             get => (IList<Brush>)GetValue(BrushesProperty);
             set => SetValue(BrushesProperty, value);
@@ -73,13 +79,33 @@ namespace CompMs.Graphics.Scatter
         #region field
         private VisualCollection visualChildren;
         private List<PropertyChangedEventHandler> handlers;
+        private ToolTip tooltip;
+        private ICollectionView cv;
+        private RubberAdorner adorner;
+        private Point zoomInitial;
+        private Point moveCurrent;
+        private bool moving;
         #endregion
 
         public ScatterChart()
         {
             visualChildren = new VisualCollection(this);
             handlers = new List<PropertyChangedEventHandler>();
+            tooltip = new ToolTip();
+            ToolTip = tooltip;
+            ToolTipService.SetInitialShowDelay(this, 0);
+
             SizeChanged += OnSizeChanged;
+            MouseWheel += ZoomOnMouseWheel;
+            MouseRightButtonDown += ZoomOnMouseRightButtonDown;
+            MouseRightButtonUp += ZoomOnMouseRightButtonUp;
+            MouseMove += ZoomOnMouseMove;
+            MouseLeftButtonDown += MoveOnMouseLeftButtonDown;
+            MouseLeftButtonUp += MoveOnMouseLeftButtonUp;
+            MouseMove += MoveOnMouseMove;
+            MouseLeftButtonDown += ResetOnDoubleClick;
+            MouseMove += OnFocusDataPoint;
+            MouseLeftButtonDown += SelectDataPointOnClick;
         }
 
         private void AddDrawingVisual(DataPoint dp)
@@ -114,10 +140,7 @@ namespace CompMs.Graphics.Scatter
             var dc = dv.RenderOpen();
             dc.DrawEllipse(
                 Brushes[dp.Type], null,
-                new Point(
-                    (dp.X - ChartArea.Left) / ChartArea.Width * ActualWidth,
-                    (ChartArea.Bottom - dp.Y) / ChartArea.Height * ActualHeight
-                    ),
+                ConvertValueToRenderPosition(new Point(dp.X, dp.Y)),
                 Radius, Radius);
             dc.Close();
         }
@@ -125,6 +148,7 @@ namespace CompMs.Graphics.Scatter
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as ScatterChart;
+            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource);
             if (chart == null) return;
 
             if (e.OldValue != null)
@@ -199,6 +223,169 @@ namespace CompMs.Graphics.Scatter
                 case NotifyCollectionChangedAction.Move:
                     break;
             }
+        }
+
+        void ZoomOnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var p = e.GetPosition(this);
+            var delta = e.Delta;
+            var scale = 1 - 0.1 * Math.Sign(delta);
+
+            var xmin = p.X * (1 - scale);
+            var xmax = p.X + (ActualWidth - p.X) * scale;
+            var ymin = p.Y * (1 - scale);
+            var ymax = p.Y + (ActualHeight - p.Y) * scale;
+
+                ChartArea = Rect.Intersect(
+                    new Rect(
+                        ConvertRenderPositionToValue(new Point(xmin, ymin)),
+                        ConvertRenderPositionToValue(new Point(xmax, ymax))
+                        ),
+                    InitialArea
+                    );
+        }
+
+        void ZoomOnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            zoomInitial = e.GetPosition(this);
+            adorner = new RubberAdorner(this, zoomInitial);
+            CaptureMouse();
+        }
+
+        void ZoomOnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (adorner != null)
+            {
+                var initial = zoomInitial;
+                var current = e.GetPosition(this);
+                adorner.Offset = current - initial;
+            }
+        }
+
+        void ZoomOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (adorner != null)
+            {
+                ReleaseMouseCapture();
+                adorner.Detach();
+                adorner = null;
+                ChartArea = Rect.Intersect(
+                    new Rect(
+                        ConvertRenderPositionToValue(zoomInitial),
+                        ConvertRenderPositionToValue(e.GetPosition(this))
+                        ),
+                    InitialArea
+                    );
+            }
+        }
+
+        void MoveOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            moveCurrent = e.GetPosition(this);
+            moving = true;
+        }
+
+        void MoveOnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (moving)
+            {
+                var previous = moveCurrent;
+                moveCurrent = e.GetPosition(this);
+                var area = Rect.Offset(new Rect(RenderSize), previous - moveCurrent);
+                var cand = new Rect(
+                        ConvertRenderPositionToValue(area.TopLeft),
+                        ConvertRenderPositionToValue(area.BottomRight)
+                        );
+                if (InitialArea.Contains(cand))
+                    ChartArea = cand;
+            }
+        }
+
+        void MoveOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (moving)
+            {
+                moving = false;
+            }
+        }
+
+        void ResetOnDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                ChartArea = InitialArea;
+            }
+        }
+
+        Point ConvertRenderPositionToValue(Point p)
+        {
+            return new Point(
+                p.X / ActualWidth * ChartArea.Width + ChartArea.Left,
+                ChartArea.Bottom - p.Y / ActualHeight * ChartArea.Height
+                );
+        }
+
+        Point ConvertValueToRenderPosition(Point p)
+        {
+            return new Point(
+                (p.X - ChartArea.Left) / ChartArea.Width * ActualWidth,
+                (ChartArea.Bottom - p.Y) / ChartArea.Height * ActualHeight
+                );
+        }
+
+        void OnFocusDataPoint(object sender, MouseEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+
+            tooltip.IsOpen = false;
+            tooltip.Content = "";
+            VisualTreeHelper.HitTest(this,
+                new HitTestFilterCallback(DataPointHitTestFilter),
+                new HitTestResultCallback(DataPointTipHitTest),
+                new PointHitTestParameters(pt)
+                );
+        }
+
+        void SelectDataPointOnClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 1)
+            {
+                var pt = e.GetPosition(this);
+
+                VisualTreeHelper.HitTest(this,
+                    new HitTestFilterCallback(DataPointHitTestFilter),
+                    new HitTestResultCallback(DataPointSelectHitTest),
+                    new PointHitTestParameters(pt)
+                    );
+
+                }
+        }
+
+        HitTestFilterBehavior DataPointHitTestFilter(DependencyObject d)
+        {
+            if (d is DrawingVisualDataPoint)
+                return HitTestFilterBehavior.Continue;
+            return HitTestFilterBehavior.ContinueSkipSelf;
+        }
+
+        HitTestResultBehavior DataPointTipHitTest(HitTestResult result)
+        {
+            var focussed = (DrawingVisualDataPoint)result.VisualHit;
+            tooltip.Content = focussed.DataPoint;
+            tooltip.IsOpen = true;
+            return HitTestResultBehavior.Stop;
+        }
+
+        HitTestResultBehavior DataPointSelectHitTest(HitTestResult result)
+        {
+            var focussed = (DrawingVisualDataPoint)result.VisualHit;
+            cv.MoveCurrentTo(focussed.DataPoint);
+            return HitTestResultBehavior.Stop;
+        }
+
+        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+        {
+            return new PointHitTestResult(this, hitTestParameters.HitPoint);
         }
 
         int VisualChildrenLowerBound(DataPoint dp)

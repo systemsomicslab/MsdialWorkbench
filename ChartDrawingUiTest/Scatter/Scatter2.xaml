@@ -19,8 +19,19 @@
         </x:Array>
     </Page.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
         <chart:ScatterChart ItemsSource="{Binding Series}"
                             Brushes="{StaticResource ChartBrushes}"
                             Margin="5" />
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="1">
+            <TextBlock Text="X="/>
+            <TextBlock Text="{Binding Series/X}"/>
+            <TextBlock Text=" Y="/>
+            <TextBlock Text="{Binding Series/Y}"/>
+        </StackPanel>
     </Grid>
 </Page>
