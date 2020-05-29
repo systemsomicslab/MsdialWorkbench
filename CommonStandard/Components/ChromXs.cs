@@ -10,13 +10,13 @@ namespace CompMs.Common.Components
     public class ChromXs: IChromXs
     {
         [Key(0)]
-        public ChromX RT { get; set; }
+        public ChromX RT { get; set; } = new RetentionTime(-1);
         [Key(1)]
-        public ChromX RI { get; set; }
+        public ChromX RI { get; set; } = new RetentionIndex(-1);
         [Key(2)]
-        public ChromX Drift { get; set; }
+        public ChromX Drift { get; set; } = new DriftTime(-1);
         [Key(3)]
-        public ChromX Mz { get; set; }
+        public ChromX Mz { get; set; } = new MzValue(-1);
         [Key(4)]
         public ChromXType MainType { get; set; } = ChromXType.RT;
         public ChromXs () { }

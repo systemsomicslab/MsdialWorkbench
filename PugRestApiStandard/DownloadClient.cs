@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -16,9 +17,12 @@ namespace Rfx.Riken.OsakaUniv
             {
                 new WebClient().DownloadFile(uri, path);
             }
+            catch (IOException e) {
+                Console.WriteLine("failed: {0}, {1}", url, e.Message);
+            }
             catch (Exception e)
             {
-                Console.WriteLine("failed: {0}, {1}", url, e);
+                Console.WriteLine("failed: {0}, {1}", url, e.Message);
             }
 
             //var client = new WebClient();

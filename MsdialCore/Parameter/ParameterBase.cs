@@ -113,11 +113,7 @@ namespace CompMs.MsdialCore.Parameter {
         public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() { SolventType = SolventType.CH3COONH4 };
         public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
 
-        public bool IsUseTimeForAnnotationFiltering { get; set; } = false;
-        public bool IsUseTimeForAnnotationScoring { get; set; } = false;
-        public bool IsUseCcsForAnnotationFiltering { get; set; } = false;
-        public bool IsUseCcsForAnnotationScoring { get; set; } = false;
-
+       
         public bool OnlyReportTopHitInMspSearch { get; set; } = false;
         public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
             RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
@@ -125,6 +121,8 @@ namespace CompMs.MsdialCore.Parameter {
         public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;
         public float RelativeAbundanceCutOff { get; set; } = 0.0F;
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
+
+        public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
 
         // deconvolution
         public float SigmaWindowValue { get; set; } = 0.5F;
@@ -205,5 +203,11 @@ namespace CompMs.MsdialCore.Parameter {
         public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = null;
         public List<StandardCompound> StandardCompounds { get; set; } = null;
 
+    }
+
+    public class RiDictionaryInfo {
+        
+        public string DictionaryFilePath { get; set; } = string.Empty;
+        public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
     }
 }

@@ -105,8 +105,16 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param) {
-            return CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            if (isUseRetentionIndex) {
+                result.TotalSimilarity = (float)GetTotalSimilarity(result.RiSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+            }
+            else {
+                result.TotalSimilarity = (float)GetTotalSimilarity(result.RtSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+            }
+            return result;
         }
 
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
@@ -1625,6 +1633,15 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return (msmsFactor * msmsSimilarity + massFactor * accurateMassSimilarity + rtFactor * rtSimilarity + isotopeFactor * isotopeSimilarity)
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor);
                 }
+            }
+        }
+
+        public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT) {
+            if (rtSimilarity < 0 || !isUseRT) {
+                return eiSimilarity;
+            }
+            else {
+                return (0.6 * eiSimilarity + 0.4 * rtSimilarity);
             }
         }
     }
