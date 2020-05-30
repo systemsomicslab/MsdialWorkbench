@@ -24,5 +24,10 @@ namespace ChartDrawingUiTest.Scatter
         {
             InitializeComponent();
         }
+
+        private void scatter_Loaded(object sender, RoutedEventArgs e)
+        {
+            scatter.ChartArea = scatter.InitialArea;
+        }
     }
 }

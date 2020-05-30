@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,48 +14,64 @@ using System.Windows.Media;
 using CompMs.Graphics.Core.Adorner;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Scatter
+
+namespace CompMs.Graphics.GraphAxis
 {
-    public class ScatterChart : FrameworkElement
+    public class ContinuousVerticalAxis : FrameworkElement
     {
         #region DependencyProperty
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-            nameof(ItemsSource), typeof(ObservableCollection<DataPoint>), typeof(ScatterChart),
-            new PropertyMetadata(default(ObservableCollection<DataPoint>), OnItemsSourceChanged)
+        public static readonly DependencyProperty MinYProperty = DependencyProperty.Register(
+            nameof(MinY), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(default(double), OnMinYChanged)
             );
 
-        public static readonly DependencyProperty BrushesProperty = DependencyProperty.Register(
-            nameof(Brushes), typeof(IList<Brush>), typeof(ScatterChart),
-            new PropertyMetadata(default(IList<Brush>))
+        public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(
+            nameof(MaxY), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(default(double), OnMaxYChanged)
             );
 
         public static readonly DependencyProperty ChartAreaProperty = DependencyProperty.Register(
-            nameof(ChartArea), typeof(Rect), typeof(ScatterChart),
-            new PropertyMetadata(default(Rect), OnChartAreaChanged)
+            nameof(ChartArea), typeof(Rect), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(default(Rect), UpdateVisual)
             );
 
         public static readonly DependencyProperty InitialAreaProperty = DependencyProperty.Register(
-            nameof(InitialArea), typeof(Rect), typeof(ScatterChart),
+            nameof(InitialArea), typeof(Rect), typeof(ContinuousVerticalAxis),
             new PropertyMetadata(default(Rect))
             );
 
-        public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(
-            nameof(Radius), typeof(double), typeof(ScatterChart),
-            new FrameworkPropertyMetadata(2d)
+        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register(
+            nameof(FontSize), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(14d)
+            );
+
+        public static readonly DependencyProperty TicknessProperty = DependencyProperty.Register(
+            nameof(Tickness), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(1d)
+            );
+
+        public static readonly DependencyProperty MajorTickSizeProperty = DependencyProperty.Register(
+            nameof(MajorTickSize), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(5d)
+            );
+
+        public static readonly DependencyProperty MinorTickSizeProperty = DependencyProperty.Register(
+            nameof(MinorTickSize), typeof(double), typeof(ContinuousVerticalAxis),
+            new PropertyMetadata(3d)
             );
         #endregion
 
         #region Property
-        public ObservableCollection<DataPoint> ItemsSource
+        public double MinY
         {
-            get => (ObservableCollection<DataPoint>)GetValue(ItemsSourceProperty);
-            set => SetValue(ItemsSourceProperty, value);
+            get => (double)GetValue(MinYProperty);
+            set => SetValue(MinYProperty, value);
         }
 
-        public IList<Brush> Brushes
+        public double MaxY
         {
-            get => (IList<Brush>)GetValue(BrushesProperty);
-            set => SetValue(BrushesProperty, value);
+            get => (double)GetValue(MaxYProperty);
+            set => SetValue(MaxYProperty, value);
         }
 
         public Rect ChartArea
@@ -69,31 +86,60 @@ namespace CompMs.Graphics.Scatter
             set => SetValue(InitialAreaProperty, value);
         }
 
-        public double Radius
+        public double FontSize
         {
-            get => (double)GetValue(RadiusProperty);
-            set => SetValue(RadiusProperty, value);
+            get => (double)GetValue(FontSizeProperty);
+            set => SetValue(FontSizeProperty, value);
+        }
+
+        public double Tickness
+        {
+            get => (double)GetValue(TicknessProperty);
+            set => SetValue(TicknessProperty, value);
+        }
+
+        public double MajorTickSize
+        {
+            get => (double)GetValue(MajorTickSizeProperty);
+            set => SetValue(MajorTickSizeProperty, value);
+        }
+
+        public double MinorTickSize
+        {
+            get => (double)GetValue(MinorTickSizeProperty);
+            set => SetValue(MinorTickSizeProperty, value);
+        }
+
+        public decimal TickInterval => (decimal)Math.Pow(10, Math.Floor(Math.Log10(ChartArea.Height)));
+        public string LabelFormat
+        {
+            get
+            {
+                var exp = Math.Floor(Math.Log10(ChartArea.Bottom));
+                return exp > 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
+            }
         }
         #endregion
 
         #region field
         private VisualCollection visualChildren;
-        private List<PropertyChangedEventHandler> handlers;
         private ToolTip tooltip;
-        private ICollectionView cv;
         private RubberAdorner adorner;
         private Point zoomInitial;
         private Point moveCurrent;
         private bool moving;
+        private Brush textBrush = Brushes.Black;
+        private Pen tickPen;
         #endregion
 
-        public ScatterChart()
+        public ContinuousVerticalAxis()
         {
             visualChildren = new VisualCollection(this);
-            handlers = new List<PropertyChangedEventHandler>();
             tooltip = new ToolTip();
             ToolTip = tooltip;
             ToolTipService.SetInitialShowDelay(this, 0);
+            tickPen = new Pen(Brushes.Black, 2);
+            tickPen.Freeze();
 
             SizeChanged += OnSizeChanged;
             MouseWheel += ZoomOnMouseWheel;
@@ -108,121 +154,93 @@ namespace CompMs.Graphics.Scatter
             MouseLeftButtonDown += SelectDataPointOnClick;
         }
 
-        private void AddDrawingVisual(DataPoint dp)
+        private void DrawMajorDrawingVisual(DrawingVisualDataPoint dv)
         {
-            var dv = new DrawingVisualDataPoint(dp);
-            DrawDrawingVisual(dv);
-
-            var index = VisualChildrenLowerBound(dp);
-            visualChildren.Insert(index, dv);
-
-            PropertyChangedEventHandler handler = (s, e) => DrawDrawingVisual(dv);
-            handlers.Insert(index, handler);
-            dp.PropertyChanged += handler;
-        }
-
-        private void RemoveDrawingVisual(DataPoint dp)
-        {
-            var index = VisualChildrenLowerBound(dp);
-
-            if (((DrawingVisualDataPoint)visualChildren[index]).DataPoint.ID != dp.ID) return;
-
-            visualChildren.RemoveAt(index);
-
-            dp.PropertyChanged -= handlers[index];
-            handlers.RemoveAt(index);
-        }
-
-        private void DrawDrawingVisual(DrawingVisualDataPoint dv)
-        {
-            var dp = dv.DataPoint;
-            dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+            var y = dv.DataPoint.Y;
             var dc = dv.RenderOpen();
-            dc.DrawEllipse(
-                Brushes[dp.Type], null,
-                ConvertValueToRenderPosition(new Point(dp.X, dp.Y)),
-                Radius, Radius);
+            var yy = ConvertValueToRenderPosition(new Point(0, y)).Y;
+            dc.DrawLine(tickPen, new Point(ActualWidth, yy), new Point(ActualWidth - MajorTickSize, yy));
+            var formattedText = new FormattedText(
+                y.ToString(LabelFormat), CultureInfo.GetCultureInfo("en-us"),
+                FlowDirection.LeftToRight, new Typeface("Calibii"), FontSize, textBrush, 1
+                )
+            {
+                MaxTextWidth = ActualWidth * 0.8,
+            };
+            dc.DrawText(formattedText,  new Point(ActualWidth * 0.8 - formattedText.Width, yy - formattedText.Height / 2));
             dc.Close();
         }
 
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void DrawMinorDrawingVisual(DrawingVisualDataPoint dv)
         {
-            var chart = d as ScatterChart;
-            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource);
-            if (chart == null) return;
+            var y = dv.DataPoint.Y;
+            dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+            var dc = dv.RenderOpen();
+            var yy = ConvertValueToRenderPosition(new Point(0, y)).Y;
+            dc.DrawLine(tickPen, new Point(ActualWidth, yy), new Point(ActualWidth - MinorTickSize, yy));
+            dc.Close();
+        }
 
-            if (e.OldValue != null)
+        public void UpdateVisualChildren()
+        {
+            if (TickInterval == 0) return;
+
+            decimal shortTickInterval;
+            var fold = (decimal)ChartArea.Height / TickInterval;
+            if (fold >= 5) shortTickInterval = TickInterval * (decimal)0.5;
+            else if (fold >= 2) shortTickInterval = TickInterval * (decimal)0.25;
+            else shortTickInterval = TickInterval * (decimal)0.1;
+
+            for(var i = Math.Ceiling((decimal)ChartArea.Top / TickInterval); i * TickInterval <= (decimal)ChartArea.Bottom; ++i)
             {
-                if (e.OldValue is ObservableCollection<DataPoint> dps)
-                {
-                    chart.visualChildren.Clear();
-                    foreach (var dp in dps.OrderByDescending(dp => dp.ID))
-                        chart.RemoveDrawingVisual(dp);
-                    chart.ItemsSource.CollectionChanged -= chart.OnItemsSourceElementChanged;
-                }
+                var dv = new DrawingVisualDataPoint(new DataPoint() { Y = (double)(i * TickInterval) });
+                DrawMajorDrawingVisual(dv);
+                visualChildren.Add(dv);
             }
-            if (e.NewValue != null)
+            if (shortTickInterval == 0) return;
+            for(var i = Math.Ceiling((decimal)ChartArea.Top / shortTickInterval); i * shortTickInterval <= (decimal)ChartArea.Bottom; ++i)
             {
-                if (e.NewValue is ObservableCollection<DataPoint> dps)
-                {
-                    var area = new Rect(
-                        new Point(dps.Min(dp => dp.X), dps.Min(dp => dp.Y)),
-                        new Point(dps.Max(dp => dp.X), dps.Max(dp => dp.Y))
-                        );
-                    area.Inflate(area.Width * 0.05, area.Height * 0.05);
-                    chart.InitialArea = area;
-                    chart.ChartArea = area;
-                    foreach (var dp in dps.OrderBy(dp => dp.ID))
-                        chart.AddDrawingVisual(dp);
-                    chart.ItemsSource.CollectionChanged += chart.OnItemsSourceElementChanged;
-                }
+                var dv = new DrawingVisualDataPoint(new DataPoint() { Y = (double)(i * shortTickInterval) });
+                DrawMinorDrawingVisual(dv);
+                visualChildren.Add(dv);
             }
         }
 
-        static void OnChartAreaChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void UpdateVisual(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var chart = d as ScatterChart;
+            var chart = d as ContinuousVerticalAxis;
             if (chart == null) return;
 
-            foreach (var dv in chart.visualChildren)
-                chart.DrawDrawingVisual((DrawingVisualDataPoint)dv);
+            chart.visualChildren.Clear();
+            chart.UpdateVisualChildren();
+        }
+
+        static void OnMinYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var chart = d as ContinuousVerticalAxis;
+            if (chart == null) return;
+
+            chart.InitialArea = new Rect(new Point(0, (double)e.NewValue), chart.InitialArea.BottomRight);
+            chart.ChartArea = chart.InitialArea;
+            chart.visualChildren.Clear();
+            chart.UpdateVisualChildren();
+        }
+
+        static void OnMaxYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var chart = d as ContinuousVerticalAxis;
+            if (chart == null) return;
+
+            chart.InitialArea = new Rect(chart.InitialArea.TopLeft, new Point(0, (double)e.NewValue));
+            chart.ChartArea = chart.InitialArea;
+            chart.visualChildren.Clear();
+            chart.UpdateVisualChildren();
         }
 
         void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            foreach (var dv in visualChildren)
-                DrawDrawingVisual((DrawingVisualDataPoint)dv);
-        }
-
-        void OnItemsSourceElementChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    if (e.NewItems == null || e.NewItems.Count == 0) break;
-                    foreach (var item in e.NewItems)
-                        AddDrawingVisual((DataPoint)item);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    if (e.OldItems == null || e.OldItems.Count == 0) break;
-                    foreach (var item in e.OldItems)
-                        RemoveDrawingVisual((DataPoint)item);
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    if (e.OldItems != null && e.OldItems.Count != 0)
-                        foreach (var item in e.OldItems)
-                            RemoveDrawingVisual((DataPoint)item);
-                    if (e.NewItems != null && e.NewItems.Count != 0)
-                        foreach (var item in e.NewItems)
-                            AddDrawingVisual((DataPoint)item);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    foreach (var dv in visualChildren)
-                        RemoveDrawingVisual(((DrawingVisualDataPoint)dv).DataPoint);
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-            }
+            visualChildren.Clear();
+            UpdateVisualChildren();
         }
 
         void ZoomOnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -231,15 +249,13 @@ namespace CompMs.Graphics.Scatter
             var delta = e.Delta;
             var scale = 1 - 0.1 * Math.Sign(delta);
 
-            var xmin = p.X * (1 - scale);
-            var xmax = p.X + (ActualWidth - p.X) * scale;
             var ymin = p.Y * (1 - scale);
             var ymax = p.Y + (ActualHeight - p.Y) * scale;
 
                 ChartArea = Rect.Intersect(
                     new Rect(
-                        ConvertRenderPositionToValue(new Point(xmin, ymin)),
-                        ConvertRenderPositionToValue(new Point(xmax, ymax))
+                        ConvertRenderPositionToValue(new Point(0, ymin)),
+                        ConvertRenderPositionToValue(new Point(0, ymax))
                         ),
                     InitialArea
                     );
@@ -321,18 +337,12 @@ namespace CompMs.Graphics.Scatter
 
         Point ConvertRenderPositionToValue(Point p)
         {
-            return new Point(
-                p.X / ActualWidth * ChartArea.Width + ChartArea.Left,
-                ChartArea.Bottom - p.Y / ActualHeight * ChartArea.Height
-                );
+            return new Point(0, ChartArea.Bottom - p.Y / ActualHeight * ChartArea.Height);
         }
 
         Point ConvertValueToRenderPosition(Point p)
         {
-            return new Point(
-                (p.X - ChartArea.Left) / ChartArea.Width * ActualWidth,
-                (ChartArea.Bottom - p.Y) / ChartArea.Height * ActualHeight
-                );
+            return new Point(0, (ChartArea.Bottom - p.Y) / ChartArea.Height * ActualHeight);
         }
 
         void OnFocusDataPoint(object sender, MouseEventArgs e)
@@ -373,7 +383,7 @@ namespace CompMs.Graphics.Scatter
         HitTestResultBehavior DataPointTipHitTest(HitTestResult result)
         {
             var focussed = (DrawingVisualDataPoint)result.VisualHit;
-            tooltip.Content = focussed.DataPoint;
+            tooltip.Content = focussed.DataPoint.Y.ToString();
             tooltip.IsOpen = true;
             return HitTestResultBehavior.Stop;
         }
@@ -381,27 +391,12 @@ namespace CompMs.Graphics.Scatter
         HitTestResultBehavior DataPointSelectHitTest(HitTestResult result)
         {
             var focussed = (DrawingVisualDataPoint)result.VisualHit;
-            cv.MoveCurrentTo(focussed.DataPoint);
             return HitTestResultBehavior.Stop;
         }
 
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
-        }
-
-        int VisualChildrenLowerBound(DataPoint dp)
-        {
-            int lo = 0, hi = visualChildren.Count;
-            while (lo < hi)
-            {
-                var mid = (lo + hi) / 2;
-                if (((DrawingVisualDataPoint)visualChildren[mid]).DataPoint.ID <= dp.ID)
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            }
-            return lo;
         }
 
         protected override int VisualChildrenCount => visualChildren.Count;

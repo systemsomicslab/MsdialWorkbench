@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -279,6 +281,7 @@ namespace CompMs.Graphics.LineChart
         {
             moveCurrent = e.GetPosition(this);
             moving = true;
+            CaptureMouse();
         }
 
         void MoveOnMouseMove(object sender, MouseEventArgs e)
@@ -302,6 +305,7 @@ namespace CompMs.Graphics.LineChart
             if (moving)
             {
                 moving = false;
+                ReleaseMouseCapture();
             }
         }
 

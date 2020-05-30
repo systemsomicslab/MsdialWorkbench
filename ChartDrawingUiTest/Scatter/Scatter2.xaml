@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
       mc:Ignorable="d" 
-      xmlns:chart="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
+      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Scatter2">
     <Page.DataContext>
@@ -22,12 +23,35 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        <chart:ScatterChart ItemsSource="{Binding Series}"
-                            Brushes="{StaticResource ChartBrushes}"
-                            Margin="5" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="Black"
+                BorderThickness="2,0,0,2"
+                Background="WhiteSmoke"
+                Margin="0,5,5,0"
+                Grid.Row="0" Grid.Column="1" >
+            <scatter:ScatterChart x:Name="scatter"
+                                  ItemsSource="{Binding Series}"
+                                  Brushes="{StaticResource ChartBrushes}"
+                                  ChartArea="{Binding ScatterArea, Mode=TwoWay}"
+                                  Loaded="scatter_Loaded" />
+        </Border>
+        <axis:ContinuousVerticalAxis MinY="{Binding MinY}"
+                                     MaxY="{Binding MaxY}"
+                                     ChartArea="{Binding YAxisArea, Mode=TwoWay}"
+                                     Margin="5,5,0,0"
+                                     Grid.Row="0" Grid.Column="0"/>
+        <axis:ContinuousHorizontalAxis MinX="{Binding MinX}"
+                                       MaxX="{Binding MaxX}"
+                                       ChartArea="{Binding XAxisArea, Mode=TwoWay}"
+                                       Margin="0,0,5,5"
+                                       Grid.Row="1" Grid.Column="1"/>
         <StackPanel Orientation="Horizontal"
-                    Grid.Row="1">
+                    Grid.Row="2" Grid.ColumnSpan="2">
             <TextBlock Text="X="/>
             <TextBlock Text="{Binding Series/X}"/>
             <TextBlock Text=" Y="/>
