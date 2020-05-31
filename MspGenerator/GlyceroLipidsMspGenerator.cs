@@ -1000,6 +1000,10 @@ namespace CompMs.MspGenerator
 
                         //
                         var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
+                        if(adduct.AdductIonName == "[M-2H]2-")
+                        {
+                            precursorMZ = Math.Round(meta.ExactMass / 2 + adduct.AdductIonMass, 4);
+                        }
                         ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
 
 

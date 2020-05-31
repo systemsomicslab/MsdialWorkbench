@@ -211,8 +211,8 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, minimumChains, "FAHFATG", outputFolder); // faChain1 = TG FA, faChain2 = Extra FA
 
             //// GL exchangable 4 chain 
-            //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
-            //Common.switchingLipid(minimumChains, "CL", outputFolder);
+            faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
+            Common.switchingLipid(minimumChains, "CL", outputFolder);
 
             // GL GP two And One Set Cains
             //faChain1 = Common.GenerateAcylChains(12, 0, 22, 6);
