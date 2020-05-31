@@ -1,0 +1,80 @@
+﻿<Page x:Class="ChartDrawingUiTest.Heatmap.Heatmap4"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
+      mc:Ignorable="d" 
+      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Heatmap4">
+    <Page.Resources>
+        <local:HeatmapVM3 x:Key="HeatmapVM"/>
+        <base:CategoryAxisManager x:Key="HorizontalAxis"
+                                  ItemsSource="{Binding Xs, Source={StaticResource HeatmapVM}}" />
+        <base:CategoryAxisManager x:Key="VerticalAxis"
+                                  ItemsSource="{Binding Ys, Source={StaticResource HeatmapVM}}" />
+        <CollectionViewSource x:Key="SeriesView"
+                              Source="{Binding Series, Source={StaticResource HeatmapVM}}" />
+    </Page.Resources>
+    <Grid DataContext="{StaticResource HeatmapVM}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Border Background="WhiteSmoke"
+                BorderBrush="Black"
+                BorderThickness="2,0,0,2"
+                Margin="0,5,5,0" 
+                Grid.Row="0" Grid.Column="1">
+            <heatmap:HeatmapControl x:Name="heatmap"
+                                    ItemsSource="{Binding  Source={StaticResource SeriesView}}"
+                                    HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    VerticalAxis="{StaticResource VerticalAxis}"
+                                    HorizontalPropertyName="X"
+                                    VerticalPropertyName="Y"
+                                    DegreePropertyName="Z" >
+                <heatmap:HeatmapControl.ToolTip>
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="X = "/>
+                            <TextBlock Text="{Binding FocussedItem.X}"/>
+                            <TextBlock Text=" Y = "/>
+                            <TextBlock Text="{Binding FocussedItem.Y}"/>
+                            <TextBlock Text=" Z = "/>
+                            <TextBlock Text="{Binding FocussedItem.Z}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </heatmap:HeatmapControl.ToolTip>
+            </heatmap:HeatmapControl>
+        </Border>
+        <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    Margin="0,0,5,5"
+                                    Grid.Row="1" Grid.Column="1" />
+        <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                  Margin="5,5,0,0"
+                                  Grid.Row="0" Grid.Column="0" />
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="2" Grid.Column="1" >
+            <TextBlock Text="X = "/>
+            <TextBlock Text="{Binding SelectedItem.X, ElementName=heatmap}"/>
+            <TextBlock Text=" Y = "/>
+            <TextBlock Text="{Binding SelectedItem.Y, ElementName=heatmap}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="3" Grid.Column="1" >
+            <TextBlock Text="X = "/>
+            <TextBlock Text="{Binding FocussedItem.X, ElementName=heatmap}"/>
+            <TextBlock Text=" Y = "/>
+            <TextBlock Text="{Binding FocussedItem.Y, ElementName=heatmap}"/>
+        </StackPanel>
+    </Grid>
+</Page>
