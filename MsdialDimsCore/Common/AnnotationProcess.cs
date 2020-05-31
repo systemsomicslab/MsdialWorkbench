@@ -29,8 +29,8 @@ namespace CompMs.MsdialDimsCore.Common {
                 if (query.PrecursorMz > mz + ms1Tol) break;
                 if (query.PrecursorMz < mz - ms1Tol) continue;
 
-                var result = MsScanMatching.CompareMSScanProperties(feature, query, param, omics);
-                if (result.IsMs2Match) {
+                var result = MsScanMatching.CompareMS2LipidomicsScanProperties(feature, query, param, omics);
+                if (result.IsSpectrumMatch) {
                     feature.MspIDs.Add(i);
                 }
                 else {

@@ -105,7 +105,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                         mspDB = mspDB.OrderBy(n => n.RetentionTime).ToList();
                     else
                         mspDB = mspDB.OrderBy(n => n.RetentionIndex).ToList();
+                    var counter = 0;
+                    foreach (var query in mspDB) {
+                        query.Id = counter; counter++;
+                    }
                 }
+
 
             }
 

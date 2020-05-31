@@ -450,7 +450,6 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 //Do MS2Dec deconvolution
                 if (smoothedMs2peaklistlist.Count > 0)
                 {
-
                     var focusedPeakTopScanNumber = 0;
                     var minDiff = 1000.0;
                     var minID = 0;

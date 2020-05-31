@@ -40,11 +40,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //args = new string[] {
             //    "lcmsdda"
             //    , "-i"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\Leaf and stem\Negative"
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data"
             //    , "-o"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\Leaf and stem\Negative"
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data"
             //    , "-m"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\ConsoleAppParam-Neg.txt" };
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data\Msdial-lcms-dda-Param20200527.txt"
+            //    , "-p" };
 
             //LC-DDA test using mzML(as profile mode)
             //args = new string[] {

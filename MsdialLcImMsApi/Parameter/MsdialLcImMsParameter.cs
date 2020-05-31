@@ -8,5 +8,6 @@ namespace CompMs.MsdialLcImMsApi.Parameter {
         public float DriftTimeBegin { get; set; } = 0;
         public float DriftTimeEnd { get; set; } = 2000;
         public float AccumulatedRtRagne { get; set; } = 0.2F;
+        public bool IsAccumulateMS2Spectra { get; set; } = false;
     }
 }

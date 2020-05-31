@@ -34,11 +34,11 @@ namespace Riken.Metabolomics.MsfinderConsoleApp
             //args = new string[] {
             //    "predict"
             //    , "-i"
-            //    , @"C:\Users\hiroshi.tsugawa\Desktop\Compounds\"
+            //    , @"D:\8_BugReports\20200523_msfinder_bug_matthew\"
             //    , "-m"
-            //    , @"C:\Users\hiroshi.tsugawa\Desktop\Compounds\MsfinderConsoleApp-Param-online-only.txt"
+            //    , @"D:\8_BugReports\20200523_msfinder_bug_matthew\MSFINDER.INI"
             //    , "-o"
-            //    , @"C:\Users\hiroshi.tsugawa\Desktop\Compounds\result\"
+            //    , @"D:\8_BugReports\20200523_msfinder_bug_matthew\"
             //};
 
             //args = new string[] {
@@ -67,7 +67,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp
             //    , "-m"
             //    , @"C:\msf\MSFINDER.INI"
             //};
-            
+
             //Console.WriteLine("IsInputRedirected:  {0}", Console.IsInputRedirected);
             //Console.WriteLine("IsOutputRedirected: {0}", Console.IsOutputRedirected);
             //Console.WriteLine("IsErrorRedirected:  {0}", Console.IsErrorRedirected);

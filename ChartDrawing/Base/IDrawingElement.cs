@@ -96,6 +96,30 @@ namespace CompMs.Graphics.Core.Base
         }
     }
 
+    public class CirclePointElement : IDrawingElement
+    {
+        public Rect ElementArea { get; }
+        EllipseGeometry ellipseElement;
+        Point center;
+
+        public CirclePointElement(Point center_, double size)
+        {
+            center = center_;
+            ellipseElement = new EllipseGeometry(new Point(0, 0), size, size);
+            ellipseElement.Freeze();
+            ElementArea = new Rect(center_.X, center_.Y, 0, 0);
+        }
+
+        public Geometry GetGeometry(Rect rect, Size size)
+        {
+            var point = new TranslateTransform(-rect.X, -rect.Y).Transform(center);
+            point = new ScaleTransform(size.Width / rect.Width, size.Height / rect.Height).Transform(point);
+            var ellipse = ellipseElement.Clone();
+            ellipse.Transform = new TranslateTransform(point.X, point.Y);
+            return ellipse;
+        }
+    }
+
     public class DrawingElementGroup : IDrawingElement, ICollection<IDrawingElement>, IReadOnlyCollection<IDrawingElement>
     {
         public Rect ElementArea => area;
@@ -105,10 +129,13 @@ namespace CompMs.Graphics.Core.Base
         public bool IsReadOnly => ((ICollection<IDrawingElement>)elements).IsReadOnly;
 
         Rect area;
-        List<IDrawingElement> elements = new List<IDrawingElement>();
+        List<IDrawingElement> elements;
 
-        public DrawingElementGroup() { }
-        public DrawingElementGroup(IEnumerable<IDrawingElement> elements_)
+        public DrawingElementGroup()
+        {
+            elements = new List<IDrawingElement>();
+        }
+        public DrawingElementGroup(IEnumerable<IDrawingElement> elements_) : this()
         {
             foreach (var element in elements_)
             {
@@ -124,6 +151,7 @@ namespace CompMs.Graphics.Core.Base
             {
                 geometryGroup.Children.Add(element.GetGeometry(rect, size));
             }
+            geometryGroup.FillRule = FillRule.Nonzero;
             return geometryGroup;
         }
 

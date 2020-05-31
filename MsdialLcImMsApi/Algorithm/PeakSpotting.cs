@@ -28,12 +28,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             MsdialLcImMsParameter param, Action<int> reportAction) {
 
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
-            var isTargetedMode = param.CompoundListInTargetMode.IsNotEmptyOrNull();
+            var isTargetedMode = !param.CompoundListInTargetMode.IsEmptyOrNull();
             if (isTargetedMode) {
                 var targetedScans = param.CompoundListInTargetMode;
                 foreach (var targetComp in targetedScans) {
                     var chromPeakFeatures = GetChromatogramPeakFeatures(accumulatedMs1Spectrum, allSpectrum, (float)targetComp.PrecursorMz, param);
-                    if (chromPeakFeatures.IsNotEmptyOrNull())
+                    if (!chromPeakFeatures.IsEmptyOrNull())
                         chromPeakFeaturesList.Add(chromPeakFeatures);
                 }
             }

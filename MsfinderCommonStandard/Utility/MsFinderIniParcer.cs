@@ -131,7 +131,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "CanExcuteMS2AdductSearch=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        Console.WriteLine(ans);
+                        //Console.WriteLine(ans);
                         if (ans.Length > 0 && ans.ToUpper() == "TRUE") param.CanExcuteMS2AdductSearch = true;
                         else param.CanExcuteMS2AdductSearch = false;
                     }

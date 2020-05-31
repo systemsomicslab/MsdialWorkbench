@@ -451,9 +451,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             float mz = peakAreaBean.AccurateMass;
             float rt = peakAreaBean.RtAtPeakTop;
 
-            if (Math.Abs(mz - 285.0978) < 0.001 && Math.Abs(rt - 2.988167) < 0.01) {
-                Console.WriteLine();
-            }
+            //if (Math.Abs(mz - 285.0978) < 0.001 && Math.Abs(rt - 2.988167) < 0.01) {
+            //    Console.WriteLine();
+            //}
 
             //Console.WriteLine(peakAreaBean.PeakID);
 

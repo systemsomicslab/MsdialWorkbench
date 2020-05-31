@@ -14,6 +14,7 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace CompMs.MsdialCore.Utility {
@@ -229,7 +230,6 @@ namespace CompMs.MsdialCore.Utility {
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, float chromBegin = float.MinValue, float chromEnd = float.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
-            double sum = 0, maxIntensityMz = double.MinValue, maxMass = -1;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
             foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel == 1)) {
@@ -237,27 +237,66 @@ namespace CompMs.MsdialCore.Utility {
                 if (chromX < chromBegin) continue;
                 if (chromX > chromEnd) break;
                 var massSpectra = spectrum.Spectrum;
-                var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
-
+                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
-                for (int j = startIndex; j < massSpectra.Length; j++) {
-                    if (massSpectra[j].Mz < targetMass - ms1Tolerance) continue;
-                    else if (targetMass - ms1Tolerance <= massSpectra[j].Mz && massSpectra[j].Mz <= targetMass + ms1Tolerance) {
-                        sum += massSpectra[j].Intensity;
-                        if (maxIntensityMz < massSpectra[j].Intensity) {
-                            maxIntensityMz = massSpectra[j].Intensity;
-                            maxMass = massSpectra[j].Mz;
-                        }
-                    }
-                    else if (massSpectra[j].Mz > targetMass + ms1Tolerance) break;
-                }
-
-                peaklist.Add(new ChromatogramPeak() {  ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = maxMass, Intensity = sum });
+                RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() {  ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
             return peaklist;
         }
-      
+
+        public static void RetrieveBinnedMzIntensity(RawPeakElement[] peaks, double targetMz, double mzTol, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
+            var startIndex = SearchCollection.LowerBound(peaks, new RawPeakElement() { Mz = targetMz - mzTol }, (a, b) => a.Mz.CompareTo(b.Mz));
+            summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
+            for (int i = startIndex; i < peaks.Length; i++) {
+                var peak = peaks[i];
+                if (peak.Mz < targetMz - mzTol) continue;
+                else if (Math.Abs(peak.Mz - targetMz) < mzTol) {
+                    summedIntensity += peak.Intensity;
+                    if (basepeakIntensity < peak.Intensity) {
+                        basepeakIntensity = peak.Intensity;
+                        basepeakMz = peak.Mz;
+                    }
+                }
+                else if (peak.Mz > targetMz + mzTol) break;
+            }
+        }
+
+        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(List<RawSpectrum> spectrumList, double precursorMz,
+            int startScanID, int endScanID, List<double> productMzList, ParameterBase param, double targetCE = -1,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            var chromPeakslist = new List<List<ChromatogramPeak>>();
+
+            foreach (var productMz in productMzList) {
+                var chromPeaks = GetMs2Peaklist(spectrumList, precursorMz, productMz, startScanID, endScanID, param, targetCE, type, unit);
+                chromPeakslist.Add(chromPeaks);
+            }
+            return chromPeakslist;
+        }
+
+        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList, 
+            double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
+            var chromPeaks = new List<ChromatogramPeak>();
+            for (int i = startID; i <= endID; i++) {
+                var spec = spectrumList[i];
+                if (spec.MsLevel == 2 && spec.Precursor != null) {
+                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
+
+                    var specPreMz = spec.Precursor.IsolationTargetMz;
+                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
+                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
+                    if (specPreMz - lowerOffset <= precursorMz && precursorMz < specPreMz + upperOffset) {
+                        RetrieveBinnedMzIntensity(spec.Spectrum, productMz, param.CentroidMs2Tolerance, 
+                            out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                        var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
+                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.ScanNumber;
+                        chromPeaks.Add(new ChromatogramPeak() { ID = id, ChromXs = chromX, Mass = basepeakMz, Intensity = summedIntensity });
+                    }
+                }
+            }
+            return chromPeaks;
+        }
 
         public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RawSpectrum> spectrumList, float centralRt, float rtBegin, float rtEnd,
             float quantMass, ParameterBase param) {
@@ -514,9 +553,155 @@ namespace CompMs.MsdialCore.Utility {
             return sum;
         }
 
+        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(List<RawSpectrum> spectrumList,
+             ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
+            var ms2peaklistlist = new List<List<ChromatogramPeak>>();
+            var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+
+            var rt = rtChromPeakFeature.ChromXsTop.Value;
+            var rtLeft = rtChromPeakFeature.ChromXsLeft.Value;
+            var rtRight = rtChromPeakFeature.ChromXsRight.Value;
+
+            var binMultiplyFactor = 1000;
+            var accumulatedRtRange = 1f;
+            if (rtRight - rt > accumulatedRtRange) {
+                //Console.WriteLine("Peak: " + pSpot.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                rtRight = rt + accumulatedRtRange;
+            }
+            if (rt - rtLeft > accumulatedRtRange) {
+                //Console.WriteLine("Peak: " + pSpot.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                rtLeft = rt - accumulatedRtRange;
+            }
+
+            var mz = rtChromPeakFeature.Mass;
+            var scanID = rtChromPeakFeature.MS1RawSpectrumIdTop;
+
+            // <mzBin, <driftTimeIndex, [driftTimeBin, accumulatedIntensity]>>
+            var chromatogramBin = new Dictionary<int, Dictionary<int, double[]>>();
+
+            // <mzBin, <driftTimeBin, driftTimeIndex>>
+            var driftTimeIndexDic = new Dictionary<int, Dictionary<int, int>>();
+
+            // <mz, driftTimeIndex>
+            var driftTimeCounter = new Dictionary<int, int>();
+
+            var driftTimeBinSet = new HashSet<int>();
+            //set initial mz
+            foreach (var peak in curatedSpectrum) {
+                var massBin = (int)(peak.Mass * binMultiplyFactor + 0.5);
+                var index = 0;
+                driftTimeCounter.Add(massBin, index + 1);
+            }
+
+            //accumulating peaks from peak top to peak left
+            for (int i = scanID; i >= 0; i--) {
+                var spectrum = spectrumList[i];
+                if (spectrum.ScanPolarity != scanPolarity) continue;
+                if (spectrum.MsLevel <= 1) continue;
+                if (spectrum.ScanStartTime < rtLeft) break;
+                if (spectrum.DriftTime < minDriftTime || spectrum.DriftTime > maxDriftTime) continue;
+                var massSpectra = spectrum.Spectrum;
+                foreach (var s in massSpectra) {
+                    var massBin = (int)(s.Mz * binMultiplyFactor + 0.5);
+                    var driftBin = (int)(spectrum.DriftTime * binMultiplyFactor + 0.5);
+
+                    driftTimeBinSet.Add(driftBin);
+                    if (!driftTimeCounter.ContainsKey(massBin)) continue;
+                    if (driftTimeIndexDic.ContainsKey(massBin)) {
+                        if (driftTimeIndexDic[massBin].ContainsKey(driftBin)) {
+                            chromatogramBin[massBin][driftTimeIndexDic[massBin][driftBin]][1] += s.Intensity;
+                        }
+                        else {
+                            driftTimeIndexDic[massBin].Add(driftBin, driftTimeCounter[massBin]);
+                            chromatogramBin[massBin][driftTimeIndexDic[massBin][driftBin]] = new double[] { driftBin, s.Intensity };
+                            driftTimeCounter[massBin] += 1;
+                        }
+                    }
+                    else {
+                        // <driftBint, driftTimeIndex>
+                        var tmp1 = new Dictionary<int, int>();
+                        tmp1.Add(driftBin, 0);
+                        driftTimeIndexDic.Add(massBin, tmp1);
+
+                        // <driftTimeIndex, [driftBin, intensity]>
+                        var tmp2 = new Dictionary<int, double[]>();
+                        tmp2.Add(0, new double[] { driftBin, s.Intensity });
+                        chromatogramBin.Add(massBin, tmp2);
+                    }
+                }
+            }
+
+            for (int i = scanID + 1; i < spectrumList.Count; i++) {
+                var spectrum = spectrumList[i];
+                if (spectrum.ScanPolarity != scanPolarity) continue;
+                if (spectrum.MsLevel == 1) continue;
+                if (spectrum.DriftTime < minDriftTime || spectrum.DriftTime > maxDriftTime) continue;
+                if (spectrum.ScanStartTime > rtRight) break;
+
+                var massSpectra = spectrum.Spectrum;
+
+                foreach (var s in massSpectra) {
+                    var massBin = (int)(s.Mz * binMultiplyFactor + 0.5);
+                    var driftBin = (int)(spectrum.DriftTime * binMultiplyFactor + 0.5);
+                    driftTimeBinSet.Add(driftBin);
+                    if (!driftTimeCounter.ContainsKey(massBin)) continue;
+
+                    if (driftTimeIndexDic.ContainsKey(massBin)) {
+                        if (driftTimeIndexDic[massBin].ContainsKey(driftBin)) {
+                            chromatogramBin[massBin][driftTimeIndexDic[massBin][driftBin]][1] += s.Intensity;
+                        }
+                        else {
+                            driftTimeIndexDic[massBin].Add(driftBin, driftTimeCounter[massBin]);
+                            chromatogramBin[massBin][driftTimeIndexDic[massBin][driftBin]] = new double[] { driftBin, s.Intensity };
+                            driftTimeCounter[massBin] += 1;
+                        }
+                    }
+                    else {
+                        // <driftBint, driftTimeIndex>
+                        var tmp1 = new Dictionary<int, int>();
+                        tmp1.Add(driftBin, 0);
+                        driftTimeIndexDic.Add(massBin, tmp1);
+
+                        // <driftTimeIndex, [driftBin, intensity]>
+                        var tmp2 = new Dictionary<int, double[]>();
+                        tmp2.Add(0, new double[] { driftBin, s.Intensity });
+                        chromatogramBin.Add(massBin, tmp2);
+                    }
+                }
+            }
+
+            foreach (var mzBin in chromatogramBin.Keys) {
+                var peaklist = new List<double[]>();
+                var targetMz = Math.Round((double)mzBin / binMultiplyFactor, 3);
+                // <driftTimeIndex, [driftBin, accumulatedIntensity]>
+                var targetChromato = chromatogramBin[mzBin];
+                var counter = 0;
+                var tmpDriftTimeBinSet = new HashSet<int>();
+                foreach (var values in targetChromato.Values) {
+                    tmpDriftTimeBinSet.Add((int)(values[0] + 0.5));
+                    var driftTime = Math.Round(values[0] / binMultiplyFactor, 3);
+                    peaklist.Add(new double[] { 0, driftTime, targetMz, values[1] });
+                }
+                foreach (var df in driftTimeBinSet.Except(tmpDriftTimeBinSet)) {
+                    // add not detected driftTime
+                    var driftTime = Math.Round((double)df / binMultiplyFactor, 3);
+                    peaklist.Add(new double[] { 0, driftTime, targetMz, 0 });
+                }
+                var sortedPeaklist = peaklist.OrderBy(n => n[1]).ToList();
+                var ms2peaklist = new List<ChromatogramPeak>();
+                foreach (var peaks in sortedPeaklist) {
+                    ms2peaklist.Add(new ChromatogramPeak() {
+                        ID = counter++, ChromXs = new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec), Mass = peaks[2], Intensity = peaks[3]
+                    });
+                }
+                ms2peaklistlist.Add(ms2peaklist);
+            }
+            return ms2peaklistlist;
+        }
+
 
         // get spectrum
-        public static List<SpectrumPeak> GetCentroidMasasSpectra(List<RawSpectrum> spectrumList, DataType dataType, 
+        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, DataType dataType, 
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
@@ -541,6 +726,104 @@ namespace CompMs.MsdialCore.Utility {
             else
                 return spectra;
         }
+
+        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+           ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
+            var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
+            if (param.DataTypeMS2 == DataType.Profile && massSpectrum.Count > 0) {
+                return SpectralCentroiding.Centroid(massSpectrum);
+            }
+            else {
+                return massSpectrum;
+            }
+        }
+
+        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+            ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
+            var rt = rtChromFeature.ChromXsTop.Value;
+            var rtLeft = rtChromFeature.ChromXsLeft.Value;
+            var rtRight = rtChromFeature.ChromXsRight.Value;
+           
+            var rtRange = 1f;
+
+            if (rtRight - rt > rtRange) {
+                //Console.WriteLine("Peak: " + pSpot.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                rtRight = rt + rtRange;
+            }
+            if (rt - rtLeft > rtRange) {
+                Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                rtLeft = rt - rtRange;
+            }
+
+            var mz = rtChromFeature.Mass;
+            var scanID = dtChromFeature.MS1RawSpectrumIdTop;
+            var dataPointDriftBin = (int)(dtChromFeature.ChromXsTop.Value * 1000);
+
+            var spectrumBin = new Dictionary<int, double[]>();
+            //accumulating peaks from peak top to peak left
+            for (int i = scanID; i >= 0; i--) {
+                var spectrum = spectrumList[i];
+                if (spectrum.MsLevel == 1) continue;
+
+                var driftTime = spectrum.DriftTime;
+                var driftBin = (int)(driftTime * 1000);
+                if (driftBin != dataPointDriftBin) continue;
+
+                var retention = spectrum.ScanStartTime;
+                if (retention < rtLeft) break;
+
+                var massSpectra = spectrum.Spectrum;
+                foreach (var s in massSpectra) {
+                    var massBin = (int)(s.Mz * 1000);
+                    if (!spectrumBin.ContainsKey(massBin)) {
+                        spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
+                    }
+                    else {
+                        spectrumBin[massBin][1] += s.Intensity;
+                        if (spectrumBin[massBin][2] < s.Intensity) {
+                            spectrumBin[massBin][0] = s.Mz;
+                            spectrumBin[massBin][2] = s.Intensity;
+                        }
+                    }
+                }
+            }
+
+            for (int i = scanID + 1; i < spectrumList.Count; i++) {
+                var spectrum = spectrumList[i];
+                if (spectrum.MsLevel == 1) continue;
+
+                var driftTime = spectrum.DriftTime;
+                var driftBin = (int)(driftTime * 1000);
+                if (driftBin != dataPointDriftBin) continue;
+
+                var retention = spectrum.ScanStartTime;
+                if (retention > rtRight) break;
+
+                var massSpectra = spectrum.Spectrum;
+                foreach (var s in massSpectra) {
+                    var massBin = (int)(s.Mz * 1000);
+                    if (!spectrumBin.ContainsKey(massBin)) {
+                        // [accurate mass, intensity, max intensity]
+                        spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
+                    }
+                    else {
+                        spectrumBin[massBin][1] += s.Intensity;
+                        if (spectrumBin[massBin][2] < s.Intensity) {
+                            spectrumBin[massBin][0] = s.Mz;
+                            spectrumBin[massBin][2] = s.Intensity;
+                        }
+                    }
+                }
+            }
+
+            var peaklist = new List<SpectrumPeak>();
+            foreach (var value in spectrumBin.Values) {
+                peaklist.Add(new SpectrumPeak() { Mass = value[0], Intensity = value[1] });
+            }
+            peaklist = peaklist.OrderBy(n => n.Mass).ToList();
+            return peaklist;
+        }
+
 
         // get properties
         /// <summary>

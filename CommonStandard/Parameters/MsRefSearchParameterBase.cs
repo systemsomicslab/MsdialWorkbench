@@ -21,5 +21,12 @@ namespace CompMs.Common.Parameter {
 
         // by absolute value
         public float MinimumSpectrumMatch { get; set; } = 3;
+
+        // option
+        public bool IsUseTimeForAnnotationFiltering { get; set; } = false;
+        public bool IsUseTimeForAnnotationScoring { get; set; } = false;
+        public bool IsUseCcsForAnnotationFiltering { get; set; } = false;
+        public bool IsUseCcsForAnnotationScoring { get; set; } = false;
+
     }
 }

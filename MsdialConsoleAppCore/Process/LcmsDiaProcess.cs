@@ -84,6 +84,13 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 if (!System.IO.File.Exists(projectProp.LibraryFilePath))
                     return fileNoExistError(projectProp.LibraryFilePath);
                 mspDB = DatabaseLcUtility.GetMspDbQueries(projectProp.LibraryFilePath, iupacDB);
+                if (mspDB != null && mspDB.Count >= 0) {
+                    mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
+                    var counter = 0;
+                    foreach (var query in mspDB) {
+                        query.Id = counter; counter++;
+                    }
+                }
             }
 
             var txtDB = new List<PostIdentificatioinReferenceBean>();
