@@ -59,7 +59,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\BasicClass.cs" />
+    <Compile Include="Base\CategoryAxisManager.cs" />
+    <Compile Include="Base\ContinuousAxisManager.cs" />
     <Compile Include="Base\DataSeries.cs" />
     <Compile Include="Base\DrawingChartBase.cs" />
     <Compile Include="Base\DrawingChartGroup.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="Dendrogram\DrawingDendrogram.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
+    <Compile Include="Base\AxisManager.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisCoreControl.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisElement.cs" />
     <Compile Include="GraphAxis\CategoryHorizontalAxisManager.cs" />
@@ -109,12 +113,16 @@
     <Compile Include="GraphAxis\DrawingCategoryVerticalAxis.cs" />
     <Compile Include="GraphAxis\DrawingContinuousHorizontalAxis.cs" />
     <Compile Include="GraphAxis\DrawingContinuousVerticalAxis.cs" />
+    <Compile Include="GraphAxis\HorizontalAxisControl.cs" />
+    <Compile Include="GraphAxis\VerticalAxisControl.cs" />
     <Compile Include="Heatmap\DrawingHeatmap.cs" />
+    <Compile Include="Heatmap\HeatmapControl.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />
     <Compile Include="Heatmap\HeatmapElement.cs" />
     <Compile Include="Heatmap\HeatmapManager.cs" />
     <Compile Include="LineChart\DrawingLineChart.cs" />
     <Compile Include="LineChart\LineChart.cs" />
+    <Compile Include="LineChart\LineChartControl.cs" />
     <Compile Include="LineChart\LineChartElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
@@ -122,6 +130,7 @@
     <Compile Include="Scatter\DrawingScatter.cs" />
     <Compile Include="Base\DrawingVisualDataPoint.cs" />
     <Compile Include="Scatter\ScatterChart.cs" />
+    <Compile Include="Scatter\ScatterControl.cs" />
     <Compile Include="Scatter\ScatterElement.cs" />
   </ItemGroup>
   <ItemGroup>
