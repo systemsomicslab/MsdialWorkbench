@@ -5693,11 +5693,22 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
                     if (isClassIonFound == false) return null;
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
 
-                    //var molecule = getSingleacyloxMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
-                    //candidates.Add(molecule);
+                    var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    var query = new List<Peak>
+                                        {
+                                        new Peak() { Mz = alphaOHflag01, Intensity = 10.0 },
+                                        };
 
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 1 && totalOxidized == 1) //totalOxidized == 1 only 
+                    {
+                        var molecule = getAlphaOxfaMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
+                        candidates.Add(molecule);
+                    }
                     return returnAnnotationResult("FA", LbmClass.OxFA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
@@ -12239,8 +12250,6 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
             };
         }
 
-
-
         private static LipidMolecule getDiacylglycerolMoleculeObjAsLevel2(string lipidClass, LbmClass lbmClass,
            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, double score)
         {
@@ -12708,27 +12717,48 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
             };
         }
 
+        private static LipidMolecule getAlphaOxfaMoleculeObjAsLevel1(string lipidClass, LbmClass lbmClass,
+            int totalCarbon, int totalDB, int totalOxidized, double score)
+        {
+            var totalString = totalCarbon + ":" + totalDB + ";(2OH)";
+            var totalName = lipidClass + " " + totalString;
 
+            return new LipidMolecule()
+            {
+                LipidClass = lbmClass,
+                AnnotationLevel = 2,
+                SublevelLipidName = totalName,
+                LipidName = totalName,
+                TotalCarbonCount = totalCarbon,
+                TotalDoubleBondCount = totalDB,
+                TotalChainString = totalString,
+                Score = score,
+                Sn1CarbonCount = totalCarbon,
+                Sn1DoubleBondCount = totalDB,
+                Sn1AcylChainString = totalString,
+                TotalOxidizedCount = totalOxidized
+            };
 
+        }
 
-    //    private static LipidMolecule getLipidAnnotaionAsLevel1(string lipidClass, LbmClass lbmClass,
-    //int totalCarbon, int totalDB,double score, string suffix)
-    //    {
-    //        var totalString = totalCarbon + ":" + totalDB + suffix;
-    //        var totalName = lipidClass + " " + totalString;
+        //    private static LipidMolecule getLipidAnnotaionAsLevel1(string lipidClass, LbmClass lbmClass,
+        //int totalCarbon, int totalDB,double score, string suffix)
+        //    {
+        //        var totalString = totalCarbon + ":" + totalDB + suffix;
+        //        var totalName = lipidClass + " " + totalString;
 
-    //        return new LipidMolecule()
-    //        {
-    //            LipidClass = lbmClass,
-    //            AnnotationLevel = 2,
-    //            SublevelLipidName = totalName,
-    //            LipidName = totalName,
-    //            TotalCarbonCount = totalCarbon,
-    //            TotalDoubleBondCount = totalDB,
-    //            TotalChainString = totalString,
-    //            Score = score,
-    //         };
-    //    }
+        //        return new LipidMolecule()
+        //        {
+        //            LipidClass = lbmClass,
+        //            AnnotationLevel = 2,
+        //            SublevelLipidName = totalName,
+        //            LipidName = totalName,
+        //            TotalCarbonCount = totalCarbon,
+        //            TotalDoubleBondCount = totalDB,
+        //            TotalChainString = totalString,
+        //            Score = score,
+        //         };
+        //    }
 
 
         private static LipidMolecule getLipidAnnotaionAsSubLevel(string lipidClass, LbmClass lbmClass,

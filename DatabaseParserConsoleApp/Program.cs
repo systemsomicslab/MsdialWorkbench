@@ -143,9 +143,9 @@ namespace DatabaseParserConsoleApp {
         private static void runLipidChalacterization() {
 
             var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200525_AAHFA\";
-            var testFilename = @"AAHFA4_0_26_0.msp";
+            var testFilename = @"OxFA2202OH.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"FAHFA_[M-H]-.txt";
+            var reffile = testFolder + @"OxFA_[M-H]-.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
