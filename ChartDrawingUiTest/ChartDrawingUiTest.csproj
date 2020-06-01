@@ -71,6 +71,10 @@
       <DependentUpon>LineAndScatter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Compound\LineAndScatterVM2.cs" />
+    <Compile Include="Dendrogram\Dendrogram5.xaml.cs">
+      <DependentUpon>Dendrogram5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramVM4.cs" />
     <Compile Include="Heatmap\Heatmap4.xaml.cs">
       <DependentUpon>Heatmap4.xaml</DependentUpon>
     </Compile>
@@ -140,6 +144,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dendrogram\Dendrogram4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrogram\Dendrogram5.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

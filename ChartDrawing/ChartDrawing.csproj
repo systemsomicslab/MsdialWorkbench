@@ -89,6 +89,7 @@
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dendrogram\DendrogramControl.cs" />
     <Compile Include="Dendrogram\DendrogramCoreControl.cs" />
     <Compile Include="Default\DefaultControl.cs" />
     <Compile Include="Dendrogram\DendrogramElement.cs" />
