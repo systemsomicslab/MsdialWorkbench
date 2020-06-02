@@ -115,7 +115,9 @@
     <Compile Include="GraphAxis\DrawingContinuousHorizontalAxis.cs" />
     <Compile Include="GraphAxis\DrawingContinuousVerticalAxis.cs" />
     <Compile Include="GraphAxis\HorizontalAxisControl.cs" />
+    <Compile Include="GraphAxis\HorizontalColorAxisControl.cs" />
     <Compile Include="GraphAxis\VerticalAxisControl.cs" />
+    <Compile Include="GraphAxis\VerticalColorAxisControl.cs" />
     <Compile Include="Heatmap\DrawingHeatmap.cs" />
     <Compile Include="Heatmap\HeatmapControl.cs" />
     <Compile Include="Heatmap\HeatmapCoreControl.cs" />

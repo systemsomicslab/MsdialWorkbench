@@ -12,10 +12,11 @@ namespace CompMs.Graphics.Core.Base
 
     public class LabelTickData
     {
-        public string Label;
-        public TickType TickType;
-        public double Center;
-        public double Width;
+        public string Label { get; set; }
+        public TickType TickType { get; set; }
+        public double Center { get; set; }
+        public double Width { get; set; }
+        public object Source { get; set; }
     }
 
     public abstract class AxisManager : DependencyObject

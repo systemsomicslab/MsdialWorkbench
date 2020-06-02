@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -8,31 +11,26 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
 {
-    public class VerticalAxisControl : FrameworkElement
+    public class VerticalColorAxisControl : FrameworkElement
     {
         #region DependencyProperty
         public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(VerticalAxisControl),
+            nameof(VerticalAxis), typeof(AxisManager), typeof(VerticalColorAxisControl),
             new PropertyMetadata(default(AxisManager), OnVerticalAxisChanged)
             );
 
-        public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
-            nameof(TickPen), typeof(Pen), typeof(VerticalAxisControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+        public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
+            nameof(LabelBrushes), typeof(IList<Brush>), typeof(VerticalColorAxisControl),
+            new PropertyMetadata(null)
             );
 
-        public static readonly DependencyProperty LabelBrushProperty = DependencyProperty.Register(
-            nameof(LabelBrush), typeof(Brush), typeof(VerticalAxisControl),
-            new PropertyMetadata(Brushes.Black)
-            );
-
-        public static readonly DependencyProperty LabelSizeProperty = DependencyProperty.Register(
-            nameof(LabelSize), typeof(double), typeof(VerticalAxisControl),
-            new PropertyMetadata(12d)
+        public static readonly DependencyProperty IdentityPropertyNameProperty = DependencyProperty.Register(
+            nameof(IdentityPropertyName), typeof(string), typeof(VerticalColorAxisControl),
+            new PropertyMetadata(null, OnIdentityPropertyNamePropertyChanged)
             );
 
         public static readonly DependencyProperty FocussedItemProperty = DependencyProperty.Register(
-            nameof(FocussedItem), typeof(object), typeof(VerticalAxisControl),
+            nameof(FocussedItem), typeof(object), typeof(VerticalColorAxisControl),
             new PropertyMetadata(default(object))
             );
         #endregion
@@ -44,22 +42,16 @@ namespace CompMs.Graphics.GraphAxis
             set => SetValue(VerticalAxisProperty, value);
         }
 
-        public Pen TickPen
+        public IList<Brush> LabelBrushes
         {
-            get => (Pen)GetValue(TickPenProperty);
-            set => SetValue(TickPenProperty, value);
+            get => (IList<Brush>)GetValue(LabelBrushesProperty);
+            set => SetValue(LabelBrushesProperty, value);
         }
 
-        public Brush LabelBrush
+        public string IdentityPropertyName
         {
-            get => (Brush)GetValue(LabelBrushProperty);
-            set => SetValue(LabelBrushProperty, value);
-        }
-
-        public double LabelSize
-        {
-            get => (double)GetValue(LabelSizeProperty);
-            set => SetValue(LabelSizeProperty, value);
+            get => (string)GetValue(IdentityPropertyNameProperty);
+            set => SetValue(IdentityPropertyNameProperty, value);
         }
 
         public object FocussedItem
@@ -67,16 +59,14 @@ namespace CompMs.Graphics.GraphAxis
             get => (object)GetValue(FocussedItemProperty);
             set => SetValue(FocussedItemProperty, value);
         }
-
-        public double ShortTickSize { get; set; } = 3;
-        public double LongTickSize { get; set; } = 5;
         #endregion
 
         #region field
         private VisualCollection visualChildren;
+        private PropertyInfo iPropertyReflection;
         #endregion
 
-        public VerticalAxisControl()
+        public VerticalColorAxisControl()
         {
             visualChildren = new VisualCollection(this);
 
@@ -85,37 +75,47 @@ namespace CompMs.Graphics.GraphAxis
 
         private void Update()
         {
-            if (VerticalAxis == null
-                || TickPen == null
-                || LabelBrush == null
-                ) return;
+            if (VerticalAxis == null) return;
+
+            var memo = new Dictionary<object, int>();
+            var id = 0;
+            Func<object, object> toKey = null;
+            Func<object, Brush> toBrush = null;
 
             visualChildren.Clear();
             foreach (var data in VerticalAxis.GetLabelTicks())
             {
-                var center = VerticalAxis.ValueToRenderPosition(data.Center) * ActualHeight;
+                if (data.TickType != TickType.LongTick) continue;
+
+                if (IdentityPropertyName != null && iPropertyReflection == null)
+                    iPropertyReflection = data.Source.GetType().GetProperty(IdentityPropertyName);
+
+                if (toKey == null)
+                {
+                    if (iPropertyReflection == null)
+                        toKey = o => o;
+                    else
+                        toKey = o => iPropertyReflection.GetValue(o);
+
+                    if (!(toKey(data.Source) is Brush) && LabelBrushes == null)
+                        return;
+                }
+
+                if (toBrush == null)
+                    toBrush = o =>
+                    {
+                        var x = toKey(o);
+                        if (x is Brush b) return b;
+                        if (!memo.ContainsKey(x)) memo[x] = id++;
+                        return LabelBrushes[memo[x] % LabelBrushes.Count];
+                    };
+
+                var yorigin = VerticalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualHeight;
+                var yheight = (VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0)) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source);
                 var dc = dv.RenderOpen();
-
-                switch (data.TickType)
-                {
-                    case TickType.LongTick:
-                        dc.DrawLine(TickPen, new Point(ActualWidth, center), new Point(ActualWidth - LongTickSize, center));
-                        var formattedText = new FormattedText(
-                            data.Label, CultureInfo.GetCultureInfo("en-us"),
-                            FlowDirection.LeftToRight, new Typeface("Calibri"),
-                            LabelSize, LabelBrush, 1)
-                        {
-                            MaxTextWidth = Math.Max(1, ActualWidth - LongTickSize),
-                            MaxTextHeight = Math.Max(1, Math.Abs(VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0)) * ActualHeight),
-                        };
-                        dc.DrawText(formattedText, new Point(ActualWidth - LongTickSize - formattedText.Width, center - formattedText.Height / 2));
-                        break;
-                    case TickType.ShortTick:
-                        dc.DrawLine(TickPen, new Point(ActualWidth, center), new Point(ActualWidth - ShortTickSize, center));
-                        break;
-                }
+                dc.DrawRectangle(toBrush(data.Source), null, new Rect(0, yorigin, ActualWidth, yheight));
                 dc.Close();
                 visualChildren.Add(dv);
             }
@@ -126,7 +126,13 @@ namespace CompMs.Graphics.GraphAxis
 
         static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is VerticalAxisControl chart) chart.Update();
+            if (d is VerticalColorAxisControl chart) chart.Update();
+        }
+
+        static void OnIdentityPropertyNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is VerticalColorAxisControl chart)
+                chart.iPropertyReflection = null;
         }
         #endregion
 

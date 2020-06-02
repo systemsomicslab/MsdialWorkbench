@@ -64,10 +64,11 @@ namespace CompMs.Graphics.Base
             {
                 var item = new LabelTickData()
                 {
-                    Label = (i * TickInterval).ToString(LabelFormat), 
+                    Label = (i * TickInterval).ToString(LabelFormat),
                     TickType = TickType.LongTick,
                     Center = (double)(i * TickInterval),
                     Width = (double)TickInterval,
+                    Source = (double)(i * TickInterval),
                 };
                 result.Add(item);
             }
@@ -81,6 +82,7 @@ namespace CompMs.Graphics.Base
                     TickType = TickType.ShortTick,
                     Center = (double)(i * shortTickInterval),
                     Width = 0,
+                    Source = (double)(i * shortTickInterval),
                 };
                 result.Add(item);
             }

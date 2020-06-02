@@ -80,6 +80,7 @@ namespace CompMs.Graphics.Base
                     TickType = TickType.LongTick,
                     Center = converter[toKey(item)],
                     Width = 1d,
+                    Source = item,
                 });
             }
 
