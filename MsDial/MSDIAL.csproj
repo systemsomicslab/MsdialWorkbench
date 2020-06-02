@@ -121,6 +121,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ForAIF\CorrDec\AskDecMethodWindow.xaml.cs">
+      <DependentUpon>AskDecMethodWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml.cs">
       <DependentUpon>AgilentCcsCalibrationSetWin.xaml</DependentUpon>
     </Compile>
@@ -458,6 +461,10 @@
     <Compile Include="Parameter for LC\WatersCcsCalibrationSetWin.xaml.cs">
       <DependentUpon>WatersCcsCalibrationSetWin.xaml</DependentUpon>
     </Compile>
+    <Page Include="ForAIF\CorrDec\AskDecMethodWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
