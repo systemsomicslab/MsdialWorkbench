@@ -56,9 +56,9 @@
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
-                            <TextBlock Text="{Binding FocussedItem.X}"/>
+                            <TextBlock Text="{Binding FocusedItem.X}"/>
                             <TextBlock Text=" Y = "/>
-                            <TextBlock Text="{Binding FocussedItem.Y}"/>
+                            <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
                 </scatter:ScatterControl.ToolTip>

@@ -42,7 +42,7 @@ namespace CompMs.Graphics.Heatmap
 
         public static readonly DependencyProperty DegreePropertyNameProperty = DependencyProperty.Register(
             nameof(DegreePropertyName), typeof(string), typeof(HeatmapControl),
-            new PropertyMetadata(default(string))
+            new PropertyMetadata(default(string), OnDegreePropertyNameChanged)
             );
 
         public static readonly DependencyProperty GradientStopsProperty = DependencyProperty.Register(
@@ -59,9 +59,14 @@ namespace CompMs.Graphics.Heatmap
             nameof(SelectedItem), typeof(object), typeof(HeatmapControl),
             new PropertyMetadata(null, OnSelectedItemChanged));
 
-        public static readonly DependencyProperty FocussedItemProperty = DependencyProperty.Register(
-            nameof(FocussedItem), typeof(object), typeof(HeatmapControl),
+        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
+            nameof(FocusedItem), typeof(object), typeof(HeatmapControl),
             new PropertyMetadata(null)
+            );
+
+        public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
+            nameof(FocusedPoint), typeof(Point), typeof(HeatmapControl),
+            new PropertyMetadata(default(Point))
             );
         #endregion
 
@@ -114,10 +119,16 @@ namespace CompMs.Graphics.Heatmap
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public object FocussedItem
+        public object FocusedItem
         {
-            get => (object)GetValue(FocussedItemProperty);
-            set => SetValue(FocussedItemProperty, value);
+            get => (object)GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        public Point FocusedPoint
+        {
+            get => (Point)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
         }
         #endregion
 
@@ -190,7 +201,7 @@ namespace CompMs.Graphics.Heatmap
                 var color = getGradientColor(GradientStops, zz, zmin, zmax);
                 var brush = new SolidColorBrush(color);
 
-                var dv = new AnnotatedDrawingVisual(o);
+                var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(brush, null, new Rect(xx - xwidth / 2, yy - ywidth / 2, xwidth, ywidth));
@@ -334,7 +345,13 @@ namespace CompMs.Graphics.Heatmap
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
-            FocussedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            var focussed = dv.Annotation;
+            if (focussed != FocusedItem)
+            {
+                FocusedItem = focussed;
+                FocusedPoint = dv.Center;
+            }
             return HitTestResultBehavior.Stop;
         }
 

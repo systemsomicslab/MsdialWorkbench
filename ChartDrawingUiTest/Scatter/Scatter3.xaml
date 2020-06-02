@@ -55,9 +55,9 @@
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
-                            <TextBlock Text="{Binding FocussedItem.X}"/>
+                            <TextBlock Text="{Binding FocusedItem.X}"/>
                             <TextBlock Text=" Y = "/>
-                            <TextBlock Text="{Binding FocussedItem.Y}"/>
+                            <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
                 </scatter:ScatterControl.ToolTip>
@@ -79,9 +79,13 @@
         <StackPanel Orientation="Horizontal"
                     Grid.Row="3" Grid.Column="1" >
             <TextBlock Text="X = "/>
-            <TextBlock Text="{Binding FocussedItem.X, ElementName=scatter}"/>
+            <TextBlock Text="{Binding FocusedItem.X, ElementName=scatter}"/>
             <TextBlock Text=" Y = "/>
-            <TextBlock Text="{Binding FocussedItem.Y, ElementName=scatter}"/>
+            <TextBlock Text="{Binding FocusedItem.Y, ElementName=scatter}"/>
+            <TextBlock Text=" IsMouseOver = "/>
+            <TextBlock Text="{Binding IsMouseOver, ElementName=scatter}"/>
+            <TextBlock Text=" IsMouseDirectlyOver = "/>
+            <TextBlock Text="{Binding IsMouseDirectlyOver, ElementName=scatter}"/>
         </StackPanel>
         <ComboBox x:Name="SeriesSelector"
                   SelectedValuePath="DataContext"

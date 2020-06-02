@@ -3,8 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
       mc:Ignorable="d" 
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
       xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
       xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
@@ -23,6 +24,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
             <ColumnDefinition />
+            <ColumnDefinition Width="50" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -41,16 +43,23 @@
                                     VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
-                                    DegreePropertyName="Z" >
+                                    DegreePropertyName="Z"
+                                    ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}">
                 <heatmap:HeatmapControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                             Placement="Relative"
+                             PlacementRectangle="0,-20,0,0"
+                             HorizontalAlignment="Center"
+                             VerticalContentAlignment="Bottom"
+                             HorizontalOffset="{Binding FocusedPoint.X}"
+                             VerticalOffset="{Binding FocusedPoint.Y}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
-                            <TextBlock Text="{Binding FocussedItem.X}"/>
+                            <TextBlock Text="{Binding FocusedItem.X}"/>
                             <TextBlock Text=" Y = "/>
-                            <TextBlock Text="{Binding FocussedItem.Y}"/>
+                            <TextBlock Text="{Binding FocusedItem.Y}"/>
                             <TextBlock Text=" Z = "/>
-                            <TextBlock Text="{Binding FocussedItem.Z}"/>
+                            <TextBlock Text="{Binding FocusedItem.Z}"/>
                         </StackPanel>
                     </ToolTip>
                 </heatmap:HeatmapControl.ToolTip>
@@ -72,9 +81,18 @@
         <StackPanel Orientation="Horizontal"
                     Grid.Row="3" Grid.Column="1" >
             <TextBlock Text="X = "/>
-            <TextBlock Text="{Binding FocussedItem.X, ElementName=heatmap}"/>
+            <TextBlock Text="{Binding FocusedItem.X, ElementName=heatmap}"/>
             <TextBlock Text=" Y = "/>
-            <TextBlock Text="{Binding FocussedItem.Y, ElementName=heatmap}"/>
+            <TextBlock Text="{Binding FocusedItem.Y, ElementName=heatmap}"/>
+            <TextBlock Text=" IsMouseOver = "/>
+            <TextBlock Text="{Binding IsMouseOver, ElementName=heatmap}"/>
         </StackPanel>
+        <Rectangle Margin="5,5,5,0"
+                   Grid.Row="0" Grid.Column="2">
+            <Rectangle.Fill>
+                <LinearGradientBrush GradientStops="{Binding GradientStops, ElementName=heatmap}"
+                                     StartPoint="0,1" EndPoint="0,0"/>
+            </Rectangle.Fill>
+        </Rectangle>
     </Grid>
 </Page>

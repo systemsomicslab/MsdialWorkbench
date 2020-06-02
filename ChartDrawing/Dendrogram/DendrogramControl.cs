@@ -55,8 +55,8 @@ namespace CompMs.Graphics.Dendrogram
             nameof(SelectedItem), typeof(object), typeof(DendrogramControl),
             new PropertyMetadata(null, OnSelectedItemChanged));
 
-        public static readonly DependencyProperty FocussedItemProperty = DependencyProperty.Register(
-            nameof(FocussedItem), typeof(object), typeof(DendrogramControl),
+        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
+            nameof(FocusedItem), typeof(object), typeof(DendrogramControl),
             new PropertyMetadata(null)
             );
         #endregion
@@ -110,10 +110,10 @@ namespace CompMs.Graphics.Dendrogram
             set => SetValue(SelectedItemProperty, value);
         }
 
-        public object FocussedItem
+        public object FocusedItem
         {
-            get => (object)GetValue(FocussedItemProperty);
-            set => SetValue(FocussedItemProperty, value);
+            get => (object)GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
         }
         #endregion
 
@@ -318,7 +318,7 @@ namespace CompMs.Graphics.Dendrogram
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
-            FocussedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            FocusedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }
 
