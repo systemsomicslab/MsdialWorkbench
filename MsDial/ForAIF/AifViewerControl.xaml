@@ -37,7 +37,7 @@
         </Button>
         <Button Name="Button_MsFinder_Peak" Width="40" Height="40" Click="Button_MsFinder_Peak_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,20,0,0">
             <Button.Content>
-                <Image Source="../Resources/MS-FINDER-Main-Icon.ico" />
+                <Image Source="../Resources/msfinder_icon.ico" />
             </Button.Content>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Bulk export to MS-FINDER from peak spot table" />
@@ -80,7 +80,7 @@
         </Button>
         <Button Name="Button_MsFinder_Alignment" Width="40" Height="40" Click="Button_MsFinder_Alignment_Click" Background="Aqua" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="355,20,0,0">
             <Button.Content>
-                <Image Source="../Resources/MS-FINDER-Main-Icon.ico" />
+                <Image Source="../Resources/msfinder_icon.ico" />
             </Button.Content>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Bulk export to MS-FINDER from alignment spot table" />
