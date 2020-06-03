@@ -8,14 +8,9 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
 {
-    public class VerticalAxisControl : FrameworkElement
+    public class VerticalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(VerticalAxisControl),
-            new PropertyMetadata(default(AxisManager), OnVerticalAxisChanged)
-            );
-
         public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
             nameof(TickPen), typeof(Pen), typeof(VerticalAxisControl),
             new PropertyMetadata(new Pen(Brushes.Black, 1))
@@ -38,12 +33,6 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
-        public AxisManager VerticalAxis
-        {
-            get => (AxisManager)GetValue(VerticalAxisProperty);
-            set => SetValue(VerticalAxisProperty, value);
-        }
-
         public Pen TickPen
         {
             get => (Pen)GetValue(TickPenProperty);
@@ -72,18 +61,12 @@ namespace CompMs.Graphics.GraphAxis
         public double LongTickSize { get; set; } = 5;
         #endregion
 
-        #region field
-        private VisualCollection visualChildren;
-        #endregion
-
         public VerticalAxisControl()
         {
-            visualChildren = new VisualCollection(this);
-
             MouseMove += VisualFocusOnMouseOver;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (VerticalAxis == null
                 || TickPen == null
@@ -96,6 +79,7 @@ namespace CompMs.Graphics.GraphAxis
                 var center = VerticalAxis.ValueToRenderPosition(data.Center) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source);
+                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
                 switch (data.TickType)
@@ -120,15 +104,6 @@ namespace CompMs.Graphics.GraphAxis
                 visualChildren.Add(dv);
             }
         }
-
-        #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
-
-        static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is VerticalAxisControl chart) chart.Update();
-        }
-        #endregion
 
         #region Mouse event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
@@ -158,16 +133,6 @@ namespace CompMs.Graphics.GraphAxis
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
-        }
-        #endregion
-
-        #region VisualCollection
-        protected override int VisualChildrenCount => visualChildren.Count;
-        protected override Visual GetVisualChild(int index)
-        {
-            if (index < 0 || visualChildren.Count <= index)
-                throw new ArgumentOutOfRangeException();
-            return visualChildren[index];
         }
         #endregion
     }

@@ -3,31 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.LineChart
 {
-    public class LineChartControl : FrameworkElement
+    public class LineChartControl : ChartBaseControl
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
             nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(LineChartControl),
             new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
-            );
-
-        public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
-            nameof(HorizontalAxis), typeof(AxisManager), typeof(LineChartControl),
-            new PropertyMetadata(default(AxisManager), OnHorizontalAxisChanged)
-            );
-
-        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(LineChartControl),
-            new PropertyMetadata(default(AxisManager), OnVerticalAxisChanged)
             );
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
@@ -53,18 +41,6 @@ namespace CompMs.Graphics.LineChart
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public AxisManager HorizontalAxis
-        {
-            get => (AxisManager)GetValue(HorizontalAxisProperty);
-            set => SetValue(HorizontalAxisProperty, value);
-        }
-
-        public AxisManager VerticalAxis
-        {
-            get => (AxisManager)GetValue(VerticalAxisProperty);
-            set => SetValue(VerticalAxisProperty, value);
-        }
-
         public string HorizontalPropertyName
         {
             get => (string)GetValue(HorizontalPropertyNameProperty);
@@ -85,19 +61,13 @@ namespace CompMs.Graphics.LineChart
         #endregion
 
         #region field
-        private VisualCollection visualChildren;
         private CollectionView cv;
         private Type dataType;
         private PropertyInfo hPropertyReflection;
         private PropertyInfo vPropertyReflection;
         #endregion
 
-        public LineChartControl()
-        {
-            visualChildren = new VisualCollection(this);
-        }
-
-        private void Update()
+        protected override void Update()
         {
             if (  hPropertyReflection == null
                || vPropertyReflection == null
@@ -163,8 +133,6 @@ namespace CompMs.Graphics.LineChart
         }
 
         #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
-
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as LineChartControl;
@@ -181,16 +149,6 @@ namespace CompMs.Graphics.LineChart
                 chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
 
             chart.Update();
-        }
-
-        static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is LineChartControl chart) chart.Update();
-        }
-
-        static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is LineChartControl chart) chart.Update();
         }
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -213,19 +171,6 @@ namespace CompMs.Graphics.LineChart
                 chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
 
             chart.Update();
-        }
-        #endregion
-
-        #region Mouse event
-        #endregion
-
-        #region VisualCollection
-        protected override int VisualChildrenCount => visualChildren.Count;
-        protected override Visual GetVisualChild(int index)
-        {
-            if (index < 0 || visualChildren.Count <= index)
-                throw new ArgumentOutOfRangeException();
-            return visualChildren[index];
         }
         #endregion
     }

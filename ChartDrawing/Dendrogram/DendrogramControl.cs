@@ -13,7 +13,7 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Dendrogram
 {
-    public class DendrogramControl : FrameworkElement
+    public class DendrogramControl : ChartBaseControl
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
@@ -24,16 +24,6 @@ namespace CompMs.Graphics.Dendrogram
         public static readonly DependencyProperty TreeProperty = DependencyProperty.Register(
             nameof(Tree), typeof(DirectedTree), typeof(DendrogramControl),
             new PropertyMetadata(default, OnTreeChanged)
-            );
-
-        public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
-            nameof(HorizontalAxis), typeof(AxisManager), typeof(DendrogramControl),
-            new PropertyMetadata(default(AxisManager), OnHorizontalAxisChanged)
-            );
-
-        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(DendrogramControl),
-            new PropertyMetadata(default(AxisManager), OnVerticalAxisChanged)
             );
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
@@ -74,18 +64,6 @@ namespace CompMs.Graphics.Dendrogram
             set => SetValue(TreeProperty, value);
         }
 
-        public AxisManager HorizontalAxis
-        {
-            get => (AxisManager)GetValue(HorizontalAxisProperty);
-            set => SetValue(HorizontalAxisProperty, value);
-        }
-
-        public AxisManager VerticalAxis
-        {
-            get => (AxisManager)GetValue(VerticalAxisProperty);
-            set => SetValue(VerticalAxisProperty, value);
-        }
-
         public string HorizontalPropertyName
         {
             get => (string)GetValue(HorizontalPropertyNameProperty);
@@ -118,7 +96,6 @@ namespace CompMs.Graphics.Dendrogram
         #endregion
 
         #region field
-        private VisualCollection visualChildren;
         private CollectionView cv;
         private Type dataType;
         private PropertyInfo hPropertyReflection;
@@ -127,13 +104,11 @@ namespace CompMs.Graphics.Dendrogram
 
         public DendrogramControl()
         {
-            visualChildren = new VisualCollection(this);
-
-            MouseMove += VisualFocusOnMouseOver;
             MouseLeftButtonDown += VisualSelectOnClick;
+            MouseMove += VisualFocusOnMouseOver;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if ( hPropertyReflection == null
                || idPropertyReflection == null
@@ -191,7 +166,8 @@ namespace CompMs.Graphics.Dendrogram
                 var childs = Tree[i].Select(e => e.To).Where(v => used[v]);
 
                 {
-                    var dv = new AnnotatedDrawingVisual(i);
+                    var dv = new AnnotatedDrawingVisual(i) { Center = new Point(xpos[i], ypos[i])};
+                    dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                     var dc = dv.RenderOpen();
                     foreach (var child in childs)
                         dc.DrawLine(LinePen, new Point(xpos[i], ypos[i]), new Point(xpos[child], ypos[i]));
@@ -201,7 +177,8 @@ namespace CompMs.Graphics.Dendrogram
 
                 foreach (var child in childs)
                 {
-                    var dv = new AnnotatedDrawingVisual(child);
+                    var dv = new AnnotatedDrawingVisual(child) { Center = new Point(xpos[child], ypos[child]) };
+                    dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                     var dc = dv.RenderOpen();
                     dc.DrawLine(LinePen, new Point(xpos[child], ypos[i]), new Point(xpos[child], ypos[child]));
                     dc.Close();
@@ -211,8 +188,6 @@ namespace CompMs.Graphics.Dendrogram
         }
 
         #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
-
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as DendrogramControl;
@@ -239,16 +214,6 @@ namespace CompMs.Graphics.Dendrogram
             if (chart == null) return;
 
             chart.Update();
-        }
-
-        static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is DendrogramControl chart) chart.Update();
-        }
-
-        static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is DendrogramControl chart) chart.Update();
         }
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -283,7 +248,7 @@ namespace CompMs.Graphics.Dendrogram
         }
         #endregion
 
-        #region Mouse event
+        #region Visual hit event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
@@ -326,16 +291,6 @@ namespace CompMs.Graphics.Dendrogram
         {
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
-        }
-        #endregion
-
-        #region VisualCollection
-        protected override int VisualChildrenCount => visualChildren.Count;
-        protected override Visual GetVisualChild(int index)
-        {
-            if (index < 0 || visualChildren.Count <= index)
-                throw new ArgumentOutOfRangeException();
-            return visualChildren[index];
         }
         #endregion
     }

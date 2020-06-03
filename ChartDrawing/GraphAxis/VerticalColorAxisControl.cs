@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -11,14 +9,9 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
 {
-    public class VerticalColorAxisControl : FrameworkElement
+    public class VerticalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(VerticalColorAxisControl),
-            new PropertyMetadata(default(AxisManager), OnVerticalAxisChanged)
-            );
-
         public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
             nameof(LabelBrushes), typeof(IList<Brush>), typeof(VerticalColorAxisControl),
             new PropertyMetadata(null)
@@ -36,12 +29,6 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
-        public AxisManager VerticalAxis
-        {
-            get => (AxisManager)GetValue(VerticalAxisProperty);
-            set => SetValue(VerticalAxisProperty, value);
-        }
-
         public IList<Brush> LabelBrushes
         {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
@@ -62,7 +49,6 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region field
-        private VisualCollection visualChildren;
         private PropertyInfo iPropertyReflection;
         #endregion
 
@@ -73,7 +59,7 @@ namespace CompMs.Graphics.GraphAxis
             MouseMove += VisualFocusOnMouseOver;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (VerticalAxis == null) return;
 
@@ -114,6 +100,7 @@ namespace CompMs.Graphics.GraphAxis
                 var yheight = (VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0)) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source);
+                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(toBrush(data.Source), null, new Rect(0, yorigin, ActualWidth, yheight));
                 dc.Close();
@@ -122,13 +109,6 @@ namespace CompMs.Graphics.GraphAxis
         }
 
         #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
-
-        static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is VerticalColorAxisControl chart) chart.Update();
-        }
-
         static void OnIdentityPropertyNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is VerticalColorAxisControl chart)
@@ -164,16 +144,6 @@ namespace CompMs.Graphics.GraphAxis
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
-        }
-        #endregion
-
-        #region VisualCollection
-        protected override int VisualChildrenCount => visualChildren.Count;
-        protected override Visual GetVisualChild(int index)
-        {
-            if (index < 0 || visualChildren.Count <= index)
-                throw new ArgumentOutOfRangeException();
-            return visualChildren[index];
         }
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
@@ -46,6 +47,7 @@ namespace CompMs.Graphics.Core.Base
             nameof(IsFlipped), typeof(bool), typeof(AxisManager),
             new PropertyMetadata(false)
             );
+
         #endregion
 
         #region Property
@@ -94,7 +96,7 @@ namespace CompMs.Graphics.Core.Base
             IsFlipped ? (Max - value * (Max - Min)) : (value * (Max - Min) + Min);
         #endregion
 
-        #region Event handler
+        #region Event
         static void OnInitialMinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var axis = d as AxisManager;
@@ -111,7 +113,6 @@ namespace CompMs.Graphics.Core.Base
             axis.Max = (double)e.NewValue;
         }
         #endregion
-
 
         public virtual List<LabelTickData> GetLabelTicks()
         {

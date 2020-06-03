@@ -48,26 +48,34 @@
                                           Tree="{Binding Dendrogram, Source={StaticResource DendrogramVM}}"
                                           HorizontalAxis="{StaticResource HorizontalAxis}"
                                           VerticalAxis="{StaticResource VerticalAxis}"
+                                          MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                          MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                          MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                          MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                           HorizontalPropertyName="X"
                                           IDPropertyName="ID" >
                 <dendrogram:DendrogramControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text=" ID = "/>
-                            <TextBlock Text="{Binding FocussedItem}"/>
+                            <TextBlock Text="{Binding FocusedItem}"/>
                         </StackPanel>
                     </ToolTip>
                 </dendrogram:DendrogramControl.ToolTip>
             </dendrogram:DendrogramControl>
         </Border>
         <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Grid.Column="1" Grid.Row="1" />
         <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                  MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Grid.Column="0" Grid.Row="0" />
         <StackPanel Orientation="Horizontal"
                     Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
             <TextBlock Text="ID = " />
-            <TextBlock Text="{Binding FocussedItem, ElementName=dendrogram}" />
+            <TextBlock Text="{Binding FocusedItem, ElementName=dendrogram}" />
         </StackPanel>
     </Grid>
 </Page>

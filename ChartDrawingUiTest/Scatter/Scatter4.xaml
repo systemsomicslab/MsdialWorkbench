@@ -49,6 +49,10 @@
                                     ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                     HorizontalAxis="{StaticResource HorizontalAxis}"
                                     VerticalAxis="{StaticResource VerticalAxis}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     PointBrush="Pink" >
@@ -66,15 +70,23 @@
         </Border>
         <axis:HorizontalColorAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                          LabelBrushes="{StaticResource AxisBrushes1}"
+                                         MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                         MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                          Margin="2,0,5,0"
                                          Grid.Row="1" Grid.Column="2" />
         <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Margin="2,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                  MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,2"
                                   Grid.Row="0" Grid.Column="0" />
         <axis:VerticalColorAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                       MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                        LabelBrushes="{StaticResource AxisBrushes2}"
                                        Margin="0,5,0,2"
                                        Grid.Row="0" Grid.Column="1" />

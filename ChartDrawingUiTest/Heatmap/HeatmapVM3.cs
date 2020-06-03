@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using CompMs.Graphics.Base;
+
 namespace ChartDrawingUiTest.Heatmap
 {
     public class HeatmapVM3 : INotifyPropertyChanged
@@ -79,8 +81,10 @@ namespace ChartDrawingUiTest.Heatmap
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        void RaiseProerptyChanged(string propertyname) =>
+        void RaiseProerptyChanged([CallerMemberName]string propertyname = "")
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        }
         protected bool SetProperty<T>(ref T property, T value, [CallerMemberName]string propertyname = "")
         {
             if (value == null && property == null || value.Equals(property)) return false;

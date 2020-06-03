@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -11,14 +9,9 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
 {
-    public class HorizontalColorAxisControl : FrameworkElement
+    public class HorizontalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
-            nameof(HorizontalAxis), typeof(AxisManager), typeof(HorizontalColorAxisControl),
-            new PropertyMetadata(default(AxisManager), OnHorizontalAxisChanged)
-            );
-
         public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
             nameof(LabelBrushes), typeof(IList<Brush>), typeof(HorizontalColorAxisControl),
             new PropertyMetadata(null)
@@ -36,12 +29,6 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
-        public AxisManager HorizontalAxis
-        {
-            get => (AxisManager)GetValue(HorizontalAxisProperty);
-            set => SetValue(HorizontalAxisProperty, value);
-        }
-
         public IList<Brush> LabelBrushes
         {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
@@ -62,18 +49,15 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region field
-        private VisualCollection visualChildren;
         private PropertyInfo iPropertyReflection;
         #endregion
 
         public HorizontalColorAxisControl()
         {
-            visualChildren = new VisualCollection(this);
-
             MouseMove += VisualFocusOnMouseOver;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (HorizontalAxis == null) return;
 
@@ -114,6 +98,7 @@ namespace CompMs.Graphics.GraphAxis
                 var xwidth = (HorizontalAxis.ValueToRenderPosition(data.Width) - HorizontalAxis.ValueToRenderPosition(0)) * ActualWidth;
 
                 var dv = new AnnotatedDrawingVisual(data.Source);
+                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(toBrush(data.Source), null, new Rect(xorigin, 0, xwidth, ActualHeight));
                 dc.Close();
@@ -122,13 +107,6 @@ namespace CompMs.Graphics.GraphAxis
         }
 
         #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
-
-        static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is HorizontalColorAxisControl chart) chart.Update();
-        }
-
         static void OnIdentityPropertyNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is HorizontalColorAxisControl chart)
@@ -164,16 +142,6 @@ namespace CompMs.Graphics.GraphAxis
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
-        }
-        #endregion
-
-        #region VisualCollection
-        protected override int VisualChildrenCount => visualChildren.Count;
-        protected override Visual GetVisualChild(int index)
-        {
-            if (index < 0 || visualChildren.Count <= index)
-                throw new ArgumentOutOfRangeException();
-            return visualChildren[index];
         }
         #endregion
     }

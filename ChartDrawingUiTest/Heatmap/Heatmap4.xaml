@@ -11,16 +11,19 @@
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Heatmap4">
+    <Page.DataContext>
+        <local:HeatmapVM3 />
+    </Page.DataContext>
     <Page.Resources>
         <local:HeatmapVM3 x:Key="HeatmapVM"/>
-        <base:CategoryAxisManager x:Key="HorizontalAxis"
-                                  ItemsSource="{Binding Xs, Source={StaticResource HeatmapVM}}" />
         <base:CategoryAxisManager x:Key="VerticalAxis"
                                   ItemsSource="{Binding Ys, Source={StaticResource HeatmapVM}}" />
+        <base:CategoryAxisManager x:Key="HorizontalAxis"
+                                  ItemsSource="{Binding Xs, Source={StaticResource HeatmapVM}}" />
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource HeatmapVM}}" />
     </Page.Resources>
-    <Grid DataContext="{StaticResource HeatmapVM}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
             <ColumnDefinition />
@@ -28,6 +31,10 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
@@ -41,6 +48,10 @@
                                     ItemsSource="{Binding  Source={StaticResource SeriesView}}"
                                     HorizontalAxis="{StaticResource HorizontalAxis}"
                                     VerticalAxis="{StaticResource VerticalAxis}"
+                                    MinX="{Binding Min, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
+                                    MaxX="{Binding Max, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
+                                    MinY="{Binding Min, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
+                                    MaxY="{Binding Max, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     DegreePropertyName="Z"
@@ -66,9 +77,13 @@
             </heatmap:HeatmapControl>
         </Border>
         <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    MinX="{Binding Min, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
+                                    MaxX="{Binding Max, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
         <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                  MinY="{Binding Min, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
+                                  MaxY="{Binding Max, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />
         <StackPanel Orientation="Horizontal"
@@ -94,5 +109,21 @@
                                      StartPoint="0,1" EndPoint="0,0"/>
             </Rectangle.Fill>
         </Rectangle>
+        <Slider Minimum="{Binding InitialMin, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
+                Maximum="{Binding InitialMax, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
+                Value="{Binding Min, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
+                Grid.Row="4" Grid.Column="1" />
+        <Slider Minimum="{Binding InitialMin, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
+                Maximum="{Binding InitialMax, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
+                Value="{Binding Max, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
+                Grid.Row="5" Grid.Column="1" />
+        <Slider Minimum="{Binding InitialMin, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
+                Maximum="{Binding InitialMax, Mode=OneTime, Source={StaticResource VerticalAxis}}"
+                Value="{Binding Min, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
+                Grid.Row="6" Grid.Column="1" />
+        <Slider Minimum="{Binding InitialMin, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
+                Maximum="{Binding InitialMax, Mode=OneTime, Source={StaticResource VerticalAxis}}"
+                Value="{Binding Max, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
+                Grid.Row="7" Grid.Column="1" />
     </Grid>
 </Page>
