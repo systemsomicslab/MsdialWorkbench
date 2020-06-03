@@ -27,6 +27,7 @@ namespace Rfx.Riken.OsakaUniv
             var responses = new ObservableCollection<double>();
             var fileIDs = new ObservableCollection<int>();
             var fileNames = new ObservableCollection<string>();
+            var fileClasses = new ObservableCollection<string>();
             var fileBrushs = new ObservableCollection<byte[]>();
             var metaboliteIDs = new ObservableCollection<int>();
             var metaboliteNames = new ObservableCollection<string>();
@@ -37,6 +38,7 @@ namespace Rfx.Riken.OsakaUniv
                 if (fileProp.AnalysisFileIncluded) {
                     fileNames.Add(fileProp.AnalysisFileName);
                     fileIDs.Add(fileProp.AnalysisFileId);
+                    fileClasses.Add(fileProp.AnalysisFileClass);
                     if (isPlsda == true) {
                         if (fileProp.ResponseVariable != 0.0) {
                             responses.Add(1.0);
@@ -127,6 +129,7 @@ namespace Rfx.Riken.OsakaUniv
                 YIndexes = fileIDs,
                 XIndexes = metaboliteIDs,
                 YLabels = fileNames,
+                YLabels2 = fileClasses,
                 XLabels = metaboliteNames,
                 YColors = fileBrushs,
                 XColors = metaboliteBrushs,
