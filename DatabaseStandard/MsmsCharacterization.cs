@@ -1,4 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.Common.Components;
+using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -5692,11 +5693,22 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
                     if (isClassIonFound == false) return null;
                     var candidates = new List<LipidMolecule>();
-                    //var averageIntensity = 0.0;
 
-                    //var molecule = getSingleacyloxMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
-                    //candidates.Add(molecule);
+                    var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    var query = new List<Peak>
+                                        {
+                                        new Peak() { Mz = alphaOHflag01, Intensity = 10.0 },
+                                        };
 
+                    var foundCount = 0;
+                    var averageIntensity = 0.0;
+                    countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                    if (foundCount == 1 && totalOxidized == 1) //totalOxidized == 1 only 
+                    {
+                        var molecule = getAlphaOxfaMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
+                        candidates.Add(molecule);
+                    }
                     return returnAnnotationResult("FA", LbmClass.OxFA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
@@ -5738,23 +5750,40 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                                 if ((double)(sn2Carbon / sn2Double) < 3) break;
                             }
 
-                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-SN1(HFA)-H]-
-                            var NL_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[M - SN2-H]-
+                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-(ExtraFA)-H]-
+                            var NL_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[ExtraFA]-
+                            var aahfaFrag1 = NL_SN1 - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
 
                             var query = new List<Peak>
                                         {
                                         new Peak() { Mz = NL_SN1, Intensity = 10.0 },
                                         new Peak() { Mz = NL_SN2, Intensity = 1.0 },
                                         };
+                            var query2 = new List<Peak>
+                                        {
+                                        new Peak() { Mz = aahfaFrag1, Intensity = 10.0 },
+                                        };
 
                             var foundCount = 0;
+                            var foundCount2 = 0;
                             var averageIntensity = 0.0;
+                            var averageIntensity2 = 0.0;
                             countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+                            countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
                             if (foundCount >= 2)
                             {
-                                var molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                var molecule = new LipidMolecule();
+                                if (foundCount2 == 1)
+                                {
+                                    molecule = getFahfaMoleculeObjAsLevel2_0("AAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                        sn2Carbon, sn2Double, averageIntensity2);
+                                }
+                                else
+                                {
+                                    molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
+                                }
                                 candidates.Add(molecule);
                             }
                         }
@@ -12221,8 +12250,6 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
             };
         }
 
-
-
         private static LipidMolecule getDiacylglycerolMoleculeObjAsLevel2(string lipidClass, LbmClass lbmClass,
            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, double score)
         {
@@ -12690,27 +12717,48 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
             };
         }
 
+        private static LipidMolecule getAlphaOxfaMoleculeObjAsLevel1(string lipidClass, LbmClass lbmClass,
+            int totalCarbon, int totalDB, int totalOxidized, double score)
+        {
+            var totalString = totalCarbon + ":" + totalDB + ";(2OH)";
+            var totalName = lipidClass + " " + totalString;
 
+            return new LipidMolecule()
+            {
+                LipidClass = lbmClass,
+                AnnotationLevel = 2,
+                SublevelLipidName = totalName,
+                LipidName = totalName,
+                TotalCarbonCount = totalCarbon,
+                TotalDoubleBondCount = totalDB,
+                TotalChainString = totalString,
+                Score = score,
+                Sn1CarbonCount = totalCarbon,
+                Sn1DoubleBondCount = totalDB,
+                Sn1AcylChainString = totalString,
+                TotalOxidizedCount = totalOxidized
+            };
 
+        }
 
-    //    private static LipidMolecule getLipidAnnotaionAsLevel1(string lipidClass, LbmClass lbmClass,
-    //int totalCarbon, int totalDB,double score, string suffix)
-    //    {
-    //        var totalString = totalCarbon + ":" + totalDB + suffix;
-    //        var totalName = lipidClass + " " + totalString;
+        //    private static LipidMolecule getLipidAnnotaionAsLevel1(string lipidClass, LbmClass lbmClass,
+        //int totalCarbon, int totalDB,double score, string suffix)
+        //    {
+        //        var totalString = totalCarbon + ":" + totalDB + suffix;
+        //        var totalName = lipidClass + " " + totalString;
 
-    //        return new LipidMolecule()
-    //        {
-    //            LipidClass = lbmClass,
-    //            AnnotationLevel = 2,
-    //            SublevelLipidName = totalName,
-    //            LipidName = totalName,
-    //            TotalCarbonCount = totalCarbon,
-    //            TotalDoubleBondCount = totalDB,
-    //            TotalChainString = totalString,
-    //            Score = score,
-    //         };
-    //    }
+        //        return new LipidMolecule()
+        //        {
+        //            LipidClass = lbmClass,
+        //            AnnotationLevel = 2,
+        //            SublevelLipidName = totalName,
+        //            LipidName = totalName,
+        //            TotalCarbonCount = totalCarbon,
+        //            TotalDoubleBondCount = totalDB,
+        //            TotalChainString = totalString,
+        //            Score = score,
+        //         };
+        //    }
 
 
         private static LipidMolecule getLipidAnnotaionAsSubLevel(string lipidClass, LbmClass lbmClass,
