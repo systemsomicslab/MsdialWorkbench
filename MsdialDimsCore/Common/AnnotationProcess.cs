@@ -39,9 +39,9 @@ namespace CompMs.MsdialDimsCore.Common {
 
                 //temp method
                 var totalscore = result.SimpleDotProduct + result.WeightedDotProduct + result.MatchedPeaksPercentage + result.ReverseDotProduct;
-                result.TotalSimilarity = totalscore;
+                result.TotalScore = totalscore;
 
-                if (feature.MspBasedMatchResult.TotalSimilarity < totalscore) {
+                if (feature.MspBasedMatchResult.TotalScore < totalscore) {
                     feature.MspID = i;
                     feature.MspBasedMatchResult = result;
                 }

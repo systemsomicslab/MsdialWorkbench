@@ -39,6 +39,7 @@ namespace CompMs.MsdialCore.MSDec {
 
         // annotation info for gcms project
         public int MspID { get; set; } // representative msp id
+        public int MspIDWhenOrdered { get; set; } // representative msp id
         public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
     }

@@ -11,6 +11,8 @@ namespace CompMs.Common.Parameter {
         public float CcsTolerance { get; set; } = 10.0F;
         public float Ms1Tolerance { get; set; } = 0.01F;
         public float Ms2Tolerance { get; set; } = 0.05F;
+        public float RelativeAmpCutoff { get; set; } = 0.1F;
+        public float AbsoluteAmpCutoff { get; set; } = 5;
 
         // by [0-1]
         public float WeightedDotProductCutOff { get; set; } = 0.5F;
