@@ -210,7 +210,7 @@ namespace MsdialDimsCoreUiTestApp
                                      .ToList();
             Spectrums = ms2spectra;
 
-            var chromPeaks = ChromMsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
+            var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             ChromatogramPeakFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1spectra, spectras);
@@ -233,13 +233,13 @@ namespace MsdialDimsCoreUiTestApp
             foreach (var result in peakPickResults) {
 
                 // here, the chrom scan ID should be matched to the scan number of RawSpectrum Element
-                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz);
+                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
                 var chromScanID = peakFeature.ChromScanIdTop;
                 peakFeature.ChromXs.RT = new RetentionTime(0);
                 peakFeature.ChromXsTop.RT = new RetentionTime(0);
                 peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? CompMs.Common.Enum.IonMode.Positive : CompMs.Common.Enum.IonMode.Negative;
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peakFeature.MS1RawSpectrumID = ms1Spectrum.ScanNumber;
+                peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 peakFeature.MS2RawSpectrumIDs = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
                 peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumIDs, allSpectra);
