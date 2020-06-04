@@ -17,7 +17,7 @@ namespace CompMs.Common.Components {
         [Key(1)]
         public double PrecursorMz { get; set; }
         [Key(2)]
-        public ChromXs ChromXs { get; set; }
+        public ChromXs ChromXs { get; set; } = new ChromXs();
         [Key(3)]
         public IonMode IonMode { get; set; }
         [Key(4)]

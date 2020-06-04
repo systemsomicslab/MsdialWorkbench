@@ -429,6 +429,8 @@ namespace Rfx.Riken.OsakaUniv
                     xAxisRtDatapointCollection.Add(alignmentResultBean.AlignmentPropertyBeanCollection[i].CentralRetentionIndex);
 
                 yAxisMzDatapointCollection.Add(alignmentResultBean.AlignmentPropertyBeanCollection[i].QuantMass);
+
+               // Console.WriteLine(alignmentResultBean.AlignmentPropertyBeanCollection[i].RelativeAmplitudeValue);
                 plotBrushCollection.Add(new SolidColorBrush(Color.FromArgb(180, (byte)(255 * alignmentResultBean.AlignmentPropertyBeanCollection[i].RelativeAmplitudeValue), (byte)(255 * (1 - Math.Abs(alignmentResultBean.AlignmentPropertyBeanCollection[i].RelativeAmplitudeValue - 0.5))), (byte)(255 - 255 * alignmentResultBean.AlignmentPropertyBeanCollection[i].RelativeAmplitudeValue))));
                 alignmentPropertyBeanCollection.Add(alignmentResultBean.AlignmentPropertyBeanCollection[i]);
             }

@@ -96,7 +96,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
 
             var path = GetResourcesPath("ExistFormulaLib");
             var existFormulaDB = new List<ExistFormulaQuery>();
-            Console.WriteLine(path);
+            //Console.WriteLine(path);
             try {
                 existFormulaDB = MessagePackMsFinderHandler.LoadFromFile<List<ExistFormulaQuery>>(path);
             }

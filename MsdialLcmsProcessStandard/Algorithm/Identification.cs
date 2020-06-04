@@ -114,6 +114,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             else {
                 similarityCalculationsWithoutMsMs(peakSpot, ms1Spectra, mspDB, param);
             }
+            //Console.WriteLine(peakSpot.MetaboliteName);
             progressReports(peakSpot.PeakID, seekpointList.Count, reportAction);
         }
 
@@ -222,14 +223,16 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         private static List<PeakAreaBean> getRefinedPeakAreaBeanListForMspSearchResult(List<PeakAreaBean> peakAreaBeanList)
         {
             if (peakAreaBeanList.Count <= 1) return peakAreaBeanList;
-            peakAreaBeanList = peakAreaBeanList.OrderByDescending(n => n.LibraryID).ToList();
+            peakAreaBeanList = peakAreaBeanList.OrderByDescending(n => n.LibraryID).OrderBy(n => n.MetaboliteName).ToList();
 
             var currentLibraryId = peakAreaBeanList[0].LibraryID;
+            var currentMetName = peakAreaBeanList[0].MetaboliteName;
             var currentPeakId = 0;
             for (int i = 1; i < peakAreaBeanList.Count; i++) {
                 if (peakAreaBeanList[i].LibraryID < 0) break;
-                if (peakAreaBeanList[i].LibraryID != currentLibraryId) {
+                if (peakAreaBeanList[i].LibraryID != currentLibraryId || peakAreaBeanList[i].MetaboliteName != currentMetName) {
                     currentLibraryId = peakAreaBeanList[i].LibraryID;
+                    currentMetName = peakAreaBeanList[i].MetaboliteName;
                     currentPeakId = i;
                     continue;
                 }
@@ -448,7 +451,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             float mz = peakAreaBean.AccurateMass;
             float rt = peakAreaBean.RtAtPeakTop;
 
-            //if (Math.Abs(accurateMass - 1490.9944) < 0.001 && Math.Abs(retentionTime - 13.438) < 0.01) {
+            //if (Math.Abs(mz - 285.0978) < 0.001 && Math.Abs(rt - 2.988167) < 0.01) {
             //    Console.WriteLine();
             //}
 

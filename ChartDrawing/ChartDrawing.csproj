@@ -60,10 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
-    <Compile Include="Base\AxisVM.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="Base\CategoryAxisManager.cs" />
-    <Compile Include="Base\CategoryAxisVM.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />
     <Compile Include="Base\ContinuousAxisManager.cs" />
     <Compile Include="Base\DataSeries.cs" />

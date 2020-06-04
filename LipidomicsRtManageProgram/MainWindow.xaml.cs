@@ -15,9 +15,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RDotNet;
-using Riken.Metabolomics.Lipidomics;
 using System.IO;
 using CompMs.Common.MessagePack;
+using CompMs.Common.Parser;
+using CompMs.Common.Components;
 
 namespace Lipidomics.Retentiontime.Manager {
     /// <summary>
@@ -211,7 +212,7 @@ namespace Lipidomics.Retentiontime.Manager {
 
             this.modelFilePath = @"D:\ayas\Retiprt_training_20200119.xlsx";
             this.rLocationPath = @"C:\Program Files\R\R-3.6.2\bin\x64";
-            this.lbmFilePath = @"C:\Users\ayasa\Desktop\MSDIAL ver 4.00-dev\MSDIAL-LipidDB-VS66-Public.lbm2";
+            this.lbmFilePath = @"C:\Users\ayasa\Desktop\MSDIAL ver 4.00-dev\MSDIAL-LipidDB-VS66-Public.lbm";
             this.outputFolderPath = @"C:\Users\ayasa\Desktop";
             this.rWorkingDirectry = @"D:\ayas\Retip_C";
 
@@ -220,11 +221,11 @@ namespace Lipidomics.Retentiontime.Manager {
 
             Console.WriteLine("Loading the lbm2 file.");
 
-            var mspDB = LipidomicsConverter.SerializedObjectToMspQeries(this.lbmFilePath);
+            var mspDB = MspFileParcer.MspFileReader(this.lbmFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB) {
-                if (!inchikeyToSmiles.ContainsKey(query.InchiKey)) {
-                    inchikeyToSmiles[query.InchiKey] = query.Smiles;
+                if (!inchikeyToSmiles.ContainsKey(query.InChIKey)) {
+                    inchikeyToSmiles[query.InChIKey] = query.SMILES;
                 }
             }
 
@@ -296,15 +297,15 @@ namespace Lipidomics.Retentiontime.Manager {
             }
 
             foreach (var query in mspDB) {
-                if (inchikeyToPredictedRt.ContainsKey(query.InchiKey)) {
-                    query.RetentionTime = inchikeyToPredictedRt[query.InchiKey];
+                if (inchikeyToPredictedRt.ContainsKey(query.InChIKey)) {
+                    query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
                 }
                 else {
-                    Console.WriteLine("Error at {0}", query.InchiKey);
+                    Console.WriteLine("Error at {0}", query.InChIKey);
                 }
             }
 
-            MspMethods.SaveMspToFile(mspDB, outputFilePath);
+            MoleculeMsRefMethods.SaveMspToFile(mspDB, outputFilePath);
 
         }
     }

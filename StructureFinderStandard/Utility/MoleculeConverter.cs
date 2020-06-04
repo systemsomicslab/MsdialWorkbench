@@ -185,6 +185,16 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             var structures = new List<Structure>();
             var dbQueryStrings = getDabaseQueries(param.DatabaseQuery);
 
+            var counter = 0;
+            while (ErrorHandler.IsFileLocked(sdfFile, out string error)) {
+                System.Threading.Thread.Sleep(2000);
+                counter++;
+                if (counter > 3) {
+                    error = "Cannot open this file: " + sdfFile;
+                    Console.WriteLine(error);
+                    return structures;
+                }
+            }
 
             using (var fr = new FileStream(sdfFile, FileMode.Open)) {
                 var imr = new EnumerableSDFReader(fr, ChemObjectBuilder.Instance);

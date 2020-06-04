@@ -1460,8 +1460,10 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
 
             for (int i = 0; i < alignmentSpots.Count; i++) {
 
+
                 var relativeValue = (float)((Math.Log((double)alignmentSpots[i].MaxValiable, 2) - minIntTotal)
                     / (maxIntTotal - minIntTotal));
+               // Console.WriteLine(alignmentSpots[i].MaxValiable + "\t" + (maxIntTotal - minIntTotal) + "\t" + relativeValue);
                 if (relativeValue < 0)
                     relativeValue = 0;
                 else if (relativeValue > 1)
@@ -1553,8 +1555,8 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             alignmentSpot.MinRi = (float)minRi;
             alignmentSpot.MaxRt = (float)maxRt;
             alignmentSpot.MinRt = (float)minRt;
-            alignmentSpot.MaxValiable = (int)maxInt;
-            alignmentSpot.MinValiable = (int)minInt;
+            alignmentSpot.MaxValiable = (float)maxInt;
+            alignmentSpot.MinValiable = (float)minInt;
         }
 
         private static ObservableCollection<AlignmentPropertyBean> getRefinedAlignmentPropertyBeanCollection(

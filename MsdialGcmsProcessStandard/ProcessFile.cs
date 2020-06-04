@@ -36,7 +36,7 @@ namespace Msdial.Gcms.Dataprocess {
                         //Exporter.export(new ObservableCollection<RAW_Spectrum>(spectrumList), "msdial_rawdata.txt");
                         //Exporter.export(new ObservableCollection<PeakAreaBean>(peakAreaList), "msdial_GC_detectedPeaks.txt");
 #endif
-						ms1DecResults = Deconvolution.GcmsMS1DecResults(spectrumList, peakAreaList, param, reportAction);
+						ms1DecResults = Deconvolution.GetMS1DecResults(spectrumList, peakAreaList, param, reportAction);
 #if (DEBUG)
 						//Exporter.export(ms1DecResults, "msdial_GC_decResults.txt");
 #endif

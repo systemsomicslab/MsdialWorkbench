@@ -24,9 +24,9 @@ namespace Riken.Metabolomics.StructureFinder.Utility {
             //    Console.WriteLine(ex.ToString());
             //}
 
-            var xlogpString = string.Empty;
+            XLogPDescriptor.Result xlogpResult = null;
             try {
-                xlogpString = descriptor.Calculate(structure.IContainer).ToString();
+                xlogpResult = descriptor.Calculate(structure.IContainer);
             }
             catch (CDKException ex) {
                 Console.WriteLine(ex.ToString());
@@ -34,13 +34,18 @@ namespace Riken.Metabolomics.StructureFinder.Utility {
             catch (System.NullReferenceException ex) {
                 Console.WriteLine(ex.ToString());
             }
-
-            if (double.TryParse(xlogpString, out xlogp)) {
-                return xlogp;
+            if (xlogpResult != null) {
+                return xlogpResult.Value;
             }
             else {
                 return -1.0;
             }
+            //if (double.TryParse(xlogpResult, out xlogp)) {
+            //    return xlogp;
+            //}
+            //else {
+            //    return -1.0;
+            //}
         }
     }
 }

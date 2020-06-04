@@ -121,6 +121,8 @@ namespace Rfx.Riken.OsakaUniv
                                 Regex.IsMatch(wkstr, "Precursor_type:.*", RegexOptions.IgnoreCase)) {
                                 var fieldString = getMspFieldValue(wkstr);
                                 mspField.AdductIonBean = AdductIonStringParser.GetAdductIonBean(fieldString);
+                                if (mspField.AdductIonBean != null)
+                                    mspField.IonMode = mspField.AdductIonBean.IonType == IonType.Positive ? IonMode.Positive : IonMode.Negative;
                                 continue;
                             }
                             else if (Regex.IsMatch(wkstr, "Links:.*", RegexOptions.IgnoreCase)) {

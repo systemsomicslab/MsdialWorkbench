@@ -65,12 +65,11 @@ namespace CompMs.MsdialCore.Algorithm {
 
                     isotopeCandidates.Add(peakFeatures[j]);
                 }
-                //isotopeCalculation(isotopeCandidates, param);
-                isotopeCalculationImproved(isotopeCandidates, param, iupac);
+                EstimateIsotopes(isotopeCandidates, param, iupac);
             }
         }
      
-        public static void isotopeCalculationImproved(
+        public static void EstimateIsotopes(
             List<ChromatogramPeakFeature> peakFeatures,
             ParameterBase param,
             IupacDatabase iupac) {

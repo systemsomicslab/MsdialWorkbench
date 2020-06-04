@@ -13,6 +13,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
         public static Formula OrganicElementsReader(string formulaString)
         {
             if (formulaString == null) return null;
+            if (formulaString == string.Empty) return null;
             if (formulaString == "Unknown") return null;
                      
             int cnum = 0, hnum = 0, pnum = 0, snum = 0, onum = 0, nnum = 0, fnum = 0, clnum = 0, brnum = 0, inum = 0, sinum = 0, tmsCount = 0, meoxCount = 0;

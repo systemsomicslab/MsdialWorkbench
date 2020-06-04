@@ -31,6 +31,7 @@ namespace CompMs.MsdialCore.Parameter {
         public TargetOmics TargetOmics { get; set; } = TargetOmics.Metablomics;
         public Ionization Ionization { get; set; } = Ionization.ESI;
         public SeparationType SeparationType { get; set; } = SeparationType.Chromatography;
+        public bool IsAIF { get; set; } = false;
 
 
 
@@ -93,7 +94,7 @@ namespace CompMs.MsdialCore.Parameter {
         public float CentroidMs2Tolerance { get; set; } = 0.025F;
         public int MaxChargeNumber { get; set; } = 2;
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
-
+        public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
 
 
         // alignment base
@@ -112,11 +113,7 @@ namespace CompMs.MsdialCore.Parameter {
         public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() { SolventType = SolventType.CH3COONH4 };
         public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
 
-        public bool IsUseTimeForAnnotationFiltering { get; set; } = false;
-        public bool IsUseTimeForAnnotationScoring { get; set; } = false;
-        public bool IsUseCcsForAnnotationFiltering { get; set; } = false;
-        public bool IsUseCcsForAnnotationScoring { get; set; } = false;
-
+       
         public bool OnlyReportTopHitInMspSearch { get; set; } = false;
         public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
             RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
@@ -125,11 +122,16 @@ namespace CompMs.MsdialCore.Parameter {
         public float RelativeAbundanceCutOff { get; set; } = 0.0F;
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
 
+        public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
+
         // deconvolution
         public float SigmaWindowValue { get; set; } = 0.5F;
         public float AmplitudeCutoff { get; set; } = 0;
+        public float AveragePeakWidth { get; set; } = 30;
+        public float KeptIsotopeRange { get; set; } = 5;
         public bool RemoveAfterPrecursor { get; set; } = true;
         public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
+        public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
 
 
         // Post-alignment and filtering
@@ -201,5 +203,11 @@ namespace CompMs.MsdialCore.Parameter {
         public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = null;
         public List<StandardCompound> StandardCompounds { get; set; } = null;
 
+    }
+
+    public class RiDictionaryInfo {
+        
+        public string DictionaryFilePath { get; set; } = string.Empty;
+        public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
     }
 }

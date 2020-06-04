@@ -113,10 +113,10 @@ namespace Rfx.Riken.OsakaUniv
 
             query.AdductIon = AdductIonParcer.GetAdductIonBean(adduct);
 
-            if (ionmode == "Positive") query.IonMode = IonMode.Positive;
+            if (ionmode.ToLower() == "positive") query.IonMode = IonMode.Positive;
             else query.IonMode = IonMode.Negative;
 
-            if (isSelected == "TRUE") query.IsSelected = true;
+            if (isSelected.ToLower() == "true") query.IsSelected = true;
             else query.IsSelected = false;
 
             return query;

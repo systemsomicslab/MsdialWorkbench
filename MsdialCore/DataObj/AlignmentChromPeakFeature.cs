@@ -59,6 +59,8 @@ namespace CompMs.MsdialCore.DataObj {
         public double PeakAreaAboveZero { get; set; }
         [Key(21)]
         public double PeakAreaAboveBaseline { get; set; }
+        [Key(38)]
+        public double Mass { get; set; }
 
         public double PeakWidth(ChromXType type) {
             switch (type) {

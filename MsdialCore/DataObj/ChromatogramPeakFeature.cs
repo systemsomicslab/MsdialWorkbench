@@ -36,6 +36,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(10)]
         public double PeakAreaAboveBaseline { get; set; }
 
+        [Key(43)]
+        public double Mass { get; set; }
+
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;
@@ -43,6 +46,10 @@ namespace CompMs.MsdialCore.DataObj {
                 case ChromXType.Drift: return ChromXsRight.Drift.Value - ChromXsLeft.Drift.Value;
                 default: return ChromXsRight.Value - ChromXsLeft.Value;
             }
+        }
+
+        public double PeakWidth() {
+            return ChromXsRight.Value - ChromXsLeft.Value;
         }
         // basic ID metadata
         [Key(11)]
@@ -58,19 +65,27 @@ namespace CompMs.MsdialCore.DataObj {
 
         // link to raw data
         [Key(16)]
-        public int MS1RawSpectrumID { get; set; }
+        public int MS1RawSpectrumIdTop { get; set; }
+        [Key(44)]
+        public int MS1RawSpectrumIdLeft { get; set; }
+        [Key(45)]
+        public int MS1RawSpectrumIdRight { get; set; }
         [Key(17)]
-        public int MS1RawSpectrumIDatAccumulatedMS1 { get; set; } // used for LC-IM-MS/MS
+        public int MS1AccumulatedMs1RawSpectrumIdTop { get; set; } // used for LC-IM-MS/MS
+        [Key(46)]
+        public int MS1AccumulatedMs1RawSpectrumIdLeft { get; set; } // used for LC-IM-MS/MS
+        [Key(47)]
+        public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
         [Key(18)]
         public int MS2RawSpectrumID { get; set; } // representative ID
         [Key(19)]
-        public List<int> MS2RawSpectrumIDs { get; set; }
+        public List<int> MS2RawSpectrumIDs { get; set; } = new List<int>();
 
         // set for IMMScanProperty
         [Key(20)]
         public int ScanID { get; set; } // same as MS1RawSpectrumID
         [Key(21)]
-        public double PrecursorMz { get; set; }
+        public double PrecursorMz { get; set; } // in LC-MS/MS same as Mass
         [Key(22)]
         public IonMode IonMode { get; set; }
         [Key(23)]

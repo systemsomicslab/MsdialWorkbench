@@ -10,4 +10,10 @@
     <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Splash">
+      <HintPath>..\Assemblies\Splash.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

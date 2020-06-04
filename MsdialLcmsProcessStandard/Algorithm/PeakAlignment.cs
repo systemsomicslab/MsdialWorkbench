@@ -1838,8 +1838,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             alignmentProperty.MinMz = (float)minMz;
             alignmentProperty.MaxRt = (float)maxRt;
             alignmentProperty.MinRt = (float)minRt;
-            alignmentProperty.MaxValiable = (int)maxInt;
-            alignmentProperty.MinValiable = (int)minInt;
+            alignmentProperty.MaxValiable = (float)maxInt;
+            alignmentProperty.MinValiable = (float)minInt;
         }
 
         private static ObservableCollection<AlignmentPropertyBean> getRefinedAlignmentPropertyBeanCollection(

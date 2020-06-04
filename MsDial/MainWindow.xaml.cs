@@ -38,33 +38,33 @@ namespace Rfx.Riken.OsakaUniv
 
     /*
          * Summary for MS-DIAL programing
-         * 
+         *
          * List<double[]> peaklist: shows data point list of chromatogram; double[] { scan number, retention time [min], base peak m/z, base peak intensity }
          * List<double[]> masslist: shows data point list of mass spectrum; double[] { m/z, intensity }
-         * 
+         *
          * .abf (binary) includes raw data. How to use => look at "private void bgWorker_AllProcess_DoWork(object sender, DoWorkEventArgs e)" of AnalysisFileProcess.cs
-         * 
+         *
          * .mtb (serialized) stores SavePropertyBean. How to use => look at "private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)" of AnalysisFileProcess.cs
-         * 
+         *
          * .med (serialized) stores data processing parameters. How to use => look at "private void saveParametersMenu_Click(object sender, RoutedEventArgs e)" of MainWindow.xaml.cs
-         * 
+         *
          * .pai (serialized) stores the peak detection result, i.e. ObservableCollection<PeakAreaBean>. How to use => look at "private void bgWorker_AllProcess_DoWork(object sender, DoWorkEventArgs e)" of AnalysisFileProcess.cs
-         * 
+         *
          * .arf (serialized) stores the alignment result, i.e. ObservableCollection<AlignmentPropertyBean>. How to use => look at "private void bgWorker_DoWork(object sender, DoWorkEventArgs e)" of JointAlignerProcess.cs
-         * 
+         *
          * .lbm (ascii) stores the LipidBlast MS/MS spectrum as the MSP format. How to use => "public LipidDbSetVM(MainWindow mainWindow, Window window)" of LipidDbSetVM.cs
-         * 
+         *
          * MS-DIAL utilizes some resources including .lbm and others prepared in 'Resources' folder. These resources will be retrieved when MS-DIAL is opened or when the project will be started.
          * How to use. => follow "private void newProjectMenu_Click(object sender, RoutedEventArgs e)" of MainWindow.xaml.cs
-         * 
+         *
          * .dcl (binary) stores the deconvolution result as described below. How to use => look at "private static void writeMS2DecResult" of SpectralDeconvolution.cs
          *
          * The main algorithm is mainly written in "Dataprocessing" assembly and IdaModeDataProcessing.cs and SwathDataAnalyzerDataprocessing.
-         * 
+         *
          * The data property is mainly stored in the C# class library of "Bean" folder of "MSDIAL" assembly and "Common" assembly.
-         * 
+         *
          * The graphical user interface is mainly constructed by MVVM consisting of "Bean", "ViewModel", and "Window" folders.
-         * 
+         *
          * <Deconvolution file (.dcl)>
          * [first header] Ver. Number
          * [second header] number of PeakAreaBean's collection
@@ -89,10 +89,10 @@ namespace Rfx.Riken.OsakaUniv
          * [(int)scan num.], [(float)rt], [(float)BasePeakMz], [(int)BasePeakIntensity](datapoint3)
          * ********************************************************************************************
          * [(int)scan num.], [(float)rt], [(float)BasePeakMz], [(int)BasePeakIntensity](datapointDN)
-         * 
+         *
          *  (peak 2: unique mass -> spectra -> datapoint detail)
          * </Deconvolution>
-         * 
+         *
          */
 
 
@@ -113,7 +113,7 @@ namespace Rfx.Riken.OsakaUniv
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged, IDataErrorInfo {
-      
+
         #region // member variables
         //Window property
         private static MainWindow mainWindow;
@@ -258,7 +258,7 @@ namespace Rfx.Riken.OsakaUniv
         private bool quantmassBrowserFlag = true;
         private bool quantmassBrowserFlag2 = true;
 
-        // additional viewers 
+        // additional viewers
         private SampleTableViewerInAlignment sampleTableViewer;
         private ManualPeakMod.AlignedChromatogramModificationWin alignedChromatogramModificationWin;
 
@@ -723,7 +723,7 @@ namespace Rfx.Riken.OsakaUniv
         private void RunDevelopedVersion()
         {
            method_Tada_Test01();
-            
+
         }
 
         private void method_Tada_Test01()
@@ -742,7 +742,7 @@ namespace Rfx.Riken.OsakaUniv
             //    analysisFiles[this.focusedFileID].PeakAreaBeanCollection[this.FocusedPeakID],
             //    null, projectProperty, analysisParamForLC);
 
-            //var accumulatedMs2Dv = UiAccessLcUtility.GetMs2ChromatogramDrawVisual(this.LcmsSpectrumCollection, this.DriftSpotBeanList[this.FocusedDriftSpotID], 
+            //var accumulatedMs2Dv = UiAccessLcUtility.GetMs2ChromatogramDrawVisual(this.LcmsSpectrumCollection, this.DriftSpotBeanList[this.FocusedDriftSpotID],
             //    analysisFiles[this.focusedFileID].PeakAreaBeanCollection[this.FocusedPeakID],
             //    this.PeakViewMS2DecResult, projectProperty, analysisParamForLC);
 
@@ -1082,18 +1082,22 @@ namespace Rfx.Riken.OsakaUniv
                 };
                 window.Show();
 
+                //var errorString = string.Empty;
                 await Task.Run(() =>
                 {
                     this.saveProperty = MessagePackHandler.LoadFromFile<SavePropertyBean>(ofd.FileName);
-                    if (this.SaveProperty == null)
-                    {
-                        MessageBox.Show(this.Title + " cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        window.Close();
-                        Mouse.OverrideCursor = null;
+                    if (this.SaveProperty == null) {
+                        //errorString = this.Title + " cannot open the project: \n" + ofd.FileName;
                         return;
                     }
                     openProjectMenuPropertySetting(ofd.FileName);
                 });
+                if (this.SaveProperty == null) {
+                    MessageBox.Show(this.Title + " cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    window.Close();
+                    Mouse.OverrideCursor = null;
+                    return;
+                }
 
                 FileNavigatorUserControlsRefresh(this.analysisFiles);
                 if (this.projectProperty.Ionization == Ionization.ESI)
@@ -1108,7 +1112,7 @@ namespace Rfx.Riken.OsakaUniv
 
             }
         }
-        
+
         //this is my private source code for a specific project
         private void exportPlantMetabolomeResult_Click(object sender, RoutedEventArgs e) {
             var exportFolder = @"D:\PROJECT_Plant Specialized Metabolites Annotations\All plant tissues\MSDIAL-Test\C grouping result";
@@ -1358,7 +1362,7 @@ namespace Rfx.Riken.OsakaUniv
             else if (this.MainWindowTitle.Contains("-dev")) {
                 this.saveProperty.ProjectPropertyBean.IsLabPrivateVersion = true;
             }
-           
+
             else {
                 this.saveProperty.ProjectPropertyBean.IsLabPrivateVersion = false;
                 this.saveProperty.ProjectPropertyBean.IsLabPrivateVersionTada = false;
@@ -1366,10 +1370,10 @@ namespace Rfx.Riken.OsakaUniv
             // overwrite project property
             this.saveProperty.ProjectPropertyBean.ProjectFolderPath = projectFolderPath;
             this.saveProperty.ProjectPropertyBean.ProjectFilePath = filePath;
-            if (this.saveProperty.ProjectPropertyBean.Ionization == Ionization.ESI && this.saveProperty.TargetFormulaLibrary == null) 
+            if (this.saveProperty.ProjectPropertyBean.Ionization == Ionization.ESI && this.saveProperty.TargetFormulaLibrary == null)
                 this.saveProperty.ProjectPropertyBean.DataTypeMS2 = this.saveProperty.ProjectPropertyBean.DataType;
 
-           
+
 
             // overwrite rdam properties
             this.saveProperty.RdamPropertyBean.RdamFileID_RdamFilePath = new Dictionary<int, string>();
@@ -1380,9 +1384,9 @@ namespace Rfx.Riken.OsakaUniv
 
                 this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFilePath =
                     projectFolderPath + "\\" + this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFileName + extension;
-                this.saveProperty.RdamPropertyBean.RdamFileID_RdamFilePath[this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFileID] = 
+                this.saveProperty.RdamPropertyBean.RdamFileID_RdamFilePath[this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFileID] =
                     this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFilePath;
-                this.saveProperty.RdamPropertyBean.RdamFilePath_RdamFileID[this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFilePath] = 
+                this.saveProperty.RdamPropertyBean.RdamFilePath_RdamFileID[this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFilePath] =
                     this.saveProperty.RdamPropertyBean.RdamFileContentBeanCollection[i].RdamFileID;
             }
 
@@ -1393,19 +1397,19 @@ namespace Rfx.Riken.OsakaUniv
 
                 this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath =
                     projectFolderPath + "\\" + Path.GetFileNameWithoutExtension(this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath) + extension;
-                this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePath = 
+                this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePath =
                     projectFolderPath + "\\" + Path.GetFileName(this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePath);
                 if (this.saveProperty.ProjectPropertyBean.CheckAIF) {
                     for(var j = 0; j < this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePathList.Count; j++) {
-                        this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePathList[j] = 
+                        this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePathList[j] =
                             projectFolderPath + "\\" + Path.GetFileName(this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePathList[j]);
                     }
                 }
                 if (this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath != null)
-                    this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath = 
+                    this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath =
                         projectFolderPath + "\\" + Path.GetFileName(this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
                 else
-                    this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath = 
+                    this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath =
                         projectFolderPath + "\\" + Path.GetFileNameWithoutExtension(this.saveProperty.AnalysisFileBeanCollection[i].AnalysisFilePropertyBean.DeconvolutionFilePath) + "." + SaveFileFormat.pai;
 
                 if (this.saveProperty.AnalysisFileBeanCollection[i].RetentionTimeCorrectionBean == null)
@@ -1426,7 +1430,7 @@ namespace Rfx.Riken.OsakaUniv
             // overwrite parameters
             if (this.saveProperty.ProjectPropertyBean.Ionization == Ionization.ESI)
             {
-                this.saveProperty.AnalysisParametersBean.LipidQueryBean = 
+                this.saveProperty.AnalysisParametersBean.LipidQueryBean =
                     DataStorageLcUtility.LipidQueryRetrieve(this.saveProperty.AnalysisParametersBean.LipidQueryBean,
                     this.saveProperty.ProjectPropertyBean);
                 if (this.saveProperty.AnalysisParametersBean.IsotopeTrackingDictionary == null)
@@ -1510,7 +1514,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
 
-         
+
 
             // set
             this.rdamProperty = this.saveProperty.RdamPropertyBean;
@@ -2216,7 +2220,7 @@ namespace Rfx.Riken.OsakaUniv
         private void MenuItem_CorrelationBasedDeconvolution_ForAIF_SettingAndRun_Click(object sender, RoutedEventArgs e) {
 
             if (this.focusedAlignmentFileID < 0) {
-                MessageBox.Show("Chose an alignment file from the file navigator.", 
+                MessageBox.Show("Chose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
             if (this.AnalysisFiles.Count <= 5) {
@@ -2227,12 +2231,12 @@ namespace Rfx.Riken.OsakaUniv
             if (AnalysisParamForLC.AnalysisParamOfMsdialCorrDec == null)
                 AnalysisParamForLC.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
 
-            
+
             var window = new ForAIF.CorrDecSetting(AnalysisParamForLC.AnalysisParamOfMsdialCorrDec, this, FocusedAlignmentResult);
             window.Owner = this;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            window.Show();           
+            window.Show();
         }
 
         private async void MenuItem_CorrelationBasedDeconvolution_ForAIF_Identification_Click(object sender, RoutedEventArgs e)
@@ -2295,11 +2299,14 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            SetAifViewerControllerForCorrDec();
+            aifViewerController.AifViewControlForPeakVM.AlignmentID = this.focusedAlignmentPeakID;
+            aifViewerController.AifViewControlForPeakVM.ShowCorrelDecRes();
+        }
 
-            if (ProjectProperty.CheckAIF)
-            {
-                if (aifViewerController == null)
-                {
+        private void SetAifViewerControllerForCorrDec() {
+            if (ProjectProperty.CheckAIF) {
+                if (aifViewerController == null) {
                     aifViewerController = new AifViewerControl(new AifViewControlCommonProperties(ProjectProperty, AnalysisFiles, AnalysisParamForLC, LcmsSpectrumCollection, MsdialIniField, analysisFiles[focusedFileID], mspDB), peakViewDecFS, peakViewDecSeekPoints, 0);
                     aifViewerController.Closed += aifViewerControllerClose;
                     aifViewerController.AifViewControlForPeakVM.Checker.PropertyChanged += aifViewerController_propertyChanged;
@@ -2308,15 +2315,15 @@ namespace Rfx.Riken.OsakaUniv
                     aifViewerController.Show();
                     SetAlignmentFileForAifViewerController();
                 }
-            }
-            else
-            {
+            } else {
+                if (aifViewerController != null) {
+                    aifViewerController.Close();
+                }
                 aifViewerController = new AifViewerControl(new AifViewControlCommonProperties(ProjectProperty, AnalysisFiles, AnalysisParamForLC, LcmsSpectrumCollection, MsdialIniField, analysisFiles[focusedFileID], mspDB), peakViewDecFS, peakViewDecSeekPoints, 0);
                 aifViewerController.AifViewControlForPeakVM.Checker.PropertyChanged += aifViewerController_propertyChanged;
                 SetAlignmentFileForAifViewerController(force: true);
             }
-            aifViewerController.AifViewControlForPeakVM.ShowCorrelDecRes();
-        }        
+        }
 
         private void MenuItem_MsViewerForAIF2_Click(object sender, RoutedEventArgs e) {
 
@@ -2337,13 +2344,11 @@ namespace Rfx.Riken.OsakaUniv
                 // output.PeakMatrix = CorrelDecHandler.SingleSpotCorrelationCalculation(msGroupRes, this.AnalysisFiles.Count, this.FocusedAlignmentPeakID, this.FocusedAlignmentResult.AlignmentPropertyBeanCollection, AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.MinCorr_MS1, AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.CorrDiff_MS1, AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.CorrDiff_MS2, AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.MinCorr_MS2, AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.MinNumberOfSample, (int)(AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.MinDetectedPercentToVisualize * AnalysisFiles.Count), AnalysisParamForLC.AnalysisParamOfMsdialCorrDec.RemoveAfterPrecursor);
                 //   outputs.Add(output);
             }
-                      
             var correlDecResMsViewer = new MsViewer.CorrelationDecResMsViewer(new AifViewControlCommonProperties(this.ProjectProperty, analysisFiles, this.AnalysisParamForLC, this.lcmsSpectrumCollection, MsdialIniField, this.AnalysisFiles[this.FocusedFileID], mspDB), this.FocusedAlignmentResult, outputs, this.ProjectProperty.ExperimentID_AnalystExperimentInformationBean.Values.Select(x => x.Name).ToList(), this.FocusedAlignmentPeakID);
             correlDecResMsViewer.Owner = this;
             correlDecResMsViewer.Title = "Correlation-based deconvolution";
             correlDecResMsViewer.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             correlDecResMsViewer.Show();
-            
             /*
             for (var numDec = 0; numDec < projectProperty.Ms2LevelIdList.Count; numDec++) {
                 var decFilePath = projectProperty.ProjectFolderPath + "\\MsGrouping_Raw_" + 0 + ".mfg";
@@ -2718,7 +2723,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 else
                 {
-                    chromatogramMrmViewModel = UiAccessLcUtility.GetMs2ChromatogramViewModel(this.lcmsSpectrumCollection, this.ProjectProperty, this.analysisFiles[this.focusedFileID].PeakAreaBeanCollection[this.focusedPeakID], this.analysisParamForLC, this.projectProperty.ExperimentID_AnalystExperimentInformationBean, this.peakViewMS2DecResult, this.mrmChromatogramViewEnum, this.solidColorBrushList);                    
+                    chromatogramMrmViewModel = UiAccessLcUtility.GetMs2ChromatogramViewModel(this.lcmsSpectrumCollection, this.ProjectProperty, this.analysisFiles[this.focusedFileID].PeakAreaBeanCollection[this.focusedPeakID], this.analysisParamForLC, this.projectProperty.ExperimentID_AnalystExperimentInformationBean, this.peakViewMS2DecResult, this.mrmChromatogramViewEnum, this.solidColorBrushList);
                 }
                 this.MS2ChromatogramUI.Content = new ChromatogramMrmUI(chromatogramMrmViewModel);
             }
@@ -2959,7 +2964,7 @@ namespace Rfx.Riken.OsakaUniv
                     this.analysisFiles, this.focusedFileID, this.lcmsSpectrumCollection, this.projectProperty, this.rdamProperty, this.analysisParamForLC);
             }
             else {
-                chromatogramTicEicVM = UiAccessGcUtility.GetMultiFilesEicsOfTargetPeak(this.focusedAlignmentResult.AlignmentPropertyBeanCollection[this.focusedAlignmentPeakID], 
+                chromatogramTicEicVM = UiAccessGcUtility.GetMultiFilesEicsOfTargetPeak(this.focusedAlignmentResult.AlignmentPropertyBeanCollection[this.focusedAlignmentPeakID],
                     this.analysisFiles, this.focusedFileID, this.gcmsSpectrumList, this.rdamProperty, this.analysisParamForGC, this.projectProperty);
             }
 
@@ -2983,7 +2988,7 @@ namespace Rfx.Riken.OsakaUniv
                 return;
             }
 
-            this.quantmassBrowser = new QuantmassBrowser(this, this.alignmentFiles[this.FocusedAlignmentFileID], 
+            this.quantmassBrowser = new QuantmassBrowser(this, this.alignmentFiles[this.FocusedAlignmentFileID],
                 this.focusedAlignmentResult, this.focusedAlignmentMs1DecID, this.mspDB, this.analysisParamForGC);
             this.quantmassBrowser.QuantmassBrowserVM.PropertyChanged -= mainWindow.QuantmassBrowser_propertyChanged;
             this.quantmassBrowser.QuantmassBrowserVM.PropertyChanged += mainWindow.QuantmassBrowser_propertyChanged;
@@ -2999,7 +3004,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public void QuantmassBrowser_propertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (((PairwisePlotAlignmentViewUI)this.RtMzPairwisePlotAlignmentViewUI.Content).PairwisePlotBean.XAxisDatapointCollection == null || 
+            if (((PairwisePlotAlignmentViewUI)this.RtMzPairwisePlotAlignmentViewUI.Content).PairwisePlotBean.XAxisDatapointCollection == null ||
                 ((PairwisePlotAlignmentViewUI)this.RtMzPairwisePlotAlignmentViewUI.Content).PairwisePlotBean.XAxisDatapointCollection.Count == 0) return;
             if (e.PropertyName == "SelectedData") {
                 if (quantmassBrowserFlag) {
@@ -3133,7 +3138,7 @@ namespace Rfx.Riken.OsakaUniv
             chromatogramBeanCollection.Add(noiseChrom);
 
             var chromUI = new ChromatogramAlignedEicUI(new ChromatogramTicEicViewModel(chromatogramBeanCollection, ChromatogramEditMode.Display, ChromatogramDisplayLabel.AnnotatedMetabolite,
-                ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Absolute, 
+                ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Absolute,
                 "Browse smoother and baseline correction", -1, "Selected files", "Selected files", "Selected files", -1));
 
             var win = new BrowseSmootherAndBaselineCorrectionWin(chromUI);
@@ -3270,7 +3275,7 @@ namespace Rfx.Riken.OsakaUniv
             if (driftPairwisePlotBean == null) return;
             this.DriftTimeMzPairwisePlotPeakViewUI.Content = new PairwisePlotPeakViewUI(driftPairwisePlotBean);
             var driftContent = (PairwisePlotPeakViewUI)this.DriftTimeMzPairwisePlotPeakViewUI.Content;
-           
+
             var peakSpot = file.PeakAreaBeanCollection[spotID];
             float[] rectangleRange = getRectangleRange(peakSpot, param.AccumulatedRtRagne);
 
@@ -3502,7 +3507,7 @@ namespace Rfx.Riken.OsakaUniv
         private void peakViewerOnDataDependentAcquisition_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (this.focusedFileID < 0) return;
-            if (((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.XAxisDatapointCollection == null || 
+            if (((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.XAxisDatapointCollection == null ||
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.XAxisDatapointCollection.Count == 0) return;
 
             if (e.PropertyName == "SelectedPlotId")
@@ -3524,7 +3529,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 peakSpotTableViewerFlag2 = true;
 
-                ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle = 
+                ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle =
                     file.AnalysisFilePropertyBean.AnalysisFileName + "  " + "Spot ID: " + targetPeakID + "  " + "Scan: " + peak.ScanNumberAtPeakTop + "  "
                     + "RT: " + Math.Round(peak.RtAtPeakTop, 2).ToString() + " min  " + "Mass: m/z " + Math.Round(peak.AccurateMass, 5).ToString();
 
@@ -3614,7 +3619,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle = file.AnalysisFilePropertyBean.AnalysisFileName + "  " + "ID: " + this.focusedPeakID + "  "
                     + "Scan: " + peak.ScanNumberAtPeakTop + "  " + "RT: " + Math.Round(peak.RtAtPeakTop, 2).ToString() + " min  " + "Mass: m/z " + Math.Round(peak.AccurateMass, 5).ToString();
-               
+
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.RectangleRangeXmin = rectangleRange[0];
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.RectangleRangeXmax = rectangleRange[1];
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.RectangleRangeYmin = rectangleRange[2];
@@ -3728,7 +3733,7 @@ namespace Rfx.Riken.OsakaUniv
                 var file = this.analysisFiles[this.focusedFileID];
                 var fileProp = file.AnalysisFilePropertyBean;
                 var ms1dec = this.ms1DecResults[this.focusedMS1DecID];
-                var mass = Math.Round(ms1dec.BasepeakMz, 4).ToString(); if (this.analysisParamForGC.AccuracyType == AccuracyType.IsNominal) mass = Math.Round(ms1dec.BasepeakMz, 1).ToString(); 
+                var mass = Math.Round(ms1dec.BasepeakMz, 4).ToString(); if (this.analysisParamForGC.AccuracyType == AccuracyType.IsNominal) mass = Math.Round(ms1dec.BasepeakMz, 1).ToString();
 
                 ((PairwisePlotPeakViewUI)this.RtMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle = fileProp.AnalysisFileName + "  " + "ID: " + this.focusedMS1DecID + "  " + "Scan: " + ms1dec.ScanNumber + "  "
                     + "RT: " + Math.Round(ms1dec.RetentionTime, 3).ToString() + " min  " + "RI: " + Math.Round(ms1dec.RetentionIndex, 0).ToString() + "  " + "Quant mass: m/z " + mass;
@@ -3809,8 +3814,8 @@ namespace Rfx.Riken.OsakaUniv
                 }
                 peakSpotTableViewerFlag2 = true;
 
-                ((PairwisePlotPeakViewUI)this.DriftTimeMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle = 
-                    file.AnalysisFilePropertyBean.AnalysisFileName + "  " + "Spot ID: " + driftSpot.MasterPeakID + "  " 
+                ((PairwisePlotPeakViewUI)this.DriftTimeMzPairwisePlotPeakViewUI.Content).PairwisePlotBean.GraphTitle =
+                    file.AnalysisFilePropertyBean.AnalysisFileName + "  " + "Spot ID: " + driftSpot.MasterPeakID + "  "
                     + "Parent scan ID: " + driftSpot.PeakAreaBeanID + "  "
                     + "Mobility: " + Math.Round(driftSpot.DriftTimeAtPeakTop, 2).ToString() + " millisecond  "
                     + "Mass: m/z " + Math.Round(driftSpot.AccurateMass, 5).ToString();
@@ -3874,7 +3879,7 @@ namespace Rfx.Riken.OsakaUniv
                 Mouse.OverrideCursor = null;
             }
             else if (e.PropertyName == "DisplayRangeMinX" || e.PropertyName == "DisplayRangeMaxX") {
-                if (((ChromatogramXicUI)this.DriftChromatogramXicUI.Content).ChromatogramXicViewModel.ChromatogramBean == null || 
+                if (((ChromatogramXicUI)this.DriftChromatogramXicUI.Content).ChromatogramXicViewModel.ChromatogramBean == null ||
                     ((ChromatogramXicUI)this.DriftChromatogramXicUI.Content).ChromatogramXicViewModel.ChromatogramBean.ChromatogramDataPointCollection == null ||
                     ((ChromatogramXicUI)this.DriftChromatogramXicUI.Content).ChromatogramXicViewModel.ChromatogramBean.ChromatogramDataPointCollection.Count == 0) return;
 
@@ -3883,9 +3888,9 @@ namespace Rfx.Riken.OsakaUniv
                 ((ChromatogramXicUI)this.DriftChromatogramXicUI.Content).RefreshUI();
             }
             else if (e.PropertyName == "DisplayRangeMinY" || e.PropertyName == "DisplayRangeMaxY") {
-                //if (((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel == null || 
-                //    ((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.MeasuredMassSpectrogramBean == null || 
-                //    ((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.MeasuredMassSpectrogramBean.MassSpectraCollection == null || 
+                //if (((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel == null ||
+                //    ((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.MeasuredMassSpectrogramBean == null ||
+                //    ((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.MeasuredMassSpectrogramBean.MassSpectraCollection == null ||
                 //    ((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.MeasuredMassSpectrogramBean.MassSpectraCollection.Count == 0) return;
                 //((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.DisplayRangeMassMax = ((PairwisePlotBean)sender).DisplayRangeMaxY;
                 //((MassSpectrogramLeftRotateUI)this.Ms1MassSpectrogramUI.Content).MassSpectrogramViewModel.DisplayRangeMassMin = ((PairwisePlotBean)sender).DisplayRangeMinY;
@@ -3928,9 +3933,9 @@ namespace Rfx.Riken.OsakaUniv
             var alignmentFile = this.alignmentFiles[this.focusedAlignmentFileID];
 
             if (!File.Exists(alignmentFile.EicFilePath)) {
-                MessageBox.Show("The aligned EIC file (" + alignmentFile.FileName + ".EIC.aef) cannot be found. Please execute peak alignment for the use of aligned EIC viewer.", 
-                    "Notice", 
-                    MessageBoxButton.OK, 
+                MessageBox.Show("The aligned EIC file (" + alignmentFile.FileName + ".EIC.aef) cannot be found. Please execute peak alignment for the use of aligned EIC viewer.",
+                    "Notice",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Asterisk);
                 this.isAlignedEicFileExist = false;
             }
@@ -3979,11 +3984,11 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        private void refreshDriftSpotViewer(AlignmentFileBean alignmentFile, AlignmentResultBean alignmentResultBean, 
+        private void refreshDriftSpotViewer(AlignmentFileBean alignmentFile, AlignmentResultBean alignmentResultBean,
             bool isColorByCompoundClass, List<MspFormatCompoundInformationBean> mspDB, int spotID) {
             var repSpotID = 0;
             var isLipidomics = this.projectProperty.TargetOmics == TargetOmics.Lipidomics ? true : false;
-            var driftPairwisePlotBean = UiAccessLcUtility.GetDriftTimeMzPairwisePlotAlignmentViewBean(alignmentFile, alignmentResultBean, spotID, 
+            var driftPairwisePlotBean = UiAccessLcUtility.GetDriftTimeMzPairwisePlotAlignmentViewBean(alignmentFile, alignmentResultBean, spotID,
                 this.analysisParamForLC.IonMobilityType, out repSpotID, isLipidomics, this.mspDB);
             if (driftPairwisePlotBean == null) return;
             this.AlignedDriftSpotBeanList = driftPairwisePlotBean.AlignmentDriftSpotBean;
@@ -4235,9 +4240,25 @@ namespace Rfx.Riken.OsakaUniv
                         MessageBox.Show("The folder is too nested, please chenge folder path (less than 230 length).\nCurrent folder path length: " + fbd.SelectedPath.Length, "Error", MessageBoxButton.OK);
                         return;
                     }
-
+                    var filePath = projectProperty.ProjectFolderPath + "\\" + System.IO.Path.GetFileNameWithoutExtension(this.alignmentFiles[focusedAlignmentFileID].FilePath) + "_CorrelationBasedDecRes_Raw_0.cbd";
                     var target = AlignmentSpotTableViewer.AlignmentSpotTableViewerVM.Source.Where(x => x.Checked).Select(x => x.AlignmentPropertyBean);
-                    MsDialToExternalApps.SendToMsFinderProgramSelectedAlignmentSpots(this, fbd.SelectedPath, target);
+                    if (File.Exists(filePath)) {
+                        Action ms2decAct = () => {
+                            //Debug.Print("MS2Dec is selected");
+                            MsDialToExternalApps.SendToMsFinderProgramSelectedAlignmentSpots(this, fbd.SelectedPath, target);
+                        };
+                        Action corrDecAct = () => {
+                            //Debug.Print("CorrDec is selected");
+                            SetAifViewerControllerForCorrDec();
+                            aifViewerController.AifViewControlForPeakVM.BulkExportToMsFinder(AlignmentSpotTableViewer.AlignmentSpotTableViewerVM.Source, fbd.SelectedPath, alignmentSpotTableViewer);
+                        };
+                        var w = new Rfx.Riken.OsakaUniv.ForAIF.CorrDec.AskDecMethodWindow(ms2decAct, corrDecAct);
+                        w.Owner = this.AlignmentSpotTableViewer;
+                        w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        w.ShowDialog();
+                    } else {
+                        MsDialToExternalApps.SendToMsFinderProgramSelectedAlignmentSpots(this, fbd.SelectedPath, target);
+                    }
                 }
             }
             else if (e.PropertyName == "ExportAlignmentSpotsAsMspFormat")
@@ -4254,15 +4275,35 @@ namespace Rfx.Riken.OsakaUniv
                     }
 
                     var target = AlignmentSpotTableViewer.AlignmentSpotTableViewerVM.Source.Where(x => x.Checked).Select(x => x.AlignmentPropertyBean);
-                    foreach (var spot in target)
-                    {
-                        var ms2Dec = Msdial.Lcms.Dataprocess.Algorithm.SpectralDeconvolution.ReadMS2DecResult(AlignViewDecFS, AlignViewDecSeekPoints, spot.AlignmentID);
-                        var filePath = fbd.SelectedPath + "\\ID" + spot.AlignmentID.ToString("00000") + "_" + Math.Round(spot.CentralRetentionTime, 2).ToString() + "_" + Math.Round(spot.CentralAccurateMass, 2).ToString() + ".msp";
-                        if (filePath.Length < 260)
-                        {
-                            using (var sw = new System.IO.StreamWriter(filePath, false, Encoding.ASCII))
-                            {
-                                Msdial.Common.Export.ExportMassSpectrum.WriteSpectrumFromAlignment(sw, mainWindow.ProjectProperty, mainWindow.MspDB, ms2Dec, spot, mainWindow.AnalysisFiles, true);
+                    var corrDecFilePath = projectProperty.ProjectFolderPath + "\\" + System.IO.Path.GetFileNameWithoutExtension(this.alignmentFiles[focusedAlignmentFileID].FilePath) + "_CorrelationBasedDecRes_Raw_0.cbd";
+                    if (File.Exists(corrDecFilePath)) {
+                        Action ms2decAct = () => {
+                            foreach (var spot in target) {
+                                var ms2Dec = Msdial.Lcms.Dataprocess.Algorithm.SpectralDeconvolution.ReadMS2DecResult(AlignViewDecFS, AlignViewDecSeekPoints, spot.AlignmentID);
+                                var filePath = fbd.SelectedPath + "\\ID" + spot.AlignmentID.ToString("00000") + "_" + Math.Round(spot.CentralRetentionTime, 2).ToString() + "_" + Math.Round(spot.CentralAccurateMass, 2).ToString() + ".msp";
+                                if (filePath.Length < 260) {
+                                    using (var sw = new System.IO.StreamWriter(filePath, false, Encoding.ASCII)) {
+                                        Msdial.Common.Export.ExportMassSpectrum.WriteSpectrumFromAlignment(sw, mainWindow.ProjectProperty, mainWindow.MspDB, ms2Dec, spot, mainWindow.AnalysisFiles, true);
+                                    }
+                                }
+                            }
+                        };
+                        Action corrDecAct = () => {
+                            SetAifViewerControllerForCorrDec();
+                            aifViewerController.AifViewControlForPeakVM.MultipleSaveAsMsp(AlignmentSpotTableViewer.AlignmentSpotTableViewerVM.Source, fbd.SelectedPath, alignmentSpotTableViewer);
+                        };
+                        var w = new Rfx.Riken.OsakaUniv.ForAIF.CorrDec.AskDecMethodWindow(ms2decAct, corrDecAct);
+                        w.Owner = this.AlignmentSpotTableViewer;
+                        w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        w.ShowDialog();
+                    } else {
+                        foreach (var spot in target) {
+                            var ms2Dec = Msdial.Lcms.Dataprocess.Algorithm.SpectralDeconvolution.ReadMS2DecResult(AlignViewDecFS, AlignViewDecSeekPoints, spot.AlignmentID);
+                            var filePath = fbd.SelectedPath + "\\ID" + spot.AlignmentID.ToString("00000") + "_" + Math.Round(spot.CentralRetentionTime, 2).ToString() + "_" + Math.Round(spot.CentralAccurateMass, 2).ToString() + ".msp";
+                            if (filePath.Length < 260) {
+                                using (var sw = new System.IO.StreamWriter(filePath, false, Encoding.ASCII)) {
+                                    Msdial.Common.Export.ExportMassSpectrum.WriteSpectrumFromAlignment(sw, mainWindow.ProjectProperty, mainWindow.MspDB, ms2Dec, spot, mainWindow.AnalysisFiles, true);
+                                }
                             }
                         }
                     }
@@ -4362,9 +4403,9 @@ namespace Rfx.Riken.OsakaUniv
                 var isColorByCompoundClass = false; if (this.projectProperty.TargetOmics == TargetOmics.Lipidomics) isColorByCompoundClass = true;
 
                 var alignedSpots = ((PairwisePlotBean)sender).AlignmentPropertyBeanCollection;
-                var targetAlignmentID 
-                    = this.projectProperty.Ionization == Ionization.ESI && this.analysisParamForLC.IsIonMobility 
-                    ? alignedSpots[this.focusedAlignmentPeakID].MasterID 
+                var targetAlignmentID
+                    = this.projectProperty.Ionization == Ionization.ESI && this.analysisParamForLC.IsIonMobility
+                    ? alignedSpots[this.focusedAlignmentPeakID].MasterID
                     : this.focusedAlignmentPeakID;
 
                 if (this.alignmentSpotTableViewer != null && alignmentSpotTableViewerFlag2 && this.isClickOnRtMzViewer) {
@@ -4457,8 +4498,8 @@ namespace Rfx.Riken.OsakaUniv
 
                 if (this.isAlignedEicFileExist) {
                     this.alignEicResult = AlignedEic.ReadAlignedEicResult(this.alignEicFS, this.alignEicSeekPoints, this.focusedAlignmentPeakID);
-                    var alignedEicVM = UiAccessGcUtility.GetAlignedEicChromatogram(this.alignEicResult, 
-                        this.focusedAlignmentResult.AlignmentPropertyBeanCollection[this.focusedAlignmentPeakID].AlignedPeakPropertyBeanCollection, 
+                    var alignedEicVM = UiAccessGcUtility.GetAlignedEicChromatogram(this.alignEicResult,
+                        this.focusedAlignmentResult.AlignmentPropertyBeanCollection[this.focusedAlignmentPeakID].AlignedPeakPropertyBeanCollection,
                         this.AnalysisFiles, this.projectProperty, this.FocusedAlignmentResult.AnalysisParamForGC);
                     this.AlignedEicUI.Content = new ChromatogramAlignedEicUI(alignedEicVM);
                 }
@@ -4483,7 +4524,7 @@ namespace Rfx.Riken.OsakaUniv
         #endregion
 
         #region manual chromatogram modification
-        
+
         #region AlignmentSampleTable
         public void Show_AlignmentSampleTable() {
             if (sampleTableViewer != null) { MessageBox.Show("The window already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return; }
@@ -4688,7 +4729,7 @@ namespace Rfx.Riken.OsakaUniv
         public void Update_AlignedChromatogramModificationWin() {
             if (alignedChromatogramModificationWin == null) return;
 
-            //var isOnDrift = this.alignedDriftSpotBeanList != null && this.alignedDriftSpotBeanList.Count > 0 && 
+            //var isOnDrift = this.alignedDriftSpotBeanList != null && this.alignedDriftSpotBeanList.Count > 0 &&
             //    this.alignedDriftSpotBeanList[this.focusedAlignmentDriftID].MasterID == this.focusedAlignmentMasterID;
             //if (isOnDrift) {
             //    alignedChromatogramModificationWin.ChangeVM(alignEicResultOnDrift, this.alignedDriftSpotBeanList[this.focusedAlignmentDriftID], analysisFiles, projectProperty, FocusedAlignmentResult.AnalysisParamForLC, solidColorBrushList);
@@ -4729,7 +4770,7 @@ namespace Rfx.Riken.OsakaUniv
             chrom.RtPeakLeft = prop.RetentionTimeLeft;
             chrom.RtPeakRight = prop.RetentionTimeRight;
             chrom.RtPeakTop = prop.RetentionTime;
-            
+
             chromUI.RefreshUI();
         }
 
@@ -4749,10 +4790,10 @@ namespace Rfx.Riken.OsakaUniv
         public void Update_BarChart() {
 
             if (this.focusedAlignmentResult == null ||
-                this.focusedAlignmentResult.AlignmentPropertyBeanCollection == null || 
+                this.focusedAlignmentResult.AlignmentPropertyBeanCollection == null ||
                 this.focusedAlignmentResult.AlignmentPropertyBeanCollection.Count == 0) return;
             var barChartBean = MsDialStatistics.GetBarChartBean(this.focusedAlignmentResult.AlignmentPropertyBeanCollection[this.focusedAlignmentPeakID],
-                  this.analysisFiles, this.projectProperty, this.BarChartDisplayMode, this.projectProperty.IsBoxPlotForAlignmentResult); 
+                  this.analysisFiles, this.projectProperty, this.BarChartDisplayMode, this.projectProperty.IsBoxPlotForAlignmentResult);
 
             this.BarChartUI.Content = new BarChartUI(barChartBean);
             var titleString = "Bar chart of aligned spot";
@@ -4827,7 +4868,7 @@ namespace Rfx.Riken.OsakaUniv
                     window = new MsmsSearchWin(this.analysisFiles[this.focusedFileID], this.focusedPeakID, this.analysisParamForLC,
                             this.peakViewMS2DecResult, this.mspDB, this.projectProperty.TargetOmics);
                 }
-                
+
 
                 window.Owner = this;
                 window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -5121,7 +5162,7 @@ namespace Rfx.Riken.OsakaUniv
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
         }
-       
+
 
         private void buttonClick_MolecularNetworkAlignmentViewer(object sender, RoutedEventArgs e) {
             if (this.FocusedFileID < 0) {
@@ -5161,9 +5202,10 @@ namespace Rfx.Riken.OsakaUniv
                     w.Width = 500;
                     w.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     w.Show();
+                } else {
+                    PeakSpotTableViewer.PeakSpotTableViewerVM.ChangeToMsFinderExporterView();
+                    //new ForAIF.MsFinderMultipleExporter(this.PeakSpotTableViewer, this.aifViewerController);
                 }
-                else
-                    new ForAIF.MsFinderMultipleExporter(this.PeakSpotTableViewer, this.aifViewerController);
             }
             if (e.PropertyName == "AlignmentExportToMsFinder") {
                 if (this.AlignmentSpotTableViewer == null) {
@@ -5172,9 +5214,10 @@ namespace Rfx.Riken.OsakaUniv
                     w.Width = 500;
                     w.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     w.Show();
+                } else {
+                    this.AlignmentSpotTableViewer.AlignmentSpotTableViewerVM.ChangeToMsFinderExporterView();
+                //   new ForAIF.MsFinderMultipleExporter(this.AlignmentSpotTableViewer, this.aifViewerController);
                 }
-                else
-                    new ForAIF.MsFinderMultipleExporter(this.AlignmentSpotTableViewer, this.aifViewerController);
             }
         }
         #endregion
@@ -5241,7 +5284,7 @@ namespace Rfx.Riken.OsakaUniv
                 AlignmentViewerForGcRefresh(alignmentFileID);
 
             this.TabItem_RtMzPairwisePlotAlignmentView.IsSelected = true;
-           
+
             Mouse.OverrideCursor = null;
         }
 
@@ -5908,7 +5951,7 @@ namespace Rfx.Riken.OsakaUniv
 				foreach (MenuItem item in monaMenu.Items) {
 					item.IsEnabled = true;
 				}
-                
+
                 //enable mrmprobs export menu
                 mrmprobsMenu.IsEnabled = true;
                 foreach (MenuItem item in mrmprobsMenu.Items) {
@@ -5998,11 +6041,11 @@ namespace Rfx.Riken.OsakaUniv
                        this.analysisParamForLC, this.projectProperty);
                 }
                 else {
-                    DataExportLcUtility.CopyToClipboardMrmprobsRef(this.peakViewMS2DecResult, 
+                    DataExportLcUtility.CopyToClipboardMrmprobsRef(this.peakViewMS2DecResult,
                         this.analysisFiles[this.focusedFileID].PeakAreaBeanCollection[this.focusedPeakID], this.mspDB,
                         this.analysisParamForLC, this.projectProperty);
                 }
-                
+
             }
             else {
                 if (isAlignmentView) {
@@ -6068,7 +6111,7 @@ namespace Rfx.Riken.OsakaUniv
         private void Button_FocusRegionByID_Click(object sender, RoutedEventArgs e) {
             if (this.projectProperty == null)
                 return;
-            this.mainWindowDisplayVM.DisplayFocus("ID"); 
+            this.mainWindowDisplayVM.DisplayFocus("ID");
         }
 
         private void TextBox_FocusSpotID_KeyDown(object sender, KeyEventArgs e) {
@@ -6189,7 +6232,7 @@ namespace Rfx.Riken.OsakaUniv
                 if (this.alignmentSpotTableViewer != null)
                     this.alignmentSpotTableViewer.AlignmentSpotTableViewerVM.SourceView.Refresh();
             }
-        }    
+        }
 
         private void RtMzPairwisePlotPeakViewUI_KeyUp(object sender, KeyEventArgs e) {
             if (this.projectProperty == null)
@@ -6594,6 +6637,6 @@ namespace Rfx.Riken.OsakaUniv
             //Mouse.OverrideCursor = null;
         }
 
-        
+
     }
 }

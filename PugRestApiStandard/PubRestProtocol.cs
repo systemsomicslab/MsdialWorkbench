@@ -16,6 +16,7 @@ namespace Rfx.Riken.OsakaUniv
         private static string inputFormula = @"/compound/formula/";
         private static string inputListKey = @"/compound/listkey/";
         private static string inputCid = @"/compound/cid/";
+        private string formula;
 
         private Timer timer;
         private PubResponse result;
@@ -25,6 +26,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public bool SearchSdfByFormula(string formula, string downloadFolderPath, int maxRecords, List<int> excludePubCIDs)
         {
+            this.formula = formula;
             if (maxRecords < 0) return false;
            
             var url = prolog + inputFormula + formula + "/JSON";
@@ -209,28 +211,28 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
             catch (System.IO.IOException ex) {
-                System.Console.WriteLine("At getPugRestSeviceResult: {0}", ex);
+                System.Console.WriteLine("Formula: {0}, Error: {1}", this.formula, ex.Message);
                 return null;
             }
 
             return result;
         }
 
-        private　WebResponse getWebResponse(WebRequest req)
-        {
+        private WebResponse getWebResponse(WebRequest req) {
             WebResponse res = null;
 
-            try
-            {
+            try {
                 res = req.GetResponse();
             }
-            catch (WebException ex) 
-            {
-                Console.WriteLine("at getWebResponse: status {0}, message {1}", ex.Status, ex.Message);
+            catch (WebException ex) {
+                Console.WriteLine("Formula: {0}, Status: {1}, Message: {2}", this.formula, ex.Status, ex.Message);
                 res = null;
             }
-            finally 
-            {
+            catch (System.OperationCanceledException ex) {
+                Console.WriteLine("Formula: {0}, Status: {1}, Message: {2}", this.formula, ex.HResult, ex.Message);
+                res = null;
+            }
+            finally {
             }
             return res;
         }

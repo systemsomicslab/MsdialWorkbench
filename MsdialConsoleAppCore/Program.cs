@@ -40,11 +40,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //args = new string[] {
             //    "lcmsdda"
             //    , "-i"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\Leaf and stem\Negative"
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data"
             //    , "-o"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\Leaf and stem\Negative"
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data"
             //    , "-m"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\Data\Arabidopsis thaliana\ConsoleAppParam-Neg.txt" };
+            //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data\Msdial-lcms-dda-Param20200527.txt"
+            //    , "-p" };
 
             //LC-DDA test using mzML(as profile mode)
             //args = new string[] {
@@ -77,20 +78,21 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MsdialConsoleApp demo files\LCMS_DIA" };
             #endregion
 
-            /*
+/*
             args = new string[] {
 
-            "lcmsdia",
+            "lcmsdda",
                 "-i",
-                @"D:\1_study\others\acetylcarnosine_chemstd",
+                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
                 "-m",
-                @"D:\1_study\others\setting_files\MS-DIAL-LCMS-AIF-Parameters_V01.txt",
+                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\Msdial-lcms-dda-Param20200527_2.txt",
                 "-o",
-                @"D:\1_study\others\acetylcarnosine_chemstd",
-                "-p", "-mCE" ,"-target", "269.117"
+                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
+                "-p"
+                //, "-mCE" ,"-target", "269.117"
             };           
-            */
 
+ */
             return MainProcess.Run(args);
         }
     }
