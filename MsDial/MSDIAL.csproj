@@ -247,8 +247,14 @@
     <Compile Include="Normalization\SplashSetWin.xaml.cs">
       <DependentUpon>SplashSetWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Statistics\Hca\HcaHeatmap.xaml.cs">
+      <DependentUpon>HcaHeatmap.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Statistics\HcaResultWin.xaml.cs">
       <DependentUpon>HcaResultWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Statistics\HcaResultWin_tmp.xaml.cs">
+      <DependentUpon>HcaResultWin_tmp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Statistics\HcaSetWin.xaml.cs">
       <DependentUpon>HcaSetWin.xaml</DependentUpon>
@@ -611,7 +617,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+    <Page Include="Statistics\Hca\HcaHeatmap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Statistics\HcaResultWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Statistics\HcaResultWin_tmp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

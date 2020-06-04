@@ -60,6 +60,8 @@ namespace CompMs.Graphics.Base
         {
             var result = new List<LabelTickData>();
 
+            if (ItemsSource == null) return result;
+
             Func<object, string> toLabel;
             if (dPropertyReflection != null)
                 toLabel = o => dPropertyReflection.GetValue(o).ToString();
@@ -87,7 +89,10 @@ namespace CompMs.Graphics.Base
             return result;
         }
 
-        public override double ValueToRenderPosition(object value) => ValueToRenderPosition(converter[value]);
+        private double ValueToRenderPositionCore(object value) => base.ValueToRenderPosition(converter[value]);
+
+        public override double ValueToRenderPosition(object value) => ValueToRenderPositionCore(value);
+        public override double ValueToRenderPosition(IConvertible value) => ValueToRenderPositionCore(value); 
 
         private void UpdateConverter()
         {

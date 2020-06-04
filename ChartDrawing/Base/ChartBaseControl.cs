@@ -13,7 +13,7 @@ namespace CompMs.Graphics.Core.Base
         #region DependencyProperty
         public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
             nameof(HorizontalAxis), typeof(AxisManager), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(default(AxisManager), ChartUpdate)
+            new PropertyMetadata(default(AxisManager), ChartUpdate)
             );
 
         public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
@@ -23,22 +23,22 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty MinXProperty = DependencyProperty.Register(
             nameof(MinX), typeof(double), typeof(ChartBaseControl),
-            new PropertyMetadata(0d, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
             );
 
         public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(
             nameof(MaxX), typeof(double), typeof(ChartBaseControl),
-            new PropertyMetadata(0d, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
             );
 
         public static readonly DependencyProperty MinYProperty = DependencyProperty.Register(
             nameof(MinY), typeof(double), typeof(ChartBaseControl),
-            new PropertyMetadata(0d, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
             );
 
         public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(
             nameof(MaxY), typeof(double), typeof(ChartBaseControl),
-            new PropertyMetadata(0d, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
             );
         #endregion
 
