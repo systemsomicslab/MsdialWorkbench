@@ -15,6 +15,27 @@ namespace CompMs.MspGenerator
             }
 
 
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\working\";//作業用フォルダ・ここに以下で設定するファイルを入れる
+            var toPredictFileName = @"\NewLipidDB.csv"; // 計算させたいInChIKeyとSMILESのリスト
+            var padelDescriptortypes = @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            var descriptorSelecerRTFile = @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            var descriptorSelecerCSSFile = @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+
+            var padelProgramPath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\PaDEL-Descriptor\";//PaDELのフォルダパス
+
+
+
+            //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
+
+            //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath);
+
+            RtCcsPredictManager.selectDescriptor(workingDirectry, descriptorSelecerRTFile, descriptorSelecerCSSFile);
+
+
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp();
+
+
+
             ///mspファイル生成ツール
             var minimumChains = new List<string>
             {
@@ -211,8 +232,8 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, minimumChains, "FAHFATG", outputFolder); // faChain1 = TG FA, faChain2 = Extra FA
 
             //// GL exchangable 4 chain 
-            faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
-            Common.switchingLipid(minimumChains, "CL", outputFolder);
+            //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
+            //Common.switchingLipid(minimumChains, "CL", outputFolder);
 
             // GL GP two And One Set Cains
             //faChain1 = Common.GenerateAcylChains(12, 0, 22, 6);

@@ -6,6 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="NCDK" Version="1.5.6" />
+    <PackageReference Include="R.NET" Version="1.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
   </ItemGroup>
 
 </Project>
