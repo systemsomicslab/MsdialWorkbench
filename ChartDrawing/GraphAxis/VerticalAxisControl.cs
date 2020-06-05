@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -13,22 +14,32 @@ namespace CompMs.Graphics.GraphAxis
         #region DependencyProperty
         public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
             nameof(TickPen), typeof(Pen), typeof(VerticalAxisControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+            new PropertyMetadata(new Pen(Brushes.Black, 1), ChartUpdate)
             );
 
         public static readonly DependencyProperty LabelBrushProperty = DependencyProperty.Register(
             nameof(LabelBrush), typeof(Brush), typeof(VerticalAxisControl),
-            new PropertyMetadata(Brushes.Black)
+            new PropertyMetadata(Brushes.Black, ChartUpdate)
             );
 
         public static readonly DependencyProperty LabelSizeProperty = DependencyProperty.Register(
             nameof(LabelSize), typeof(double), typeof(VerticalAxisControl),
-            new PropertyMetadata(12d)
+            new PropertyMetadata(12d, ChartUpdate)
             );
 
-        public static readonly DependencyProperty FocussedItemProperty = DependencyProperty.Register(
-            nameof(FocussedItem), typeof(object), typeof(VerticalAxisControl),
+        public static readonly DependencyProperty DisplayPropertyNameProperty = DependencyProperty.Register(
+            nameof(DisplayPropertyName), typeof(string), typeof(VerticalAxisControl),
+            new PropertyMetadata(null, OnDisplayPropertyNameChanged)
+            );
+
+        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
+            nameof(FocusedItem), typeof(object), typeof(VerticalAxisControl),
             new PropertyMetadata(default(object))
+            );
+
+        public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
+            nameof(FocusedPoint), typeof(Point), typeof(VerticalAxisControl),
+            new PropertyMetadata(default(Point))
             );
         #endregion
 
@@ -51,14 +62,30 @@ namespace CompMs.Graphics.GraphAxis
             set => SetValue(LabelSizeProperty, value);
         }
 
-        public object FocussedItem
+        public string DisplayPropertyName
         {
-            get => (object)GetValue(FocussedItemProperty);
-            set => SetValue(FocussedItemProperty, value);
+            get => (string)GetValue(DisplayPropertyNameProperty);
+            set => SetValue(DisplayPropertyNameProperty, value);
+        }
+
+        public object FocusedItem
+        {
+            get => (object)GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        public Point FocusedPoint
+        {
+            get => (Point)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
         }
 
         public double ShortTickSize { get; set; } = 3;
         public double LongTickSize { get; set; } = 5;
+        #endregion
+
+        #region Field
+        private PropertyInfo dPropertyReflection;
         #endregion
 
         public VerticalAxisControl()
@@ -73,12 +100,25 @@ namespace CompMs.Graphics.GraphAxis
                 || LabelBrush == null
                 ) return;
 
+            Func<LabelTickData, string> toLabel = null;
+
             visualChildren.Clear();
             foreach (var data in VerticalAxis.GetLabelTicks())
             {
+                if (dPropertyReflection == null && DisplayPropertyName != null)
+                    dPropertyReflection = data.Source.GetType().GetProperty(DisplayPropertyName);
+
+                if (toLabel == null)
+                {
+                    if (dPropertyReflection == null)
+                        toLabel = o => o.Label;
+                    else
+                        toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
+                }
+
                 var center = VerticalAxis.ValueToRenderPosition(data.Center) * ActualHeight;
 
-                var dv = new AnnotatedDrawingVisual(data.Source);
+                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, center) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
@@ -87,12 +127,12 @@ namespace CompMs.Graphics.GraphAxis
                     case TickType.LongTick:
                         dc.DrawLine(TickPen, new Point(ActualWidth, center), new Point(ActualWidth - LongTickSize, center));
                         var formattedText = new FormattedText(
-                            data.Label, CultureInfo.GetCultureInfo("en-us"),
+                            toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),
                             LabelSize, LabelBrush, 1)
                         {
                             MaxTextWidth = Math.Max(1, ActualWidth - LongTickSize),
-                            MaxTextHeight = Math.Max(1, Math.Abs(VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0)) * ActualHeight),
+                            MaxTextHeight = Math.Max(1, Math.Abs(VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0d)) * ActualHeight),
                         };
                         dc.DrawText(formattedText, new Point(ActualWidth - LongTickSize - formattedText.Width, center - formattedText.Height / 2));
                         break;
@@ -104,6 +144,17 @@ namespace CompMs.Graphics.GraphAxis
                 visualChildren.Add(dv);
             }
         }
+
+        #region Event handler
+        static void OnDisplayPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is VerticalAxisControl chart)
+            {
+                chart.dPropertyReflection = null;
+                chart.Update();
+            }
+        }
+        #endregion
 
         #region Mouse event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
@@ -126,7 +177,13 @@ namespace CompMs.Graphics.GraphAxis
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
-            FocussedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            var focussed = dv.Annotation;
+            if (focussed != FocusedItem)
+            {
+                FocusedItem = focussed;
+                FocusedPoint = dv.Center;
+            }
             return HitTestResultBehavior.Stop;
         }
 

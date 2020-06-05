@@ -12,6 +12,20 @@
             <ColumnDefinition />
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <ComboBox SelectedValuePath="Text"
+                      SelectedValue="{Binding DisplayFileProperty, Mode=TwoWay}">
+                <TextBlock Text="FileName" />
+                <TextBlock Text="ClassName" />
+            </ComboBox>
+            <ComboBox SelectedValuePath="Text"
+                      SelectedValue="{Binding NumberOfDisplayMetabolite, Mode=TwoWay}">
+                <TextBlock>10</TextBlock>
+                <TextBlock>20</TextBlock>
+                <TextBlock>50</TextBlock>
+                <TextBlock>100</TextBlock>
+            </ComboBox>
+        </StackPanel>
         <hca:HcaHeatmap Grid.Column="1"/>
     </Grid>
 </Window>

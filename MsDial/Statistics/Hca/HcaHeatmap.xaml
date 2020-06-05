@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv.Hca"
              xmlns:chart="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
@@ -13,24 +14,11 @@
              x:Name="ClustermapControl"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="FileViewSource"
-                              Source="{Binding DataContext.FileSource, Source={x:Reference ClustermapControl}}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Order" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-        <CollectionViewSource x:Key="MetaboliteViewSource"
-                              Source="{Binding DataContext.MetaboliteSource, Source={x:Reference ClustermapControl}}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Order" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
         <chart:CategoryAxisManager x:Key="FileAxis"
-                                   ItemsSource="{Binding Source={StaticResource FileViewSource}}"
-                                   IdentityPropertyName="ID"
-                                   DisplayPropertyName="FileName" />
+                                   ItemsSource="{Binding DataContext.FileView, Source={x:Reference ClustermapControl}}"
+                                   IdentityPropertyName="ID" />
         <chart:CategoryAxisManager x:Key="MetaboliteAxis"
-                                   ItemsSource="{Binding Source={StaticResource MetaboliteViewSource}}"
+                                   ItemsSource="{Binding DataContext.MetaboliteView, Source={x:Reference ClustermapControl}}"
                                    IdentityPropertyName="ID"
                                    DisplayPropertyName="MetaboliteName" />
         <chart:ContinuousAxisManager x:Key="FileDendrogramAxis"
@@ -69,9 +57,25 @@
                                 HorizontalPropertyName="FileId"
                                 VerticalPropertyName="MetaboliteId"
                                 DegreePropertyName="Intensity"
-                                Grid.Column="3" Grid.Row="2"/>
+                                Grid.Column="3" Grid.Row="2"
+                                ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}" >
+            <heatmap:HeatmapControl.ToolTip>
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         Placement="Relative"
+                         PlacementRectangle="0,-20,0,0"
+                         HorizontalOffset="{Binding FocusedPoint.X}"
+                         VerticalOffset="{Binding FocusedPoint.Y}" >
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Sample = " />
+                        <TextBlock Text="{Binding FocusedItem.FileName}" />
+                        <TextBlock Text=", Metabolite = " />
+                        <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
+                    </StackPanel>
+                </ToolTip>
+            </heatmap:HeatmapControl.ToolTip>
+        </heatmap:HeatmapControl>
         <dendrogram:DendrogramControl x:Name="file_dendrogram"
-                                      ItemsSource="{Binding Source={StaticResource FileViewSource}}"
+                                      ItemsSource="{Binding FileView}"
                                       Tree="{Binding FileTree}"
                                       HorizontalAxis="{StaticResource FileAxis}"
                                       VerticalAxis="{StaticResource FileDendrogramAxis}"
@@ -84,7 +88,7 @@
                                       Margin="0,5,0,0"
                                       Grid.Column="3" Grid.Row="0" />
         <dendrogram:DendrogramControl x:Name="metabolite_dendrogram"
-                                      ItemsSource="{Binding Source={StaticResource MetaboliteViewSource}}"
+                                      ItemsSource="{Binding MetaboliteView}"
                                       Tree="{Binding MetaboliteTree}"
                                       HorizontalAxis="{StaticResource MetaboliteAxis}"
                                       VerticalAxis="{StaticResource MetaboliteDendrogramAxis}"
@@ -107,18 +111,45 @@
                                     HorizontalAxis="{StaticResource FileAxis}"
                                     MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                     MaxX="{Binding Max, Source={StaticResource FileAxis}}"
-                                    Grid.Column="3" Grid.Row="4" />
+                                    DisplayPropertyName="{Binding DisplayFileProperty}"
+                                    Grid.Column="3" Grid.Row="4" >
+            <axis:HorizontalAxisControl.ToolTip>
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         Placement="Relative"
+                         PlacementRectangle="0,-20,0,0"
+                         HorizontalOffset="{Binding FocusedPoint.X}"
+                         VerticalOffset="{Binding FocusedPoint.Y}" >
+                    <TextBlock Text="{Binding FocusedItem.FileName}" />
+                </ToolTip>
+            </axis:HorizontalAxisControl.ToolTip>
+        </axis:HorizontalAxisControl>
         <axis:VerticalAxisControl x:Name="metabolite_axis"
-                                  VerticalAxis="{StaticResource MetaboliteAxis}"
+                                  VerticalAxis="{Binding Source={StaticResource MetaboliteAxis}}"
                                   MinY="{Binding Min, Source={StaticResource MetaboliteAxis}}"
                                   MaxY="{Binding Max, Source={StaticResource MetaboliteAxis}}"
-                                  Grid.Column="1" Grid.Row="2" />
+                                  Grid.Column="1" Grid.Row="2" >
+            <axis:VerticalAxisControl.ToolTip>
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         Placement="Relative"
+                         PlacementRectangle="10,-10,0,0"
+                         HorizontalOffset="{Binding FocusedPoint.X}"
+                         VerticalOffset="{Binding FocusedPoint.Y}" >
+                    <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
+                </ToolTip>
+            </axis:VerticalAxisControl.ToolTip>
+        </axis:VerticalAxisControl>
         <axis:HorizontalColorAxisControl x:Name="file_coloraxis"
                                          HorizontalAxis="{StaticResource FileAxis}"
                                          MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                          MaxX="{Binding Max, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"
-                                         Grid.Column="3" Grid.Row="1" />
+                                         Grid.Column="3" Grid.Row="1">
+            <axis:HorizontalColorAxisControl.ToolTip>
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <TextBlock Text="{Binding FocusedItem.ClassName}" />
+                </ToolTip>
+            </axis:HorizontalColorAxisControl.ToolTip>
+        </axis:HorizontalColorAxisControl>
         <GridSplitter Height="2"
                       HorizontalAlignment="Stretch"
                       Background="Black"
@@ -129,6 +160,24 @@
                       Background="Black"
                       Margin="-2,0"
                       Grid.Column="2" Grid.Row="2" Grid.RowSpan="2"/>
-
+        <TextBlock Text="{Binding XLabel}"
+                   FontSize="18"
+                   FontStyle="Italic"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Grid.Column="3" Grid.Row="5" />
+        <TextBlock Text="{Binding YLabel}"
+                   FontSize="18"
+                   FontStyle="Italic"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Grid.Column="0" Grid.Row="2" >
+            <TextBlock.LayoutTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-90" />
+                    <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}" />
+                </TransformGroup>
+            </TextBlock.LayoutTransform>
+        </TextBlock>
     </Grid>
 </UserControl>

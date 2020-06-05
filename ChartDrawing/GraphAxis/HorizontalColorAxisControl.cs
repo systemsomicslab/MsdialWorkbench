@@ -22,9 +22,14 @@ namespace CompMs.Graphics.GraphAxis
             new PropertyMetadata(null, OnIdentityPropertyNamePropertyChanged)
             );
 
-        public static readonly DependencyProperty FocussedItemProperty = DependencyProperty.Register(
-            nameof(FocussedItem), typeof(object), typeof(HorizontalColorAxisControl),
+        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
+            nameof(FocusedItem), typeof(object), typeof(HorizontalColorAxisControl),
             new PropertyMetadata(default(object))
+            );
+
+        public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
+            nameof(FocusedPoint), typeof(Point), typeof(HorizontalColorAxisControl),
+            new PropertyMetadata(default(Point))
             );
         #endregion
 
@@ -41,10 +46,16 @@ namespace CompMs.Graphics.GraphAxis
             set => SetValue(IdentityPropertyNameProperty, value);
         }
 
-        public object FocussedItem
+        public object FocusedItem
         {
-            get => (object)GetValue(FocussedItemProperty);
-            set => SetValue(FocussedItemProperty, value);
+            get => (object)GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        public Point FocusedPoint
+        {
+            get => (Point)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
         }
         #endregion
 
@@ -97,7 +108,7 @@ namespace CompMs.Graphics.GraphAxis
                 var xorigin = HorizontalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualWidth;
                 var xwidth = (HorizontalAxis.ValueToRenderPosition(data.Width) - HorizontalAxis.ValueToRenderPosition(0)) * ActualWidth;
 
-                var dv = new AnnotatedDrawingVisual(data.Source);
+                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(xorigin - xwidth / 2, ActualHeight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(toBrush(data.Source), null, new Rect(xorigin, 0, xwidth, ActualHeight));
@@ -135,7 +146,13 @@ namespace CompMs.Graphics.GraphAxis
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
-            FocussedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            var focussed = dv.Annotation;
+            if (focussed != FocusedItem)
+            {
+                FocusedItem = focussed;
+                FocusedPoint = dv.Center;
+            }
             return HitTestResultBehavior.Stop;
         }
 

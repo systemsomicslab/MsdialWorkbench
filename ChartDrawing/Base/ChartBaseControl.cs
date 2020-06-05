@@ -123,7 +123,7 @@ namespace CompMs.Graphics.Core.Base
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
 
         #region PropertyChanged event
-        static void ChartUpdate(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected static void ChartUpdate(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is ChartBaseControl chart) chart.Update();
         }
