@@ -46,8 +46,8 @@
                 Grid.Row="0" Grid.Column="1">
             <heatmap:HeatmapControl x:Name="heatmap"
                                     ItemsSource="{Binding  Source={StaticResource SeriesView}}"
-                                    HorizontalAxis="{StaticResource HorizontalAxis}"
-                                    VerticalAxis="{StaticResource VerticalAxis}"
+                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                     MinX="{Binding Min, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                                     MaxX="{Binding Max, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                                     MinY="{Binding Min, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
@@ -76,12 +76,14 @@
                 </heatmap:HeatmapControl.ToolTip>
             </heatmap:HeatmapControl>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     MinX="{Binding Min, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                                     MaxX="{Binding Max, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   MinY="{Binding Min, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                                   MaxY="{Binding Max, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"

@@ -27,11 +27,6 @@ namespace CompMs.Graphics.Base
             nameof(IdentityPropertyName), typeof(string), typeof(CategoryAxisManager),
             new PropertyMetadata(default, OnIdentityPropertyNameChanged)
             );
-
-        public static readonly DependencyProperty AxisFunctionProperty = DependencyProperty.Register(
-            nameof(AxisFunction), typeof(AxisManagerFunction), typeof(CategoryAxisManager),
-            new PropertyMetadata(default)
-            );
         #endregion
 
         #region Property
@@ -51,12 +46,6 @@ namespace CompMs.Graphics.Base
         {
             get => (string)GetValue(IdentityPropertyNameProperty);
             set => SetValue(IdentityPropertyNameProperty, value);
-        }
-
-        public AxisManagerFunction AxisFunction
-        {
-            get => (AxisManagerFunction)GetValue(AxisFunctionProperty);
-            set => SetValue(AxisFunctionProperty, value);
         }
         #endregion
 
@@ -100,14 +89,19 @@ namespace CompMs.Graphics.Base
             return result;
         }
 
-        private double ValueToRenderPositionCore(object value) => base.ValueToRenderPosition(converter[value]);
-
-        public override double ValueToRenderPosition(object value) => ValueToRenderPositionCore(value);
-        public override double ValueToRenderPosition(IConvertible value) => ValueToRenderPositionCore(value);
-        public override double ValueToRenderPosition(double value)
+        protected override double ValueToRenderPositionCore(object value)
         {
-            Console.WriteLine("called double -> double");
-            return base.ValueToRenderPosition(value);
+            if (converter.ContainsKey(value))
+                return base.ValueToRenderPositionCore(converter[value]);
+            return double.NaN;
+        }
+
+        public override double ValueToRenderPosition(object value)
+        {
+            if (value is double)
+                return ValueToRenderPositionCore((double)value);
+            else
+                return ValueToRenderPositionCore(value);
         }
 
         private void UpdateConverter()
@@ -126,6 +120,8 @@ namespace CompMs.Graphics.Base
 
             InitialMin = 0d;
             InitialMax = cnt;
+
+            AxisMapper = new AxisMapper(this);
         }
 
         #region Event handler
@@ -144,7 +140,7 @@ namespace CompMs.Graphics.Base
                 axis.iPropertyReflection = axis.dataType.GetProperty(axis.IdentityPropertyName);
 
             axis.UpdateConverter();
-            axis.AxisFunction = new AxisManagerFunction(axis);
+            Console.WriteLine("itemsSource changed.");
         }
 
         static void OnDisplayPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -154,8 +150,6 @@ namespace CompMs.Graphics.Base
 
             if (axis.dataType != null)
                 axis.dPropertyReflection = axis.dataType.GetProperty(axis.DisplayPropertyName);
-
-            axis.AxisFunction = new AxisManagerFunction(axis);
         }
 
         static void OnIdentityPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -167,22 +161,7 @@ namespace CompMs.Graphics.Base
                 axis.iPropertyReflection = axis.dataType.GetProperty(axis.IdentityPropertyName);
 
             axis.UpdateConverter();
-            axis.AxisFunction = new AxisManagerFunction(axis);
         }
         #endregion
-
-    }
-    public class AxisManagerFunction : AxisManager
-    {
-        private AxisManager parent;
-
-        public AxisManagerFunction(AxisManager axis)
-        {
-            parent = axis;
-        }
-        public override List<LabelTickData> GetLabelTicks() => parent.GetLabelTicks();
-        public override double ValueToRenderPosition(object value) => parent.ValueToRenderPosition(value);
-        public override double ValueToRenderPosition(IConvertible value) => parent.ValueToRenderPosition(value); 
-        public override double ValueToRenderPosition(double value) => parent.ValueToRenderPosition(value);
     }
 }

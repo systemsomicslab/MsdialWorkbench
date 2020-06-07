@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
+    <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="Base\CategoryAxisManager.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />

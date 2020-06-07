@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Adorner;
 
 
@@ -12,13 +12,13 @@ namespace CompMs.Graphics.Core.Base
     {
         #region DependencyProperty
         public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
-            nameof(HorizontalAxis), typeof(AxisManager), typeof(ChartBaseControl),
-            new PropertyMetadata(default(AxisManager), ChartUpdate)
+            nameof(HorizontalAxis), typeof(AxisMapper), typeof(ChartBaseControl),
+            new PropertyMetadata(default(AxisMapper), ChartUpdate)
             );
 
         public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisManager), typeof(ChartBaseControl),
-            new PropertyMetadata(default(AxisManager), ChartUpdate)
+            nameof(VerticalAxis), typeof(AxisMapper), typeof(ChartBaseControl),
+            new PropertyMetadata(default(AxisMapper), ChartUpdate)
             );
 
         public static readonly DependencyProperty MinXProperty = DependencyProperty.Register(
@@ -43,15 +43,15 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Property
-        public AxisManager HorizontalAxis
+        public AxisMapper HorizontalAxis
         {
-            get => (AxisManager)GetValue(HorizontalAxisProperty);
+            get => (AxisMapper)GetValue(HorizontalAxisProperty);
             set => SetValue(HorizontalAxisProperty, value);
         }
 
-        public AxisManager VerticalAxis
+        public AxisMapper VerticalAxis
         {
-            get => (AxisManager)GetValue(VerticalAxisProperty);
+            get => (AxisMapper)GetValue(VerticalAxisProperty);
             set => SetValue(VerticalAxisProperty, value);
         }
 

@@ -22,7 +22,7 @@ namespace CompMs.Graphics.Base
 
         public static readonly DependencyProperty ChartMarginProperty = DependencyProperty.Register(
             nameof(ChartMargin), typeof(double), typeof(ContinuousAxisManager),
-            new PropertyMetadata(0d)
+            new PropertyMetadata(0d, OnChartMarginChanged)
             );
         #endregion
 

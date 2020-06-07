@@ -48,8 +48,8 @@
         </Grid.RowDefinitions>
         <heatmap:HeatmapControl x:Name="heatmap"
                                 ItemsSource="{Binding HeatmapSource}"
-                                HorizontalAxis="{StaticResource FileAxis}"
-                                VerticalAxis="{StaticResource MetaboliteAxis}"
+                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                 MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                 MaxX="{Binding Max, Source={StaticResource FileAxis}}"
                                 MinY="{Binding Min, Source={StaticResource MetaboliteAxis}}"
@@ -77,8 +77,8 @@
         <dendrogram:DendrogramControl x:Name="file_dendrogram"
                                       ItemsSource="{Binding FileView}"
                                       Tree="{Binding FileTree}"
-                                      HorizontalAxis="{StaticResource FileAxis}"
-                                      VerticalAxis="{StaticResource FileDendrogramAxis}"
+                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource FileDendrogramAxis}}"
                                       MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                       MaxX="{Binding Max, Source={StaticResource FileAxis}}"
                                       MinY="{Binding Min, Source={StaticResource FileDendrogramAxis}}"
@@ -90,8 +90,8 @@
         <dendrogram:DendrogramControl x:Name="metabolite_dendrogram"
                                       ItemsSource="{Binding MetaboliteView}"
                                       Tree="{Binding MetaboliteTree}"
-                                      HorizontalAxis="{StaticResource MetaboliteAxis}"
-                                      VerticalAxis="{StaticResource MetaboliteDendrogramAxis}"
+                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteDendrogramAxis}}"
                                       MinX="{Binding Min, Source={StaticResource MetaboliteAxis}}"
                                       MaxX="{Binding Max, Source={StaticResource MetaboliteAxis}}"
                                       MinY="{Binding Min, Source={StaticResource MetaboliteDendrogramAxis}}"
@@ -108,7 +108,8 @@
             </dendrogram:DendrogramControl.LayoutTransform>
         </dendrogram:DendrogramControl>
         <axis:HorizontalAxisControl x:Name="file_axis"
-                                    HorizontalAxis="{StaticResource FileAxis}"
+                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                     MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                     MaxX="{Binding Max, Source={StaticResource FileAxis}}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
@@ -124,7 +125,8 @@
             </axis:HorizontalAxisControl.ToolTip>
         </axis:HorizontalAxisControl>
         <axis:VerticalAxisControl x:Name="metabolite_axis"
-                                  VerticalAxis="{Binding Source={StaticResource MetaboliteAxis}}"
+                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                   MinY="{Binding Min, Source={StaticResource MetaboliteAxis}}"
                                   MaxY="{Binding Max, Source={StaticResource MetaboliteAxis}}"
                                   Grid.Column="1" Grid.Row="2" >
@@ -139,7 +141,8 @@
             </axis:VerticalAxisControl.ToolTip>
         </axis:VerticalAxisControl>
         <axis:HorizontalColorAxisControl x:Name="file_coloraxis"
-                                         HorizontalAxis="{StaticResource FileAxis}"
+                                         HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                         LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                          MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                          MaxX="{Binding Max, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"

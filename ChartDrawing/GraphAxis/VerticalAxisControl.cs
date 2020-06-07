@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Windows;
@@ -12,6 +13,11 @@ namespace CompMs.Graphics.GraphAxis
     public class VerticalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
+            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(VerticalAxisControl),
+            new PropertyMetadata(null)
+            );
+
         public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
             nameof(TickPen), typeof(Pen), typeof(VerticalAxisControl),
             new PropertyMetadata(new Pen(Brushes.Black, 1), ChartUpdate)
@@ -44,6 +50,12 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        public List<LabelTickData> LabelTicks
+        {
+            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
+            set => SetValue(LabelTicksProperty, value);
+        }
+
         public Pen TickPen
         {
             get => (Pen)GetValue(TickPenProperty);
@@ -96,6 +108,7 @@ namespace CompMs.Graphics.GraphAxis
         protected override void Update()
         {
             if (VerticalAxis == null
+                || LabelTicks == null
                 || TickPen == null
                 || LabelBrush == null
                 ) return;
@@ -103,7 +116,7 @@ namespace CompMs.Graphics.GraphAxis
             Func<LabelTickData, string> toLabel = null;
 
             visualChildren.Clear();
-            foreach (var data in VerticalAxis.GetLabelTicks())
+            foreach (var data in LabelTicks)
             {
                 if (dPropertyReflection == null && DisplayPropertyName != null)
                     dPropertyReflection = data.Source.GetType().GetProperty(DisplayPropertyName);

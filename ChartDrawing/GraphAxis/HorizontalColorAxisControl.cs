@@ -12,6 +12,11 @@ namespace CompMs.Graphics.GraphAxis
     public class HorizontalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
+            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(HorizontalColorAxisControl),
+            new PropertyMetadata(null)
+            );
+
         public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
             nameof(LabelBrushes), typeof(IList<Brush>), typeof(HorizontalColorAxisControl),
             new PropertyMetadata(null)
@@ -34,6 +39,12 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        public List<LabelTickData> LabelTicks
+        {
+            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
+            set => SetValue(LabelTicksProperty, value);
+        }
+
         public IList<Brush> LabelBrushes
         {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
@@ -70,7 +81,7 @@ namespace CompMs.Graphics.GraphAxis
 
         protected override void Update()
         {
-            if (HorizontalAxis == null) return;
+            if (HorizontalAxis == null || LabelTicks == null) return;
 
             var memo = new Dictionary<object, int>();
             var id = 0;
@@ -78,7 +89,7 @@ namespace CompMs.Graphics.GraphAxis
             Func<object, Brush> toBrush = null;
 
             visualChildren.Clear();
-            foreach (var data in HorizontalAxis.GetLabelTicks())
+            foreach (var data in LabelTicks)
             {
                 if (data.TickType != TickType.LongTick) continue;
 
@@ -106,7 +117,7 @@ namespace CompMs.Graphics.GraphAxis
                     };
 
                 var xorigin = HorizontalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualWidth;
-                var xwidth = (HorizontalAxis.ValueToRenderPosition(data.Width) - HorizontalAxis.ValueToRenderPosition(0)) * ActualWidth;
+                var xwidth = (HorizontalAxis.ValueToRenderPosition(data.Width) - HorizontalAxis.ValueToRenderPosition(0d)) * ActualWidth;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(xorigin - xwidth / 2, ActualHeight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

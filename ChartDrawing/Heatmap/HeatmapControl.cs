@@ -150,27 +150,14 @@ namespace CompMs.Graphics.Heatmap
             {
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
-                var z = zPropertyReflection.GetValue(o);
 
                 double xx, yy, zz;
-                if (x is double)
-                    xx = HorizontalAxis.ValueToRenderPosition((double)x) * ActualWidth;
-                else if (x is string)
-                    xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-                else if (x is IConvertible)
-                    xx = HorizontalAxis.ValueToRenderPosition(x as IConvertible) * ActualWidth;
-                else
-                    xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+                xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+                yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
 
-                if (y is double)
-                    yy = VerticalAxis.ValueToRenderPosition((double)y) * ActualHeight;
-                else if (y is string)
-                    yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
-                else if (y is IConvertible)
-                    yy = VerticalAxis.ValueToRenderPosition(y as IConvertible) * ActualHeight;
-                else
-                    yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
+                if (xx == double.NaN || yy == double.NaN) continue;
 
+                var z = zPropertyReflection.GetValue(o);
                 zz = Convert.ToDouble(z as IConvertible);
                 var color = getGradientColor(GradientStops, zz, zmin, zmax);
                 var brush = new SolidColorBrush(color);

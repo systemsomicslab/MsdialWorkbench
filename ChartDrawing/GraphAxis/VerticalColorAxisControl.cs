@@ -12,6 +12,11 @@ namespace CompMs.Graphics.GraphAxis
     public class VerticalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
+            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(VerticalColorAxisControl),
+            new PropertyMetadata(null)
+            );
+
         public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
             nameof(LabelBrushes), typeof(IList<Brush>), typeof(VerticalColorAxisControl),
             new PropertyMetadata(null)
@@ -34,6 +39,12 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        public List<LabelTickData> LabelTicks
+        {
+            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
+            set => SetValue(LabelTicksProperty, value);
+        }
+
         public IList<Brush> LabelBrushes
         {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
@@ -72,7 +83,7 @@ namespace CompMs.Graphics.GraphAxis
 
         protected override void Update()
         {
-            if (VerticalAxis == null) return;
+            if (VerticalAxis == null || LabelTicks == null) return;
 
             var memo = new Dictionary<object, int>();
             var id = 0;
@@ -80,7 +91,7 @@ namespace CompMs.Graphics.GraphAxis
             Func<object, Brush> toBrush = null;
 
             visualChildren.Clear();
-            foreach (var data in VerticalAxis.GetLabelTicks())
+            foreach (var data in LabelTicks)
             {
                 if (data.TickType != TickType.LongTick) continue;
 
@@ -108,7 +119,7 @@ namespace CompMs.Graphics.GraphAxis
                     };
 
                 var yorigin = VerticalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualHeight;
-                var yheight = (VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0)) * ActualHeight;
+                var yheight = (VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0d)) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, yorigin - yheight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
