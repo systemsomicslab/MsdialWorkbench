@@ -24,5 +24,13 @@ namespace Rfx.Riken.OsakaUniv.Hca
         {
             InitializeComponent();
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new SaveImageAsWin(this);
+            window.Owner = Window.GetWindow(this);
+            window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            window.Show();
+        }
     }
 }

@@ -8,9 +8,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace CompMs.Graphics.Core.Command
+namespace CompMs.Graphics.Command
 {
-    internal class SavePngCommand : ICommand
+    public class SavePngCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
         public FrameworkElement Element { get; set; }
@@ -22,13 +22,11 @@ namespace CompMs.Graphics.Core.Command
 
         public void Execute(object parameter)
         {
-            Console.WriteLine("Before check");
             if (Element == null) return;
-            Console.WriteLine("After check");
 
             var bmp = new RenderTargetBitmap(
-                (int)Element.ActualWidth, (int)Element.ActualHeight,
-                96, 96, PixelFormats.Pbgra32
+                (int)(Element.ActualWidth * 300d / 96d), (int)(Element.ActualHeight * 300d / 96d),
+                300d, 300d, PixelFormats.Pbgra32
                 );
             bmp.Render(Element);
             var encoder = new PngBitmapEncoder();

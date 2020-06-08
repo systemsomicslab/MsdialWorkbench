@@ -196,10 +196,16 @@ namespace CompMs.Graphics.Core.Base
                         ),
                     InitialArea
                     );
-                MinX = area.Left;
-                MaxX = area.Right;
-                MinY = area.Top;
-                MaxY = area.Bottom;
+                if (area.Width > 0)
+                {
+                    MinX = area.Left;
+                    MaxX = area.Right;
+                }
+                if (area.Height > 0)
+                {
+                    MinY = area.Top;
+                    MaxY = area.Bottom;
+                }
             }
         }
 
