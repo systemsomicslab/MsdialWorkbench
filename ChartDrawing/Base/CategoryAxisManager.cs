@@ -140,7 +140,6 @@ namespace CompMs.Graphics.Base
                 axis.iPropertyReflection = axis.dataType.GetProperty(axis.IdentityPropertyName);
 
             axis.UpdateConverter();
-            Console.WriteLine("itemsSource changed.");
         }
 
         static void OnDisplayPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -121,7 +121,7 @@ namespace CompMs.Graphics.GraphAxis
                 var yorigin = VerticalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualHeight;
                 var yheight = (VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0d)) * ActualHeight;
 
-                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, yorigin - yheight / 2) };
+                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, yorigin + yheight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(toBrush(data.Source), null, new Rect(0, yorigin, ActualWidth, yheight));

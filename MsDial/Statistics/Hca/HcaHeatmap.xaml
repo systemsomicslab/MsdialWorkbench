@@ -47,7 +47,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <heatmap:HeatmapControl x:Name="heatmap"
-                                ItemsSource="{Binding HeatmapSource}"
+                                ItemsSource="{Binding HeatmapView}"
                                 HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                 MinX="{Binding Min, Source={StaticResource FileAxis}}"
@@ -148,7 +148,11 @@
                                          IdentityPropertyName="TypeBrush"
                                          Grid.Column="3" Grid.Row="1">
             <axis:HorizontalColorAxisControl.ToolTip>
-                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         Placement="Relative"
+                         PlacementRectangle="-5,-5,0,0"
+                         HorizontalOffset="{Binding FocusedPoint.X}"
+                         VerticalOffset="{Binding FocusedPoint.Y}" >
                     <TextBlock Text="{Binding FocusedItem.ClassName}" />
                 </ToolTip>
             </axis:HorizontalColorAxisControl.ToolTip>

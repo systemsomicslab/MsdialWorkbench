@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -116,7 +117,17 @@ namespace CompMs.Graphics.GraphAxis
             Func<LabelTickData, string> toLabel = null;
 
             visualChildren.Clear();
-            foreach (var data in LabelTicks)
+
+            var labelTicks = LabelTicks.Where(data => MinX <= data.Center && data.Center <= MaxX).ToList();
+            if (labelTicks.Count > 100)
+                labelTicks = labelTicks.Where(data => data.TickType == TickType.LongTick).ToList();
+            if (labelTicks.Count > 100)
+            {
+                var m = (labelTicks.Count + 100 - 1) / 100;
+                labelTicks = labelTicks.Where((_, index) => index % m == 0).ToList();
+            }
+
+            foreach (var data in labelTicks)
             {
                 if (dPropertyReflection == null && DisplayPropertyName != null)
                     dPropertyReflection = data.Source.GetType().GetProperty(DisplayPropertyName);

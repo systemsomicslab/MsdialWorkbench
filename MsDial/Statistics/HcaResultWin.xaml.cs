@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -39,20 +40,22 @@ namespace Rfx.Riken.OsakaUniv
     public class HcaResultVM : ViewModelBase
     {
         #region Property
-        public ObservableCollection<MatrixData> HeatmapSource
+        public IEnumerable HeatmapView
         {
-            get => heatmapSource;
-            set => SetProperty(ref heatmapSource, value);
+            get => heatmapView;
+            set => SetProperty(ref heatmapView, value);
         }
 
-        public ICollectionView FileView
+        public IEnumerable FileView
         {
             get => fileView;
+            private set => SetProperty(ref fileView, value);
         }
 
-        public ICollectionView MetaboliteView
+        public IEnumerable MetaboliteView
         {
             get => metaboliteView;
+            private set => SetProperty(ref metaboliteView, value);
         }
 
         public DirectedTree FileTree
@@ -120,7 +123,7 @@ namespace Rfx.Riken.OsakaUniv
         private ObservableCollection<MatrixData> heatmapSource;
         private ObservableCollection<FileLeaf> fileSource;
         private ObservableCollection<MetaboliteLeaf> metaboliteSource;
-        private ICollectionView fileView, metaboliteView;
+        private IEnumerable fileView, metaboliteView, heatmapView;
         private double fileDendrogramMinimum, fileDendrogramMaximum, metaboliteDendrogramMinimum, metaboliteDendrogramMaximum;
         private DirectedTree fileTree, metaboliteTree;
         private int numberOfDisplayMetabolite;
@@ -205,31 +208,41 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
 
-            fileSource = new ObservableCollection<FileLeaf>(filesource);
+            fileSource = new ObservableCollection<FileLeaf>(filesource.OrderBy(leaf => leaf.Order));
             FileDendrogramMinimum = xdendro.Min();
             FileDendrogramMaximum = xdendro.Max();
             FileTree = filetree;
-            fileView = CollectionViewSource.GetDefaultView(fileSource);
-            fileView.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending));
+            FileView = fileSource;
             XLabel = "Samples";
             DisplayFileProperty = "FileName";
 
-            metaboliteSource = new ObservableCollection<MetaboliteLeaf>(metabolitesource);
+            metaboliteSource = new ObservableCollection<MetaboliteLeaf>(metabolitesource.OrderBy(leaf => leaf.Order));
             NumberOfDisplayMetabolite = Math.Min(metabolitesource.Count, 100);
             MetaboliteTree = metabolitetree;
             MetaboliteDendrogramMinimum = ydendro.Min();
             MetaboliteDendrogramMaximum = ydendro.Max();
-            metaboliteView = CollectionViewSource.GetDefaultView(metaboliteSource);
-            metaboliteView.SortDescriptions.Add(new SortDescription("Order", ListSortDirection.Ascending));
-            metaboliteView.Filter += VarianceFiltering;
+            MetaboliteView = metaboliteSource;
             YLabel = "Metabolites";
 
-            HeatmapSource = new ObservableCollection<MatrixData>(heatmapsource);
+            heatmapSource = new ObservableCollection<MatrixData>(heatmapsource);
+            HeatmapView = heatmapSource;
+
+            NumberOfDisplayMetabolite = 50;
+            TopNMetaboliteFilter(NumberOfDisplayMetabolite);
         }
 
-        bool VarianceFiltering(object leaf)
+        void TopNMetaboliteFilter(int n)
         {
-            return ((MetaboliteLeaf)leaf).Rank <= NumberOfDisplayMetabolite;
+            if (metaboliteSource != null)
+            {
+                var metabolite = metaboliteSource.Where(leaf => leaf.Rank <= n);
+                MetaboliteView = metabolite;
+                if (heatmapSource != null)
+                {
+                    var metaboliteIds = metabolite.Select(leaf => leaf.ID).ToHashSet();
+                    HeatmapView = heatmapSource.Where(data => metaboliteIds.Contains(data.MetaboliteId));
+                }
+            }
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -239,8 +252,7 @@ namespace Rfx.Riken.OsakaUniv
             switch (e.PropertyName)
             {
                 case nameof(NumberOfDisplayMetabolite):
-                    if (MetaboliteView != null)
-                        MetaboliteView.Refresh();
+                    TopNMetaboliteFilter(NumberOfDisplayMetabolite);
                     break;
             }
         }

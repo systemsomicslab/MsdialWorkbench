@@ -119,7 +119,7 @@ namespace CompMs.Graphics.GraphAxis
                 var xorigin = HorizontalAxis.ValueToRenderPosition(data.Center - data.Width / 2) * ActualWidth;
                 var xwidth = (HorizontalAxis.ValueToRenderPosition(data.Width) - HorizontalAxis.ValueToRenderPosition(0d)) * ActualWidth;
 
-                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(xorigin - xwidth / 2, ActualHeight / 2) };
+                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(xorigin + xwidth / 2, ActualHeight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 dc.DrawRectangle(toBrush(data.Source), null, new Rect(xorigin, 0, xwidth, ActualHeight));
