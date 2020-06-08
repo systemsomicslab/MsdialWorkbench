@@ -29,6 +29,10 @@
                                      MinValue="{Binding DataContext.MetaboliteDendrogramMinimum, Source={x:Reference ClustermapControl}}"
                                      MaxValue="{Binding DataContext.MetaboliteDendrogramMaximum, Source={x:Reference ClustermapControl}}"
                                      IsFlipped="True" />
+        <chart:ContinuousAxisManager x:Key="HeatmapValueAxis"
+                                     MinValue="{Binding DataContext.HeatmapValueMinimum, Source={x:Reference ClustermapControl}}"
+                                     MaxValue="{Binding DataContext.HeatmapValueMaximum, Source={x:Reference ClustermapControl}}"
+                                     IsFlipped="True" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -112,6 +116,7 @@
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                     MinX="{Binding Min, Source={StaticResource FileAxis}}"
                                     MaxX="{Binding Max, Source={StaticResource FileAxis}}"
+                                    LabelSize="{Binding FileLabelSize}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
                                     Grid.Column="3" Grid.Row="4" >
             <axis:HorizontalAxisControl.ToolTip>
@@ -129,6 +134,7 @@
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                   MinY="{Binding Min, Source={StaticResource MetaboliteAxis}}"
                                   MaxY="{Binding Max, Source={StaticResource MetaboliteAxis}}"
+                                  LabelSize="{Binding MetaboliteLabelSize}"
                                   Grid.Column="1" Grid.Row="2" >
             <axis:VerticalAxisControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -157,6 +163,26 @@
                 </ToolTip>
             </axis:HorizontalColorAxisControl.ToolTip>
         </axis:HorizontalColorAxisControl>
+        <StackPanel Orientation="Horizontal"
+                    MaxHeight="200"
+                    MinHeight="70"
+                    Margin="15, 5"
+                    VerticalAlignment="Bottom"
+                    Grid.Row="0" Grid.Column="4">
+            <axis:VerticalAxisControl MinWidth="20"
+                                      MaxWidth="30"
+                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}"
+                                      MinY="{Binding Min, Source={StaticResource HeatmapValueAxis}}"
+                                      MaxY="{Binding Max, Source={StaticResource HeatmapValueAxis}}" />
+            <Rectangle MinWidth="20"
+                       MaxWidth="40">
+                <Rectangle.Fill>
+                    <LinearGradientBrush GradientStops="{Binding GradientStops,ElementName=heatmap}"
+                                         StartPoint="0,1" EndPoint="0,0"/>
+                </Rectangle.Fill>
+            </Rectangle>
+        </StackPanel>
         <GridSplitter Height="2"
                       HorizontalAlignment="Stretch"
                       Background="Black"

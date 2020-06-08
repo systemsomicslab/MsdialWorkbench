@@ -94,6 +94,18 @@ namespace Rfx.Riken.OsakaUniv
             set => SetProperty(ref metaboliteDendrogramMaximum, value);
         }
 
+        public double HeatmapValueMinimum
+        {
+            get => heatmapValueMinimum;
+            set => SetProperty(ref heatmapValueMinimum, value);
+        }
+
+        public double HeatmapValueMaximum
+        {
+            get => heatmapValueMaximum;
+            set => SetProperty(ref heatmapValueMaximum, value);
+        }
+
         public int NumberOfDisplayMetabolite
         {
             get => numberOfDisplayMetabolite;
@@ -111,6 +123,18 @@ namespace Rfx.Riken.OsakaUniv
             get => yLabel;
             set => SetProperty(ref yLabel, value);
         }
+        
+        public double FileLabelSize
+        {
+            get => fileLabelSize;
+            set => SetProperty(ref fileLabelSize, value);
+        }
+
+        public double MetaboliteLabelSize
+        {
+            get => metaboliteLabelSize;
+            set => SetProperty(ref metaboliteLabelSize, value);
+        }
 
         public string DisplayFileProperty
         {
@@ -124,10 +148,13 @@ namespace Rfx.Riken.OsakaUniv
         private ObservableCollection<FileLeaf> fileSource;
         private ObservableCollection<MetaboliteLeaf> metaboliteSource;
         private IEnumerable fileView, metaboliteView, heatmapView;
-        private double fileDendrogramMinimum, fileDendrogramMaximum, metaboliteDendrogramMinimum, metaboliteDendrogramMaximum;
+        private double fileDendrogramMinimum, fileDendrogramMaximum,
+            metaboliteDendrogramMinimum, metaboliteDendrogramMaximum,
+            heatmapValueMinimum, heatmapValueMaximum;
         private DirectedTree fileTree, metaboliteTree;
         private int numberOfDisplayMetabolite;
         private string xLabel, yLabel, displayFileProperty;
+        private double fileLabelSize, metaboliteLabelSize;
         #endregion
 
         public HcaResultVM(MultivariateAnalysisResult result)
@@ -214,6 +241,7 @@ namespace Rfx.Riken.OsakaUniv
             FileTree = filetree;
             FileView = fileSource;
             XLabel = "Samples";
+            FileLabelSize = 12d;
             DisplayFileProperty = "FileName";
 
             metaboliteSource = new ObservableCollection<MetaboliteLeaf>(metabolitesource.OrderBy(leaf => leaf.Order));
@@ -223,9 +251,12 @@ namespace Rfx.Riken.OsakaUniv
             MetaboliteDendrogramMaximum = ydendro.Max();
             MetaboliteView = metaboliteSource;
             YLabel = "Metabolites";
+            MetaboliteLabelSize = 12d;
 
             heatmapSource = new ObservableCollection<MatrixData>(heatmapsource);
             HeatmapView = heatmapSource;
+            HeatmapValueMinimum = heatmapSource.Min(data => data.Intensity);
+            HeatmapValueMaximum = heatmapSource.Max(data => data.Intensity);
 
             NumberOfDisplayMetabolite = 50;
             TopNMetaboliteFilter(NumberOfDisplayMetabolite);
