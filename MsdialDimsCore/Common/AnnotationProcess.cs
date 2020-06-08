@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parameter;
@@ -29,7 +30,13 @@ namespace CompMs.MsdialDimsCore.Common {
                 if (query.PrecursorMz > mz + ms1Tol) break;
                 if (query.PrecursorMz < mz - ms1Tol) continue;
 
-                var result = MsScanMatching.CompareMS2LipidomicsScanProperties(feature, query, param, omics);
+                MsScanMatchResult result = null;
+                if (omics == TargetOmics.Lipidomics) {
+                    result = MsScanMatching.CompareMS2LipidomicsScanProperties(feature, query, param);
+                }
+                else {
+                    result = MsScanMatching.CompareMS2ScanProperties(feature, query, param);
+                }
                 if (result.IsSpectrumMatch) {
                     feature.MspIDs.Add(i);
                 }
@@ -39,9 +46,9 @@ namespace CompMs.MsdialDimsCore.Common {
 
                 //temp method
                 var totalscore = result.SimpleDotProduct + result.WeightedDotProduct + result.MatchedPeaksPercentage + result.ReverseDotProduct;
-                result.TotalSimilarity = totalscore;
+                result.TotalScore = totalscore;
 
-                if (feature.MspBasedMatchResult.TotalSimilarity < totalscore) {
+                if (feature.MspBasedMatchResult.TotalScore < totalscore) {
                     feature.MspID = i;
                     feature.MspBasedMatchResult = result;
                 }
