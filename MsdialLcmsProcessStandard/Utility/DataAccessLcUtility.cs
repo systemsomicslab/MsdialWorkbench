@@ -479,6 +479,27 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
         }
 
+        public static string GetOntologyOfAlignmentObj(object spotProp, List<PostIdentificatioinReferenceBean> txtDB, List<MspFormatCompoundInformationBean> mspDB)
+        {
+            int libTxtId = -1, MspId = -1;
+            if (spotProp is AlignmentPropertyBean rSpot)
+            {
+                libTxtId = rSpot.PostIdentificationLibraryID;
+                MspId = rSpot.LibraryID;
+            }
+            else if (spotProp is AlignedDriftSpotPropertyBean dSpot)
+            {
+                libTxtId = dSpot.PostIdentificationLibraryID;
+                MspId = dSpot.LibraryID;
+            }
+
+            var ontology = PostIdentificationReferenceDataRetrieve.GetOntology(libTxtId, txtDB);
+            if (string.IsNullOrEmpty(ontology))
+                ontology = MspDataRetrieve.GetOntology(MspId, mspDB);
+
+            return ontology;
+        }
+
         public static double GetIonAbundanceOfMzInSpectrum(RawPeakElement[] massSpectra, 
             float mz, float mztol, out double basepeakMz, out double basepeakIntensity) {
             var startIndex = GetMs1StartIndex(mz, mztol, massSpectra);

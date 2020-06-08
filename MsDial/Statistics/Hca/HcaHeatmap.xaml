@@ -40,6 +40,7 @@
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -103,7 +104,7 @@
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
                                       Margin="0,0,10,0"
-                                      Grid.Column="4" Grid.Row="2">
+                                      Grid.Column="5" Grid.Row="2">
             <dendrogram:DendrogramControl.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="90" />
@@ -163,12 +164,29 @@
                 </ToolTip>
             </axis:HorizontalColorAxisControl.ToolTip>
         </axis:HorizontalColorAxisControl>
+        <axis:VerticalColorAxisControl x:Name="metabolite_coloraxis"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                       LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
+                                       MinY="{Binding Min, Source={StaticResource MetaboliteAxis}}"
+                                       MaxY="{Binding Max, Source={StaticResource MetaboliteAxis}}"
+                                       IdentityPropertyName="TypeBrush"
+                                       Grid.Column="4" Grid.Row="2" >
+            <axis:VerticalColorAxisControl.ToolTip>
+                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         Placement="Relative"
+                         PlacementRectangle="5,5,0,0"
+                         HorizontalOffset="{Binding FocusedPoint.X}"
+                         VerticalOffset="{Binding FocusedPoint.Y}" >
+                    <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
+                </ToolTip>
+            </axis:VerticalColorAxisControl.ToolTip>
+        </axis:VerticalColorAxisControl>
         <StackPanel Orientation="Horizontal"
                     MaxHeight="200"
                     MinHeight="70"
                     Margin="15, 5"
                     VerticalAlignment="Bottom"
-                    Grid.Row="0" Grid.Column="4">
+                    Grid.Row="0" Grid.Column="5">
             <axis:VerticalAxisControl MinWidth="20"
                                       MaxWidth="30"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"

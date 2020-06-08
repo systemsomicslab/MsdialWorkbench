@@ -190,6 +190,7 @@ namespace Rfx.Riken.OsakaUniv
             filetree.PreOrder(e => xdendro[e.To] = xdendro[e.From] + e.Distance);
 
             var metabolites = result.StatisticsObject.XLabels;
+            var metabolitecolors = result.StatisticsObject.XColors;
             var metabolitesource = new List<MetaboliteLeaf>(metabolites.Count);
             var metabolitetree = result.YDendrogram;
             var metaboliteroot = metabolitetree.Root;
@@ -206,9 +207,12 @@ namespace Rfx.Riken.OsakaUniv
                                                              .OrderByDescending(p => p.stdev)
                                                              .Select((p, rank) => (rank, p.index)))
             {
+                var brush = new SolidColorBrush(Color.FromArgb(metabolitecolors[index][3], metabolitecolors[index][0], metabolitecolors[index][1], metabolitecolors[index][2]));
+                brush.Freeze();
                 metabolitesource.Add(new MetaboliteLeaf()
                 {
                     MetaboliteName = metabolites[index],
+                    TypeBrush = brush,
                     ID = index,
                     Order = metaboliteorder[index],
                     Rank = rank + 1,
@@ -322,6 +326,7 @@ namespace Rfx.Riken.OsakaUniv
     {
         public string MetaboliteName { get; set; }
         public int ID { get; set; }
+        public Brush TypeBrush { get; set; }
         public int Order { get; set; }
         public int Rank { get; set; }
     }
