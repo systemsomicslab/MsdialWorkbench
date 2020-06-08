@@ -40,9 +40,6 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
     }
 
-
-
-
     public sealed class Identification
     {
         private Identification() { }

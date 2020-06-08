@@ -1,6 +1,9 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.IsotopeCalc;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.MessagePack;
@@ -10,16 +13,16 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.Parser {
-    public sealed class MspFileParcer
-    {
-
+    public sealed class MspFileParcer {
         private MspFileParcer() { }
-        
+        static IupacDatabase IupacDatabase = IupacResourceParser.GetIUPACDatabase();
+
         /// <summary>
         /// This is the MSP file parcer.
         /// Each MS/MS information will be stored in MspFormatCompoundInformationBean.cs.
@@ -30,6 +33,7 @@ namespace CompMs.Common.Parser {
         {
             var mspFields = new List<MoleculeMsReference>();
             var counter = 0;
+            
             using (StreamReader sr = new StreamReader(filepath, Encoding.ASCII))
             {
                 while (sr.Peek() > -1)
@@ -255,7 +259,16 @@ namespace CompMs.Common.Parser {
                     mspObj.Comment = fieldValue; 
                     return false;
 
-                case "formula": mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue);  return false;
+                case "formula": 
+                    mspObj.Formula = FormulaStringParcer.OrganicElementsReader(fieldValue); 
+                    if (mspObj.Formula != null) {
+                        mspObj.Formula.M1IsotopicAbundance = SevenGoldenRulesCheck.GetM1IsotopicAbundance(mspObj.Formula);
+                        mspObj.Formula.M2IsotopicAbundance = SevenGoldenRulesCheck.GetM2IsotopicAbundance(mspObj.Formula);
+
+                        var isotopeProp = IsotopeCalculator.GetAccurateIsotopeProperty(mspObj.Formula.FormulaString, 2, IupacDatabase);
+                        mspObj.IsotopicPeaks = isotopeProp.IsotopeProfile;
+                    }
+                    return false;
                 case "smiles": mspObj.SMILES = fieldValue;  return false;
                 case "ontology": mspObj.Ontology = fieldValue;  return false;
                 case "compoundclass": mspObj.CompoundClass = fieldValue;  return false;

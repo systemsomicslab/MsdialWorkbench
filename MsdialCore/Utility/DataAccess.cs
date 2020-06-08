@@ -7,8 +7,10 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
@@ -117,7 +119,7 @@ namespace CompMs.MsdialCore.Utility {
             return peakFeature;
         }
 
-        public static List<IsotopicPeak> GetIsotopicPeaks(List<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 5) {
+        public static List<IsotopicPeak> GetIsotopicPeaks(List<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             if (scanID < 0 || rawSpectrumList == null || scanID > rawSpectrumList.Count - 1) return null;
             var spectrum = rawSpectrumList[scanID].Spectrum;
             var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
@@ -824,6 +826,35 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
+        public static MSScanProperty GetNormalizedMSScanProperty(MSDecResult result, ParameterBase param) {
+            var specMatchParam = param.MspSearchParam;
+            var prop = new MSScanProperty() {
+                ChromXs = result.ChromXs, IonMode = result.IonMode, PrecursorMz = result.PrecursorMz,
+                Spectrum = GetNormalizedMs2Spectra(result.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = result.ScanID
+            };
+            return prop;
+        }
+
+        public static MSScanProperty GetNormalizedMSScanProperty(ChromatogramPeakFeature chromPeak, MSDecResult result, ParameterBase param) {
+            var specMatchParam = param.MspSearchParam;
+            var prop = new MSScanProperty() {
+                ChromXs = chromPeak.ChromXs, IonMode = chromPeak.IonMode, PrecursorMz = chromPeak.PrecursorMz,
+                Spectrum = GetNormalizedMs2Spectra(result.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = chromPeak.ScanID
+            };
+            return prop;
+        }
+
+        public static List<SpectrumPeak> GetNormalizedMs2Spectra(List<SpectrumPeak> spectrum, double abscutoff, double relcutoff) {
+            if (spectrum.IsEmptyOrNull()) return null;
+            var massSpec = new List<SpectrumPeak>();
+            var maxIntensity = spectrum.Max(n => n.Intensity);
+            foreach (var peak in spectrum) {
+                if (peak.Intensity > maxIntensity * relcutoff * 0.01 && peak.Intensity > abscutoff) {
+                    massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
+                }
+            }
+            return massSpec;
+        }
 
         // get properties
         /// <summary>

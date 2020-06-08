@@ -13,7 +13,7 @@ namespace CompMs.Common.DataObj.Result {
         public string InChIKey { get; set; }
 
         [Key(2)]
-        public float TotalSimilarity { get; set; }
+        public float TotalScore { get; set; }
 
         // spectral similarity
         [Key(3)]
@@ -44,6 +44,8 @@ namespace CompMs.Common.DataObj.Result {
         // Link to database
         [Key(14)]
         public int LibraryID { get; set; } = -1;
+        [Key(24)]
+        public int LibraryIDWhenOrdered { get; set; } = -1;
 
         // Checker
         [Key(15)]
@@ -64,6 +66,9 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
-    }
 
+        public MsScanMatchResult Clone() {
+            return (MsScanMatchResult)MemberwiseClone();
+        }
+    }
 }

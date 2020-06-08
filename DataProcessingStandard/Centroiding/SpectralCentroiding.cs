@@ -264,6 +264,7 @@ namespace Rfx.Riken.OsakaUniv
 
         /// <summary>
         /// This is the spectrum centroid method for MS-DIAL program
+        /// importing double list i.e. spectral data: [0] m/z [1] intensity
         /// </summary>
         /// <param name="spectraCollection"></param>
         /// <returns></returns>

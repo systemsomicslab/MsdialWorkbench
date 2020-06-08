@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Parameter {
+    
     public class ParameterBase {
 
         public DateTime ProjectDate { get; set; }
@@ -119,7 +120,6 @@ namespace CompMs.MsdialCore.Parameter {
             RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
         };
         public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;
-        public float RelativeAbundanceCutOff { get; set; } = 0.0F;
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
 
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
@@ -210,4 +210,6 @@ namespace CompMs.MsdialCore.Parameter {
         public string DictionaryFilePath { get; set; } = string.Empty;
         public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
     }
+
+
 }

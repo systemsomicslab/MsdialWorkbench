@@ -118,10 +118,14 @@ namespace CompMs.MsdialCore.DataObj {
         // IDs to link properties
         [Key(32)]
         public int MspID { get; set; } = -1; // representative msp id
+        [Key(48)]
+        public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
         [Key(33)]
         public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(34)]
         public int TextDbID { get; set; }// representative text id
+        [Key(49)]
+        public int TextDbIDWhenOrdered { get; set; }// representative text id
         [Key(35)]
         public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
 
