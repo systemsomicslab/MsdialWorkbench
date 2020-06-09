@@ -46,7 +46,7 @@
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
         <scatter:ScatterControl x:Name="MS1Scatter"
-                                ItemsSource="{Binding Ms2Features}"
+                                ItemsSource="{Binding Ms2CentroidFeatures}"
                                 HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
                                 MinX="{Binding Min, Source={StaticResource MassAxisManager}}"

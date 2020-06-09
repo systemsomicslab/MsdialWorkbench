@@ -67,8 +67,8 @@
     <Compile Include="View\MS1Control.xaml.cs">
       <DependentUpon>MS1Control.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MS2Control.xaml.cs">
-      <DependentUpon>MS2Control.xaml</DependentUpon>
+    <Compile Include="View\MS2SpectrumControl.xaml.cs">
+      <DependentUpon>MS2SpectrumControl.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -86,7 +86,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MS2Control.xaml">
+    <Page Include="View\MS2SpectrumControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

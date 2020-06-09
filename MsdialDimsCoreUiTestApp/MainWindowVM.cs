@@ -44,14 +44,14 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref ms2Area, value);
         }
 
-        public ObservableCollection<ChromatogramPeakFeature> Ms2Features
+        public ObservableCollection<ChromatogramPeakFeature> Ms2CentroidFeatures
         {
-            get => ms2Features;
-            set => SetProperty(ref ms2Features, value);
+            get => ms2CentroidFeatures;
+            set => SetProperty(ref ms2CentroidFeatures, value);
         }
 
         private ObservableCollection<ChromatogramPeak> ms1Peaks;
-        private ObservableCollection<ChromatogramPeakFeature> ms2Features;
+        private ObservableCollection<ChromatogramPeakFeature> ms2CentroidFeatures;
         private Rect ms1Area, ms2Area;
 
         public MainWindowVM()
@@ -92,7 +92,7 @@ namespace MsdialDimsCoreUiTestApp
             Ms1Area = new Rect(new Point(sChromPeaks.Min(peak => peak.Mass), sChromPeaks.Min(peak => peak.Intensity)),
                                new Point(sChromPeaks.Max(peak => peak.Mass), sChromPeaks.Max(peak => peak.Intensity)));
             Ms2Area = new Rect(0, 0, 1000, 1000);
-            Ms2Features = new ObservableCollection<ChromatogramPeakFeature>(chromatogramPeakFeatures);
+            Ms2CentroidFeatures = new ObservableCollection<ChromatogramPeakFeature>(chromatogramPeakFeatures);
         }
 
         bool SetProperty<T, U>(ref T property, U value, [CallerMemberName]string propertyname = "") where U : T

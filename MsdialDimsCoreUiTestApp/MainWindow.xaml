@@ -19,7 +19,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ListBox ItemsSource="{Binding Ms2Features}"
+        <ListBox ItemsSource="{Binding Ms2CentroidFeatures}"
                  IsSynchronizedWithCurrentItem="True"
                  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
             <ListBox.ItemTemplate>
@@ -36,6 +36,6 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <view:MS1Control Grid.Column="1" Grid.Row="0" />
-        <view:MS2Control Grid.Column="1" Grid.Row="1" />
+        <view:MS2SpectrumControl Grid.Column="1" Grid.Row="1" />
     </Grid>
 </Window>

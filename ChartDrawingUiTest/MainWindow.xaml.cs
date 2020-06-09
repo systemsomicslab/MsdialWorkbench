@@ -9,6 +9,7 @@ using ChartDrawingUiTest.LineChart;
 using ChartDrawingUiTest.Scatter;
 using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
+using ChartDrawingUiTest.LineSpectrum;
 using ChartDrawingUiTest.Compound;
 using ChartDrawingUiTest.Chromatogram;
 
@@ -43,6 +44,7 @@ namespace ChartDrawingUiTest
                 {"Heatmap2", typeof(Heatmap2) },
                 {"Heatmap3", typeof(Heatmap3) },
                 {"Heatmap4", typeof(Heatmap4) },
+                {"LineSpectrum1", typeof(LineSpectrum1) },
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
                 {"LineAndScatter1", typeof(LineAndScatter1) },

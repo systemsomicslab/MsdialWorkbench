@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace MsdialDimsCoreUiTestApp.View
 {
     /// <summary>
-    /// Interaction logic for MS2Control.xaml
+    /// Interaction logic for MS2SpectrumControl.xaml
     /// </summary>
-    public partial class MS2Control : UserControl
+    public partial class MS2SpectrumControl : UserControl
     {
-        public MS2Control()
+        public MS2SpectrumControl()
         {
             InitializeComponent();
         }
