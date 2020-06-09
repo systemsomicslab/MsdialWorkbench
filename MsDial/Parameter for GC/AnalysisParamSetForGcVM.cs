@@ -20,6 +20,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private ObservableCollection<AnalysisFileBean> analysisFiles;
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
+        private ObservableCollection<ExcludeMassVM> excludedMassVMs;
 
         private string mspFilePath;
         private string mspFilePathCopy;
@@ -44,6 +45,15 @@ namespace Rfx.Riken.OsakaUniv
 
             this.mspFilePath = this.param.MspFilePath;
             this.mspFilePathCopy = this.param.MspFilePath;
+            this.excludedMassVMs = new ObservableCollection<ExcludeMassVM>();
+            for (int i = 0; i < 200; i++)
+                this.excludedMassVMs.Add(new ExcludeMassVM());
+            if (this.param.ExcludedMassList != null && this.param.ExcludedMassList.Count != 0) {
+                for (int i = 0; i < this.param.ExcludedMassList.Count; i++) {
+                    this.excludedMassVMs[i].ExcludedMass = this.param.ExcludedMassList[i].ExcludedMass;
+                    this.excludedMassVMs[i].MassTolerance = this.param.ExcludedMassList[i].MassTolerance;
+                }
+            }
 
             if (this.param.AccuracyType == AccuracyType.IsAccurate) this.isAccurateMs = true;
             else this.isAccurateMs = false;
@@ -114,6 +124,13 @@ namespace Rfx.Riken.OsakaUniv
                     MessageBox.Show(text, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
+            }
+
+            this.param.ExcludedMassList = new List<ExcludeMassBean>();
+            for (int i = 0; i < excludedMassVMs.Count; i++) {
+                if (this.excludedMassVMs[i].ExcludedMass == null || this.excludedMassVMs[i].MassTolerance == null) continue;
+                if (this.excludedMassVMs[i].ExcludedMass <= 0 || this.excludedMassVMs[i].MassTolerance <= 0) continue;
+                this.param.ExcludedMassList.Add(new ExcludeMassBean() { ExcludedMass = this.excludedMassVMs[i].ExcludedMass, MassTolerance = this.excludedMassVMs[i].MassTolerance });
             }
 
             if (this.param.AlignmentIndexType == AlignmentIndexType.RI && (this.param.FileIdRiInfoDictionary == null || this.param.FileIdRiInfoDictionary.Count != this.analysisFiles.Count)) {
@@ -204,6 +221,7 @@ namespace Rfx.Riken.OsakaUniv
             OnPropertyChanged("SmoothingMethod"); OnPropertyChanged("SmoothingLevel"); 
             OnPropertyChanged("MassSliceWidth"); OnPropertyChanged("AveragePeakWidth");
             OnPropertyChanged("MinimumAmplitude"); OnPropertyChanged("MassAccuracy");
+            OnPropertyChanged("ExcludedMassViewModelCollection");
 
             //identification
             OnPropertyChanged("MspFilePath"); OnPropertyChanged("RiDictionaryFilePath");
@@ -232,6 +250,15 @@ namespace Rfx.Riken.OsakaUniv
             OnPropertyChanged("IsKeepRemovableFeaturesAndAssignedTagForChecking"); OnPropertyChanged("IsKeepIdentifiedMetaboliteFeatures"); OnPropertyChanged("IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples");
             OnPropertyChanged("BlankFiltering"); OnPropertyChanged("IsKeepAnnotatedMetaboliteFeatures"); OnPropertyChanged("FoldChangeForBlankFiltering");
 
+        }
+
+        public void UpdateExcludedMassList(AnalysisParamOfMsdialGcms param) {
+            if (param.ExcludedMassList != null && param.ExcludedMassList.Count != 0) {
+                for (int i = 0; i < param.ExcludedMassList.Count; i++) {
+                    this.excludedMassVMs[i].ExcludedMass = param.ExcludedMassList[i].ExcludedMass;
+                    this.excludedMassVMs[i].MassTolerance = param.ExcludedMassList[i].MassTolerance;
+                }
+            }
         }
 
         public AnalysisParamOfMsdialGcms Param
@@ -322,6 +349,12 @@ namespace Rfx.Riken.OsakaUniv
                 OnPropertyChanged("IsAccurateMs");
             }
         }
+
+        public ObservableCollection<ExcludeMassVM> ExcludedMassViewModelCollection {
+            get { return excludedMassVMs; }
+            set { if (excludedMassVMs == value) return; excludedMassVMs = value; OnPropertyChanged("ExcludedMassViewModelCollection"); }
+        }
+
         #endregion
 
         #region ms1dec

@@ -462,6 +462,9 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             var rdamScan = gcmsDecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.MassAccuracy; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
             var focusedMs1Spectrum = DataAccessGcUtility.GetCentroidMasasSpectra(spectrumList, param.DataType, rdamScan, massBin, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
+            focusedMs1Spectrum = excludeMasses(focusedMs1Spectrum, param.ExcludedMassList);
+            if (focusedMs1Spectrum.Count == 0) return new List<List<Peak>>();
+
             var rdamScanList = modelChromVector.RdamScanList;
             var peaksList = new List<List<Peak>>();
             foreach (var spec in focusedMs1Spectrum.Where(n => n[1] >= param.AmplitudeCutoff).OrderByDescending(n => n[1]))
@@ -476,6 +479,24 @@ namespace Msdial.Gcms.Dataprocess.Algorithm {
             }
 
             return peaksList;
+        }
+
+        private static List<double[]> excludeMasses(List<double[]> focusedMs1Spectrum, List<ExcludeMassBean> excludedMassList) {
+            if (excludedMassList == null || excludedMassList.Count == 0) return focusedMs1Spectrum;
+
+            var cMasses = new List<double[]>();
+            foreach (var pair in focusedMs1Spectrum) {
+                var checker = false;
+                foreach (var ePair in excludedMassList) {
+                    if (Math.Abs(pair[0] - (double)ePair.ExcludedMass) < ePair.MassTolerance) {
+                        checker = true;
+                        break;
+                    }
+                }
+                if (checker) continue;
+                cMasses.Add(pair);
+            }
+            return cMasses;
         }
 
         private static ModelChromVector getModelChromatogramVector(int modelID, List<ModelChromatogram> modelChromatograms, GcmsDecBin[] gcmsDecBins)
