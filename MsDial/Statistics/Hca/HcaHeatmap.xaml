@@ -16,8 +16,11 @@
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem
-                Header="Save image as png"
-                Click="MenuItem_Click" />
+                Header="Save image as .."
+                Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem
+                Header="Copy image as .."
+                Click="contextMenu_CopyImageAs_Click" />
         </ContextMenu>
     </UserControl.ContextMenu>
     <UserControl.Resources>
@@ -41,7 +44,7 @@
                                      MaxValue="{Binding DataContext.HeatmapValueMaximum, Source={x:Reference ClustermapControl}}"
                                      IsFlipped="True" />
     </UserControl.Resources>
-    <Grid>
+    <Grid x:Name="chart_panel">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="50"/>
@@ -171,18 +174,16 @@
             </axis:HorizontalColorAxisControl.ToolTip>
         </axis:HorizontalColorAxisControl>
         <StackPanel Orientation="Horizontal"
-                    MaxHeight="200"
-                    MinHeight="70"
+                    Height="70"
                     Margin="15, 5"
                     VerticalAlignment="Bottom"
                     Grid.Row="0" Grid.Column="4">
-            <axis:VerticalAxisControl MinWidth="20"
-                                      MaxWidth="30"
+            <axis:VerticalAxisControl Width="50"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}"
                                       MinY="{Binding Min, Source={StaticResource HeatmapValueAxis}}"
                                       MaxY="{Binding Max, Source={StaticResource HeatmapValueAxis}}" />
-            <Rectangle MinWidth="20"
+            <Rectangle MinWidth="30"
                        MaxWidth="40">
                 <Rectangle.Fill>
                     <LinearGradientBrush GradientStops="{Binding GradientStops,ElementName=heatmap}"
