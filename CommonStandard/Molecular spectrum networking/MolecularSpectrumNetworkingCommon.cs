@@ -257,7 +257,6 @@ namespace Rfx.Riken.OsakaUniv
             { "GM3", "rgb(168, 0, 47)" },
             { "Others", "rgb(220, 20, 60)" },
             { "Unknown", "rgb(181, 181, 181)" },
-            { "Others", "rgb(220, 20, 60)" },
             { "(3'->5')-cyclic dinucleotides and analogues", "rgb(255, 165, 0)" },
             { "(3'->5')-dinucleotides", "rgb(210, 105, 30)" },
             { "(5'->5')-dinucleotides", "rgb(139, 69, 19)" },
