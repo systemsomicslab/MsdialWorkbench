@@ -50,6 +50,7 @@ namespace CompMs.Graphics.Base
         {
             var result = new List<LabelTickData>();
 
+            if (Min >= Max) return result;
             var TickInterval = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Max - Min)));
             var exp = Math.Floor(Math.Log10(Max));
             var LabelFormat = exp > 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";

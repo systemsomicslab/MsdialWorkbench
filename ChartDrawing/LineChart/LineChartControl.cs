@@ -136,10 +136,10 @@ namespace CompMs.Graphics.LineChart
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as LineChartControl;
-            if (chart == null) return;
+            if (chart == null || chart.ItemsSource == null) return;
 
             var enumerator = chart.ItemsSource.GetEnumerator();
-            enumerator.MoveNext();
+            if (!enumerator.MoveNext()) return;
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 
