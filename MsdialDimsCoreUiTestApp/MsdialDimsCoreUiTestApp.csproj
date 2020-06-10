@@ -67,6 +67,12 @@
     <Compile Include="View\MS1Control.xaml.cs">
       <DependentUpon>MS1Control.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\MS2RawSpectrumControl.xaml.cs">
+      <DependentUpon>MS2RawSpectrumControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MS2ReverseSpectrumControl.xaml.cs">
+      <DependentUpon>MS2ReverseSpectrumControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MS2SpectrumControl.xaml.cs">
       <DependentUpon>MS2SpectrumControl.xaml</DependentUpon>
     </Compile>
@@ -83,6 +89,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\MS1Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MS2RawSpectrumControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MS2ReverseSpectrumControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

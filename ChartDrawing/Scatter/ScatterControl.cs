@@ -168,8 +168,14 @@ namespace CompMs.Graphics.Scatter
             var chart = d as ScatterControl;
             if (chart == null) return;
 
+            chart.dataType = null;
+            chart.cv = null;
+
+            if (chart.ItemsSource == null) return;
+
             var enumerator = chart.ItemsSource.GetEnumerator();
-            enumerator.MoveNext();
+            if (!enumerator.MoveNext()) return;
+
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 

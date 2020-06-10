@@ -108,6 +108,8 @@ namespace CompMs.Graphics.LineSpectrum
 
         protected override void Update()
         {
+            visualChildren.Clear();
+
             if (  hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
@@ -117,7 +119,6 @@ namespace CompMs.Graphics.LineSpectrum
                )
                 return;
 
-            visualChildren.Clear();
             foreach (var o in cv)
             {
                 var x = hPropertyReflection.GetValue(o);
@@ -142,8 +143,22 @@ namespace CompMs.Graphics.LineSpectrum
             var chart = d as LineSpectrumControl;
             if (chart == null) return;
 
+            chart.dataType = null;
+            chart.cv = null;
+
+            if (chart.ItemsSource == null)
+            {
+                chart.Update();
+                return;
+            }
+
             var enumerator = chart.ItemsSource.GetEnumerator();
-            enumerator.MoveNext();
+            if (!enumerator.MoveNext())
+            {
+                chart.Update();
+                return;
+            }
+
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 

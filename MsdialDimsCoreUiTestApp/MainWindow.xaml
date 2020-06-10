@@ -18,10 +18,11 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <ListBox ItemsSource="{Binding Ms2CentroidFeatures}"
+        <ListBox ItemsSource="{Binding Ms2Features}"
                  IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                 Grid.Column="0" Grid.Row="0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -30,12 +31,51 @@
                         <TextBlock Text="Mass: " Margin="3,0,0,0"/>
                         <TextBlock Text="{Binding Mass}"/>
                         <TextBlock Text="Intensity: " Margin="3,0,0,0"/>
-                        <TextBlock Text="{Binding PeakHeightTop}"/>
+                        <TextBlock Text="{Binding Intensity}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox ItemsSource="{Binding Ms2Features/Detected}"
+                 SelectedIndex="{Binding Ms2Features/Annotated, Mode=OneWay}"
+                 IsSynchronizedWithCurrentItem="True"
+                 Grid.Column="0" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Name: "/>
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
+                        <TextBlock Text="{Binding PrecursorMz}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox ItemsSource="{Binding Ms2Features/References}"
+                 IsSynchronizedWithCurrentItem="True"
+                 Grid.Column="0" Grid.Row="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Name: "/>
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
+                        <TextBlock Text="{Binding PrecursorMz}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         <view:MS1Control Grid.Column="1" Grid.Row="0" />
-        <view:MS2SpectrumControl Grid.Column="1" Grid.Row="1" />
+        <TabControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+            <TabItem Header="RawSpectrum">
+                <view:MS2RawSpectrumControl />
+            </TabItem>
+            <TabItem Header="Overlap" >
+                <view:MS2SpectrumControl />
+            </TabItem>
+            <TabItem Header="Centroid vs. Detected">
+                <view:MS2ReverseSpectrumControl />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
