@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaChart\AreaChartControl.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\BasicClass.cs" />

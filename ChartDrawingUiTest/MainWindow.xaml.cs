@@ -6,10 +6,11 @@ using System.Windows.Controls;
 
 using ChartDrawingUiTest.Default;
 using ChartDrawingUiTest.LineChart;
+using ChartDrawingUiTest.AreaChart;
 using ChartDrawingUiTest.Scatter;
+using ChartDrawingUiTest.LineSpectrum;
 using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
-using ChartDrawingUiTest.LineSpectrum;
 using ChartDrawingUiTest.Compound;
 using ChartDrawingUiTest.Chromatogram;
 
@@ -30,10 +31,12 @@ namespace ChartDrawingUiTest
                 {"LineChart2", typeof(LineChart2) },
                 {"LineChart3", typeof(LineChart3) },
                 {"LineChart4", typeof(LineChart4) },
+                {"AreaChart1", typeof(AreaChart1) },
                 {"Scatter1", typeof(Scatter1) },
                 {"Scatter2", typeof(Scatter2) },
                 {"Scatter3", typeof(Scatter3) },
                 {"Scatter4", typeof(Scatter4) },
+                {"LineSpectrum1", typeof(LineSpectrum1) },
                 {"Dendrogram1", typeof(Dendrogram1) },
                 {"Dendrogram2", typeof(Dendrogram2) },
                 {"Dendrogram3", typeof(Dendrogram3) },
@@ -44,7 +47,6 @@ namespace ChartDrawingUiTest
                 {"Heatmap2", typeof(Heatmap2) },
                 {"Heatmap3", typeof(Heatmap3) },
                 {"Heatmap4", typeof(Heatmap4) },
-                {"LineSpectrum1", typeof(LineSpectrum1) },
                 {"Clustermap1", typeof(Clustermap1) },
                 {"Clustermap2", typeof(Clustermap2) },
                 {"LineAndScatter1", typeof(LineAndScatter1) },

@@ -1,0 +1,66 @@
+﻿<Page x:Class="ChartDrawingUiTest.AreaChart.AreaChart1"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.AreaChart"
+      mc:Ignorable="d" 
+      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="AreaChart1">
+    <Page.Resources>
+        <local:AreaChartVM1 x:Key="AreaChartVM"/>
+        <base:ContinuousAxisManager x:Key="HorizontalAxis"
+                                    MinValue="{Binding MinX, Source={StaticResource AreaChartVM}}"
+                                    MaxValue="{Binding MaxX, Source={StaticResource AreaChartVM}}"
+                                    ChartMargin="0.05" />
+        <base:ContinuousAxisManager x:Key="VerticalAxis"
+                                    MinValue="{Binding MinY, Source={StaticResource AreaChartVM}}"
+                                    MaxValue="{Binding MaxY, Source={StaticResource AreaChartVM}}"
+                                    ChartMargin="0.05"
+                                    IsFlipped="True"/>
+        <CollectionViewSource x:Key="SeriesView"
+                              Source="{Binding Series, Source={StaticResource AreaChartVM}}" />
+    </Page.Resources>
+    <Grid DataContext="{StaticResource AreaChartVM}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Border Background="WhiteSmoke"
+                BorderBrush="Black"
+                BorderThickness="2,0,0,2"
+                Margin="0,5,5,0" 
+                Grid.Row="0" Grid.Column="1">
+            <area:AreaChartControl x:Name="area"
+                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                   MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                   MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                   MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                   MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                   HorizontalPropertyName="X"
+                                   VerticalPropertyName="Y" >
+            </area:AreaChartControl>
+        </Border>
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    Margin="0,0,5,5"
+                                    Grid.Row="1" Grid.Column="1" />
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                  MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  Margin="5,5,0,0"
+                                  Grid.Row="0" Grid.Column="0" />
+    </Grid>
+</Page>

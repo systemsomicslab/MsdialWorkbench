@@ -8,29 +8,29 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.LineChart
+namespace CompMs.Graphics.AreaChart
 {
-    public class LineChartControl : ChartBaseControl
+    public class AreaChartControl : ChartBaseControl
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-            nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(LineChartControl),
+            nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(AreaChartControl),
             new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
             );
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
-            nameof(HorizontalPropertyName), typeof(string), typeof(LineChartControl),
+            nameof(HorizontalPropertyName), typeof(string), typeof(AreaChartControl),
             new PropertyMetadata(default(string), OnHorizontalPropertyNameChanged)
             );
 
         public static readonly DependencyProperty VerticalPropertyNameProperty = DependencyProperty.Register(
-            nameof(VerticalPropertyName), typeof(string), typeof(LineChartControl),
+            nameof(VerticalPropertyName), typeof(string), typeof(AreaChartControl),
             new PropertyMetadata(default(string), OnVerticalPropertyNameChanged)
             );
 
-        public static readonly DependencyProperty LinePenProperty = DependencyProperty.Register(
-            nameof(LinePen), typeof(Pen), typeof(LineChartControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+        public static readonly DependencyProperty AreaBrushProperty = DependencyProperty.Register(
+            nameof(AreaBrush), typeof(Brush), typeof(AreaChartControl),
+            new PropertyMetadata(Brushes.Aqua)
             );
         #endregion
 
@@ -53,10 +53,10 @@ namespace CompMs.Graphics.LineChart
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        public Pen LinePen
+        public Brush AreaBrush
         {
-            get => (Pen)GetValue(LinePenProperty);
-            set => SetValue(LinePenProperty, value);
+            get => (Brush)GetValue(AreaBrushProperty);
+            set => SetValue(AreaBrushProperty, value);
         }
         #endregion
 
@@ -75,7 +75,7 @@ namespace CompMs.Graphics.LineChart
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
-               || LinePen == null
+               || AreaBrush == null
                || cv == null
                )
                 return;
@@ -85,49 +85,55 @@ namespace CompMs.Graphics.LineChart
                 Clip = new RectangleGeometry(new Rect(RenderSize))
             };
             var dc = dv.RenderOpen();
-            var lineGeometry = new PathGeometry();
-            var path = new PathFigure();
+            var areaGeometry = new PathGeometry();
+            var path = new PathFigure() { IsClosed = true };
             if (cv.Count != 0)
             {
-                path.StartPoint = ValueToRenderPosition(
-                    hPropertyReflection.GetValue(cv.GetItemAt(0)),
-                    vPropertyReflection.GetValue(cv.GetItemAt(0))
-                    );
-                for (int i = 1; i < cv.Count; ++i)
+                foreach(var o in cv)
                 {
-                    var o = cv.GetItemAt(i);
-
                     path.Segments.Add(new LineSegment()
                     {
-                        Point = ValueToRenderPosition(
-                            hPropertyReflection.GetValue(o),
-                            vPropertyReflection.GetValue(o)
-                            )
+                        Point = new Point(
+                            HorizontalAxis.ValueToRenderPosition(hPropertyReflection.GetValue(o)) * ActualWidth,
+                            VerticalAxis.ValueToRenderPosition(vPropertyReflection.GetValue(o)) * ActualHeight
+                            ),
                     });
                 }
+                var p = (path.Segments.First() as LineSegment).Point;
+                // Console.WriteLine($"{p.X}, {p.Y}");
+                p.Y = VerticalAxis.ValueToRenderPosition(0d) * ActualHeight;
+                path.StartPoint = p;
+                var q = (path.Segments.Last() as LineSegment).Point;
+                q.Y = p.Y;
+                path.Segments.Add(new LineSegment() { Point = q });
             }
             path.Freeze();
-            lineGeometry.Figures = new PathFigureCollection { path };
-            dc.DrawGeometry(null, LinePen, lineGeometry);
+            areaGeometry.Figures = new PathFigureCollection { path };
+            dc.DrawGeometry(AreaBrush, null, areaGeometry);
             dc.Close();
             visualChildren.Add(dv);
-        }
-
-        Point ValueToRenderPosition(object x, object y)
-        {
-            var xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-            var yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
-            return new Point(xx, yy);
         }
 
         #region Event handler
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var chart = d as LineChartControl;
-            if (chart == null || chart.ItemsSource == null) return;
+            var chart = d as AreaChartControl;
+            if (chart == null) return;
 
+            chart.dataType = null;
+            chart.cv = null;
+
+            if (chart.ItemsSource == null)
+            {
+                chart.Update();
+                return;
+            }
             var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
+            if (!enumerator.MoveNext())
+            {
+                chart.Update();
+                return;
+            }
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 
@@ -141,7 +147,7 @@ namespace CompMs.Graphics.LineChart
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var chart = d as LineChartControl;
+            var chart = d as AreaChartControl;
             if (chart == null) return;
 
             if (chart.dataType != null)
@@ -152,7 +158,7 @@ namespace CompMs.Graphics.LineChart
 
         static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var chart = d as LineChartControl;
+            var chart = d as AreaChartControl;
             if (chart == null) return;
 
             if (chart.dataType != null)

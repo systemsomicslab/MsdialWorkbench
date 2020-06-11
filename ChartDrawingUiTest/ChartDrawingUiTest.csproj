@@ -63,6 +63,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AreaChart\AreaChart1.xaml.cs">
+      <DependentUpon>AreaChart1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AreaChart\AreaChartVM1.cs" />
     <Compile Include="Compound\LineAndScatter2.xaml.cs">
       <DependentUpon>LineAndScatter2.xaml</DependentUpon>
     </Compile>
@@ -111,6 +115,10 @@
     <Compile Include="Scatter\ScatterVM2.cs" />
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
+    <Page Include="AreaChart\AreaChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Chromatogram\Chromatogram1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
