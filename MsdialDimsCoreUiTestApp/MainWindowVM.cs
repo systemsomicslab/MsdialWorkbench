@@ -47,9 +47,22 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref ms2Features, value);
         }
 
+        public bool IsDetectedDisplay
+        {
+            get => isDetectedDisplay;
+            set => SetProperty(ref isDetectedDisplay, value);
+        }
+
+        public bool IsReferenceDisplay
+        {
+            get => isReferenceDisplay;
+            set => SetProperty(ref isReferenceDisplay, value);
+        }
+
         private ObservableCollection<ChromatogramPeak> ms1Peaks;
         private ObservableCollection<ChromatogramReferencePair> ms2Features;
         private Rect ms1Area, ms2Area;
+        private bool isReferenceDisplay = false, isDetectedDisplay = true;
 
         public MainWindowVM()
         {
@@ -114,6 +127,7 @@ namespace MsdialDimsCoreUiTestApp
                 chromatogramPeakFeatures.Select(feature =>
                     new ChromatogramReferencePair
                     {
+                        ChromatogramPeakFeature = feature,
                         PeakID = feature.PeakID,
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
@@ -270,23 +284,30 @@ namespace MsdialDimsCoreUiTestApp
 
         private List<MoleculeMsReference> GetReferences(List<MoleculeMsReference> mspDB, double mz, double tolerance)
         {
+            if (mz > 500)
+            {
+                var ppm = Math.Abs(CompMs.Common.FormulaGenerator.Function.MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + tolerance));
+                tolerance = (float)CompMs.Common.FormulaGenerator.Function.MolecularFormulaUtility.ConvertPpmToMassAccuracy(mz, ppm);
+            }
+
             var target = new MoleculeMsReference() { PrecursorMz = mz - tolerance };
             var lo = SearchCollection.LowerBound(mspDB, target, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
             target.PrecursorMz = mz + tolerance;
             var hi = SearchCollection.UpperBound(mspDB, target, lo, mspDB.Count, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
             return mspDB.GetRange(lo, hi - lo);
         }
+    }
 
-        internal class ChromatogramReferencePair
-        {
-            public int PeakID { get; set; }
-            public double Mass { get; set; }
-            public double Intensity { get; set; }
-            public List<SpectrumPeak> Spectrum { get; set; }
-            public List<SpectrumPeak> Centroids { get; set; }
-            public List<MoleculeMsReference> Detected { get; set; }
-            public List<MoleculeMsReference> References { get; set; }
-            public int Annotated { get; set; }
-        }
+    internal class ChromatogramReferencePair
+    {
+        public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
+        public int PeakID { get; set; }
+        public double Mass { get; set; }
+        public double Intensity { get; set; }
+        public List<SpectrumPeak> Spectrum { get; set; }
+        public List<SpectrumPeak> Centroids { get; set; }
+        public List<MoleculeMsReference> Detected { get; set; }
+        public List<MoleculeMsReference> References { get; set; }
+        public int Annotated { get; set; }
     }
 }

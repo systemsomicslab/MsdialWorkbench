@@ -5,70 +5,119 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp"
         xmlns:view="clr-namespace:MsdialDimsCoreUiTestApp.View"
+        xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
+        xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
+        xmlns:com="clr-namespace:CompMs.Common.Components;assembly=Common"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000">
     <Window.DataContext>
         <local:MainWindowVM/>
     </Window.DataContext>
+    <Window.Resources>
+        <converter:AreEqualsConverter x:Key="Eq" />
+        <DataTemplate DataType="{x:Type local:ChromatogramReferencePair}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="PeakID: "/>
+                <TextBlock Text="{Binding ChromatogramPeakFeature.PeakID}"/>
+                <TextBlock Text="Mass: " Margin="3,0,0,0"/>
+                <TextBlock Text="{Binding ChromatogramPeakFeature.Mass}"/>
+                <TextBlock Text="Intensity: " Margin="3,0,0,0"/>
+                <TextBlock Text="{Binding ChromatogramPeakFeature.PeakHeightTop}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type com:MoleculeMsReference}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Name: "/>
+                <TextBlock Text="{Binding Name}"/>
+                <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
+                <TextBlock Text="{Binding PrecursorMz}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type com:MoleculeMsReference}" x:Key="mmsr_detail">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Name: "/>
+                    <TextBlock Text="{Binding Name}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Formula: "/>
+                    <TextBlock Text="{Binding Formula}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Ontology: "/>
+                    <TextBlock Text="{Binding Ontology}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="SMILES: "/>
+                    <TextBlock Text="{Binding SMILES}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="InCHIKey: "/>
+                    <TextBlock Text="{Binding InChIKey}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="AdductType: "/>
+                    <TextBlock Text="{Binding AdductType}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ListBox ItemsSource="{Binding Ms2Features}"
                  IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="PeakID: "/>
-                        <TextBlock Text="{Binding PeakID}"/>
-                        <TextBlock Text="Mass: " Margin="3,0,0,0"/>
-                        <TextBlock Text="{Binding Mass}"/>
-                        <TextBlock Text="Intensity: " Margin="3,0,0,0"/>
-                        <TextBlock Text="{Binding Intensity}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <ListBox ItemsSource="{Binding Ms2Features/Detected}"
-                 SelectedIndex="{Binding Ms2Features/Annotated, Mode=OneWay}"
+                 Grid.Column="0" Grid.Row="0" />
+        <ListBox DataContext="{Binding Ms2Features/}"
+                 ItemsSource="{Binding Detected}"
+                 AlternationCount="10000"
+                 SelectedIndex="{Binding Annotated, Mode=OneWay}"
                  IsSynchronizedWithCurrentItem="True"
                  Grid.Column="0" Grid.Row="1">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Name: "/>
-                        <TextBlock Text="{Binding Name}"/>
-                        <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
-                        <TextBlock Text="{Binding PrecursorMz}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Style.Triggers>
+                        <DataTrigger Value="True">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{StaticResource Eq}">
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="(ListBox.AlternationIndex)" />
+                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBox}" Path="DataContext.Annotated" />
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+                            <Setter Property="Background" Value="LightPink" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.Resources>
         </ListBox>
-        <ListBox ItemsSource="{Binding Ms2Features/References}"
+        <ListBox x:Name="Ms2RefLB"
+                 ItemsSource="{Binding Ms2Features/References}"
+                 SelectionMode="Extended"
                  IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="2">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Name: "/>
-                        <TextBlock Text="{Binding Name}"/>
-                        <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
-                        <TextBlock Text="{Binding PrecursorMz}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <view:MS1Control Grid.Column="1" Grid.Row="0" />
-        <TabControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+                 Grid.Column="0" Grid.Row="2"/>
+        <StackPanel Orientation="Horizontal"
+                    Height="20"
+                    Grid.Column="0" Grid.Row="3">
+            <CheckBox Content="Detected"
+                      IsChecked="{Binding IsDetectedDisplay, Mode=TwoWay}" />
+            <CheckBox Content="Reference"
+                      IsChecked="{Binding IsReferenceDisplay, Mode=TwoWay}" />
+        </StackPanel>
+        <view:MS1Control Margin="0,5,5,0"
+                         Grid.Column="1" Grid.Row="0" />
+        <TabControl Margin="0,0,5,5"
+                    Grid.Row="1" Grid.Column="1" Grid.RowSpan="3">
             <TabItem Header="RawSpectrum">
-                <view:MS2RawSpectrumControl />
+                <view:MS2RawSpectrumControl SelectedReferences="{Binding SelectedItems, ElementName=Ms2RefLB}" />
             </TabItem>
             <TabItem Header="Overlap" >
                 <view:MS2SpectrumControl />
@@ -77,5 +126,8 @@
                 <view:MS2ReverseSpectrumControl />
             </TabItem>
         </TabControl>
+        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2RefLB}"
+                 ItemTemplate="{StaticResource ResourceKey=mmsr_detail}"
+                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"/>
     </Grid>
 </Window>

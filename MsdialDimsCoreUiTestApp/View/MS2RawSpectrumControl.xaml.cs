@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using CompMs.Common.Components;
+
 namespace MsdialDimsCoreUiTestApp.View
 {
     /// <summary>
@@ -20,6 +23,16 @@ namespace MsdialDimsCoreUiTestApp.View
     /// </summary>
     public partial class MS2RawSpectrumControl : UserControl
     {
+        public IEnumerable SelectedReferences
+        {
+            get { return (IEnumerable)GetValue(SelectedReferencesProperty); }
+            set { SetValue(SelectedReferencesProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for moleculeMsReferences.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedReferencesProperty =
+            DependencyProperty.Register(nameof(SelectedReferences), typeof(IEnumerable), typeof(MS2RawSpectrumControl), new PropertyMetadata(default));
+
         public MS2RawSpectrumControl()
         {
             InitializeComponent();

@@ -25,6 +25,7 @@
                                     MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
                                     Min="{Binding Min, Source={StaticResource MeasureIntensityAxisManager}, Mode=TwoWay}"
                                     Max="{Binding Max, Source={StaticResource MeasureIntensityAxisManager}, Mode=TwoWay}"/>
+        <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -62,6 +63,7 @@
                                MaxY="{Binding Max, Source={StaticResource ReferenceIntensityAxisManager}}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
+                               Visibility="{Binding IsDetectedDisplay, Converter={StaticResource BoolVisibilityConverter}}"
                                Grid.Row="2" Grid.Column="3" >
             <spectrum:LineSpectrumControl.LinePen>
                 <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
@@ -77,6 +79,7 @@
                                MaxY="{Binding Max, Source={StaticResource ReferenceIntensityAxisManager}}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
+                               Visibility="{Binding IsReferenceDisplay, Converter={StaticResource BoolVisibilityConverter}}"
                                Grid.Row="2" Grid.Column="3" >
             <spectrum:LineSpectrumControl.LinePen>
                 <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="true"/>

@@ -75,6 +75,7 @@
     <Compile Include="Behavior\ResetZoomBehavior.cs" />
     <Compile Include="Behavior\ZoomChartBehavior.cs" />
     <Compile Include="Compound\ChartWithAxisControl.cs" />
+    <Compile Include="Converter\AreEqualsConverter.cs" />
     <Compile Include="Default\DrawingControl.cs" />
     <Compile Include="Base\IDrawingElement.cs" />
     <Compile Include="Base\IChartManager.cs" />

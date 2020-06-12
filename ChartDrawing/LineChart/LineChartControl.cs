@@ -30,7 +30,7 @@ namespace CompMs.Graphics.LineChart
 
         public static readonly DependencyProperty LinePenProperty = DependencyProperty.Register(
             nameof(LinePen), typeof(Pen), typeof(LineChartControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+            new PropertyMetadata(new Pen(Brushes.Black, 1) { LineJoin = PenLineJoin.Bevel })
             );
         #endregion
 
