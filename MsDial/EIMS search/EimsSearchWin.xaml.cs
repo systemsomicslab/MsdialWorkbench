@@ -83,18 +83,21 @@ namespace Rfx.Riken.OsakaUniv
         {
             int mspID = ((EimsSearchVM)this.DataContext).SelectedReferenceId;
             int selectedRowId = ((EimsSearchVM)this.DataContext).SelectedReferenceViewModelId;
-
+            
+            this.ms1DecResult.MetaboliteName = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
+            setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
+           
             if (((EimsSearchVM)this.DataContext).PeakViewer)
             {
-                this.ms1DecResult.MetaboliteName = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
-                setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
+                
             }
             else
             {
                 this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId].MetaboliteName = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
                 setIdentificationProperty(this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId], selectedRowId, mspID);
+                //setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
             }
-            
+
             this.Close();
         }
 
@@ -102,16 +105,19 @@ namespace Rfx.Riken.OsakaUniv
         {
             int mspID = ((EimsSearchVM)this.DataContext).SelectedReferenceId;
             int selectedRowId = ((EimsSearchVM)this.DataContext).SelectedReferenceViewModelId;
-
+            this.ms1DecResult.MetaboliteName = "Unsettled: " + ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
+            setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
             if (((EimsSearchVM)this.DataContext).PeakViewer)
             {
-                this.ms1DecResult.MetaboliteName = "Unsettled: " + ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
-                setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
+               
             }
             else
             {
                 this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId].MetaboliteName = "Unsettled: " + ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
                 setIdentificationProperty(this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId], selectedRowId, mspID);
+
+                //this.ms1DecResult.MetaboliteName = "Unsettled: " + ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
+                //setIdentificationProperty(this.ms1DecResult, selectedRowId, mspID);
             }
            
             this.Close();
@@ -120,16 +126,19 @@ namespace Rfx.Riken.OsakaUniv
         private void Button_Unknown_Click(object sender, RoutedEventArgs e)
         {
             int selectedRowId = ((EimsSearchVM)this.DataContext).SelectedReferenceViewModelId;
-
+            this.ms1DecResult.MetaboliteName = string.Empty;
+            setIdentificationProperty(this.ms1DecResult, selectedRowId, -1);
             if (((EimsSearchVM)this.DataContext).PeakViewer)
             {
-                this.ms1DecResult.MetaboliteName = string.Empty;
-                setIdentificationProperty(this.ms1DecResult, selectedRowId, -1);
+                
             }
             else
             {
                 this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId].MetaboliteName = string.Empty;
                 setIdentificationProperty(this.alignmentResult.AlignmentPropertyBeanCollection[this.focusedPeakId], selectedRowId, -1);
+
+                //this.ms1DecResult.MetaboliteName = string.Empty;
+                //setIdentificationProperty(this.ms1DecResult, selectedRowId, -1);
             }
             
             this.Close();
@@ -140,6 +149,7 @@ namespace Rfx.Riken.OsakaUniv
             ms1DecResult.MspDbID = mspID;
             if (mspID >= 0)
             {
+                ms1DecResult.MetaboliteName = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
                 ms1DecResult.EiSpectrumSimilarity = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].EiSpectraSimilarity * 1000;
                 ms1DecResult.DotProduct = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].DotProduct * 1000;
                 ms1DecResult.ReverseDotProduct = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].ReverseDotProduct * 1000;
@@ -150,6 +160,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else
             {
+                ms1DecResult.MetaboliteName = string.Empty;
                 ms1DecResult.EiSpectrumSimilarity = -1;
                 ms1DecResult.DotProduct = -1;
                 ms1DecResult.ReverseDotProduct = -1;
@@ -166,6 +177,7 @@ namespace Rfx.Riken.OsakaUniv
 
             if (mspID >= 0)
             {
+                property.MetaboliteName = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].CompoundName;
                 property.EiSpectrumSimilarity = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].EiSpectraSimilarity * 1000;
                 property.MassSpectraSimilarity = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].DotProduct * 1000;
                 property.ReverseSimilarity = ((EimsSearchVM)this.DataContext).EimsSearchReferenceVMs[selectedRowId].ReverseDotProduct * 1000;
@@ -177,6 +189,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else
             {
+                property.MetaboliteName = string.Empty;
                 property.RetentionTimeSimilarity = -1;
                 property.RetentionIndexSimilarity = -1;
                 property.MassSpectraSimilarity = -1;

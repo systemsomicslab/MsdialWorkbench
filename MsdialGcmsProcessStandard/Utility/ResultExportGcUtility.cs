@@ -14,9 +14,12 @@ namespace Msdial.Gcms.Dataprocess.Utility
         private ResultExportGcUtility() { }
 
         #region //utility for peak list export
-        public static void WriteAsMsp(StreamWriter sw, int id, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB)
+        public static void WriteAsMsp(StreamWriter sw, int id, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignedProp = null)
         {
             var metname = MspDataRetrieve.GetCompoundName(ms1DecResult.MspDbID, mspDB);
+            if (alignedProp != null && alignedProp.MetaboliteName != null && alignedProp.MetaboliteName != string.Empty) {
+                metname = alignedProp.MetaboliteName;
+            }
             if (metname == "Unknown") {
                 metname += "ID=" + id.ToString();
                 metname += "|RT=" + Math.Round(ms1DecResult.RetentionTime, 3);
@@ -49,10 +52,16 @@ namespace Msdial.Gcms.Dataprocess.Utility
             sw.WriteLine();
         }
 
-        public static void WriteAsMgf(StreamWriter sw, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB)
+        public static void WriteAsMgf(StreamWriter sw, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignedProp = null)
         {
             sw.WriteLine("BEGIN IONS");
-            sw.WriteLine("TITLE=" + MspDataRetrieve.GetCompoundName(ms1DecResult.MspDbID, mspDB));
+
+            var metname = MspDataRetrieve.GetCompoundName(ms1DecResult.MspDbID, mspDB);
+            if (alignedProp != null && alignedProp.MetaboliteName != null && alignedProp.MetaboliteName != string.Empty) {
+                metname = alignedProp.MetaboliteName;
+            }
+            sw.WriteLine("TITLE=" + metname);
+
             sw.WriteLine("SCANS=" + ms1DecResult.ScanNumber);
             sw.WriteLine("RTINMINUTES=" + ms1DecResult.RetentionTime);
             if (ms1DecResult.RetentionIndex >= 0) {
@@ -89,9 +98,14 @@ namespace Msdial.Gcms.Dataprocess.Utility
             //    "\tDot Product\tReverse Dot Product\tModelPeak Purity\tModel Peak Quality\tModelMasses\tSpectrum");
         }
 
-        public static void WriteAsTxt(StreamWriter sw, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB)
+        public static void WriteAsTxt(StreamWriter sw, MS1DecResult ms1DecResult, List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignedProp = null)
         {
-            sw.Write(MspDataRetrieve.GetCompoundName(ms1DecResult.MspDbID, mspDB) + "\t");		// Name (if identified)
+            var metname = MspDataRetrieve.GetCompoundName(ms1DecResult.MspDbID, mspDB);
+            if (alignedProp != null && alignedProp.MetaboliteName != null && alignedProp.MetaboliteName != string.Empty) {
+                metname = alignedProp.MetaboliteName;
+            }
+
+            sw.Write(metname + "\t");		// Name (if identified)
             sw.Write(ms1DecResult.ScanNumber + "\t");											// Scan
             sw.Write(ms1DecResult.RetentionTime + "\t");										// RT
             sw.Write(((ms1DecResult.RetentionIndex == -1) ? "" : ms1DecResult.RetentionIndex.ToString()) + "\t");		// RI

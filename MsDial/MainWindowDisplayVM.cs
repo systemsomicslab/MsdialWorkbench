@@ -1511,8 +1511,9 @@ namespace Rfx.Riken.OsakaUniv
             var ontology = "NA";
             var smiles = "NA";
             var comment = alignmentPropertyBean.Comment;
-
-            var annotation = GetCompoundName(ms1DecResult.MspDbID);
+            var annotation = "Unknown";
+            if (alignmentPropertyBean.MetaboliteName != string.Empty) annotation = alignmentPropertyBean.MetaboliteName;
+            //var annotation = GetCompoundName(alignmentPropertyBean.LibraryID);
 
             if (alignmentPropertyBean.LibraryID >= 0 && this.mainWindow.MspDB != null && this.mainWindow.MspDB.Count != 0) {
 
