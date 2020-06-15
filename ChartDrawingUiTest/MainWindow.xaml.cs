@@ -13,6 +13,7 @@ using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
 using ChartDrawingUiTest.Compound;
 using ChartDrawingUiTest.Chromatogram;
+using ChartDrawingUiTest.DataGrid;
 
 namespace ChartDrawingUiTest
 {
@@ -52,6 +53,7 @@ namespace ChartDrawingUiTest
                 {"LineAndScatter1", typeof(LineAndScatter1) },
                 {"LineAndScatter2", typeof(LineAndScatter2) },
                 {"Chromatogram1", typeof(Chromatogram1) },
+                {"DataGrid1", typeof(DataGrid1) },
                 // {"DrawingTest1", typeof(DrawingTest1) },
                 // {"BindingTest1", typeof(BindingTest1) },
                 // {"ClipTest1", typeof(ClipTest1) },

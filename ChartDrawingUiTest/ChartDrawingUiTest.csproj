@@ -75,6 +75,10 @@
       <DependentUpon>LineAndScatter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Compound\LineAndScatterVM2.cs" />
+    <Compile Include="DataGrid\DataGrid1.xaml.cs">
+      <DependentUpon>DataGrid1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataGrid\DataGridVM1.cs" />
     <Compile Include="Dendrogram\Dendrogram5.xaml.cs">
       <DependentUpon>Dendrogram5.xaml</DependentUpon>
     </Compile>
@@ -136,6 +140,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Compound\LineAndScatter2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataGrid\DataGrid1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
