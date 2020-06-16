@@ -76,6 +76,7 @@
     <Compile Include="View\MS2SpectrumControl.xaml.cs">
       <DependentUpon>MS2SpectrumControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\SmilesToImageConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -149,6 +150,10 @@
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
       <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
       <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
+      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
+      <Name>MolViewer</Name>
     </ProjectReference>
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj">
       <Project>{b39eb5f8-713a-49cc-b0e9-b4040687cb81}</Project>

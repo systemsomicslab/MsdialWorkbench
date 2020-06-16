@@ -120,23 +120,33 @@ namespace MsdialDimsCoreUiTestApp
             Ms1Peaks = new ObservableCollection<ChromatogramPeak>(sChromPeaks);
             Ms1Area = new Rect(new Point(sChromPeaks.Min(peak => peak.Mass), sChromPeaks.Min(peak => peak.Intensity)),
                                new Point(sChromPeaks.Max(peak => peak.Mass), sChromPeaks.Max(peak => peak.Intensity)));
-            Ms2Area = new Rect(0, 0, 1000, 1000);
+            Ms2Area = new Rect(0, 0, 1000, 1);
             SetAnnotatedReferences(chromatogramPeakFeatures, mspDB, param);
 
             Ms2Features = new ObservableCollection<ChromatogramReferencePair>(
                 chromatogramPeakFeatures.Select(feature =>
-                    new ChromatogramReferencePair
+                {
+                    var spectrum = ScalingSpectrumPeaks(ComponentsConverter.ConvertToSpectrumPeaks(spectras[feature.MS2RawSpectrumID].Spectrum));
+                    var centroid = ScalingSpectrumPeaks(feature.Spectrum);
+                    var detected = feature.MspIDs.Select(id => mspDB[id]).ToList();
+                    foreach (var det in detected)
+                        det.Spectrum = ScalingSpectrumPeaks(det.Spectrum);
+                    var references = GetReferences(mspDB, feature.PrecursorMz, param.MspSearchParam.Ms1Tolerance);
+                    foreach (var reference in references)
+                        reference.Spectrum = ScalingSpectrumPeaks(reference.Spectrum);
+                    return new ChromatogramReferencePair
                     {
                         ChromatogramPeakFeature = feature,
                         PeakID = feature.PeakID,
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
-                        Spectrum = ComponentsConverter.ConvertToSpectrumPeaks(spectras[feature.MS2RawSpectrumID].Spectrum),
-                        Centroids = feature.Spectrum,
-                        Detected = feature.MspIDs.Select(id => mspDB[id]).ToList(),
-                        References = GetReferences(mspDB, feature.PrecursorMz, param.MspSearchParam.Ms1Tolerance),
+                        Spectrum = spectrum,
+                        Centroids = centroid,
+                        Detected = detected,
+                        References = references,
                         Annotated = feature.MspIDs.IndexOf(feature.MspID)
-                    })
+                    };
+                })
                 );
         }
 
@@ -150,6 +160,14 @@ namespace MsdialDimsCoreUiTestApp
             property = value;
             RaisePropertyChanged(propertyname);
             return true;
+        }
+
+        private List<SpectrumPeak> ScalingSpectrumPeaks(IEnumerable<SpectrumPeak> spectrumPeaks)
+        {
+            var min = spectrumPeaks.Min(peak => peak.Intensity);
+            var width = spectrumPeaks.Max(peak => peak.Intensity) - min;
+
+            return spectrumPeaks.Select(peak => new SpectrumPeak(peak.Mass, (peak.Intensity - min) / width)).ToList();
         }
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, List<RawSpectrum> allSpectra) {

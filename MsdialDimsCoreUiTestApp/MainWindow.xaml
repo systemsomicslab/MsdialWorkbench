@@ -15,6 +15,7 @@
     </Window.DataContext>
     <Window.Resources>
         <converter:AreEqualsConverter x:Key="Eq" />
+        <view:SmilesToImageConverter x:Key="SmilesToImage" />
         <DataTemplate DataType="{x:Type local:ChromatogramReferencePair}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="PeakID: "/>
@@ -34,32 +35,55 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type com:MoleculeMsReference}" x:Key="mmsr_detail">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Name: "/>
-                    <TextBlock Text="{Binding Name}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Formula: "/>
-                    <TextBlock Text="{Binding Formula}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Ontology: "/>
-                    <TextBlock Text="{Binding Ontology}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="SMILES: "/>
-                    <TextBlock Text="{Binding SMILES}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="InCHIKey: "/>
-                    <TextBlock Text="{Binding InChIKey}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="AdductType: "/>
-                    <TextBlock Text="{Binding AdductType}"/>
-                </StackPanel>
-            </StackPanel>
+            <Border BorderThickness="1"
+                    BorderBrush="Gray"
+                    HorizontalAlignment="Center"
+                    Padding="5,2"
+                    Margin="0,2" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions >
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Name: "
+                               Grid.Column="0" Grid.Row="0" />
+                    <TextBlock Text="{Binding Name}"
+                               Grid.Column="1" Grid.Row="0" />
+                    <TextBlock Text="Formula: "
+                               Grid.Column="0" Grid.Row="1" />
+                    <TextBlock Text="{Binding Formula}"
+                               Grid.Column="1" Grid.Row="1" />
+                    <TextBlock Text="Ontology: "
+                               Grid.Column="0" Grid.Row="2" />
+                    <TextBlock Text="{Binding Ontology}"
+                               Grid.Column="1" Grid.Row="2" />
+                    <TextBlock Text="SMILES: "
+                               Grid.Column="0" Grid.Row="3" />
+                    <TextBlock Text="{Binding SMILES}"
+                               TextWrapping="Wrap"
+                               Grid.Column="1" Grid.Row="3" />
+                    <TextBlock Text="InCHIKey: "
+                               Grid.Column="0" Grid.Row="4" />
+                    <TextBlock Text="{Binding InChIKey}"
+                               TextWrapping="Wrap"
+                               Grid.Column="1" Grid.Row="4" />
+                    <TextBlock Text="AdductType: "
+                               Grid.Column="0" Grid.Row="5" />
+                    <TextBlock Text="{Binding AdductType}"
+                               Grid.Column="1" Grid.Row="5" />
+                    <Image Source="{Binding SMILES, Converter={StaticResource SmilesToImage}}"
+                           Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" />
+                </Grid>
+            </Border>
         </DataTemplate>
     </Window.Resources>
     <Grid>
@@ -77,9 +101,11 @@
         <ListBox ItemsSource="{Binding Ms2Features}"
                  IsSynchronizedWithCurrentItem="True"
                  Grid.Column="0" Grid.Row="0" />
-        <ListBox DataContext="{Binding Ms2Features/}"
+        <ListBox x:Name="Ms2DetLB"
+                 DataContext="{Binding Ms2Features/}"
                  ItemsSource="{Binding Detected}"
                  AlternationCount="10000"
+                 SelectionMode="Extended"
                  SelectedIndex="{Binding Annotated, Mode=OneWay}"
                  IsSynchronizedWithCurrentItem="True"
                  Grid.Column="0" Grid.Row="1">
@@ -117,7 +143,8 @@
         <TabControl Margin="0,0,5,5"
                     Grid.Row="1" Grid.Column="1" Grid.RowSpan="3">
             <TabItem Header="RawSpectrum">
-                <view:MS2RawSpectrumControl SelectedReferences="{Binding SelectedItems, ElementName=Ms2RefLB}" />
+                <view:MS2RawSpectrumControl SelectedReferences="{Binding SelectedItems, ElementName=Ms2RefLB}"
+                                            SelectedDetection="{Binding SelectedItems, ElementName=Ms2DetLB}" />
             </TabItem>
             <TabItem Header="Overlap" >
                 <view:MS2SpectrumControl />
@@ -126,8 +153,13 @@
                 <view:MS2ReverseSpectrumControl />
             </TabItem>
         </TabControl>
+        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2DetLB}"
+                 ItemTemplate="{StaticResource ResourceKey=mmsr_detail}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"/>
         <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2RefLB}"
                  ItemTemplate="{StaticResource ResourceKey=mmsr_detail}"
-                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="4"/>
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Grid.Column="2" Grid.Row="2" Grid.RowSpan="2"/>
     </Grid>
 </Window>
