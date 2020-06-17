@@ -4,6 +4,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Query;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -950,7 +951,7 @@ namespace CompMs.MsdialCore.MSDec {
             int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, MsDecBin[] msdecBins, float focusedMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
 
-            int startIndex = 0, leftRemainder = 0, rightRemainder = 0;
+            int leftRemainder = 0, rightRemainder = 0;
             double sum = 0, maxIntensityMz, maxMass;
             float massTol = param.CentroidMs1Tolerance;
 
@@ -969,7 +970,8 @@ namespace CompMs.MsdialCore.MSDec {
                 maxIntensityMz = double.MinValue;
                 maxMass = focusedMass;
 
-                startIndex = DataAccess.GetMs1StartIndex(focusedMass, massTol, massSpectra);
+                //var startIndex = DataAccess.GetMs1StartIndex(focusedMass, massTol, massSpectra);
+                var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = focusedMass - massTol }, (a, b) => a.Mz.CompareTo(b.Mz));
                 for (int j = startIndex; j < massSpectra.Length; j++) {
                     if (massSpectra[j].Mz < focusedMass - massTol) continue;
                     else if (focusedMass - massTol <= massSpectra[j].Mz && massSpectra[j].Mz < focusedMass + massTol) {

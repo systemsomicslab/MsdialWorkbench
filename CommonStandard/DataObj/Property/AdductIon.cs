@@ -32,6 +32,8 @@ namespace CompMs.Common.DataObj.Property {
         public double M2Intensity { get; set; }
         [Key(8)]
         public bool IsRadical { get; set; }
+        [Key(9)]
+        public bool IsIncluded { get; set; } // used for applications
 
         public override string ToString() {
             return AdductIonName;

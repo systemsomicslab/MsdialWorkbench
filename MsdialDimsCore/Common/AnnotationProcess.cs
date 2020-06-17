@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parameter;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -24,7 +25,11 @@ namespace CompMs.MsdialDimsCore.Common {
             }
             #endregion
 
-            var startIndex = DataAccess.GetDatabaseStartIndex(mz, ms1Tol, mspDB);
+            var startIndex = SearchCollection.LowerBound(mspDB, new MoleculeMsReference() { PrecursorMz = mz - ms1Tol }, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+
+            //DataAccess.GetDatabaseStartIndex(mz, ms1Tol, mspDB);
+
+
             for (int i = startIndex; i < mspDB.Count; i++) {
                 var query = mspDB[i];
                 if (query.PrecursorMz > mz + ms1Tol) break;

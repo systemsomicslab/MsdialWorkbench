@@ -186,7 +186,8 @@ namespace Rfx.Riken.OsakaUniv
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Console.WriteLine(ex.Message);
+                //MessageBox.Show(ex.Message);
             }
         }
 
