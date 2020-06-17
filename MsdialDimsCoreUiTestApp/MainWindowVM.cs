@@ -8,17 +8,15 @@ using System.Windows;
 using CompMs.Common.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Parameter;
-// using Rfx.Riken.OsakaUniv;
 
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialDimsCore.Common;
+using CompMs.Common.DataObj.Result;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -41,28 +39,15 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref ms2Area, value);
         }
 
-        public ObservableCollection<ChromatogramReferencePair> Ms2Features
+        public ObservableCollection<Ms2Info> Ms2Features
         {
             get => ms2Features;
             set => SetProperty(ref ms2Features, value);
         }
 
-        public bool IsDetectedDisplay
-        {
-            get => isDetectedDisplay;
-            set => SetProperty(ref isDetectedDisplay, value);
-        }
-
-        public bool IsReferenceDisplay
-        {
-            get => isReferenceDisplay;
-            set => SetProperty(ref isReferenceDisplay, value);
-        }
-
         private ObservableCollection<ChromatogramPeak> ms1Peaks;
-        private ObservableCollection<ChromatogramReferencePair> ms2Features;
+        private ObservableCollection<Ms2Info> ms2Features;
         private Rect ms1Area, ms2Area;
-        private bool isReferenceDisplay = false, isDetectedDisplay = true;
 
         public MainWindowVM()
         {
@@ -121,20 +106,17 @@ namespace MsdialDimsCoreUiTestApp
             Ms1Area = new Rect(new Point(sChromPeaks.Min(peak => peak.Mass), sChromPeaks.Min(peak => peak.Intensity)),
                                new Point(sChromPeaks.Max(peak => peak.Mass), sChromPeaks.Max(peak => peak.Intensity)));
             Ms2Area = new Rect(0, 0, 1000, 1);
-            SetAnnotatedReferences(chromatogramPeakFeatures, mspDB, param);
+            var results = chromatogramPeakFeatures.Select(feature => CalculateAndSetAnnotatedReferences(feature, mspDB, param)).ToList();
 
-            Ms2Features = new ObservableCollection<ChromatogramReferencePair>(
-                chromatogramPeakFeatures.Select(feature =>
+            Ms2Features = new ObservableCollection<Ms2Info>(
+                chromatogramPeakFeatures.Zip(results, (feature, result) =>
                 {
                     var spectrum = ScalingSpectrumPeaks(ComponentsConverter.ConvertToSpectrumPeaks(spectras[feature.MS2RawSpectrumID].Spectrum));
                     var centroid = ScalingSpectrumPeaks(feature.Spectrum);
-                    var detected = feature.MspIDs.Select(id => mspDB[id]).ToList();
+                    var detected = feature.MspIDs.Zip(result, (id, res) => new AnnotationResult{Reference = mspDB[id], Result = res}).ToList();
                     foreach (var det in detected)
-                        det.Spectrum = ScalingSpectrumPeaks(det.Spectrum);
-                    var references = GetReferences(mspDB, feature.PrecursorMz, param.MspSearchParam.Ms1Tolerance);
-                    foreach (var reference in references)
-                        reference.Spectrum = ScalingSpectrumPeaks(reference.Spectrum);
-                    return new ChromatogramReferencePair
+                        det.Reference.Spectrum = ScalingSpectrumPeaks(det.Reference.Spectrum);
+                    return new Ms2Info
                     {
                         ChromatogramPeakFeature = feature,
                         PeakID = feature.PeakID,
@@ -143,8 +125,7 @@ namespace MsdialDimsCoreUiTestApp
                         Spectrum = spectrum,
                         Centroids = centroid,
                         Detected = detected,
-                        References = references,
-                        Annotated = feature.MspIDs.IndexOf(feature.MspID)
+                        Annotated = feature.MspIDs.IndexOf(feature.MspID),
                     };
                 })
                 );
@@ -257,24 +238,6 @@ namespace MsdialDimsCoreUiTestApp
             return startIndex;
         }
 
-
-        private RawSpectrum getMs1SpectraInMsmsAllData(List<RawSpectrum> spectra) {
-            var maxSpecCount = -1.0;
-            var maxSpecCountID = -1;
-
-            foreach (var item in spectra.Select((value, index) => new { value, index })
-                .Where(n => n.value.MsLevel == 1 && n.value.Spectrum != null && n.value.Spectrum.Length > 0)) {
-                var spec = item.value;
-                if (spec.Spectrum.Length > maxSpecCount) {
-                    maxSpecCount = spec.Spectrum.Length;
-                    maxSpecCountID = item.index;
-                }
-            }
-
-            if (maxSpecCountID < 0) return null;
-            return spectra[maxSpecCountID];
-        }
-
         private void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, List<RawSpectrum> spectra) {
             foreach (var feature in chromFeatures) {
                 if (feature.MS2RawSpectrumID < 0 || feature.MS2RawSpectrumID > spectra.Count - 1) {
@@ -291,32 +254,78 @@ namespace MsdialDimsCoreUiTestApp
             }
         }
 
-        private void SetAnnotatedReferences(IList<ChromatogramPeakFeature> chromatogramPeakFeatures, List<MoleculeMsReference> mspDB, MsdialDimsParameter param)
+        private List<MsScanMatchResult> CalculateAndSetAnnotatedReferences(ChromatogramPeakFeature chromatogramPeakFeature, List<MoleculeMsReference> mspDB, MsdialDimsParameter param)
         {
-            if (mspDB != null) mspDB = mspDB.OrderBy(n => n.PrecursorMz).ToList();
-            foreach (var feature in chromatogramPeakFeatures) {
-                AnnotationProcess.Run(feature, mspDB, param.MspSearchParam, param.TargetOmics);
-                Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
-            }
+            var result = AnnotationProcess.Run(chromatogramPeakFeature, mspDB, param.MspSearchParam, param.TargetOmics);
+            Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
+            return result;
         }
 
-        private List<MoleculeMsReference> GetReferences(List<MoleculeMsReference> mspDB, double mz, double tolerance)
+        private List<SpectrumPeak> MergeReferences(List<(MoleculeMsReference, double)> references, double tolerance)
         {
-            if (mz > 500)
+            var spectrums = new List<List<SpectrumPeak>>(references.Count);
+            foreach ((MoleculeMsReference reference, double ratio) in references)
             {
-                var ppm = Math.Abs(CompMs.Common.FormulaGenerator.Function.MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + tolerance));
-                tolerance = (float)CompMs.Common.FormulaGenerator.Function.MolecularFormulaUtility.ConvertPpmToMassAccuracy(mz, ppm);
+                if (ratio == 0) continue;
+                var spectrum = reference.Spectrum.Select(peak => new SpectrumPeak(peak.Mass, peak.Intensity * ratio)).ToList();
+                spectrums.Add(spectrum);
             }
 
-            var target = new MoleculeMsReference() { PrecursorMz = mz - tolerance };
-            var lo = SearchCollection.LowerBound(mspDB, target, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
-            target.PrecursorMz = mz + tolerance;
-            var hi = SearchCollection.UpperBound(mspDB, target, lo, mspDB.Count, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
-            return mspDB.GetRange(lo, hi - lo);
+            return MergeSpectrums(spectrums, tolerance);
         }
+
+        private List<SpectrumPeak> MergeSpectrums(List<List<SpectrumPeak>> spectrums, double tolerance)
+        {
+            var n = spectrums.Count;
+            if (n == 0) return new List<SpectrumPeak>();
+            if (n == 1) return spectrums.First();
+
+            return MergeSpectrum(
+                MergeSpectrums(spectrums.GetRange(0, n / 2), tolerance),
+                MergeSpectrums(spectrums.GetRange(n / 2, n - n / 2), tolerance),
+                tolerance
+                );
+        }
+
+        private List<SpectrumPeak> MergeSpectrum(List<SpectrumPeak> spectrum1, List<SpectrumPeak> spectrum2, double tolerance)
+        {
+            var result = new List<SpectrumPeak>(spectrum1.Count + spectrum2.Count);
+            int i = 0, j = 0;
+            while (i < spectrum1.Count && j < spectrum2.Count)
+            {
+                if (Math.Abs(spectrum1[i].Mass - spectrum2[j].Mass) < tolerance)
+                {
+                    result.Add(new SpectrumPeak(spectrum1[i].Mass, spectrum1[i].Intensity + spectrum2[j].Intensity));
+                    ++i; ++j;
+                }
+                else if (spectrum1[i].Mass < spectrum2[j].Mass)
+                {
+                    result.Add(spectrum1[i]);
+                    ++i;
+                }
+                else
+                {
+                    result.Add(spectrum2[j]);
+                    ++j;
+                }
+            }
+            if (i < spectrum1.Count)
+                result.AddRange(spectrum1.GetRange(i, spectrum1.Count - i));
+            if (j < spectrum2.Count)
+                result.AddRange(spectrum2.GetRange(j, spectrum2.Count - j));
+
+            return result;
+        } 
     }
 
-    internal class ChromatogramReferencePair
+    internal class AnnotationResult
+    {
+        public MoleculeMsReference Reference { get; set; }
+        public MsScanMatchResult Result { get; set; }
+        public double Score => Result.TotalScore;
+    }
+
+    internal class Ms2Info
     {
         public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
         public int PeakID { get; set; }
@@ -324,8 +333,7 @@ namespace MsdialDimsCoreUiTestApp
         public double Intensity { get; set; }
         public List<SpectrumPeak> Spectrum { get; set; }
         public List<SpectrumPeak> Centroids { get; set; }
-        public List<MoleculeMsReference> Detected { get; set; }
-        public List<MoleculeMsReference> References { get; set; }
+        public List<AnnotationResult> Detected { get; set; }
         public int Annotated { get; set; }
     }
 }

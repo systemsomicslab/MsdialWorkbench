@@ -49,7 +49,6 @@
                                Grid.Row="0" Grid.Column="3" />
         <ItemsControl x:Name="MS2Det"
                       ItemsSource="{Binding SelectedDetection, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                      Visibility="{Binding IsDetectedDisplay, Converter={StaticResource BoolVisibilityConverter}}"
                       Grid.Row="0" Grid.Column="3" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -58,7 +57,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <spectrum:LineSpectrumControl ItemsSource="{Binding Spectrum}"
+                    <spectrum:LineSpectrumControl ItemsSource="{Binding Reference.Spectrum}"
                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
                                                   MinX="{Binding Min, Source={StaticResource MassAxisManager}}"
@@ -73,37 +72,9 @@
                         <spectrum:LineSpectrumControl.ToolTip>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Name: " />
-                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Reference.Name}" />
                             </StackPanel>
                         </spectrum:LineSpectrumControl.ToolTip>
-                    </spectrum:LineSpectrumControl>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <ItemsControl x:Name="MS2Ref"
-                      ItemsSource="{Binding SelectedReferences, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                      Visibility="{Binding IsReferenceDisplay, Converter={StaticResource BoolVisibilityConverter}}"
-                      Grid.Row="0" Grid.Column="3" >
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <spectrum:LineSpectrumControl 
-                                           ItemsSource="{Binding Spectrum}"
-                                           HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                           VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                                           MinX="{Binding Min, Source={StaticResource MassAxisManager}}"
-                                           MaxX="{Binding Max, Source={StaticResource MassAxisManager}}"
-                                           MinY="{Binding Min, Source={StaticResource IntensityAxisManager}}"
-                                           MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
-                                           HorizontalPropertyName="Mass"
-                                           VerticalPropertyName="Intensity" >
-                        <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="true"/>
-                        </spectrum:LineSpectrumControl.LinePen>
                     </spectrum:LineSpectrumControl>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

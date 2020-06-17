@@ -1,90 +1,32 @@
 ﻿<Window x:Class="MsdialDimsCoreUiTestApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
         xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp"
         xmlns:view="clr-namespace:MsdialDimsCoreUiTestApp.View"
-        xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
-        xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
-        xmlns:com="clr-namespace:CompMs.Common.Components;assembly=Common"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
+        x:Name="window"
         Title="MainWindow" Height="800" Width="1000">
     <Window.DataContext>
         <local:MainWindowVM/>
     </Window.DataContext>
     <Window.Resources>
-        <converter:AreEqualsConverter x:Key="Eq" />
-        <view:SmilesToImageConverter x:Key="SmilesToImage" />
-        <DataTemplate DataType="{x:Type local:ChromatogramReferencePair}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="PeakID: "/>
-                <TextBlock Text="{Binding ChromatogramPeakFeature.PeakID}"/>
-                <TextBlock Text="Mass: " Margin="3,0,0,0"/>
-                <TextBlock Text="{Binding ChromatogramPeakFeature.Mass}"/>
-                <TextBlock Text="Intensity: " Margin="3,0,0,0"/>
-                <TextBlock Text="{Binding ChromatogramPeakFeature.PeakHeightTop}"/>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type com:MoleculeMsReference}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Name: "/>
-                <TextBlock Text="{Binding Name}"/>
-                <TextBlock Text="Precursor: " Margin="3,0,0,0"/>
-                <TextBlock Text="{Binding PrecursorMz}"/>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type com:MoleculeMsReference}" x:Key="mmsr_detail">
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    HorizontalAlignment="Center"
-                    Padding="5,2"
-                    Margin="0,2" >
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions >
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Name: "
-                               Grid.Column="0" Grid.Row="0" />
-                    <TextBlock Text="{Binding Name}"
-                               Grid.Column="1" Grid.Row="0" />
-                    <TextBlock Text="Formula: "
-                               Grid.Column="0" Grid.Row="1" />
-                    <TextBlock Text="{Binding Formula}"
-                               Grid.Column="1" Grid.Row="1" />
-                    <TextBlock Text="Ontology: "
-                               Grid.Column="0" Grid.Row="2" />
-                    <TextBlock Text="{Binding Ontology}"
-                               Grid.Column="1" Grid.Row="2" />
-                    <TextBlock Text="SMILES: "
-                               Grid.Column="0" Grid.Row="3" />
-                    <TextBlock Text="{Binding SMILES}"
-                               TextWrapping="Wrap"
-                               Grid.Column="1" Grid.Row="3" />
-                    <TextBlock Text="InCHIKey: "
-                               Grid.Column="0" Grid.Row="4" />
-                    <TextBlock Text="{Binding InChIKey}"
-                               TextWrapping="Wrap"
-                               Grid.Column="1" Grid.Row="4" />
-                    <TextBlock Text="AdductType: "
-                               Grid.Column="0" Grid.Row="5" />
-                    <TextBlock Text="{Binding AdductType}"
-                               Grid.Column="1" Grid.Row="5" />
-                    <Image Source="{Binding SMILES, Converter={StaticResource SmilesToImage}}"
-                           Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" />
-                </Grid>
-            </Border>
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/Resource.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converter:AreEqualsConverter x:Key="Eq" />
+            <CollectionViewSource x:Key="detects"
+                                  Source="{Binding DataContext.Ms2Features/Detected, Source={x:Reference window}}">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="Score" Direction="Descending"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+                
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -95,71 +37,38 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <!-- Ms1 spectrum -->
+        <view:MS1Control Margin="0,5,5,0"
+                         Grid.Column="1" Grid.Row="0" />
+
+        <!-- Ms2 selector -->
         <ListBox ItemsSource="{Binding Ms2Features}"
                  IsSynchronizedWithCurrentItem="True"
                  Grid.Column="0" Grid.Row="0" />
-        <ListBox x:Name="Ms2DetLB"
-                 DataContext="{Binding Ms2Features/}"
-                 ItemsSource="{Binding Detected}"
-                 AlternationCount="10000"
+
+        <!-- Ms2 spectrum -->
+        <view:MS2RawSpectrumControl SelectedDetection="{Binding SelectedItems, ElementName=Ms2AnnoLB}"
+                                    Margin="0,0,5,5"
+                                    Grid.Row="1" Grid.Column="1"/>
+
+        <!-- Annotation selector -->
+        <ListBox x:Name="Ms2AnnoLB"
+                 ItemsSource="{Binding Source={StaticResource detects}}"
                  SelectionMode="Extended"
-                 SelectedIndex="{Binding Annotated, Mode=OneWay}"
                  IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="1">
-            <ListBox.Resources>
-                <Style TargetType="ListBoxItem">
-                    <Style.Triggers>
-                        <DataTrigger Value="True">
-                            <DataTrigger.Binding>
-                                <MultiBinding Converter="{StaticResource Eq}">
-                                    <Binding RelativeSource="{RelativeSource Self}" Path="(ListBox.AlternationIndex)" />
-                                    <Binding RelativeSource="{RelativeSource AncestorType=ListBox}" Path="DataContext.Annotated" />
-                                </MultiBinding>
-                            </DataTrigger.Binding>
-                            <Setter Property="Background" Value="LightPink" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.Resources>
+                 Grid.Column="0" Grid.Row="1" />
+
+        <!-- Annotation detailview -->
+        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2AnnoLB}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl Content="{Binding Reference}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
-        <ListBox x:Name="Ms2RefLB"
-                 ItemsSource="{Binding Ms2Features/References}"
-                 SelectionMode="Extended"
-                 IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="2"/>
-        <StackPanel Orientation="Horizontal"
-                    Height="20"
-                    Grid.Column="0" Grid.Row="3">
-            <CheckBox Content="Detected"
-                      IsChecked="{Binding IsDetectedDisplay, Mode=TwoWay}" />
-            <CheckBox Content="Reference"
-                      IsChecked="{Binding IsReferenceDisplay, Mode=TwoWay}" />
-        </StackPanel>
-        <view:MS1Control Margin="0,5,5,0"
-                         Grid.Column="1" Grid.Row="0" />
-        <TabControl Margin="0,0,5,5"
-                    Grid.Row="1" Grid.Column="1" Grid.RowSpan="3">
-            <TabItem Header="RawSpectrum">
-                <view:MS2RawSpectrumControl SelectedReferences="{Binding SelectedItems, ElementName=Ms2RefLB}"
-                                            SelectedDetection="{Binding SelectedItems, ElementName=Ms2DetLB}" />
-            </TabItem>
-            <TabItem Header="Overlap" >
-                <view:MS2SpectrumControl />
-            </TabItem>
-            <TabItem Header="Centroid vs. Detected">
-                <view:MS2ReverseSpectrumControl />
-            </TabItem>
-        </TabControl>
-        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2DetLB}"
-                 ItemTemplate="{StaticResource ResourceKey=mmsr_detail}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"/>
-        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2RefLB}"
-                 ItemTemplate="{StaticResource ResourceKey=mmsr_detail}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 Grid.Column="2" Grid.Row="2" Grid.RowSpan="2"/>
     </Grid>
 </Window>
