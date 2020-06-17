@@ -267,5 +267,75 @@ namespace Rfx.Riken.OsakaUniv
             ((AnalysisParamSetForGcVM)this.DataContext).BlankFiltering = (BlankFiltering)index;
         }
 
+        private void DataGrid_ExcludeMassSetting_CurrentCellChanged(object sender, EventArgs e) {
+            var cell = DataGridHelper.GetCell((DataGridCellInfo)this.DataGrid_ExcludeMassSetting.CurrentCell);
+            if (cell == null) return;
+            cell.Focus();
+            this.DataGrid_ExcludeMassSetting.BeginEdit();
+        }
+
+        private void DataGrid_ExcludeMassSetting_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.V & Keyboard.Modifiers == ModifierKeys.Control) {
+                e.Handled = true;
+                string[] clipText = Clipboard.GetText().Replace("\r\n", "\n").Split('\n');
+                List<string[]> clipTextList = new List<string[]>();
+                for (int i = 0; i < clipText.Length; i++) { clipTextList.Add(clipText[i].Split('\t')); }
+                if (clipTextList.Count > 1) clipTextList.RemoveAt(clipTextList.Count - 1);
+
+                if (clipTextList.Count > 1 && this.DataGrid_ExcludeMassSetting.SelectedCells[0].Column.DisplayIndex == 0) {
+                    int startRow = this.DataGrid_ExcludeMassSetting.Items.IndexOf(this.DataGrid_ExcludeMassSetting.SelectedCells[0].Item);
+                    double exactMass, massTolerance;
+                    for (int i = 0; i < clipTextList.Count; i++) {
+                        if (startRow + i > this.DataGrid_ExcludeMassSetting.Items.Count - 1) break;
+                        if (clipTextList[i].Length > 0) {
+                            if (double.TryParse(clipTextList[i][0], out exactMass)) {
+                                ((ExcludeMassVM)this.DataGrid_ExcludeMassSetting.Items[startRow + i]).ExcludedMass = (float)exactMass;
+                            }
+                        }
+                        if (clipTextList[i].Length > 1) {
+                            if (double.TryParse(clipTextList[i][1], out massTolerance)) {
+                                ((ExcludeMassVM)this.DataGrid_ExcludeMassSetting.Items[startRow + i]).MassTolerance = (float)massTolerance;
+                            }
+                        }
+                    }
+                    this.DataGrid_ExcludeMassSetting.UpdateLayout();
+                }
+                else if (clipTextList.Count > 1 && this.DataGrid_ExcludeMassSetting.SelectedCells[0].Column.DisplayIndex == 1) {
+                    int startRow = this.DataGrid_ExcludeMassSetting.Items.IndexOf(this.DataGrid_ExcludeMassSetting.SelectedCells[0].Item);
+                    double exactMass, massTolerance;
+                    for (int i = 0; i < clipTextList.Count; i++) {
+                        if (startRow + i > this.DataGrid_ExcludeMassSetting.Items.Count - 1) break;
+                        if (clipTextList[i].Length > 0) {
+                            if (double.TryParse(clipTextList[i][0], out massTolerance)) {
+                                ((ExcludeMassVM)this.DataGrid_ExcludeMassSetting.Items[startRow + i]).MassTolerance = (float)massTolerance;
+                            }
+                        }
+                    }
+                    this.DataGrid_ExcludeMassSetting.UpdateLayout();
+                }
+                else if (clipTextList.Count == 1 && this.DataGrid_ExcludeMassSetting.SelectedCells[0].Column.DisplayIndex == 0) {
+                    int startRow = this.DataGrid_ExcludeMassSetting.Items.IndexOf(this.DataGrid_ExcludeMassSetting.SelectedCells[0].Item);
+                    for (int i = 0; i < this.DataGrid_ExcludeMassSetting.SelectedCells.Count; i++) {
+                        if (this.DataGrid_ExcludeMassSetting.SelectedCells[i].Column.DisplayIndex != 0) continue;
+                        if (startRow + i > this.DataGrid_ExcludeMassSetting.Items.Count - 1) break;
+                        double d;
+                        if (double.TryParse(clipTextList[0][0], out d))
+                            ((ExcludeMassVM)this.DataGrid_ExcludeMassSetting.Items[startRow + i]).ExcludedMass = (float)d;
+                    }
+                }
+                else if (clipTextList.Count == 1 && this.DataGrid_ExcludeMassSetting.SelectedCells[0].Column.DisplayIndex == 1) {
+                    int startRow = this.DataGrid_ExcludeMassSetting.Items.IndexOf(this.DataGrid_ExcludeMassSetting.SelectedCells[0].Item);
+                    for (int i = 0; i < this.DataGrid_ExcludeMassSetting.SelectedCells.Count; i++) {
+                        if (this.DataGrid_ExcludeMassSetting.SelectedCells[i].Column.DisplayIndex != 1) continue;
+                        if (startRow + i > this.DataGrid_ExcludeMassSetting.Items.Count - 1) break;
+                        double d;
+                        if (double.TryParse(clipTextList[0][1], out d))
+                            ((ExcludeMassVM)this.DataGrid_ExcludeMassSetting.Items[startRow + i]).MassTolerance = (float)d;
+                    }
+                }
+            }
+        }
+
+
     }
 }

@@ -78,6 +78,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                         chromPeak.MspBasedMatchResult = result;
                         chromPeak.MspID = result.LibraryID;
                         chromPeak.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[result.LibraryIDWhenOrdered], result);
                     }
                     chromPeak.MspIDs.Add(result.LibraryID);
                 }
@@ -105,6 +106,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                         chromPeak.TextDbBasedMatchResult = result;
                         chromPeak.TextDbID = result.LibraryID;
                         chromPeak.TextDbIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        DataAccess.SetMoleculeMsProperty(chromPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     chromPeak.TextDbIDs.Add(result.LibraryID);
                 }

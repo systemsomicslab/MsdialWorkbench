@@ -123,7 +123,7 @@ namespace Rfx.Riken.OsakaUniv
             get => yLabel;
             set => SetProperty(ref yLabel, value);
         }
-        
+
         public double FileLabelSize
         {
             get => fileLabelSize;

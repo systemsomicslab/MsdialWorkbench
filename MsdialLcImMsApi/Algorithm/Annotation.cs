@@ -63,11 +63,15 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             if (maxMspMatchedScore >= 0) {
                 chromPeak.MspBasedMatchResult = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
                 chromPeak.MspID = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspID;
+                chromPeak.MspIDWhenOrdered = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspIDWhenOrdered;
+                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered], chromPeak.MspBasedMatchResult);
             }
 
             if (maxTextDBMatchedDriftSpotID >= 0) {
                 chromPeak.TextDbBasedMatchResult = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbBasedMatchResult.Clone();
                 chromPeak.TextDbID = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbID;
+                chromPeak.TextDbIDWhenOrdered = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbIDWhenOrdered;
+                DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered], chromPeak.TextDbBasedMatchResult, true);
             }
         }
 
@@ -111,6 +115,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                         driftPeak.MspBasedMatchResult = result;
                         driftPeak.MspID = result.LibraryID;
                         driftPeak.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        DataAccess.SetMoleculeMsProperty(driftPeak, mspDB[result.LibraryIDWhenOrdered], result);
                     }
                     driftPeak.MspIDs.Add(result.LibraryID);
                 }
@@ -138,6 +143,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                         driftPeak.TextDbBasedMatchResult = result;
                         driftPeak.TextDbID = result.LibraryID;
                         driftPeak.TextDbIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        DataAccess.SetMoleculeMsProperty(driftPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     driftPeak.TextDbIDs.Add(result.LibraryID);
                 }

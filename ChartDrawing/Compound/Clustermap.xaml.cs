@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using CompMs.Common.DataStructure;
-using CompMs.Graphics.Core.Command;
+using CompMs.Graphics.Command;
 
 namespace CompMs.Graphics.Compound
 {

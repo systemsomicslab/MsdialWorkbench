@@ -12,7 +12,7 @@ namespace CompMs.MsdialCore.Algorithm {
     public sealed class CcsEstimator {
         private CcsEstimator() { }
 
-        public static void MainProcess(List<ChromatogramPeakFeature> chromPeakFeatures,
+        public static void Process(List<ChromatogramPeakFeature> chromPeakFeatures,
             ParameterBase param, IonMobilityType type, CoefficientsForCcsCalculation calinfo, bool isAllCalibrantDataImported = false) {
 
             foreach (var chromPeak in chromPeakFeatures) { // to deal with both IM-MS and LC-IM-MS

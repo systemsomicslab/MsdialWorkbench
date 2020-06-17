@@ -108,7 +108,7 @@ namespace Rfx.Riken.OsakaUniv
     public sealed class MetaboliteColorCode
     {
         public static readonly Dictionary<string, string> metabolite_colorcode = new Dictionary<string, string> {
-           { "SM", "rgb(255, 165, 0)" },
+            { "SM", "rgb(255, 165, 0)" },
             { "ASM", "rgb(245, 155, 10)" },
             { "Sphingosine", "rgb(235, 145, 20)" },
             { "Sphinganine", "rgb(235, 145, 20)" },

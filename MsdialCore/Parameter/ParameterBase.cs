@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.Common.Query;
@@ -48,6 +49,7 @@ namespace CompMs.MsdialCore.Parameter {
         public string TextDBFilePath { get; set; } = string.Empty;
         public string IsotopeTextDBFilePath { get; set; } = string.Empty;
         public string CompoundListInTargetModePath { get; set; } = string.Empty;
+        public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
 
         // Export
         public ExportSpectraFileFormat ExportSpectraFileFormat { get; set; } = ExportSpectraFileFormat.msp;

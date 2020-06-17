@@ -9,7 +9,7 @@
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Core.Heatmap"
              xmlns:axis="clr-namespace:CompMs.Graphics.Core.GraphAxis"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Core.Behavior"
-             xmlns:command="clr-namespace:CompMs.Graphics.Core.Command"
+             xmlns:command="clr-namespace:CompMs.Graphics.Command"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.ContextMenu>
