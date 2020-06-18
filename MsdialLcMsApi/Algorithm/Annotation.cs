@@ -89,8 +89,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     new MoleculeMsReference() { PrecursorMz = chromPeak.Mass - ms1Tol },
                     (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
                 var candidates = new List<MsScanMatchResult>();
-                for (int i = startID; i < mspDB.Count; i++) {
-                    var refSpec = mspDB[i];
+                for (int i = startID; i < textDB.Count; i++) {
+                    var refSpec = textDB[i];
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
