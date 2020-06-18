@@ -17,7 +17,12 @@ namespace CompMs.MsdialDimsCore.Common {
     public sealed class AnnotationProcess {
         private AnnotationProcess() { }
 
-        public static List<MsScanMatchResult> Run(ChromatogramPeakFeature feature, List<MoleculeMsReference> mspDB, MsRefSearchParameterBase param, TargetOmics omics) {
+        public static void Run(
+            ChromatogramPeakFeature feature,
+            List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
+            MsRefSearchParameterBase param, TargetOmics omics,
+            out List<MsScanMatchResult> mspResults, out List<MsScanMatchResult> textResults) {
+
             var mz = feature.PrecursorMz;
             var ms1Tol = param.Ms1Tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
@@ -27,54 +32,67 @@ namespace CompMs.MsdialDimsCore.Common {
             }
             #endregion
 
-            var results = new List<MsScanMatchResult>();
+            mspResults = new List<MsScanMatchResult>(0);
+            textResults = new List<MsScanMatchResult>(0);
 
-            var startIndex = SearchCollection.LowerBound(mspDB, new MoleculeMsReference() { PrecursorMz = mz - ms1Tol }, (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+            if (mspDB != null)
+            {
+                mspResults = GetMatchResults(feature, mspDB, ms1Tol, param, omics);
+                feature.MspIDs = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
+                if (mspResults.Count > 0)
+                {
+                    var best = mspResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
+                    feature.MspBasedMatchResult = best;
+                    feature.MspID = best.LibraryID;
+                    feature.MspIDWhenOrdered = best.LibraryIDWhenOrdered;
+                    DataAccess.SetMoleculeMsProperty(feature, mspDB[best.LibraryIDWhenOrdered], best);
+                }
+            }
 
-            for (int i = startIndex; i < mspDB.Count; i++) {
-                var query = mspDB[i];
-                if (query.PrecursorMz > mz + ms1Tol) break;
-                if (query.PrecursorMz < mz - ms1Tol) continue;
+            if (textDB != null)
+            {
+                textResults = GetMatchResults(feature, textDB, ms1Tol, param, omics);
+                feature.TextDbIDs = textResults.Select(result => result.LibraryIDWhenOrdered).ToList();
+                if (textResults.Count > 0)
+                {
+                    var best = textResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
+                    feature.TextDbBasedMatchResult = best;
+                    feature.TextDbID = best.LibraryID;
+                    feature.TextDbIDWhenOrdered = best.LibraryIDWhenOrdered;
+                    DataAccess.SetMoleculeMsProperty(feature, textDB[best.LibraryIDWhenOrdered], best, true);
+                }
+            }
+        }
+
+        private static List<MsScanMatchResult> GetMatchResults(
+            ChromatogramPeakFeature chromPeak, List<MoleculeMsReference> db,
+            double tolerance, MsRefSearchParameterBase param, TargetOmics omics)
+        {
+            var mz = chromPeak.Mass;
+            var startID = SearchCollection.LowerBound(
+                db, new MoleculeMsReference() { PrecursorMz = mz - tolerance },
+                (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+            var candidates = new List<MsScanMatchResult>();
+            for (int i = startID; i < db.Count; i++)
+            {
+                var refSpec = db[i];
+                if (refSpec.PrecursorMz < mz - tolerance) continue;
+                if (refSpec.PrecursorMz > mz + tolerance) break;
 
                 MsScanMatchResult result = null;
                 if (omics == TargetOmics.Lipidomics) {
-                    result = MsScanMatching.CompareMS2LipidomicsScanProperties(feature, query, param);
+                    result = MsScanMatching.CompareMS2LipidomicsScanProperties(chromPeak, refSpec, param);
                 }
-                else {
-                    result = MsScanMatching.CompareMS2ScanProperties(feature, query, param);
+                else if (omics == TargetOmics.Metablomics) {
+                    result = MsScanMatching.CompareMS2ScanProperties(chromPeak, refSpec, param);
                 }
-                if (result.IsSpectrumMatch) {
-                    feature.MspIDs.Add(i);
-                }
-                else {
-                    continue;
-                }
-
-                //temp method
-                var totalscore = result.SimpleDotProduct + result.WeightedDotProduct + result.MatchedPeaksPercentage + result.ReverseDotProduct;
-                result.TotalScore = totalscore;
-                results.Add(result);
-
-                if (feature.MspBasedMatchResult.TotalScore < totalscore) {
-                    feature.MspID = i;
-                    feature.MspBasedMatchResult = result;
+                if (result != null && (result.IsPrecursorMzMatch || result.IsSpectrumMatch)) {
+                    result.LibraryIDWhenOrdered = i;
+                    candidates.Add(result);
                 }
             }
 
-            if (feature.MspBasedMatchResult.LibraryID >= 0) {
-                var mspID = feature.MspID;
-                var refQuery = mspDB[mspID];
-                feature.Name = refQuery.Name;
-                feature.Formula = refQuery.Formula;
-                feature.Ontology = refQuery.Ontology;
-                feature.SMILES = refQuery.SMILES;
-                feature.InChIKey = refQuery.InChIKey;
-            }
-            else {
-                feature.Name = "Unknown";
-            }
-
-            return results;
+            return candidates;
         }
 
         public static List<(MoleculeMsReference reference, double ratio)> RunMultiAlignment(

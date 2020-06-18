@@ -256,7 +256,7 @@ namespace MsdialDimsCoreUiTestApp
 
         private List<MsScanMatchResult> CalculateAndSetAnnotatedReferences(ChromatogramPeakFeature chromatogramPeakFeature, List<MoleculeMsReference> mspDB, MsdialDimsParameter param)
         {
-            var result = AnnotationProcess.Run(chromatogramPeakFeature, mspDB, param.MspSearchParam, param.TargetOmics);
+            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, null, param.MspSearchParam, param.TargetOmics, out List<MsScanMatchResult> result, out _);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
             return result;
         }
