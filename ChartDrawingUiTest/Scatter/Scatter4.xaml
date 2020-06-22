@@ -7,6 +7,7 @@
       xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Scatter4">
@@ -55,7 +56,18 @@
                                     MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
-                                    PointBrush="Pink" >
+                                    PointGeometry= "F1 M 0.0 -8.0 L 4.702282018339786 6.472135954999579 L -7.608452130361229 -2.472135954999578
+                                        L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z" >
+                <scatter:ScatterControl.PointBrush>
+                    <LinearGradientBrush PresentationOptions:Freeze="true">
+                        <GradientStopCollection>
+                            <GradientStop Color="Yellow" Offset="0" />
+                            <GradientStop Color="Magenta" Offset=".5" />
+                            <GradientStop Color="Cyan" Offset="1"/>
+                        </GradientStopCollection>
+                    </LinearGradientBrush>
+                </scatter:ScatterControl.PointBrush>
+
                 <scatter:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">

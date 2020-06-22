@@ -54,9 +54,11 @@ namespace MsdialDimsCoreUiTestApp
             // testfiles
             var filepath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf";
             var lbmFile = @"C:\Users\YUKI MATSUZAWA\works\data\lbm\MSDIAL_LipidDB_Test.lbm2";
+            var textLibraryFile = @"C:\Users\YUKI MATSUZAWA\works\data\textlib\TestLibrary.txt";
             var param = new MsdialDimsParameter() {
                 IonMode = CompMs.Common.Enum.IonMode.Negative,
                 MspFilePath = lbmFile,
+                TextDBFilePath = textLibraryFile,
                 TargetOmics = CompMs.Common.Enum.TargetOmics.Lipidomics,
                 LipidQueryContainer = new CompMs.Common.Query.LipidQueryBean() {
                     SolventType = CompMs.Common.Enum.SolventType.HCOONH4
@@ -86,6 +88,10 @@ namespace MsdialDimsCoreUiTestApp
             }
             mspDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
 
+            List<MoleculeMsReference> textDB = null;
+            textDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string _);
+            textDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+
             var spectras = DataAccess.GetAllSpectra(filepath);
             var ms1spectra = spectras.Where(spectra => spectra.MsLevel == 1)
                                      .Where(spectra => spectra.Spectrum != null)
@@ -106,14 +112,16 @@ namespace MsdialDimsCoreUiTestApp
             Ms1Area = new Rect(new Point(sChromPeaks.Min(peak => peak.Mass), sChromPeaks.Min(peak => peak.Intensity)),
                                new Point(sChromPeaks.Max(peak => peak.Mass), sChromPeaks.Max(peak => peak.Intensity)));
             Ms2Area = new Rect(0, 0, 1000, 1);
-            var results = chromatogramPeakFeatures.Select(feature => CalculateAndSetAnnotatedReferences(feature, mspDB, param)).ToList();
+            var results = chromatogramPeakFeatures.Select(feature => CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param)).ToList();
 
             Ms2Features = new ObservableCollection<Ms2Info>(
                 chromatogramPeakFeatures.Zip(results, (feature, result) =>
                 {
                     var spectrum = ScalingSpectrumPeaks(ComponentsConverter.ConvertToSpectrumPeaks(spectras[feature.MS2RawSpectrumID].Spectrum));
                     var centroid = ScalingSpectrumPeaks(feature.Spectrum);
-                    var detected = feature.MspIDs.Zip(result, (id, res) => new AnnotationResult{Reference = mspDB[id], Result = res}).ToList();
+                    var detectedMsp = feature.MspIDs.Zip(result.Msp, (id, res) => new AnnotationResult{Reference = mspDB[id], Result = res });
+                    var detectedText = feature.TextDbIDs.Zip(result.Text, (id, res) => new AnnotationResult { Reference = textDB[id], Result = res });
+                    var detected = detectedMsp.Concat(detectedText).ToList();
                     foreach (var det in detected)
                         det.Reference.Spectrum = ScalingSpectrumPeaks(det.Reference.Spectrum);
                     return new Ms2Info
@@ -145,6 +153,7 @@ namespace MsdialDimsCoreUiTestApp
 
         private List<SpectrumPeak> ScalingSpectrumPeaks(IEnumerable<SpectrumPeak> spectrumPeaks)
         {
+            if (!spectrumPeaks.Any()) return new List<SpectrumPeak>();
             var min = spectrumPeaks.Min(peak => peak.Intensity);
             var width = spectrumPeaks.Max(peak => peak.Intensity) - min;
 
@@ -254,11 +263,11 @@ namespace MsdialDimsCoreUiTestApp
             }
         }
 
-        private List<MsScanMatchResult> CalculateAndSetAnnotatedReferences(ChromatogramPeakFeature chromatogramPeakFeature, List<MoleculeMsReference> mspDB, MsdialDimsParameter param)
+        private (List<MsScanMatchResult> Msp, List<MsScanMatchResult> Text) CalculateAndSetAnnotatedReferences(ChromatogramPeakFeature chromatogramPeakFeature, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialDimsParameter param)
         {
-            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, null, param.MspSearchParam, param.TargetOmics, out List<MsScanMatchResult> result, out _);
+            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
-            return result;
+            return (mspResult, textResult);
         }
 
         private List<SpectrumPeak> MergeReferences(List<(MoleculeMsReference, double)> references, double tolerance)

@@ -49,18 +49,31 @@
                  Grid.Column="0" Grid.Row="0" />
 
         <!-- Ms2 spectrum -->
-        <view:MS2RawSpectrumControl SelectedDetection="{Binding SelectedItems, ElementName=Ms2AnnoLB}"
+        <view:MS2RawSpectrumControl SelectedDetection="{Binding SelectedItems, ElementName=Ms2Anno}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1"/>
 
         <!-- Annotation selector -->
-        <ListBox x:Name="Ms2AnnoLB"
-                 ItemsSource="{Binding Source={StaticResource detects}}"
-                 SelectionMode="Extended"
-                 Grid.Column="0" Grid.Row="1" />
+        <ListView x:Name="Ms2Anno"
+                  ItemsSource="{Binding Source={StaticResource detects}}"
+                  SelectionMode="Extended"
+                  Grid.Column="0" Grid.Row="1" >
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Result.TotalScore, StringFormat={}{0:N2}}"
+                                    Header="Score" Width="Auto"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Reference.Name}" Width="Auto"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
 
         <!-- Annotation detailview -->
-        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2AnnoLB}"
+        <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2Anno}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >
             <ListBox.ItemTemplate>

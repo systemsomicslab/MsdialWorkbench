@@ -29,6 +29,11 @@ namespace CompMs.Graphics.Scatter
             new PropertyMetadata(default(string), OnVerticalPropertyNameChanged)
             );
 
+        public static readonly DependencyProperty PointGeometryProperty = DependencyProperty.Register(
+            nameof(PointGeometry), typeof(Geometry), typeof(ScatterControl),
+            new PropertyMetadata(null)
+            );
+
         public static readonly DependencyProperty PointBrushProperty = DependencyProperty.Register(
             nameof(PointBrush), typeof(Brush), typeof(ScatterControl),
             new PropertyMetadata(Brushes.Black)
@@ -71,6 +76,12 @@ namespace CompMs.Graphics.Scatter
         {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
+        }
+
+        public Geometry PointGeometry
+        {
+            get => (Geometry)GetValue(PointGeometryProperty);
+            set => SetValue(PointGeometryProperty, value);
         }
 
         public Brush PointBrush
@@ -129,34 +140,27 @@ namespace CompMs.Graphics.Scatter
                 return;
 
             visualChildren.Clear();
+
+
             foreach (var o in cv)
             {
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx, yy;
-                if (x is double)
-                    xx = HorizontalAxis.ValueToRenderPosition((double)x) * ActualWidth;
-                else if (x is string)
-                    xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-                else if (x is IConvertible)
-                    xx = HorizontalAxis.ValueToRenderPosition(x as IConvertible) * ActualWidth;
-                else
-                    xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-
-                if (y is double)
-                    yy = VerticalAxis.ValueToRenderPosition((double)y) * ActualHeight;
-                else if (y is string)
-                    yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
-                else if (y is IConvertible)
-                    yy = VerticalAxis.ValueToRenderPosition(y as IConvertible) * ActualHeight;
-                else
-                    yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
+                double xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+                double yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
-                dc.DrawEllipse(PointBrush, null, new Point(xx, yy), Radius, Radius);
+                if (PointGeometry == null) {
+                    dc.DrawEllipse(PointBrush, null, new Point(xx, yy), Radius, Radius);
+                }
+                else {
+                    Geometry geo = PointGeometry.Clone();
+                    geo.Transform = new TranslateTransform(xx, yy);
+                    dc.DrawGeometry(PointBrush, null, geo);
+                }
                 dc.Close();
                 visualChildren.Add(dv);
             }

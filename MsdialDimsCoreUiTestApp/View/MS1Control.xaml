@@ -55,8 +55,12 @@
                                 MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
                                 HorizontalPropertyName="Mass"
                                 VerticalPropertyName="Intensity"
-                                Radius="2"
-                                Grid.Row="0" Grid.Column="3" />
+                                PointGeometry="M 0.0 3.0 L 2.598076211353316 -1.4999999999999993 H -2.5980762113533156 Z"
+                                Grid.Row="0" Grid.Column="3">
+            <scatter:ScatterControl.RenderTransform>
+                <TranslateTransform Y="-10" />
+            </scatter:ScatterControl.RenderTransform>
+        </scatter:ScatterControl>
         <axis:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                     HorizontalAxis="{Binding AxisMapper}"
