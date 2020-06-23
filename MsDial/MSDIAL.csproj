@@ -121,6 +121,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ForAIF\CorrDec\AskDecMethodWindow.xaml.cs">
+      <DependentUpon>AskDecMethodWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml.cs">
       <DependentUpon>AgilentCcsCalibrationSetWin.xaml</DependentUpon>
     </Compile>
@@ -244,8 +247,14 @@
     <Compile Include="Normalization\SplashSetWin.xaml.cs">
       <DependentUpon>SplashSetWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Statistics\Hca\HcaHeatmap.xaml.cs">
+      <DependentUpon>HcaHeatmap.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Statistics\HcaResultWin.xaml.cs">
       <DependentUpon>HcaResultWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Statistics\HcaResultWin_tmp.xaml.cs">
+      <DependentUpon>HcaResultWin_tmp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Statistics\HcaSetWin.xaml.cs">
       <DependentUpon>HcaSetWin.xaml</DependentUpon>
@@ -458,6 +467,10 @@
     <Compile Include="Parameter for LC\WatersCcsCalibrationSetWin.xaml.cs">
       <DependentUpon>WatersCcsCalibrationSetWin.xaml</DependentUpon>
     </Compile>
+    <Page Include="ForAIF\CorrDec\AskDecMethodWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Parameter for LC\AgilentCcsCalibrationSetWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -604,7 +617,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+    <Page Include="Statistics\Hca\HcaHeatmap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Statistics\HcaResultWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Statistics\HcaResultWin_tmp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

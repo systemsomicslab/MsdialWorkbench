@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Mathematics.Matrix;
 using System;
@@ -19,6 +20,7 @@ namespace CompMs.MsdialCore.MSDec {
 		/// </summary>
         public static MSDecResult GetMsDecResult(ModelChromVector modelChromVector, List<List<ChromatogramPeak>> chromatograms)
         {
+            if (chromatograms.IsEmptyOrNull()) return null;
             var ms1DecResult = new MSDecResult();
             switch (modelChromVector.Ms1DecPattern)
             {

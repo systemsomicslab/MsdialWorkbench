@@ -19,8 +19,12 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(4)]
         public int IsotopeWeightNumber { get; set; } = -1; // mono isotopic ion (M), M+1, M+2, M+3 etc
         [Key(5)]
-        public int IsotopeParentPeakID { get; set; } // link to monoisotopic ion
+        public int IsotopeParentPeakID { get; set; } = -1; // link to monoisotopic ion
         [Key(6)]
-        public int PeakGroupID { get; set; } // at least, isotopes and adduct types from same metabolite are organized
+        public int PeakGroupID { get; set; } = -1; // at least, isotopes and adduct types from same metabolite are organized
+        [Key(7)]
+        public bool IsLinked { get; set; } = false;
+        [Key(8)]
+        public int AdductParent { get; set; } = -1; // the peak id which is used to annotate the adduct type for this peak is insearted.
     }
 }

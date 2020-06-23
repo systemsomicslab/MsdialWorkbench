@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
@@ -63,6 +64,11 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(15)]
         public long SeekPointToDCLFile { get; set; } // deconvoluted spectrum is stored in dcl file, and this is the seek pointer
 
+        public int GetMSDecResultID() {
+            if (IsMultiLayeredData()) return MasterPeakID;
+            return PeakID;
+        }
+
         // link to raw data
         [Key(16)]
         public int MS1RawSpectrumIdTop { get; set; }
@@ -108,9 +114,26 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(29)]
         public string InChIKey { get; set; } = string.Empty;
 
+        public bool IsValidInChIKey() {
+            if (InChIKey == null || InChIKey == string.Empty || InChIKey.Length != 27) return false;
+            return true;
+        }
+
+
         // ion physiochemical information
         [Key(30)]
         public AdductIon AdductType { get; set; } // representative
+        public void AddAdductType(AdductIon adductIon) {
+            AdductType = adductIon;
+            if (PeakCharacter == null) PeakCharacter = new IonFeatureCharacter();
+            PeakCharacter.AdductType = adductIon;
+            PeakCharacter.Charge = adductIon.ChargeNumber;
+        }
+        public bool IsAdductTypeFormatted() {
+            if (AdductType == null || !AdductType.FormatCheck || AdductType.AdductIonName == null || AdductType.AdductIonName == string.Empty) return false;
+            return true;
+        }
+
         [Key(31)]
         public double CollisionCrossSection { get; set; }
 
@@ -118,12 +141,32 @@ namespace CompMs.MsdialCore.DataObj {
         // IDs to link properties
         [Key(32)]
         public int MspID { get; set; } = -1; // representative msp id
+        [Key(48)]
+        public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
         [Key(33)]
         public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(34)]
         public int TextDbID { get; set; }// representative text id
+        [Key(49)]
+        public int TextDbIDWhenOrdered { get; set; }// representative text id
         [Key(35)]
         public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
+
+        public bool IsReferenceMatched() {
+            if (TextDbID >= 0) return true;
+            if (MspID >= 0 && MspBasedMatchResult.IsSpectrumMatch) return true;
+            return false;
+        }
+
+        public bool IsAnnotationSuggested() {
+            if (MspID >= 0 && !MspBasedMatchResult.IsSpectrumMatch) return true;
+            return false;
+        }
+
+        public bool IsUnknown() {
+            if (MspID < 0 && TextDbID < 0) return true;
+            return false;
+        }
 
         [Key(36)]
         public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
@@ -143,7 +186,10 @@ namespace CompMs.MsdialCore.DataObj {
         public FeatureFilterStatus FeatureFilterStatus { get; set; }
         [Key(42)]
         public List<ChromatogramPeakFeature> DriftChromFeatures { get; set; } = null;
-
+        public bool IsMultiLayeredData() {
+            if (DriftChromFeatures.IsEmptyOrNull()) return false;
+            return true;
+        }
     }
 
     [MessagePackObject]

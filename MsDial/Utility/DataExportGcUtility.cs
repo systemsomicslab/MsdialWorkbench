@@ -324,9 +324,9 @@ namespace Rfx.Riken.OsakaUniv
                     if (blankFilter && alignedSpots[j].IsBlankFiltered) continue;
                     switch (exportFormat)
                     {
-                        case ExportSpectraFileFormat.msp: ResultExportGcUtility.WriteAsMsp(sw, alignedSpots[j].AlignmentID, ms1DecResults[j], mspDB); break;
-                        case ExportSpectraFileFormat.mgf: ResultExportGcUtility.WriteAsMgf(sw, ms1DecResults[j], mspDB); break;
-                        case ExportSpectraFileFormat.txt: ResultExportGcUtility.WriteAsTxt(sw, ms1DecResults[j], mspDB); break;
+                        case ExportSpectraFileFormat.msp: ResultExportGcUtility.WriteAsMsp(sw, alignedSpots[j].AlignmentID, ms1DecResults[j], mspDB, alignedSpots[j]); break;
+                        case ExportSpectraFileFormat.mgf: ResultExportGcUtility.WriteAsMgf(sw, ms1DecResults[j], mspDB, alignedSpots[j]); break;
+                        case ExportSpectraFileFormat.txt: ResultExportGcUtility.WriteAsTxt(sw, ms1DecResults[j], mspDB, alignedSpots[j]); break;
                         default: break;
                     }
                 }

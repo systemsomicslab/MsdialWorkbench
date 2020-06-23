@@ -95,6 +95,7 @@ namespace Rfx.Riken.OsakaUniv
         private float massSliceWidth;
         [DataMember]
         private bool backgroundSubtraction;
+        private List<ExcludeMassBean> excludedMassList;
 
         //Deconvolution
         [DataMember]
@@ -299,6 +300,8 @@ namespace Rfx.Riken.OsakaUniv
             PeaktopNoiseFactor = 2;
             AveragePeakWidth = 20;
             MassAccuracy = 0.025F;
+            ExcludedMassList = new List<ExcludeMassBean>(); 
+
 
             //MS1Dec
             AmplitudeCutoff = 10;
@@ -1233,6 +1236,17 @@ namespace Rfx.Riken.OsakaUniv
 
             set {
                 isRepresentativeQuantMassBasedOnBasePeakMz = value;
+            }
+        }
+
+        [Key(101)]
+        public List<ExcludeMassBean> ExcludedMassList {
+            get {
+                return excludedMassList;
+            }
+
+            set {
+                excludedMassList = value;
             }
         }
 

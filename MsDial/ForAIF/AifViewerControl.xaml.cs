@@ -719,7 +719,7 @@ namespace Rfx.Riken.OsakaUniv
 
         #region public methods
 
-        #region multiple export to MsFinder 
+        #region multiple export to MsFinder
         public void BulkExportToMsFinder(ObservableCollection<PeakSpotRow> source, string exportDir, PeakSpotTableViewer viewer) {
             var w = new ShortMessageWindow("Exporting...,\nit takes time depending on the number of target peaks");
             w.Width = 500;
@@ -775,6 +775,7 @@ namespace Rfx.Riken.OsakaUniv
             if (!UtilityForAIF.CheckFilePath(iniField)) return;
             var alignmentId = this.AlignmentID;
             var timeString = DateTime.Now.ToString("yy_MM_dd_HH_mm");
+            initializeCorrelDec();
 
             foreach (var row in source) {
                 if (row.Checked) {
@@ -862,15 +863,18 @@ namespace Rfx.Riken.OsakaUniv
             var alignmentId = this.AlignmentID;
             var timeString = DateTime.Now.ToString("yy_MM_dd_HH_mm");
             var filePath = exportDir + "\\" + "Alignment" + "_" + timeString  + "_" + System.IO.Path.GetFileNameWithoutExtension(alignmentFilePath) + "_" + ".msp";
+            initializeCorrelDec();
             using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
-
                 foreach (var row in source) {
                     if (row.Checked) {
                         ReadAlignmentDecRes(row.AlignmentPropertyBean.AlignmentID);
+                        ReadCorrelDecRes(row.AlignmentPropertyBean.AlignmentID);
                         for (var i = 0; i < CommonProp.NumDec; i++) {
                             if (MS2DecResList[i].MassSpectra.Count == 0) continue;
                             if (MS2DecResList[i].MassSpectra.Count(x => x[1] >= 0.5) == 0) continue;
-                            UtilityForAIF.writeMsAnnotationTag(sw, this.CommonProp.ProjectProperty, this.CommonProp.MspDB, this.MS2DecResListAlignment[i], row.AlignmentPropertyBean,CommonProp.AnalysisFiles, i,  true);
+                            var masslist = CorrDecHandler.GetCorrDecSpectrumWithComment(this.CorrelDecResList[i], CommonProp.Param.AnalysisParamOfMsdialCorrDec, row.AlignmentPropertyBean.CentralAccurateMass, (int)(row.AlignmentPropertyBean.AlignedPeakPropertyBeanCollection.Count * row.AlignmentPropertyBean.FillParcentage));
+                            if (masslist.Count == 0) continue;
+                            UtilityForAIF.writeMsAnnotationTag(sw, CommonProp.ProjectProperty, this.CommonProp.MspDB, masslist, row.AlignmentPropertyBean, CommonProp.AnalysisFiles, i, true);
                             sw.WriteLine("");
                         }
                     }
@@ -984,7 +988,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
         }
-        
+
         // Export particular peak info
         public void ExportFiguresFromMainWindow_particularPeakSpot(ObservableCollection<AlignmentPropertyBean> collections) {
             if (!System.IO.Directory.Exists(CommonProp.ProjectProperty.ProjectFolderPath + "\\tmp"))

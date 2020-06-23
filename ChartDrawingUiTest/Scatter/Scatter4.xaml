@@ -1,0 +1,98 @@
+﻿<Page x:Class="ChartDrawingUiTest.Scatter.Scatter4"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
+      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
+      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Scatter4">
+    <Page.Resources>
+        <local:ScatterVM4 x:Key="ScatterVM"/>
+        <base:CategoryAxisManager x:Key="HorizontalAxis"
+                                  ItemsSource="{Binding Xs, Source={StaticResource ScatterVM}}" />
+        <base:CategoryAxisManager x:Key="VerticalAxis"
+                                  ItemsSource="{Binding Ys, Source={StaticResource ScatterVM}}" />
+        <CollectionViewSource x:Key="SeriesView"
+                              Source="{Binding Series, Source={StaticResource ScatterVM}}" />
+        <x:Array Type="Brush" x:Key="AxisBrushes1">
+            <x:Static Member="Brushes.Cyan"/>
+            <x:Static Member="Brushes.Magenta"/>
+            <x:Static Member="Brushes.Yellow"/>
+        </x:Array>
+        <x:Array Type="Brush" x:Key="AxisBrushes2">
+            <x:Static Member="Brushes.Red"/>
+            <x:Static Member="Brushes.Green"/>
+            <x:Static Member="Brushes.Blue"/>
+        </x:Array>
+    </Page.Resources>
+    <Grid DataContext="{StaticResource ScatterVM}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Border Background="WhiteSmoke"
+                BorderBrush="Black"
+                BorderThickness="2,0,0,2"
+                Margin="0,5,5,0" 
+                Grid.Row="0" Grid.Column="2">
+            <scatter:ScatterControl x:Name="scatter"
+                                    ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    HorizontalPropertyName="X"
+                                    VerticalPropertyName="Y"
+                                    PointBrush="Pink" >
+                <scatter:ScatterControl.ToolTip>
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="X = "/>
+                            <TextBlock Text="{Binding FocusedItem.X}"/>
+                            <TextBlock Text=" Y = "/>
+                            <TextBlock Text="{Binding FocusedItem.Y}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </scatter:ScatterControl.ToolTip>
+            </scatter:ScatterControl>
+        </Border>
+        <axis:HorizontalColorAxisControl HorizontalAxis="{Binding AxisMapper,Source={StaticResource HorizontalAxis}}"
+                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                         LabelBrushes="{StaticResource AxisBrushes1}"
+                                         MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                         MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                         Margin="2,0,5,0"
+                                         Grid.Row="1" Grid.Column="2" />
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    Margin="2,0,5,5"
+                                    Grid.Row="2" Grid.Column="2" />
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                  MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  Margin="5,5,0,2"
+                                  Grid.Row="0" Grid.Column="0" />
+        <axis:VerticalColorAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                       MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       LabelBrushes="{StaticResource AxisBrushes2}"
+                                       Margin="0,5,0,2"
+                                       Grid.Row="0" Grid.Column="1" />
+    </Grid>
+</Page>

@@ -5,9 +5,9 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace CompMs.Graphics.Core.Behavior
+namespace CompMs.Graphics.Core.Adorner
 {
-    internal class RubberAdorner : Adorner
+    internal class RubberAdorner : System.Windows.Documents.Adorner
     {
         public RubberAdorner(UIElement adornedElement, Point point) : base(adornedElement)
         {

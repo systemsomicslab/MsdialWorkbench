@@ -63,10 +63,50 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Compound\LineAndScatter2.xaml.cs">
+      <DependentUpon>LineAndScatter2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compound\LineAndScatterVM.cs" />
+    <Compile Include="Compound\LineAndScatter.xaml.cs">
+      <DependentUpon>LineAndScatter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Compound\LineAndScatterVM2.cs" />
+    <Compile Include="Dendrogram\Dendrogram5.xaml.cs">
+      <DependentUpon>Dendrogram5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrogram\DendrogramVM4.cs" />
+    <Compile Include="Heatmap\Heatmap4.xaml.cs">
+      <DependentUpon>Heatmap4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Heatmap\HeatmapVM3.cs" />
+    <Compile Include="LineChart\LineChart2.xaml.cs">
+      <DependentUpon>LineChart2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LineChart\LineChart3.xaml.cs">
+      <DependentUpon>LineChart3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LineChart\LineChart4.xaml.cs">
+      <DependentUpon>LineChart4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LineChart\LineChartVM2.cs" />
+    <Compile Include="LineChart\LineChartVM3.cs" />
+    <Compile Include="LineChart\LineChartVM4.cs" />
     <Compile Include="Scatter\Scatter1.xaml.cs">
       <DependentUpon>Scatter1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Scatter\Scatter2.xaml.cs">
+      <DependentUpon>Scatter2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Scatter\Scatter3.xaml.cs">
+      <DependentUpon>Scatter3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Scatter\Scatter4.xaml.cs">
+      <DependentUpon>Scatter4.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Scatter\ScatterVM.cs" />
+    <Compile Include="Scatter\ScatterVM2.cs" />
+    <Compile Include="Scatter\ScatterVM3.cs" />
+    <Compile Include="Scatter\ScatterVM4.cs" />
     <Page Include="Chromatogram\Chromatogram1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -76,6 +116,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Compound\Clustermap2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compound\LineAndScatter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Compound\LineAndScatter2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -99,6 +147,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dendrogram\Dendrogram5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dendrogram\DigraphView1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -115,7 +167,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Heatmap\Heatmap4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LineChart\LineChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LineChart\LineChart2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LineChart\LineChart3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LineChart\LineChart4.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -180,6 +248,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Scatter\Scatter1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Scatter\Scatter2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Scatter\Scatter3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Scatter\Scatter4.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

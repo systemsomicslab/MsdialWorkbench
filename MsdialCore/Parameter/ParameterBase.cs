@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.Common.Query;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Parameter {
+    
     public class ParameterBase {
 
         public DateTime ProjectDate { get; set; }
@@ -47,6 +49,7 @@ namespace CompMs.MsdialCore.Parameter {
         public string TextDBFilePath { get; set; } = string.Empty;
         public string IsotopeTextDBFilePath { get; set; } = string.Empty;
         public string CompoundListInTargetModePath { get; set; } = string.Empty;
+        public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
 
         // Export
         public ExportSpectraFileFormat ExportSpectraFileFormat { get; set; } = ExportSpectraFileFormat.msp;
@@ -119,7 +122,6 @@ namespace CompMs.MsdialCore.Parameter {
             RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
         };
         public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;
-        public float RelativeAbundanceCutOff { get; set; } = 0.0F;
         public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
 
         public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
@@ -210,4 +212,6 @@ namespace CompMs.MsdialCore.Parameter {
         public string DictionaryFilePath { get; set; } = string.Empty;
         public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
     }
+
+
 }

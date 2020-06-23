@@ -265,7 +265,7 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
                 sw.WriteLine("LICENSE: " + projectProp.License);
             }
 
-            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0) {
+            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0 && projectProp.Ms2LevelIdList.Count > id) {
                 sw.WriteLine("COLLISIONENERGY: " + projectProp.CollisionEnergyList[projectProp.Ms2LevelIdList[id]]);
             }
             else if (projectProp.CollisionEnergy != null && projectProp.CollisionEnergy != string.Empty) {
@@ -312,7 +312,7 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
         }
 
         // correl
-        private static void writeMsAnnotationTag(StreamWriter sw, ProjectPropertyBean projectProp, List<MspFormatCompoundInformationBean> mspDB, List<Peak> massList, AlignmentPropertyBean alignmentProperty, ObservableCollection<AnalysisFileBean> files, int id, bool isMsp) {
+        public static void writeMsAnnotationTag(StreamWriter sw, ProjectPropertyBean projectProp, List<MspFormatCompoundInformationBean> mspDB, List<Peak> massList, AlignmentPropertyBean alignmentProperty, ObservableCollection<AnalysisFileBean> files, int id, bool isMsp) {
             var name = alignmentProperty.MetaboliteName;
             if (name == string.Empty || name.Contains("w/o")) name = "Unknown";
             var adduct = alignmentProperty.AdductIonName;
@@ -342,8 +342,10 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
                 sw.WriteLine("LICENSE: " + projectProp.License);
             }
 
-            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0) {
+            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0 && projectProp.Ms2LevelIdList.Count > id) {
                 sw.WriteLine("COLLISIONENERGY: " + projectProp.CollisionEnergyList[projectProp.Ms2LevelIdList[id]]);
+            } else if (projectProp.CollisionEnergy != null && projectProp.CollisionEnergy != string.Empty) {
+                sw.WriteLine("COLLISIONENERGY: " + projectProp.CollisionEnergy);
             }
 
             if (projectProp.InstrumentType != null && projectProp.InstrumentType != string.Empty) {
@@ -354,7 +356,7 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
                 sw.WriteLine("INSTRUMENT: " + projectProp.Instrument);
             }
 
-            var com = "CorrelDec; " + projectProp.ProjectFilePath;
+            var com = "CorrDec; " + projectProp.ProjectFilePath;
             if ((alignmentProperty.Comment != null && alignmentProperty.Comment != string.Empty))
                 com = com + ", " + alignmentProperty.Comment + "; ";
             if (projectProp.Comment != null && projectProp.Comment != string.Empty)
@@ -417,8 +419,10 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
                 sw.WriteLine("LICENSE: " + projectProp.License);
             }
 
-            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0) {
+            if (projectProp.CollisionEnergyList != null && projectProp.CollisionEnergyList.Count > id && projectProp.CollisionEnergyList[id] >= 0 && projectProp.Ms2LevelIdList.Count > id) {
                 sw.WriteLine("COLLISIONENERGY: " + projectProp.CollisionEnergyList[projectProp.Ms2LevelIdList[id]]);
+            } else if (projectProp.CollisionEnergy != null && projectProp.CollisionEnergy != string.Empty) {
+                sw.WriteLine("COLLISIONENERGY: " + projectProp.CollisionEnergy);
             }
 
             if (projectProp.InstrumentType != null && projectProp.InstrumentType != string.Empty) {
@@ -503,8 +507,10 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
                 sw.WriteLine("LICENSE: " + projectProperty.License);
             }
 
-            if (projectProperty.CollisionEnergyList != null && projectProperty.CollisionEnergyList.Count > id && projectProperty.CollisionEnergyList[id] >= 0) {
+            if (projectProperty.CollisionEnergyList != null && projectProperty.CollisionEnergyList.Count > id && projectProperty.CollisionEnergyList[id] >= 0 && projectProperty.Ms2LevelIdList.Count > id) {
                 sw.WriteLine("COLLISIONENERGY: " + projectProperty.CollisionEnergyList[projectProperty.Ms2LevelIdList[id]]);
+            } else if (projectProperty.CollisionEnergy != null && projectProperty.CollisionEnergy != string.Empty) {
+                sw.WriteLine("COLLISIONENERGY: " + projectProperty.CollisionEnergy);
             }
 
             if (projectProperty.InstrumentType != null && projectProperty.InstrumentType != string.Empty) {
@@ -695,14 +701,14 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
             else {
                 var maxInt = ms2Spectra.Max(x => x[1]);
                 foreach (var peak in ms2Spectra) { masslist.Add(new double[] { peak[0], (peak[1] / maxInt * 100) }); }
-                spectraSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetMassSpectraSimilarity(masslist, 
+                spectraSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetMassSpectraSimilarity(masslist,
 					msp.MzIntensityCommentBeanList, param.Ms2LibrarySearchTolerance, massBegin, massEnd);
                 simpleSim = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetSimpleDotProductSimilarity(masslist, msp.MzIntensityCommentBeanList, param.Ms2LibrarySearchTolerance, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
                 var simpleSim2 = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetSimpleDotProductSimilarity(masslist, msp.MzIntensityCommentBeanList, param.Ms2LibrarySearchTolerance, param.Ms2MassRangeBegin, accurateMass + 0.5f);
                 if (simpleSim < simpleSim2) simpleSim = simpleSim2;
-                reverseSearchSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetReverseSearchSimilarity(masslist, msp.MzIntensityCommentBeanList, 
+                reverseSearchSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetReverseSearchSimilarity(masslist, msp.MzIntensityCommentBeanList,
 					param.Ms2LibrarySearchTolerance, massBegin, massEnd);
-                presenseSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetPresenceSimilarity(masslist, msp.MzIntensityCommentBeanList, 
+                presenseSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetPresenceSimilarity(masslist, msp.MzIntensityCommentBeanList,
 				param.Ms2LibrarySearchTolerance, massBegin, massEnd);
                 totalSimilarity = Msdial.Lcms.Dataprocess.Scoring.LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, spectraSimilarity, reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, targetOmics, param.IsUseRetentionInfoForIdentificationScoring);
 
@@ -734,10 +740,10 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
 
         #endregion
 
-        #region Chromatogram viewer 
+        #region Chromatogram viewer
         //PeakSpot
-        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModelForMsViewer(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, 
-            PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, Dictionary<int, AnalystExperimentInformationBean> analystExperimentInformationBean, 
+        public static ChromatogramMrmViewModel GetMs2ChromatogramViewModelForMsViewer(ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean,
+            PeakAreaBean peakAreaBean, AnalysisParametersBean analysisParametersBean, Dictionary<int, AnalystExperimentInformationBean> analystExperimentInformationBean,
             MS2DecResult deconvolutionResultBean, MrmChromatogramView mrmChromatogramView, List<SolidColorBrush> solidColorBrushList, int id) {
 
             int ms2LevelId = projectPropertyBean.Ms2LevelIdList[id];
@@ -918,8 +924,8 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
             return vms;
         }
 
-        public static ObservableCollection<SampleTableRow> GetSourceOfAlignedSampleTableViewer(AlignmentPropertyBean alignmentProp, 
-            AlignedData alignedData, ObservableCollection<AnalysisFileBean> files, ProjectPropertyBean projectPropety, 
+        public static ObservableCollection<SampleTableRow> GetSourceOfAlignedSampleTableViewer(AlignmentPropertyBean alignmentProp,
+            AlignedData alignedData, ObservableCollection<AnalysisFileBean> files, ProjectPropertyBean projectPropety,
             AnalysisParametersBean param, List<SolidColorBrush> solidColorBrushList) {
             var source = new ObservableCollection<SampleTableRow>();
             var vms = GetAlignedEicChromatogramList(alignedData, alignmentProp, files, projectPropety, param);
@@ -979,7 +985,7 @@ List<MspFormatCompoundInformationBean> mspDB, AlignmentPropertyBean alignmentPro
             foreach (var spot in alignedRes.AlignmentPropertyBeanCollection) {
                 if (spot.MetaboliteName == string.Empty) {
                     spot.Comment = "Unknown";
-                } 
+                }
                 if (spot.LibraryID > -1 && m.MspDB.Count > 0){
                     if (m.MspDB[spot.LibraryID].RetentionTime > 0) {
                         if (Math.Abs(spot.CentralRetentionTime - m.MspDB[spot.LibraryID].RetentionTime) > rtDiff) {

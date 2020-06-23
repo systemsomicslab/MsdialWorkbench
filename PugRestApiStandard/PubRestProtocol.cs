@@ -97,11 +97,13 @@ namespace Rfx.Riken.OsakaUniv
         {
             var result = getPugRestSeviceResult(res);
             if (result == null) return null;
-
-            while (this.result.Waiting != null)
+            
+            var maxTrial = 2.5;
+            var trialCount = 0;
+            while (this.result.Waiting != null && trialCount < maxTrial)
             {
-                Thread.Sleep(2000);
-
+                //Thread.Sleep(2000);
+                trialCount++;
                 var listKeyUrl = prolog + inputListKey + result.Waiting.ListKey + "/inchikey/JSON";
                 if (!listKeySearch(listKeyUrl, result)) { return null; }
                 else return result.PropertyTable.Properties;
@@ -132,9 +134,10 @@ namespace Rfx.Riken.OsakaUniv
 
             var maxTrial = 2.5;
             var trialCount = 0;
-            while (this.result.Waiting != null && trialCount < maxTrial)
-            {
-                Thread.Sleep(2000); trialCount++;
+            while (this.result.Waiting != null && trialCount < maxTrial) { 
+            //while (this.result.Waiting != null) {
+                    //Thread.Sleep(2000); 
+                trialCount++;
 
                 var listKeyUrl = prolog + inputListKey + result.Waiting.ListKey + "/cids/JSON";
                 if (!listKeySearch(listKeyUrl)) {
@@ -153,10 +156,10 @@ namespace Rfx.Riken.OsakaUniv
 
             var maxTrial = 2.5;
             var trialCount = 0;
-            while (pubResult.Waiting != null && trialCount < maxTrial)
-            {
-                Thread.Sleep(2000); trialCount++;
-
+            while (pubResult.Waiting != null && trialCount < maxTrial) {
+            //while (pubResult.Waiting != null) {
+                    //Thread.Sleep(2000); 
+                trialCount++;
                 var listKeyUrl = prolog + inputListKey + result.Waiting.ListKey + "/synonyms/JSON";
                 if (!listKeySearch(listKeyUrl, pubResult)) {
                     if (pubResult.Waiting != null) continue;

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
+using CompMs.Graphics.Core.Adorner;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Core.Behavior

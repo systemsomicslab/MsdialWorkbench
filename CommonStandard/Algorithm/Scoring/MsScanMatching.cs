@@ -3,6 +3,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
@@ -27,36 +28,44 @@ namespace CompMs.Common.Algorithm.Scoring {
             return true;
         }
 
-        
         public static MsScanMatchResult CompareIMMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
-            MsRefSearchParameterBase param, double scanCCS, double refCCS) {
-            var result = CompareMS2ScanProperties(scanProp, refSpec, param);
+            MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+            var result = CompareMS2ScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
             var isCcsMatch = false;
-            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refCCS, param.CcsTolerance, out isCcsMatch);
+            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+            
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+
+            result.TotalScore = (float)GetTotalScore(result, param);
 
             return result;
         }
 
         public static MsScanMatchResult CompareIMMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
-            MsRefSearchParameterBase param, double scanCCS, double refCCS) {
-            var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
+            MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+            var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
             var isCcsMatch = false;
-            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refCCS, param.CcsTolerance, out isCcsMatch);
+            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+            
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+
+            result.TotalScore = (float)GetTotalScore(result, param);
 
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param) {
-            return CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
+            List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+            var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            result.TotalScore = (float)GetTotalScore(result, param);
+            return result;
         }
 
-        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
-            MsRefSearchParameterBase param,
-            TargetOmics targetOmics = TargetOmics.Metablomics) {
+        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
+            List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
 
             var isMs1Match = false;
             var isMs2Match = false;
@@ -84,23 +93,28 @@ namespace CompMs.Common.Algorithm.Scoring {
                 isMs2Match = true;
             }
 
-            if (targetOmics == TargetOmics.Lipidomics) {
-                name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
-                    out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
-            }
+            name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
+                out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
 
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
-            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, param.Ms1Tolerance, out isMs1Match);
+            var ms1Tol = param.Ms1Tolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            if (scanProp.PrecursorMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
+            }
+            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
+            var isotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, ms1Tol);
 
             var result = new MsScanMatchResult() {
                 Name = name, LibraryID = refID, InChIKey = refSpec.InChIKey, WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, AcurateMassSimilarity = (float)ms1Similarity,
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = isotopeSimilarity,
                 IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isMs2Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch,
                 IsLipidChainsMatch = isLipidChainsMatch, IsLipidClassMatch = isLipidClassMatch, IsLipidPositionMatch = isLipidPositionMatch, IsOtherLipidMatch = isOtherLipidMatch
             };
+            result.TotalScore = (float)GetTotalScore(result, param);
 
             return result;
         }
@@ -109,27 +123,28 @@ namespace CompMs.Common.Algorithm.Scoring {
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             if (isUseRetentionIndex) {
-                result.TotalSimilarity = (float)GetTotalSimilarity(result.RiSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
             }
             else {
-                result.TotalSimilarity = (float)GetTotalSimilarity(result.RtSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
             }
             return result;
         }
 
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
-            float mzTolerance, float massRangeBegin, float massRangeEnd) {
+            float ms2Tol, float massRangeBegin, float massRangeEnd) {
             var isSpecMatch = false;
             var isRtMatch = false;
             var isRiMatch = false;
+            var isMs1Match = false;
 
             var name = refSpec.Name;
             var refID = refSpec.ScanID;
 
-            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, mzTolerance, massRangeBegin, massRangeEnd);
-            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, mzTolerance, massRangeBegin, massRangeEnd);
-            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, mzTolerance, massRangeBegin, massRangeEnd);
-            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, mzTolerance, massRangeBegin, massRangeEnd);
+            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
 
             if (weightedDotProduct >= param.WeightedDotProductCutOff &&
                 simpleDotProduct >= param.SimpleDotProductCutOff &&
@@ -142,11 +157,19 @@ namespace CompMs.Common.Algorithm.Scoring {
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
 
+            var ms1Tol = param.Ms1Tolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            if (scanProp.PrecursorMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
+            }
+            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
+
             var result = new MsScanMatchResult() {
                 Name = name, LibraryID = refID, InChIKey = refSpec.InChIKey, WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                AcurateMassSimilarity = (float)ms1Similarity,
                 MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsSpectrumMatch = isSpecMatch, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isSpecMatch, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };
 
             return result;
@@ -172,7 +195,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetIsotopeRatioSimilarity(List<IsotopicPeak> peaks1, List<IsotopicPeak> peaks2, float targetedMz, float tolerance) {
+        public static double GetIsotopeRatioSimilarity(List<IsotopicPeak> peaks1, List<IsotopicPeak> peaks2, double targetedMz, double tolerance) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1;
 
             double similarity = 0;
@@ -216,9 +239,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// [0] The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be returned.
         /// [1] MatchedPeaksCount is also returned.
         /// </returns>
-        public static double[] GetMatchedPeaksScores(IMSScanProperty prop1, IMSScanProperty prop2, float bin,
-            float massBegin, float massEnd) {
-            if (!IsComparedAvailable(prop1, prop2)) return new double[2] { 0, 0 };
+        public static double[] GetMatchedPeaksScores(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+            double massBegin, double massEnd) {
+            if (!IsComparedAvailable(prop1, prop2)) return new double[2] { -1, -1 };
 
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
@@ -293,9 +316,9 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// [1] MatchedPeaksCount is also returned.
         /// </returns>
         public static double[] GetLipidomicsMatchedPeaksScores(IMSScanProperty msScanProp, MoleculeMsReference molMsRef,
-            float bin, float massBegin, float massEnd) {
+            double bin, double massBegin, double massEnd) {
 
-            if (!IsComparedAvailable(msScanProp, molMsRef)) return new double[] { 0, 0 };
+            if (!IsComparedAvailable(msScanProp, molMsRef)) return new double[] { -1, -1 };
            
             // in lipidomics project, currently, the well-known lipid classes now including
             // PC, PE, PI, PS, PG, BMP, SM, TAG are now evaluated.
@@ -339,7 +362,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static string GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, float bin,
+        public static string GetRefinedLipidAnnotationLevel(IMSScanProperty msScanProp, MoleculeMsReference molMsRef, double bin,
             out bool isLipidClassMatched, out bool isLipidChainMatched, out bool isLipidPositionMatched, out bool isOthers) {
 
             isLipidClassMatched = false;
@@ -990,11 +1013,11 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetReverseDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, float bin,
-            float massBegin, float massEnd) {
+        public static double GetReverseDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+            double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumL = 0;
-            if (!IsComparedAvailable(prop1, prop2)) return 0;
+            if (!IsComparedAvailable(prop1, prop2)) return -1;
 
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
@@ -1116,12 +1139,12 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetWeightedDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, float bin,
-            float massBegin, float massEnd) {
+        public static double GetWeightedDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+            double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
-            if (!IsComparedAvailable(prop1, prop2)) return 0;
+            if (!IsComparedAvailable(prop1, prop2)) return -1;
 
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
@@ -1227,11 +1250,11 @@ namespace CompMs.Common.Algorithm.Scoring {
             else { return Math.Pow(covariance, 2) / scalarM / scalarR * peakCountPenalty; }
         }
 
-        public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, float bin, float massBegin, float massEnd) {
+        public static double GetSimpleDotProduct(IMSScanProperty prop1, IMSScanProperty prop2, double bin, double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
-            if (!IsComparedAvailable(prop1, prop2)) return 0;
+            if (!IsComparedAvailable(prop1, prop2)) return -1;
 
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
@@ -1300,7 +1323,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static double GetGaussianSimilarity(ChromX actual, ChromX reference, float tolerance, out bool isInTolerance) {
+        public static double GetGaussianSimilarity(ChromX actual, ChromX reference, double tolerance, out bool isInTolerance) {
             isInTolerance = false;
             if (actual == null || reference == null) return -1;
             if (actual.Value <= 0 || reference.Value <= 0) return -1;
@@ -1309,7 +1332,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             return similarity;
         }
 
-        public static double GetGaussianSimilarity(double actual, double reference, float tolerance, out bool isInTolerance) {
+        public static double GetGaussianSimilarity(double actual, double reference, double tolerance, out bool isInTolerance) {
             isInTolerance = false;
             if (actual <= 0 || reference <= 0) return -1;
             if (Math.Abs(actual - reference) <= tolerance) isInTolerance = true;
@@ -1333,7 +1356,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetGaussianSimilarity(double actual, double reference, float tolrance) {
+        public static double GetGaussianSimilarity(double actual, double reference, double tolrance) {
             return Math.Exp(-0.5 * Math.Pow((actual - reference) / tolrance, 2));
         }
 
@@ -1634,6 +1657,29 @@ namespace CompMs.Common.Algorithm.Scoring {
                         / (msmsFactor + massFactor + rtFactor + isotopeFactor);
                 }
             }
+        }
+
+        public static double GetTotalScore(MsScanMatchResult result, MsRefSearchParameterBase param) {
+            var totalScore = 0.0;
+            if (param.IsUseTimeForAnnotationScoring && result.RtSimilarity > 0) {
+                totalScore += result.RtSimilarity;
+            }
+            if (param.IsUseCcsForAnnotationScoring && result.CcsSimilarity > 0) {
+                totalScore += result.CcsSimilarity;
+            }
+            if (result.AcurateMassSimilarity > 0) {
+                totalScore += result.AcurateMassSimilarity;
+            }
+            if (result.IsotopeSimilarity > 0) {
+                totalScore += result.IsotopeSimilarity;
+            }
+            if (result.WeightedDotProduct > 0) {
+                totalScore += (result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3.0;
+            }
+            if (result.MatchedPeaksPercentage > 0) {
+                totalScore += result.MatchedPeaksPercentage;
+            }
+            return totalScore;
         }
 
         public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT) {
