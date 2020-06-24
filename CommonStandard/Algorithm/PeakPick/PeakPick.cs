@@ -386,7 +386,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 }
             }
             baselineMedian = BasicMathematics.Median(baseIntensites.ToArray());
-            isHighBaseline = baselineMedian > (maxChromIntensity - minChromIntensity) * 0.5 ? true : false;
+            isHighBaseline = baselineMedian > (maxChromIntensity + minChromIntensity) * 0.5 ? true : false;
 
             if (amplitudeDiffs.Count >= minNoiseWindowSize) {
                 minNoiseLevel = BasicMathematics.Median(amplitudeDiffs.ToArray());
