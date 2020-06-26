@@ -253,9 +253,6 @@
     <Compile Include="Statistics\HcaResultWin.xaml.cs">
       <DependentUpon>HcaResultWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Statistics\HcaResultWin_tmp.xaml.cs">
-      <DependentUpon>HcaResultWin_tmp.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Statistics\HcaSetWin.xaml.cs">
       <DependentUpon>HcaSetWin.xaml</DependentUpon>
     </Compile>
@@ -622,10 +619,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Statistics\HcaResultWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Statistics\HcaResultWin_tmp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
