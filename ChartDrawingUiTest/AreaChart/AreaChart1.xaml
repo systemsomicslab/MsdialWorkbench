@@ -57,7 +57,7 @@
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"

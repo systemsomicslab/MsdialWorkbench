@@ -126,6 +126,7 @@ namespace CompMs.Graphics.Scatter
         {
             MouseLeftButtonDown += VisualSelectOnClick;
             MouseMove += VisualFocusOnMouseOver;
+            ClipToBounds = true;
         }
 
         protected override void Update()
@@ -151,7 +152,6 @@ namespace CompMs.Graphics.Scatter
                 double yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
-                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
                 if (PointGeometry == null) {
                     dc.DrawEllipse(PointBrush, null, new Point(xx, yy), Radius, Radius);
@@ -159,6 +159,7 @@ namespace CompMs.Graphics.Scatter
                 else {
                     Geometry geo = PointGeometry.Clone();
                     geo.Transform = new TranslateTransform(xx, yy);
+                    geo.Freeze();
                     dc.DrawGeometry(PointBrush, null, geo);
                 }
                 dc.Close();
