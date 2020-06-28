@@ -116,6 +116,7 @@ namespace Riken.Metabolomics.Pathwaymap
                 var edgeTargetXY = new Point();
                 var sourceAngle = 0.0;
                 var targetAngle = 0.0;
+                Console.WriteLine(edge.TargetArrow + "\t" + edge.SourceArrow);
 
                 setEdgeProperties(edge, out edgeSourceXY, out edgeTargetXY, out sourceAngle, out targetAngle);
                 edge.SourceX = (float)edgeSourceXY.X;
@@ -123,24 +124,19 @@ namespace Riken.Metabolomics.Pathwaymap
                 edge.TargetX = (float)edgeTargetXY.X;
                 edge.TargetY = (float)edgeTargetXY.Y;
 
-                drawEdge(edgeSourceXY, edgeTargetXY, sourceAngle, targetAngle);
+                drawEdge(edgeSourceXY, edgeTargetXY, sourceAngle, targetAngle, edge.SourceArrow, edge.TargetArrow);
             }
         }
 
-        private void drawEdge(Point edgeSourceXY, Point edgeTargetXY, double sourceAngle, double targetAngle) {
+        private void drawEdge(Point edgeSourceXY, Point edgeTargetXY, double sourceAngle, double targetAngle, string sourceArrowType, string targetArrowType) {
+
+            //var color = (Color)ColorConverter.ConvertFromString("#000000");
+
             this.drawingContext.DrawLine(new Pen(Brushes.Black, 1.0), edgeSourceXY, edgeTargetXY);
+            //this.drawingContext.DrawLine(new Pen(new SolidColorBrush(color), 1.0), edgeSourceXY, edgeTargetXY);
 
-            var sourceArrow = new PathFigure();
-            sourceArrow.StartPoint = edgeSourceXY; // PathFigure for GraphLine 
-            sourceArrow.Segments.Add(new LineSegment() { Point = new Point(edgeSourceXY.X + 10 * this.xPacket, edgeSourceXY.Y + 5 * this.yPacket) });
-            sourceArrow.Segments.Add(new LineSegment() { Point = new Point(edgeSourceXY.X + 10 * this.xPacket, edgeSourceXY.Y - 5 * this.yPacket) });
-            sourceArrow.Freeze();
-
-            var targetArrow = new PathFigure();
-            targetArrow.StartPoint = edgeTargetXY; // PathFigure for GraphLine 
-            targetArrow.Segments.Add(new LineSegment() { Point = new Point(edgeTargetXY.X + 10 * this.xPacket, edgeTargetXY.Y + 5 * this.yPacket) });
-            targetArrow.Segments.Add(new LineSegment() { Point = new Point(edgeTargetXY.X + 10 * this.xPacket, edgeTargetXY.Y - 5 * this.yPacket) });
-            targetArrow.Freeze();
+            var sourceArrow = getPathFigure(edgeSourceXY, sourceArrowType);
+            var targetArrow = getPathFigure(edgeTargetXY, targetArrowType);
 
             var areaPathGeometry = new PathGeometry(new PathFigure[] { sourceArrow });
             areaPathGeometry.Freeze();
@@ -157,10 +153,39 @@ namespace Riken.Metabolomics.Pathwaymap
             this.drawingContext.Pop();
         }
 
+        private PathFigure getPathFigure(Point startPoint, string arrowType) {
+            
+            var arrow = new PathFigure();
+            if (arrowType == "TBar") {
+                arrow.StartPoint = new Point(startPoint.X, startPoint.Y + 7 * this.yPacket); // PathFigure for GraphLine 
+                arrow.Segments.Add(new LineSegment() { Point = new Point(startPoint.X, startPoint.Y - 7 * this.yPacket) });
+                arrow.Segments.Add(new LineSegment() { Point = new Point(startPoint.X + 1 * this.xPacket, startPoint.Y - 7 * this.yPacket) });
+                arrow.Segments.Add(new LineSegment() { Point = new Point(startPoint.X + 1 * this.xPacket, startPoint.Y + 7 * this.yPacket) });
+                arrow.Freeze();
+            } else if (arrowType == null || arrowType == string.Empty) {
+                arrow.StartPoint = startPoint; // PathFigure for GraphLine 
+                arrow.Freeze();
+            }
+            else {
+                arrow.StartPoint = startPoint; // PathFigure for GraphLine 
+                arrow.Segments.Add(new LineSegment() { Point = new Point(startPoint.X + 10 * this.xPacket, startPoint.Y + 5 * this.yPacket) });
+                arrow.Segments.Add(new LineSegment() { Point = new Point(startPoint.X + 10 * this.xPacket, startPoint.Y - 5 * this.yPacket) });
+                arrow.Freeze();
+            }
+            return arrow;
+        }
+
         private void setEdgeProperties(Edge edge, out Point edgeSourceXY, 
             out Point edgeTargetXY, out double sourceAngle, out double targetAngle) {
             var sourceID = edge.SourceNodeID;
             var targetID = edge.TargetNodeID;
+
+            sourceAngle = 0.0;
+            targetAngle = 0.0;
+            edgeSourceXY = new Point();
+            edgeTargetXY = new Point();
+
+            if (!this.pathwayObj.Id2Node.ContainsKey(sourceID) || !this.pathwayObj.Id2Node.ContainsKey(targetID)) return;
 
             var sourceNode = this.pathwayObj.Id2Node[sourceID];
             var targetNode = this.pathwayObj.Id2Node[targetID];
@@ -173,11 +198,7 @@ namespace Riken.Metabolomics.Pathwaymap
             var sourceNodeRect = getNodeRectanglePoints(sourceNode.Width, sourceNode.Height, sourceNodeCenter.X, sourceNodeCenter.Y);
             var targetNodeRect = getNodeRectanglePoints(targetNode.Width, targetNode.Height, targetNodeCenter.X, targetNodeCenter.Y);
 
-            edgeSourceXY = new Point();
-            edgeTargetXY = new Point();
-
-            sourceAngle = 0.0;
-            targetAngle = 0.0;
+        
 
             //isOverlaped = false;
             //var euclideanST = getEuclideanDistance(sourceNodeCenter, targetNodeCenter);

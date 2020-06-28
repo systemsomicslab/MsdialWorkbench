@@ -84,7 +84,7 @@ namespace CompMs.Common.Components
     public class DriftTime : ChromX
     {
         public DriftTime() { }
-        public DriftTime(double driftTime, ChromXUnit unit = ChromXUnit.None) : base(driftTime)
+        public DriftTime(double driftTime, ChromXUnit unit = ChromXUnit.Msec) : base(driftTime)
         {
             Type = ChromXType.Drift;
             Unit = unit;

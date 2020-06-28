@@ -19,9 +19,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
-
             foreach (var spot in chromPeakFeatures) {
                 var result = GetMS2DecResult(spectrumList, spot, param, summary, targetCE);
+                result.ScanID = spot.PeakID;
             }
             return msdecResults;
         }

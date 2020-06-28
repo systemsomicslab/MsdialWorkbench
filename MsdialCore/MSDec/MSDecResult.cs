@@ -8,6 +8,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.MSDec {
     public class MSDecResult : IMSScanProperty {
+        public long SeekPoint { get; set; }
         public int ScanID { get; set; }
         public double PrecursorMz { get; set; }
         public IonMode IonMode { get; set; }
@@ -17,24 +18,21 @@ namespace CompMs.MsdialCore.MSDec {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
-        public int MsDecID { get; set; }
-        public float ModelPeakMz { get; set; }
-        public float ModelPeakHeight { get; set; }
-        public float ModelPeakArea { get; set; }
-        public float IntegratedHeight { get; set; }
-        public float IntegratedArea { get; set; }
-        public float AmplitudeScore { get; set; }
+        public double ModelPeakMz { get; set; }
+        public double ModelPeakHeight { get; set; }
+        public double ModelPeakArea { get; set; }
+        public double IntegratedHeight { get; set; }
+        public double IntegratedArea { get; set; }
         public List<ChromatogramPeak> ModelPeakChromatogram { get; set; } = new List<ChromatogramPeak>();
         
         public string Splash { get; set; }
-        public long SeekPoint { get; set; }
 
-        public List<float> ModelMasses { get; set; } = new List<float>();
+        public List<double> ModelMasses { get; set; } = new List<double>();
         public float ModelPeakPurity { get; set; }
         public float ModelPeakQuality { get; set; }
         public float SignalNoiseRatio { get; set; }
         public float EstimatedNoise { get; set; }
-
+        public float AmplitudeScore { get; set; }
 
 
         // annotation info for gcms project
