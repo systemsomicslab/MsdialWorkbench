@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="ACE Inhibitor Pathway" Last-Modified="10/17/2013" Organism="Mus musculus">
+  <Comment Source="WikiPathways-category">Physiological Process</Comment>
+  <Comment Source="WikiPathways-description">The renin-angiotensin-aldosterone system (RAAS) is central to the control of blood pressure and the target of several types of anti-hypertensive drugs. This pathway depicts a simplified representation of the pharmacodynamics (PD) of RAAS-acting drugs including candidate genes for the pharmacogenomics (PGx) of ACE inhibitors, angiotensin receptor blockers (ARBs), renin inhibitor aliskiren and aldosterone receptor antagonists.
+Source: PharmGKB (http://www.pharmgkb.org/do/serve?objId=PA2023&amp;objCls=Pathway)</Comment>
+  <BiopaxRef>cc0</BiopaxRef>
+  <Graphics BoardWidth="635.8333333333334" BoardHeight="550.0" />
+  <DataNode TextLabel="Ace" GraphId="a36" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Ace | angiotensin converting enzyme" />
+    <Graphics CenterX="108.0" CenterY="299.6666666666667" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="11421" />
+  </DataNode>
+  <DataNode TextLabel="Bradykinin" GraphId="a51" Type="Metabolite">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Bradykinin" />
+    <Graphics CenterX="456.6666666666667" CenterY="246.66666666666666" Width="93.33333333333333" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="0000ff" />
+    <Xref Database="HMDB" ID="HMDB0004246" />
+  </DataNode>
+  <DataNode TextLabel="Kng1" GraphId="b32" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Kng1 | kininogen 1" />
+    <Graphics CenterX="466.6666666666667" CenterY="153.33333333333334" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="16644" />
+  </DataNode>
+  <DataNode TextLabel="Angiotensin II" GraphId="b67" Type="Metabolite">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Angiotensin II" />
+    <Graphics CenterX="106.33333333333333" CenterY="360.0" Width="93.33333333333333" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="0000ff" />
+    <Xref Database="HMDB" ID="HMDB0001035" />
+  </DataNode>
+  <DataNode TextLabel="Agtr2" GraphId="be7" Type="GeneProduct" GroupRef="f927c">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Agtr2 | angiotensin II receptor type 2" />
+    <Graphics CenterX="106.33333333333333" CenterY="443.3333333333333" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="11609" />
+  </DataNode>
+  <DataNode TextLabel="Ace" GraphId="c80" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Ace | angiotensin converting enzyme" />
+    <Graphics CenterX="443.3333333333333" CenterY="332.6666666666667" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="11421" />
+  </DataNode>
+  <DataNode TextLabel="Agtr1" GraphId="d6a" Type="GeneProduct" GroupRef="f927c">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Agtr1 | angiotensin receptor 1" />
+    <Graphics CenterX="106.33333333333333" CenterY="423.3333333333333" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="11607" />
+  </DataNode>
+  <DataNode TextLabel="Ren1" GraphId="daf" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Ren1 | renin 1 structural" />
+    <Graphics CenterX="130.66666666666666" CenterY="192.0" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="19701" />
+  </DataNode>
+  <DataNode TextLabel="Aldosterone" GraphId="df7" Type="Metabolite">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Aldosterone" />
+    <Graphics CenterX="153.33333333333334" CenterY="510.0" Width="93.33333333333333" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="0000ff" />
+    <Xref Database="KEGG Compound" ID="C01780" />
+  </DataNode>
+  <DataNode TextLabel="Angiotensin I" GraphId="f33" Type="Metabolite">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Angiotensin I" />
+    <Graphics CenterX="106.0" CenterY="253.33333333333334" Width="93.33333333333333" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="0000ff" />
+    <Xref Database="PubChem-compound" ID="3081372" />
+  </DataNode>
+  <DataNode TextLabel="ACE Inhibitor" GraphId="f39" Type="Metabolite">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="ACE Inhibitor" />
+    <Graphics CenterX="286.6666666666667" CenterY="206.66666666666666" Width="93.33333333333333" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" Color="ff0000" />
+    <Xref Database="ChEBI" ID="CHEBI:35457" />
+  </DataNode>
+  <DataNode TextLabel="Nos3" GraphId="f67" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Nos3 | nitric oxide synthase 3 endothelial ce..." />
+    <Graphics CenterX="370.0" CenterY="493.3333333333333" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="18127" />
+  </DataNode>
+  <DataNode TextLabel="Agt" GraphId="fa1" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Agt | angiotensinogen" />
+    <Graphics CenterX="156.66666666666666" CenterY="150.0" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="11606" />
+  </DataNode>
+  <DataNode TextLabel="Bdkrb2" GraphId="fb4" Type="GeneProduct">
+    <Attribute Key="org.pathvisio.model.BackpageHead" Value="Bdkrb2 | bradykinin receptor beta 2" />
+    <Graphics CenterX="422.3333333333333" CenterY="418.0" Width="60.0" Height="20.0" ZOrder="32768" FontSize="10" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="12062" />
+  </DataNode>
+  <Interaction GraphId="id167474c3">
+    <Graphics ZOrder="12288" LineStyle="Broken" LineThickness="1.0" Color="008000">
+      <Point X="106.33333333333331" Y="461.3333333333333" GraphRef="ad07f" RelX="0.0" RelY="1.0" />
+      <Point X="153.33333333333334" Y="500.0" GraphRef="df7" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id2067a77f">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="156.66666666666666" Y="160.0" GraphRef="fa1" RelX="0.0" RelY="1.0" />
+      <Point X="106.0" Y="243.33333333333337" GraphRef="f33" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+      <Anchor Position="0.4" Shape="None" GraphId="d6877" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id243257fc">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="130.66666666666666" Y="202.0" GraphRef="daf" RelX="0.0" RelY="1.0" />
+      <Point X="136.39999999999998" Y="193.33333333333334" GraphRef="d6877" RelX="0.0" RelY="0.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id4760d27a">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="106.33333333333334" Y="370.0" GraphRef="b67" RelX="0.0" RelY="1.0" />
+      <Point X="106.33333333333331" Y="405.3333333333333" GraphRef="ad07f" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id61316c2a">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="ff0000">
+      <Point X="263.33333333333337" Y="216.66666666666666" GraphRef="f39" RelX="-0.5" RelY="1.0" />
+      <Point X="138.0" Y="299.6666666666667" GraphRef="a36" RelX="1.0" RelY="0.0" ArrowHead="TBar" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id8a906e85">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="466.6666666666667" Y="163.33333333333334" GraphRef="b32" RelX="0.0" RelY="1.0" />
+      <Point X="456.66666666666663" Y="236.66666666666663" GraphRef="a51" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id99f492c6">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="ff0000">
+      <Point X="310.0" Y="216.66666666666666" GraphRef="f39" RelX="0.5" RelY="1.0" />
+      <Point X="413.3333333333333" Y="332.6666666666667" GraphRef="c80" RelX="-1.0" RelY="0.0" ArrowHead="TBar" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="ida74b522d">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="422.3333333333333" Y="428.0" GraphRef="fb4" RelX="0.0" RelY="1.0" />
+      <Point X="370.0" Y="483.3333333333333" GraphRef="f67" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idac1fc574">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="78.0" Y="299.6666666666667" GraphRef="a36" RelX="-1.0" RelY="0.0" />
+      <Point X="106.13333333333334" Y="298.0" GraphRef="cb4a9" RelX="0.0" RelY="0.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idcb6c05c1">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="106.0" Y="263.33333333333337" GraphRef="f33" RelX="0.0" RelY="1.0" />
+      <Point X="106.33333333333334" Y="350.0" GraphRef="b67" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+      <Anchor Position="0.4" Shape="None" GraphId="cb4a9" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idd0d0680f">
+    <Graphics ZOrder="12288" LineThickness="1.0" Color="008000">
+      <Point X="456.66666666666663" Y="256.66666666666663" GraphRef="a51" RelX="0.0" RelY="1.0" />
+      <Point X="422.3333333333333" Y="408.0" GraphRef="fb4" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+      <Anchor Position="0.48628158844765335" Shape="None" GraphId="caac6" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idd754b0de">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="443.3333333333333" Y="342.6666666666667" GraphRef="c80" RelX="0.0" RelY="1.0" />
+      <Point X="439.9709987966305" Y="330.25728038507816" GraphRef="caac6" RelX="0.0" RelY="0.0" ArrowHead="Arrow" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Label TextLabel="Cell Membrane" GraphId="ae7">
+    <Graphics CenterX="546.6666666666666" CenterY="403.3333333333333" Width="118.33333333333333" Height="19.0" ZOrder="28672" FillColor="ffffff" FontWeight="Bold" FontSize="12" Valign="Middle" Color="008000" />
+  </Label>
+  <Shape GraphId="a66">
+    <Graphics CenterX="313.3333333333333" CenterY="446.6666666666667" Width="526.8354666666667" Height="60.0" ZOrder="16384" FillColor="000000" FontSize="10" Valign="Middle" ShapeType="Arc" Rotation="3.141593" />
+  </Shape>
+  <Group GroupId="f927c" GraphId="ad07f" Style="Group" TextLabel="Group object" />
+  <InfoBox CenterX="1.6666666666666667" CenterY="38.333333333333336" />
+  <Biopax>
+    <bp:PublicationXref xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:id="cc0">
+      <bp:ID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17464936</bp:ID>
+      <bp:DB rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PubMed</bp:DB>
+      <bp:TITLE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The emerging role of ACE2 in physiology and disease.</bp:TITLE>
+      <bp:SOURCE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J Pathol</bp:SOURCE>
+      <bp:YEAR rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2007</bp:YEAR>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hamming I</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cooper ME</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Haagmans BL</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hooper NM</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Korstanje R</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Osterhaus AD</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Timens W</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turner AJ</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Navis G</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">van Goor H</bp:AUTHORS>
+    </bp:PublicationXref>
+    <bp:openControlledVocabulary xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#">
+      <bp:TERM xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ACE inhibitor drug pathway</bp:TERM>
+      <bp:ID xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PW:0001228</bp:ID>
+      <bp:Ontology xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pathway Ontology</bp:Ontology>
+    </bp:openControlledVocabulary>
+  </Biopax>
+</Pathway>

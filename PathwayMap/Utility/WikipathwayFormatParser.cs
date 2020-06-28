@@ -71,7 +71,18 @@ namespace Riken.Metabolomics.Pathwaymap.Parser {
 
         private void parseEdgeGraphics(Edge edge) {
             parserCommonMethod(
-               "Graphics", null,
+               "Graphics", 
+               new Dictionary<string, Action<string>>() {
+                    { "LineThickness", (v) => {
+                        var tickness = 1.0F; 
+                        if (float.TryParse(v, out tickness)) {
+                            edge.LineTickness = tickness;
+                        }
+                    }},
+                    { "Color", (v) => {
+                        edge.ColorCode = v;
+                    }}
+               },
                new Dictionary<string, Action>()
                {
                     { "Point", () => this.parseEdgePoint(edge) }
