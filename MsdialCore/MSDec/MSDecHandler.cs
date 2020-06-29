@@ -190,7 +190,7 @@ namespace CompMs.MsdialCore.MSDec {
                 //Debug.WriteLine("model count: " + modelChromatograms.Count + "  -- ms1 Count: " + ms1Chromatograms.Count + " -- ms1Dec count: " + ms1DecResults.Count);
 
                 if (msdecResult != null && msdecResult.Spectrum.Count > 0) {
-                    msdecResult.MsDecID = counter;
+                    msdecResult.ScanID = counter;
                     msdecResult.Spectrum = getRefinedMsDecSpectrum(msdecResult.Spectrum, param);
                     msdecResult.Splash = calculateSplash(msdecResult.Spectrum);
                     msdecResults.Add(msdecResult);

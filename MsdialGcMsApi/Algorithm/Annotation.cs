@@ -4,9 +4,11 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
@@ -27,6 +29,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         /// <param name="reportAction"></param>
         public void MainProcess(List<MSDecResult> ms1DecResults, List<MoleculeMsReference> mspDB, 
             MsdialGcmsParameter param, Dictionary<int, float> carbon2RtDict, Action<int> reportAction) {
+
+            var saveObj = new MsdialDataStorage() {
+                ParameterBase = param
+            };
+
+
 
             Console.WriteLine("Annotation started");
             SetRetentionIndexForMS1DecResults(ms1DecResults, param, carbon2RtDict);

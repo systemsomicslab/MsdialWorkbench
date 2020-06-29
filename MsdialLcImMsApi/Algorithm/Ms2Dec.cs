@@ -20,9 +20,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var msdecResults = new List<MSDecResult>();
 
             foreach (var rtChromPeak in chromPeakFeatures) {
-                msdecResults.Add(MSDecObjectHandler.GetDefaultMSDecResult(rtChromPeak));
+                var rtDecResult = MSDecObjectHandler.GetDefaultMSDecResult(rtChromPeak);
+                rtDecResult.ScanID = rtChromPeak.MasterPeakID;
+                msdecResults.Add(rtDecResult);
                 foreach (var dtChromPeak in rtChromPeak.DriftChromFeatures.OrEmptyIfNull()) {
                     var result = GetMS2DecResult(spectrumList, rtChromPeak, dtChromPeak, param, summary, targetCE);
+                    result.ScanID = dtChromPeak.MasterPeakID;
                     msdecResults.Add(result);
                 }
             }

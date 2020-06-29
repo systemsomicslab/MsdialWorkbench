@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.MsdialCore.Parameter;
 using MessagePack;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -23,9 +24,7 @@ namespace CompMs.MsdialCore.DataObj {
         public List<MoleculeMsReference> IsotopeTextDB { get; set; }
         [Key(5)]
         public IupacDatabase IupacDatabase { get; set; }
-      
-
-        //public AnalysisParametersBean analysisParametersBean { get; set; }
-        //public AnalysisParamOfMsdialGcms analysisParamForGC { get; set; }
+        [Key(6)]
+        public ParameterBase ParameterBase { get; set; }
     }
 }

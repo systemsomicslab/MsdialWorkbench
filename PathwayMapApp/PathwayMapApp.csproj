@@ -88,6 +88,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="TEST\Mm_ACE_Inhibitor_Pathway_WP396_110700.gpml" />
     <Resource Include="TEST\MetabolicMapForAnimal.gpml" />
     <Resource Include="TEST\LipidMapForPlant.gpml" />
     <Resource Include="TEST\LipidMapForAnimal.gpml" />

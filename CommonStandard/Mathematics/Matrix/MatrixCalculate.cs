@@ -21,18 +21,18 @@ namespace CompMs.Common.Mathematics.Matrix {
 
         public static double[] MatrixProduct(double[] leftVector, double[,] rightMatrix)
         {
-            var leftRowSize = leftVector.Length;
+            var leftColumnSize = leftVector.Length;
             var rightRowSize = rightMatrix.GetLength(0);
             var rightColumnSize = rightMatrix.GetLength(1);
-            if (leftRowSize != rightRowSize) return null;
+            if (leftColumnSize != rightRowSize) return null;
 
-            var vector = new double[leftRowSize];
-            for (int i = 0; i < leftRowSize; i++)
+            var vector = new double[rightColumnSize];
+            for (int i = 0; i < rightColumnSize; i++)
             {
                 var sum = 0.0;
-                for (int j = 0; j < rightColumnSize; j++)
+                for (int j = 0; j < leftColumnSize; j++)
                 {
-                    sum += leftVector[i] * rightMatrix[i, j];
+                    sum += leftVector[j] * rightMatrix[j, i];
                 }
                 vector[i] = sum;
             }
