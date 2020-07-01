@@ -143,6 +143,12 @@ namespace CompMs.Graphics.Scatter
             visualChildren.Clear();
 
 
+            var brush = PointBrush;
+            if (PointGeometry != null)
+                brush = new DrawingBrush(new GeometryDrawing(brush, null, PointGeometry));
+            brush.Freeze();
+            var radius = Radius;
+
             foreach (var o in cv)
             {
                 var x = hPropertyReflection.GetValue(o);
@@ -154,13 +160,10 @@ namespace CompMs.Graphics.Scatter
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 var dc = dv.RenderOpen();
                 if (PointGeometry == null) {
-                    dc.DrawEllipse(PointBrush, null, new Point(xx, yy), Radius, Radius);
+                    dc.DrawEllipse(brush, null, new Point(xx, yy), radius, radius);
                 }
                 else {
-                    Geometry geo = PointGeometry.Clone();
-                    geo.Transform = new TranslateTransform(xx, yy);
-                    geo.Freeze();
-                    dc.DrawGeometry(PointBrush, null, geo);
+                    dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
                 }
                 dc.Close();
                 visualChildren.Add(dv);
