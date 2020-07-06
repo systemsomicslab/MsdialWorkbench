@@ -661,6 +661,12 @@ namespace Rfx.Riken.OsakaUniv
             set { this.copyParam.DatabaseQuery.Blexp = value; OnPropertyChanged("Blexp"); }
         }
 
+        public bool Npa
+        {
+            get { return this.copyParam.DatabaseQuery.Npa; }
+            set { this.copyParam.DatabaseQuery.Npa = value; OnPropertyChanged("Npa"); }
+        }
+
         public bool IsUserDefinedDB
         {
             get { return this.copyParam.IsUserDefinedDB; }

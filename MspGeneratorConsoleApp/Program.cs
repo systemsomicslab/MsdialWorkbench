@@ -22,9 +22,9 @@ namespace CompMs.MspGenerator
             }
 
 
-
-            var workingDirectry = @"F:\takahashi\20200616_RT_Prediction\cleanup\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\202006221842.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            /// RTCCS Prediction
+            var workingDirectry = @"F:\takahashi\20200616_RT_Prediction\complete\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt3\202006251131.txt"; // 計算させたいInChIKeyとSMILESのリスト
             var padelDescriptortypes = workingDirectry + @"\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
             var descriptorSelecerRTFile = workingDirectry + @"\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
             var descriptorSelecerCSSFile = workingDirectry + @"\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
@@ -69,20 +69,33 @@ namespace CompMs.MspGenerator
 
 
             ////フォルダ連続処理
-            //RtCcsPredictManager.generateSdfsOnNCDK(@"F:\takahashi\20200616_RT_Prediction\working3\txt\");
-            //RtCcsPredictManager.runFoldersToPaDEL(@"F:\takahashi\20200616_RT_Prediction\working3\txt\sdf\", padelDescriptortypes, padelProgramPath);
+            ///
+            workingDirectry = @"F:\takahashi\20200616_RT_Prediction\complete\";
+            var toGenarateSdfDirectry = workingDirectry + "\\txt2\\";
+            var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\";
 
-            RtCcsPredictManager.runFolderToFitting(workingDirectry, workingDirectry + "\\txt\\", workingDirectry + "\\padelOutAllFile\\",
-                descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+            //RtCcsPredictManager.generateSdfsOnNCDK(toGenarateSdfDirectry);
+            //RtCcsPredictManager.runFoldersToPaDEL(toPadelDirectry, padelDescriptortypes, padelProgramPath); //これを使うよりコマンドを利用したほうが早いです
 
-            //var outputResultFolderPath = @"F:\takahashi\20200616_RT_Prediction\working2\mergeToMsp\";
-            //var mspFilePath = outputResultFolderPath + @"\Msp20200622153756.msp";
-            //var predictedFilesDirectry = @"F:\takahashi\20200616_RT_Prediction\working2\predictResult\";
-            //var dbFileName = predictedFilesDirectry + "\\predictedFile_20200622_1edited.txt";
+            //padel結果ファイルを1つのディレクトリに入れて開始(予測結果をpredictResultディレクトリに保存するところまで)
+            //var padelResultDirectry = workingDirectry + "\\padelOut3\\";
+            //RtCcsPredictManager.runFolderToFitting(workingDirectry, toGenarateSdfDirectry, padelResultDirectry,
+            //    descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
-            ////MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
+            var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";
+            var mspFilePath = outputResultFolderPath + @"\Msp20200622153756.msp";
+            var predictedFilesDirectry = workingDirectry + "\\predictResult\\";
+            var dbFileName = predictedFilesDirectry + "\\predictedFile_20200625_curated.txt"; //generate
+
+            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+
+            ///tool
+            ///Inchikey And Smiles List From Msp
+            //var mspPath = @"F:\takahashi\20200616_RT_Prediction\msp\";
+            //var mspFile = mspPath + "Bile acids.msp";
+            //MergeRTandCCSintoMsp.generateInchikeyAndSmilesListFromMsp(mspFile);
 
 
             ///mspファイル生成ツール

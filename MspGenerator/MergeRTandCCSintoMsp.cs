@@ -68,6 +68,29 @@ namespace CompMs.MspGenerator
 
         }
 
+        public static void generateInchikeyAndSmilesListFromMsp(string mspFilePath)
+        {
+            var outputFilePath = Path.GetDirectoryName(mspFilePath) + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_InChIKey-SMILES.txt";
+            var mspDB = MspFileParcer.MspFileReader(mspFilePath);
+            var inchikeyToSmiles = new Dictionary<string, string>();
+            foreach (var query in mspDB)
+            {
+                if (!inchikeyToSmiles.ContainsKey(query.InChIKey))
+                {
+                    inchikeyToSmiles[query.InChIKey] = query.SMILES;
+                }
+            }
+            using (var sw = new StreamWriter(outputFilePath,false,Encoding.ASCII))
+            {
+                sw.WriteLine("InChIKey\tSMILES");
+                foreach(var item in inchikeyToSmiles) 
+                {
+                    sw.WriteLine(item.Key + "\t" + item.Value);
+                }
+            }
+
+        }
+
         public static void mergeRTandCCSintoMsp(string mspFilePath , string calculatedFilePath, string outputFolderPath)
         {
             var outputFilePath = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
@@ -158,6 +181,10 @@ namespace CompMs.MspGenerator
 
                 if (inchikeyToPredictedRt.ContainsKey(query.InChIKey))
                 {
+                    if(inchikeyToPredictedRt[query.InChIKey] == 0) 
+                    {
+                        continue; 
+                    }
                     query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
                 }
                 else
@@ -173,7 +200,7 @@ namespace CompMs.MspGenerator
                     if (CCSs.ContainsKey(query.AdductType.AdductIonName))
                     {
                         var adductCCS = CCSs[query.AdductType.AdductIonName];
-                        if (adductCCS == "") { continue; }
+                        if (adductCCS == "" || adductCCS == "0") { continue; }
                         query.CollisionCrossSection = double.Parse(adductCCS);
                     }
                 }

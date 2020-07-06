@@ -30,38 +30,38 @@ namespace CompMs.MspGenerator
                 Directory.CreateDirectory(outputSdfFolderPath);
             }
             var sdfFile = outputSdfFolderPath + "\\" + outputFileName + ".sdf";
-            var outputFolderPath = workingDirectry ;
+            var outputFolderPath = workingDirectry;
             if (!Directory.Exists(outputFolderPath))
             {
                 Directory.CreateDirectory(outputFolderPath);
             }
             var SmilesParser = new SmilesParser();
             var iAtomContList = new List<IAtomContainer>();
-            //var coordinate2D = new NCDK.Layout.StructureDiagramGenerator();
+            var coordinate2D = new NCDK.Layout.StructureDiagramGenerator();
 
             //using (var sw = new StreamWriter(outputFolderPath + "\\InChIKey-Exactmass.txt", false))
             //{
-                using (var sr = new StreamReader(toPredictFile, false))
+            using (var sr = new StreamReader(toPredictFile, false))
+            {
+                var line = sr.ReadLine();
+                while (sr.Peek() > -1)
                 {
-                    var line = sr.ReadLine();
-                    while (sr.Peek() > -1)
-                    {
-                        line = sr.ReadLine();
-                        if (line == string.Empty) continue;
-                        var linearray = line.Split('\t');
-                        var inchikey = linearray[0];
-                        var smiles = linearray[1];
-                        if (smiles == "SMILES") { continue; }
-                        var iAtomCont = SmilesParser.ParseSmiles(smiles);
-                        iAtomCont.Title = inchikey;
-                        //coordinate2D.GenerateCoordinates(iAtomCont); // 2D座標計算 これは無くてもOK
-                        iAtomContList.Add(iAtomCont);
+                    line = sr.ReadLine();
+                    if (line == string.Empty) continue;
+                    var linearray = line.Split('\t');
+                    var inchikey = linearray[0];
+                    var smiles = linearray[1];
+                    if (smiles == "SMILES") { continue; }
+                    var iAtomCont = SmilesParser.ParseSmiles(smiles);
+                    iAtomCont.Title = inchikey;
+                    coordinate2D.GenerateCoordinates(iAtomCont); // 2D座標計算 これは無くてもOK
+                    iAtomContList.Add(iAtomCont);
 
-                        //var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(iAtomCont);
-                        //var exactMass = MolecularFormulaManipulator.GetMass(iMolecularFormula, MolecularWeightTypes.MonoIsotopic);
-                        //sw.WriteLine(inchikey + '\t' + exactMass);
-                    }
+                    //var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(iAtomCont);
+                    //var exactMass = MolecularFormulaManipulator.GetMass(iMolecularFormula, MolecularWeightTypes.MonoIsotopic);
+                    //sw.WriteLine(inchikey + '\t' + exactMass);
                 }
+            }
             //}
 
             using (var sw = new StreamWriter(sdfFile, false))
@@ -91,7 +91,7 @@ namespace CompMs.MspGenerator
             }
 
             var padelOutFile = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(sdfFileName[0]) + ".csv";
-            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 1 -maxruntime 1200000";
+            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 1 -maxruntime 30000";
 
             Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
             //Console.ReadKey();
@@ -99,7 +99,7 @@ namespace CompMs.MspGenerator
 
         public static void runPaDEL2(string workingDirectry, string sdfsDir, string padelDescriptortypes, string padelProgramPath)
         {
-            var padelDescriptortypesPath = workingDirectry + padelDescriptortypes;
+            var padelDescriptortypesPath = padelDescriptortypes;
             var outputSdfFolderPath = sdfsDir;
             var sdfFileName = Directory.GetFiles(outputSdfFolderPath);
             var outputFolderPath = sdfsDir + @"\PadelResult\";
@@ -108,15 +108,15 @@ namespace CompMs.MspGenerator
                 Directory.CreateDirectory(outputFolderPath);
             }
             var padelOutFile = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(sdfFileName[0]) + ".csv";
-            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -retainorder";
+            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 4 -maxruntime 600000";
 
-            Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
-            
+            Process p = Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
+            p.WaitForExit();
             //Console.ReadKey();
         }
 
 
-        public static void selectDescriptor(string workingDirectry, string padelOutFileName,string descriptorSelecterRTFile, string descriptorSelecterCSSFile)
+        public static void selectDescriptor(string workingDirectry, string padelOutFileName, string descriptorSelecterRTFile, string descriptorSelecterCSSFile)
         {
             var outputFolderPath = workingDirectry;
             if (!Directory.Exists(outputFolderPath))
@@ -188,7 +188,7 @@ namespace CompMs.MspGenerator
                     }
                     foreach (var desc in descriptorSelecterRTList)
                     {
-                         selectedRtList.Add(descripterDicRt[desc]);
+                        selectedRtList.Add(descripterDicRt[desc]);
                     }
                     foreach (var desc in descriptorSelecterCSSList)
                     {
@@ -199,7 +199,7 @@ namespace CompMs.MspGenerator
                     ccsDescriptorList.Add(selectedCcsList);
                     if (!exactmassDic.ContainsKey(lineArray[0].Trim('"')))
                     {
-                    exactmassDic.Add(lineArray[0].Trim('"'), descripterDicCcs["MW"]);
+                        exactmassDic.Add(lineArray[0].Trim('"'), descripterDicCcs["MW"]);
                     }
                 }
             }
@@ -251,7 +251,7 @@ namespace CompMs.MspGenerator
             foreach (var adduct in adductList)
             {
                 var fileSurfix = adduct.Value.AdductSurfix + "_" + adduct.Value.IonMode.Substring(0, 3);
-                var fileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(ccsSelectedDescriptorFile) ;
+                var fileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(ccsSelectedDescriptorFile);
                 using (var swCcs = new StreamWriter(fileName + "_" + fileSurfix + ".csv", false))
                 {
                     ccsSelectedDescriptorHeader = ccsSelectedDescriptorHeader.Replace('-', '_');
@@ -262,7 +262,7 @@ namespace CompMs.MspGenerator
 
                     foreach (var desc in ccsDescriptorList)
                     {
-                        var descString = desc[0]  + "," + adduct.Value.AdductIonMass.ToString() + "," + exactmassDic[desc[0]];
+                        var descString = desc[0] + "," + adduct.Value.AdductIonMass.ToString() + "," + exactmassDic[desc[0]];
                         for (int i = 1; i < desc.Count; i++)
                         {
                             descString = descString + "," + desc[i];
@@ -299,7 +299,7 @@ namespace CompMs.MspGenerator
             }
 
             var toPredictFileName = Path.GetFileNameWithoutExtension(toPredictFile);
-            var resultFile = outputFolderPath + "\\PredictedResult_"+ toPredictFileName + ".txt";
+            var resultFile = outputFolderPath + "\\PredictedResult_" + toPredictFileName + ".txt";
 
             var toPredictFileDic = new Dictionary<string, string>();
             using (var sr = new StreamReader(toPredictFile, true))
@@ -307,12 +307,12 @@ namespace CompMs.MspGenerator
                 while (sr.Peek() > -1)
                 {
                     var line = sr.ReadLine();
-                    if (line == "" || line == "\0" || line.Contains("InChIKey")) 
+                    if (line == "" || line == "\0" || line.Contains("InChIKey"))
                     {
-                        continue; 
+                        continue;
                     }
                     var lineArray = line.Split('\t');
-                    if(!toPredictFileDic.ContainsKey(lineArray[0]))
+                    if (!toPredictFileDic.ContainsKey(lineArray[0]))
                     {
                         toPredictFileDic.Add(lineArray[0], lineArray[1]);
                     }
@@ -321,7 +321,7 @@ namespace CompMs.MspGenerator
 
             var allResultDic = new Dictionary<string, List<string>>();
             var rtResultDic = new Dictionary<string, string>();
-            var readRtFileName = "RTpred_"+ toPredictFileName + ".txt";
+            var readRtFileName = "RTpred_" + toPredictFileName + ".txt";
 
             using (
                 var sr = new StreamReader(workingDirectry + readRtFileName, false))
@@ -330,7 +330,7 @@ namespace CompMs.MspGenerator
                 {
                     var line = sr.ReadLine();
                     var lineArray = line.Split(' ');
-                    if(! rtResultDic.ContainsKey(lineArray[1]))
+                    if (!rtResultDic.ContainsKey(lineArray[1]))
                     {
                         rtResultDic.Add(lineArray[1], lineArray[2]);
                     }
@@ -340,7 +340,7 @@ namespace CompMs.MspGenerator
             var ccsResultDic = new Dictionary<string, List<string>>();
             var ccsAdductHeaderList = new List<string>();
 
-            var ccsResultFiles = new List<string>(Directory.GetFiles(workingDirectry, "CCSpred_"+ toPredictFileName + "*.txt"));
+            var ccsResultFiles = new List<string>(Directory.GetFiles(workingDirectry, "CCSpred_" + toPredictFileName + "*.txt"));
             foreach (string file in ccsResultFiles)
             {
                 var fileName = Path.GetFileNameWithoutExtension(file);
@@ -357,11 +357,11 @@ namespace CompMs.MspGenerator
                         var lineArray = line.Split(' ');
                         if (!ccsResultDic.ContainsKey(lineArray[1]))
                         {
-                             ccsResultDic.Add(lineArray[1], new List<string>() { lineArray[2] });
+                            ccsResultDic.Add(lineArray[1], new List<string>() { lineArray[2] });
                         }
                         else
                         {
-                             ccsResultDic[lineArray[1]].Add(lineArray[2]);
+                            ccsResultDic[lineArray[1]].Add(lineArray[2]);
                         }
                     }
                 }
@@ -393,7 +393,7 @@ namespace CompMs.MspGenerator
                         resultLine.Add(lineArray[1]);
 
                         var rtResultValue = "";
-                        if(rtResultDic.ContainsKey(lineArray[0]))
+                        if (rtResultDic.ContainsKey(lineArray[0]))
                         {
                             rtResultValue = rtResultDic[lineArray[0]];
                         }
@@ -434,7 +434,7 @@ namespace CompMs.MspGenerator
         }
 
         public static void runFolderToFitting
-            (string workingDirectry,string toPredictFileDirectry, string padelOutFileDirectry, string descriptorSelecerRTFile, string descriptorSelecerCSSFile,
+            (string workingDirectry, string toPredictFileDirectry, string padelOutFileDirectry, string descriptorSelecerRTFile, string descriptorSelecerCSSFile,
             string rPath, string rScriptAvdModelPath, string rtModelingRdsFile, string ccsModelingRdsFile)
         {
             var files = Directory.GetFiles(padelOutFileDirectry);
