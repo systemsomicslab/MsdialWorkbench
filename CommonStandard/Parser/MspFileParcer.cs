@@ -245,10 +245,10 @@ namespace CompMs.Common.Parser {
         public static void ReadMspField(string wkstr, out string fieldName, out string fieldValue) {
             fieldName = wkstr.Split(':')[0];
             fieldValue = wkstr.Substring(fieldName.Length + 1).Trim();
-        }
+         }
 
         public static bool SetMspField(MoleculeMsReference mspObj, string fieldName, string fieldValue, StreamReader sr, bool isFiehnDB = false) {
-            if (fieldValue.IsEmptyOrNull()) return false;
+            // if (fieldValue.IsEmptyOrNull()) return false; // this code has some bug ?
             switch (fieldName.ToLower()) {
                 // string
                 case "name": mspObj.Name = fieldValue;  return false;

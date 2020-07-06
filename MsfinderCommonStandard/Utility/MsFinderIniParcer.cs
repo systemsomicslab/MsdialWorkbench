@@ -301,6 +301,12 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                         if (ans.Length > 0 && ans.Contains("F")) param.DatabaseQuery.Blexp = false;
                         else param.DatabaseQuery.Blexp = true;
                     }
+                    else if (Regex.IsMatch(line, "Npa=", RegexOptions.IgnoreCase))
+                    {
+                        ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
+                        if (ans.Length > 0 && ans.Contains("F")) param.DatabaseQuery.Npa = false;
+                        else param.DatabaseQuery.Npa = true;
+                    }
                     else if (Regex.IsMatch(line, "IsUserDefinedDB=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
                         if (ans.Length > 0 && ans.Contains("F")) param.IsUserDefinedDB = false;
@@ -717,6 +723,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 sw.WriteLine("Serum=" + param.DatabaseQuery.Serum);
                 sw.WriteLine("Csf=" + param.DatabaseQuery.Csf);
                 sw.WriteLine("BLEXP=" + param.DatabaseQuery.Blexp);
+                sw.WriteLine("NPA=" + param.DatabaseQuery.Npa);
                 sw.WriteLine("IsUserDefinedDB=" + param.IsUserDefinedDB);
                 sw.WriteLine("UserDefinedDbFilePath=" + param.UserDefinedDbFilePath);
 

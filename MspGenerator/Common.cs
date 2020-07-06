@@ -44,15 +44,49 @@ namespace CompMs.MspGenerator
 
         }
 
+        public static void jointTxtFiles(string path, string filename)
+        {
+            var txtFiles = Directory.GetFiles(path, "*.txt");
+            using (var wfs = new FileStream(path + "\\" + filename, FileMode.Create, FileAccess.Write))
+            {
+                // 結合するファイルを順に読んで、結果ファイルに書き込む
+                foreach (var mspFile in txtFiles)
+                {
+                    var rbuf = new byte[1024 * 1024];
+
+                    using (var rfs = new FileStream(mspFile, FileMode.Open, FileAccess.Read))
+                    {
+                        var readByte = 0;
+                        var leftByte = rfs.Length;
+                        while (leftByte > 0)
+                        {
+                            // 指定のサイズずつファイルを読み込む
+                            readByte = rfs.Read(rbuf, 0, (int)Math.Min(rbuf.Length, leftByte));
+
+                            // 読み込んだ内容を結果ファイルに書き込む
+                            wfs.Write(rbuf, 0, readByte);
+
+                            // 残りの読み込みバイト数を更新
+                            leftByte -= readByte;
+                        }
+                    }
+                }
+            }
+
+        }
+
+
         public static MetaProperty getMetaProperty(string rawSmiles)
         {
             var SmilesParser = new SmilesParser();
             var SmilesGenerator = new SmilesGenerator(SmiFlavors.Canonical);
             var iAtomContainer = SmilesParser.ParseSmiles(rawSmiles);
             var smiles = SmilesGenerator.Create(iAtomContainer);
+            var iAtomContainer2 = SmilesParser.ParseSmiles(smiles);
+
 
             var InChIGeneratorFactory = new InChIGeneratorFactory();
-            var InChIKey = InChIGeneratorFactory.GetInChIGenerator(iAtomContainer).GetInChIKey();
+            var InChIKey = InChIGeneratorFactory.GetInChIGenerator(iAtomContainer2).GetInChIKey();
 
             var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(iAtomContainer);
             var formula = MolecularFormulaManipulator.GetString(iMolecularFormula);

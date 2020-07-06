@@ -9,44 +9,128 @@ namespace CompMs.MspGenerator
         {
             {
                 /////指定のフォルダの中にある.mspファイルを結合します。
-                //var mspFolder = @"D:\MSDIALmsp_generator\outputFolder\finished\";
-                //var exportFileName = "~jointedMsp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                //var mspFolder = @"F:\takahashi\20200616_RT_Prediction\msp\";
+                //var exportFileName = "jointedMsp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
                 //Common.jointMspFiles(mspFolder, exportFileName);
+                //}
+
+                //{
+                //    ///指定のフォルダの中にある.txtファイルを結合します。
+                //    var txtFolder = @"F:\takahashi\20200616_RT_Prediction\msp\";
+                //    var exportFileName = "jointedTxt" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedtxt";
+                //    Common.jointTxtFiles(txtFolder, exportFileName);
             }
 
 
+            /// RTCCS Prediction
+            var workingDirectry = @"F:\takahashi\20200616_RT_Prediction\complete\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt3\202006251131.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            var padelDescriptortypes = workingDirectry + @"\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            var descriptorSelecerRTFile = workingDirectry + @"\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            var descriptorSelecerCSSFile = workingDirectry + @"\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+            var rScriptAvdModelPath = workingDirectry + @"\setting\";// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
+            var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
+            var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
+
+
+            var padelProgramPath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\PaDEL-Descriptor\";//PaDELのフォルダパス
+            var rLocationPath = @"D:\Program Files\R\R-3.6.3\bin\x64"; // Rのpath
+
+
+            //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
+
+            //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath);
+
+            //var padelOutFileName = workingDirectry + @"\PadelResult\202006221842.csv"; // PaDELで出力されたファイル(csv)
+
+            //RtCcsPredictManager.selectDescriptor(workingDirectry, padelOutFileName, descriptorSelecerRTFile, descriptorSelecerCSSFile);
+
+            // modeling on R
+            //RtCcsPredictOnR.generatePredictModel(workingDirectry, rLocationPath, rScriptAvdModelPath);  // modeling on R
+            //// RT predict
+            //RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
+            ///// CCS predict
+            //RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
+
+            // RT and CCS predict
+            //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+
+            //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
+
+            //var outputResultFolderPath = @"F:\takahashi\20200616_RT_Prediction\working3\mergeToMsp\";
+            //var mspFilePath = outputResultFolderPath + @"\Msp20200622153756.msp";
+            //var predictedFilesDirectry = @"F:\takahashi\20200616_RT_Prediction\working3\predictResult\";
+            //var dbFileName = predictedFilesDirectry + "\\predictedFile_20200622_2.txt";
+
+            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
+
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+
+
+
+            ////フォルダ連続処理
+            ///
+            workingDirectry = @"F:\takahashi\20200616_RT_Prediction\complete\";
+            var toGenarateSdfDirectry = workingDirectry + "\\txt2\\";
+            var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\";
+
+            //RtCcsPredictManager.generateSdfsOnNCDK(toGenarateSdfDirectry);
+            //RtCcsPredictManager.runFoldersToPaDEL(toPadelDirectry, padelDescriptortypes, padelProgramPath); //これを使うよりコマンドを利用したほうが早いです
+
+            //padel結果ファイルを1つのディレクトリに入れて開始(予測結果をpredictResultディレクトリに保存するところまで)
+            //var padelResultDirectry = workingDirectry + "\\padelOut3\\";
+            //RtCcsPredictManager.runFolderToFitting(workingDirectry, toGenarateSdfDirectry, padelResultDirectry,
+            //    descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+
+            var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";
+            var mspFilePath = outputResultFolderPath + @"\Msp20200622153756.msp";
+            var predictedFilesDirectry = workingDirectry + "\\predictResult\\";
+            var dbFileName = predictedFilesDirectry + "\\predictedFile_20200625_curated.txt"; //generate
+
+            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
+
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+
+            ///tool
+            ///Inchikey And Smiles List From Msp
+            //var mspPath = @"F:\takahashi\20200616_RT_Prediction\msp\";
+            //var mspFile = mspPath + "Bile acids.msp";
+            //MergeRTandCCSintoMsp.generateInchikeyAndSmilesListFromMsp(mspFile);
+
+
             ///mspファイル生成ツール
-            var minimumChains = new List<string>
-            {
-                "12:0","14:0","14:1", "15:0","15:1", "16:0","16:1","16:2", "17:0","17:1","17:2",
-                "18:0","18:1","18:2","18:3","20:3","20:4","20:5","22:3","22:4","22:5",
-                "22:6" ,"24:0" ,"26:0","28:0"
-            };
 
-            var sphingoChains = new List<string>();
-            var acylChains = new List<string>();
-            var extraFaChains = new List<string>();
+            //var minimumChains = new List<string>
+            //{
+            //    "12:0","14:0","14:1", "15:0","15:1", "16:0","16:1","16:2", "17:0","17:1","17:2",
+            //    "18:0","18:1","18:2","18:3","20:3","20:4","20:5","22:3","22:4","22:5",
+            //    "22:6" ,"24:0" ,"26:0","28:0"
+            //};
 
-            var faChain1 = new List<string>();
-            var faChain2 = new List<string>();
-            var faChain3 = new List<string>();
+            //var sphingoChains = new List<string>();
+            //var acylChains = new List<string>();
+            //var extraFaChains = new List<string>();
 
-            var outputFolder = @"D:\MSDIALmsp_generator\outputFolder\";
+            //var faChain1 = new List<string>();
+            //var faChain2 = new List<string>();
+            //var faChain3 = new List<string>();
 
-            ////// check
+            //var outputFolder = @"F:\takahashi\20200616_RT_Prediction\msp";
+
+            //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
             //var LipidAChains = new List<string>
-            //{"18:0"  };
+            //{"18:3","18:1"  };
             //Common.switchingLipid(LipidAChains, "LipidA", outputFolder);
 
 
-            // chain変数部分に脂肪鎖『**:*』をListで与えるとそれをもとにLipidの構造が作成され、mspを生成します。
-            //
-            // 脂肪鎖のList作成tool
-            //  以下の変数の組み合わせでListを作成します。
-            // generate***Chains(最小の炭素数, 最小の二重結合数, 最大の炭素数, 最大の二重結合数, chain listの名前)
+            /// chain変数部分に脂肪鎖『**:*』をListで与えるとそれをもとにLipidの構造が作成され、mspを生成します。
+            ///
+            /// 脂肪鎖のList作成tool
+            ///  以下の変数の組み合わせでListを作成します。
+            /// generate***Chains(最小の炭素数, 最小の二重結合数, 最大の炭素数, 最大の二重結合数, chain listの名前)
 
-            ////// ceramide 
+            //// ceramide 
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 30, 3);
             //acylChains = Common.GenerateAcylChains(8, 0, 44, 3);
             //Common.switchingLipid(sphingoChains, acylChains, "SM", outputFolder);
@@ -200,21 +284,21 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, faChain2, "EtherMGDG", outputFolder);   // faChain1 = Ether alkyl, faChain2 = FA
             //Common.switchingLipid(faChain1, faChain2, "EtherSMGDG", outputFolder);  // faChain1 = Ether alkyl, faChain2 = FA
 
-            // GL exchangable 3 chain 
+            ////GL exchangable 3 chain
             //faChain1 = Common.GenerateAcylChains(8, 0, 26, 12);
             //Common.switchingLipid(faChain1, "TG", outputFolder);
 
-            // GL three and one set chains
+            ////GL three and one set chains
             //faChain1 = Common.GenerateAcylChains(8, 0, 10, 0);
             //faChain1.AddRange(minimumChains);
             ////faChain2 = Common.GenerateAcylChains(8, 0, 22, 6);
             //Common.switchingLipid(faChain1, minimumChains, "FAHFATG", outputFolder); // faChain1 = TG FA, faChain2 = Extra FA
 
             //// GL exchangable 4 chain 
-            faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
-            Common.switchingLipid(minimumChains, "CL", outputFolder);
+            //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
+            //Common.switchingLipid(minimumChains, "CL", outputFolder);
 
-            // GL GP two And One Set Cains
+            ////GL GP two And One Set Cains
             //faChain1 = Common.GenerateAcylChains(12, 0, 22, 6);
             //faChain2 = Common.GenerateAcylChains(12, 0, 22, 6);
             //Common.switchingLipid(faChain1, faChain2, "MLCL", outputFolder); // faChain1 = SN1,SN2, faChain2 = SN3
@@ -231,18 +315,18 @@ namespace CompMs.MspGenerator
             ////// single Acyl Chain With Steroidal Lipid
             ////
             //{
-            //faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
+            //    faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
 
-            //Common.switchingLipid(faChain1, "DCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "GDCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "GLCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "TDCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "TLCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "KLCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "KDCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "LCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "DCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "GDCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "GLCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "TDCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "TLCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "KLCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "KDCAE", outputFolder);
+            //    Common.switchingLipid(faChain1, "LCAE", outputFolder);
 
-            //Common.switchingLipid(faChain1, "CE", outputFolder);
+            //    Common.switchingLipid(faChain1, "CE", outputFolder);
             //    Common.switchingLipid(faChain1, "BRSE", outputFolder);
             //    Common.switchingLipid(faChain1, "CASE", outputFolder);
             //    Common.switchingLipid(faChain1, "SISE", outputFolder);
@@ -258,19 +342,19 @@ namespace CompMs.MspGenerator
 
             //// 2 Acyl Chain With PA Steroidal Lipid
             //{
-            //faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
+            //    faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
 
-            //Common.switchingLipid(faChain1, "CSLPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "BRSLPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "CASLPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "SISLPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "STSLPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "CSLPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "BRSLPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "CASLPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "SISLPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "STSLPHex", outputFolder);
 
-            //Common.switchingLipid(faChain1, "CSPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "BRSPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "CASPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "SISPHex", outputFolder);
-            //Common.switchingLipid(faChain1, "STSPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "CSPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "BRSPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "CASPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "SISPHex", outputFolder);
+            //    Common.switchingLipid(faChain1, "STSPHex", outputFolder);
             //}
 
             //////others single chain
@@ -282,22 +366,22 @@ namespace CompMs.MspGenerator
             //}
 
             //{
-            //    faChain1=Common.GenerateAcylChains(2, 0, 44, 12);
+            //    faChain1 = Common.GenerateAcylChains(2, 0, 44, 12);
             //    Common.switchingLipid(faChain1, "FA", outputFolder);
             //}
-            {
-                //faChain1 = Common.GenerateAcylChains(14, 0, 28, 12);
-                //Common.switchingLipid(faChain1, "OxFA", outputFolder);
-                //Common.switchingLipid(faChain1, "alphaOxFA", outputFolder);
+            //{
+            //    faChain1 = Common.GenerateAcylChains(14, 0, 28, 12);
+            //    Common.switchingLipid(faChain1, "OxFA", outputFolder);
+            //    Common.switchingLipid(faChain1, "alphaOxFA", outputFolder);
 
-            }
+            //}
 
             //////others 2 chains
             //{
-            //faChain2 = Common.GenerateAcylChains(2, 0, 11, 0);
-            //faChain2.AddRange(minimumChains);
-            //Common.switchingLipid(minimumChains, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-            //Common.switchingLipid(minimumChains, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //    faChain2 = Common.GenerateAcylChains(2, 0, 11, 0);
+            //    faChain2.AddRange(minimumChains);
+            //    Common.switchingLipid(minimumChains, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //    Common.switchingLipid(minimumChains, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
             //}
 
 
@@ -344,7 +428,7 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(AcPIMChains, "Ac3PIM2", outputFolder);
             //Common.switchingLipid(AcPIMChains, "Ac4PIM2", outputFolder);
 
-            //var LipidAChains = new List<string>
+            //var LipidAChains = new List<string> //たくさん代入するとエラーになります
             //{
             ////"10:0",
             //    "12:0","14:0","16:0","18:0"
@@ -352,21 +436,23 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(LipidAChains, "LipidA", outputFolder);
 
 
-            // other tools
+            ////ここまで
 
-            //// nameとSMILESのリストを与えると、adductごとのprecursor massのみをピークに出力したmspファイルを生成します。
-            //// exportMSP.fromSMILEStoMsp(nameとSMILESのリスト, 出力ファイル) 両方ともフルパスで与える
-            //exportMSP.fromSMILEStoMsp(@"D:\MSDIALmsp_generator\outputFolder\temp.txt", @"D:\MSDIALmsp_generator\outputFolder\temp.txt");
+            //////other tools
 
-            //var acylChains1 = new List<string>();
-            //var acylChains2 = new List<string>();
+            ////// nameとSMILESのリストを与えると、adductごとのprecursor massのみをピークに出力したmspファイルを生成します。
+            ////// exportMSP.fromSMILEStoMsp(nameとSMILESのリスト, 出力ファイル) 両方ともフルパスで与える
+            ////ExportMSP.fromSMILEStoMsp(@"D:\MSDIALmsp_generator\outputFolder\temp.txt", @"D:\MSDIALmsp_generator\outputFolder\temp.txt");
 
-            //Common.GenerateFaAcylChains(2, 0, 38, 10, acylChains1);
-            //Common.GenerateAcylChains(2, 0, 38, 10, acylChains2);
-            //Common.GenerateSmilesList(acylChains1, acylChains2, "PC", "-phenyl", @"D:\MSDIALmsp_generator\outputFolder\PC-phenyl.txt");
-            //ExportMSP.fromSMILEStoMsp(@"D:\MSDIALmsp_generator\outputFolder\OxFA.txt", @"D:\MSDIALmsp_generator\outputFolder\OxFA.txt");
+            ////var acylChains1 = new List<string>();
+            ////var acylChains2 = new List<string>();
 
-            //Common.fromSMILEStoMeta(@"D:\MSDIALmsp_generator\outputFolder\OxFA.txt", @"D:\MSDIALmsp_generator\outputFolder\OxFA.txt");
+            ////Common.GenerateFaAcylChains(2, 0, 38, 10, acylChains1);
+            ////acylChains2 = Common.GenerateAcylChains(2, 0, 38, 10, );
+            ////Common.GenerateSmilesList(acylChains1, acylChains2, "PC", "-phenyl", @"D:\MSDIALmsp_generator\outputFolder\PC-phenyl.txt");
+            ////ExportMSP.fromSMILEStoMsp(@"D:\MSDIALmsp_generator\outputFolder\OxFA.txt", @"D:\MSDIALmsp_generator\outputFolder\OxFA.txt");
+
+            ////Common.fromSMILEStoMeta(@"D:\MSDIALmsp_generator\outputFolder\OxFA.txt", @"D:\MSDIALmsp_generator\outputFolder\OxFA.txt");
         }
     }
 }

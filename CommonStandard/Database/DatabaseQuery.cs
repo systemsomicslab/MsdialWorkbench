@@ -36,6 +36,7 @@ namespace Rfx.Riken.OsakaUniv
         private bool serum;
         private bool csf;
         private bool blexp;
+        private bool npa;
 
 
         [Key(0)]
@@ -221,5 +222,20 @@ namespace Rfx.Riken.OsakaUniv
                 blexp = value;
             }
         }
+
+        [Key(22)]
+        public bool Npa
+        {
+            get
+            {
+                return npa;
+            }
+
+            set
+            {
+                npa = value;
+            }
+        }
+
     }
 }
