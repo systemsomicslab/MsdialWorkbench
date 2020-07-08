@@ -23,8 +23,6 @@ namespace CompMs.MsdialCore.DataObj {
         public int PeakID { get; set; } // sequential IDs from the same dimmension e.g. RT vs MZ or IM vs MZ
         [Key(4)]
         public int ParentPeakID { get; set; } // for LC-IM-MS/MS. The parent peak ID generating the daughter peak IDs
-        [Key(5)]
-        public int DeconvolutionID { get; set; } // 
         [Key(6)]
         public long SeekPointToDCLFile { get; set; } // deconvoluted spectrum is stored in dcl file, and this is the seek pointer
         [Key(7)]
@@ -43,6 +41,19 @@ namespace CompMs.MsdialCore.DataObj {
         public int ChromScanIdTop { get; set; }
         [Key(13)]
         public int ChromScanIdRight { get; set; }
+        [Key(38)]
+        public int MS1RawSpectrumIdTop { get; set; }
+        [Key(39)]
+        public int MS1RawSpectrumIdLeft { get; set; }
+        [Key(40)]
+        public int MS1RawSpectrumIdRight { get; set; }
+        [Key(41)]
+        public int MS1AccumulatedMs1RawSpectrumIdTop { get; set; } // used for LC-IM-MS/MS
+        [Key(42)]
+        public int MS1AccumulatedMs1RawSpectrumIdLeft { get; set; } // used for LC-IM-MS/MS
+        [Key(43)]
+        public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
+
         [Key(14)]
         public ChromXs ChromXsLeft { get; set; }
         [Key(15)]
@@ -59,7 +70,7 @@ namespace CompMs.MsdialCore.DataObj {
         public double PeakAreaAboveZero { get; set; }
         [Key(21)]
         public double PeakAreaAboveBaseline { get; set; }
-        [Key(38)]
+        [Key(22)]
         public double Mass { get; set; }
 
         public double PeakWidth(ChromXType type) {
@@ -72,8 +83,6 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         // set for IMMScanProperty
-        [Key(22)]
-        public double PrecursorMz { get; set; }
         [Key(23)]
         public IonMode IonMode { get; set; }
 
@@ -113,7 +122,5 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(37)]
         public ChromatogramPeakShape PeakShape { get; set; }
 
-      
-      
     }
 }

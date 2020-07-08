@@ -59,8 +59,6 @@ namespace CompMs.MsdialCore.DataObj {
         public int PeakID { get; set; } // sequential IDs from the same dimmension e.g. RT vs MZ or IM vs MZ
         [Key(13)]
         public int ParentPeakID { get; set; } // for LC-IM-MS/MS. The parent peak ID generating the daughter peak IDs
-        [Key(14)]
-        public int DeconvolutionID { get; set; } // 
         [Key(15)]
         public long SeekPointToDCLFile { get; set; } // deconvoluted spectrum is stored in dcl file, and this is the seek pointer
 

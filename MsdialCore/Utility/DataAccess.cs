@@ -82,6 +82,7 @@ namespace CompMs.MsdialCore.Utility {
 
             var peakFeature = new ChromatogramPeakFeature() {
 
+                MasterPeakID = result.PeakID,
                 PeakID = result.PeakID,
                
                 ChromScanIdLeft = result.ScanNumAtLeftPeakEdge,
@@ -116,6 +117,13 @@ namespace CompMs.MsdialCore.Utility {
                     AmplitudeScoreValue = result.AmplitudeScoreValue
                 }
             };
+
+            if (type != ChromXType.Mz) {
+                peakFeature.ChromXs.Mz = new MzValue(mass);
+                peakFeature.ChromXsLeft.Mz = new MzValue(mass);
+                peakFeature.ChromXsTop.Mz = new MzValue(mass);
+                peakFeature.ChromXsRight.Mz = new MzValue(mass);
+            }
 
             return peakFeature;
         }
