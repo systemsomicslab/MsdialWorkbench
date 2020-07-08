@@ -31,7 +31,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             ChromatogramPeaksDataSummary summary, double targetCE = -1) { // targetCE is used in multiple CEs option
             
             //first, the MS/MS spectrum at the scan point of peak top is stored.
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataTypeMS2, chromPeakFeature.MS2RawSpectrumID, 
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, chromPeakFeature.MS2RawSpectrumID, 
                 param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
@@ -45,7 +45,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (param.MethodType == Common.Enum.MethodType.ddMSMS) {
+            if (param.AcquisitionType == Common.Enum.AcquisitionType.DDA) {
                 return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
             }
 

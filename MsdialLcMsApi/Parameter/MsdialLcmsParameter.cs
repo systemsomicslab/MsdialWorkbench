@@ -6,5 +6,9 @@ using System.Text;
 
 namespace CompMs.MsdialLcmsApi.Parameter {
     public class MsdialLcmsParameter : ParameterBase {
+        public override List<string> ParametersAsText() {
+            var pStrings = base.ParametersAsText();
+            return pStrings;
+        }
     }
 }

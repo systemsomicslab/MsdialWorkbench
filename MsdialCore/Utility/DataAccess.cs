@@ -11,6 +11,7 @@ using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.RawDataHandler.Core;
@@ -23,6 +24,17 @@ using System.Text;
 namespace CompMs.MsdialCore.Utility {
     public sealed class DataAccess {
         private DataAccess() { }
+
+        // raw data support
+        public static bool IsDataFormatSupported(string filepath) {
+            if (System.IO.File.Exists(filepath)) {
+                var extension = System.IO.Path.GetExtension(filepath).ToLower().Substring(1); // .abf -> abf
+                foreach (var item in System.Enum.GetNames(typeof(SupportMsRawDataExtension))) {
+                    if (item == extension) return true;
+                }
+            }
+            return false;
+        }
 
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
@@ -715,7 +727,7 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // get spectrum
-        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, DataType dataType, 
+        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, MSDataType dataType, 
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
@@ -729,7 +741,7 @@ namespace CompMs.MsdialCore.Utility {
                 spectra.Add(new SpectrumPeak() { Mass = massSpectra[i].Mz, Intensity = massSpectra[i].Intensity });
             }
 
-            if (dataType == DataType.Centroid) return spectra.Where(n => n.Intensity > amplitudeThresh).ToList();
+            if (dataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > amplitudeThresh).ToList();
 
             if (spectra.Count == 0) return new List<SpectrumPeak>();
 
@@ -744,7 +756,7 @@ namespace CompMs.MsdialCore.Utility {
         public static List<SpectrumPeak> GetAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
             var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
-            if (param.DataTypeMS2 == DataType.Profile && massSpectrum.Count > 0) {
+            if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
                 return SpectralCentroiding.Centroid(massSpectrum);
             }
             else {

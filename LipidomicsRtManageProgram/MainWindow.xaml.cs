@@ -221,7 +221,7 @@ namespace Lipidomics.Retentiontime.Manager {
 
             Console.WriteLine("Loading the lbm2 file.");
 
-            var mspDB = MspFileParcer.MspFileReader(this.lbmFilePath);
+            var mspDB = MspFileParser.MspFileReader(this.lbmFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB) {
                 if (!inchikeyToSmiles.ContainsKey(query.InChIKey)) {
