@@ -64,6 +64,15 @@ namespace CompMs.Common.Components {
         public int Charge { get; set; }
         [Key(22)]
         public int MsLevel { get; set; }
+        [Key(23)]
+        public float RetentionTimeTolerance { get; set; } = 0.05F; // used for text library searching
+        [Key(24)]
+        public float MassTolerance { get; set; } = 0.05F; // used for text library searching
+        [Key(25)]
+        public float MinimumPeakHeight { get; set; } = 1000F; // used for text library searching
+        [Key(26)]
+        public bool IsTargetMolecule { get; set; } = true; // used for text library searching
+
 
         public void AddPeak(double mass, double intensity, string comment = null) {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));

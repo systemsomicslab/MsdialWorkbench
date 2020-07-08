@@ -42,7 +42,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 cSpectrum = DataAccess.GetAccumulatedMs2Spectra(spectrumList, dtChromPeak, rtChromPeak, param);
             }
             else {
-                cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataTypeMS2, dtChromPeak.MS2RawSpectrumID,
+                cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, dtChromPeak.MS2RawSpectrumID,
                     param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             }
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
@@ -56,7 +56,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
-            if (param.MethodType == Common.Enum.MethodType.ddMSMS) {
+            if (param.AcquisitionType == Common.Enum.AcquisitionType.DDA) {
                 return MSDecObjectHandler.GetMSDecResultByRawSpectrum(dtChromPeak, curatedSpectra);
             }
 

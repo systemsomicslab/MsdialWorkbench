@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Extension;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,10 @@ namespace CompMs.Common.Utility {
                     fs.Close();
             }
             return false;
+        }
 
+        public static bool IsFileExist(string file) {
+            return !file.IsEmptyOrNull() && System.IO.File.Exists(file);
         }
     }
 }

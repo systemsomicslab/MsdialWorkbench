@@ -265,7 +265,7 @@ namespace CompMs.MsdialCore.Algorithm {
             assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, spectrumList, param);
 
             // linked by partial matching of MS1 and MS2
-            if (param.IsAIF == true) return;
+            if (param.AcquisitionType == AcquisitionType.AIF) return;
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, spectrumList, param);
         }
 

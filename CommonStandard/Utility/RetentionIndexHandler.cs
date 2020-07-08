@@ -1,13 +1,33 @@
 ﻿using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.Utility {
     public sealed class RetentionIndexHandler {
         private RetentionIndexHandler() { }
-        
+
+        public static Dictionary<int, float> GetRiDictionary(string filePath) {
+            var dict = new Dictionary<int, float>();
+            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line == string.Empty) break;
+                    var lineArray = line.Split('\t');
+                    if (lineArray.Length < 2) continue;
+
+                    int carbon; float rt;
+                    if (int.TryParse(lineArray[0], out carbon) && float.TryParse(lineArray[1], out rt))
+                        dict[carbon] = rt;
+                }
+            }
+            if (dict.Count == 0) return null;
+            return dict;
+        }
+
         public static float GetRetentionIndexByAlkanes(Dictionary<int, float> retentionIndexDictionary, float retentionTime) {
             var leftCarbon = retentionIndexDictionary.Min(n => n.Key);
             var rightCarbon = retentionIndexDictionary.Max(n => n.Key);

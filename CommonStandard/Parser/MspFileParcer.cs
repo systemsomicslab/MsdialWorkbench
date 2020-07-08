@@ -19,8 +19,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.Parser {
-    public sealed class MspFileParcer {
-        private MspFileParcer() { }
+    public sealed class MspFileParser {
+        private MspFileParser() { }
         static IupacDatabase IupacDatabase = IupacResourceParser.GetIUPACDatabase();
 
         /// <summary>

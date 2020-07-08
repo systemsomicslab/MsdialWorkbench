@@ -16,7 +16,7 @@ namespace CompMs.Common.DataObj {
         public RawData()
         {
             ScanNumber = -1;
-            SpectrumType = DataType.Centroid;
+            SpectrumType = MSDataType.Centroid;
             IonMode = IonMode.Positive;
             Comment = string.Empty;
             CollisionEnergy = 40.0;
@@ -46,7 +46,7 @@ namespace CompMs.Common.DataObj {
         public double PrecursorMz { get; set; }
         public string PrecursorType { get; set; }
         public IonMode IonMode { get; set; }
-        public DataType SpectrumType { get; set; }
+        public MSDataType SpectrumType { get; set; }
         public int Intensity { get; set; }
         public string MetaboliteName { get; set; }
         public string InstrumentType { get; set; }

@@ -543,7 +543,7 @@ namespace CompMs.MsdialCore.MSDec {
            MsDecBin[] msdecBins, int chromScanOfPeakTop, ParameterBase param) {
             var rdamScan = msdecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.CentroidMs1Tolerance; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
-            var focusedMs1Spectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataType, rdamScan, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
+            var focusedMs1Spectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, rdamScan, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
             focusedMs1Spectrum = ExcludeMasses(focusedMs1Spectrum, param.ExcludedMassList);
             if (focusedMs1Spectrum.Count == 0) return new List<List<ChromatogramPeak>>();
 

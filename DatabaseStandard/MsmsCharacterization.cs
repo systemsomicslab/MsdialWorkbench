@@ -5301,10 +5301,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                         //Console.WriteLine(sn1_2Carbon + ":" + sn1_2Double + "-" + sn3_4Carbon + ":" + sn3_4Double + " " + SN1_SN2 + " " + SN3_SN4);
 
                         var query2 = new List<Peak>
-                                            {
-                                                new Peak() { Mz = SN1_SN2, Intensity = 1.0 },
-                                                new Peak() { Mz = SN3_SN4, Intensity = 1.0 }
-                                            };
+                        {
+                            new Peak() { Mz = SN1_SN2, Intensity = 1.0 },
+                            new Peak() { Mz = SN3_SN4, Intensity = 1.0 }
+                        };
                         var foundCount2 = 0;
                         var averageIntensity2 = 0.0;
                         countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);

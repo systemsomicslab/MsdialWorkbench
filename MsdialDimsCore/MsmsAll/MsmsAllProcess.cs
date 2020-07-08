@@ -40,16 +40,16 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             var iupacDB = IupacResourceParser.GetIUPACDatabase();
             List<MoleculeMsReference> mspDB = null;
             if (param.TargetOmics == TargetOmics.Metablomics) {
-                mspDB = MspFileParcer.MspFileReader(param.MspFilePath);
+                mspDB = MspFileParser.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
                 var extension = System.IO.Path.GetExtension(param.MspFilePath);
                 if (extension == ".lbm2") {
-                    mspDB = MspFileParcer.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
                 else {
-                    mspDB = MspFileParcer.LbmFileReader(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.LbmFileReader(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
             }

@@ -107,7 +107,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                     else if (Regex.IsMatch(wkstr, "SPECTRUMTYPE:", RegexOptions.IgnoreCase))
                     {
                         string spectrum = wkstr.Split(':')[1].Trim();
-                        if (spectrum.Contains("Centroid") || spectrum.Contains("C")) rawData.SpectrumType = DataType.Centroid; else rawData.SpectrumType = DataType.Profile;
+                        if (spectrum.Contains("Centroid") || spectrum.Contains("C")) rawData.SpectrumType = MSDataType.Centroid; else rawData.SpectrumType = MSDataType.Profile;
                     }
                     else if (Regex.IsMatch(wkstr, "INTENSITY:", RegexOptions.IgnoreCase))
                     {
