@@ -20,8 +20,21 @@ namespace CompMs.MspGenerator
             { "[M+HCOO]-",new AdductIon(){ AdductIonName= "[M+HCOO]-", AdductIonMass = MassDictionary.HCOOadduct ,AdductSurfix ="FA", IonMode ="Negative"} },
             { "[M+CH3COO]-",new AdductIon(){ AdductIonName= "[M+CH3COO]-", AdductIonMass = MassDictionary.CH3COOadduct ,AdductSurfix ="Hac", IonMode ="Negative"} },
             { "[M-2H]2-",new AdductIon(){ AdductIonName= "[M-2H]2-", AdductIonMass = -MassDictionary.Proton ,AdductSurfix ="2H-", IonMode ="Negative"} },
-
         };
+
+        public static Dictionary<string, string>
+        adductIonSurfixDic = new Dictionary<string, string>()
+        {
+                    { "non_Pos" , "[M]+"},
+                    { "H_Pos","[M+H]+"},
+                    { "NH4_Pos","[M+NH4]+" },
+                    { "Na_Pos","[M+Na]+" },
+                    { "H_Neg","[M-H]-" },
+                    { "FA_Neg","[M+HCOO]-" },
+                    { "Hac_Neg","[M+CH3COO]-"},
+                    { "2H-_Neg","[M-2H]2-"},
+        };
+
 
         public static Dictionary<string, List<string>>
         lipidClassAdductDic = new Dictionary<string, List<string>>()

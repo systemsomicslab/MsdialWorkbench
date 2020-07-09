@@ -340,6 +340,9 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                 case "BLEXP":
                     databaseQuery.Blexp = true;
                     break;
+                case "NPA":
+                    databaseQuery.Npa = true;
+                    break;
                 default:
                     break;
             }

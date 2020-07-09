@@ -85,7 +85,8 @@ namespace Riken.Metabolomics.StructureFinder.Utility {
                     (qDbQuery.Saliva == true && cDbQuery.Saliva == true) ||
                     (qDbQuery.Serum == true && cDbQuery.Serum == true) ||
                     (qDbQuery.Csf == true && cDbQuery.Csf == true) ||
-                    (qDbQuery.Blexp == true && cDbQuery.Blexp == true)
+                    (qDbQuery.Blexp == true && cDbQuery.Blexp == true)||
+                    (qDbQuery.Npa == true && cDbQuery.Npa == true)
                     )
                 {
                     return true;

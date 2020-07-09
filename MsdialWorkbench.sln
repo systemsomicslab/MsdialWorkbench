@@ -127,9 +127,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTestApp", "Msdial
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApi", "MsdialLcImMsApi\MsdialLcImMsApi.csproj", "{0750647B-1DFC-49DC-ADFB-16235E22AA88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MspGenerator", "MspGenerator\MspGenerator.csproj", "{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MspGenerator", "MspGenerator\MspGenerator.csproj", "{72F4E904-E10A-4E3A-BC95-2412F776FDB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MspGeneratorConsoleApp", "MspGeneratorConsoleApp\MspGeneratorConsoleApp.csproj", "{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MspGeneratorConsoleApp", "MspGeneratorConsoleApp\MspGeneratorConsoleApp.csproj", "{6D693B0F-D99C-4946-83D1-248FFC3A5637}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTests", "MsdialDimsCoreTests\MsdialDimsCoreTests.csproj", "{98544BC7-3111-4A2B-B33D-72154A7CBC81}"
 EndProject
