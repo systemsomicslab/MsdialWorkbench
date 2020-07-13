@@ -121,6 +121,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTestApp", "Ms
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialDimsCoreUiTestApp", "MsdialDimsCoreUiTestApp\MsdialDimsCoreUiTestApp.csproj", "{8BDFBF53-884D-447D-ABA8-9D408A7F982E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApi", "MsdialGcMsApi\MsdialGcMsApi.csproj", "{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcMsApi", "MsdialLcMsApi\MsdialLcMsApi.csproj", "{A45C80BC-85BB-4953-AA7D-941633964F08}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTestApp", "MsdialCoreTestApp\MsdialCoreTestApp.csproj", "{AA61D298-CAC4-4CFA-8F20-00CDB5ACA5BC}"
@@ -132,6 +134,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MspGeneratorConsoleApp", "MspGeneratorConsoleApp\MspGeneratorConsoleApp.csproj", "{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTests", "MsdialDimsCoreTests\MsdialDimsCoreTests.csproj", "{98544BC7-3111-4A2B-B33D-72154A7CBC81}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTests", "MsdialCoreTests\MsdialCoreTests.csproj", "{B21FC8DB-0C0D-4313-AE05-53F328B5B827}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -375,6 +379,10 @@ Global
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A45C80BC-85BB-4953-AA7D-941633964F08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A45C80BC-85BB-4953-AA7D-941633964F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A45C80BC-85BB-4953-AA7D-941633964F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -399,12 +407,16 @@ Global
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal
