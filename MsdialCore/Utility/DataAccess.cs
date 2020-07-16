@@ -46,6 +46,16 @@ namespace CompMs.MsdialCore.Utility {
             return rawSpectra;
         }
 
+        public static void GetAllSpectraWithAccumulatedMS1(string filepath, out List<RawSpectrum> allSpectrumList, out List<RawSpectrum> accumulatedSpectrumList) {
+            allSpectrumList = new List<RawSpectrum>();
+            accumulatedSpectrumList = new List<RawSpectrum>();
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+                var measurment = GetRawDataMeasurement(rawDataAccess);
+                allSpectrumList = measurment.SpectrumList;
+                accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
+            }
+        }
+
         public static RawMeasurement GetRawDataMeasurement(RawDataAccess rawDataAccess) {
             var mes = rawDataAccess.GetMeasurement();
             return mes;
@@ -87,7 +97,7 @@ namespace CompMs.MsdialCore.Utility {
 
             return smoothedPeaklist;
         }
-       
+
         // converter
         public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass) {
             if (result == null) return null;
@@ -96,7 +106,7 @@ namespace CompMs.MsdialCore.Utility {
 
                 MasterPeakID = result.PeakID,
                 PeakID = result.PeakID,
-               
+
                 ChromScanIdLeft = result.ScanNumAtLeftPeakEdge,
                 ChromScanIdTop = result.ScanNumAtPeakTop,
                 ChromScanIdRight = result.ScanNumAtRightPeakEdge,
@@ -145,7 +155,7 @@ namespace CompMs.MsdialCore.Utility {
             var spectrum = rawSpectrumList[scanID].Spectrum;
             var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
             //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
-            var massDiffBase = MassDiffDictionary.C13_C12;
+            var massDiffBase = MassDiffDictionary.CHNO_AverageStepSize;
             var maxIsotopeRange = (double)maxIsotopes;
             var isotopes = new List<IsotopicPeak>();
             for (int i = 0; i < maxIsotopes; i++) {
@@ -161,20 +171,21 @@ namespace CompMs.MsdialCore.Utility {
                 if (peak.Mz > targetedMz + massDiffBase * maxIsotopeRange + massTolerance) break;
 
                 foreach (var isotope in isotopes) {
-                    if (Math.Abs(isotope.Mass - peak.Mz) < massTolerance)
-                        isotope.RelativeAbundance += peak.Intensity;
+                    if (Math.Abs(isotope.Mass - peak.Mz) < massTolerance) {
+                        isotope.AbsoluteAbundance += peak.Intensity;
+                    }
                 }
             }
 
-            if (isotopes[0].RelativeAbundance <= 0) return null;
-            var baseIntensity = isotopes[0].RelativeAbundance;
+            if (isotopes[0].AbsoluteAbundance <= 0) return null;
+            var baseIntensity = isotopes[0].AbsoluteAbundance;
 
             foreach (var isotope in isotopes)
-                isotope.RelativeAbundance = isotope.RelativeAbundance / baseIntensity * 100;
+                isotope.RelativeAbundance = isotope.AbsoluteAbundance / baseIntensity * 100;
 
             return isotopes;
         }
-     
+
 
         // index access
         public static int GetScanStartIndexByMz(float targetMass, List<ChromatogramPeakFeature> features) {
@@ -250,7 +261,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatograms
-        public static List<ChromatogramPeak> GetMs1Peaklist(List<RawSpectrum> spectrumList, float targetMass, float ms1Tolerance, IonMode ionmode, 
+        public static List<ChromatogramPeak> GetMs1Peaklist(List<RawSpectrum> spectrumList, float targetMass, float ms1Tolerance, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, float chromBegin = float.MinValue, float chromEnd = float.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
@@ -264,7 +275,7 @@ namespace CompMs.MsdialCore.Utility {
                 //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
                 RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
-                peaklist.Add(new ChromatogramPeak() {  ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
+                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
             return peaklist;
@@ -299,7 +310,7 @@ namespace CompMs.MsdialCore.Utility {
             return chromPeakslist;
         }
 
-        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList, 
+        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList,
             double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
@@ -311,7 +322,7 @@ namespace CompMs.MsdialCore.Utility {
                     var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
                     var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
                     if (specPreMz - lowerOffset <= precursorMz && precursorMz < specPreMz + upperOffset) {
-                        RetrieveBinnedMzIntensity(spec.Spectrum, productMz, param.CentroidMs2Tolerance, 
+                        RetrieveBinnedMzIntensity(spec.Spectrum, productMz, param.CentroidMs2Tolerance,
                             out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
                         var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.ScanNumber;
@@ -354,11 +365,11 @@ namespace CompMs.MsdialCore.Utility {
                     }
                     else if (massSpectra[j].Mz >= quantMass + sliceWidth) break;
                 }
-                peaklist.Add(new ChromatogramPeak() { 
-                    ID = spectrum.ScanNumber, 
-                    ChromXs = new ChromXs(new RetentionTime(spectrum.ScanStartTime)), 
-                    Mass = maxMass, 
-                    Intensity = sum 
+                peaklist.Add(new ChromatogramPeak() {
+                    ID = spectrum.ScanNumber,
+                    ChromXs = new ChromXs(new RetentionTime(spectrum.ScanStartTime)),
+                    Mass = maxMass,
+                    Intensity = sum
                 });
             }
 
@@ -448,8 +459,8 @@ namespace CompMs.MsdialCore.Utility {
                 var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
                     out basepeakMz, out basepeakIntensity);
                 if (!driftBinToChromPeak.ContainsKey(driftBin)) {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak() { 
-                        ID = driftIndex, ChromXs = new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = intensity 
+                    driftBinToChromPeak[driftBin] = new ChromatogramPeak() {
+                        ID = driftIndex, ChromXs = new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = intensity
                     };
                     driftBinToSpecPeak[driftBin] = new SpectrumPeak() { Mass = basepeakMz, Intensity = basepeakIntensity };
                 }
@@ -558,7 +569,7 @@ namespace CompMs.MsdialCore.Utility {
         public static double GetIonAbundanceOfMzInSpectrum(RawPeakElement[] massSpectra,
             float mz, float mztol, out double basepeakMz, out double basepeakIntensity) {
             var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = mz - mztol }, (a, b) => a.Mz.CompareTo(b.Mz));
-           // var startIndex = GetMs1StartIndex(mz, mztol, massSpectra);
+            // var startIndex = GetMs1StartIndex(mz, mztol, massSpectra);
             double sum = 0, maxIntensityMz = 0.0, maxMass = mz;
 
             //bin intensities for focused MZ +- ms1Tolerance
@@ -727,7 +738,36 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // get spectrum
-        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, MSDataType dataType, 
+        public static List<SpectrumPeak> GetMassSpectrum(List<RawSpectrum> spectrumList, MSDecResult msdecResult, ExportspectraType type, int msScanPoint, ParameterBase param) {
+            if (msScanPoint < 0) return new List<SpectrumPeak>();
+            if (type == ExportspectraType.deconvoluted) return msdecResult.Spectrum;
+            if (type == ExportspectraType.centroid && param.AcquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;
+
+            var spectra = new List<SpectrumPeak>();
+            var spectrum = spectrumList[msScanPoint];
+            var massSpectra = spectrum.Spectrum;
+
+            var mzBegin = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeBegin : param.Ms2MassRangeBegin;
+            var mzEnd = param.MachineCategory == MachineCategory.GCMS ? param.MassRangeEnd : param.Ms2MassRangeEnd;
+
+            for (int i = 0; i < massSpectra.Length; i++) {
+                if (massSpectra[i].Mz < mzBegin) continue;
+                if (massSpectra[i].Mz > mzEnd) continue;
+                spectra.Add(new SpectrumPeak() { Mass = massSpectra[i].Mz, Intensity = massSpectra[i].Intensity });
+            }
+
+            if (param.MS2DataType == MSDataType.Centroid) return spectra.Where(n => n.Intensity > param.AmplitudeCutoff).ToList();
+            if (spectra.Count == 0) return new List<SpectrumPeak>();
+            if (type == ExportspectraType.profile) return spectra;
+
+            var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
+            if (centroidedSpectra != null && centroidedSpectra.Count != 0)
+                return centroidedSpectra;
+            else
+                return spectra;
+        }
+
+        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, MSDataType dataType,
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
@@ -769,7 +809,7 @@ namespace CompMs.MsdialCore.Utility {
             var rt = rtChromFeature.ChromXsTop.Value;
             var rtLeft = rtChromFeature.ChromXsLeft.Value;
             var rtRight = rtChromFeature.ChromXsRight.Value;
-           
+
             var rtRange = 1f;
 
             if (rtRight - rt > rtRange) {
@@ -913,6 +953,166 @@ namespace CompMs.MsdialCore.Utility {
             if (isTextDB) return;
             if (!result.IsSpectrumMatch) {
                 feature.Name = "w/o MS2: " + result.Name;
+            }
+        }
+
+        public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
+            var category = param.MachineCategory;
+            var code = 999; // unknown
+            var mspSearchParam = param.MspSearchParam;
+            if (category == MachineCategory.GCMS) {
+                if (result.IsSpectrumMatch) code = 440; //440: EI-MS matched
+                if (result.IsRiMatch || result.IsRtMatch) code = 340; //340: RT/RI+EI-MS matched
+                return code;
+            }
+            else if (category == MachineCategory.LCIMMS || category == MachineCategory.IMMS) {
+                if (result.IsPrecursorMzMatch) code = 530; // 430: m/z+MS/MS matched
+                if (result.IsSpectrumMatch) code = 430; // 430: m/z+MS/MS matched
+                if (code == 430) {
+                    if (result.IsLipidPositionMatch) {
+                        code = 400; // 400: MS/MS matched, lipid acyl position resolved
+                    }
+                    else if (result.IsLipidChainsMatch) {
+                        code = 410; //410: MS/MS matched, lipid acyl chain resolved
+                    }
+                    else if (result.IsLipidClassMatch) {
+                        code = 420; //420: MS/MS matched, lipid class resolved
+                    }
+                }
+
+                if (result.IsRtMatch && result.IsCcsMatch) {
+                    if (result.IsSpectrumMatch) {
+                        switch (code) {
+                            case 400: return 100;
+                            case 410: return 110;
+                            case 420: return 120;
+                            case 430: return 130;
+                        }
+                    }
+                    else if (result.IsPrecursorMzMatch) {
+                        return 500;
+                    }
+                }
+                else if (result.IsRtMatch) {
+                    if (result.IsSpectrumMatch) {
+                        switch (code) {
+                            case 400: return 300;
+                            case 410: return 310;
+                            case 420: return 320;
+                            case 430: return 330;
+                        }
+                    }
+                    else if (result.IsPrecursorMzMatch) {
+                        return 520;
+                    }
+                }
+                else if (result.IsCcsMatch) {
+                    if (result.IsSpectrumMatch) {
+                        switch (code) {
+                            case 400: return 200;
+                            case 410: return 210;
+                            case 420: return 220;
+                            case 430: return 230;
+                        }
+                    }
+                    else if (result.IsPrecursorMzMatch) {
+                        return 510;
+                    }
+                }
+
+                return code;
+            }
+            else {
+                if (result.IsPrecursorMzMatch) code = 530; // 530: m/z matched
+                if (result.IsSpectrumMatch) code = 430; // 430: m/z+MS/MS matched
+                if (code == 430) {
+                    if (result.IsLipidPositionMatch) {
+                        code = 400; // 400: MS/MS matched, lipid acyl position resolved
+                    }
+                    else if (result.IsLipidChainsMatch) {
+                        code = 410; //410: MS/MS matched, lipid acyl chain resolved
+                    }
+                    else if (result.IsLipidClassMatch) {
+                        code = 420; //420: MS/MS matched, lipid class resolved
+                    }
+                }
+
+                if (result.IsRtMatch || result.IsRiMatch) {
+                    if (result.IsSpectrumMatch) {
+                        switch (code) {
+                            case 400: return 300;
+                            case 410: return 310;
+                            case 420: return 320;
+                            case 430: return 330;
+                        }
+                    }
+                    else if (result.IsPrecursorMzMatch) {
+                        return 520;
+                    }
+                }
+
+                return code;
+            }
+        }
+
+        // Alignment result
+        public static double GetInterpolatedValueForMissingValue(List<AlignmentChromPeakFeature> features,
+            bool replaceZeroToHalf, string exportType) {
+            if (exportType == "Height" || exportType == "Area" || exportType == "Normalized height" || exportType == "Normalized area") {
+                if (replaceZeroToHalf) {
+                    var nonZeroMin = double.MaxValue;
+                    foreach (var peak in features) {
+                        var variable = GetSpotValue(peak, exportType);
+                        if (variable > 0 && nonZeroMin > variable)
+                            nonZeroMin = variable;
+                    }
+
+                    if (nonZeroMin == double.MaxValue)
+                        nonZeroMin = 1;
+                    return nonZeroMin;
+                }
+                else {
+                    return -1;
+                }
+            }
+            else {
+                return -1;
+            }
+        }
+
+        public static string GetSpotValueAsString(AlignmentChromPeakFeature spotProperty, string exportType) {
+            switch (exportType) {
+                case "Height": return Math.Round(spotProperty.PeakHeightTop, 0).ToString();
+                case "Normalized height": return spotProperty.NormalizedPeakHeight.ToString();
+                case "Normalized area": return spotProperty.NormalizedPeakAreaAboveZero.ToString();
+                case "Area": return Math.Round(spotProperty.PeakAreaAboveZero, 0).ToString();
+                case "ID": return spotProperty.MasterPeakID.ToString();
+                case "RT": return Math.Round(spotProperty.ChromXsTop.RT.Value, 3).ToString();
+                case "RI": return Math.Round(spotProperty.ChromXsTop.RI.Value, 2).ToString();
+                case "Mobility": return Math.Round(spotProperty.ChromXsTop.Drift.Value, 5).ToString();
+                case "CCS": return Math.Round(spotProperty.CollisionCrossSection, 3).ToString();
+                case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
+                case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
+                case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+                default: return string.Empty;
+            }
+        }
+
+        public static double GetSpotValue(AlignmentChromPeakFeature spotProperty, string exportType) {
+            switch (exportType) {
+                case "Height": return spotProperty.PeakHeightTop;
+                case "Normalized height": return spotProperty.NormalizedPeakHeight;
+                case "Normalized area": return spotProperty.NormalizedPeakAreaAboveZero;
+                case "Area": return spotProperty.PeakAreaAboveZero;
+                case "ID": return spotProperty.MasterPeakID;
+                case "RT": return spotProperty.ChromXsTop.RT.Value;
+                case "RI": return spotProperty.ChromXsTop.RI.Value;
+                case "Mobility": return spotProperty.ChromXsTop.Drift.Value;
+                case "CCS": return spotProperty.CollisionCrossSection;
+                case "MZ": return spotProperty.Mass;
+                case "SN": return spotProperty.PeakShape.SignalToNoise;
+                case "MSMS": return spotProperty.MS2RawSpectrumID;
+                default: return -1;
             }
         }
     }

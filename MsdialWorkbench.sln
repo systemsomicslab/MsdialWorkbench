@@ -129,9 +129,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTestApp", "Msdial
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApi", "MsdialLcImMsApi\MsdialLcImMsApi.csproj", "{0750647B-1DFC-49DC-ADFB-16235E22AA88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MspGenerator", "MspGenerator\MspGenerator.csproj", "{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MspGenerator", "MspGenerator\MspGenerator.csproj", "{72F4E904-E10A-4E3A-BC95-2412F776FDB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MspGeneratorConsoleApp", "MspGeneratorConsoleApp\MspGeneratorConsoleApp.csproj", "{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MspGeneratorConsoleApp", "MspGeneratorConsoleApp\MspGeneratorConsoleApp.csproj", "{6D693B0F-D99C-4946-83D1-248FFC3A5637}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTests", "MsdialDimsCoreTests\MsdialDimsCoreTests.csproj", "{98544BC7-3111-4A2B-B33D-72154A7CBC81}"
 EndProject
@@ -395,14 +395,14 @@ Global
 		{0750647B-1DFC-49DC-ADFB-16235E22AA88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0750647B-1DFC-49DC-ADFB-16235E22AA88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0750647B-1DFC-49DC-ADFB-16235E22AA88}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C11EE7B2-E6D8-4214-87E6-A2751AD5EC06}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E28690D-0BCC-43C7-91F2-B8AE3D9E9008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72F4E904-E10A-4E3A-BC95-2412F776FDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72F4E904-E10A-4E3A-BC95-2412F776FDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72F4E904-E10A-4E3A-BC95-2412F776FDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72F4E904-E10A-4E3A-BC95-2412F776FDB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D693B0F-D99C-4946-83D1-248FFC3A5637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D693B0F-D99C-4946-83D1-248FFC3A5637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D693B0F-D99C-4946-83D1-248FFC3A5637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D693B0F-D99C-4946-83D1-248FFC3A5637}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98544BC7-3111-4A2B-B33D-72154A7CBC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -416,7 +416,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal

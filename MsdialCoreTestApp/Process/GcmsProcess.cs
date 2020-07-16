@@ -16,12 +16,13 @@ using CompMs.Common.Components;
 using CompMs.Common.Parser;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialGcMsApi.Parser;
 
 namespace CompMs.App.MsdialConsole.Process
 {
 	public class GcmsProcess
     {
-        public static void ConvertRtToKovatRi(string alkaneDictPath, string rtListPath, string outputFilePath)
+        public void ConvertRtToKovatRi(string alkaneDictPath, string rtListPath, string outputFilePath)
         {
             var alkaneDict = RetentionIndexHandler.GetRiDictionary(alkaneDictPath);
 
@@ -38,19 +39,11 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        public static int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectStore)
+        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectStore)
         {
-            Console.WriteLine("Loading library files..");
-            Console.WriteLine(String.Format("inputFolder: {0} -- outputFolder: {1} -- method: {2}", inputFolder, outputFolder, methodFile));
-
             var param = ConfigParser.ReadForGcms(methodFile);
-            var alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputFolder);
-            var analysisFiles = AnalysisFilesParser.ReadInput(inputFolder);
-            if (analysisFiles.IsEmptyOrNull()) {
-                Console.WriteLine(CommonProcess.NoFileError());
-                return -1;
-            }
-            CommonProcess.SetProjectProperty(param, inputFolder);
+            var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
+            if (!isCorrectlyImported) return -1;
             if (param.RiDictionaryFilePath != string.Empty)
             {
                 var errorMessage = string.Empty;
@@ -112,7 +105,7 @@ namespace CompMs.App.MsdialConsole.Process
 			return Execute(container, outputFolder, isProjectStore);
 		}
 
-        private static bool isFamesContanesMatch(Dictionary<int, float> riDictionary)
+        private bool isFamesContanesMatch(Dictionary<int, float> riDictionary)
         {
             var fiehnFamesDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
 
@@ -132,7 +125,7 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
 
-        private static bool checkRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
+        private bool checkRiDicionaryFiles(List<AnalysisFileBean> analysisFiles, string riDictionaryFile, out string errorMessage)
         {
             errorMessage = string.Empty;
             using (var sr = new StreamReader(riDictionaryFile, Encoding.ASCII)) {
@@ -169,17 +162,18 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private static int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+        private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
 
             }
+            new MsdialGcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }
 
 #region // error code
 
-        private static int ridictionaryError()
+        private int ridictionaryError()
         {
             string error = "Invalid RI information. Please check that your file follows the following format.\r\n";
             error += "Carbon number\tRT(min)\r\n";
@@ -202,7 +196,7 @@ namespace CompMs.App.MsdialConsole.Process
             return -1;
         }
 
-        private static int famesIndexError()
+        private int famesIndexError()
         {
             var error = "If you use the FAMEs RI, you have to decide the retention times as minute for \r\n"
                             + "C8, C9, C10, C12, C14, C16, C18, C20, C22, C24, C26, C28, C30.";

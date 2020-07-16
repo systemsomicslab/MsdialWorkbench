@@ -756,7 +756,8 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             }
         }
 
-        public static void WriteData(StreamWriter sw, ObservableCollection<AlignedPeakPropertyBean> peaks, string exportType, bool replaceZeroToHalf, float nonZeroMin, List<BasicStats> statsList) {
+        public static void WriteData(StreamWriter sw, ObservableCollection<AlignedPeakPropertyBean> peaks, string exportType,
+            bool replaceZeroToHalf, float nonZeroMin, List<BasicStats> statsList) {
             for (int i = 0; i < peaks.Count; i++) {
                 var spotValue = GetSpotValue(peaks[i], exportType);
 

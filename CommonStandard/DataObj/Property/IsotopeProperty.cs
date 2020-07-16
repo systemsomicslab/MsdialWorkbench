@@ -28,6 +28,8 @@ namespace CompMs.Common.DataObj.Property {
     public class IsotopicPeak {
         [Key(0)]
         public double RelativeAbundance { get; set; }
+        [Key(4)]
+        public double AbsoluteAbundance { get; set; }
         [Key(1)]
         public double Mass { get; set; }
         [Key(2)]

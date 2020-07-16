@@ -57,5 +57,8 @@ namespace CompMs.Common.Parameter {
         public bool Csf { get; set; }
         [Key(21)]
         public bool Blexp { get; set; }
+        [Key(22)]
+        public bool Npa { get; set; }
+
     }
 }

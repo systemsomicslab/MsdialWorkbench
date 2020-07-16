@@ -36,6 +36,7 @@ namespace CompMs.Common.DataObj {
         public List<RawChromatogram> ChromatogramList { get; set; }
         public List<RawSpectrum> SpectrumList { get; set; }
         public List<RawSpectrum> AccumulatedSpectrumList { get; set; }
+        public List<double> CollisionEnergyTargets { get; set; }
 
         public RawMeasurement()
         {

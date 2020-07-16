@@ -8,7 +8,7 @@ using System.Text;
 namespace CompMs.MsdialDimsCore.Parameter {
     public class MsdialDimsParameter : ParameterBase {
         public MsdialDimsParameter() {
-            this.SeparationType = SeparationType.Infusion;
+            this.MachineCategory = MachineCategory.IFMS;
         }
     }
 }

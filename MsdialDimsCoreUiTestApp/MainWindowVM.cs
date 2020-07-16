@@ -17,6 +17,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Common;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -73,16 +74,16 @@ namespace MsdialDimsCoreUiTestApp
             var iupacDB = IupacResourceParser.GetIUPACDatabase();
             List<MoleculeMsReference> mspDB = null;
             if (param.TargetOmics == TargetOmics.Metablomics) {
-                mspDB = MspFileParcer.MspFileReader(param.MspFilePath);
+                mspDB = MspFileParser.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
                 var extension = System.IO.Path.GetExtension(param.MspFilePath);
                 if (extension == ".lbm2") {
-                    mspDB = MspFileParcer.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
                 else {
-                    mspDB = MspFileParcer.LbmFileReader(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.LbmFileReader(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
             }
@@ -119,7 +120,9 @@ namespace MsdialDimsCoreUiTestApp
                 {
                     var spectrum = ScalingSpectrumPeaks(ComponentsConverter.ConvertToSpectrumPeaks(spectras[feature.MS2RawSpectrumID].Spectrum));
                     var centroid = ScalingSpectrumPeaks(feature.Spectrum);
-                    var detectedMsp = feature.MspIDs.Zip(result.Msp, (id, res) => new AnnotationResult{Reference = mspDB[id], Result = res });
+                    // TODO: check please
+                    var mspIDs = feature.MSRawID2MspIDs.IsEmptyOrNull() ? new List<int>() : feature.MSRawID2MspIDs[feature.MS2RawSpectrumID];
+                    var detectedMsp = mspIDs.Zip(result.Msp, (id, res) => new AnnotationResult{Reference = mspDB[id], Result = res });
                     var detectedText = feature.TextDbIDs.Zip(result.Text, (id, res) => new AnnotationResult { Reference = textDB[id], Result = res });
                     var detected = detectedMsp.Concat(detectedText).ToList();
                     foreach (var det in detected)
@@ -133,7 +136,7 @@ namespace MsdialDimsCoreUiTestApp
                         Spectrum = spectrum,
                         Centroids = centroid,
                         Detected = detected,
-                        Annotated = feature.MspIDs.IndexOf(feature.MspID),
+                        //Annotated = 0
                     };
                 })
                 );

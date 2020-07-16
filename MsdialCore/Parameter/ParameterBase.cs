@@ -228,6 +228,8 @@ namespace CompMs.MsdialCore.Parameter {
         public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
         [Key(86)]
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
+        [Key(148)]
+        public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
 
 
         // Post-alignment and filtering
@@ -474,6 +476,7 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Target CE", TargetCE.ToString() }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# MSP-based annotation");

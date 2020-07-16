@@ -75,12 +75,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
-                        chromPeak.MspBasedMatchResult = result;
-                        chromPeak.MspID = result.LibraryID;
-                        chromPeak.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        chromPeak.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = result;
                         DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[result.LibraryIDWhenOrdered], result);
+                        chromPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID] = new List<int>();
                     }
-                    chromPeak.MspIDs.Add(result.LibraryID);
+                    chromPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID].Add(result.LibraryID);
                 }
             }
 
@@ -104,8 +103,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
                         chromPeak.TextDbBasedMatchResult = result;
-                        chromPeak.TextDbID = result.LibraryID;
-                        chromPeak.TextDbIDWhenOrdered = result.LibraryIDWhenOrdered;
                         DataAccess.SetMoleculeMsProperty(chromPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     chromPeak.TextDbIDs.Add(result.LibraryID);

@@ -533,7 +533,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1102,7 +1102,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1111,7 +1111,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1120,7 +1120,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1129,7 +1129,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1138,7 +1138,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1147,7 +1147,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1156,7 +1156,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1165,7 +1165,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1174,7 +1174,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1183,7 +1183,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,

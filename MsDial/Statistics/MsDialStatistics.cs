@@ -307,7 +307,7 @@ namespace Rfx.Riken.OsakaUniv
                 double average = 0, stdev = 0, minValue = 0, twentyfive = 0, median = 0, seventyfive = 0, maxValue = 0;
                 calculateChartProperties(dict.Value, out average, out stdev, out minValue,
                     out twentyfive, out median, out seventyfive, out maxValue);
-
+                if (!classnameToOrder.ContainsKey(dict.Key)) continue;
                 var barElement = new BarElement()
                 {
                     Id = classnameToOrder[dict.Key],

@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MessagePack;
+using CompMs.Common.Extension;
+using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -103,24 +105,66 @@ namespace CompMs.MsdialCore.DataObj {
         public double CollisionCrossSection { get; set; }
 
         // molecule annotation results
-        [Key(30)]
-        public int MspID { get; set; } // representative msp id
+        //[Key(30)]
+        //public int MspID { get; set; } // representative msp id
         [Key(31)]
-        public List<int> MspIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
-        [Key(32)]
-        public int TextDbID { get; set; }// representative text id
+        public Dictionary<int, List<int>> MSRawID2MspIDs { get; set; } = new Dictionary<int, List<int>>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS). ID list having the metabolite candidates exceeding the threshold
+        //[Key(32)]
+        //public int TextDbID { get; set; }// representative text id
         [Key(33)]
         public List<int> TextDbIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(34)]
-        public MsScanMatchResult MspBasedMatchResult { get; set; }
+        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
         [Key(35)]
         public MsScanMatchResult TextDbBasedMatchResult { get; set; }
+
+        public MsScanMatchResult MspBasedMatchResult() { // get result having max score
+            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+            else {
+                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+            }
+        }
+
+        public int TextDbID() {
+            if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
+            else return -1;
+        }
+
+        public int MspID() {
+            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+            else {
+                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+            }
+        }
+
+        public bool IsReferenceMatched() {
+            if (TextDbID() >= 0) return true;
+            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
+            return false;
+        }
+
+        public bool IsAnnotationSuggested() {
+            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
+            return false;
+        }
+
+        public bool IsUnknown() {
+            if (MspID() < 0 && TextDbID() < 0) return true;
+            return false;
+        }
+
 
         // peak characters
         [Key(36)]
         public IonFeatureCharacter PeakCharacter { get; set; }
         [Key(37)]
         public ChromatogramPeakShape PeakShape { get; set; }
+        [Key(44)]
+        public double NormalizedPeakHeight { get; set; }
+        [Key(45)]
+        public double NormalizedPeakAreaAboveZero { get; set; }
+        [Key(46)]
+        public double NormalizedPeakAreaAboveBaseline { get; set; }
 
     }
 }

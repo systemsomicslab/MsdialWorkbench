@@ -138,13 +138,14 @@ namespace CompMs.MsdialCore.Parser {
 
             result.SeekPoint = BitConverter.ToInt64(buffer, 0);
             result.ScanID = BitConverter.ToInt32(buffer, 8);
-            result.PrecursorMz = BitConverter.ToDouble(buffer, 12);
-            result.IonMode = (IonMode)BitConverter.ToInt32(buffer, 20);
+            result.RawSpectrumID = BitConverter.ToInt32(buffer, 12);
+            result.PrecursorMz = BitConverter.ToDouble(buffer, 16);
+            result.IonMode = (IonMode)BitConverter.ToInt32(buffer, 24);
             result.ChromXs = new ChromXs();
-            result.ChromXs.RT = new RetentionTime(BitConverter.ToDouble(buffer, 24));
-            result.ChromXs.RI = new RetentionIndex(BitConverter.ToDouble(buffer, 32));
-            result.ChromXs.Drift = new DriftTime(BitConverter.ToDouble(buffer, 40));
-            result.ChromXs.Mz = new MzValue(BitConverter.ToDouble(buffer, 48));
+            result.ChromXs.RT = new RetentionTime(BitConverter.ToDouble(buffer, 28));
+            result.ChromXs.RI = new RetentionIndex(BitConverter.ToDouble(buffer, 36));
+            result.ChromXs.Drift = new DriftTime(BitConverter.ToDouble(buffer, 44));
+            result.ChromXs.Mz = new MzValue(BitConverter.ToDouble(buffer, 52));
 
 
             //Quant info

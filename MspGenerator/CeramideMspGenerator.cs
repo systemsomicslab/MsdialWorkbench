@@ -80,13 +80,13 @@ namespace CompMs.MspGenerator
                             }
                         }
 
-                        if (lipidClass.EndsWith('P') && lipidClass !="CerP")
+                        if (lipidClass.EndsWith("P") && lipidClass !="CerP")
                         {
                             if (AcylChainDic.sphingoBasePDictionary.ContainsKey(chainArray[0]) == false) { continue; }
                             sphSmiles = new List<string>(AcylChainDic.sphingoBasePDictionary[chainArray[0]])[3];
                             //sphMass = sphMass + 2 * MassDictionary.OxygenMass;
                         }
-                        else if (lipidClass.EndsWith('S'))
+                        else if (lipidClass.EndsWith("S"))
                         {
                             if (AcylChainDic.sphingoBaseSDictionary.ContainsKey(chainArray[0]) == false) { continue; }
                             sphSmiles = new List<string>(AcylChainDic.sphingoBaseSDictionary[chainArray[0]])[3];

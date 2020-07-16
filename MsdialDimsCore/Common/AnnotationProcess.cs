@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
@@ -38,13 +39,13 @@ namespace CompMs.MsdialDimsCore.Common {
             if (mspDB != null)
             {
                 mspResults = GetMatchResults(feature, mspDB, ms1Tol, param, omics);
-                feature.MspIDs = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
                 if (mspResults.Count > 0)
                 {
+                    feature.MSRawID2MspIDs[feature.MS2RawSpectrumID] = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
+
                     var best = mspResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
-                    feature.MspBasedMatchResult = best;
-                    feature.MspID = best.LibraryID;
-                    feature.MspIDWhenOrdered = best.LibraryIDWhenOrdered;
+
+                    feature.MSRawID2MspBasedMatchResult[feature.MS2RawSpectrumID] = best;
                     DataAccess.SetMoleculeMsProperty(feature, mspDB[best.LibraryIDWhenOrdered], best);
                 }
             }
@@ -57,8 +58,6 @@ namespace CompMs.MsdialDimsCore.Common {
                 {
                     var best = textResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
                     feature.TextDbBasedMatchResult = best;
-                    feature.TextDbID = best.LibraryID;
-                    feature.TextDbIDWhenOrdered = best.LibraryIDWhenOrdered;
                     DataAccess.SetMoleculeMsProperty(feature, textDB[best.LibraryIDWhenOrdered], best, true);
                 }
             }
@@ -99,7 +98,10 @@ namespace CompMs.MsdialDimsCore.Common {
             ChromatogramPeakFeature chromatogram, List<MoleculeMsReference> MspDB,
             MsRefSearchParameterBase param, double threshold = .01)
         {
-            var refs = chromatogram.MspIDs.Select(id => MspDB[id]);
+            // TODO: check below
+            var mspIDs = chromatogram.MSRawID2MspIDs.IsEmptyOrNull() ? null : chromatogram.MSRawID2MspIDs[chromatogram.MS2RawSpectrumID];
+            if (mspIDs.IsEmptyOrNull()) return new List<(MoleculeMsReference reference, double ratio)>();
+            var refs = mspIDs.Select(id => MspDB[id]);
 
             var results = CalcAbundanceRatio(chromatogram, refs, param.Ms2Tolerance);
 

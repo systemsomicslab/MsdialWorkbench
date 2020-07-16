@@ -134,11 +134,9 @@ namespace CompMs.MsdialDimsCore.Common
                 SMILES = peak.SMILES,
                 InChIKey = peak.InChIKey,
                 CollisionCrossSection = peak.CollisionCrossSection,
-                MspID = peak.MspID,
-                MspIDs = peak.MspIDs,
-                TextDbID = peak.TextDbID,
+                MSRawID2MspIDs = peak.MSRawID2MspIDs,
                 TextDbIDs = peak.TextDbIDs,
-                MspBasedMatchResult = peak.MspBasedMatchResult,
+                MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult,
                 TextDbBasedMatchResult = peak.TextDbBasedMatchResult,
                 PeakCharacter = peak.PeakCharacter,
                 PeakShape = peak.PeakShape,
@@ -219,8 +217,10 @@ namespace CompMs.MsdialDimsCore.Common
         private static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
             if (alignment.Count == 0) return -1;
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumIDs.IsEmptyOrNull()).ToArray();
-            if (alignmentWithMSMS.Length != 0)
-                return alignmentWithMSMS.Max(align => (align.MspBasedMatchResult?.TotalScore, align.PeakHeightTop, align.FileID)).FileID;
+            if (alignmentWithMSMS.Length != 0) {
+                // TODO: check below
+                return alignmentWithMSMS.Max(align => (align.MSRawID2MspBasedMatchResult?.Values?.Max(n => n.TotalScore), align.PeakHeightTop, align.FileID)).FileID;
+            }
             return alignment.Max(align => (align.TextDbBasedMatchResult?.TotalScore, align.FileID)).FileID;
         }
 
@@ -287,11 +287,9 @@ namespace CompMs.MsdialDimsCore.Common
 
                 CollisionCrossSection = representative.CollisionCrossSection,
 
-                MspID = representative.MspID,
-                MspIDs = representative.MspIDs,
-                TextDbID = representative.TextDbID,
+                MSRawID2MspIDs = representative.MSRawID2MspIDs,
                 TextDbIDs = representative.TextDbIDs,
-                MspBasedMatchResult = representative.MspBasedMatchResult,
+                MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult,
                 TextDbBasedMatchResult = representative.TextDbBasedMatchResult,
 
                 HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop),
