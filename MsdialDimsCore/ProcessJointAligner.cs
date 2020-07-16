@@ -208,7 +208,6 @@ namespace CompMs.MsdialDimsCore
             alignment.MasterPeakID = feature.MasterPeakID;
             alignment.PeakID = feature.PeakID;
             alignment.ParentPeakID = feature.ParentPeakID;
-            alignment.DeconvolutionID = feature.DeconvolutionID;
             alignment.MS1RawSpectrumID = feature.ScanID;
             alignment.MS1RawSpectrumIDatAccumulatedMS1 = feature.MS1AccumulatedMs1RawSpectrumIdTop;
             alignment.MS2RawSpectrumID = feature.MS2RawSpectrumID;
@@ -225,7 +224,6 @@ namespace CompMs.MsdialDimsCore
             alignment.PeakAreaAboveZero = feature.PeakAreaAboveZero;
             alignment.PeakAreaAboveBaseline = feature.PeakAreaAboveBaseline;
             alignment.Mass = feature.Mass;
-            alignment.PrecursorMz = feature.PrecursorMz;
             alignment.IonMode = feature.IonMode;
             alignment.Name = feature.Name;
             alignment.Formula = feature.Formula;
@@ -233,11 +231,9 @@ namespace CompMs.MsdialDimsCore
             alignment.SMILES = feature.SMILES;
             alignment.InChIKey = feature.InChIKey;
             alignment.CollisionCrossSection = feature.CollisionCrossSection;
-            alignment.MspID = feature.MspID;
-            alignment.MspIDs = feature.MspIDs;
-            alignment.TextDbID = feature.TextDbID;
+            alignment.MSRawID2MspIDs = feature.MSRawID2MspIDs;
             alignment.TextDbIDs = feature.TextDbIDs;
-            alignment.MspBasedMatchResult = feature.MspBasedMatchResult;
+            alignment.MSRawID2MspBasedMatchResult = feature.MSRawID2MspBasedMatchResult;
             alignment.TextDbBasedMatchResult = feature.TextDbBasedMatchResult;
             alignment.PeakCharacter = feature.PeakCharacter;
             alignment.PeakShape = feature.PeakShape;

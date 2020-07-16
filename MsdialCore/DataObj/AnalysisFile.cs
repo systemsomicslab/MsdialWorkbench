@@ -39,5 +39,7 @@ namespace CompMs.MsdialCore.DataObj {
         public string AnalysisFileSuperClass { get; set; } = string.Empty;
         [Key(15)]
         public RetentionTimeCorrectionBean RetentionTimeCorrectionBean { get; set; } = new RetentionTimeCorrectionBean();
+        [Key(16)]
+        public ChromatogramPeaksDataSummary ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummary();
     }
 }

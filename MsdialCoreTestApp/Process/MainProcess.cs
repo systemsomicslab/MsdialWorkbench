@@ -33,52 +33,32 @@ namespace CompMs.App.MsdialConsole.Process {
             if (inputFolder == string.Empty || methodFile == string.Empty || outputFolder == string.Empty) return argsError();
 
             var analysisType = args[0];
-            switch (analysisType) {
-                case "gcms":
-                    return gcmsProcess(inputFolder, outputFolder, methodFile, isProjectStore);
-                case "lcms":
-                    return lcmsProcess(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                case "lcimms":
-                    return lcmsProcess(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-                default:
-                    Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia'");
-                    return -1;
-            }
-        }
-
-        private static int gcmsProcess(string inputFolder, string outputFolder, string methodFile, bool isProjectStore)
-        {
-			var code = 0;
-			try {
-    			code = GcmsProcess.Run(inputFolder, outputFolder, methodFile, isProjectStore);
-			} catch(Exception ex) {
-                code = ex.GetHashCode();
-                Debug.WriteLine(ex.Message);
-                Console.WriteLine(ex.Message);
-			}
-
-            return code;
-        }
-
-		private static int lcmsProcess(string inputFolder, string outputFolder, string methodFile, bool isProjectStore, float targetMz = -1f)
-        {
-			var code = 0;
             try {
-                code = new LcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
-            } catch (Exception ex) {
-                code = ex.GetHashCode();
+                switch (analysisType) {
+                    case "gcms":
+                        return new GcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore);
+                    case "lcms":
+                        return new LcmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                    case "lcimms":
+                        return new LcimmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                    case "dims":
+                        return new DimsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                    default:
+                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia'");
+                        return -1;
+                }
+            } 
+            catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
-                Debug.WriteLine(msg);
                 Console.WriteLine(msg);
+                return ex.GetHashCode(); ;
             }
+        }
 
-			return code;
-		}
-
-		/// <summary>
-		/// Shows console application usage help
-		/// </summary>
-		/// <returns>error code -1</returns>
+        /// <summary>
+        /// Shows console application usage help
+        /// </summary>
+        /// <returns>error code -1</returns>
         private static int argsError() {
             var error = @"Msdial Console App requires the following args:
 						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)

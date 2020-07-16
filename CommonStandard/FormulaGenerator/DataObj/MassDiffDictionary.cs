@@ -12,6 +12,7 @@ namespace CompMs.Common.FormulaGenerator.DataObj {
         public static double O17_O16 = 1.00421708;
         public static double Si29_Si28 = 0.999568168;
         public static double S33_S32 = 0.99938776;
+        public static double CHNO_AverageStepSize = 1.004667751;
 
         public static double C13_12_Plus_H2_H1 = 2.009631584;
         public static double C13_12_Plus_N15_N14 = 2.000389731;

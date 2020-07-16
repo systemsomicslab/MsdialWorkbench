@@ -49,29 +49,25 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 var msdecResult = msdecResults[driftPeak.MasterPeakID];
                 LcImMsMsMatchMethod(chromPeak, driftPeak, msdecResult, isotopes, mspDB, textDB, param);
 
-                if (driftPeak.MspID >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult.TotalScore) {
-                    maxMspMatchedScore = driftPeak.MspBasedMatchResult.TotalScore;
+                if (driftPeak.MspID() >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult().TotalScore) {
+                    maxMspMatchedScore = driftPeak.MspBasedMatchResult().TotalScore;
                     maxMspMatchedDriftSpotID = driftPeak.PeakID;
                 }
 
-                if (driftPeak.TextDbID >= 0 && maxTextDBMatchedScore > driftPeak.TextDbBasedMatchResult.TotalScore) {
+                if (driftPeak.TextDbID() >= 0 && maxTextDBMatchedScore > driftPeak.TextDbBasedMatchResult.TotalScore) {
                     maxTextDBMatchedScore = driftPeak.TextDbBasedMatchResult.TotalScore;
                     maxTextDBMatchedDriftSpotID = driftPeak.PeakID;
                 }
             }
 
             if (maxMspMatchedScore >= 0) {
-                chromPeak.MspBasedMatchResult = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
-                chromPeak.MspID = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspID;
-                chromPeak.MspIDWhenOrdered = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspIDWhenOrdered;
-                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered], chromPeak.MspBasedMatchResult);
+                chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult().Clone();
+                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered()], chromPeak.MspBasedMatchResult());
             }
 
             if (maxTextDBMatchedDriftSpotID >= 0) {
                 chromPeak.TextDbBasedMatchResult = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbBasedMatchResult.Clone();
-                chromPeak.TextDbID = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbID;
-                chromPeak.TextDbIDWhenOrdered = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbIDWhenOrdered;
-                DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered], chromPeak.TextDbBasedMatchResult, true);
+                DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered()], chromPeak.TextDbBasedMatchResult, true);
             }
         }
 
@@ -112,12 +108,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
-                        driftPeak.MspBasedMatchResult = result;
-                        driftPeak.MspID = result.LibraryID;
-                        driftPeak.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        driftPeak.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = result;
                         DataAccess.SetMoleculeMsProperty(driftPeak, mspDB[result.LibraryIDWhenOrdered], result);
+
+                        driftPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID] = new List<int>();
                     }
-                    driftPeak.MspIDs.Add(result.LibraryID);
+                    driftPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID].Add(result.LibraryID);
                 }
             }
 
@@ -141,8 +137,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
                         driftPeak.TextDbBasedMatchResult = result;
-                        driftPeak.TextDbID = result.LibraryID;
-                        driftPeak.TextDbIDWhenOrdered = result.LibraryIDWhenOrdered;
                         DataAccess.SetMoleculeMsProperty(driftPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     driftPeak.TextDbIDs.Add(result.LibraryID);

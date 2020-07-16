@@ -100,6 +100,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     }
                 }
                 msdecResult.ChromXs = dtChromPeak.ChromXs;
+                msdecResult.RawSpectrumID = dtChromPeak.MS2RawSpectrumID;
                 msdecResult.PrecursorMz = precursorMz;
                 return msdecResult;
             }

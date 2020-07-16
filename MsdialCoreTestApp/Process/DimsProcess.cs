@@ -1,28 +1,18 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
-using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parser;
-using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
-using CompMs.MsdialLcMsApi.Parser;
-using CompMs.RawDataHandler.Core;
+using CompMs.Common.Extension;
 using System;
+
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Text;
+using CompMs.MsdialDimsCore.Parser;
 
 namespace CompMs.App.MsdialConsole.Process {
-    public class LcmsProcess
-    {
-        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
-        {
-            var param = ConfigParser.ReadForLcmsParameter(methodFile);
+    public class DimsProcess {
+        public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
+            var param = ConfigParser.ReadForDimsParameter(methodFile);
             var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
             if (!isCorrectlyImported) return -1;
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
@@ -40,9 +30,9 @@ namespace CompMs.App.MsdialConsole.Process {
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-               
+
             }
-            new MsdialLcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }
     }

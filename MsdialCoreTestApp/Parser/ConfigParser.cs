@@ -61,7 +61,7 @@ namespace CompMs.App.MsdialConsole.Parser
             return param;
         }
 
-        public static MsdialDimsParameter ReadForIMMSParameter(string filepath) {
+        public static MsdialDimsParameter ReadForDimsParameter(string filepath) {
             var param = new MsdialDimsParameter();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
@@ -250,8 +250,9 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "sigma window valueLower": if (float.TryParse(valueLower, out float sigmaWindow)) param.SigmaWindowValue = sigmaWindow; return true;
                 case "amplitude cut off": if (float.TryParse(valueLower, out float ms2ampthreshold)) param.AmplitudeCutoff = ms2ampthreshold; return true;
                 case "keep isotope range": if (float.TryParse(valueLower, out float keepisotoperange)) param.KeptIsotopeRange = keepisotoperange; return true;
-                case "exclude after precursor": if (valueLower.ToUpper() == "false") param.RemoveAfterPrecursor = false; return true;
-                case "keep original precursor isotopes": if (valueLower.ToUpper() == "false") param.KeepOriginalPrecursorIsotopes = false; return true;
+                case "exclude after precursor": if (valueLower == "false") param.RemoveAfterPrecursor = false; return true;
+                case "keep original precursor isotopes": if (valueLower == "false") param.KeepOriginalPrecursorIsotopes = false; return true;
+                case "target ce": if (double.TryParse(valueLower, out double targetce)) param.TargetCE = targetce; return true;
 
                 //Identification
                 case "rt tolerance for msp-based annotation": if (float.TryParse(valueLower, out float rttol_ident)) param.MspSearchParam.RtTolerance = rttol_ident; return true;

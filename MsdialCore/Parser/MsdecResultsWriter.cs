@@ -126,6 +126,7 @@ namespace CompMs.MsdialCore.Parser {
             
             fs.Write(BitConverter.GetBytes(msdecResult.SeekPoint), 0, ByteConvertion.ToByteCount(msdecResult.SeekPoint));
             fs.Write(BitConverter.GetBytes(msdecResult.ScanID), 0, ByteConvertion.ToByteCount(msdecResult.ScanID));
+            fs.Write(BitConverter.GetBytes(msdecResult.RawSpectrumID), 0, ByteConvertion.ToByteCount(msdecResult.RawSpectrumID));
             fs.Write(BitConverter.GetBytes(msdecResult.PrecursorMz), 0, ByteConvertion.ToByteCount(msdecResult.PrecursorMz));
             fs.Write(BitConverter.GetBytes((int)msdecResult.IonMode), 0, 4);
 
@@ -140,6 +141,7 @@ namespace CompMs.MsdialCore.Parser {
         public static int GetSavedScanDataBytes(MSDecResult obj) {
             var byteCount = ByteConvertion.ToByteCount(obj.SeekPoint)
                 + ByteConvertion.ToByteCount(obj.ScanID)
+                + ByteConvertion.ToByteCount(obj.RawSpectrumID)
                 + ByteConvertion.ToByteCount(obj.PrecursorMz)
                 + ByteConvertion.ToByteCount((int)obj.IonMode)
                 + ByteConvertion.ToByteCount(obj.ChromXs.RT.Value)

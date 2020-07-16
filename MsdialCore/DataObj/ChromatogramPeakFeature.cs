@@ -7,6 +7,7 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -137,39 +138,72 @@ namespace CompMs.MsdialCore.DataObj {
 
         // molecule annotation results
         // IDs to link properties
-        [Key(32)]
-        public int MspID { get; set; } = -1; // representative msp id
-        [Key(48)]
-        public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
+        //[Key(32)]
+        //public int MspID { get; set; } = -1; // representative msp id
+        //[Key(48)]
+        //public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
         [Key(33)]
-        public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
-        [Key(34)]
-        public int TextDbID { get; set; }// representative text id
-        [Key(49)]
-        public int TextDbIDWhenOrdered { get; set; }// representative text id
+        public Dictionary<int, List<int>> MSRawID2MspIDs { get; set; } = new Dictionary<int, List<int>>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS). ID list having the metabolite candidates exceeding the threshold
+        [Key(36)]
+        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
+       
+        //[Key(34)]
+        //public int TextDbID { get; set; }// representative text id
+        //[Key(49)]
+        //public int TextDbIDWhenOrdered { get; set; }// representative text id
         [Key(35)]
         public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
+        [Key(37)]
+        public MsScanMatchResult TextDbBasedMatchResult { get; set; } = null;
+        
+        public MsScanMatchResult MspBasedMatchResult() { // get result having max score
+            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+            else {
+                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+            }
+        }
+
+        public int TextDbID() {
+            if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
+            else return -1;
+        }
+
+        public int TextDbIDWhenOrdered() {
+            if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryIDWhenOrdered;
+            else return -1;
+        }
+
+        public int MspID() {
+            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+            else {
+                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+            }
+        }
+
+        public int MspIDWhenOrdered() {
+            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+            else {
+                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryIDWhenOrdered)).LibraryIDWhenOrdered;
+            }
+        }
 
         public bool IsReferenceMatched() {
-            if (TextDbID >= 0) return true;
-            if (MspID >= 0 && MspBasedMatchResult.IsSpectrumMatch) return true;
+            if (TextDbID() >= 0) return true;
+            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
             return false;
         }
 
         public bool IsAnnotationSuggested() {
-            if (MspID >= 0 && !MspBasedMatchResult.IsSpectrumMatch) return true;
+            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
             return false;
         }
 
         public bool IsUnknown() {
-            if (MspID < 0 && TextDbID < 0) return true;
+            if (MspID() < 0 && TextDbID() < 0) return true;
             return false;
         }
 
-        [Key(36)]
-        public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
-        [Key(37)]
-        public MsScanMatchResult TextDbBasedMatchResult { get; set; } = new MsScanMatchResult();
+      
         [Key(38)]
         public string Comment { get; set; }
 

@@ -18,6 +18,7 @@ namespace CompMs.MsdialCore.MSDec {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
+        public int RawSpectrumID { get; set; } // origin of the msdec result spectrum
         public double ModelPeakMz { get; set; }
         public double ModelPeakHeight { get; set; }
         public double ModelPeakArea { get; set; }
