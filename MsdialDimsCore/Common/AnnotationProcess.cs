@@ -98,11 +98,15 @@ namespace CompMs.MsdialDimsCore.Common {
             ChromatogramPeakFeature chromatogram, List<MoleculeMsReference> MspDB,
             MsRefSearchParameterBase param, double threshold = .01)
         {
-            // TODO: check below
-            var mspIDs = chromatogram.MSRawID2MspIDs.IsEmptyOrNull() ? null : chromatogram.MSRawID2MspIDs[chromatogram.MS2RawSpectrumID];
-            if (mspIDs.IsEmptyOrNull()) return new List<(MoleculeMsReference reference, double ratio)>();
-            var refs = mspIDs.Select(id => MspDB[id]);
+            if (chromatogram.MSRawID2MspIDs.IsEmptyOrNull())
+                return new List<(MoleculeMsReference reference, double ratio)>();
 
+            var mspIDs = chromatogram.MSRawID2MspIDs[chromatogram.MS2RawSpectrumID];
+
+            if (mspIDs.IsEmptyOrNull())
+                return new List<(MoleculeMsReference reference, double ratio)>();
+
+            var refs = mspIDs.Select(id => MspDB[id]);
             var results = CalcAbundanceRatio(chromatogram, refs, param.Ms2Tolerance);
 
             return results.Where(reference => reference.ratio > threshold).ToList();
