@@ -28,5 +28,45 @@ namespace CompMs.Common.Extension {
         public static IEnumerable<System.Tuple<T1, T2, T3>> Zip<T1, T2, T3>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs) {
             return xs.Zip(ys, zs, Tuple.Create);
         }
+
+        public static int Argmax<T>(this IEnumerable<T> xs) where T: IComparable {
+            return Argmax(xs, Comparer<T>.Default.Compare);
+        }
+
+        public static int Argmax<T>(this IEnumerable<T> xs, Comparison<T> comp) {
+            return xs.Select((x, idx) => (x, idx)).Aggregate((acc, x) => comp(acc.x, x.x) < 0 ? x : acc).idx;
+        }
+
+        public static T Argmax<T, U>(this IEnumerable<T> xs, Func<T, U> func) where U: IComparable {
+            return Argmax(xs, func, Comparer<U>.Default);
+        }
+
+        public static T Argmax<T, U>(this IEnumerable<T> xs, Func<T, U> func, IComparer<U> comparer) {
+            return Argmax(xs, func, comparer.Compare);
+        }
+
+        public static T Argmax<T, U>(this IEnumerable<T> xs, Func<T, U> func, Comparison<U> comp) {
+            return xs.Select(x => (x, y: func(x))).Aggregate((acc, p) => comp(acc.y, p.y) < 0 ? p : acc).x;
+        }
+
+        public static int Argmin<T>(this IEnumerable<T> xs) where T: IComparable {
+            return Argmin(xs, Comparer<T>.Default.Compare);
+        }
+
+        public static int Argmin<T>(this IEnumerable<T> xs, Comparison<T> comp) {
+            return xs.Select((x, idx) => (x, idx)).Aggregate((acc, x) => comp(acc.x, x.x) > 0 ? x : acc).idx;
+        }
+
+        public static T Argmin<T, U>(this IEnumerable<T> xs, Func<T, U> func) where U: IComparable {
+            return Argmin(xs, func, Comparer<U>.Default);
+        }
+
+        public static T Argmin<T, U>(this IEnumerable<T> xs, Func<T, U> func, IComparer<U> comparer) {
+            return Argmin(xs, func, comparer.Compare);
+        }
+
+        public static T Argmin<T, U>(this IEnumerable<T> xs, Func<T, U> func, Comparison<U> comp) {
+            return xs.Select(x => (x, y: func(x))).Aggregate((acc, p) => comp(acc.y, p.y) > 0 ? p : acc).x;
+        }
     }
 }
