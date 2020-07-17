@@ -27,6 +27,10 @@ namespace CompMs.MsdialCore.Parser
             WriteContent(stream, arr, arr.Length);
         }
 
+        public override void SerializeN(Stream stream, IEnumerable<T> chromatograms, int num) {
+            WriteContent(stream, chromatograms, num);
+        }
+
         public override T DeserializeAt(Stream stream, int index) {
             var pointers = ReadHeader(stream);
             if (index < 0 || index >= pointers.Length) return default;

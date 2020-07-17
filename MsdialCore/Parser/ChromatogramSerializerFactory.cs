@@ -69,6 +69,20 @@ namespace CompMs.MsdialCore.Parser
          *     Chromatogram chunks
          *       Horizontal value: 4 byte
          *       Intensity: 4 byte
+         *
+         *------------------------------------------------------
+         * CPSTMP
+         * 
+         * Peak info chunks
+         *   File id: 4 byte
+         *   Number of Chromatogram peak: 4 byte
+         *   PeakTop horizontal axis value: 4 byte
+         *   PeakLeft horizontal axis value: 4 byte
+         *   PeakRight horizontal axis value: 4 byte
+         *   
+         *   Chromatogram chunks
+         *     Horizontal value: 4 byte
+         *     Intensity: 4 byte
          */
 
         public static ChromatogramSerializer<ChromatogramPeakInfo> CreatePeakSerializer(string version, ChromXType mainType = ChromXType.RT) {
@@ -77,6 +91,9 @@ namespace CompMs.MsdialCore.Parser
                 var ps = new PeakInfoSerializer(mainType);
                 var ads = new ChromatogramAccessDecorator<ChromatogramPeakInfo>(ps);
                 result = new ChromatogramVersionDecorator<ChromatogramPeakInfo>(ads, version);
+            }
+            if (version == "CPSTMP") {
+                result = new PeakInfoSerializer(mainType);
             }
             return result;
         }

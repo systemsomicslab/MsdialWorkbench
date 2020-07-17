@@ -18,6 +18,10 @@ namespace CompMs.MsdialCore.Parser
                 Serialize(stream, chromatogram);
         }
 
+        public virtual void SerializeN(Stream stream, IEnumerable<T> chromatograms, int num) {
+            SerializeAll(stream, chromatograms.Take(num));
+        }
+
         public virtual T Deserialize(Stream stream) {
             return DeserializeAt(stream, 0);
         }
@@ -44,6 +48,12 @@ namespace CompMs.MsdialCore.Parser
         public void SerializeAllToFile(string path, IEnumerable<T> chromatograms) {
             using (var fs = File.OpenWrite(path)) {
                 SerializeAll(fs, chromatograms);
+            }
+        }
+
+        public void SerializeNToFile(string path, IEnumerable<T> chromatograms, int num) {
+            using (var fs = File.OpenWrite(path)) {
+                SerializeN(fs, chromatograms, num);
             }
         }
 
