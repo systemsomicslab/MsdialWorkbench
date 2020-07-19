@@ -211,7 +211,7 @@ namespace CompMs.MsdialDimsCore
             alignment.MS1RawSpectrumID = feature.ScanID;
             alignment.MS1RawSpectrumIDatAccumulatedMS1 = feature.MS1AccumulatedMs1RawSpectrumIdTop;
             alignment.MS2RawSpectrumID = feature.MS2RawSpectrumID;
-            alignment.MS2RawSpectrumIDs = feature.MS2RawSpectrumIDs;
+            alignment.MS2RawSpectrumID2CE = feature.MS2RawSpectrumID2CE;
             alignment.ChromScanIdLeft = feature.ChromScanIdLeft;
             alignment.ChromScanIdRight = feature.ChromScanIdRight;
             alignment.ChromScanIdTop = feature.ChromScanIdTop;

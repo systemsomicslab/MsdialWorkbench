@@ -240,8 +240,11 @@ namespace Rfx.Riken.OsakaUniv
 
            
                 var file_name = query.Name + "_" + query.PrecursorMz + "_" + dateString;
-                SaveChartAsPng(dv, export_dir + "\\" + file_name + ".png");
-                SaveChartAsEmf(dv, export_dir + "\\" + file_name + ".emf");
+                var invalidChars = System.IO.Path.GetInvalidFileNameChars();
+                var converted = string.Concat(
+                          file_name.Select(c => invalidChars.Contains(c) ? '_' : c));
+                SaveChartAsPng(dv, export_dir + "\\" + converted + ".png");
+                SaveChartAsEmf(dv, export_dir + "\\" + converted + ".emf");
             }
             #endregion
 
@@ -264,8 +267,11 @@ namespace Rfx.Riken.OsakaUniv
                 // var file_name = analysisFile.AnalysisFilePropertyBean.AnalysisFileId + "_" +
                 //        analysisFile.AnalysisFilePropertyBean.AnalysisFileName + "_Peak" + mainWindow.FocusedPeakID.ToString("0000") + "_withRef";
                 var file_name = "File " + query.Name + "-" + dateString;
-                SaveChartAsPng(dv, export_dir + "\\" + file_name + ".png");
-                SaveChartAsEmf(dv, export_dir + "\\" + file_name + ".emf");
+                var invalidChars = System.IO.Path.GetInvalidFileNameChars();
+                var converted = string.Concat(
+                  file_name.Select(c => invalidChars.Contains(c) ? '_' : c));
+                SaveChartAsPng(dv, export_dir + "\\" + converted + ".png");
+                SaveChartAsEmf(dv, export_dir + "\\" + converted + ".emf");
             }
             #endregion
         }

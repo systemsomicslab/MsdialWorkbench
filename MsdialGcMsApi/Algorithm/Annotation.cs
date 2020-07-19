@@ -18,6 +18,13 @@ using System.Text;
 
 namespace CompMs.MsdialGcMsApi.Algorithm {
     public class Annotation {
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Annotation(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
 
         /// <summary>
         /// ref must be ordered by retention time or retention index

@@ -260,6 +260,22 @@ namespace CompMs.MsdialCore.Utility {
             return startIndex;
         }
 
+        public static int GetTargetCEIndexForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
+            var targetSpecID = chromPeakFeature.MS2RawSpectrumID;
+            if (targetCE >= 0) {
+                var targetCEs = chromPeakFeature.MS2RawSpectrumID2CE;
+                var isTargetCEFound = false;
+                foreach (var pair in targetCEs) {
+                    if (Math.Abs(pair.Value - targetCE) < 0.01) {
+                        targetSpecID = pair.Key;
+                        isTargetCEFound = true;
+                    }
+                }
+                if (!isTargetCEFound) Console.WriteLine("Target CE cannot be found.");
+            }
+            return targetSpecID;
+        }
+
         // get chromatograms
         public static List<ChromatogramPeak> GetMs1Peaklist(List<RawSpectrum> spectrumList, float targetMass, float ms1Tolerance, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, float chromBegin = float.MinValue, float chromEnd = float.MaxValue) {
