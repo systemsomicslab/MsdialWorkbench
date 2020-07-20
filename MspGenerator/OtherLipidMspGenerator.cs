@@ -501,7 +501,7 @@ namespace CompMs.MspGenerator
             }
 
             if (lipidClass == "DCAE" || lipidClass == "GDCAE" || lipidClass == "GLCAE" || lipidClass == "TDCAE" ||
-                lipidClass == "TLCAE" || lipidClass == "KLCAE" || lipidClass == "KDCAE" || lipidClass == "LCAE")
+                lipidClass == "TLCAE" || lipidClass == "KLCAE" || lipidClass == "KDCAE" || lipidClass == "LCAE")  // bileAcids with OxFA chain
             {
                 for (int i = 0; i < Chain1.Count; i++)
                 {
@@ -597,6 +597,24 @@ namespace CompMs.MspGenerator
                                 OtherLipidFragmentation.steroidalEsterFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain1Ox);
                                 name = cags[lipidClass] + "/" + chain1String;
                                 break;
+
+                            case "ErgoSE":
+                                headerSmiles = smilesHeaderDict[lipidClass];
+                                rawSmiles = headerSmiles + chain1Smiles + "%10";
+                                meta = Common.getMetaProperty(rawSmiles);
+                                OtherLipidFragmentation.ergosterolEsterFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain1Ox);
+                                name = "SE 28:3" + "/" + chain1String;
+                                break;
+
+                            case "DehydroErgoSE":
+                                headerSmiles = smilesHeaderDict[lipidClass];
+                                rawSmiles = headerSmiles + chain1Smiles + "%10";
+                                meta = Common.getMetaProperty(rawSmiles);
+                                OtherLipidFragmentation.ergosterolEsterFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain1Ox);
+                                name = "SE 28:4" + "/" + chain1String;
+                                exportLipidClassName = "ErgoSE";
+                                break;
+
 
                             case "AHexBRS":
                             case "AHexCAS":

@@ -177,6 +177,7 @@ namespace CompMs.MspGenerator
                 case "HexCer_HDS":
                 case "CerP":
                 case "GM3":
+                case "MIPC":
                     CeramideMspGenerator.twoChainsCeramideGenerator(chain1, chain2, lipidClass, output);
                     break;
 
@@ -296,7 +297,9 @@ namespace CompMs.MspGenerator
                 case "PA":  
                 case "PEtOH":  
                 case "PMeOH":  
-                case "BMP":  
+                case "BMP":
+                case "MMPE":
+                case "DMPE":
                 // two Equally Acyl Cains GL
                 case "DG":  
                 case "MGDG":  
@@ -374,6 +377,10 @@ namespace CompMs.MspGenerator
                 case "AHexCS":
                 case "AHexSIS":
                 case "AHexSTS":
+
+                case "ErgoSE":
+                case "DehydroErgoSE":
+
                     OtherLipidMspGenerator.singleAcylChainWithSteroidalLipidGenerator(chain1, lipidClass, output);
                     break;
 
