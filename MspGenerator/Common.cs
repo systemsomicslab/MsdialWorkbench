@@ -378,8 +378,8 @@ namespace CompMs.MspGenerator
                 case "AHexSIS":
                 case "AHexSTS":
 
-                case "ErgoSE":
-                case "DehydroErgoSE":
+                case "EGSE":
+                case "DEGSE":
 
                     OtherLipidMspGenerator.singleAcylChainWithSteroidalLipidGenerator(chain1, lipidClass, output);
                     break;

@@ -598,7 +598,7 @@ namespace CompMs.MspGenerator
                                 name = cags[lipidClass] + "/" + chain1String;
                                 break;
 
-                            case "ErgoSE":
+                            case "EGSE":
                                 headerSmiles = smilesHeaderDict[lipidClass];
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -606,13 +606,12 @@ namespace CompMs.MspGenerator
                                 name = "SE 28:3" + "/" + chain1String;
                                 break;
 
-                            case "DehydroErgoSE":
+                            case "DEGSE":
                                 headerSmiles = smilesHeaderDict[lipidClass];
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 OtherLipidFragmentation.ergosterolEsterFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain1Ox);
                                 name = "SE 28:4" + "/" + chain1String;
-                                exportLipidClassName = "ErgoSE";
                                 break;
 
 

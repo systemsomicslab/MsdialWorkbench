@@ -83,14 +83,14 @@ namespace CompMs.MspGenerator
             //RtCcsPredictManager.runFolderToFitting(workingDirectry, toGenarateSdfDirectry, padelResultDirectry,
             //    descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
-            //var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";
-            //var mspFilePath = outputResultFolderPath + @"\Msp20200720150421.msp";
-            //var predictedFilesDirectry = workingDirectry + "\\predictResult\\";
-            //var dbFileName = predictedFilesDirectry + "\\predictedFileAll_20200720.txt"; //generate
+            var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";
+            var mspFilePath = outputResultFolderPath + @"\Msp20200721083757.msp";
+            var predictedFilesDirectry = workingDirectry + "\\predictResult\\";
+            var dbFileName = predictedFilesDirectry + "\\predictedFileAll_20200720.txt"; //generate
 
             //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
 
             ///tool
             ///Inchikey And Smiles List From Msp
@@ -444,10 +444,10 @@ namespace CompMs.MspGenerator
             //faChain1 = minimumChains;
             //Common.switchingLipid(faChain1, "MMPE", outputFolder);
             //Common.switchingLipid(faChain1, "DMPE", outputFolder);
-            // add 20200720
+            ////add 20200720
             //faChain1 = Common.GenerateAcylChains(12, 0, 32, 8);
-            //Common.switchingLipid(faChain1, "ErgoSE", outputFolder);
-            //Common.switchingLipid(faChain1, "DehydroErgoSE", outputFolder);
+            //Common.switchingLipid(faChain1, "EGSE", outputFolder);
+            //Common.switchingLipid(faChain1, "DEGSE", outputFolder);
 
 
 

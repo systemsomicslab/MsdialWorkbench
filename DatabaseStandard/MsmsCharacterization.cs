@@ -10644,35 +10644,42 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
                     // seek 379.335928  sterol structure (Ergosterol)
                     var threshold = 50;
                     var diagnosticMz = 379.335928;
-                    // seek  377.320278  sterol structure (Dehydroergosterol)
-                    var threshold2 = 50;
-                    var diagnosticMz2 = 377.320278;
-
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    if (isClassIonFound == false && isClassIonFound2 == false) return null;
+                    if (isClassIonFound == false) return null;
 
-                    var adductMass = adduct.AdductIonName == "[M+NH4]+" ? 18.033825553 : adduct.AdductIonName == "[M+Na]+" ? 22.9892207: 1.00782503207;
-                    var lossChainMass = theoreticalMz - acylCainMass(totalCarbon, totalDoubleBond) - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass - adductMass + Proton;
-                    var lipidHeader = "";
-                    if(isClassIonFound && Math.Round(lossChainMass,1)==Math.Round(diagnosticMz,1) )
-                    {
-                        lipidHeader = "28:3";
-                    }
-                    else if (isClassIonFound2 && Math.Round(lossChainMass, 1) == Math.Round(diagnosticMz2, 1))
-                    {
-                        lipidHeader = "28:4";
-                    }
-                    if(lipidHeader == "")
-                    {
-                        return null;
-                    }
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "ester";
-                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.ErgoSE, lipidHeader, steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.EGSE, "28:3", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("SE", LbmClass.ErgoSE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("SE", LbmClass.EGSE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfDehydroErgoSESpecies(ObservableCollection<double[]> spectrum, double ms2Tolerance, float theoreticalMz,
+            int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+Na]+")
+                {
+                    // seek  377.320278  sterol structure (Dehydroergosterol)
+                    var threshold = 50;
+                    var diagnosticMz = 377.320278;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    var steroidalModificationClass = "ester";
+                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.DEGSE, "28:4", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    candidates.Add(molecule);
+
+                    return returnAnnotationResult("SE", LbmClass.DEGSE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }

@@ -186,8 +186,8 @@ namespace CompMs.MspGenerator
 
             {"Cholestan", "CC(C)CCCC(C)C1CCC2C3CCC4CC(O%10)CCC4(C)C3CCC12C."},
 
-            {"ErgoSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)[C@H]3CC[C@]12C)O%10."},
-            {"DehydroErgoSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)C3=CC[C@]12C)O%10."},
+            {"EGSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)[C@H]3CC[C@]12C)O%10."},
+            {"DEGSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)C3=CC[C@]12C)O%10."},
 
             {"AHexCS", "CC(C)CCCC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC12C)OC1OC(C(O%10))C(O)C(O)C1O."},
             {"AHexBRS", "CC(C)C(C)C=CC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC12C)OC1OC(C(O%10))C(O)C(O)C1O."},

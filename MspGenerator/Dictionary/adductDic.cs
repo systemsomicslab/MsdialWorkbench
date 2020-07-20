@@ -244,8 +244,8 @@ namespace CompMs.MspGenerator
 
                 {"LipidA", new List<string>(){ "[M-H]-" } },
 
-                {"ErgoSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
-                {"DehydroErgoSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
 
     };
 
