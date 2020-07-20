@@ -19,10 +19,12 @@ namespace CompMs.MsdialDimsCore.Common
 {
     public class AlignmentProcess
     {
-        public static AlignmentResultContainer Alignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, ParameterBase param) {
+        public static AlignmentResultContainer Alignment(
+            IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
+            ChromatogramSerializer<ChromatogramSpotInfo> chromPeakSpotSerializer, ParameterBase param) {
             var master = GetMasterList(analysisFiles, param.AlignmentReferenceFileID, param.Ms1AlignmentTolerance);
             var alignments = AlignAll(master, analysisFiles, param.Ms1AlignmentTolerance);
-            var alignmentSpots = CollectPeakSpots(analysisFiles, alignmentFile, alignments, param);
+            var alignmentSpots = CollectPeakSpots(analysisFiles, alignmentFile, alignments, chromPeakSpotSerializer, param);
 
             return PackingSpots(alignmentSpots, param);
         }
@@ -34,6 +36,7 @@ namespace CompMs.MsdialDimsCore.Common
         private static List<AlignmentChromPeakFeature> AlignFileToMaster(AnalysisFileBean analysisFile, IReadOnlyList<ChromatogramPeakFeature> master, double tolerance) {
             var results = AlignPeaksToMaster(GetChromatogramPeakFeatures(analysisFile), master, tolerance);
             foreach(var result in results) {
+                if (result == null) continue;
                 result.FileID = analysisFile.AnalysisFileId;
                 result.FileName = analysisFile.AnalysisFileName;
             }
@@ -103,14 +106,14 @@ namespace CompMs.MsdialDimsCore.Common
 
         private static List<AlignmentSpotProperty> CollectPeakSpots(
             IEnumerable<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
-            List<List<AlignmentChromPeakFeature>> alignments, ParameterBase param) {
+            List<List<AlignmentChromPeakFeature>> alignments,
+            ChromatogramSerializer<ChromatogramSpotInfo> chromPeakSpotSerializer, ParameterBase param) {
             var transpose = Sequence(alignments);
             var points = GetAlignmentPointCore(transpose);
             var widths = GetPeakWidths(transpose);
             var aligns = new List<List<AlignmentChromPeakFeature>>();
             var files = new List<string>();
             var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-            var chromPeakSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             foreach ((var analysisFile, var alignment) in analysisFiles.Zip(alignments)) {
                 (var align, var file) = CollectAlignmentPeaks(analysisFile, points, widths, alignment, param, chromPeakInfoSerializer);
                 aligns.Add(align);
@@ -241,7 +244,8 @@ namespace CompMs.MsdialDimsCore.Common
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumIDs.IsEmptyOrNull()).ToArray();
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Max(align =>
-                    (align.MSRawID2MspBasedMatchResult?.Values?.Max(val => val.TotalScore), align.PeakHeightTop, align.FileID)
+                    // UNDONE: MSRawID2MspBasedMatchResult has no element.
+                    (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop, align.FileID)
                     ).FileID;
             }
             return alignment.Max(align => (align.TextDbBasedMatchResult?.TotalScore, align.FileID)).FileID;
@@ -382,6 +386,7 @@ namespace CompMs.MsdialDimsCore.Common
             AlignmentFileBean alignmentFile,
             ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer,
             ChromatogramSerializer<ChromatogramPeakInfo> peakSerializer) {
+            // UNDONE: already close files
             var pss = files.Select(file => peakSerializer.DeserializeAllFromFile(file)).ToList();
             var qss = Sequence(pss);
 

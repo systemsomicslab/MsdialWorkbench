@@ -72,4 +72,12 @@
             </Grid>
         </Border>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type do:AnalysisFileBean}">
+        <TextBlock Text="{Binding AnalysisFileName}" />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type do:AlignmentFileBean}">
+        <TextBlock Text="{Binding FileName}" />
+    </DataTemplate>
 </ResourceDictionary>

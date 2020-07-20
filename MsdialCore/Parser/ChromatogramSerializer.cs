@@ -71,13 +71,15 @@ namespace CompMs.MsdialCore.Parser
 
         public IEnumerable<T> DeserializeAllFromFile(string path) {
             using (var fs = File.OpenRead(path)) {
-                return DeserializeAll(fs);
+                foreach (var v in DeserializeAll(fs))
+                    yield return v;
             }
         }
 
         public IEnumerable<T> DeserializeNFromFile(string path, int num) {
             using (var fs = File.OpenRead(path)) {
-                return DeserializeN(fs, num);
+                foreach (var v in DeserializeN(fs, num))
+                    yield return v;
             }
         }
     }

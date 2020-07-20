@@ -9,7 +9,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         x:Name="window"
-        Title="MainWindow" Height="800" Width="1000">
+        Title="MainWindow" Height="1200" Width="1500">
     <Window.DataContext>
         <local:MainWindowVM/>
     </Window.DataContext>
@@ -25,39 +25,67 @@
                     <scm:SortDescription PropertyName="Score" Direction="Descending"/>
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
-                
+            <ControlTemplate TargetType="ListBox" x:Key="ListBoxWithHeader">
+                <StackPanel>
+                    <TextBlock Text="{Binding}" />
+                    <ContentPresenter/>
+                </StackPanel>
+            </ControlTemplate>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <!-- File Navigator -->
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Text="File navigator"
+                       Height="20" Grid.Row="0"/>
+            <ListBox ItemsSource="{Binding AnalysisFiles}" Grid.Row="1"/>
+        </Grid>
+
+        <!-- Alignment Navigator -->
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Alignment navigator"
+                       Height="20" Grid.Row="0"/>
+            <ListBox ItemsSource="{Binding AlignmentFiles}" Grid.Row="1"/>
+        </Grid>
+
         <!-- Ms1 spectrum -->
         <view:MS1Control Margin="0,5,5,0"
-                         Grid.Column="1" Grid.Row="0" />
+                         Grid.Column="2" Grid.Row="0" />
 
-        <!-- Ms2 selector -->
+        <!-- Peak selector -->
         <ListBox ItemsSource="{Binding Ms2Features}"
                  IsSynchronizedWithCurrentItem="True"
-                 Grid.Column="0" Grid.Row="0" />
+                 Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"/>
 
         <!-- Ms2 spectrum -->
         <view:MS2RawSpectrumControl SelectedDetection="{Binding SelectedItems, ElementName=Ms2Anno}"
                                     Margin="0,0,5,5"
-                                    Grid.Row="1" Grid.Column="1"/>
+                                    Grid.Row="1" Grid.Column="2"/>
 
         <!-- Annotation selector -->
         <ListView x:Name="Ms2Anno"
                   ItemsSource="{Binding Source={StaticResource detects}}"
                   SelectionMode="Extended"
-                  Grid.Column="0" Grid.Row="1" >
+                  Grid.Column="3" Grid.Row="1" >
             <ListView.Resources>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -75,7 +103,7 @@
         <!-- Annotation detailview -->
         <ListBox ItemsSource="{Binding SelectedItems, ElementName=Ms2Anno}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" >
+                 Grid.Column="3" Grid.Row="0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <ContentControl Content="{Binding Reference}" />

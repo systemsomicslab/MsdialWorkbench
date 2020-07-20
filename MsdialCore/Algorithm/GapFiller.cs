@@ -116,6 +116,9 @@ namespace CompMs.MsdialCore.Algorithm
             result.ChromScanIdTop = id;
             result.ChromScanIdLeft = leftId;
             result.ChromScanIdRight = rightId;
+            result.ChromXsTop = sPeaklist[id].ChromXs;
+            result.ChromXsLeft = sPeaklist[leftId].ChromXs;
+            result.ChromXsRight = sPeaklist[rightId].ChromXs;
             result.PeakHeightTop = sPeaklist[id].Intensity;
             result.PeakHeightLeft = sPeaklist[leftId].Intensity;
             result.PeakHeightRight = sPeaklist[rightId].Intensity;
