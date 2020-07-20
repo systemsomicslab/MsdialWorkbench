@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(9)]
         public int MS2RawSpectrumID { get; set; } // representative ID
         [Key(10)]
-        public List<int> MS2RawSpectrumIDs { get; set; }
+        public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; }
 
         // basic property of IChromatogramPeakFeature
         [Key(11)]

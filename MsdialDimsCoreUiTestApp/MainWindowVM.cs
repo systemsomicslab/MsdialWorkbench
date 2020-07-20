@@ -204,8 +204,10 @@ namespace MsdialDimsCoreUiTestApp
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
-                peakFeature.MS2RawSpectrumIDs = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
-                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumIDs, allSpectra);
+                peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
+                // foreach (var spec in allSpectra[peakFeature.MS2RawSpectrumID].Spectrum)
+                //     peakFeature.AddPeak(spec.Mz, spec.Intensity);
                 peakFeatures.Add(peakFeature);
 
                 // result check
@@ -216,13 +218,13 @@ namespace MsdialDimsCoreUiTestApp
             return peakFeatures;
         }
 
-        private int GetRepresentativeMS2RawSpectrumID(List<int> ms2RawSpectrumIDs, List<RawSpectrum> allSpectra) {
-            if (ms2RawSpectrumIDs.Count == 0) return -1;
+        private int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {
+            if (ms2RawSpectrumID2CE.Count == 0) return -1;
 
             var maxIntensity = 0.0;
             var maxIntensityID = -1;
-            for (int i = 0; i < ms2RawSpectrumIDs.Count; i++) {
-                var specID = ms2RawSpectrumIDs[i];
+            foreach (var pair in ms2RawSpectrumID2CE) {
+                var specID = pair.Key;
                 var specObj = allSpectra[specID];
                 if (specObj.TotalIonCurrent > maxIntensity) {
                     maxIntensity = specObj.TotalIonCurrent;
@@ -232,8 +234,8 @@ namespace MsdialDimsCoreUiTestApp
             return maxIntensityID;
         }
 
-        private List<int> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
-            var IDs = new List<int>();
+        private Dictionary<int, double> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
+            var ID2CE = new Dictionary<int, double>();
             var target = new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz - mzTolerance } };
             var startID =  SearchCollection.LowerBound(ms2SpecObjects, target, (a, b) => a.Precursor.SelectedIonMz.CompareTo(b.Precursor.SelectedIonMz));
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
@@ -242,9 +244,9 @@ namespace MsdialDimsCoreUiTestApp
                 if (precursorMzObj < precursorMz - mzTolerance) continue;
                 if (precursorMzObj > precursorMz + mzTolerance) break;
 
-                IDs.Add(spec.ScanNumber);
+                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }
-            return IDs; // maybe, in msmsall, the id count is always one but for just in case
+            return ID2CE; // maybe, in msmsall, the id count is always one but for just in case
         }
 
         private void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, List<RawSpectrum> spectra) {

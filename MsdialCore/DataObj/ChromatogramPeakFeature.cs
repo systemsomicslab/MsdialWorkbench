@@ -84,7 +84,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(18)]
         public int MS2RawSpectrumID { get; set; } // representative ID
         [Key(19)]
-        public List<int> MS2RawSpectrumIDs { get; set; } = new List<int>();
+        public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; } = new Dictionary<int, double>();
 
         // set for IMMScanProperty
         [Key(20)]

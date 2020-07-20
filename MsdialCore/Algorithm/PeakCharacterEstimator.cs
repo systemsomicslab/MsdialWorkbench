@@ -21,14 +21,20 @@ namespace CompMs.MsdialCore.Algorithm {
         public double PrecursorMz { get; set; }
         public AdductIon AdductIon { get; set; }
     }
-    public sealed class PeakCharacterEstimator {
+    public class PeakCharacterEstimator {
         private PeakCharacterEstimator() { }
         private static float rtMargin = 0.0177F;
-        private static double initialProgress = 80.0;
-        private static double progressMax = 20.0;
-        public static List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
 
-        public static void Process(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param, Action<int> reportAction) {
+        public PeakCharacterEstimator(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
+        public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
+
+        public void Process(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
+            List<MSDecResult> msdecResults, ParameterBase param, Action<int> reportAction) {
             
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(param);
@@ -56,7 +62,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
 
                 CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, param);
-                ProgressReports(i, chromPeakFeatures.Count, reportAction);
+                ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
             }
             
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
@@ -67,7 +73,7 @@ namespace CompMs.MsdialCore.Algorithm {
         // currently, the links for same metabolite, isotope, and adduct are grouped.
         // the others such as found in upper msms and chromatogram correlation are not grouped.
         // in future, I have to create the merge GUI for user side
-        private static void AssignPutativePeakgroupIDs(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void AssignPutativePeakgroupIDs(List<ChromatogramPeakFeature> chromPeakFeatures) {
             var groupID = 0;
             foreach (var peak in chromPeakFeatures) {
                 var peakCharacter = peak.PeakCharacter;
@@ -84,7 +90,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void recPeakGroupAssignment(ChromatogramPeakFeature peak, List<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
+        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, List<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
             var peakCharacter = peak.PeakCharacter;
             if (peakCharacter.PeakLinks == null || peakCharacter.PeakLinks.Count == 0) return;
             foreach (var linkedPeak in peak.PeakCharacter.PeakLinks) {
@@ -100,7 +106,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static bool isCrawledPeaks(List<LinkedPeakFeature> peakLinks, List<int> crawledPeaks, int peakID) {
+        private bool isCrawledPeaks(List<LinkedPeakFeature> peakLinks, List<int> crawledPeaks, int peakID) {
             if (peakLinks.Count(n => n.LinkedPeakID != peakID) == 0) return true;
             var frag = false;
             foreach (var linkID in peakLinks.Select(n => n.LinkedPeakID)) {
@@ -113,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
 
-        private static void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
                 if (character.IsotopeWeightNumber != 0) {
@@ -142,7 +148,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void SearchedAdductInitialize(ParameterBase param) {
+        private void SearchedAdductInitialize(ParameterBase param) {
             var paramAdducts = param.SearchedAdductIons;
             foreach (var adduct in paramAdducts.OrEmptyIfNull().Where(n => n.IsIncluded)) {
                 SearchedAdducts.Add(adduct);
@@ -153,7 +159,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void ObjectsRefresh(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void ObjectsRefresh(List<ChromatogramPeakFeature> chromPeakFeatures) {
             if (chromPeakFeatures.IsEmptyOrNull()) return;
             foreach (var spot in chromPeakFeatures) {
                 spot.PeakCharacter = new IonFeatureCharacter();
@@ -163,12 +169,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void ProgressReports(int currentProgress, int maxProgress, Action<int> reportAction) {
-            var progress = initialProgress + (double)currentProgress / (double)maxProgress * progressMax;
-            reportAction?.Invoke((int)progress);
-        }
-
-        private static void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             var defaultAdduct = SearchedAdducts[0];
             var defaultAdduct2 = AdductIonParser.ConvertDifferentChargedAdduct(defaultAdduct, 2);
 
@@ -242,7 +243,7 @@ namespace CompMs.MsdialCore.Algorithm {
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        private static void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
+        private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
             List<RawSpectrum> spectrumList, List<MSDecResult> msdecResults, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
@@ -269,7 +270,7 @@ namespace CompMs.MsdialCore.Algorithm {
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, spectrumList, param);
         }
 
-        private static void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
+        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
 
             var isAcetateAdduct = false;
             var isFormateAdduct = false;
@@ -333,7 +334,7 @@ namespace CompMs.MsdialCore.Algorithm {
         // currently, the method is very simple.
         // if a peak (at least 10% relative abundance) in MS/MS is found in MS1 spectrum,
         // the peak of MS1 is assigned as "Found in upper MSMS"
-        private static void assignLinksBasedOnPartialMatchingOfMS1MS2(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, List<RawSpectrum> spectrumList, ParameterBase param) {
+        private void assignLinksBasedOnPartialMatchingOfMS1MS2(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, List<RawSpectrum> spectrumList, ParameterBase param) {
 
             for (int i = chromPeakFeatures.Count - 1; i >= 0; i--) {
                 var peak = chromPeakFeatures[i];
@@ -370,7 +371,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         // currently, only pure peaks are evaluated by this way.
-        private static void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, List<RawSpectrum> spectrumList, ParameterBase param) {
+        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, List<RawSpectrum> spectrumList, ParameterBase param) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
                 
@@ -409,7 +410,7 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         // just copied from the previous adduct estimator, should be checked for the improvement
-        private static void assignLinksBasedOnAdductPairingMethod(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnAdductPairingMethod(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && !n.IsAdductTypeFormatted())) {
                 var flg = false;
                 var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
@@ -459,7 +460,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted())) {
                 var centralAdduct = peak.AdductType;
@@ -498,7 +499,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 if (peak.IsUnknown() || peak.IsAnnotationSuggested()) continue;
 
@@ -546,7 +547,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 
                 if (peak.IsUnknown() || peak.IsAnnotationSuggested()) continue;
@@ -579,7 +580,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        private static void registerLinks(ChromatogramPeakFeature cSpot, ChromatogramPeakFeature rSpot, PeakLinkFeatureEnum rLinkProp) {
+        private void registerLinks(ChromatogramPeakFeature cSpot, ChromatogramPeakFeature rSpot, PeakLinkFeatureEnum rLinkProp) {
             var cSpotCharacter = cSpot.PeakCharacter;
             var rSpotCharacter = rSpot.PeakCharacter;
             if (cSpotCharacter.PeakLinks.Count(n => n.LinkedPeakID == rSpot.PeakID && n.Character == rLinkProp) == 0) {
@@ -597,6 +598,5 @@ namespace CompMs.MsdialCore.Algorithm {
                 rSpotCharacter.IsLinked = true;
             }
         }
-
     }
 }

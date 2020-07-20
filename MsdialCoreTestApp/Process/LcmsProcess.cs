@@ -8,6 +8,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcMsApi.Parser;
+using CompMs.MsdialLcMsApi.Process;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace CompMs.App.MsdialConsole.Process {
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-               
+                FileProcess.Run(file, container);
             }
             new MsdialLcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;

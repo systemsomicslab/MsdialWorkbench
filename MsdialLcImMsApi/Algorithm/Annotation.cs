@@ -17,6 +17,13 @@ using System.Text;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm {
     public class Annotation {
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Annotation(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
         // mspDB must be sorted by precursor mz
         // textDB must be sorted by precursor mz
         // ccs must be calculated before this processing

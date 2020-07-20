@@ -17,13 +17,20 @@ using System.Text;
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Annotation {
 
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Annotation(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
+
         // mspDB must be sorted by precursor mz
         // textDB must be sorted by precursor mz
         public void MainProcess(List<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialLcmsParameter param, Action<int> reportAction) {
 
-            Console.WriteLine("Annotation started");
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 // count of chrompeakfeatures and msdecresults should be same
                 var chromPeak = chromPeakFeatures[i];
@@ -31,7 +38,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 if (chromPeak.PeakCharacter.IsotopeWeightNumber == 0) {
                     LcMsMsMatchMethod(chromPeak, msdecResult, spectrumList, mspDB, textDB, param);
                 }
-                Console.WriteLine("Done {0}/{1}", i, chromPeakFeatures.Count);
+                //Console.WriteLine("Done {0}/{1}", i, chromPeakFeatures.Count);
+                ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count(), reportAction);
             }
         }
 

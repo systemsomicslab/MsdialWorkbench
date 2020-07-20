@@ -147,11 +147,9 @@ namespace CompMs.MsdialCore.MSDec {
     public sealed class MSDecHandler {
         private MSDecHandler() { }
 
-        private const double initialProgress = 30.0;
-        private const double progressMax = 30.0;
-
         #region gcms
-        public static List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, Action<int> reportAction) {
+        public static List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
+            ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
@@ -201,7 +199,7 @@ namespace CompMs.MsdialCore.MSDec {
 
                     counter++;
                 }
-                progressReports(i, modelChromatograms.Count, reportAction);
+                ReportProgress.Show(initialProgress, progressMax, i, modelChromatograms.Count, reportAction);
             }
 
             foreach (var ms1DecResult in msdecResults) {
@@ -1110,11 +1108,6 @@ namespace CompMs.MsdialCore.MSDec {
                 ms1SpectrumList.Add(spectrum);
             }
             return ms1SpectrumList;
-        }
-
-        private static void progressReports(float focusedMass, float endMass, Action<int> reportAction) {
-            var progress = initialProgress + focusedMass / endMass * progressMax;
-            reportAction?.Invoke((int)progress);
         }
     }
 }

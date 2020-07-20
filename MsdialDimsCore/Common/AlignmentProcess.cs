@@ -133,7 +133,7 @@ namespace CompMs.MsdialDimsCore.Common
                 MS1RawSpectrumID = peak.ScanID,
                 MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop,
                 MS2RawSpectrumID = peak.MS2RawSpectrumID,
-                MS2RawSpectrumIDs = peak.MS2RawSpectrumIDs,
+                MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE,
                 ChromScanIdLeft = peak.ChromScanIdLeft,
                 ChromScanIdRight = peak.ChromScanIdRight,
                 ChromScanIdTop = peak.ChromScanIdTop,
@@ -241,7 +241,7 @@ namespace CompMs.MsdialDimsCore.Common
 
         private static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
             if (alignment.Count == 0) return -1;
-            var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumIDs.IsEmptyOrNull()).ToArray();
+            var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray();
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Max(align =>
                     // UNDONE: MSRawID2MspBasedMatchResult has no element.
