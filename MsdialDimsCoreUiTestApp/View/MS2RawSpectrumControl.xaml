@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
-             xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
@@ -13,14 +13,14 @@
              x:Name="MS2Chart"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <base:ContinuousAxisManager x:Key="MassAxisManager"
-                                    MinValue="{Binding DataContext.Ms2Area.Left, Source={x:Reference Name=MS2Chart}}"
-                                    MaxValue="{Binding DataContext.Ms2Area.Right, Source={x:Reference Name=MS2Chart}}" />
-        <base:ContinuousAxisManager x:Key="IntensityAxisManager"
-                                    MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
-                                    MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
-                                    ChartMargin="0.05"
-                                    IsFlipped="True"/>
+        <manager:ContinuousAxisManager x:Key="MassAxisManager"
+                                       MinValue="{Binding DataContext.Ms2Area.Left, Source={x:Reference Name=MS2Chart}}"
+                                       MaxValue="{Binding DataContext.Ms2Area.Right, Source={x:Reference Name=MS2Chart}}" />
+        <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
+                                       MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
+                                       MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
         <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <Grid>

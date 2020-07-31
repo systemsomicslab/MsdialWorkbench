@@ -5,9 +5,9 @@ using System.Windows;
 using System.Windows.Forms;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Base
+namespace CompMs.Graphics.AxisManager
 {
-    public class ContinuousAxisManager : AxisManager
+    public class ContinuousAxisManager : CompMs.Graphics.Core.Base.AxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
@@ -99,8 +99,9 @@ namespace CompMs.Graphics.Base
 
             var min = Convert.ToDouble((IConvertible)e.NewValue);
             var max = Convert.ToDouble(axis.MaxValue);
-            axis.InitialMin = min - (max - min) * axis.ChartMargin;
-            axis.InitialMax = max + (max - min) * axis.ChartMargin;
+            var r = axis.ChartMargin;
+            axis.InitialMin = min - (max - min) * r;
+            axis.InitialMax = max + (max - min) * r;
         }
 
         static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -110,8 +111,9 @@ namespace CompMs.Graphics.Base
 
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble((IConvertible)e.NewValue);
-            axis.InitialMin = min - (max - min) * axis.ChartMargin;
-            axis.InitialMax = max + (max - min) * axis.ChartMargin;
+            var r = axis.ChartMargin;
+            axis.InitialMin = min - (max - min) * r;
+            axis.InitialMax = max + (max - min) * r;
         }
 
         static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -120,7 +122,7 @@ namespace CompMs.Graphics.Base
             if (axis == null) return;
 
             var min = Convert.ToDouble(axis.MinValue);
-            var max = Convert.ToDouble((IConvertible)e.NewValue);
+            var max = Convert.ToDouble(axis.MaxValue);
             var r = (double)e.NewValue;
             axis.InitialMin = min - (max - min) * r;
             axis.InitialMax = max + (max - min) * r;

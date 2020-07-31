@@ -47,7 +47,7 @@ namespace ChartDrawingUiTest.LineChart
 
         public LineChartVM4()
         {
-            var xs = Enumerable.Range(0, 6000).Select(x => new DataPoint() { X = x / 1000d, Y = Math.Sin(x / 1000d), Type = x / 2000});
+            var xs = Enumerable.Range(0, 60000).Select(x => new DataPoint() { X = x / 10000d, Y = Math.Sin(x / 10000d) });
             Series = new ObservableCollection<DataPoint>(xs);
             MinX = xs.Min(dp => dp.X);
             MaxX = xs.Max(dp => dp.X);

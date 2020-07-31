@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
-      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
@@ -13,10 +13,10 @@
       Title="Scatter4">
     <Page.Resources>
         <local:ScatterVM4 x:Key="ScatterVM"/>
-        <base:CategoryAxisManager x:Key="HorizontalAxis"
-                                  ItemsSource="{Binding Xs, Source={StaticResource ScatterVM}}" />
-        <base:CategoryAxisManager x:Key="VerticalAxis"
-                                  ItemsSource="{Binding Ys, Source={StaticResource ScatterVM}}" />
+        <manager:CategoryAxisManager x:Key="HorizontalAxis"
+                                     ItemsSource="{Binding Xs, Source={StaticResource ScatterVM}}" />
+        <manager:CategoryAxisManager x:Key="VerticalAxis"
+                                     ItemsSource="{Binding Ys, Source={StaticResource ScatterVM}}" />
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource ScatterVM}}" />
         <x:Array Type="Brush" x:Key="AxisBrushes1">

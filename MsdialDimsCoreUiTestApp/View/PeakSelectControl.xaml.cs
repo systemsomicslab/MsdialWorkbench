@@ -18,12 +18,11 @@ using CompMs.Graphics.Core.Base;
 namespace MsdialDimsCoreUiTestApp.View
 {
     /// <summary>
-    /// Interaction logic for MS1Control.xaml
+    /// Interaction logic for PeakSelectControl.xaml
     /// </summary>
-    public partial class MS1Control : UserControl
+    public partial class PeakSelectControl : UserControl
     {
-        public MS1Control()
-        {
+        public PeakSelectControl() {
             InitializeComponent();
         }
 
@@ -33,6 +32,8 @@ namespace MsdialDimsCoreUiTestApp.View
         }
 
         public static readonly DependencyProperty HorizontalAxisProperty =
-            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(MS1Control), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(PeakSelectControl), new PropertyMetadata(null));
+
+
     }
 }

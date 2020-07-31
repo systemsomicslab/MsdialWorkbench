@@ -156,10 +156,13 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(37)]
         public MsScanMatchResult TextDbBasedMatchResult { get; set; } = null;
         
-        public MsScanMatchResult MspBasedMatchResult() { // get result having max score
-            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
-            else {
-                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+        [IgnoreMember]
+        public MsScanMatchResult MspBasedMatchResult { // get result having max score
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+                }
             }
         }
 

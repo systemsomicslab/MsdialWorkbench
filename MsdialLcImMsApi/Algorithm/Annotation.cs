@@ -56,8 +56,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 var msdecResult = msdecResults[driftPeak.MasterPeakID];
                 LcImMsMsMatchMethod(chromPeak, driftPeak, msdecResult, isotopes, mspDB, textDB, param);
 
-                if (driftPeak.MspID() >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult().TotalScore) {
-                    maxMspMatchedScore = driftPeak.MspBasedMatchResult().TotalScore;
+                if (driftPeak.MspID() >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult.TotalScore) {
+                    maxMspMatchedScore = driftPeak.MspBasedMatchResult.TotalScore;
                     maxMspMatchedDriftSpotID = driftPeak.PeakID;
                 }
 
@@ -68,8 +68,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             if (maxMspMatchedScore >= 0) {
-                chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult().Clone();
-                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered()], chromPeak.MspBasedMatchResult());
+                chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
+                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered()], chromPeak.MspBasedMatchResult);
             }
 
             if (maxTextDBMatchedDriftSpotID >= 0) {

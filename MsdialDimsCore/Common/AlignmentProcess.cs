@@ -80,7 +80,7 @@ namespace CompMs.MsdialDimsCore.Common
             List<AlignmentChromPeakFeature> alignment, ParameterBase param, ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
             var results = new List<AlignmentChromPeakFeature>();
             var peakInfos = new List<ChromatogramPeakInfo>();
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, analysisFile.AnalysisFileId, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 var spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 foreach ((var point, var width, var align_) in points.Zip(widths, alignment)) {
                     var align = align_;

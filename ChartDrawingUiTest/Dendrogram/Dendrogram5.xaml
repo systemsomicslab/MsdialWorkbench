@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ChartDrawingUiTest.Dendrogram"
       mc:Ignorable="d" 
       xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:dendrogram="clr-namespace:CompMs.Graphics.Dendrogram;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -19,15 +19,15 @@
                 <scm:SortDescription PropertyName="Order" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
-        <base:ContinuousAxisManager x:Key="VerticalAxis"
-                                    MaxValue="{Binding MaxY, Source={StaticResource DendrogramVM}}"
-                                    MinValue="{Binding MinY, Source={StaticResource DendrogramVM}}"
-                                    IsFlipped="True"
-                                    ChartMargin="0.05" />
-        <base:CategoryAxisManager x:Key="HorizontalAxis"
-                                  ItemsSource="{Binding Source={StaticResource Nodes}}"
-                                  DisplayPropertyName="X"
-                                  IdentityPropertyName="X" />
+        <manager:ContinuousAxisManager x:Key="VerticalAxis"
+                                       MaxValue="{Binding MaxY, Source={StaticResource DendrogramVM}}"
+                                       MinValue="{Binding MinY, Source={StaticResource DendrogramVM}}"
+                                       IsFlipped="True"
+                                       ChartMargin="0.05" />
+        <manager:CategoryAxisManager x:Key="HorizontalAxis"
+                                     ItemsSource="{Binding Source={StaticResource Nodes}}"
+                                     DisplayPropertyName="X"
+                                     IdentityPropertyName="X" />
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

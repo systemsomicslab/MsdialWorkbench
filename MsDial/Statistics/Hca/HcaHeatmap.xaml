@@ -6,7 +6,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv.Hca"
-             xmlns:chart="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
              xmlns:dendrogram="clr-namespace:CompMs.Graphics.Dendrogram;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
@@ -24,25 +24,25 @@
         </ContextMenu>
     </UserControl.ContextMenu>
     <UserControl.Resources>
-        <chart:CategoryAxisManager x:Key="FileAxis"
-                                   ItemsSource="{Binding DataContext.FileView, Source={x:Reference ClustermapControl}}"
-                                   IdentityPropertyName="ID" />
-        <chart:CategoryAxisManager x:Key="MetaboliteAxis"
-                                   ItemsSource="{Binding DataContext.MetaboliteView, Source={x:Reference ClustermapControl}}"
-                                   IdentityPropertyName="ID"
-                                   DisplayPropertyName="MetaboliteName" />
-        <chart:ContinuousAxisManager x:Key="FileDendrogramAxis"
-                                     MinValue="{Binding DataContext.FileDendrogramMinimum, Source={x:Reference ClustermapControl}}"
-                                     MaxValue="{Binding DataContext.FileDendrogramMaximum, Source={x:Reference ClustermapControl}}"
-                                     IsFlipped="True" />
-        <chart:ContinuousAxisManager x:Key="MetaboliteDendrogramAxis"
-                                     MinValue="{Binding DataContext.MetaboliteDendrogramMinimum, Source={x:Reference ClustermapControl}}"
-                                     MaxValue="{Binding DataContext.MetaboliteDendrogramMaximum, Source={x:Reference ClustermapControl}}"
-                                     IsFlipped="True" />
-        <chart:ContinuousAxisManager x:Key="HeatmapValueAxis"
-                                     MinValue="{Binding DataContext.HeatmapValueMinimum, Source={x:Reference ClustermapControl}}"
-                                     MaxValue="{Binding DataContext.HeatmapValueMaximum, Source={x:Reference ClustermapControl}}"
-                                     IsFlipped="True" />
+        <manager:CategoryAxisManager x:Key="FileAxis"
+                                     ItemsSource="{Binding DataContext.FileView, Source={x:Reference ClustermapControl}}"
+                                     IdentityPropertyName="ID" />
+        <manager:CategoryAxisManager x:Key="MetaboliteAxis"
+                                     ItemsSource="{Binding DataContext.MetaboliteView, Source={x:Reference ClustermapControl}}"
+                                     IdentityPropertyName="ID"
+                                     DisplayPropertyName="MetaboliteName" />
+        <manager:ContinuousAxisManager x:Key="FileDendrogramAxis"
+                                       MinValue="{Binding DataContext.FileDendrogramMinimum, Source={x:Reference ClustermapControl}}"
+                                       MaxValue="{Binding DataContext.FileDendrogramMaximum, Source={x:Reference ClustermapControl}}"
+                                       IsFlipped="True" />
+        <manager:ContinuousAxisManager x:Key="MetaboliteDendrogramAxis"
+                                       MinValue="{Binding DataContext.MetaboliteDendrogramMinimum, Source={x:Reference ClustermapControl}}"
+                                       MaxValue="{Binding DataContext.MetaboliteDendrogramMaximum, Source={x:Reference ClustermapControl}}"
+                                       IsFlipped="True" />
+        <manager:ContinuousAxisManager x:Key="HeatmapValueAxis"
+                                       MinValue="{Binding DataContext.HeatmapValueMinimum, Source={x:Reference ClustermapControl}}"
+                                       MaxValue="{Binding DataContext.HeatmapValueMaximum, Source={x:Reference ClustermapControl}}"
+                                       IsFlipped="True" />
     </UserControl.Resources>
     <Grid x:Name="chart_panel">
         <Grid.ColumnDefinitions>

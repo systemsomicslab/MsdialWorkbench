@@ -105,8 +105,10 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Method
-        protected virtual double ValueToRenderPositionCore(double value) =>
-            (IsFlipped ? (Max - value) : (value - Min)) / (Max - Min);
+        protected virtual double ValueToRenderPositionCore(double value) {
+            double min = Min, max = Max;
+            return (IsFlipped ? (max - value) : (value - min)) / (max - min);
+        }
 
         protected virtual double ValueToRenderPositionCore(IConvertible value) =>
             ValueToRenderPositionCore(Convert.ToDouble(value));

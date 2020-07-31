@@ -19,23 +19,16 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type local:AnnotationResult}">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Result.TotalScore, StringFormat={}{0:N2}}" Width="30" />
-            <TextBlock Text="{Binding Reference.Name}" Margin="5,0,0,0" />
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type com:MoleculeMsReference}">
+    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeature}">
         <Border BorderThickness="1"
                 BorderBrush="Gray"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Stretch"
                 Padding="5,2"
                 Margin="0,2" >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions >
                     <RowDefinition />
@@ -68,6 +61,7 @@
                            TextWrapping="Wrap"
                            Grid.Column="1" Grid.Row="4" />
                 <Image Source="{Binding SMILES, Converter={StaticResource SmilesToImage}}"
+                       Stretch="Uniform"
                        Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" />
             </Grid>
         </Border>

@@ -117,7 +117,7 @@ namespace CompMs.MsdialCore.Export {
             var sn = category == MachineCategory.GCMS ? String.Format("{0:000}", msdec.SignalNoiseRatio) : String.Format("{0:000}", feature.PeakShape.SignalToNoise);
 
             var matchedResult = category == MachineCategory.GCMS ? msdec.MspBasedMatchResult :
-                feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult();
+                feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult;
             var refID = matchedResult != null ? matchedResult.LibraryID : -1;
             var matchedDB = category == MachineCategory.GCMS ? mspDB :
                 feature.TextDbBasedMatchResult != null ? textDB : mspDB;

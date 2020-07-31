@@ -6,11 +6,13 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Base
+using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Base;
+
+namespace CompMs.Graphics.AxisManager
 {
-    public class CategoryAxisManager : AxisManager
+    public class CategoryAxisManager : CompMs.Graphics.Core.Base.AxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(

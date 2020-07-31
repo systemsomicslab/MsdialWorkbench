@@ -47,7 +47,7 @@ namespace ChartDrawingUiTest.Scatter
 
         public ScatterVM3()
         {
-            var xs = Enumerable.Range(0, 6000).Select(x => new DataPoint() { X = x / 1000d, Y = Math.Sin(x / 1000d), Type = x / 2000});
+            var xs = Enumerable.Range(0, 10000).Select(x => new DataPoint() { X = x / 1600d, Y = Math.Sin(x / 1600d), Type = x / 1600});
             Series = new ObservableCollection<DataPoint>(xs);
             MinX = xs.Min(dp => dp.X);
             MaxX = xs.Max(dp => dp.X);

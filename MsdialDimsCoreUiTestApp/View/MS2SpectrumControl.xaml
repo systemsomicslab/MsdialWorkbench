@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
-             xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
@@ -13,14 +13,15 @@
              x:Name="MS2Chart"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <base:ContinuousAxisManager x:Key="MassAxisManager"
-                                    MinValue="{Binding DataContext.Ms2Area.Left, Source={x:Reference Name=MS2Chart}}"
-                                    MaxValue="{Binding DataContext.Ms2Area.Right, Source={x:Reference Name=MS2Chart}}" />
-        <base:ContinuousAxisManager x:Key="IntensityAxisManager"
-                                    MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
-                                    MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
-                                    ChartMargin="0.05"
-                                    IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
+                                           ItemsSource="{Binding DataContext.Ms2Features/Centroids, Source={x:Reference Name=MS2Chart}}"
+                                           ValuePropertyName="Mass"
+                                           ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
+                                       MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
+                                       MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
         <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
@@ -47,38 +48,6 @@
                                       HorizontalPropertyName="Mass"
                                       VerticalPropertyName="Intensity"
                                       Grid.Row="0" Grid.Column="3" />
-        <spectrum:LineSpectrumControl x:Name="MS2Det"
-                               ItemsSource="{Binding Ms2Features/Detected/Spectrum}"
-                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               MinX="{Binding Min, Source={StaticResource MassAxisManager}}"
-                               MaxX="{Binding Max, Source={StaticResource MassAxisManager}}"
-                               MinY="{Binding Min, Source={StaticResource IntensityAxisManager}}"
-                               MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
-                               HorizontalPropertyName="Mass"
-                               VerticalPropertyName="Intensity"
-                               Visibility="{Binding IsDetectedDisplay, Converter={StaticResource BoolVisibilityConverter}}"
-                               Grid.Row="0" Grid.Column="3" >
-            <spectrum:LineSpectrumControl.LinePen>
-                <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-            </spectrum:LineSpectrumControl.LinePen>
-        </spectrum:LineSpectrumControl>
-        <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                               ItemsSource="{Binding Ms2Features/References/Spectrum}"
-                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               MinX="{Binding Min, Source={StaticResource MassAxisManager}}"
-                               MaxX="{Binding Max, Source={StaticResource MassAxisManager}}"
-                               MinY="{Binding Min, Source={StaticResource IntensityAxisManager}}"
-                               MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
-                               HorizontalPropertyName="Mass"
-                               VerticalPropertyName="Intensity"
-                               Visibility="{Binding IsReferenceDisplay, Converter={StaticResource BoolVisibilityConverter}}"
-                               Grid.Row="0" Grid.Column="3" >
-            <spectrum:LineSpectrumControl.LinePen>
-                <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="true"/>
-            </spectrum:LineSpectrumControl.LinePen>
-        </spectrum:LineSpectrumControl>
         <axis:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                     HorizontalAxis="{Binding AxisMapper}"
@@ -98,7 +67,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Grid.Row="3" Grid.Column="3" />
-        <TextBlock Text="Intensity"
+        <TextBlock Text="Relative intensity"
                    FontStyle="Italic"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"

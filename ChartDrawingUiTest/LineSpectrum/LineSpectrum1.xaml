@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       xmlns:local="clr-namespace:ChartDrawingUiTest.LineSpectrum"
-      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       mc:Ignorable="d" 
@@ -13,15 +13,15 @@
       Title="LineSpectrum1">
     <Page.Resources>
         <local:LineSpecrumVM1 x:Key="LineSpectrumVM"/>
-        <base:ContinuousAxisManager x:Key="HorizontalAxis"
-                                    MinValue="{Binding MinX, Source={StaticResource LineSpectrumVM}}"
-                                    MaxValue="{Binding MaxX, Source={StaticResource LineSpectrumVM}}"
-                                    ChartMargin="0.05" />
-        <base:ContinuousAxisManager x:Key="VerticalAxis"
-                                    MinValue="{Binding MinY, Source={StaticResource LineSpectrumVM}}"
-                                    MaxValue="{Binding MaxY, Source={StaticResource LineSpectrumVM}}"
-                                    ChartMargin="0.05"
-                                    IsFlipped="True"/>
+        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
+                                       MinValue="{Binding MinX, Source={StaticResource LineSpectrumVM}}"
+                                       MaxValue="{Binding MaxX, Source={StaticResource LineSpectrumVM}}"
+                                       ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="VerticalAxis"
+                                       MinValue="{Binding MinY, Source={StaticResource LineSpectrumVM}}"
+                                       MaxValue="{Binding MaxY, Source={StaticResource LineSpectrumVM}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource LineSpectrumVM}}" />
         <CollectionViewSource x:Key="FilteredSeriesView"

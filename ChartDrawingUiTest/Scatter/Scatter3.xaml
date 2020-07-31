@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
-      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       mc:Ignorable="d" 
@@ -12,15 +12,15 @@
       Title="Scatter3">
     <Page.Resources>
         <local:ScatterVM3 x:Key="ScatterVM"/>
-        <base:ContinuousAxisManager x:Key="HorizontalAxis"
-                                    MinValue="{Binding MinX, Source={StaticResource ScatterVM}}"
-                                    MaxValue="{Binding MaxX, Source={StaticResource ScatterVM}}"
-                                    ChartMargin="0.05" />
-        <base:ContinuousAxisManager x:Key="VerticalAxis"
-                                    MinValue="{Binding MinY, Source={StaticResource ScatterVM}}"
-                                    MaxValue="{Binding MaxY, Source={StaticResource ScatterVM}}"
-                                    ChartMargin="0.05"
-                                    IsFlipped="True"/>
+        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
+                                       MinValue="{Binding MinX, Source={StaticResource ScatterVM}}"
+                                       MaxValue="{Binding MaxX, Source={StaticResource ScatterVM}}"
+                                       ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="VerticalAxis"
+                                       MinValue="{Binding MinY, Source={StaticResource ScatterVM}}"
+                                       MaxValue="{Binding MaxY, Source={StaticResource ScatterVM}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource ScatterVM}}" />
         <CollectionViewSource x:Key="FilteredSeriesView"

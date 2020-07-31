@@ -140,34 +140,40 @@ namespace CompMs.Graphics.Scatter
                )
                 return;
 
-            visualChildren.Clear();
-
-
             var brush = PointBrush;
             if (PointGeometry != null)
                 brush = new DrawingBrush(new GeometryDrawing(brush, null, PointGeometry));
             brush.Freeze();
-            var radius = Radius;
+            double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
 
-            foreach (var o in cv)
+            foreach(var visual in visualChildren)
             {
+                var dv = visual as AnnotatedDrawingVisual;
+                var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-                double yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
+                double xx = HorizontalAxis.ValueToRenderPosition(x) * actualWidth;
+                double yy = VerticalAxis.ValueToRenderPosition(y) * actualHeight;
+                dv.Center = new Point(xx, yy);
 
-                var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
-                var dc = dv.RenderOpen();
-                if (PointGeometry == null) {
-                    dc.DrawEllipse(brush, null, new Point(xx, yy), radius, radius);
+                using (var dc = dv.RenderOpen()) {
+                    if (PointGeometry == null) {
+                        dc.DrawEllipse(brush, null, new Point(xx, yy), radius, radius);
+                    }
+                    else {
+                        dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
+                    }
                 }
-                else {
-                    dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
-                }
-                dc.Close();
-                visualChildren.Add(dv);
             }
+        }
+
+        private void SetDrawingVisuals() {
+            if (cv == null) return;
+
+            visualChildren.Clear();
+            foreach (var o in cv)
+                visualChildren.Add(new AnnotatedDrawingVisual(o));
         }
 
         #region Event handler
@@ -186,6 +192,8 @@ namespace CompMs.Graphics.Scatter
 
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
+
+            chart.SetDrawingVisuals();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);

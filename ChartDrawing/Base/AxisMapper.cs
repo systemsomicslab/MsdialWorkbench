@@ -12,9 +12,9 @@ namespace CompMs.Graphics.Base
         public double InitialMin => manager.InitialMin;
         public double InitialMax => manager.InitialMax;
 
-        private AxisManager manager;
+        private CompMs.Graphics.Core.Base.AxisManager manager;
 
-        public AxisMapper(AxisManager manager_)
+        public AxisMapper(CompMs.Graphics.Core.Base.AxisManager manager_)
         {
             manager = manager_;
         }

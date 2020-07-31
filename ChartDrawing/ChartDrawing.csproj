@@ -60,12 +60,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AreaChart\AreaChartControl.cs" />
+    <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\BasicClass.cs" />
-    <Compile Include="Base\CategoryAxisManager.cs" />
+    <Compile Include="AxisManager\CategoryAxisManager.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />
-    <Compile Include="Base\ContinuousAxisManager.cs" />
+    <Compile Include="AxisManager\ContinuousAxisManager.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
     <Compile Include="Converter\EnumTypeToValuesConverter.cs" />

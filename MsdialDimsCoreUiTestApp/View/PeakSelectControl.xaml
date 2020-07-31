@@ -1,21 +1,21 @@
-﻿<UserControl x:Class="MsdialDimsCoreUiTestApp.View.MS1Control"
+﻿<UserControl x:Class="MsdialDimsCoreUiTestApp.View.PeakSelectControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             x:Name="MS1Chart"
+             x:Name="PeakSelector"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="IntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=MS1Chart}}"
-                                           ValuePropertyName="Intensity"
-                                           ChartMargin="0.05"
-                                           IsFlipped="True" />
+        <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
+                                       MinValue="{Binding DataContext.Ms1Area.Top, Source={x:Reference Name=PeakSelector}}"
+                                       MaxValue="{Binding DataContext.Ms1Area.Bottom, Source={x:Reference Name=PeakSelector}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -30,17 +30,18 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <line:LineChartControl x:Name="MS1Line"
-                               ItemsSource="{Binding Ms1Peaks}"
-                               HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               MinX="{Binding HorizontalAxis.Min, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               MaxX="{Binding HorizontalAxis.Max, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               MinY="{Binding Min, Source={StaticResource IntensityAxisManager}}"
-                               MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
-                               HorizontalPropertyName="Mass"
-                               VerticalPropertyName="Intensity"
-                               Grid.Row="0" Grid.Column="3" />
+        <scatter:ScatterControl x:Name="PeakScatter"
+                                ItemsSource="{Binding Ms2Features}"
+                                HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                                MinX="{Binding Min, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                MaxX="{Binding Max, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                MinY="{Binding Min, Source={StaticResource IntensityAxisManager}}"
+                                MaxY="{Binding Max, Source={StaticResource IntensityAxisManager}}"
+                                HorizontalPropertyName="Mass"
+                                VerticalPropertyName="Intensity"
+                                PointGeometry="M 0.0 3.0 L 2.598076211353316 -1.4999999999999993 H -2.5980762113533156 Z"
+                                Grid.Row="0" Grid.Column="3" />
         <axis:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                     HorizontalAxis="{Binding AxisMapper}"
