@@ -185,7 +185,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                 if (maxMatchId == -1) continue;
 
-                maxFactors[maxMatchId] = matchFactor;
+                maxFactors[maxMatchId] = maxMatchFactor;
                 setAlignmentResult(alignmentCollection[maxMatchId].AlignedPeakPropertyBeanCollection[fileID], peakAreaBeanList[i], fileID, fileName);
             }
         }

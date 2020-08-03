@@ -212,7 +212,8 @@ namespace Rfx.Riken.OsakaUniv
                 T3db = true,
                 Stoff = true,
                 Nanpdb = true,
-                Blexp = true
+                Blexp = true,
+                Npa = true
             };
 
             isUserDefinedDB = false;

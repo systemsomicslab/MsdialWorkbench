@@ -97,182 +97,94 @@ namespace CompMs.Common.DataObj.Property {
     /// </summary>
     [MessagePackObject]
     public class Formula {
-        string formulaString;
-        double mass;
-
-        double m1IsotopicAbundance;
-        double m2IsotopicAbundance;
-
-        int cnum;
-        int nnum;
-        int hnum;
-        int onum;
-        int snum;
-        int pnum;
-        int fnum;
-        int clnum;
-        int brnum;
-        int inum;
-        int sinum;
-
-        int tmsCount;
-        int meoxCount;
-
+       
         public Formula() {
-            formulaString = string.Empty;
+            FormulaString = string.Empty;
         }
 
         public Formula(string formulaString, double mass) {
-            this.formulaString = formulaString;
-            this.mass = mass;
+            FormulaString = formulaString;
+            Mass = mass;
         }
 
         public Formula(string formulaString) {
-            this.formulaString = formulaString;
+            FormulaString = formulaString;
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum, int tmsCount = 0, int meoxCount = 0) {
-            this.cnum = cnum;
-            this.hnum = hnum;
-            this.nnum = nnum;
-            this.onum = onum;
-            this.pnum = pnum;
-            this.snum = snum;
-            this.fnum = fnum;
-            this.clnum = clnum;
-            this.brnum = brnum;
-            this.inum = inum;
-            this.sinum = sinum;
+            Cnum = cnum;
+            Hnum = hnum;
+            Nnum = nnum;
+            Onum = onum;
+            Pnum = pnum;
+            Snum = snum;
+            Fnum = fnum;
+            Clnum = clnum;
+            Brnum = brnum;
+            Inum = inum;
+            Sinum = sinum;
 
-            this.tmsCount = tmsCount;
-            this.meoxCount = meoxCount;
+            TmsCount = tmsCount;
+            MeoxCount = meoxCount;
 
-            this.mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
-            this.formulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, tmsCount, meoxCount);
+            Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
+            FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, tmsCount, meoxCount);
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
             double cLabelMass, double hLabelMass, double nLabelMass, double oLabelMass, double pLabelMass, double sLabelMass, double fLabelMass, double clLabelMass, double brLabelMass,
             double iLabelMass, double siLabelMass) {
-            this.cnum = cnum;
-            this.hnum = hnum;
-            this.nnum = nnum;
-            this.onum = onum;
-            this.pnum = pnum;
-            this.snum = snum;
-            this.fnum = fnum;
-            this.clnum = clnum;
-            this.brnum = brnum;
-            this.inum = inum;
-            this.sinum = sinum;
+            Cnum = cnum;
+            Hnum = hnum;
+            Nnum = nnum;
+            Onum = onum;
+            Pnum = pnum;
+            Snum = snum;
+            Fnum = fnum;
+            Clnum = clnum;
+            Brnum = brnum;
+            Inum = inum;
+            Sinum = sinum;
 
-            this.mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
+            Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
                 cLabelMass, hLabelMass, nLabelMass, oLabelMass, pLabelMass, sLabelMass, fLabelMass, clLabelMass, brLabelMass, iLabelMass, siLabelMass);
-            this.formulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, 0, 0);
+            FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, 0, 0);
         }
 
         [Key(0)]
-        public string FormulaString {
-            get { return formulaString; }
-            set { formulaString = value; }
-        }
-
+        public string FormulaString { get; set; }
         [Key(1)]
-        public double Mass {
-            get { return mass; }
-            set { mass = value; }
-        }
-
+        public double Mass { get; set; }
         [Key(2)]
-        public double M1IsotopicAbundance {
-            get { return m1IsotopicAbundance; }
-            set { m1IsotopicAbundance = value; }
-        }
-
+        public double M1IsotopicAbundance { get; set; }
         [Key(3)]
-        public double M2IsotopicAbundance {
-            get { return m2IsotopicAbundance; }
-            set { m2IsotopicAbundance = value; }
-        }
-
+        public double M2IsotopicAbundance { get; set; }
         [Key(4)]
-        public int Cnum {
-            get { return cnum; }
-            set { cnum = value; }
-        }
-
+        public int Cnum { get; set; }
         [Key(5)]
-        public int Nnum {
-            get { return nnum; }
-            set { nnum = value; }
-        }
-
+        public int Nnum { get; set; }
         [Key(6)]
-        public int Hnum {
-            get { return hnum; }
-            set { hnum = value; }
-        }
-
+        public int Hnum { get; set; }
         [Key(7)]
-        public int Onum {
-            get { return onum; }
-            set { onum = value; }
-        }
-
+        public int Onum { get; set; }
         [Key(8)]
-        public int Snum {
-            get { return snum; }
-            set { snum = value; }
-        }
-
+        public int Snum { get; set; }
         [Key(9)]
-        public int Pnum {
-            get { return pnum; }
-            set { pnum = value; }
-        }
-
+        public int Pnum { get; set; }
         [Key(10)]
-        public int Fnum {
-            get { return fnum; }
-            set { fnum = value; }
-        }
-
+        public int Fnum { get; set; }
         [Key(11)]
-        public int Clnum {
-            get { return clnum; }
-            set { clnum = value; }
-        }
-
+        public int Clnum { get; set; }
         [Key(12)]
-        public int Brnum {
-            get { return brnum; }
-            set { brnum = value; }
-        }
-
+        public int Brnum { get; set; }
         [Key(13)]
-        public int Inum {
-            get { return inum; }
-            set { inum = value; }
-        }
-
+        public int Inum { get; set; }
         [Key(14)]
-        public int Sinum {
-            get { return sinum; }
-            set { sinum = value; }
-        }
-
+        public int Sinum { get; set; }
         [Key(15)]
-        public int TmsCount {
-            get { return tmsCount; }
-            set { tmsCount = value; }
-        }
-
+        public int TmsCount { get; set; }
         [Key(16)]
-        public int MeoxCount {
-            get { return meoxCount; }
-            set { meoxCount = value; }
-        }
-
+        public int MeoxCount { get; set; }
         public override string ToString() {
             return FormulaString;
         }

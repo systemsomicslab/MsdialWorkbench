@@ -67,7 +67,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             var chromFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1Spectrum, spectra);
 
             if (chromFeatures.Count == 0) return new ProcessError(true, featureEmptyError);
-            IsotopeEstimator.SetIsotopeInformation(chromFeatures, param, iupacDB);
+            IsotopeEstimator.Process(chromFeatures, param, iupacDB);
 
             SetSpectrumPeaks(chromFeatures, spectra);
 
@@ -77,6 +77,8 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 AnnotationProcess.Run(feature, mspDB, param.MspSearchParam, param.TargetOmics);
                 Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
+
+            PeakCharacterEstimator.Process(spectra, chromFeatures, null, param, null);
 
             return new ProcessError();
         }

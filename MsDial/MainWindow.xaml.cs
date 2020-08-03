@@ -1082,18 +1082,22 @@ namespace Rfx.Riken.OsakaUniv
                 };
                 window.Show();
 
+                //var errorString = string.Empty;
                 await Task.Run(() =>
                 {
                     this.saveProperty = MessagePackHandler.LoadFromFile<SavePropertyBean>(ofd.FileName);
-                    if (this.SaveProperty == null)
-                    {
-                        MessageBox.Show(this.Title + " cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        window.Close();
-                        Mouse.OverrideCursor = null;
+                    if (this.SaveProperty == null) {
+                        //errorString = this.Title + " cannot open the project: \n" + ofd.FileName;
                         return;
                     }
                     openProjectMenuPropertySetting(ofd.FileName);
                 });
+                if (this.SaveProperty == null) {
+                    MessageBox.Show(this.Title + " cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    window.Close();
+                    Mouse.OverrideCursor = null;
+                    return;
+                }
 
                 FileNavigatorUserControlsRefresh(this.analysisFiles);
                 if (this.projectProperty.Ionization == Ionization.ESI)

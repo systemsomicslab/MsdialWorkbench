@@ -84,6 +84,11 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             for (int i = 0; i < detectedPeaks.Count; i++)
             {
                 if (detectedPeaks[i].IntensityAtPeakTop <= 0) continue;
+                var excludeChecker = false;
+                if (param.ExcludedMassList != null && param.ExcludedMassList.Count != 0)
+                    for (int j = 0; j < param.ExcludedMassList.Count; j++)
+                        if (param.ExcludedMassList[j].ExcludedMass - param.ExcludedMassList[j].MassTolerance <= (float)peaklist[detectedPeaks[i].ScanNumAtPeakTop][2] && (float)peaklist[detectedPeaks[i].ScanNumAtPeakTop][2] <= param.ExcludedMassList[j].ExcludedMass + param.ExcludedMassList[j].MassTolerance) { excludeChecker = true; break; }
+                if (excludeChecker) continue;
 
                 var peakAreaBean = DataAccessGcUtility.GetPeakAreaBean(detectedPeaks[i]);
                 peakAreaBean.AccurateMass = (float)peaklist[detectedPeaks[i].ScanNumAtPeakTop][2];

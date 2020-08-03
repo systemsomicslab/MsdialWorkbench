@@ -346,6 +346,91 @@
                                     <Label Content="scan" Height="30" VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
+                                <Label Content="Exclusion mass list:" Height="30" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" Margin="20,100,0,0" />
+
+                                <DataGrid Name="DataGrid_ExcludeMassSetting" 
+                                          ItemsSource="{Binding Path=ExcludedMassViewModelCollection}" 
+                                          Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" 
+                                          VerticalAlignment="Stretch"
+                                          Margin="5,100,5,0" CanUserAddRows="False" CanUserDeleteRows="False" 
+                                          CanUserReorderColumns="False" CanUserSortColumns="False"
+                                          SelectionUnit="Cell" IsReadOnly="False" HeadersVisibility="All" 
+                                          AutoGenerateColumns="False" 
+                                          CurrentCellChanged="DataGrid_ExcludeMassSetting_CurrentCellChanged" 
+                                          PreviewKeyDown="DataGrid_ExcludeMassSetting_PreviewKeyDown" >
+
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" >
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.Columns>
+
+                                        <DataGridTemplateColumn Width="*" Header="Accurate mass [Da]" IsReadOnly="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Name="TextBox_ExcludedMass" 
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                                 VerticalContentAlignment="Center">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ExcludedMass" 
+                                                         ValidatesOnDataErrors="True" 
+                                                         UpdateSourceTrigger="LostFocus" 
+                                                         NotifyOnValidationError="True">
+                                                                <Binding.ValidationRules>
+                                                                    <local:PositiveDoubleNumericValidation />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_ExcludedMass}">
+                                                        <TextBox Name="TextBox_ExcludedMass" 
+                                                     Text="{Binding ExcludedMass, UpdateSourceTrigger=LostFocus}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+                                        </DataGridTemplateColumn>
+
+                                        <DataGridTemplateColumn Width="*" Header="Mass tolerance [Da]" IsReadOnly="False">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Name="TextBox_MassTolerance"
+                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                                 VerticalContentAlignment="Center">
+                                                        <TextBox.Text>
+                                                            <Binding Path="MassTolerance" 
+                                                         ValidatesOnDataErrors="True" 
+                                                         UpdateSourceTrigger="LostFocus" 
+                                                         NotifyOnValidationError="True">
+                                                                <Binding.ValidationRules>
+                                                                    <local:PositiveDoubleNumericValidation />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+
+                                            <DataGridTemplateColumn.CellEditingTemplate>
+                                                <DataTemplate>
+                                                    <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_MassTolerance}">
+                                                        <TextBox Name="TextBox_MassTolerance" 
+                                                     Text="{Binding MassTolerance, UpdateSourceTrigger=LostFocus}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellEditingTemplate>
+
+                                        </DataGridTemplateColumn>
+
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
                             </Grid>
 
 

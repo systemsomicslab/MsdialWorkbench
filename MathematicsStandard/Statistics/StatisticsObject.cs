@@ -37,6 +37,7 @@ namespace Rfx.Riken.OsakaUniv {
         public ObservableCollection<int> XIndexes { get; set; } = new ObservableCollection<int>();
 
         public ObservableCollection<string> YLabels { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> YLabels2 { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> XLabels { get; set; } = new ObservableCollection<string>();
 
         public ObservableCollection<byte[]> YColors { get; set; } = new ObservableCollection<byte[]>(); // [0] R [1] G [2] B [3] A

@@ -1,0 +1,49 @@
+﻿<Window x:Class="MsdialDimsCoreUiTestApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp"
+        xmlns:chart="clr-namespace:CompMs.Graphics.Compound;assembly=ChartDrawing"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1000">
+    <Window.DataContext>
+        <local:MainWindowVM/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ListBox ItemsSource="{Binding Spectrums}"
+                 SelectedItem="{Binding SelectedSpectrum, Mode=OneWayToSource}"
+                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Mz: "/>
+                        <TextBlock Text="{Binding Precursor.SelectedIonMz}"/>
+                        <TextBlock Text="MsLevel: " Margin="3,0,0,0"/>
+                        <TextBlock Text="{Binding MsLevel}"/>
+                        <TextBlock Text="ScanNumber: " Margin="3,0,0,0"/>
+                        <TextBlock Text="{Binding ScanNumber}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <chart:ChartWithAxisControl DrawingChart="{Binding DrawingMS1}"
+                                    DrawingHorizontalAxis="{Binding DrawingMS1HorizontalAxis}"
+                                    DrawingVerticalAxis="{Binding DrawingMS1VerticalAxis}"
+                                    Margin="5"
+                                    Grid.Column="1" Grid.Row="0" />
+        <chart:ChartWithAxisControl DrawingChart="{Binding DrawingMS2}"
+                                    DrawingHorizontalAxis="{Binding DrawingMS2HorizontalAxis}"
+                                    DrawingVerticalAxis="{Binding DrawingMS2VerticalAxis}"
+                                    Margin="5"
+                                    Grid.Column="1" Grid.Row="1" />
+    </Grid>
+</Window>

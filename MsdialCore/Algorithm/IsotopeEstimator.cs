@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -32,7 +33,7 @@ namespace CompMs.MsdialCore.Algorithm {
         /// </summary>
         /// <param name="peakAreaBeanCollection"></param>
         /// <param name="analysisParametersBean"></param>
-        public static void SetIsotopeInformation(
+        public static void Process(
             List<ChromatogramPeakFeature> peakFeatures,
             ParameterBase param, 
             IupacDatabase iupac)
@@ -51,7 +52,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 var focusedMass = peak.PrecursorMz;
                 var focusedRt = peak.ChromXsTop.RT.Value;
 
-                var startScanIndex = DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
+                var startScanIndex = SearchCollection.LowerBound(peakFeatures, new ChromatogramPeakFeature() { Mass = focusedMass - param.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
+                //DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
                 var isotopeCandidates = new List<ChromatogramPeakFeature>() { peak };
 
                 for (int j = startScanIndex; j < peakFeatures.Count; j++) {

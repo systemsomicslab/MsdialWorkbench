@@ -208,13 +208,13 @@ namespace Lipidomics.Retentiontime.Manager {
         private void ProcessRun(object obj) {
             
             //Set the directory containing R.dll
-            REngine.SetEnvironmentVariables(@"C:\Program Files\R\R-3.6.2\bin\x64");
+            REngine.SetEnvironmentVariables(@"D:\Program Files\R\R-3.6.3\bin\x64");
 
-            this.modelFilePath = @"D:\ayas\Retiprt_training_20200119.xlsx";
-            this.rLocationPath = @"C:\Program Files\R\R-3.6.2\bin\x64";
-            this.lbmFilePath = @"C:\Users\ayasa\Desktop\MSDIAL ver 4.00-dev\MSDIAL-LipidDB-VS66-Public.lbm";
-            this.outputFolderPath = @"C:\Users\ayasa\Desktop";
-            this.rWorkingDirectry = @"D:\ayas\Retip_C";
+            this.modelFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\Retiprt_training_20200119.xlsx";
+            this.rLocationPath = @"D:\Program Files\R\R-3.6.3\bin\x64";
+            this.lbmFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\AAHFA_H_Neg.msp";
+            this.outputFolderPath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\result\";
+            this.rWorkingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20200601RTprediction\Retip_C\";
 
             var outputFilePath = this.outputFolderPath + "\\" + System.IO.Path.GetFileNameWithoutExtension(this.lbmFilePath) + "_converted.lbm2";
             var rWorkingDirectryConverted = this.rWorkingDirectry.Replace("\\", "/");
@@ -271,7 +271,7 @@ namespace Lipidomics.Retentiontime.Manager {
                 r.Evaluate("DB <- read_csv(\"temp.csv\")");
 
                 //Compute Chemical descriptors
-                r.Evaluate("DB_desc <- getCD(DB)");
+                r.Evaluate("DB_desc <- getC D(DB)");
 
                 //Perform the RT spell
                 r.Evaluate("DB_pred <- RT.spell(db_rt,DB_desc,model=xgb)");

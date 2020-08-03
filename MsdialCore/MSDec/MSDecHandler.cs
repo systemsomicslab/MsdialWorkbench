@@ -3,6 +3,8 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Query;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -188,7 +190,7 @@ namespace CompMs.MsdialCore.MSDec {
                 //Debug.WriteLine("model count: " + modelChromatograms.Count + "  -- ms1 Count: " + ms1Chromatograms.Count + " -- ms1Dec count: " + ms1DecResults.Count);
 
                 if (msdecResult != null && msdecResult.Spectrum.Count > 0) {
-                    msdecResult.MsDecID = counter;
+                    msdecResult.ScanID = counter;
                     msdecResult.Spectrum = getRefinedMsDecSpectrum(msdecResult.Spectrum, param);
                     msdecResult.Splash = calculateSplash(msdecResult.Spectrum);
                     msdecResults.Add(msdecResult);
@@ -542,6 +544,9 @@ namespace CompMs.MsdialCore.MSDec {
             var rdamScan = msdecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.CentroidMs1Tolerance; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
             var focusedMs1Spectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataType, rdamScan, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
+            focusedMs1Spectrum = ExcludeMasses(focusedMs1Spectrum, param.ExcludedMassList);
+            if (focusedMs1Spectrum.Count == 0) return new List<List<ChromatogramPeak>>();
+
             var rdamScanList = modelChromVector.RdamScanList;
             var peaksList = new List<List<ChromatogramPeak>>();
             foreach (var spec in focusedMs1Spectrum.Where(n => n.Intensity >= param.AmplitudeCutoff).OrderByDescending(n => n.Intensity)) {
@@ -555,6 +560,24 @@ namespace CompMs.MsdialCore.MSDec {
             }
 
             return peaksList;
+        }
+
+        private static List<SpectrumPeak> ExcludeMasses(List<SpectrumPeak> focusedMs1Spectrum, List<MzSearchQuery> excludedMassList) {
+            if (excludedMassList == null || excludedMassList.Count == 0) return focusedMs1Spectrum;
+
+            var cMasses = new List<SpectrumPeak>();
+            foreach (var pair in focusedMs1Spectrum) {
+                var checker = false;
+                foreach (var ePair in excludedMassList) {
+                    if (Math.Abs(pair.Mass - (double)ePair.Mass) < ePair.MassTolerance) {
+                        checker = true;
+                        break;
+                    }
+                }
+                if (checker) continue;
+                cMasses.Add(pair);
+            }
+            return cMasses;
         }
 
         #endregion
@@ -928,7 +951,7 @@ namespace CompMs.MsdialCore.MSDec {
             int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, MsDecBin[] msdecBins, float focusedMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
 
-            int startIndex = 0, leftRemainder = 0, rightRemainder = 0;
+            int leftRemainder = 0, rightRemainder = 0;
             double sum = 0, maxIntensityMz, maxMass;
             float massTol = param.CentroidMs1Tolerance;
 
@@ -947,7 +970,8 @@ namespace CompMs.MsdialCore.MSDec {
                 maxIntensityMz = double.MinValue;
                 maxMass = focusedMass;
 
-                startIndex = DataAccess.GetMs1StartIndex(focusedMass, massTol, massSpectra);
+                //var startIndex = DataAccess.GetMs1StartIndex(focusedMass, massTol, massSpectra);
+                var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = focusedMass - massTol }, (a, b) => a.Mz.CompareTo(b.Mz));
                 for (int j = startIndex; j < massSpectra.Length; j++) {
                     if (massSpectra[j].Mz < focusedMass - massTol) continue;
                     else if (focusedMass - massTol <= massSpectra[j].Mz && massSpectra[j].Mz < focusedMass + massTol) {

@@ -18,6 +18,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
         public static MS1DecResult GetMs1DecResult(ModelChromVector modelChromVector, List<List<Peak>> ms1Chromatograms)
         {
             var ms1DecResult = new MS1DecResult();
+            if (ms1Chromatograms == null || ms1Chromatograms.Count == 0) return null;
             switch (modelChromVector.Ms1DecPattern)
             {
                 case Ms1DecPattern.C: return ms1DecPatternSingle(modelChromVector, ms1Chromatograms);

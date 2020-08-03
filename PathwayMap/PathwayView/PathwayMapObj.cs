@@ -31,6 +31,7 @@ namespace Riken.Metabolomics.Pathwaymap
         public bool IsMapped { get; set; } = false;
         public bool IsStereoValidated { get; set; } = false;
         public bool IsMappedByInChIKey { get; set; } = false;
+        public string ColorCode { get; set; } = "000000";
     }
 
     public class Edge {
@@ -45,6 +46,8 @@ namespace Riken.Metabolomics.Pathwaymap
         public float SourceY { get; set; } = -1;
         public float TargetX { get; set; } = -1;
         public float TargetY { get; set; } = -1;
+        public string ColorCode { get; set; } = "000000";
+        public float LineTickness { get; set; } = 1.0F;
     }
 
     public class PathwayMapObj : INotifyPropertyChanged {
@@ -123,9 +126,9 @@ namespace Riken.Metabolomics.Pathwaymap
                 var sourceID = edge.SourceNodeID;
                 var targetID = edge.TargetNodeID;
                 Console.WriteLine(edge.ID + "\t" + edge.SourceNodeID + "\t" + edge.TargetNodeID);
-                if (!Node2Edges[sourceID].Contains(targetID))
+                if (Node2Edges.ContainsKey(sourceID) && !Node2Edges[sourceID].Contains(targetID))
                     Node2Edges[sourceID].Add(targetID);
-                if (!Node2Edges[targetID].Contains(sourceID))
+                if (Node2Edges.ContainsKey(targetID) && !Node2Edges[targetID].Contains(sourceID))
                     Node2Edges[targetID].Add(sourceID);
             }
 

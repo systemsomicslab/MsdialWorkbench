@@ -13,8 +13,8 @@ namespace MsdialDimsCoreTestApp {
             //MoleculeMsRefMethods.SaveMspToFile(queries, @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\MSDIAL_LipidDB_Test.lbm2");
 
             // testfiles
-            var filepath = @"D:\PROJECT for MSMSALL\remsall\ABF\704_Egg2 Egg Yolk.abf";
-            var lbmFile = @"D:\PROJECT for MSMSALL\remsall\ABF\MSDIAL_LipidDB_Test.lbm2";
+            var filepath = @"C:\Users\Matsuzawa\workspace\riken\abf\704_Egg2 Egg Yolk.abf";
+            var lbmFile = @"C:\Users\Matsuzawa\workspace\riken\MSDIAL_LipidDB_Test.lbm2";
             var param = new MsdialDimsParameter() {
                 IonMode = CompMs.Common.Enum.IonMode.Negative,
                 MspFilePath = lbmFile, 
