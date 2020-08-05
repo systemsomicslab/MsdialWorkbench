@@ -18,7 +18,7 @@ namespace CompMs.Common.Algorithm.Scoring {
     public sealed class MsScanMatching {
         private MsScanMatching() { }
 
-        private static bool IsComparedAvailable(List<IsotopicPeak> obj1, List<IsotopicPeak> obj2) {
+        private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
             if (obj1 == null || obj2 == null || obj1.Count == 0 || obj2.Count == 0) return false;
             return true;
         }
@@ -57,7 +57,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
-            List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
             result.TotalScore = (float)GetTotalScore(result, param);
@@ -65,7 +65,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
-            List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
 
             var isMs1Match = false;
             var isMs2Match = false;
@@ -195,7 +195,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <returns>
         /// The similarity score which is standadized from 0 (no similarity) to 1 (consistency) will be return.
         /// </returns>
-        public static double GetIsotopeRatioSimilarity(List<IsotopicPeak> peaks1, List<IsotopicPeak> peaks2, double targetedMz, double tolerance) {
+        public static double GetIsotopeRatioSimilarity(IReadOnlyList<IsotopicPeak> peaks1, IReadOnlyList<IsotopicPeak> peaks2, double targetedMz, double tolerance) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1;
 
             double similarity = 0;

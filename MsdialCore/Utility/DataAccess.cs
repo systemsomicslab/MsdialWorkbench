@@ -150,9 +150,13 @@ namespace CompMs.MsdialCore.Utility {
             return peakFeature;
         }
 
-        public static List<IsotopicPeak> GetIsotopicPeaks(List<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 2) {
+        public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             if (scanID < 0 || rawSpectrumList == null || scanID > rawSpectrumList.Count - 1) return null;
             var spectrum = rawSpectrumList[scanID].Spectrum;
+            return GetIsotopicPeaks(spectrum, targetedMz, massTolerance, maxIsotopes);
+        }
+
+        public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawPeakElement> spectrum, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             var startID = SearchCollection.LowerBound(spectrum, new RawPeakElement() { Mz = targetedMz - massTolerance }, (a, b) => a.Mz.CompareTo(b.Mz));
             //var startID = GetMs1StartIndex(targetedMz, massTolerance, spectrum);
             var massDiffBase = MassDiffDictionary.CHNO_AverageStepSize;
@@ -165,7 +169,7 @@ namespace CompMs.MsdialCore.Utility {
                 });
             }
 
-            for (int i = startID; i < spectrum.Length; i++) {
+            for (int i = startID; i < spectrum.Count; i++) {
                 var peak = spectrum[i];
                 if (peak.Mz < targetedMz - massTolerance) continue;
                 if (peak.Mz > targetedMz + massDiffBase * maxIsotopeRange + massTolerance) break;

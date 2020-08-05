@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.DataObj {
             get {
                 if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
                 else {
-                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+                    return MSRawID2MspBasedMatchResult.Argmax(n => n.Value.TotalScore).Value;
                 }
             }
         }

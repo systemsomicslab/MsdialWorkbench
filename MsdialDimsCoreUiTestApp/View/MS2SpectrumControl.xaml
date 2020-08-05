@@ -14,7 +14,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2Features/Centroids, Source={x:Reference Name=MS2Chart}}"
+                                           ItemsSource="{Binding ItemsSource/Centroids, Source={x:Reference Name=MS2Chart}}"
                                            ValuePropertyName="Mass"
                                            ChartMargin="0.05" />
         <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
@@ -38,7 +38,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                      ItemsSource="{Binding Ms2Features/Centroids}"
+                                      ItemsSource="{Binding ItemsSource/Centroids, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
                                       MinX="{Binding Min, Source={StaticResource MassAxisManager}}"

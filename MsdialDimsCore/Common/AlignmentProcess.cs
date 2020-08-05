@@ -351,8 +351,10 @@ namespace CompMs.MsdialDimsCore.Common
                 EstimatedNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.EstimatedNoise),
                 EstimatedNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.EstimatedNoise),
 
-                TimesMin = alignedPeaks.Min(peak => (peak.ChromXsTop.Value, peak.ChromXsTop)).ChromXsTop,
-                TimesMax = alignedPeaks.Max(peak => (peak.ChromXsTop.Value, peak.ChromXsTop)).ChromXsTop,
+                TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop,
+                TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop,
+                // TimesMin = alignedPeaks.Min(peak => (peak.ChromXsTop.Value, peak.ChromXsTop)).ChromXsTop,
+                // TimesMax = alignedPeaks.Max(peak => (peak.ChromXsTop.Value, peak.ChromXsTop)).ChromXsTop,
 
                 MassMin = (float)alignedPeaks.Min(peak => peak.Mass),
                 MassMax = (float)alignedPeaks.Max(peak => peak.Mass),

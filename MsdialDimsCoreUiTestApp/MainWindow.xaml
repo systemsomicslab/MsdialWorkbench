@@ -10,6 +10,11 @@
         mc:Ignorable="d"
         x:Name="window"
         Title="MainWindow" Height="1200" Width="1500">
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="save" Click="MenuItem_Click" />
+        </ContextMenu>
+    </Window.ContextMenu>
     <Window.DataContext>
         <local:MainWindowVM/>
     </Window.DataContext>
@@ -21,6 +26,16 @@
             <manager:ContinuousAxisManager x:Key="MassAxisManager"
                                            MinValue="{Binding DataContext.Ms1Area.Left, Source={x:Reference Name=window}}"
                                            MaxValue="{Binding DataContext.Ms1Area.Right, Source={x:Reference Name=window}}" />
+            <CollectionViewSource x:Key="RefMatched"
+                                  Source="{Binding DataContext.Ms2Features, Source={x:Reference Name=window}}"
+                                  Filter="CollectionViewSource_Ref_Filter"/>
+            <CollectionViewSource x:Key="Suggested"
+                                  Source="{Binding DataContext.Ms2Features, Source={x:Reference Name=window}}"
+                                  Filter="CollectionViewSource_Suggested_Filter" />
+            <CompositeCollection x:Key="RefAndSuggested">
+                <CollectionContainer Collection="{Binding Source={StaticResource RefMatched}}" />
+                <CollectionContainer Collection="{Binding Source={StaticResource Suggested}}" />
+            </CompositeCollection>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -87,14 +102,22 @@
             </Grid.RowDefinitions>
 
             <!-- Parameter setting -->
-            <TextBlock Text="Param" Grid.Row="0" />
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Param" />
+                <ComboBox x:Name="PeaksSelector" SelectedValuePath="DataContext" SelectedIndex="0">
+                    <TextBlock Text="All" DataContext="{Binding Ms2Features}"/>
+                    <TextBlock Text="Ref. matched" DataContext="{Binding Source={StaticResource RefMatched}}"/>
+                    <TextBlock Text="Suggested" DataContext="{Binding Source={StaticResource Suggested}}"/>
+                    <TextBlock Text="Ref.matched and Suggested" DataContext="{StaticResource RefAndSuggested}"/>
+                </ComboBox>
+            </StackPanel>
 
             <GridSplitter HorizontalAlignment="Stretch"
                           Height="2"
                           Grid.Row="1" />
 
             <!-- Peak selector -->
-            <ListBox ItemsSource="{Binding Ms2Features}"
+            <ListBox ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
                      IsSynchronizedWithCurrentItem="True"
                      Grid.Row="2" />
             
@@ -118,6 +141,7 @@
 
             <!-- Ms1 peak view -->
             <view:PeakSelectControl HorizontalAxis="{Binding Source={StaticResource MassAxisManager}}"
+                                    ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
                                     Margin="0,5,5,0"
                                     Grid.Row="2" />
             
@@ -131,7 +155,7 @@
             </Grid.RowDefinitions>
 
             <!-- Annotation detailview -->
-            <ContentControl Content="{Binding Ms2Features/ChromatogramPeakFeature}"
+            <ContentControl Content="{Binding SelectedValue/ChromatogramPeakFeature, ElementName=PeaksSelector}"
                             Grid.Row="0" />
 
             <GridSplitter HorizontalAlignment="Stretch"
@@ -139,7 +163,8 @@
                           Grid.Row="1" />
 
             <!-- Ms2 spectrum -->
-            <view:MS2SpectrumControl Margin="0,0,5,5"
+            <view:MS2SpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                                     Margin="0,0,5,5"
                                      Grid.Row="2"/>
             
         </Grid>

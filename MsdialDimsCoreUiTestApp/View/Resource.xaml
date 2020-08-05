@@ -40,8 +40,18 @@
                 </Grid.RowDefinitions>
                 <TextBlock Text="Name: "
                            Grid.Column="0" Grid.Row="0" />
-                <TextBlock Text="{Binding Name}"
-                           Grid.Column="1" Grid.Row="0" />
+                <TextBlock Grid.Column="1" Grid.Row="0" >
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="{Binding Name}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Name}" Value="">
+                                    <Setter Property="Text" Value="Unknown" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <TextBlock Text="Formula: "
                            Grid.Column="0" Grid.Row="1" />
                 <TextBlock Text="{Binding Formula}"

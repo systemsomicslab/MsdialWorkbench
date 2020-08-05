@@ -21,6 +21,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
 using System.Windows.Input;
+using CompMs.Common.DataObj.Property;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -56,6 +57,11 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref ms2Features, value);
         }
 
+        public AlignmentResultContainer AlignmentContainer {
+            get => alignmentContainer;
+            set => SetProperty(ref alignmentContainer, value);
+        }
+
         public ICommand SelectionChangedCmd { get; }
 
         private ChromatogramSerializer<ChromatogramSpotInfo> chromSpotSerializer;
@@ -64,6 +70,7 @@ namespace MsdialDimsCoreUiTestApp
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
         private ObservableCollection<ChromatogramPeak> ms1Peaks;
         private ObservableCollection<Ms2Info> ms2Features;
+        private AlignmentResultContainer alignmentContainer;
         private Rect ms1Area, ms2Area;
         private List<MoleculeMsReference> mspDB, textDB;
         private MsdialDimsParameter param;
@@ -73,15 +80,30 @@ namespace MsdialDimsCoreUiTestApp
         {
             // testfiles
             var lbmFile = @"C:\Users\YUKI MATSUZAWA\works\data\lbm\MSDIAL_LipidDB_Test.lbm2";
+            // var lbmFile = @"C:\Users\YUKI MATSUZAWA\works\data\lbm\LipidMsmsBinaryDB-VS68-AritaM.lbm2";
             var textLibraryFile = @"C:\Users\YUKI MATSUZAWA\works\data\textlib\TestLibrary.txt";
             analysisFiles = new ObservableCollection<AnalysisFileBean> {
                 new AnalysisFileBean { AnalysisFileId = 0,
-                                       AnalysisFileName = "703_Egg2 Egg White",
-                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\703_Egg2 Egg White.abf",
+                                       // AnalysisFileName = "703_Egg2 Egg White",
+                                       // AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\703_Egg2 Egg White.abf",
+                                       AnalysisFileName = "Neg_Infusion_IDA_Liver1",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver1.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver1",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver1.abf",
                                        PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
                 new AnalysisFileBean { AnalysisFileId = 1,
-                                       AnalysisFileName = "704_Egg2 Egg Yolk",
-                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf",
+                                       // AnalysisFileName = "704_Egg2 Egg Yolk",
+                                       // AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf",
+                                       AnalysisFileName = "Neg_Infusion_IDA_Liver2",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver2.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver2",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver2.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 2,
+                                       AnalysisFileName = "Neg_Infusion_IDA_Liver3",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver3.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver3",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver3.abf",
                                        PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
             };
 
@@ -113,8 +135,8 @@ namespace MsdialDimsCoreUiTestApp
             mspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
             mspDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
 
-            textDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out _);
-            textDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+            // textDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out _);
+            // textDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
 
             chromSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             chromPeakSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPS1", ChromXType.Mz);
@@ -132,7 +154,7 @@ namespace MsdialDimsCoreUiTestApp
             SelectionChangedCmd = new SelectionChangedCommand(this);
 
             ReadAndSetMs1RawSpectrum(analysisFiles[0].AnalysisFileId);
-            ReadAndSetMs1PeaksAsync(analysisFiles[0].PeakAreaBeanInformationFilePath);
+            ReadAndSetMs1Peaks(analysisFiles[0].PeakAreaBeanInformationFilePath);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -157,12 +179,16 @@ namespace MsdialDimsCoreUiTestApp
             var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
             if (stream != null)
-                chromPeakSerializer?.Serialize(stream, new ChromatogramPeakInfo(analysisFileBean.AnalysisFileId, chromPeaks, -1, -1, -1));
+                chromPeakSerializer?.Serialize(stream, new ChromatogramPeakInfo(analysisFileBean.AnalysisFileId, sChromPeaks, -1, -1, -1));
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             var chromatogramPeakFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1spectra, spectras);
             SetSpectrumPeaks(chromatogramPeakFeatures, spectras);
-            chromatogramPeakFeatures.ForEach(feature => CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param));
+
+            foreach (var feature in chromatogramPeakFeatures) {
+                var isotopes = DataAccess.GetIsotopicPeaks(spectras, feature.MS1RawSpectrumIdTop, (float)feature.Mass, param.CentroidMs1Tolerance);
+                _ = CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param, isotopes);
+            }
 
             MsdialSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
         }
@@ -251,16 +277,18 @@ namespace MsdialDimsCoreUiTestApp
             return spectrumPeaks.Select(peak => new SpectrumPeak(peak.Mass, (peak.Intensity - min) / width)).ToList();
         }
 
-        private (List<MsScanMatchResult> Msp, List<MsScanMatchResult> Text) CalculateAndSetAnnotatedReferences(ChromatogramPeakFeature chromatogramPeakFeature, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialDimsParameter param)
+        private (List<MsScanMatchResult> Msp, List<MsScanMatchResult> Text) CalculateAndSetAnnotatedReferences(
+            ChromatogramPeakFeature chromatogramPeakFeature, 
+            List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
+            MsdialDimsParameter param, List<IsotopicPeak> isotopes)
         {
-            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
+            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
             return (mspResult, textResult);
         }
 
-        async Task ReadAndSetMs1PeaksAsync(string serializedPeakPath) {
-            var readTask = Task.Run(() => MsdialSerializer.LoadChromatogramPeakFeatures(serializedPeakPath));
-            var chromatogramPeakFeatures = await readTask;
+        void ReadAndSetMs1Peaks(string serializedPeakPath) {
+            var chromatogramPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(serializedPeakPath);
 
             Ms2Features = new ObservableCollection<Ms2Info>(
                 chromatogramPeakFeatures.Select(feature =>
@@ -271,6 +299,9 @@ namespace MsdialDimsCoreUiTestApp
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
                         Centroids = ScalingSpectrumPeaks(feature.Spectrum),
+                        RefMatched = feature.Name != string.Empty && !feature.Name.Contains("w/o"),
+                        Suggested = feature.Name.Contains("w/o"),
+                        Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
             Ms2Area = new Rect(param.Ms2MassRangeBegin, 0, param.Ms2MassRangeEnd, 1);
@@ -290,6 +321,13 @@ namespace MsdialDimsCoreUiTestApp
             stream.Seek(0, SeekOrigin.Begin);
         }
 
+        void ReadAndSetAlignmentResultContainer(int id) {
+            var alignmentFile = alignmentFiles.FirstOrDefault(alignment => alignment.FileID == id);
+            if (alignmentFile == null) return;
+
+            AlignmentContainer = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
+        }
+
         public class SelectionChangedCommand : ICommand
         {
             MainWindowVM mainWindowVM;
@@ -304,12 +342,13 @@ namespace MsdialDimsCoreUiTestApp
                 return true;
             }
 
-            public async void Execute(object parameter) {
+            public void Execute(object parameter) {
                 var analysisFile = parameter as AnalysisFileBean;
                 mainWindowVM.ReadAndSetMs1RawSpectrum(analysisFile.AnalysisFileId);
-                await mainWindowVM.ReadAndSetMs1PeaksAsync(analysisFile.PeakAreaBeanInformationFilePath);
+                mainWindowVM.ReadAndSetMs1Peaks(analysisFile.PeakAreaBeanInformationFilePath);
             }
         }
+
     }
 
     internal class Ms2Info
@@ -319,5 +358,8 @@ namespace MsdialDimsCoreUiTestApp
         public double Mass { get; set; }
         public double Intensity { get; set; }
         public List<SpectrumPeak> Centroids { get; set; }
+        public bool RefMatched { get; set; }
+        public bool Suggested { get; set; }
+        public bool Ms2Acquired { get; set; }
     }
 }

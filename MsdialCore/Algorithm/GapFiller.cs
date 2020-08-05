@@ -39,6 +39,7 @@ namespace CompMs.MsdialCore.Algorithm
 
             var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { Mass = centralMz - mzTol }, (a, b) => a.Mass.CompareTo(b.Mass));
             for (int i = start; i < sPeaklist.Count; i++) {
+                if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
                 if (sPeaklist[i].Mass < centralMz - mzTol) continue;
                 if (centralMz + mzTol < sPeaklist[i].Mass) break;
 

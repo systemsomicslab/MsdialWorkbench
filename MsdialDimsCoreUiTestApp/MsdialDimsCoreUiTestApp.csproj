@@ -84,6 +84,9 @@
       <DependentUpon>PeakSelectControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SmilesToImageConverter.cs" />
+    <Compile Include="View\SpotSelectControl.xaml.cs">
+      <DependentUpon>SpotSelectControl.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Resource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SpotSelectControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

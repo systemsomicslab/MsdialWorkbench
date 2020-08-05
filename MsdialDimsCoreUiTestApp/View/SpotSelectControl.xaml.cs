@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,11 +18,11 @@ using CompMs.Graphics.Core.Base;
 namespace MsdialDimsCoreUiTestApp.View
 {
     /// <summary>
-    /// Interaction logic for PeakSelectControl.xaml
+    /// Interaction logic for SpotSelectControl.xaml
     /// </summary>
-    public partial class PeakSelectControl : UserControl
+    public partial class SpotSelectControl : UserControl
     {
-        public PeakSelectControl() {
+        public SpotSelectControl() {
             InitializeComponent();
         }
 
@@ -32,17 +31,7 @@ namespace MsdialDimsCoreUiTestApp.View
             set { SetValue(HorizontalAxisProperty, value); }
         }
 
-        public IEnumerable ItemsSource {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
-        }
-
         public static readonly DependencyProperty HorizontalAxisProperty =
-            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(PeakSelectControl), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(PeakSelectControl), new PropertyMetadata(null));
-
-
+            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(SpotSelectControl), new PropertyMetadata(null));
     }
 }

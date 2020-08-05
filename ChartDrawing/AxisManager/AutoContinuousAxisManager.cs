@@ -62,8 +62,8 @@ namespace CompMs.Graphics.AxisManager
             var axis = d as AutoContinuousAxisManager;
             if (axis == null) return;
 
-            var enumerator = axis.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
+            var enumerator = axis.ItemsSource?.GetEnumerator();
+            if (enumerator == null || !enumerator.MoveNext()) return;
             axis.dataType = enumerator.Current.GetType();
 
             axis.SetMinAndMaxValues();

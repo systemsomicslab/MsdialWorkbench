@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -22,7 +23,9 @@ namespace CompMs.MsdialDimsCore.Common {
             ChromatogramPeakFeature feature,
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsRefSearchParameterBase param, TargetOmics omics,
-            out List<MsScanMatchResult> mspResults, out List<MsScanMatchResult> textResults) {
+            IReadOnlyList<IsotopicPeak> isotopes,
+            out List<MsScanMatchResult> mspResults, out List<MsScanMatchResult> textResults
+            ) {
 
             var mz = feature.PrecursorMz;
             var ms1Tol = param.Ms1Tolerance;
@@ -33,18 +36,22 @@ namespace CompMs.MsdialDimsCore.Common {
             }
             #endregion
 
-            mspResults = new List<MsScanMatchResult>(0);
-            textResults = new List<MsScanMatchResult>(0);
+            mspResults = new List<MsScanMatchResult>();
+            textResults = new List<MsScanMatchResult>();
 
             if (mspDB != null)
             {
-                mspResults = GetMatchResults(feature, mspDB, ms1Tol, param, omics);
+                Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = null;
+                if (omics == TargetOmics.Lipidomics)
+                    getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(feature, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+                else if (omics == TargetOmics.Metablomics)
+                    getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(feature, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+
+                mspResults = GetMatchResults(mspDB, feature.Mass, ms1Tol, getMatchResult);
+                feature.MSRawID2MspIDs[feature.MS2RawSpectrumID] = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
                 if (mspResults.Count > 0)
                 {
-                    feature.MSRawID2MspIDs[feature.MS2RawSpectrumID] = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
-
-                    var best = mspResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
-
+                    var best = mspResults.Argmax(result => result.TotalScore);
                     feature.MSRawID2MspBasedMatchResult[feature.MS2RawSpectrumID] = best;
                     DataAccess.SetMoleculeMsProperty(feature, mspDB[best.LibraryIDWhenOrdered], best);
                 }
@@ -52,11 +59,13 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (textDB != null)
             {
-                textResults = GetMatchResults(feature, textDB, ms1Tol, param, omics);
+                Func<MoleculeMsReference, MsScanMatchResult> getMatchResult =
+                    refSpec => MsScanMatching.CompareMS2ScanProperties(feature, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+                textResults = GetMatchResults(textDB, feature.Mass, ms1Tol, getMatchResult);
                 feature.TextDbIDs = textResults.Select(result => result.LibraryIDWhenOrdered).ToList();
                 if (textResults.Count > 0)
                 {
-                    var best = textResults.Select((result, index) => (result.TotalScore, -index, result)).Max().result;
+                    var best = textResults.Argmax(result => result.TotalScore);
                     feature.TextDbBasedMatchResult = best;
                     DataAccess.SetMoleculeMsProperty(feature, textDB[best.LibraryIDWhenOrdered], best, true);
                 }
@@ -64,10 +73,10 @@ namespace CompMs.MsdialDimsCore.Common {
         }
 
         private static List<MsScanMatchResult> GetMatchResults(
-            ChromatogramPeakFeature chromPeak, List<MoleculeMsReference> db,
-            double tolerance, MsRefSearchParameterBase param, TargetOmics omics)
+            List<MoleculeMsReference> db, double mz, double tolerance, 
+            Func<MoleculeMsReference, MsScanMatchResult> func)
         {
-            var mz = chromPeak.Mass;
+            if (func == null) return new List<MsScanMatchResult>(0);
             var startID = SearchCollection.LowerBound(
                 db, new MoleculeMsReference() { PrecursorMz = mz - tolerance },
                 (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
@@ -78,13 +87,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 if (refSpec.PrecursorMz < mz - tolerance) continue;
                 if (refSpec.PrecursorMz > mz + tolerance) break;
 
-                MsScanMatchResult result = null;
-                if (omics == TargetOmics.Lipidomics) {
-                    result = MsScanMatching.CompareMS2LipidomicsScanProperties(chromPeak, refSpec, param);
-                }
-                else if (omics == TargetOmics.Metablomics) {
-                    result = MsScanMatching.CompareMS2ScanProperties(chromPeak, refSpec, param);
-                }
+                MsScanMatchResult result = func(refSpec);
                 if (result != null && (result.IsPrecursorMzMatch || result.IsSpectrumMatch)) {
                     result.LibraryIDWhenOrdered = i;
                     candidates.Add(result);
