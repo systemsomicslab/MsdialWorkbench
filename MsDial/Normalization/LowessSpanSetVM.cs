@@ -49,7 +49,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void setIsEnabled(double span)
         {
-            if (span >= minOptSize && span <= 1.0)
+            if (span >= minOptSize - 0.0001 && span <= 1.0)
             {
                 this.isEnabled = true;
             }
