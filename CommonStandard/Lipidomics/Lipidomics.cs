@@ -592,6 +592,31 @@ namespace CompMs.Common.Lipidomics {
                             totalCarbon, totalDbBond, adduct, totalOxidized);
                         break;
 
+                    //add 20200714
+                    case LbmClass.DMPE:
+                        result = LipidMsmsCharacterization.JudgeIfDiMethylPE(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.MMPE:
+                        result = LipidMsmsCharacterization.JudgeIfMonoMethylPE(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.MIPC:
+                        result = LipidMsmsCharacterization.JudgeIfMipc(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    //add 20200720
+                    case LbmClass.EGSE:
+                        result = LipidMsmsCharacterization.JudgeIfErgoSESpecies(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.DEGSE:
+                        result = LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
 
                 }
 

@@ -79,10 +79,11 @@ namespace CompMs.MspGenerator
 
 
 
-        public static void runPaDEL(string workingDirectry, string padelDescriptortypes, string padelProgramPath)
+        public static void runPaDEL(string workingDirectry, string padelDescriptortypes, string padelProgramPath, string toPredictFile)
         {
             var padelDescriptortypesPath = padelDescriptortypes;
-            var outputSdfFolderPath = workingDirectry + @"\sdf\";
+            var toPredictFileName = Path.GetFileNameWithoutExtension(toPredictFile);
+            var outputSdfFolderPath = workingDirectry + @"\sdf\" + toPredictFileName + "\\";
             var sdfFileName = Directory.GetFiles(outputSdfFolderPath);
             var outputFolderPath = workingDirectry + @"\PadelResult\";
             if (!Directory.Exists(outputFolderPath))
