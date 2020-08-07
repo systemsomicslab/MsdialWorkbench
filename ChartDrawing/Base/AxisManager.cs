@@ -1,4 +1,4 @@
-﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,8 +21,7 @@ namespace CompMs.Graphics.Core.Base
         public object Source { get; set; }
     }
 
-    public abstract class AxisManager : DependencyObject
-    {
+    public abstract class AxisManager : DependencyObject {
         #region DependencyProperty
         public static readonly DependencyProperty MinProperty = DependencyProperty.Register(
             nameof(Min), typeof(double), typeof(AxisManager),
@@ -105,29 +104,41 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Method
-        protected virtual double ValueToRenderPositionCore(double value) {
-            double min = Min, max = Max;
-            return (IsFlipped ? (max - value) : (value - min)) / (max - min);
+        protected virtual double ValueToRenderPositionCore(double value, double min, double max, bool isFlipped) {
+            return (isFlipped ? (max - value) : (value - min)) / (max - min);
         }
 
-        protected virtual double ValueToRenderPositionCore(IConvertible value) =>
-            ValueToRenderPositionCore(Convert.ToDouble(value));
+        public virtual double ValueToRenderPosition(object value) {
+            double max = Max, min = Min;
+            bool isFlipped = IsFlipped;
 
-        protected virtual double ValueToRenderPositionCore(object value) =>
-            throw new NotImplementedException();
-
-        public virtual double ValueToRenderPosition(object value)
-        {
-            if (value is double)
-                return ValueToRenderPositionCore((double)value);
-            else if (value is IConvertible)
-                return ValueToRenderPositionCore(value as IConvertible);
+            if (value is double d)
+                return ValueToRenderPositionCore(d, min, max, isFlipped);
+            else if (value is IConvertible convertible)
+                return ValueToRenderPositionCore(Convert.ToDouble(convertible), min, max, isFlipped);
             else
-                return ValueToRenderPositionCore(value);
+                throw new NotImplementedException();
         }
 
         public virtual double RenderPositionToValue(double value) =>
             IsFlipped ? (Max - value * (Max - Min)) : (value * (Max - Min) + Min);
+
+        public virtual List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+            double max = Max, min = Min;
+            bool isFlipped = IsFlipped;
+            var result = new List<double>();
+
+            foreach (var value in values) {
+                if (value is double d)
+                    result.Add(ValueToRenderPositionCore(d, min, max, isFlipped));
+                else if (value is IConvertible convertible)
+                    result.Add(ValueToRenderPositionCore(Convert.ToDouble(convertible), min, max, isFlipped));
+                else
+                    result.Add(double.NaN);
+            }
+
+            return result;
+        }
         #endregion
 
         #region Event

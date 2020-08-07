@@ -23,22 +23,22 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty MinXProperty = DependencyProperty.Register(
             nameof(MinX), typeof(double), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public static readonly DependencyProperty MaxXProperty = DependencyProperty.Register(
             nameof(MaxX), typeof(double), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public static readonly DependencyProperty MinYProperty = DependencyProperty.Register(
             nameof(MinY), typeof(double), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public static readonly DependencyProperty MaxYProperty = DependencyProperty.Register(
             nameof(MaxY), typeof(double), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ChartUpdate)
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
         #endregion
 

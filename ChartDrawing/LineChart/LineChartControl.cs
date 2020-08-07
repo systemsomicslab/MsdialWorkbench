@@ -90,26 +90,22 @@ namespace CompMs.Graphics.LineChart
 
             var dc = dv.RenderOpen();
 
-            if (datas.Length != 0)
-            {
-                Matrix factor = new Matrix(ActualWidth, 0, 0, ActualHeight, 0, 0);
+            var points = ValuesToRenderPositions(datas, ActualWidth, ActualHeight);
 
-                var points = new List<Point>(datas.Length);
-                foreach (var data in datas)
-                    points.Add(ValueToRenderPosition(data) * factor);
-
+            if (points.Count != 0)
                 for (int i = 1; i < points.Count; ++i)
                     dc.DrawLine(LinePen, points[i - 1], points[i]);
-            }
             
             dc.Close();
         }
 
-        Point ValueToRenderPosition(Data d)
-        {
-            var xx = HorizontalAxis.ValueToRenderPosition(d.x);
-            var yy = VerticalAxis.ValueToRenderPosition(d.y);
-            return new Point(xx, yy);
+        List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
+            var points = new List<Point>(ds.Count);
+
+            var xs = HorizontalAxis.ValuesToRenderPositions(ds.Select(d => d.x));
+            var ys = VerticalAxis.ValuesToRenderPositions(ds.Select(d => d.y));
+
+            return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
         }
 
         void SetHorizontalDatas() {

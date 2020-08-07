@@ -14,18 +14,18 @@ namespace CompMs.Graphics.Base
 
         private CompMs.Graphics.Core.Base.AxisManager manager;
 
-        public AxisMapper(CompMs.Graphics.Core.Base.AxisManager manager_)
-        {
+        public AxisMapper(CompMs.Graphics.Core.Base.AxisManager manager_) {
             manager = manager_;
         }
 
-        public double ValueToRenderPosition(object value)
-        {
+        public double ValueToRenderPosition(object value) {
             return manager.ValueToRenderPosition(value);
         }
-        public double RenderPositionToValue(double value)
-        {
+        public double RenderPositionToValue(double value) {
             return manager.RenderPositionToValue(value);
+        }
+        public List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+            return manager.ValuesToRenderPositions(values);
         }
     }
 }

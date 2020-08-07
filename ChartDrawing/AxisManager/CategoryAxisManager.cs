@@ -91,19 +91,28 @@ namespace CompMs.Graphics.AxisManager
             return result;
         }
 
-        protected override double ValueToRenderPositionCore(object value)
-        {
-            if (converter.ContainsKey(value))
-                return base.ValueToRenderPositionCore(converter[value]);
-            return double.NaN;
-        }
-
         public override double ValueToRenderPosition(object value)
         {
-            if (value is double)
-                return ValueToRenderPositionCore((double)value);
+            double min = Min, max = Max;
+            bool isFlipped = IsFlipped;
+
+            if (value is double d)
+                return ValueToRenderPositionCore(d, min, max, isFlipped);
+            else if (converter.ContainsKey(value))
+                return base.ValueToRenderPositionCore(converter[value], min, max, isFlipped);
             else
-                return ValueToRenderPositionCore(value);
+                return double.NaN;
+        }
+
+        public override List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+            double min = Min, max = Max;
+            bool isFlipped = IsFlipped;
+
+            return values.Select(value =>
+                converter.ContainsKey(value)
+                    ? base.ValueToRenderPositionCore(converter[value], min, max, isFlipped)
+                    : double.NaN
+                ).ToList();
         }
 
         private void UpdateConverter()
