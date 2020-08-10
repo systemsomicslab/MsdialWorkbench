@@ -121,7 +121,7 @@ namespace CompMs.Graphics.GraphAxis
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             double basePoint = HorizontalAxis.ValueToRenderPosition(0d);
 
-            var labelTicks = LabelTicks.Where(data => MinX <= data.Center && data.Center <= MaxX).ToList();
+            var labelTicks = LabelTicks.Where(data => RangeX.Minimum <= data.Center && data.Center <= RangeX.Maximum).ToList();
             if (labelTicks.Count > 100)
                 labelTicks = labelTicks.Where(data => data.TickType == TickType.LongTick).ToList();
             if (labelTicks.Count > 100)

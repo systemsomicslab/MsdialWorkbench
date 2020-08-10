@@ -50,7 +50,7 @@ namespace CompMs.Graphics.AxisManager
         {
             var result = new List<LabelTickData>();
 
-            if (Min >= Max) return result;
+            if (Min >= Max || double.IsNaN(Min) || double.IsNaN(Max)) return result;
             var TickInterval = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Max - Min)));
             var exp = Math.Floor(Math.Log10(Max));
             var LabelFormat = exp > 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
@@ -100,8 +100,10 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble((IConvertible)e.NewValue);
             var max = Convert.ToDouble(axis.MaxValue);
             var r = axis.ChartMargin;
-            axis.InitialMin = min - (max - min) * r;
-            axis.InitialMax = max + (max - min) * r;
+            axis.InitialRange = new Base.Range {
+                Minimum = min - (max - min) * r,
+                Maximum = max + (max - min) * r,
+            };
         }
 
         static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -112,8 +114,10 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble((IConvertible)e.NewValue);
             var r = axis.ChartMargin;
-            axis.InitialMin = min - (max - min) * r;
-            axis.InitialMax = max + (max - min) * r;
+            axis.InitialRange = new Base.Range {
+                Minimum = min - (max - min) * r,
+                Maximum = max + (max - min) * r,
+            };
         }
 
         static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -124,8 +128,10 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble(axis.MaxValue);
             var r = (double)e.NewValue;
-            axis.InitialMin = min - (max - min) * r;
-            axis.InitialMax = max + (max - min) * r;
+            axis.InitialRange = new Base.Range {
+                Minimum = min - (max - min) * r,
+                Maximum = max + (max - min) * r,
+            };
         }
         #endregion
     }

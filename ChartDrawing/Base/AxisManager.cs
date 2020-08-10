@@ -1,4 +1,4 @@
-using CompMs.Graphics.Base;
+﻿using CompMs.Graphics.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,24 +23,14 @@ namespace CompMs.Graphics.Core.Base
 
     public abstract class AxisManager : DependencyObject {
         #region DependencyProperty
-        public static readonly DependencyProperty MinProperty = DependencyProperty.Register(
-            nameof(Min), typeof(double), typeof(AxisManager),
-            new PropertyMetadata(default(double), OnMinChanged)
+        public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
+            nameof(Range), typeof(Range), typeof(AxisManager),
+            new PropertyMetadata(new Range { Minimum = 0, Maximum = 1}, OnRangeChanged)
             );
 
-        public static readonly DependencyProperty MaxProperty = DependencyProperty.Register(
-            nameof(Max), typeof(double), typeof(AxisManager),
-            new PropertyMetadata(default(double), OnMaxChanged)
-            );
-
-        public static readonly DependencyProperty InitialMinProperty = DependencyProperty.Register(
-            nameof(InitialMin), typeof(double), typeof(AxisManager),
-            new PropertyMetadata(default(double), OnInitialMinChanged)
-            );
-
-        public static readonly DependencyProperty InitialMaxProperty = DependencyProperty.Register(
-            nameof(InitialMax), typeof(double), typeof(AxisManager),
-            new PropertyMetadata(default(double), OnInitialMaxChanged)
+        public static readonly DependencyProperty InitialRangeProperty = DependencyProperty.Register(
+            nameof(InitialRange), typeof(Range), typeof(AxisManager),
+            new PropertyMetadata(new Range { Minimum = 0, Maximum = 1}, OnInitialRangeChanged)
             );
 
         public static readonly DependencyProperty IsFlippedProperty = DependencyProperty.Register(
@@ -60,44 +50,37 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Property
-        public double Min
-        {
-            get => (double)GetValue(MinProperty);
-            set => SetValue(MinProperty, value);
+        public double Min {
+            get => Range.Minimum;
+            set => Range = new Range { Minimum = value, Maximum = Range.Maximum };
         }
 
-        public double Max
-        {
-            get => (double)GetValue(MaxProperty);
-            set => SetValue(MaxProperty, value);
+        public double Max {
+            get => Range.Maximum;
+            set => Range = new Range { Minimum = Range.Minimum, Maximum = value };
         }
 
-        public double InitialMin
-        {
-            get => (double)GetValue(InitialMinProperty);
-            set => SetValue(InitialMinProperty, value);
+        public Range Range {
+            get => (Range)GetValue(RangeProperty);
+            set => SetValue(RangeProperty, value);
         }
 
-        public double InitialMax
-        {
-            get => (double)GetValue(InitialMaxProperty);
-            set => SetValue(InitialMaxProperty, value);
+        public Range InitialRange {
+            get => (Range)GetValue(InitialRangeProperty);
+            set => SetValue(InitialRangeProperty, value);
         }
 
-        public bool IsFlipped
-        {
+        public bool IsFlipped {
             get => (bool)GetValue(IsFlippedProperty);
             set => SetValue(IsFlippedProperty, value);
         }
 
-        public AxisMapper AxisMapper
-        {
+        public AxisMapper AxisMapper {
             get => (AxisMapper)GetValue(AxisMapperProperty);
             set => SetValue(AxisMapperProperty, value);
         }
 
-        public List<LabelTickData> LabelTicks
-        {
+        public List<LabelTickData> LabelTicks {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
             set => SetValue(LabelTicksProperty, value);
         }
@@ -142,33 +125,14 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Event
-        static void OnInitialMinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = d as AxisManager;
             if (axis == null) return;
 
-            axis.Min = (double)e.NewValue;
+            axis.Range = (Range)e.NewValue;
         }
 
-        static void OnInitialMaxChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var axis = d as AxisManager;
-            if (axis == null) return;
-
-            axis.Max = (double)e.NewValue;
-        }
-
-        static void OnMinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var axis = d as AxisManager;
-            if (axis == null) return;
-
-            axis.LabelTicks = axis.GetLabelTicks();
-            axis.AxisMapper = new AxisMapper(axis);
-        }
-
-        static void OnMaxChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = d as AxisManager;
             if (axis == null) return;
 

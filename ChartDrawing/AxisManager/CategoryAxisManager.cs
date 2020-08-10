@@ -129,8 +129,7 @@ namespace CompMs.Graphics.AxisManager
                 foreach(object item in ItemsSource)
                     converter[item] = 0.5 + cnt++;
 
-            InitialMin = 0d;
-            InitialMax = cnt;
+            InitialRange = new Range { Minimum = 0d, Maximum = cnt };
 
             AxisMapper = new AxisMapper(this);
         }

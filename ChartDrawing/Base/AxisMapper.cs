@@ -9,8 +9,8 @@ namespace CompMs.Graphics.Base
 {
     public class AxisMapper
     {
-        public double InitialMin => manager.InitialMin;
-        public double InitialMax => manager.InitialMax;
+        public double InitialMin => manager.InitialRange.Minimum;
+        public double InitialMax => manager.InitialRange.Maximum;
 
         private CompMs.Graphics.Core.Base.AxisManager manager;
 
