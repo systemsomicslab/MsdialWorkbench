@@ -67,6 +67,7 @@
     <Compile Include="AxisManager\CategoryAxisManager.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />
     <Compile Include="AxisManager\ContinuousAxisManager.cs" />
+    <Compile Include="Base\ChartMargin.cs" />
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace CompMs.Graphics.Base
+namespace CompMs.Graphics.Core.Base
 {
     [TypeConverter(typeof(RangeTypeConverter))]
     public class Range

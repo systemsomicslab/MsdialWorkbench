@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using System.Windows.Forms;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class ContinuousAxisManager : CompMs.Graphics.Core.Base.AxisManager
+    public class ContinuousAxisManager : Core.Base.AxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
@@ -21,8 +19,8 @@ namespace CompMs.Graphics.AxisManager
             );
 
         public static readonly DependencyProperty ChartMarginProperty = DependencyProperty.Register(
-            nameof(ChartMargin), typeof(double), typeof(ContinuousAxisManager),
-            new PropertyMetadata(0d, OnChartMarginChanged)
+            nameof(ChartMargin), typeof(ChartMargin), typeof(ContinuousAxisManager),
+            new PropertyMetadata(new ChartMargin { Left = 0d, Right = 0d }, OnChartMarginChanged)
             );
         #endregion
 
@@ -39,9 +37,9 @@ namespace CompMs.Graphics.AxisManager
             set => SetValue(MaxValueProperty, value);
         }
 
-        public double ChartMargin
+        public ChartMargin ChartMargin
         {
-            get => (double)GetValue(ChartMarginProperty);
+            get => (ChartMargin)GetValue(ChartMarginProperty);
             set => SetValue(ChartMarginProperty, value);
         }
         #endregion
@@ -100,9 +98,9 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble((IConvertible)e.NewValue);
             var max = Convert.ToDouble(axis.MaxValue);
             var r = axis.ChartMargin;
-            axis.InitialRange = new Base.Range {
-                Minimum = min - (max - min) * r,
-                Maximum = max + (max - min) * r,
+            axis.InitialRange = new Range {
+                Minimum = min - (max - min) * r?.Left ?? 0d,
+                Maximum = max + (max - min) * r?.Right ?? 0d,
             };
         }
 
@@ -114,9 +112,9 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble((IConvertible)e.NewValue);
             var r = axis.ChartMargin;
-            axis.InitialRange = new Base.Range {
-                Minimum = min - (max - min) * r,
-                Maximum = max + (max - min) * r,
+            axis.InitialRange = new Range {
+                Minimum = min - (max - min) * r?.Left ?? 0d,
+                Maximum = max + (max - min) * r?.Right ?? 0d,
             };
         }
 
@@ -127,10 +125,10 @@ namespace CompMs.Graphics.AxisManager
 
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble(axis.MaxValue);
-            var r = (double)e.NewValue;
-            axis.InitialRange = new Base.Range {
-                Minimum = min - (max - min) * r,
-                Maximum = max + (max - min) * r,
+            var r = (ChartMargin)e.NewValue;
+            axis.InitialRange = new Range {
+                Minimum = min - (max - min) * r?.Left ?? 0d,
+                Maximum = max + (max - min) * r?.Right ?? 0d,
             };
         }
         #endregion

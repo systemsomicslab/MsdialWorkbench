@@ -23,7 +23,7 @@
                                        MaxValue="{Binding MaxY, Source={StaticResource DendrogramVM}}"
                                        MinValue="{Binding MinY, Source={StaticResource DendrogramVM}}"
                                        IsFlipped="True"
-                                       ChartMargin="0.05" />
+                                       ChartMargin="0,0.05" />
         <manager:CategoryAxisManager x:Key="HorizontalAxis"
                                      ItemsSource="{Binding Source={StaticResource Nodes}}"
                                      DisplayPropertyName="X"
@@ -65,10 +65,12 @@
         <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    Margin="2,0,0,0"
                                     Grid.Column="1" Grid.Row="1" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  Margin="0,0,0,2"
                                   Grid.Column="0" Grid.Row="0" />
         <StackPanel Orientation="Horizontal"
                     Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
