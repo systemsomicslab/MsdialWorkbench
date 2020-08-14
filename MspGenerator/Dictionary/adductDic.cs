@@ -47,7 +47,11 @@ namespace CompMs.MspGenerator
                 {   "PS" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+Na]+"}    },
                 {   "PA" ,    new List<string>(){ "[M-H]-" }    },
                 {   "PMeOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }    }, 
-                {   "PEtOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }   }, 
+                {   "PEtOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }   },
+                {   "MMPE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
+                {   "DMPE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
+
+
             // (GP)glycerophosphoLipids mono acyl(ester) chains
                 {   "LPC" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+" , }    },
                 {   "LPCSN1" ,    new List<string>(){ "[M+H]+" }    },
@@ -139,6 +143,9 @@ namespace CompMs.MspGenerator
                 {   "Hex2Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "Hex3Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
 
+                {   "MIPC" ,    new List<string>(){ "[M+H]+" , "[M-H]-" }    },
+
+
             //cer 2chains and chain conbination
                 {   "SM" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+"  }    },
                 {   "SM+O" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-" }    },
@@ -173,7 +180,7 @@ namespace CompMs.MspGenerator
                 {   "NAGlySer_FAHFA" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
                 {   "NAOrn_FAHFA" ,    new List<string>(){ "[M+H]+"  }    },
             //single chain
-                {   "CAR" ,    new List<string>(){ "[M]+" }    },
+                {   "CAR" ,    new List<string>(){ "[M+H]+" }    },
                 {   "VAE" ,    new List<string>(){ "[M+H]+", "[M+Na]+"  , }    },
                 {   "NAE" ,    new List<string>(){ "[M+H]+"  }    },
                 {   "NAGly_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
@@ -236,6 +243,9 @@ namespace CompMs.MspGenerator
                 {"Ac4PIM2", new List<string>(){ "[M-H]-" } },
 
                 {"LipidA", new List<string>(){ "[M-H]-" } },
+
+                {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
 
     };
 

@@ -586,6 +586,32 @@ namespace Riken.Metabolomics.Lipidomics {
                             totalCarbon, totalDbBond, adduct, totalOxidized);
                         break;
 
+                    //add 20200714
+                    case LbmClass.DMPE:
+                        result = LipidMsmsCharacterization.JudgeIfDiMethylPE(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.MMPE:
+                        result = LipidMsmsCharacterization.JudgeIfMonoMethylPE(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.MIPC:
+                        result = LipidMsmsCharacterization.JudgeIfMipc(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    //add 20200720
+                    case LbmClass.EGSE:
+                        result = LipidMsmsCharacterization.JudgeIfErgoSESpecies(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.DEGSE:
+                        result = LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+
 
                 }
 

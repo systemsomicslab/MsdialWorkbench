@@ -82,9 +82,11 @@ namespace CompMs.MspGenerator
             {"CL", "OC(COP(O)(=O)OCC(O%10)C(O%11))COP(O)(=O)OCC(O%12)C(O%13)."},
             {"FAHFATG", "C(O%11)C(O%12)C(O%13)."},
 
-            //{"AAHFA", "C(O%10)C(O)C(O)."},
+            {"MMPE", "C(O%10)C(O%11)COP(O)(=O)OCCNC."},
+            {"DMPE", "C(O%10)C(O%11)COP(O)(=O)OCCN(C)C."},
+
+
             //{"NAPE", "OP(=O)(OCC%20)OCC(O%10)C(O%11)."},
-            //{"NAE", "OCC%20."},
 
             //ceramide 2chains
             {"Cer_ADS", "OCC%20N%30."},
@@ -113,6 +115,9 @@ namespace CompMs.MspGenerator
             {"CerP", "OP(O)(=O)OCC%20N%30."},
             {"Hex2Cer", "N%30C%20COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O."},
             {"Hex3Cer", "N%30C%20COC1OC(CO)C(OC2OC(CO)C(OC3OC(CO)C(O)C(O)C3O)C(O)C2O)C(O)C1O."},
+
+            {"MIPC", "OCC1OC(OC2C(O)C(O)C(O)C(O)C2OP(O)(=O)OCC(%20)N%30)C(O)C(O)C1O."},
+
 
             //ceramide need chain conbination
             {"SHexCer", "OCC1OC(OCC%20N%30)C(O)C(OS(O)(=O)=O)C1O."},
@@ -154,7 +159,7 @@ namespace CompMs.MspGenerator
             {"NAOrn_FAHFA", "NCCCC(N%20)C(O)=O."},
 
             // single acyl chain
-            {"CAR", "C[N+](C)(C)CC(CC(O)=O)O%10."},
+            {"CAR", "C[N+](C)(C)CC(CC([O-])=O)O%10."},  //  old SMILES {"CAR", "C[N+](C)(C)CC(CC(O)=O)O%10."},  20200713 adduct change [M+] -> [M+H]+
             {"NAE", "N%10CCO."},
             {"VAE", "CC(=CCO%10)C=CC=C(C)C=CC1=C(C)CCCC1(C)C."},
             {"NAGlySer_OxFA", "OCC(NC(=O)CN%20)C(O)=O."},
@@ -181,6 +186,8 @@ namespace CompMs.MspGenerator
 
             {"Cholestan", "CC(C)CCCC(C)C1CCC2C3CCC4CC(O%10)CCC4(C)C3CCC12C."},
 
+            {"EGSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)[C@H]3CC[C@]12C)O%10."},
+            {"DEGSE", "CC(C)[C@@H](C)C=C[C@@H](C)[C@H]1CC[C@H]2C3=CC=C4C[C@H](CC[C@]4(C)C3=CC[C@]12C)O%10."},
 
             {"AHexCS", "CC(C)CCCC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC12C)OC1OC(C(O%10))C(O)C(O)C1O."},
             {"AHexBRS", "CC(C)C(C)C=CC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC12C)OC1OC(C(O%10))C(O)C(O)C1O."},

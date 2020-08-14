@@ -175,6 +175,14 @@ namespace CompMs.MspGenerator
                                 GlycerolipidFragmentation.dgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
                                 break;
 
+                            case "MMPE": // 
+                                GlycerolipidFragmentation.mmpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
+                                break;
+                            case "DMPE": // 
+                                GlycerolipidFragmentation.dmpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
+                                break;
+
+
                             default:
                                 Console.WriteLine("Error in lipidClass switch. Please check settings...");
                                 Console.ReadKey();
