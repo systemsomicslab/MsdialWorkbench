@@ -16,8 +16,8 @@ namespace DatabaseParserConsoleApp {
             //runLipidMassGenerator();
             #endregion
 
-            runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
-            //convertAsciiToBinary();
+            //runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
+            convertAsciiToBinary();
 
 
             //testLipidChalacterizationMethods();
@@ -133,11 +133,11 @@ namespace DatabaseParserConsoleApp {
             //    @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-AritaM-replaced.lbm",
             //    @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-AritaM.lbm2");
             LipidomicsConverter.AsciiToSerializedObject(
-                @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-FiehnO.lbm",
-                @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-FiehnO.lbm");
-            LipidomicsConverter.AsciiToSerializedObject(
-                @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-SaitoK.lbm",
-                @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-SaitoK.lbm");
+                @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\Msp20200812154316.jointedmsp",
+                @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\Msp20200812154316.lbm2");
+            //LipidomicsConverter.AsciiToSerializedObject(
+            //    @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-SaitoK.lbm",
+            //    @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-SaitoK.lbm");
         }
 
         private static void runLipidChalacterization() {

@@ -159,6 +159,44 @@ namespace Rfx.Riken.OsakaUniv
 
         }
 
+        private void userControl_MouseWheel(object sender, MouseWheelEventArgs e) {
+            if (this.chromatogramXicViewModel == null) return;
+
+            this.currentMousePoint = Mouse.GetPosition(this);
+
+            var peakInformation = this.chromatogramXicFE.getDataPositionOnMousePoint(this.currentMousePoint);
+            if (peakInformation == null) return;
+
+            float newMinX = float.MaxValue;
+            float newMaxX = float.MinValue;
+            float newMaxY = float.MinValue;
+
+            float rt = peakInformation[1];
+            float intensity = peakInformation[3];
+
+            if (e.Delta > 0) {
+                newMinX = (float)rt - (float)((rt - (float)this.chromatogramXicViewModel.DisplayRangeRtMin) * 0.9);
+                newMaxX = (float)rt + (float)(((float)this.chromatogramXicViewModel.DisplayRangeRtMax - rt) * 0.9);
+                newMaxY = (float)this.chromatogramXicViewModel.DisplayRangeIntensityMax * 0.9F;
+            }
+            else {
+                newMinX = (float)rt - (float)((rt - (float)this.chromatogramXicViewModel.DisplayRangeRtMin) * 1.1);
+                newMaxX = (float)rt + (float)(((float)this.chromatogramXicViewModel.DisplayRangeRtMax - rt) * 1.1);
+                newMaxY = (float)this.chromatogramXicViewModel.DisplayRangeIntensityMax * 1.1F;
+            }
+
+            if (this.currentMousePoint.X <= this.leftMargin && this.currentMousePoint.Y > this.topMargin && this.currentMousePoint.Y < this.ActualHeight - this.bottomMargin) {
+                if (newMaxY > this.chromatogramXicViewModel.MaxIntensity) {
+                    this.chromatogramXicViewModel.DisplayRangeIntensityMax = this.chromatogramXicViewModel.MaxIntensity;
+                }
+                else {
+                    this.chromatogramXicViewModel.DisplayRangeIntensityMax = newMaxY;
+                }
+            }
+
+            RefreshUI();
+        }
+
         private void userControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
         }
