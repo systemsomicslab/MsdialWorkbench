@@ -9,6 +9,7 @@
              MouseMove="userControl_MouseMove" 
              MouseRightButtonUp="userControl_MouseRightButtonUp" 
              MouseLeave="userControl_MouseLeave" 
+             MouseWheel="userControl_MouseWheel"
              d:DesignHeight="30" d:DesignWidth="30">
     <Grid>
             

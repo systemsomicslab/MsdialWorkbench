@@ -512,17 +512,25 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                 var totalSimilarity1 = -1.0;
                 var totalSimilarity2 = -1.0;
-                var ontology = query.CompoundClass;
-                if (ontology == null || ontology == string.Empty || ontology == "Others" || ontology == "Unknown") {
-                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, spectraSimilarity,
-                    reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, TargetOmics.Metablomics,
-                    param.IsUseRetentionInfoForIdentificationScoring);
+                if (query.Ontology == "PFAS") {
+                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, 1.0,
+                        1.0, presenseSimilarity, spectrumPenalty, TargetOmics.Lipidomics,
+                        param.IsUseRetentionInfoForIdentificationScoring);
                 }
                 else {
-                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, spectraSimilarity,
-                    reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, project.TargetOmics,
-                    param.IsUseRetentionInfoForIdentificationScoring);
+                    var ontology = query.CompoundClass;
+                    if (ontology == null || ontology == string.Empty || ontology == "Others" || ontology == "Unknown") {
+                        totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, spectraSimilarity,
+                        reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, TargetOmics.Metablomics,
+                        param.IsUseRetentionInfoForIdentificationScoring);
+                    }
+                    else {
+                        totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity, spectraSimilarity,
+                        reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, project.TargetOmics,
+                        param.IsUseRetentionInfoForIdentificationScoring);
+                    }
                 }
+                
                
 
                 totalSimilarity2 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, isotopeSimilarity,
@@ -813,17 +821,26 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                 var totalSimilarity1 = -1.0;
                 var totalSimilarity2 = -1.0;
-                var ontology = query.CompoundClass;
-                if (ontology == null || ontology == string.Empty || ontology == "Others" || ontology == "Unknown") {
-                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity, spectraSimilarity,
-                    reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, TargetOmics.Metablomics,
-                    param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
+
+                if (query.Ontology == "PFAS") {
+                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity, 1.0,
+                         1.0, presenseSimilarity, spectrumPenalty, TargetOmics.Lipidomics,
+                        param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
                 }
                 else {
-                    totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity, spectraSimilarity,
-                    reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, project.TargetOmics,
-                    param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
+                    var ontology = query.CompoundClass;
+                    if (ontology == null || ontology == string.Empty || ontology == "Others" || ontology == "Unknown") {
+                        totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity, spectraSimilarity,
+                        reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, TargetOmics.Metablomics,
+                        param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
+                    }
+                    else {
+                        totalSimilarity1 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity, spectraSimilarity,
+                        reverseSearchSimilarity, presenseSimilarity, spectrumPenalty, project.TargetOmics,
+                        param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
+                    }
                 }
+               
 
                 totalSimilarity2 = LcmsScoring.GetTotalSimilarity(accurateMassSimilarity, rtSimilarity, ccsSimilarity, isotopeSimilarity,
                     param.IsUseRetentionInfoForIdentificationScoring, param.IsUseCcsForIdentificationScoring);
