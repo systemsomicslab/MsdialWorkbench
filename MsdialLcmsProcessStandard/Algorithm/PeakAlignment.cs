@@ -1170,7 +1170,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// </summary>
         public static void FinalizeJointAligner(AlignmentResultBean alignmentResultBean, 
             ObservableCollection<AnalysisFileBean> analysisFileBeanCollection, 
-            AnalysisParametersBean param, ProjectPropertyBean projectProperty, ref List<int> newIdList)
+            AnalysisParametersBean param, ProjectPropertyBean projectProperty, IupacReferenceBean iupacRef, ref List<int> newIdList)
         {
             int fileIdOfMaxTotalScore = -1, fileIdOfMaxTotalScoreWithMSMS = -1, fileIdOfMaxIntensity = -1, fileIdOfMaxIntensityWithMSMS = -1;
             double minInt = double.MaxValue, maxInt = double.MinValue, minIntTotal = double.MaxValue, maxIntTotal = double.MinValue;
@@ -1189,7 +1189,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             }
 
             //if (!param.TrackingIsotopeLabels)
-            reanalysisOfIsotopesInAlignmentSpots(alignedSpots, param, projectProperty);
+            reanalysisOfIsotopesInAlignmentSpots(alignedSpots, param, projectProperty, iupacRef);
             alignedSpots = getRefinedAlignmentPropertyBeanCollection(alignedSpots, param, projectProperty, ref newIdList);
 
             if (maxIntTotal > 1) maxIntTotal = Math.Log(maxIntTotal, 2); else maxIntTotal = 1;
@@ -1271,11 +1271,12 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
 
         private static void reanalysisOfIsotopesInAlignmentSpots(ObservableCollection<AlignmentPropertyBean> alignmentCollection,
-            AnalysisParametersBean param, ProjectPropertyBean projectProperty) {
-            var rtMargin = 0.03F;
+            AnalysisParametersBean param, ProjectPropertyBean projectProperty, IupacReferenceBean iupacRef) {
             var alignSpots = new List<AlignmentPropertyBean>(alignmentCollection);
             #region //initialization
             foreach (var spot in alignSpots) {
+                //spot.PostDefinedIsotopeParentID = spot.AlignmentID;
+                //spot.PostDefinedIsotopeWeightNumber = 0;
                 #region
                 if ((spot.LibraryID >= 0 || spot.PostDefinedAdductParentID >= 0) && !spot.MetaboliteName.Contains("w/o")) { //identified metabolite must be defined as mono isotopic ions.
                     spot.PostDefinedIsotopeParentID = spot.AlignmentID;
@@ -1295,7 +1296,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             if (param.TrackingIsotopeLabels == true) return;
 
             #region //isotope curations
-            PostIsotopeCurator(alignSpots, param, projectProperty, rtMargin);
+            IsotopeEstimator.PostIsotopeCurator(alignSpots, param, projectProperty, iupacRef);
             #endregion
 
         }
@@ -1334,6 +1335,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             foreach (var spot in alignSpots) {
                 #region
                 if (spot.PostDefinedIsotopeWeightNumber > 0) continue;
+                
                 var spotRt = spot.CentralRetentionTime;
                 var spotMz = spot.CentralAccurateMass;
 
@@ -1904,100 +1906,18 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             foreach (var spot in alignmentSpotList.Where(n => n.LibraryID >= 0 && !n.MetaboliteName.Contains("w/o"))) {
                 tryMergeToMaster(spot, cSpots, donelist, param);
-
-                //var spotRt = spot.CentralRetentionTime;
-                //var spotMz = spot.CentralAccurateMass;
-
-                //var flg = false;
-                //foreach (var cSpot in cSpots.Where(n => Math.Abs(n.CentralAccurateMass - spotMz) < param.Ms1AlignmentTolerance)) {
-                //    var cSpotRt = cSpot.CentralRetentionTime;
-                //    if (Math.Abs(cSpotRt - spotRt) < param.RetentionTimeAlignmentTolerance * 0.5) {
-                //        flg = true;
-                //        break;
-                //    }
-                //}
-                //if (!flg && !donelist.Contains(spot.AlignmentID)) {
-                //    cSpots.Add(spot);
-                //    donelist.Add(spot.AlignmentID);
-                //}
-
-                //cSpots.Add(spot); // first, identifid spots are stored for this priority.
-                //donelist.Add(spot.AlignmentID);
             }
 
             foreach (var spot in alignmentSpotList.Where(n => n.PostIdentificationLibraryID >= 0 && !n.MetaboliteName.Contains("w/o"))) {
                 tryMergeToMaster(spot, cSpots, donelist, param);
-
-                //var spotRt = spot.CentralRetentionTime;
-                //var spotMz = spot.CentralAccurateMass;
-
-                //var flg = false;
-                //foreach (var cSpot in cSpots.Where(n => Math.Abs(n.CentralAccurateMass - spotMz) < param.Ms1AlignmentTolerance)) {
-                //    var cSpotRt = cSpot.CentralRetentionTime;
-                //    if (Math.Abs(cSpotRt - spotRt) < param.RetentionTimeAlignmentTolerance * 0.5) {
-                //        flg = true;
-                //        break;
-                //    }
-                //}
-                //if (!flg && !donelist.Contains(spot.AlignmentID)) {
-                //    cSpots.Add(spot);
-                //    donelist.Add(spot.AlignmentID);
-                //}
-                //if (!donelist.Contains(spot.AlignmentID)) {
-                //    cSpots.Add(spot); // first, post-identifid spots are stored for this priority.
-                //    donelist.Add(spot.AlignmentID);
-                //}
             }
 
             foreach (var spot in alignmentSpotList) {
                 if (spot.LibraryID >= 0 && !spot.MetaboliteName.Contains("w/o")) continue;
                 if (spot.PostIdentificationLibraryID >= 0 && !spot.MetaboliteName.Contains("w/o")) continue;
-                //if (Math.Abs(spot.CentralAccurateMass - 258.2519) < 0.01) {
-                //    Console.WriteLine();
-                //}
                 if (spot.PostDefinedIsotopeWeightNumber > 0) continue;
-
                 tryMergeToMaster(spot, cSpots, donelist, param);
-
-                //var spotRt = spot.CentralRetentionTime;
-                //var spotMz = spot.CentralAccurateMass;
-
-                //var flg = false;
-
-                //foreach (var cSpot in cSpots.Where(n => Math.Abs(n.CentralAccurateMass - spotMz) < param.Ms1AlignmentTolerance)) {
-                //    var cSpotRt = cSpot.CentralRetentionTime;
-
-                //    if (Math.Abs(cSpotRt - spotRt) < param.RetentionTimeAlignmentTolerance * 0.5) {
-                //        flg = true;
-                //        break;
-                //    }
-                //}
-                //if (!flg && !donelist.Contains(spot.AlignmentID)) {
-                //    cSpots.Add(spot);
-                //    donelist.Add(spot.AlignmentID);
-                //}
             }
-
-            //// Replace true zero values with 1/2 of minimum peak height over all samples
-            //if (param.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples) {
-            //    foreach (var spot in cSpots) {
-            //        var nonZeroMin = double.MaxValue;
-            //        var isZeroExist = false;
-            //        foreach (var peak in spot.AlignedPeakPropertyBeanCollection) {
-            //            if (peak.Variable > 0.0001 && nonZeroMin > peak.Variable)
-            //                nonZeroMin = peak.Variable;
-            //            if (peak.Variable < 0.0001)
-            //                isZeroExist = true;
-            //        }
-
-            //        if (isZeroExist && nonZeroMin != double.MaxValue) {
-            //            foreach (var peak in spot.AlignedPeakPropertyBeanCollection) {
-            //                if (peak.Variable < 0.0001)
-            //                    peak.Variable = (float)(nonZeroMin * 0.5);
-            //            }
-            //        }
-            //    }
-            //}
 
             // further cleaing by blank features
             var fcSpots = new List<AlignmentPropertyBean>();
@@ -2118,7 +2038,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             }
 
             #region //checking alignment spot variable correlations
-            var rtMargin = 0.03F;
+            var rtMargin = 0.06F;
             assignLinksByIonAbundanceCorrelations(fcSpots, rtMargin);
             #endregion
 
@@ -2150,6 +2070,11 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         if (rSpot.AlignedPeakPropertyBeanCollection[repFileID].PeakID == rLinkID) {
                             if (rLinkProp == PeakLinkFeatureEnum.Adduct) {
                                 if (rSpot.AdductIonName != string.Empty) continue;
+                                var adductCharge = AdductIonParcer.GetChargeNumber(rSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName);
+                                if (rSpot.ChargeNumber != adductCharge) continue;
+                                adductCharge = AdductIonParcer.GetChargeNumber(fcSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName);
+                                if (fcSpot.ChargeNumber != adductCharge) continue;
+
                                 registerLinks(fcSpot, rSpot, rLinkProp);
                                 rSpot.AdductIonName = rSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName;
                                 if (fcSpot.AdductIonName == string.Empty) {
@@ -2168,11 +2093,22 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             #region // finalize adduct features
             foreach (var fcSpot in fcSpots.Where(n => n.AdductIonName == string.Empty)) {
+                var chargeNum = fcSpot.ChargeNumber;
                 if (project.IonMode == IonMode.Positive) {
-                    fcSpot.AdductIonName = "[M+H]+";
+                    if (chargeNum >= 2) {
+                        fcSpot.AdductIonName = "[M+" + chargeNum + "H]" + chargeNum + "+";
+                    }
+                    else {
+                        fcSpot.AdductIonName = "[M+H]+";
+                    }
                 }
                 else {
-                    fcSpot.AdductIonName = "[M-H]-";
+                    if (chargeNum >= 2) {
+                        fcSpot.AdductIonName = "[M-" + chargeNum + "H]" + chargeNum + "-";
+                    }
+                    else {
+                        fcSpot.AdductIonName = "[M-H]-";
+                    }
                 }
             }
             #endregion
@@ -2228,9 +2164,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                                     }
                                 }
                                 else {
-                                    registerLinks(cSpot, rSpot, rLinkProp);
                                     if (rLinkProp == PeakLinkFeatureEnum.Adduct) {
-                                        rSpot.AdductIonName = rSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName;
+                                        var rAdductCharge = AdductIonParcer.GetChargeNumber(rSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName);
+                                        if (rAdductCharge == rSpot.ChargeNumber) {
+                                            rSpot.AdductIonName = rSpot.AlignedPeakPropertyBeanCollection[repFileID].AdductIonName;
+                                            registerLinks(cSpot, rSpot, rLinkProp);
+                                        }
+                                    }
+                                    else {
+                                        registerLinks(cSpot, rSpot, rLinkProp);
                                     }
                                 }
                              
@@ -3125,7 +3067,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         /// </summary>
         public static void FinalizeJointAlignerAtIonMobility(AlignmentResultBean alignmentResult,
             ObservableCollection<AnalysisFileBean> files,
-            AnalysisParametersBean param, ProjectPropertyBean projectProperty, ref List<int> newIdList) {
+            AnalysisParametersBean param, ProjectPropertyBean projectProperty, IupacReferenceBean iupacRef, ref List<int> newIdList) {
 
             int fileIdOfMaxTotalScore = -1, fileIdOfMaxTotalScoreWithMSMS = -1, fileIdOfMaxIntensity = -1,
                 fileIdOfMaxIntensityWithMSMS = -1;
@@ -3210,7 +3152,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             }
 
             //if (!param.TrackingIsotopeLabels)
-            reanalysisOfIsotopesInAlignmentSpots(alignedSpots, param, projectProperty);
+            reanalysisOfIsotopesInAlignmentSpots(alignedSpots, param, projectProperty, iupacRef);
             alignedSpots = getRefinedAlignmentPropertyBeanCollection(alignedSpots, param, projectProperty, ref newIdList);
 
             if (maxIntTotal > 1) maxIntTotal = Math.Log(maxIntTotal, 2); else maxIntTotal = 1;
