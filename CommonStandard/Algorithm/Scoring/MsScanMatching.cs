@@ -991,6 +991,26 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfKdcae(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, adduct, totalOxidized);
 
+                //add 20200714
+                case LbmClass.DMPE:
+                    return LipidMsmsCharacterization.JudgeIfDiMethylPE(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MMPE:
+                    return LipidMsmsCharacterization.JudgeIfMonoMethylPE(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MIPC:
+                    return LipidMsmsCharacterization.JudgeIfMipc(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                //add 20200720
+                case LbmClass.EGSE:
+                    return LipidMsmsCharacterization.JudgeIfErgoSESpecies(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DEGSE:
+                    return LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }

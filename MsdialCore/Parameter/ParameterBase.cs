@@ -11,6 +11,9 @@ using CompMs.MsdialCore.Properties;
 using Accord;
 using System.Linq;
 using CompMs.Common.Parser;
+using System.IO;
+using System.Text;
+using CompMs.Common.Extension;
 
 namespace CompMs.MsdialCore.Parameter {
 
@@ -27,19 +30,19 @@ namespace CompMs.MsdialCore.Parameter {
 
         // Project container
         [Key(3)]
-        public string ProjectFolderPath { get; set; }
+        public string ProjectFolderPath { get; set; } = string.Empty;
         [Key(4)]
-        public string ProjectFilePath { get; set; }
+        public string ProjectFilePath { get; set; } = string.Empty;
         [Key(5)]
-        public Dictionary<int, string> FileID_ClassName { get; set; }
+        public Dictionary<int, string> FileID_ClassName { get; set; } = new Dictionary<int, string>();
         [Key(6)]
-        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; }
+        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; } = new Dictionary<int, AnalysisFileType>();
         [Key(7)]
         public bool IsBoxPlotForAlignmentResult { get; set; }
         [Key(8)]
-        public Dictionary<string, int> ClassnameToOrder { get; set; }
+        public Dictionary<string, int> ClassnameToOrder { get; set; } = new Dictionary<string, int>();
         [Key(9)]
-        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; }
+        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
 
         // Project type
         [Key(10)]
@@ -176,7 +179,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(66)]
         public float Ms1AlignmentFactor { get; set; } = 0.5F;
         [Key(67)]
-        public float SpectrumSimilarityAlignmentFactor { get; set; } = 59F;
+        public float SpectrumSimilarityAlignmentFactor { get; set; } = 0.5F;
         [Key(68)]
         public float Ms1AlignmentTolerance { get; set; } = 0.015F;
         [Key(69)]
@@ -348,9 +351,9 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(135)]
         public RetentionTimeCorrectionCommon RetentionTimeCorrectionCommon { get; set; } = new RetentionTimeCorrectionCommon();
         [Key(136)]
-        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = null;
+        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = new List<MoleculeMsReference>();
         [Key(137)]
-        public List<StandardCompound> StandardCompounds { get; set; } = null;
+        public List<StandardCompound> StandardCompounds { get; set; } = new List<StandardCompound>();
 
         [Key(138)]
         public bool IsLabPrivate { get; set; } = false;
@@ -407,19 +410,19 @@ namespace CompMs.MsdialCore.Parameter {
 
             pStrings.Add("\r\n");
             pStrings.Add("# FileID ClassName");
-            foreach (var item in FileID_ClassName) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value }));
+            foreach (var item in FileID_ClassName.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value }));
            
             pStrings.Add("\r\n");
             pStrings.Add("# FileID AnalysisFileType");
-            foreach (var item in FileID_AnalysisFileType) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value.ToString() }));
+            foreach (var item in FileID_AnalysisFileType.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value.ToString() }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Classname order");
-            foreach (var item in ClassnameToOrder) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, item.Value.ToString() }));
+            foreach (var item in ClassnameToOrder.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, item.Value.ToString() }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Classname ColorBytes");
-            foreach (var item in ClassnameToColorBytes) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, String.Join(",", item.Value.ToArray()) }));
+            foreach (var item in ClassnameToColorBytes.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, String.Join(",", item.Value.ToArray()) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Export");
@@ -503,7 +506,7 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Execute annotation process only for alignment file", IsIdentificationOnlyPerformedForAlignmentFile.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Solvent type", LipidQueryContainer.SolventType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Searched lipid class",  
-                String.Join(";", LipidQueryContainer.LbmQueries.Where(n => n.IsSelected).Select(n => String.Join(" ", new string[] { n.LbmClass.ToString(), n.AdductType.AdductIonName }).ToArray())) }));
+                String.Join(";", LipidQueryContainer.LbmQueries.Where(n => n.IsSelected).Select(n => String.Join(" ", new string[] { n.LbmClass.ToString(), n.AdductType.AdductIonName })).ToArray()) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Text-based annotation");
@@ -580,6 +583,17 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "CorrDec remove peaks larger than precursor", CorrDecParam.RemoveAfterPrecursor.ToString() }));
 
             return pStrings;
+        }
+
+        public void SaveParameter(string filepath, List<string> paramTexts) {
+            using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
+                foreach (var text in paramTexts) sw.WriteLine(text);
+            }
+        }
+
+        public void SaveParameter(string filepath) {
+            var paramTexts = ParametersAsText();
+            SaveParameter(filepath, paramTexts);
         }
     }
 

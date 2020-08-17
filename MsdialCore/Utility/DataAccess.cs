@@ -287,7 +287,7 @@ namespace CompMs.MsdialCore.Utility {
             var peaklist = new List<ChromatogramPeak>();
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel == 1)) {
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
                 var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
                 if (chromX < chromBegin) continue;
                 if (chromX > chromEnd) break;

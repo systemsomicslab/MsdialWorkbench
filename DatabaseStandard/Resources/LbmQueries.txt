@@ -1,5 +1,5 @@
 Class	Adduct	Ion mode	IsSelected
-CAR	[M]+	Positive	TRUE
+CAR	[M+H]+	Positive	TRUE
 LPC	[M+H]+	Positive	TRUE
 LPC	[M+Na]+	Positive	TRUE
 LPE	[M+H]+	Positive	TRUE
@@ -111,7 +111,6 @@ BASulfate	[M-H]-	Negative	TRUE
 Cholesterol	[M+NH4]+	Positive	TRUE
 Cholesterol	[M+Na]+	Positive	TRUE
 Cholesterol	[M-H2O+H]+	Positive	TRUE
-##CholesterolSulfate	[M-H]-	Negative	TRUE
 CoQ	[M+H]+	Positive	FALSE
 Vitamin	[M+H]+	Positive	TRUE
 Vitamin	[M+Na]+	Positive	TRUE
@@ -284,3 +283,18 @@ Ac2PIM2	[M-H]-	Negative	FALSE
 Ac3PIM2	[M-H]-	Negative	FALSE
 Ac4PIM2	[M-H]-	Negative	FALSE
 LipidA	[M-H]-	Negative	FALSE
+OxFA	[M-H]-	Negative	TRUE
+AAHFA	[M-H]-	Negative	TRUE
+MMPE	[M+H]+	Positive	TRUE
+MMPE	[M-H]-	Negative	TRUE
+DMPE	[M-H]-	Negative	TRUE
+DMPE	[M+H]+	Positive	TRUE
+EGSE	[M+H]+	Positive	TRUE
+EGSE	[M+NH4]+	Positive	TRUE
+EGSE	[M+Na]+	Positive	TRUE
+DEGSE	[M+H]+	Positive	TRUE
+DEGSE	[M+NH4]+	Positive	TRUE
+DEGSE	[M+Na]+	Positive	TRUE
+OxTG	[M+NH4]+	Positive	TRUE
+MIPC	[M-H]-	Negative	TRUE
+MIPC	[M+H]+	Positive	TRUE

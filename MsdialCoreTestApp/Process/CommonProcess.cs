@@ -33,7 +33,7 @@ namespace CompMs.App.MsdialConsole.Process {
             var dt = DateTime.Now;
             var projectFileName = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + ".mtd2";
             param.ProjectFolderPath = inputfolder;
-            param.ProjectFilePath = inputfolder + "\t" + projectFileName;
+            param.ProjectFilePath = inputfolder + "\\" + projectFileName;
 
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
                 param.Ionization = Common.Enum.Ionization.EI;

@@ -22,6 +22,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
 using System.Windows.Input;
 using CompMs.Common.DataObj.Property;
+using CompMs.MsdialCore.Algorithm;
 
 namespace MsdialDimsCoreUiTestApp
 {
