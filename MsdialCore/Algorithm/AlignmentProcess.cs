@@ -8,15 +8,13 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 
-namespace CompMs.MsdialDimsCore.Common
-{
+namespace CompMs.MsdialCore.Algorithm {
     public class AlignmentProcess
     {
         public static AlignmentResultContainer Alignment(

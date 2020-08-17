@@ -854,6 +854,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.EtherSMGDG:
                     return LipidMsmsCharacterization.JudgeIfEtherSmgdg(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+               
                 //add 20200218
                 case LbmClass.LCAE:
                     return LipidMsmsCharacterization.JudgeIfLcae(spectrum, ms2tol, refMz,
@@ -866,6 +867,27 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.KDCAE:
                     return LipidMsmsCharacterization.JudgeIfKdcae(spectrum, ms2tol, refMz,
                         totalCarbon, totalDbBond, adduct, totalOxidized);
+
+                //add 20200714
+                case LbmClass.DMPE:
+                    return LipidMsmsCharacterization.JudgeIfDiMethylPE(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MMPE:
+                    return LipidMsmsCharacterization.JudgeIfMonoMethylPE(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.MIPC:
+                    return LipidMsmsCharacterization.JudgeIfMipc(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                //add 20200720
+                case LbmClass.EGSE:
+                    return LipidMsmsCharacterization.JudgeIfErgoSESpecies(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DEGSE:
+                    return LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
 
                 default:
                     return null;

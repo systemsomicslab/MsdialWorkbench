@@ -37,11 +37,11 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
-            if (param.AccuracyType == AccuracyType.IsNominal)
-            {
+            if (param.AccuracyType == AccuracyType.IsNominal) {
                 param.MassSliceWidth = 0.5F;
                 param.CentroidMs1Tolerance = 0.5F;
             }
+            
             return param;
         }
 

@@ -25,16 +25,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp
 
             #region arg[] examples
             //GC - MS test using netCDF
-            //args = new string[] {
-            //  "gcms"
-            //  , "-i"
-            //  , @"\\mtbdt\Mtb_info\data\MS-DIAL_aono_190828\RawDataset(console)"
-            //  , "-m"
-            //  , @"\\mtbdt\Mtb_info\data\MS-DIAL_aono_190828\Msdial-GCMS-Param.txt"
-            //  , "-o"
-            //  , @"\\mtbdt\Mtb_info\data\MS-DIAL_aono_190828\RawDataset(console)\result"
-            //  , "-p"
-            //};
+            args = new string[] {
+                "gcms"
+                , "-i"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+                , "-o"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+                , "-m"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
+                , "-p" };
 
             //LC-DDA test using abf (as centroid mode)
             //args = new string[] {
@@ -78,21 +77,21 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MsdialConsoleApp demo files\LCMS_DIA" };
             #endregion
 
-/*
-            args = new string[] {
+            /*
+                        args = new string[] {
 
-            "lcmsdda",
-                "-i",
-                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
-                "-m",
-                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\Msdial-lcms-dda-Param20200527_2.txt",
-                "-o",
-                @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
-                "-p"
-                //, "-mCE" ,"-target", "269.117"
-            };           
+                        "lcmsdda",
+                            "-i",
+                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
+                            "-m",
+                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\Msdial-lcms-dda-Param20200527_2.txt",
+                            "-o",
+                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
+                            "-p"
+                            //, "-mCE" ,"-target", "269.117"
+                        };           
 
- */
+             */
             return MainProcess.Run(args);
         }
     }

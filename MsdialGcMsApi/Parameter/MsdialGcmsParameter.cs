@@ -1,15 +1,22 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialGcMsApi.Parameter {
+    [MessagePackObject]
     public class MsdialGcmsParameter : ParameterBase {
+        [Key(149)]
         public string RiDictionaryFilePath { get; set; } = string.Empty;
+        [Key(150)]
         public RiCompoundType RiCompoundType { get; set; } = RiCompoundType.Alkanes;
+        [Key(151)]
         public RetentionType RetentionType { get; set; } = RetentionType.RT;
+        [Key(152)]
         public AlignmentIndexType AlignmentIndexType { get; set; } = AlignmentIndexType.RT;
+        [Key(153)]
         public float RetentionIndexAlignmentTolerance { get; set; } = 20;
 
         public override List<string> ParametersAsText() {

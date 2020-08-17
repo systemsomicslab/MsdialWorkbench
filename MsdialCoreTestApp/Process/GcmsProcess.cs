@@ -17,6 +17,9 @@ using CompMs.Common.Parser;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parser;
+using CompMs.MsdialGcMsApi.Process;
+using CompMs.MsdialCore.Parser;
+using CompMs.App.MsdialConsole.Export;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -86,9 +89,9 @@ namespace CompMs.App.MsdialConsole.Process
 				mspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath);
                 if (mspDB != null && mspDB.Count > 0) {
                     if (param.RetentionType == RetentionType.RT)
-                        mspDB = mspDB.OrderBy(n => n.ChromXs.RT).ToList();
+                        mspDB = mspDB.OrderBy(n => n.ChromXs.RT.Value).ToList();
                     else
-                        mspDB = mspDB.OrderBy(n => n.ChromXs.RI).ToList();
+                        mspDB = mspDB.OrderBy(n => n.ChromXs.RI.Value).ToList();
                     var counter = 0;
                     foreach (var query in mspDB) {
                         query.ScanID = counter; counter++;
@@ -165,7 +168,13 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
+                FileProcess.Run(file, container);
 
+                var chromPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+                var msdecResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
+                Console.WriteLine("DCL version: {0}", dcl_version);
+
+                ResultExporter.ExportChromPeakFeatures(file, outputFolder, container, null, chromPeakFeatures, msdecResults);
             }
             new MsdialGcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;

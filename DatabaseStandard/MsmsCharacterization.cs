@@ -1404,7 +1404,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher {
             int totalCarbon, int totalDoubleBond, AdductIon adduct) {
             if (spectrum == null || spectrum.Count == 0) return null;
             if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
-                if (adduct.AdductIonName == "[M]+") {
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M]+") {
                     // seek 85.028405821 (C4H5O2+)
                     var threshold = 5.0;
                     var diagnosticMz = 85.028405821;
