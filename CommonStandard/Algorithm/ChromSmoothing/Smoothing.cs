@@ -51,26 +51,37 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
 
         public static List<ChromatogramPeak> SimpleMovingAverage(List<ChromatogramPeak> peaklist, int smoothingLevel)
         {
-            var smoothedPeaklist = new List<ChromatogramPeak>();
-            double sum;
+            var intensities = new double[peaklist.Count + smoothingLevel * 2 + 1];
+            var n = peaklist.Count;
             int normalizationValue = 2 * smoothingLevel + 1;
 
-            for (int i = 0; i < peaklist.Count; i++)
-            {
-                var smoothedPeakIntensity = 0.0;
-                sum = 0;
-
-                for (int j = -smoothingLevel; j <= smoothingLevel; j++)
-                {
-                    if (i + j < 0 || i + j > peaklist.Count - 1) sum += peaklist[i].Intensity;
-                    else sum += peaklist[i + j].Intensity;
-                }
-                smoothedPeakIntensity = (double)(sum / normalizationValue);
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity
-                }; 
-                smoothedPeaklist.Add(smoothedPeak);
+            for (int i = 0; i < n; i++) {
+                intensities[i] += peaklist[i].Intensity;
+                intensities[i + smoothingLevel * 2 + 1] -= peaklist[i].Intensity;
             }
+
+            for (int i = 1; i < intensities.Length; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 0; i < smoothingLevel; i++) {
+                intensities[i + smoothingLevel] += peaklist[i].Intensity * (smoothingLevel - i);
+            }
+
+            for (int i = 0; i < smoothingLevel; i++) {
+                intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * (smoothingLevel - i);
+            }
+
+            var smoothedPeaklist = new List<ChromatogramPeak>(n);
+            for (int i = 0; i < n; i++) {
+                smoothedPeaklist.Add(new ChromatogramPeak {
+                    ID = i,
+                    ChromXs = peaklist[i].ChromXs,
+                    Mass = peaklist[i].Mass,
+                    Intensity = intensities[i + smoothingLevel] / (normalizationValue)
+                });
+            }
+
             return smoothedPeaklist;
         }
 
