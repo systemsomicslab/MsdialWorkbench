@@ -23,7 +23,7 @@ namespace CompMs.MspGenerator
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20200811_OxTGcheck\newLBM\prediction\";//作業用フォルダ
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20200818_NAcylAmineCharacterization\lbm\";//作業用フォルダ
             var toPredictFileName = workingDirectry + @"\txt\temp2.txt"; // 計算させたいInChIKeyとSMILESのリスト
             var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
             var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
@@ -59,14 +59,14 @@ namespace CompMs.MspGenerator
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
 
 
-            //var outputResultFolderPath = workingDirectry + @"\msp\";　// mergeした結果の出力フォルダ
-            //var mspFilePath = outputResultFolderPath + @"\Msp20200812154316.msp"; //mergeするmspファイル
-            //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20200813.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            var outputResultFolderPath = workingDirectry ;　// mergeした結果の出力フォルダ
+            var mspFilePath = outputResultFolderPath + @"\Msp20200812154316.jointedmsp"; //mergeするmspファイル
+            var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+            var dbFileName = @"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\RT_CCS_predictedFile\predictedRTCCSAll_20200813.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
 
 
 
