@@ -142,10 +142,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200720_addErgosterol\check\";
-            var testFilename = @"Ergo18_1_posNa.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200818_NAcylAmineCharacterization\";
+            var testFilename = @"\msp\NAOrn16-0pos.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"lib.txt";
+            var reffile = testFolder + @"NAAmine_lib.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);

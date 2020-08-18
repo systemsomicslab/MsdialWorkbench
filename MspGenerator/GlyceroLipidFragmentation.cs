@@ -3255,19 +3255,35 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
 
                 var fra06mass = fra02mass - chain1Mass - 2* MassDictionary.H2OMass;
-                var fra06int = 999;
+                var fra06int = 500;
                 var fra06comment = "NL of SN1 and H2O";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
 
                 var fra07mass = fra02mass - chain2Mass - 2 * MassDictionary.H2OMass;
-                var fra07int = 999;
+                var fra07int = 500;
                 var fra07comment = "NL of SN2 and H2O";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
 
                 var fra08mass = fra02mass - MassDictionary.H2OMass;
-                var fra08int = 999;
+                var fra08int = 500;
                 var fra08comment = "[M-H2O+H]+";
                 fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
+
+                var fra09mass = chain1Mass + MassDictionary.Proton + (12 * 3 + MassDictionary.HydrogenMass * 6 + MassDictionary.OxygenMass * 2);
+                var fra09int = 100;
+                var fra09comment = "SN1+C3H6O2";
+                fragmentList.Add(fra09mass + "\t" + fra09int + "\t" + fra09comment);
+
+                var fra10mass = chain2Mass + MassDictionary.Proton + (12 * 3 + MassDictionary.HydrogenMass * 6 + MassDictionary.OxygenMass * 2);
+                var fra10int = 100;
+                var fra10comment = "SN2+C3H6O2";
+                fragmentList.Add(fra10mass + "\t" + fra10int + "\t" + fra10comment);
+
+                var fra11mass = chain3Mass + MassDictionary.Proton;
+                var fra11int = 200;
+                var fra11comment = "SN3+";
+                fragmentList.Add(fra11mass + "\t" + fra11int + "\t" + fra11comment);
+
             }
 
         }

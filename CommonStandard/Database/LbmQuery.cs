@@ -37,6 +37,7 @@ namespace Rfx.Riken.OsakaUniv
         Others, Unknown, SPLASH, EtherSMGDG, SMGDG, Vitamin_D,
         LCAE, KLCAE, KDCAE,
         MMPE, DMPE, MIPC, EGSE, DEGSE,
+        OxTG, FAHFATG,
 
         // new version
         //CerP, SM,

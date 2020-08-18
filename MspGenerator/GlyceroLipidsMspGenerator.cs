@@ -730,12 +730,12 @@ namespace CompMs.MspGenerator
                 {
                     for (int k = 0; k < chains2.Count; k++)
                     {
-                        var chainList = new List<string> { chains1[i], chains1[j] };
-                        chainList.Sort();
                         if (lipidClass.Contains("Ox"))
                         {
                             for (int l = 1; l < 5; l++)
                             {
+                                var chainList = new List<string> { chains1[i], chains1[j] };
+                                chainList.Sort();
                                 var chain2addO = chains2[k] + ":" + l;
                                 chainList.Add(chain2addO);
                                 wholeChainList.Add(string.Join("\t", chainList));
@@ -743,6 +743,9 @@ namespace CompMs.MspGenerator
                         }
                         else
                         {
+                            var chainList = new List<string> { chains1[i], chains1[j] };
+                            chainList.Sort();
+
                             chainList.Add(chains2[k]);
                             wholeChainList.Add(string.Join("\t", chainList));
                         }

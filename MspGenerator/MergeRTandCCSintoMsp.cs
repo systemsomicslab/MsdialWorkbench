@@ -9,6 +9,7 @@ using CompMs.Common.FormulaGenerator.Parser;
 using System.Linq;
 using CompMs.Common.Extension;
 using System.Collections.Specialized;
+using Rfx.Riken.OsakaUniv;
 
 namespace CompMs.MspGenerator
 {
@@ -71,7 +72,7 @@ namespace CompMs.MspGenerator
         public static void generateInchikeyAndSmilesListFromMsp(string mspFilePath)
         {
             var outputFilePath = Path.GetDirectoryName(mspFilePath) + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_InChIKey-SMILES.txt";
-            var mspDB = MspFileParcer.MspFileReader(mspFilePath);
+            var mspDB = MspFileParser.MspFileReader(mspFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB)
             {
@@ -93,11 +94,13 @@ namespace CompMs.MspGenerator
 
         public static void mergeRTandCCSintoMsp(string mspFilePath , string calculatedFilePath, string outputFolderPath)
         {
-            var outputFilePath = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
+            var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
+            var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted_dev.lbm2";
 
             Console.WriteLine("Loading the msp file.");
 
-            var mspDB = MspFileParcer.MspFileReader(mspFilePath);
+            var mspDB = MspFileParser.MspFileReader(mspFilePath);
+            var mspDB2 =  MspFileParcer.MspFileReader(mspFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB)
             {
@@ -231,7 +234,8 @@ namespace CompMs.MspGenerator
             }
             else
             {
-                MoleculeMsRefMethods.SaveMspToFile(mspDB, outputFilePath);
+                MoleculeMsRefMethods.SaveMspToFile(mspDB, outputFileNameDev);
+                MspMethods.SaveMspToFile(mspDB2, outputFileName);
             }
         }
 
