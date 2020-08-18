@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(12)]
         public double ResponseVariable { get; set; } // for PLS
         [Key(13)]
-        public double InjectionVolume { get; set; } = 1.9;
+        public double InjectionVolume { get; set; } = 1.0;
         [Key(14)]
         public string AnalysisFileSuperClass { get; set; } = string.Empty;
         [Key(15)]

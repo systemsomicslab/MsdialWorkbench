@@ -8,6 +8,7 @@ using System.Text;
 namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
     public class MsdialGcmsParameter : ParameterBase {
+        
         [Key(149)]
         public string RiDictionaryFilePath { get; set; } = string.Empty;
         [Key(150)]
@@ -18,6 +19,8 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public AlignmentIndexType AlignmentIndexType { get; set; } = AlignmentIndexType.RT;
         [Key(153)]
         public float RetentionIndexAlignmentTolerance { get; set; } = 20;
+
+        public MsdialGcmsParameter() { this.MachineCategory = MachineCategory.GCMS; }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();

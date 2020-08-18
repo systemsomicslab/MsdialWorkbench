@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
@@ -20,7 +21,7 @@ namespace CompMs.MsdialCore.Algorithm {
         public static AlignmentResultContainer Alignment(
             IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
             ChromatogramSerializer<ChromatogramSpotInfo> chromPeakSpotSerializer, ParameterBase param) {
-            var master = GetMasterList(analysisFiles, param.AlignmentReferenceFileID, param.Ms1AlignmentTolerance);
+            var master = GetMasterList(analysisFiles, param);
             var alignments = AlignAll(master, analysisFiles, param.Ms1AlignmentTolerance);
             var alignmentSpots = CollectPeakSpots(analysisFiles, alignmentFile, alignments, chromPeakSpotSerializer, param);
 
@@ -41,6 +42,11 @@ namespace CompMs.MsdialCore.Algorithm {
                 
             return results;
         }
+
+        //public static bool IsSpotSimilar(ChromatogramPeakFeature spot1, ChromatogramPeakFeature spot2, MachineCategory category, 
+        //    double rttol, double ritol, double dttol, double mztol, double spectol) {
+        //    switch (category) { }
+        //}
 
         private static List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<ChromatogramPeakFeature> peaks, IReadOnlyList<ChromatogramPeakFeature> master, double tolerance) {
             var n = master.Count;
@@ -209,8 +215,12 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromatogram;
         }
 
-        private static List<ChromatogramPeakFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, double tolerance) {
+        private static List<ChromatogramPeakFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, ParameterBase param) {
+
+            var referenceId = param.AlignmentReferenceFileID;
+            var tolerance = param.Ms1AlignmentTolerance;
             var master = new LinkedList<ChromatogramPeakFeature>();
+
             master.AddFirst(new ChromatogramPeakFeature { ChromXsTop = new ChromXs(double.MinValue, ChromXType.Mz, ChromXUnit.Mz) }); // Add Sentinel
             master.AddLast(new ChromatogramPeakFeature { ChromXsTop = new ChromXs(double.MaxValue, ChromXType.Mz, ChromXUnit.Mz) });  // Add Sentinel
 
@@ -257,6 +267,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var itr = master.First;
             foreach (var peak in peaks) {
                 while (itr.Next.Value.ChromXsTop.Mz.Value < peak.ChromXsTop.Mz.Value) itr = itr.Next;
+               
                 if (itr.Value.ChromXsTop.Mz.Value + tolerance < peak.ChromXsTop.Mz.Value && peak.ChromXsTop.Mz.Value < itr.Next.Value.ChromXsTop.Mz.Value - tolerance)
                     master.AddAfter(itr, peak);
             }
