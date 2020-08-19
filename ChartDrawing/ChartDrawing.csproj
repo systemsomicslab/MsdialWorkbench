@@ -63,6 +63,7 @@
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
+    <Compile Include="Base\AxisValue.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="AxisManager\CategoryAxisManager.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />

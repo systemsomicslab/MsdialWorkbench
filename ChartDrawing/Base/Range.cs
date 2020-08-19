@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace CompMs.Graphics.Core.Base
@@ -7,8 +8,13 @@ namespace CompMs.Graphics.Core.Base
     [TypeConverter(typeof(RangeTypeConverter))]
     public class Range
     {
-        public double Minimum { get; set; }
-        public double Maximum { get; set; }
+        public AxisValue Minimum { get; set; }
+        public AxisValue Maximum { get; set; }
+
+        public Range(AxisValue minimum, AxisValue maximum) {
+            Minimum = minimum;
+            Maximum = maximum;
+        }
     }
 
     public class RangeTypeConverter : TypeConverter
@@ -18,15 +24,16 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-            var text = value as string;
-            if (text == null) return null;
+            if (!(value is string text)) throw new ArgumentException();
 
             var values = text.Split(',');
+
+            if (values.Length != 2) throw new ArgumentException();
 
             if (!double.TryParse(values[0].Trim(), out var min)) throw new ArgumentException();
             if (!double.TryParse(values[1].Trim(), out var max)) throw new ArgumentException();
 
-            return new Range { Minimum = min, Maximum = max };
+            return new Range(new AxisValue(min), new AxisValue(max));
         }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
@@ -34,8 +41,7 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
-            var range = value as Range;
-            return range == null ? null : $"{range.Minimum},{range.Maximum}";
+            return (value is Range range) ? $"{range.Minimum.Value},{range.Maximum.Value}" : null;
         }
     }
 }

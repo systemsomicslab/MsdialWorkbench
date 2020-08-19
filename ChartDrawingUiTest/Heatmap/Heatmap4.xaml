@@ -107,20 +107,20 @@
                                      StartPoint="0,1" EndPoint="0,0"/>
             </Rectangle.Fill>
         </Rectangle>
-        <Slider Minimum="{Binding InitialRange.Minimum, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
-                Maximum="{Binding InitialRange.Maximum, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
+        <Slider Minimum="{Binding InitialRange.Minimum.Value, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
+                Maximum="{Binding InitialRange.Maximum.Value, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
                 Value="{Binding Range.Minimum, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                 Grid.Row="4" Grid.Column="1" />
-        <Slider Minimum="{Binding InitialRange.Minimum, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
-                Maximum="{Binding InitialRange.Maximum, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
+        <Slider Minimum="{Binding InitialRange.Minimum.Value, Mode=OneTime, Source={StaticResource HorizontalAxis}}" 
+                Maximum="{Binding InitialRange.Maximum.Value, Mode=OneTime, Source={StaticResource HorizontalAxis}}"
                 Value="{Binding Range.Maximum, Mode=TwoWay, Source={StaticResource HorizontalAxis}}"
                 Grid.Row="5" Grid.Column="1" />
-        <Slider Minimum="{Binding InitialRange.Minimum, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
-                Maximum="{Binding InitialRange.Maximum, Mode=OneTime, Source={StaticResource VerticalAxis}}"
+        <Slider Minimum="{Binding InitialRange.Minimum.Value, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
+                Maximum="{Binding InitialRange.Maximum.Value, Mode=OneTime, Source={StaticResource VerticalAxis}}"
                 Value="{Binding Range.Minimum, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                 Grid.Row="6" Grid.Column="1" />
-        <Slider Minimum="{Binding InitialRange.Minimum, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
-                Maximum="{Binding InitialRange.Maximum, Mode=OneTime, Source={StaticResource VerticalAxis}}"
+        <Slider Minimum="{Binding InitialRange.Minimum.Value, Mode=OneTime, Source={StaticResource VerticalAxis}}" 
+                Maximum="{Binding InitialRange.Maximum.Value, Mode=OneTime, Source={StaticResource VerticalAxis}}"
                 Value="{Binding Range.Maximum, Mode=TwoWay, Source={StaticResource VerticalAxis}}"
                 Grid.Row="7" Grid.Column="1" />
     </Grid>

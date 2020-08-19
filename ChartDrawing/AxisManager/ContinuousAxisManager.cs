@@ -59,7 +59,7 @@ namespace CompMs.Graphics.AxisManager
                                          fold >= 2 ? 0.25 :
                                                      0.1);
 
-            for(var i = Math.Ceiling((decimal)Min / TickInterval); i * TickInterval <= (decimal)Max; ++i)
+            for(var i = Math.Ceiling((decimal)Min.Value / TickInterval); i * TickInterval <= (decimal)Max.Value; ++i)
             {
                 var item = new LabelTickData()
                 {
@@ -73,7 +73,7 @@ namespace CompMs.Graphics.AxisManager
             }
 
             if (shortTickInterval == 0) return result;
-            for(var i = Math.Ceiling((decimal)Min / shortTickInterval); i * shortTickInterval <= (decimal)Max; ++i)
+            for(var i = Math.Ceiling((decimal)Min.Value / shortTickInterval); i * shortTickInterval <= (decimal)Max.Value; ++i)
             {
                 var item = new LabelTickData()
                 {
@@ -92,44 +92,41 @@ namespace CompMs.Graphics.AxisManager
         #region Event handler
         static void OnMinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var axis = d as ContinuousAxisManager;
-            if (axis == null) return;
-
-            var min = Convert.ToDouble((IConvertible)e.NewValue);
-            var max = Convert.ToDouble(axis.MaxValue);
-            var r = axis.ChartMargin;
-            axis.InitialRange = new Range {
-                Minimum = min - (max - min) * r?.Left ?? 0d,
-                Maximum = max + (max - min) * r?.Right ?? 0d,
-            };
+            if (d is ContinuousAxisManager axis) {
+                var min = Convert.ToDouble((IConvertible)e.NewValue);
+                var max = Convert.ToDouble(axis.MaxValue);
+                var r = axis.ChartMargin;
+                axis.InitialRange = new Range(
+                    minimum: min - (max - min) * r?.Left ?? 0d,
+                    maximum: max + (max - min) * r?.Right ?? 0d
+                );
+            }
         }
 
         static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var axis = d as ContinuousAxisManager;
-            if (axis == null) return;
-
-            var min = Convert.ToDouble(axis.MinValue);
-            var max = Convert.ToDouble((IConvertible)e.NewValue);
-            var r = axis.ChartMargin;
-            axis.InitialRange = new Range {
-                Minimum = min - (max - min) * r?.Left ?? 0d,
-                Maximum = max + (max - min) * r?.Right ?? 0d,
-            };
+            if (d is ContinuousAxisManager axis) {
+                var min = Convert.ToDouble(axis.MinValue);
+                var max = Convert.ToDouble((IConvertible)e.NewValue);
+                var r = axis.ChartMargin;
+                axis.InitialRange = new Range(
+                    minimum: min - (max - min) * r?.Left ?? 0d,
+                    maximum: max + (max - min) * r?.Right ?? 0d
+                );
+            }
         }
 
         static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var axis = d as ContinuousAxisManager;
-            if (axis == null) return;
-
-            var min = Convert.ToDouble(axis.MinValue);
-            var max = Convert.ToDouble(axis.MaxValue);
-            var r = (ChartMargin)e.NewValue;
-            axis.InitialRange = new Range {
-                Minimum = min - (max - min) * r?.Left ?? 0d,
-                Maximum = max + (max - min) * r?.Right ?? 0d,
-            };
+            if (d is ContinuousAxisManager axis) {
+                var min = Convert.ToDouble(axis.MinValue);
+                var max = Convert.ToDouble(axis.MaxValue);
+                var r = (ChartMargin)e.NewValue;
+                axis.InitialRange = new Range(
+                    minimum: min - (max - min) * r?.Left ?? 0d,
+                    maximum: max + (max - min) * r?.Right ?? 0d
+                );
+            }
         }
         #endregion
     }

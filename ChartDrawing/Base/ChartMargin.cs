@@ -22,8 +22,7 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-            var text = value as string;
-            if (text == null) return null;
+            if (!(value is string text)) return null;
 
             var values = text.Split(',');
             double left, right;

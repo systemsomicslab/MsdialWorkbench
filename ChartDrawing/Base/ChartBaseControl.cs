@@ -23,12 +23,12 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty RangeXProperty = DependencyProperty.Register(
             nameof(RangeX), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range { Minimum = 0d, Maximum = 1d}, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
 
         public static readonly DependencyProperty RangeYProperty = DependencyProperty.Register(
             nameof(RangeY), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range { Minimum = 0d, Maximum = 1d}, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
         #endregion
 
@@ -109,9 +109,9 @@ namespace CompMs.Graphics.Core.Base
         {
             double x = 0, y = 0;
             if (HorizontalAxis != null)
-                x = HorizontalAxis.RenderPositionToValue(p.X / ActualWidth);
+                x = HorizontalAxis.RenderPositionToValue(p.X / ActualWidth).Value;
             if (VerticalAxis != null)
-                y = VerticalAxis.RenderPositionToValue(p.Y / ActualHeight);
+                y = VerticalAxis.RenderPositionToValue(p.Y / ActualHeight).Value;
             return new Point(x, y);
         }
 
@@ -133,8 +133,8 @@ namespace CompMs.Graphics.Core.Base
                     ),
                 InitialArea
                 );
-            RangeX = new Range { Minimum = area.Left, Maximum = area.Right };
-            RangeY = new Range { Minimum = area.Top, Maximum = area.Bottom };
+            RangeX = new Range(minimum: area.Left, maximum: area.Right);
+            RangeY = new Range(minimum: area.Top, maximum: area.Bottom);
         }
 
         void ZoomOnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -172,11 +172,11 @@ namespace CompMs.Graphics.Core.Base
                     );
                 if (area.Width > 0)
                 {
-                    RangeX = new Range { Minimum = area.Left, Maximum = area.Right };
+                    RangeX = new Range(minimum: area.Left, maximum: area.Right);
                 }
                 if (area.Height > 0)
                 {
-                    RangeY = new Range { Minimum = area.Top, Maximum = area.Bottom };
+                    RangeY = new Range(minimum: area.Top, maximum: area.Bottom);
                 }
             }
         }
@@ -198,8 +198,8 @@ namespace CompMs.Graphics.Core.Base
                 var cand = new Rect(RenderPositionToValue(area.TopLeft), RenderPositionToValue(area.BottomRight));
                 if (InitialArea.Contains(cand))
                 {
-                    RangeX = new Range { Minimum = cand.Left, Maximum = cand.Right };
-                    RangeY = new Range { Minimum = cand.Top, Maximum = cand.Bottom };
+                    RangeX = new Range(minimum: cand.Left, maximum: cand.Right);
+                    RangeY = new Range(minimum: cand.Top, maximum: cand.Bottom);
                 }
             }
         }
@@ -219,11 +219,11 @@ namespace CompMs.Graphics.Core.Base
             {
                 if (HorizontalAxis != null)
                 {
-                    RangeX = new Range { Minimum = HorizontalAxis.InitialMin, Maximum = HorizontalAxis.InitialMax };
+                    RangeX = new Range(minimum: HorizontalAxis.InitialMin, maximum: HorizontalAxis.InitialMax);
                 }
                 if (VerticalAxis != null)
                 {
-                    RangeY = new Range { Minimum = VerticalAxis.InitialMin, Maximum = VerticalAxis.InitialMax };
+                    RangeY = new Range(minimum: VerticalAxis.InitialMin, maximum: VerticalAxis.InitialMax);
                 }
             }
         }
