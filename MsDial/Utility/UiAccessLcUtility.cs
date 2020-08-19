@@ -265,14 +265,19 @@ namespace Rfx.Riken.OsakaUniv
                 case "BileAcid": return new SolidColorBrush(Color.FromArgb(180, 190, 85, 10)); // chocolate modified
                 case "VAE": return new SolidColorBrush(Color.FromArgb(180, 180, 75, 0)); // chocolate modified
                 case "DCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 50)); // chocolate modified
-                case "GDCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 50)); // chocolate modified
-                case "GLCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 50)); // chocolate modified
-                case "TDCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 50)); // chocolate modified
-                case "TLCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 50)); // chocolate modified
+                case "GDCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 55)); // chocolate modified
+                case "GLCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 60)); // chocolate modified
+                case "TDCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 65)); // chocolate modified
+                case "TLCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 70)); // chocolate modified
+                case "LCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 75)); // chocolate modified
+                case "KLCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 80)); // chocolate modified
+                case "KDCAE": return new SolidColorBrush(Color.FromArgb(180, 230, 125, 85)); // chocolate modified
                 case "BRSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 30)); // chocolate modified
-                case "CASE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 30)); // chocolate modified
-                case "SISE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 30)); // chocolate modified
-                case "STSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 30)); // chocolate modified
+                case "CASE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 35)); // chocolate modified
+                case "SISE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 40)); // chocolate modified
+                case "STSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 45)); // chocolate modified
+                case "EGSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 50)); // chocolate modified
+                case "DEGSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 55)); // chocolate modified
                 case "AHexBRS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
                 case "AHexCAS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
                 case "AHexCS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
@@ -304,6 +309,8 @@ namespace Rfx.Riken.OsakaUniv
                 case "PA": return new SolidColorBrush(Color.FromArgb(180, 218, 112, 214)); // orchid
                 case "PC": return new SolidColorBrush(Color.FromArgb(180, 50, 205, 50)); // limegreen
                 case "PE": return new SolidColorBrush(Color.FromArgb(180, 128, 0, 128)); // purple
+                case "MMPE": return new SolidColorBrush(Color.FromArgb(180, 128, 0, 148)); // purple modified
+                case "DMPE": return new SolidColorBrush(Color.FromArgb(180, 128, 0, 168)); // purple modified
                 case "PG": return new SolidColorBrush(Color.FromArgb(180, 184, 134, 11)); // darkgoldenrod
                 case "PI": return new SolidColorBrush(Color.FromArgb(180, 255, 0, 255)); // fuchsia
                 case "PS": return new SolidColorBrush(Color.FromArgb(180, 0, 255, 255)); // aqua
@@ -344,6 +351,8 @@ namespace Rfx.Riken.OsakaUniv
                 case "MG": return new SolidColorBrush(Color.FromArgb(180, 152, 251, 152)); // palegreen
                 case "DG": return new SolidColorBrush(Color.FromArgb(180, 0, 255, 0)); // lime
                 case "TG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 0)); // green
+                case "OxTG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 20)); // green modified
+                case "FAHFATG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 40)); // green modified
                 case "EtherDG": return new SolidColorBrush(Color.FromArgb(180, 0, 204, 0)); // lime
                 case "EtherTG": return new SolidColorBrush(Color.FromArgb(180, 0, 51, 0)); // green
                 case "MGDG": return new SolidColorBrush(Color.FromArgb(180, 0, 0, 255)); // blue
@@ -389,6 +398,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "CoQ": return new SolidColorBrush(Color.FromArgb(180, 235, 49, 20)); //scarlet
                 case "PI_Cer": return new SolidColorBrush(Color.FromArgb(180, 225, 30, 225)); // fuchsia modified
                 case "PE_Cer": return new SolidColorBrush(Color.FromArgb(180, 118, 10, 118)); // purple modified
+                case "MIPC": return new SolidColorBrush(Color.FromArgb(180, 225, 30, 205)); // fuchsia modified modified
                 case "NAE": return new SolidColorBrush(Color.FromArgb(180, 245, 59, 10)); // orangered modified
                 case "NAAG": return new SolidColorBrush(Color.FromArgb(180, 235, 49, 20)); // orangered modified
                 case "NAAGS": return new SolidColorBrush(Color.FromArgb(180, 225, 39, 30)); // orangered modified

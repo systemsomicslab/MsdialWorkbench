@@ -824,12 +824,25 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.NAGly:
-                    return LipidMsmsCharacterization.JudgeIfFahfamidegly(msScanProp, ms2tol, refMz,
+                    if (totalOxidized > 0) {
+                        return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamidegly(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
+
 
                 case LbmClass.NAGlySer:
-                    return LipidMsmsCharacterization.JudgeIfFahfamideglyser(msScanProp, ms2tol, refMz,
-                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    if (totalOxidized > 0) {
+                        return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideglyser(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
 
 
                 case LbmClass.SL:
@@ -860,8 +873,14 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAOrn:
-                    return LipidMsmsCharacterization.JudgeIfFahfamideorn(msScanProp, ms2tol, refMz,
+                    if (totalOxidized > 0) {
+                        return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                    }
+                    else {
+                        return LipidMsmsCharacterization.JudgeIfFahfamideorn(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                    }
 
 
                 case LbmClass.BRSE:
@@ -1011,6 +1030,24 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DEGSE:
                     return LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
+
+                //add 20200812
+                case LbmClass.OxTG:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+
+                    return LipidMsmsCharacterization.JudgeIfOxTriacylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, totalOxidized, adduct);
+                case LbmClass.FAHFATG:
+                    sn2Carbon = molecule.Sn2CarbonCount;
+                    sn2DbBond = molecule.Sn2DoubleBondCount;
+                    sn3Carbon = molecule.Sn3CarbonCount;
+                    sn3DbBond = molecule.Sn3DoubleBondCount;
+                    return LipidMsmsCharacterization.JudgeIfFahfaTriacylglycerol(msScanProp, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                        sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
+                        sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
                 default:
                     return null;
             }

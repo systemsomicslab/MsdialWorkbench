@@ -117,7 +117,8 @@ namespace Rfx.Riken.OsakaUniv
                     Serum = param.DatabaseQuery.Serum,
                     Urine = param.DatabaseQuery.Urine, 
                     Csf = param.DatabaseQuery.Csf,
-                    Blexp = param.DatabaseQuery.Blexp
+                    Blexp = param.DatabaseQuery.Blexp,
+                    Npa = param.DatabaseQuery.Npa
                 },
 
                 LipidQueryBean = param.LipidQueryBean,

@@ -221,8 +221,16 @@ namespace CompMs.MsdialCore.Algorithm {
             var tolerance = param.Ms1AlignmentTolerance;
             var master = new LinkedList<ChromatogramPeakFeature>();
 
-            master.AddFirst(new ChromatogramPeakFeature { ChromXsTop = new ChromXs(double.MinValue, ChromXType.Mz, ChromXUnit.Mz) }); // Add Sentinel
-            master.AddLast(new ChromatogramPeakFeature { ChromXsTop = new ChromXs(double.MaxValue, ChromXType.Mz, ChromXUnit.Mz) });  // Add Sentinel
+            master.AddFirst(new ChromatogramPeakFeature {
+                PrecursorMz = double.MinValue,
+                ChromXsTop = new ChromXs() { RT = new RetentionTime(double.MinValue), RI = new RetentionIndex(double.MinValue), 
+                    Drift = new DriftTime(double.MinValue), Mz = new MzValue(double.MinValue) }
+            }); // Add Sentinel
+            master.AddLast(new ChromatogramPeakFeature {
+                PrecursorMz = double.MaxValue,
+                ChromXsTop = new ChromXs() { RT = new RetentionTime(double.MaxValue), RI = new RetentionIndex(double.MaxValue), 
+                    Drift = new DriftTime(double.MaxValue), Mz = new MzValue(double.MaxValue) }
+            });  // Add Sentinel
 
             MergeFileToMasterList(analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId), master, tolerance);
             foreach (var file in analysisFiles) {
@@ -267,7 +275,6 @@ namespace CompMs.MsdialCore.Algorithm {
             var itr = master.First;
             foreach (var peak in peaks) {
                 while (itr.Next.Value.ChromXsTop.Mz.Value < peak.ChromXsTop.Mz.Value) itr = itr.Next;
-               
                 if (itr.Value.ChromXsTop.Mz.Value + tolerance < peak.ChromXsTop.Mz.Value && peak.ChromXsTop.Mz.Value < itr.Next.Value.ChromXsTop.Mz.Value - tolerance)
                     master.AddAfter(itr, peak);
             }
