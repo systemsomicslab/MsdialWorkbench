@@ -16,8 +16,8 @@ namespace DatabaseParserConsoleApp {
             //runLipidMassGenerator();
             #endregion
 
-            runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
-            //convertAsciiToBinary();
+            //runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
+            convertAsciiToBinary();
 
 
             //testLipidChalacterizationMethods();
@@ -133,19 +133,19 @@ namespace DatabaseParserConsoleApp {
             //    @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-AritaM-replaced.lbm",
             //    @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-AritaM.lbm2");
             LipidomicsConverter.AsciiToSerializedObject(
-                @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-FiehnO.lbm",
-                @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-FiehnO.lbm");
-            LipidomicsConverter.AsciiToSerializedObject(
-                @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-SaitoK.lbm",
-                @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-SaitoK.lbm");
+                @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\Msp20200812154316.jointedmsp",
+                @"C:\Users\hiroshi.tsugawa\Desktop\MSDIAL_LipidMsmsCreater\Msp20200812154316.lbm2");
+            //LipidomicsConverter.AsciiToSerializedObject(
+            //    @"C:\Users\ADMIN\Desktop\MSDIAL-LipidDB-VS47-SaitoK.lbm",
+            //    @"C:\Users\ADMIN\Desktop\LipidMsmsBinaryDB-VS47-SaitoK.lbm");
         }
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200525_AAHFA\";
-            var testFilename = @"OxFA2202OH.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200720_addErgosterol\check\";
+            var testFilename = @"Ergo18_1_posNa.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"OxFA_[M-H]-.txt";
+            var reffile = testFolder + @"lib.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);

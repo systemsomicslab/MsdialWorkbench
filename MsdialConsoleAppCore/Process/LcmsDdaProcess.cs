@@ -162,7 +162,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("Joint aligner finished");
 
                 ProcessGapFilling.Execute(projectProp, rdamProperty, new ObservableCollection<AnalysisFileBean>(analysisFiles), alignmentFile, lcmsParam, 
-                    alignmentResult, null);
+                    iupacDB, alignmentResult, null);
                 Console.WriteLine("Gap filling finished");
 
                 ProcessAlignmentFinalization.Execute(new ObservableCollection<AnalysisFileBean>(analysisFiles), alignmentFile.SpectraFilePath, 

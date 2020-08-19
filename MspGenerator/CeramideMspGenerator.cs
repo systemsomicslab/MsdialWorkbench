@@ -208,6 +208,15 @@ namespace CompMs.MspGenerator
                             //sphMass = sphMass + MassDictionary.OxygenMass;
                             acylOx = acylOx + 1;
                         }
+                        else if (lipidClass == "MIPC") //AP
+                        {
+                            if (AcylChainDic.sphingoBasePDictionary.ContainsKey(chainArray[0]) == false) { continue; }
+                            sphSmiles = new List<string>(AcylChainDic.sphingoBasePDictionary[chainArray[0]])[3];
+                            if (AcylChainDic.AcylChainAlphaOxDictionary.ContainsKey(chainArray[1]) == false) { continue; }
+                            acylSmiles = new List<string>(AcylChainDic.AcylChainAlphaOxDictionary[chainArray[1]])[3];
+                            acylOx = acylOx + 1;
+                        }
+
 
                         if (sphSmiles == "" || acylSmiles == "") 
                         {
@@ -345,6 +354,13 @@ namespace CompMs.MspGenerator
                                 }
                                 CermideFragmentation.GM3Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
+
+                            case "MIPC":
+                                name = "MIPC " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
+                                shortName = "MIPC " + totalChain + ":" + totalBond + ";4O";
+                                CermideFragmentation.MipcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+
                             //conbination
                             case "SM":
                                 name = "SM " + chainArray[0] + ";2O/" + chainArray[1];

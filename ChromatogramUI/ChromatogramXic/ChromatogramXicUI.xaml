@@ -12,6 +12,7 @@
              MouseLeave="userControl_MouseLeave" 
              MouseLeftButtonDown="userControl_MouseLeftButtonDown" 
              MouseLeftButtonUp="userControl_MouseLeftButtonUp" 
+             MouseWheel="userControl_MouseWheel"
              MouseDoubleClick="userControl_MouseLeftDoubleClick">
     <Grid>
 

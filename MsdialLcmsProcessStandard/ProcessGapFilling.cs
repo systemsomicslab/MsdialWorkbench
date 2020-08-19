@@ -18,11 +18,11 @@ namespace Msdial.Lcms.DataProcess
 
         public static void Execute(ProjectPropertyBean projectProp, RdamPropertyBean rdamProperty, 
             ObservableCollection<AnalysisFileBean> files, AlignmentFileBean alignmentFile, 
-            AnalysisParametersBean param, 
+            AnalysisParametersBean param, IupacReferenceBean iupacRef,
             AlignmentResultBean alignmentResult, Action<int> reportAction)
         {
             if (param.IsIonMobility) {
-                ExecuteAtIonMobility(projectProp, rdamProperty, files, alignmentFile, param, alignmentResult, reportAction);
+                ExecuteAtIonMobility(projectProp, rdamProperty, files, alignmentFile, param, alignmentResult, iupacRef, reportAction);
                 return;
             }
             var alignedEics = new List<AlignedData>();
@@ -109,7 +109,7 @@ namespace Msdial.Lcms.DataProcess
                 DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
             }
             Console.WriteLine("Start finalization");
-            PeakAlignment.FinalizeJointAligner(alignmentResult, files, param, projectProp, ref newIdList);
+            PeakAlignment.FinalizeJointAligner(alignmentResult, files, param, projectProp, iupacRef, ref newIdList);
             Console.WriteLine("End finalization");
 
 
@@ -121,7 +121,7 @@ namespace Msdial.Lcms.DataProcess
 
         public static void ExecuteAtIonMobility(ProjectPropertyBean projectProperty, RdamPropertyBean rdamProperty, 
             ObservableCollection<AnalysisFileBean> files, AlignmentFileBean alignmentFile, AnalysisParametersBean param, 
-            AlignmentResultBean alignmentResult, Action<int> reportAction) {
+            AlignmentResultBean alignmentResult, IupacReferenceBean iupacRef, Action<int> reportAction) {
             var alignedEics = new List<AlignedData>();
             var newIdList = new List<int>();
             var alignedSpots = alignmentResult.AlignmentPropertyBeanCollection;
@@ -252,7 +252,7 @@ namespace Msdial.Lcms.DataProcess
                 reportAction?.Invoke(i + 1);
                 DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
             }
-            PeakAlignment.FinalizeJointAlignerAtIonMobility(alignmentResult, files, param, projectProperty, ref newIdList);
+            PeakAlignment.FinalizeJointAlignerAtIonMobility(alignmentResult, files, param, projectProperty, iupacRef, ref newIdList);
 
             AlignedEic.WriteAlignedEic(alignedEics, projectProperty, newIdList, files.Count, dirname, eicFilePath);
             System.IO.Directory.Delete(dirname, true);
