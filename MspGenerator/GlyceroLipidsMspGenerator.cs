@@ -607,7 +607,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void threeEquallyCainsGlyceroLipidGenerator(List<string> chains, string lipidClass, string output) //TAG
+        public static void threeEquallyCainsGlyceroLipidGenerator(List<string> chains, string lipidClass, string output) //TG
         {
             int chainCount = chains.Count;
             var wholeChainList = new List<string>();
@@ -670,6 +670,12 @@ namespace CompMs.MspGenerator
                         //var chain3Mass = (chain3Chain * 12 + (2 * chain3Chain - 2 * chain3Double) * MassDictionary.HydrogenMass + MassDictionary.OxygenMass);//chain3 acyl
 
                         var totalChain = chain1Carbon + chain2Carbon + chain3Carbon;
+
+                        if (totalChain > 88)
+                        {
+                            continue;
+                        }
+
                         var totalBond = chain1Double + chain2Double + chain3Double;
 
                         var shortName = lipidClass + " " + totalChain + ":" + totalBond;
