@@ -137,6 +137,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTests", "Msdi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCoreTests", "MsdialCoreTests\MsdialCoreTests.csproj", "{B21FC8DB-0C0D-4313-AE05-53F328B5B827}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wiff2FileReader", "Wiff2FileReader\Wiff2FileReader.csproj", "{AA0FA4E8-4040-4C3D-9D25-A6BF7B22A13D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -411,12 +413,16 @@ Global
 		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B21FC8DB-0C0D-4313-AE05-53F328B5B827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA0FA4E8-4040-4C3D-9D25-A6BF7B22A13D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA0FA4E8-4040-4C3D-9D25-A6BF7B22A13D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA0FA4E8-4040-4C3D-9D25-A6BF7B22A13D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA0FA4E8-4040-4C3D-9D25-A6BF7B22A13D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal
