@@ -22,6 +22,8 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
 using System.Windows.Input;
 using CompMs.Common.DataObj.Property;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialDimsCore.DataObj;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -211,8 +213,7 @@ namespace MsdialDimsCoreUiTestApp
             var spectras = DataAccess.GetAllSpectra(analysisFileBean.AnalysisFilePath);
             var ms1spectra = spectras.Where(spectra => spectra.MsLevel == 1)
                                      .Where(spectra => spectra.Spectrum != null)
-                                     .Max(spectra => (spectra.Spectrum.Length, spectra))
-                                     .spectra;
+                                     .Argmax(spectra => spectra.Spectrum.Length);
 
             var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
@@ -232,7 +233,8 @@ namespace MsdialDimsCoreUiTestApp
         }
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile) {
-            var result = AlignmentProcess.Alignment(analysisFiles, alignmentFile, chromSpotSerializer, param);
+            var aligner = new PeakAligner(new DimsPeakComparer(param.Ms1AlignmentTolerance), param);
+            var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
         }
 
