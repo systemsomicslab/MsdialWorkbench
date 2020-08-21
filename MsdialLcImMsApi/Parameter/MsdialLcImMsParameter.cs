@@ -11,13 +11,15 @@ namespace CompMs.MsdialLcImMsApi.Parameter {
         public float DriftTimeEnd { get; set; } = 2000;
         public float AccumulatedRtRagne { get; set; } = 0.2F;
         public bool IsAccumulateMS2Spectra { get; set; } = false;
-
-        public float DriftTimeAlignmentTolerance { get; set; } = 0.02F; // msec
-        public float DriftTimeAlignmentFactor { get; set; } = 0.5F;
         public IonMobilityType IonMobilityType { get; set; } = IonMobilityType.Tims;
         public bool IsAllCalibrantDataImported { get; set; } = false;
 
+        public float DriftTimeAlignmentTolerance { get; set; } = 0.02F; // msec
+        public float DriftTimeAlignmentFactor { get; set; } = 0.5F;
+        
+
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
+        public MsdialLcImMsParameter() { this.MachineCategory = Common.Enum.MachineCategory.LCIMMS; }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
