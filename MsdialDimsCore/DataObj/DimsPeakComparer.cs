@@ -21,7 +21,7 @@ namespace CompMs.MsdialDimsCore.DataObj
         }
 
         public override bool Equals(IChromatogramPeakFeature x, IChromatogramPeakFeature y) {
-            return (x.Mass - y.Mass) <= _mztol;
+            return Math.Abs(x.Mass - y.Mass) <= _mztol;
         }
 
         public override double GetSimilality(IChromatogramPeakFeature x, IChromatogramPeakFeature y) {
