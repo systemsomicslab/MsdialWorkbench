@@ -595,41 +595,41 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
 
-                //compounds.Add(new StandardCompound() {
-                //    StandardName = "FA 18:0(d3)",
-                //    Concentration = 160,
-                //    DilutionRate = 0.001,
-                //    MolecularWeight = 287.502,
-                //    PeakID = -1,
-                //    TargetClass = "FA"
-                //});
-
-                //compounds.Add(new StandardCompound() {
-                //    StandardName = "FA 18:0(d3)",
-                //    Concentration = 160,
-                //    DilutionRate = 0.001,
-                //    MolecularWeight = 287.502,
-                //    PeakID = -1,
-                //    TargetClass = "FAHFA"
-                //});
-
                 compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
+                    StandardName = "FA 18:0(d3)",
+                    Concentration = 160,
+                    DilutionRate = 0.001,
+                    MolecularWeight = 287.502,
                     PeakID = -1,
                     TargetClass = "FA"
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
+                    StandardName = "FA 18:0(d3)",
+                    Concentration = 160,
+                    DilutionRate = 0.001,
+                    MolecularWeight = 287.502,
                     PeakID = -1,
                     TargetClass = "FAHFA"
                 });
+
+                //compounds.Add(new StandardCompound() {
+                //    StandardName = "LPC 18:1(d7)",
+                //    Concentration = 47.284175,
+                //    DilutionRate = 0.015625,
+                //    MolecularWeight = 528.718,
+                //    PeakID = -1,
+                //    TargetClass = "FA"
+                //});
+
+                //compounds.Add(new StandardCompound() {
+                //    StandardName = "LPC 18:1(d7)",
+                //    Concentration = 47.284175,
+                //    DilutionRate = 0.015625,
+                //    MolecularWeight = 528.718,
+                //    PeakID = -1,
+                //    TargetClass = "FAHFA"
+                //});
 
                 // level 3
                 compounds.Add(new StandardCompound() {
