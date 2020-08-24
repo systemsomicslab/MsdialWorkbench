@@ -91,26 +91,26 @@ namespace CompMs.Graphics.AxisManager
             return result;
         }
 
-        public override double ValueToRenderPosition(object value)
+        public override double TranslateToRenderPoint(object value)
         {
             double min = Min, max = Max;
             bool isFlipped = IsFlipped;
 
             if (value is double d)
-                return ValueToRenderPositionCore(d, min, max, isFlipped);
+                return TranslateToRenderPointCore(d, min, max, isFlipped);
             else if (converter.ContainsKey(value))
-                return base.ValueToRenderPositionCore(converter[value], min, max, isFlipped);
+                return base.TranslateToRenderPointCore(converter[value], min, max, isFlipped);
             else
                 return double.NaN;
         }
 
-        public override List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+        public override List<double> TranslateToRenderPoints(IEnumerable<object> values) {
             double min = Min, max = Max;
             bool isFlipped = IsFlipped;
 
             return values.Select(value =>
                 converter.ContainsKey(value)
-                    ? base.ValueToRenderPositionCore(converter[value], min, max, isFlipped)
+                    ? base.TranslateToRenderPointCore(converter[value], min, max, isFlipped)
                     : double.NaN
                 ).ToList();
         }
@@ -129,7 +129,7 @@ namespace CompMs.Graphics.AxisManager
                 foreach(object item in ItemsSource)
                     converter[item] = 0.5 + cnt++;
 
-            InitialRange = new Range { Minimum = 0d, Maximum = cnt };
+            InitialRange = new Range(minimum: 0d, maximum: cnt);
 
             AxisMapper = new AxisMapper(this);
         }

@@ -1,9 +1,8 @@
-﻿using CompMs.Graphics.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Windows;
+
+using CompMs.Graphics.Base;
 
 namespace CompMs.Graphics.Core.Base
 {
@@ -25,12 +24,12 @@ namespace CompMs.Graphics.Core.Base
         #region DependencyProperty
         public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
             nameof(Range), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(new Range { Minimum = 0, Maximum = 1}, OnRangeChanged)
+            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnRangeChanged)
             );
 
         public static readonly DependencyProperty InitialRangeProperty = DependencyProperty.Register(
             nameof(InitialRange), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(new Range { Minimum = 0, Maximum = 1}, OnInitialRangeChanged)
+            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged)
             );
 
         public static readonly DependencyProperty IsFlippedProperty = DependencyProperty.Register(
@@ -50,14 +49,14 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Property
-        public double Min {
+        public AxisValue Min {
             get => Range.Minimum;
-            set => Range = new Range { Minimum = value, Maximum = Range.Maximum };
+            set => Range = new Range(minimum: value, maximum: Range.Maximum);
         }
 
-        public double Max {
+        public AxisValue Max {
             get => Range.Maximum;
-            set => Range = new Range { Minimum = Range.Minimum, Maximum = value };
+            set => Range = new Range(minimum: Range.Minimum, maximum: value);
         }
 
         public Range Range {
@@ -87,37 +86,44 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Method
-        protected virtual double ValueToRenderPositionCore(double value, double min, double max, bool isFlipped) {
-            return (isFlipped ? (max - value) : (value - min)) / (max - min);
+        protected virtual double TranslateToRenderPointCore(AxisValue value, AxisValue min, AxisValue max, bool isFlipped) {
+            return (isFlipped ? (max.Value - value.Value) : (value.Value - min.Value)) / (max.Value - min.Value);
         }
 
-        public virtual double ValueToRenderPosition(object value) {
+        public virtual AxisValue TranslateToAxisValue(object value) {
+            if (value is double d)
+                return new AxisValue(d);
+            else if (value is IConvertible convertible)
+                return new AxisValue(Convert.ToDouble(convertible));
+            else
+                return new AxisValue(double.NaN);
+        }
+
+        public virtual double TranslateToRenderPoint(AxisValue val) {
             double max = Max, min = Min;
             bool isFlipped = IsFlipped;
 
-            if (value is double d)
-                return ValueToRenderPositionCore(d, min, max, isFlipped);
-            else if (value is IConvertible convertible)
-                return ValueToRenderPositionCore(Convert.ToDouble(convertible), min, max, isFlipped);
-            else
-                throw new NotImplementedException();
+            return TranslateToRenderPointCore(val, min, max, isFlipped);
         }
 
-        public virtual double RenderPositionToValue(double value) =>
-            IsFlipped ? (Max - value * (Max - Min)) : (value * (Max - Min) + Min);
+        public virtual double TranslateToRenderPoint(object value) {
+            return TranslateToRenderPoint(TranslateToAxisValue(value));
+        }
 
-        public virtual List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+        public virtual AxisValue TranslateFromRenderPoint(double value) {
+            double max = Max.Value, min = Min.Value;
+
+            return new AxisValue(IsFlipped ? (max - value * (max - min)) : (value * (max - min) + min));
+        }
+
+        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values) {
             double max = Max, min = Min;
             bool isFlipped = IsFlipped;
             var result = new List<double>();
 
             foreach (var value in values) {
-                if (value is double d)
-                    result.Add(ValueToRenderPositionCore(d, min, max, isFlipped));
-                else if (value is IConvertible convertible)
-                    result.Add(ValueToRenderPositionCore(Convert.ToDouble(convertible), min, max, isFlipped));
-                else
-                    result.Add(double.NaN);
+                var axVal = TranslateToAxisValue(value);
+                result.Add(TranslateToRenderPointCore(axVal, min, max, isFlipped));
             }
 
             return result;
@@ -126,27 +132,23 @@ namespace CompMs.Graphics.Core.Base
 
         #region Event
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var axis = d as AxisManager;
-            if (axis == null) return;
-
-            axis.Range = (Range)e.NewValue;
+            if (d is AxisManager axis)
+                axis.Range = (Range)e.NewValue;
         }
 
         static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var axis = d as AxisManager;
-            if (axis == null) return;
-
-            axis.LabelTicks = axis.GetLabelTicks();
-            axis.AxisMapper = new AxisMapper(axis);
+            if (d is AxisManager axis) {
+                axis.LabelTicks = axis.GetLabelTicks();
+                axis.AxisMapper = new AxisMapper(axis);
+            }
         }
 
         static void OnIsFlippedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var axis = d as AxisManager;
-            if (axis == null) return;
-
-            axis.LabelTicks = axis.GetLabelTicks();
-            axis.AxisMapper = new AxisMapper(axis);
+            if (d is AxisManager axis) {
+                axis.LabelTicks = axis.GetLabelTicks();
+                axis.AxisMapper = new AxisMapper(axis);
+            }
         }
         #endregion
 
