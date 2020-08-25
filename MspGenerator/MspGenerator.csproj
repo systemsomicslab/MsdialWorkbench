@@ -118,6 +118,7 @@
     <Compile Include="Property\Adduct.cs" />
     <Compile Include="Property\FattyAcid.cs" />
     <Compile Include="Property\MetaProperty.cs" />
+    <Compile Include="qsarDescriptorOnNcdk.cs" />
     <Compile Include="RtCcsPredictUsingR.cs" />
     <Compile Include="RtCcsPredictManager.cs" />
   </ItemGroup>

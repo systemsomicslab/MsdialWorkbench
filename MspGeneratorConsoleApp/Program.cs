@@ -21,6 +21,16 @@ namespace CompMs.MspGenerator
                 //    Common.jointTxtFiles(txtFolder, exportFileName);
             }
 
+            {
+                //NCDKを利用したdescriptorの出力 (string inputFile, string outputFile)
+                // inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
+                // 1行目(ヘッダー行)が"InChIKey"、"SMILES"となっている列を認識してdescriptorを算出する。
+                qsarDescriptorOnNcdk.outputDescriptors
+                    (@"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.txt",
+                     @"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.out.txt");
+
+            }
+
 
             /// RTCCS Prediction
             var workingDirectry = @"F:\takahashi\20200820_RTPrediction\prediction\";//作業用フォルダ
@@ -64,9 +74,9 @@ namespace CompMs.MspGenerator
             var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
             var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20200821.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
-            MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
+            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
-            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
 
 
 
