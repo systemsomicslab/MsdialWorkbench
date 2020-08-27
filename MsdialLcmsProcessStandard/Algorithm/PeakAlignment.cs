@@ -2498,9 +2498,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         var masterDriftSpots = masterPeakSpots[j].DriftSpots;
                         for (int p = 0; p < masterDriftSpots.Count; p++) {
 
-                            if (i == 29 && k == 0 && j == 31) {
-                                Debug.WriteLine(p);
-                            }
+                            //if (i == 29 && k == 0 && j == 31) {
+                            //    Debug.WriteLine(p);
+                            //}
 
                             var masterDrifttime = masterDriftSpots[p].DriftTimeAtPeakTop;
                             var dtDiff = Math.Abs(masterDrifttime - drifttime);

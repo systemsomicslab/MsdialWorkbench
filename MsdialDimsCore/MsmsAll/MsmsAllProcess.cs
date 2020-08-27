@@ -61,7 +61,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             // the following parser is used to safely obtain the information
             var ms1Spectrum = getMs1SpectraInMsmsAllData(spectra);
             if (ms1Spectrum == null) return new ProcessError(true, specEmptyError);
-            var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             var chromFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1Spectrum, spectra);
@@ -91,7 +91,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 }
                 else {
                     var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
-                    var spectrumPeaks = ComponentsConverter.ConvertToSpectrumPeaks(peakElements);
+                    var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
                     var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
                     feature.Spectrum = centroidSpec;
                 }
