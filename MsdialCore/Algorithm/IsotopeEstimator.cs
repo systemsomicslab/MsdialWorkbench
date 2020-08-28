@@ -497,15 +497,12 @@ namespace CompMs.MsdialCore.Algorithm {
         private static void SetParentToIsotopes(IList<AlignmentSpotProperty> spots, AlignmentSpotProperty monoIsoPeak,
             IReadOnlyList<IsotopeTemp> isotopeTemps, int maxTraceNumber, IupacDatabase iupac, bool isBrClConsidered) {
 
-            Func<int, bool> predicate = null;
+            Func<int, bool> predicate = i => isBrClConsidered || isotopeTemps[i - 1].Intensity > isotopeTemps[i].Intensity;
             var monoisotopicMass = monoIsoPeak.MassCenter * monoIsoPeak.PeakCharacter.Charge;
 
             //from here, simple decreasing will be expected for <= 800 Da
             //simulated profiles by alkane formula will be projected to the real abundances for the peaks of more than 800 Da
-            if (monoisotopicMass <= 800) {
-                predicate = i => isBrClConsidered || isotopeTemps[i - 1].Intensity > isotopeTemps[i].Intensity;
-            }
-            else {
+            if (monoisotopicMass > 800) {
                 var simulatedFormulaByAlkane = getSimulatedFormulaByAlkane(monoisotopicMass);
                 var simulatedIsotopicPeaks = IsotopeCalculator.GetNominalIsotopeProperty(simulatedFormulaByAlkane, maxTraceNumber + 1, iupac);
                 predicate = i => {
