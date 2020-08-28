@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialGcMsApi.DataObj {
+    [MessagePackObject]
     public class MsdialGcmsSaveObj {
         [Key(0)]
         public List<AnalysisFileBean> AnalysisFiles { get; set; }

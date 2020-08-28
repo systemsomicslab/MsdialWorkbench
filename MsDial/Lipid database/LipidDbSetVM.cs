@@ -117,15 +117,13 @@ namespace Rfx.Riken.OsakaUniv
                     {
                         if (solventType == SolventType.CH3COONH4)
                         {
-                            if (query.AdductIon.AdductIonName == "[M+CH3COO]-" || query.AdductIon.AdductIonName == "[M+Hac-H]-" || query.AdductIon.AdductIonName == "[M-H]-")
-                            {
+                            if (query.AdductIon.AdductIonName != "[M+HCOO]-" && query.AdductIon.AdductIonName != "[M+FA-H]-") {
                                 queryVMs.Add(new LbmQueryVM(query));
                             }
                         }
                         else if (solventType == SolventType.HCOONH4)
                         {
-                            if (query.AdductIon.AdductIonName == "[M+HCOO]-" || query.AdductIon.AdductIonName == "[M+FA-H]-" || query.AdductIon.AdductIonName == "[M-H]-")
-                            {
+                            if (query.AdductIon.AdductIonName != "[M+CH3COO]-" && query.AdductIon.AdductIonName != "[M+Hac-H]-") {
                                 queryVMs.Add(new LbmQueryVM(query));
                             }
                         }

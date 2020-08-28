@@ -40,6 +40,8 @@ namespace CompMs.Common.Enum {
         SSulfate, BAHex, BASulfate,
         LCAE, KLCAE, KDCAE,
         MMPE, DMPE, MIPC, EGSE, DEGSE,
+        OxTG, FAHFATG,
+
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
 
-        public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialGcmsParameter param, ChromatogramPeaksDataSummary summary, Action<int> reportAction, System.Threading.CancellationToken token) {
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, param, reportAction, InitialProgress, ProgressMax);
         }

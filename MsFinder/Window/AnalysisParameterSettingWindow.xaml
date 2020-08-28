@@ -749,7 +749,7 @@
                             <StackPanel Orientation="Horizontal" Margin="20,165,0,0">
                                 <CheckBox Content="STOFF (Environment)" IsChecked="{Binding Path=Stoff}" Margin="5,5,5,5" />
                                 <CheckBox Content="BLEXP (blood exposome)" IsChecked="{Binding Path=Blexp}" Margin="15,5,5,5" />
-                                <CheckBox Content="NPA (Natural Products Atlas)" IsChecked="{Binding Path=NPA}" Margin="15,5,5,5" />
+                                <CheckBox Content="NPA (Natural Products Atlas)" IsChecked="{Binding Path=Npa}" Margin="15,5,5,5" />
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="20,200,0,0">

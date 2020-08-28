@@ -34,7 +34,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             {
                 if (focusedMass < param.MassRangeBegin) { focusedMass += massStep; continue; }
                 if (focusedMass > param.MassRangeEnd) break;
-
+                //Console.WriteLine(focusedMass);
                 peaklist = DataAccessGcUtility.GetMs1SlicePeaklist(spectrumList, focusedMass, sliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd, param.IonMode);
 
                 if (peaklist.Count == 0) { focusedMass += massStep; continue; }

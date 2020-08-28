@@ -1,6 +1,7 @@
 ﻿using Riken.Metabolomics.Lipidomics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -35,7 +36,7 @@ namespace Rfx.Riken.OsakaUniv
             var mspRecord = new MspFormatCompoundInformationBean();
             var mzIntCommentBean = new MzIntensityCommentBean();
             
-            var tQueries = getTrueQueries(queries);
+            var tQueries = getTrueQueryStrings(queries);
             if (tQueries.Count == 0) return null;
             
             string wkstr;
@@ -264,10 +265,12 @@ namespace Rfx.Riken.OsakaUniv
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
             var usedMspDB = new List<MspFormatCompoundInformationBean>();
             var mspDB = LipidomicsConverter.SerializedObjectToMspQeries(file);
-            var tQueries = getTrueQueries(queries);
+            var tQueries = getTrueQueryStrings(queries);
             if (tQueries.Count == 0) return null;
             var counter = 0;
-           // var strings = new List<string>();
+            // var strings = new List<string>();
+            var sw = new Stopwatch();
+            sw.Start();
             foreach (var mspRecord in mspDB) {
                 //if (mspRecord.CompoundClass == "Cer_EBDS") {
                 //    Console.WriteLine("OK");
@@ -279,7 +282,8 @@ namespace Rfx.Riken.OsakaUniv
                     counter++;
                 }
             }
-
+            Console.WriteLine("read end {0}", sw.ElapsedMilliseconds);
+            sw.Stop();
             
             //usedMspDB = usedMspDB.OrderBy(n => n.PrecursorMz).ToList();
             //for (int i = 0; i < usedMspDB.Count; i++) {
@@ -496,13 +500,23 @@ namespace Rfx.Riken.OsakaUniv
         }
 
 
-        private static bool queryCheck(MspFormatCompoundInformationBean mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType)
+        private static bool queryCheck(MspFormatCompoundInformationBean mspRecord, List<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType)
         {
-            if (queries[0].IonMode != mspRecord.IonMode) return false;
+            if (ionMode != mspRecord.IonMode) return false;
+            if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
+                return true;
+            }
+            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductIonBean.AdductIonName)) return true;
+            return false;
+          
+        }
+
+        private static bool queryCheck(MspFormatCompoundInformationBean mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+            if (ionMode != mspRecord.IonMode) return false;
+            if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
+                return true;
+            }
             foreach (var query in queries) {
-                if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
-                    return true;
-                }
                 if (query.LbmClass.ToString() == mspRecord.CompoundClass) {
                     if (query.AdductIon.AdductIonName == mspRecord.AdductIonBean.AdductIonName) {
                         return true;
@@ -532,6 +546,20 @@ namespace Rfx.Riken.OsakaUniv
             foreach (var query in queries)
             {
                 if (query.IsSelected == true) tQueries.Add(query);
+            }
+
+            return tQueries;
+        }
+
+        /// <summary>
+        /// return lipidclass + "_" + adduct list
+        /// </summary>
+        /// <param name="queries"></param>
+        /// <returns></returns>
+        private static List<string> getTrueQueryStrings(List<LbmQuery> queries) {
+            var tQueries = new List<string>();
+            foreach (var query in queries) {
+                if (query.IsSelected == true) tQueries.Add(query.LbmClass + "_" + query.AdductIon.AdductIonName);
             }
 
             return tQueries;
