@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -17,10 +19,12 @@ namespace CompMs.MsdialCore.Algorithm
     {
         PeakComparer Comparer { get; set; }
         ParameterBase Param { get; set; }
+        IupacDatabase Iupac { get; set; }
 
-        public PeakAligner(PeakComparer comparer, ParameterBase param) {
+        public PeakAligner(PeakComparer comparer, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
             Param = param;
+            Iupac = iupac;
         }
 
         public AlignmentResultContainer Alignment(
@@ -31,6 +35,8 @@ namespace CompMs.MsdialCore.Algorithm
             var alignments = AlignAll(master, analysisFiles);
             var alignmentSpots = CollectPeakSpots(analysisFiles, alignmentFile, alignments, spotSerializer);
             var alignmentResult = PackingSpots(alignmentSpots);
+
+            IsotopeAnalysis(alignmentResult);
 
             return alignmentResult;
         }
@@ -52,7 +58,7 @@ namespace CompMs.MsdialCore.Algorithm
             return master;
         }
 
-        // TODO: too late. O(n2) 
+        // TODO: too slow. O(n2) 
         private void MergeChromatogramPeaks(List<ChromatogramPeakFeature> masters, List<ChromatogramPeakFeature> targets) {
             foreach (var target in targets) {
                 var samePeakExists = false;
@@ -80,7 +86,7 @@ namespace CompMs.MsdialCore.Algorithm
             return result;
         }
 
-        // TODO: too late.
+        // TODO: too slow.
         private List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<ChromatogramPeakFeature> peaks, IReadOnlyList<ChromatogramPeakFeature> master) {
             var n = master.Count;
             var result = Enumerable.Repeat<AlignmentChromPeakFeature>(null, n).ToList();
@@ -179,6 +185,21 @@ namespace CompMs.MsdialCore.Algorithm
                 TotalAlignmentSpotCount = spots.Count,
                 AlignmentSpotProperties = spots,
             };
+        }
+
+        private void IsotopeAnalysis(AlignmentResultContainer alignmentResult) {
+            foreach (var spot in alignmentResult.AlignmentSpotProperties) {
+                if (Param.TrackingIsotopeLabels || spot.IsReferenceMatched) {
+                    spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
+                    spot.PeakCharacter.IsotopeWeightNumber = 0;
+                }
+                if (!spot.IsReferenceMatched) {
+                    spot.AdductType.AdductIonName = string.Empty;
+                }
+            }
+            if (Param.TrackingIsotopeLabels) return;
+
+            IsotopeEstimator.Process(alignmentResult.AlignmentSpotProperties, Param, Iupac);
         }
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile) {

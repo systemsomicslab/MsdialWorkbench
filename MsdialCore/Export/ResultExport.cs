@@ -336,7 +336,7 @@ namespace CompMs.MsdialCore.Export {
             var isManuallyModForQuant = feature.IsManuallyModifiedForQuant.ToString();
             var repFileName = feature.AlignedPeakProperties[feature.RepresentativeFileID].FileName;
 
-            var matchedResult = feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult();
+            var matchedResult = feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult;
             var refID = matchedResult != null ? matchedResult.LibraryID : -1;
             var matchedDB = feature.TextDbBasedMatchResult != null ? textDB : mspDB;
 

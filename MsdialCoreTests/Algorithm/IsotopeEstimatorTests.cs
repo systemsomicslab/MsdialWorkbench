@@ -15,9 +15,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
     [TestClass()]
     public class IsotopeEstimatorTests
     {
+        // basic condition
         [TestMethod()]
         public void EstimateIsotopesTest1() {
-            // basic condition
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -80,9 +80,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // intensity not decrease
         [TestMethod()]
         public void EstimateIsotopesTest2() {
-            // intensity not decrease
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -145,9 +145,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // intensity not decrease, but IsBrClConsideredForIsotopes = true
         [TestMethod()]
         public void EstimateIsotopesTest3() {
-            // intensity not decrease, but IsBrClConsideredForIsotopes = true
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase { IsBrClConsideredForIsotopes = true };
             var actuals = new List<AlignmentSpotProperty> {
@@ -210,9 +210,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // 2 candidates for same weight number
         [TestMethod()]
         public void EstimateIsotopesTest4() {
-            // 2 candidates for same weight number
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -275,9 +275,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // tolerance check (shift +)
         [TestMethod()]
         public void EstimateIsotopesTest5() {
-            // tolerance check (shift +)
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 400
@@ -342,9 +342,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // tolerance check (shift -)
         [TestMethod()]
         public void EstimateIsotopesTest6() {
-            // tolerance check (shift -)
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 400
@@ -409,9 +409,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // mass >= 800
         [TestMethod()]
         public void EstimateIsotopesTest7() {
-            // mz >= 800
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -474,9 +474,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // missing some isotopes
         [TestMethod()]
         public void EstimateIsotopesTest8() {
-            // missing some isotopes
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -516,17 +516,14 @@ namespace CompMs.MsdialCore.Algorithm.Tests
                 },
                 new AlignmentSpotProperty {
                     AlignmentID = 3, MassCenter = 500 + MassDiffDictionary.C13_C12 * 3, HeightAverage = 800000,
-                    // PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 3, Charge = 1 },
                     PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
                 },
                 new AlignmentSpotProperty {
                     AlignmentID = 4, MassCenter = 500 + MassDiffDictionary.C13_C12 * 5, HeightAverage = 700000,
-                    // PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 5, Charge = 1 },
                     PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
                 },
                 new AlignmentSpotProperty {
                     AlignmentID = 5, MassCenter = 500 + MassDiffDictionary.C13_C12 * 7, HeightAverage = 600000,
-                    // PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 7, Charge = 1 },
                     PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
                 },
                 new AlignmentSpotProperty {
@@ -542,9 +539,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // charge
         [TestMethod()]
         public void EstimateIsotopesTest9() {
-            // charge
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -607,9 +604,9 @@ namespace CompMs.MsdialCore.Algorithm.Tests
             }
         }
 
+        // trace isotopes
         [TestMethod()]
         public void EstimateIsotopesTest10() {
-            // charge
             var iupac = IupacResourceParser.GetIUPACDatabase();
             var param = new ParameterBase();
             var actuals = new List<AlignmentSpotProperty> {
@@ -751,6 +748,268 @@ namespace CompMs.MsdialCore.Algorithm.Tests
                 //     AlignmentID = 17, MassCenter = 500 + MassDiffDictionary.C13_C12 * 16, HeightAverage = 390000,
                 //     PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 16, Charge = 1 },
                 // },
+            };
+
+            IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+            foreach((var actual, var expect) in actuals.Zip(expects)) {
+                AreEqual(expect, actual);
+            }
+        }
+
+        // mass >= 800 and IsBrClConsideredForIsotopes
+        [TestMethod()]
+        public void EstimateIsotopesTest11() {
+            var iupac = IupacResourceParser.GetIUPACDatabase();
+            var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+            var actuals = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 812, HeightAverage = 1000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 812 + MassDiffDictionary.C13_C12, HeightAverage = 6000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 812 + MassDiffDictionary.C13_C12 * 2, HeightAverage = 25000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 812 + MassDiffDictionary.C13_C12 * 3, HeightAverage = 125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 812 + MassDiffDictionary.C13_C12 * 4, HeightAverage = 625000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 812 + MassDiffDictionary.C13_C12 * 5, HeightAverage = 3125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+            var expects = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 812, HeightAverage = 1000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 812 + MassDiffDictionary.C13_C12, HeightAverage = 6000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 812 + MassDiffDictionary.C13_C12 * 2, HeightAverage = 25000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 812 + MassDiffDictionary.C13_C12 * 3, HeightAverage = 125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 812 + MassDiffDictionary.C13_C12 * 4, HeightAverage = 625000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 812 + MassDiffDictionary.C13_C12 * 5, HeightAverage = 3125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+
+            IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+            foreach((var actual, var expect) in actuals.Zip(expects)) {
+                AreEqual(expect, actual);
+            }
+        }
+
+        // missing some isotopes and IsBrClConsideredForIsotopes
+        [TestMethod()]
+        public void EstimateIsotopesTest12() {
+            var iupac = IupacResourceParser.GetIUPACDatabase();
+            var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+            var actuals = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 500, HeightAverage = 1000000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 500 + MassDiffDictionary.C13_C12, HeightAverage = 900000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 500 + MassDiffDictionary.C13_C12 * 3, HeightAverage = 800000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 500 + MassDiffDictionary.C13_C12 * 5, HeightAverage = 700000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 500 + MassDiffDictionary.C13_C12 * 7, HeightAverage = 600000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 500 + MassDiffDictionary.C13_C12 * 10, HeightAverage = 500000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+            var expects = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 500, HeightAverage = 1000000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 500 + MassDiffDictionary.C13_C12, HeightAverage = 900000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 1, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 500 + MassDiffDictionary.C13_C12 * 3, HeightAverage = 800000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 3, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 500 + MassDiffDictionary.C13_C12 * 5, HeightAverage = 700000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 5, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 500 + MassDiffDictionary.C13_C12 * 7, HeightAverage = 600000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 7, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 500 + MassDiffDictionary.C13_C12 * 10, HeightAverage = 500000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+
+            IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+            foreach((var actual, var expect) in actuals.Zip(expects)) {
+                AreEqual(expect, actual);
+            }
+        }
+
+        // mass >= 800 and m/z < 800
+        [TestMethod()]
+        public void EstimateIsotopesTest13() {
+            var iupac = IupacResourceParser.GetIUPACDatabase();
+            var param = new ParameterBase();
+            var actuals = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 406, HeightAverage = 1000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2, HeightAverage = 5000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 2, HeightAverage = 25000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 3, HeightAverage = 125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 4, HeightAverage = 625000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 5, HeightAverage = 3125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+            var expects = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 406, HeightAverage = 1000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 0, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2, HeightAverage = 5000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 1, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 2, HeightAverage = 25000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 2, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 3, HeightAverage = 125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 3, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 4, HeightAverage = 625000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 4, Charge = 2 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 406 + MassDiffDictionary.C13_C12 / 2 * 5, HeightAverage = 3125000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 5, Charge = 2 },
+                },
+            };
+
+            IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+            foreach((var actual, var expect) in actuals.Zip(expects)) {
+                AreEqual(expect, actual);
+            }
+        }
+
+        // tolerance test
+        [TestMethod()]
+        public void EstimateIsotopesTest14() {
+            var iupac = IupacResourceParser.GetIUPACDatabase();
+            var param = new ParameterBase() { CentroidMs1Tolerance = 0.05f };
+            var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 400
+            var tolerance = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(500, ppm);
+            var actuals = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 500, HeightAverage = 1000000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 500 + MassDiffDictionary.C13_C12 + tolerance * 0.99, HeightAverage = 900000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 500 + MassDiffDictionary.C13_C12 * 2 + tolerance * 0.99 * 2, HeightAverage = 800000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 500 + MassDiffDictionary.C13_C12 * 3 + tolerance * 0.99 * 3, HeightAverage = 700000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 500 + MassDiffDictionary.C13_C12 * 4 + tolerance * 0.99 * 2, HeightAverage = 600000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 500 + MassDiffDictionary.C13_C12 * 5 + tolerance * 0.979, HeightAverage = 500000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
+            };
+            var expects = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty {
+                    AlignmentID = 1, MassCenter = 500, HeightAverage = 1000000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 0, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 2, MassCenter = 500 + MassDiffDictionary.C13_C12 + tolerance * 0.99, HeightAverage = 900000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 1, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 3, MassCenter = 500 + MassDiffDictionary.C13_C12 * 2 + tolerance * 0.99 * 2, HeightAverage = 800000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 2, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 4, MassCenter = 500 + MassDiffDictionary.C13_C12 * 3 + tolerance * 0.99 * 3, HeightAverage = 700000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 3, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 5, MassCenter = 500 + MassDiffDictionary.C13_C12 * 4 + tolerance * 0.99 * 2, HeightAverage = 600000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 1, IsotopeWeightNumber = 4, Charge = 1 },
+                },
+                new AlignmentSpotProperty {
+                    AlignmentID = 6, MassCenter = 500 + MassDiffDictionary.C13_C12 * 5 + tolerance * 0.979, HeightAverage = 500000,
+                    PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = 0 },
+                },
             };
 
             IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
