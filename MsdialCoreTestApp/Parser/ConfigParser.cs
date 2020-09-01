@@ -121,6 +121,12 @@ namespace CompMs.App.MsdialConsole.Parser
                     return true;
                 case "alignment index type": if (value == "ri") param.AlignmentIndexType = AlignmentIndexType.RI; else param.AlignmentIndexType = AlignmentIndexType.RT; return true;
                 case "retention index tolerance for alignment": if (float.TryParse(value, out float ritol_align)) param.RetentionIndexAlignmentTolerance = ritol_align; return true;
+                case "replace quant mass by user defined value":
+                    if (value == "true")
+                        param.IsReplaceQuantmassByUserDefinedValue = true; return true;
+                case "is quant mass based on base peak mz":
+                    if (value == "true")
+                        param.IsRepresentativeQuantMassBasedOnBasePeakMz = true; return true;
                 default: return false;
             }
         }

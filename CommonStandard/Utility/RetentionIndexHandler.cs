@@ -59,7 +59,7 @@ namespace CompMs.Common.Utility {
             }
         }
 
-        public static float ConvertKovatsRiToRetentiontime(Dictionary<int, float> retentionIndexDictionary, float retentionIndex) {
+        public static double ConvertKovatsRiToRetentiontime(Dictionary<int, float> retentionIndexDictionary, double retentionIndex) {
             var leftCarbon = retentionIndexDictionary.Min(n => n.Key);
             var rightCarbon = retentionIndexDictionary.Max(n => n.Key);
             var leftRtValue = retentionIndexDictionary[leftCarbon];
@@ -117,26 +117,24 @@ namespace CompMs.Common.Utility {
             };
         }
 
-        public static float CalculateFiehnRi(FiehnRiCoefficient fiehnRiCoeff, float retentionTime) {
-            var retentionIndex = 0.0F;
+        public static double CalculateFiehnRi(FiehnRiCoefficient fiehnRiCoeff, double retentionTime) {
+            var retentionIndex = 0.0;
             if (retentionTime <= fiehnRiCoeff.BeginCoeff.EndRt) {
-                retentionIndex = (float)(fiehnRiCoeff.BeginCoeff.A * retentionTime
-                    + fiehnRiCoeff.BeginCoeff.B);
+                retentionIndex = fiehnRiCoeff.BeginCoeff.A * retentionTime + fiehnRiCoeff.BeginCoeff.B;
             }
             else if (retentionTime > fiehnRiCoeff.PolyCoeff.BeginRt && retentionTime < fiehnRiCoeff.PolyCoeff.EndRt) {
-                retentionIndex = (float)(fiehnRiCoeff.PolyCoeff.A * Math.Pow(retentionTime, 5) +
+                retentionIndex = fiehnRiCoeff.PolyCoeff.A * Math.Pow(retentionTime, 5) +
                     fiehnRiCoeff.PolyCoeff.B * Math.Pow(retentionTime, 4) +
                     fiehnRiCoeff.PolyCoeff.C * Math.Pow(retentionTime, 3) + fiehnRiCoeff.PolyCoeff.D * Math.Pow(retentionTime, 2) +
-                    fiehnRiCoeff.PolyCoeff.E * retentionTime + fiehnRiCoeff.PolyCoeff.F);
+                    fiehnRiCoeff.PolyCoeff.E * retentionTime + fiehnRiCoeff.PolyCoeff.F;
             }
             else if (retentionTime >= fiehnRiCoeff.EndCoeff.BeginRt) {
-                retentionIndex = (float)(fiehnRiCoeff.EndCoeff.A * retentionTime +
-                    fiehnRiCoeff.EndCoeff.B);
+                retentionIndex = fiehnRiCoeff.EndCoeff.A * retentionTime + fiehnRiCoeff.EndCoeff.B;
             }
             return retentionIndex;
         }
 
-        public static float ConvertFiehnRiToRetentionTime(FiehnRiCoefficient revFiehnRiCoeff, float retentionIndex) {
+        public static double ConvertFiehnRiToRetentionTime(FiehnRiCoefficient revFiehnRiCoeff, double retentionIndex) {
             var convertedRt = CalculateFiehnRi(revFiehnRiCoeff, retentionIndex);
             //return convertedFiehnRi * 0.001F / 60.0F;
             return convertedRt;

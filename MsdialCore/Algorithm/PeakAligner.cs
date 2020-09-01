@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -22,11 +24,18 @@ namespace CompMs.MsdialCore.Algorithm
         PeakComparer Comparer { get; set; }
         ParameterBase Param { get; set; }
         IupacDatabase Iupac { get; set; }
+        AlignmentProcessFactory AProcessFactory { get; set; }
 
         public PeakAligner(PeakComparer comparer, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
             Param = param;
             Iupac = iupac;
+        }
+
+        public PeakAligner(PeakComparer comparer, ParameterBase param, AlignmentProcessFactory factory) {
+            Comparer = comparer;
+            Param = param;
+            AProcessFactory = factory;
         }
 
         public AlignmentResultContainer Alignment(
@@ -64,17 +73,17 @@ namespace CompMs.MsdialCore.Algorithm
             return alignmentResult;
         }
 
-        protected virtual List<ChromatogramPeakFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles) {
+        protected virtual List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles) {
 
             var referenceId = Param.AlignmentReferenceFileID;
             var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
-            if (referenceFile == null) return new List<ChromatogramPeakFeature>();
+            if (referenceFile == null) return new List<IMSScanProperty>();
 
-            var master = GetChromatogramPeakFeatures(referenceFile);
+            var master = GetChromatogramPeakFeatures(referenceFile, Param.MachineCategory);
             foreach (var analysisFile in analysisFiles) {
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
-                var target = GetChromatogramPeakFeatures(analysisFile);
+                var target = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
                 MergeChromatogramPeaks(master, target);
             }
 
@@ -82,7 +91,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         // TODO: too slow. O(n2) 
-        private void MergeChromatogramPeaks(List<ChromatogramPeakFeature> masters, List<ChromatogramPeakFeature> targets) {
+        private void MergeChromatogramPeaks(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
             foreach (var target in targets) {
                 var samePeakExists = false;
                 foreach (var master in masters) {
@@ -96,12 +105,12 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         protected virtual List<List<AlignmentChromPeakFeature>> AlignAll(
-            IReadOnlyList<ChromatogramPeakFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
+            IReadOnlyList<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
 
             var result = new List<List<AlignmentChromPeakFeature>>(analysisFiles.Count);
 
             foreach (var analysisFile in analysisFiles) {
-                var chromatogram = GetChromatogramPeakFeatures(analysisFile);
+                var chromatogram = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
                 var peaks = AlignPeaksToMaster(chromatogram, master);
                 result.Add(peaks);
             }
@@ -110,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         // TODO: too slow.
-        private List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<ChromatogramPeakFeature> peaks, IReadOnlyList<ChromatogramPeakFeature> master) {
+        private List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<IMSScanProperty> peaks, IReadOnlyList<IMSScanProperty> master) {
             var n = master.Count;
             var result = Enumerable.Repeat<AlignmentChromPeakFeature>(null, n).ToList();
             var maxMatchs = new double[n];
@@ -126,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm
                     }
                 }
                 if (matchIdx.HasValue)
-                    result[matchIdx.Value] = DataObjConverter.ConvertToAlignmentChromPeakFeature(peak);
+                    result[matchIdx.Value] = DataObjConverter.ConvertToAlignmentChromPeakFeature(peak, Param.MachineCategory);
             }
 
             return result;
@@ -138,8 +147,11 @@ namespace CompMs.MsdialCore.Algorithm
             var aligns = new List<List<AlignmentChromPeakFeature>>();
             var files = new List<string>();
             var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
+            var quantMasses = GetQuantmassDictionary(analysisFiles, alignments);
+            var tAlignments = alignments.Sequence().ToList();
+
             foreach ((var analysisFile, var alignment) in analysisFiles.Zip(alignments)) {
-                (var peaks, var file) = CollectAlignmentPeaks(analysisFile, alignment, alignments, chromPeakInfoSerializer);
+                (var peaks, var file) = CollectAlignmentPeaks(analysisFile, alignment, tAlignments, quantMasses, chromPeakInfoSerializer);
                 foreach (var peak in peaks) {
                     peak.FileID = analysisFile.AnalysisFileId;
                     peak.FileName = analysisFile.AnalysisFileName;
@@ -157,19 +169,113 @@ namespace CompMs.MsdialCore.Algorithm
             return spots;
         }
 
+        private List<double> GetQuantmassDictionary(IReadOnlyList<AnalysisFileBean> analysisFiles, List<List<AlignmentChromPeakFeature>> alignments) {
+            var sampleNum = alignments.Count;
+            var peakNum = alignments[0].Count;
+            var quantmasslist = Enumerable.Repeat<double>(-1, peakNum).ToList();
+
+            if (Param.MachineCategory != MachineCategory.GCMS) return quantmasslist;
+
+            var isReplaceMode = this.AProcessFactory.MspDB.IsEmptyOrNull() ? false : true;
+            var bin = this.Param.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
+            for (int i = 0; i < peakNum; i++) {
+                var alignment = new List<AlignmentChromPeakFeature>();
+                for (int j = 0; j < sampleNum; j++) alignment.Add(alignments[j][i]);
+                var repFileID = DataObjConverter.GetRepresentativeFileID(alignment);
+                
+                if (isReplaceMode && alignment[repFileID].MspID() >= 0) {
+                    var refQuantMass = this.AProcessFactory.MspDB[alignment[repFileID].MspID()].QuantMass;
+                    if (refQuantMass >= this.Param.MassRangeBegin && refQuantMass <= this.Param.MassRangeEnd) {
+                        quantmasslist[i] = refQuantMass; continue;
+                    }
+                }
+
+                var dclFile = analysisFiles[repFileID].DeconvolutionFilePath;
+                var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, alignment[repFileID].SeekPointToDCLFile);
+                var spectrum = msdecResult.Spectrum;
+                var quantMassDict = new Dictionary<double, List<double>>();
+                var maxPeakHeight = alignment.Max(n => n.PeakHeightTop);
+                var repQuantMass = alignment[repFileID].Mass;
+
+                foreach (var feature in alignment.Where(n => n.PeakHeightTop > maxPeakHeight * 0.1)) {
+                    var quantMass = Math.Round(feature.Mass, bin);
+                    if (!quantMassDict.Keys.Contains(quantMass))
+                        quantMassDict[quantMass] = new List<double>() { feature.Mass };
+                    else
+                        quantMassDict[quantMass].Add(feature.Mass);
+                }
+                var maxQuant = 0.0; var maxCount = 0;
+                foreach (var pair in quantMassDict)
+                    if (pair.Value.Count > maxCount) { maxCount = pair.Value.Count; maxQuant = pair.Key; }
+
+                var quantMassCandidate = quantMassDict[maxQuant].Average();
+                var basepeakMz = 0.0;
+                var basepeakIntensity = 0.0;
+                var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, this.Param.CentroidMs1Tolerance, 10.0F, out basepeakMz, out basepeakIntensity);
+                if (AProcessFactory.IsRepresentativeQuantMassBasedOnBasePeakMz) {
+                    quantmasslist[i] = basepeakMz; continue;
+                }
+                if (isQuantMassExist) {
+                    quantmasslist[i] = quantMassCandidate; continue;
+                }
+
+                var isSuitableQuantMassExist = false;
+                foreach (var peak in spectrum) {
+                    if (peak.Mass < repQuantMass - bin) continue;
+                    if (peak.Mass > repQuantMass + bin) break;
+                    var diff = Math.Abs(peak.Mass - repQuantMass);
+                    if (diff <= bin && peak.Intensity > basepeakIntensity * 10.0 * 0.01) {
+                        isSuitableQuantMassExist = true;
+                        break;
+                    }
+                }
+                if (isSuitableQuantMassExist)
+                    quantmasslist[i] = repQuantMass;
+                else
+                    quantmasslist[i] = basepeakMz;
+            }
+            return quantmasslist;
+        }
+
+        // spectrum should be ordered by m/z value
+        private static bool isQuantMassExistInSpectrum(double quantMass, List<SpectrumPeak> spectrum, float bin, float threshold,
+            out double basepeakMz, out double basepeakIntensity) {
+
+            basepeakMz = 0.0;
+            basepeakIntensity = 0.0;
+            foreach (var peak in spectrum) {
+                if (peak.Intensity > basepeakIntensity) {
+                    basepeakIntensity = peak.Intensity;
+                    basepeakMz = peak.Mass;
+                }
+            }
+
+            var maxIntensity = basepeakIntensity;
+            foreach (var peak in spectrum) {
+                if (peak.Mass < quantMass - bin) continue;
+                if (peak.Mass > quantMass + bin) break;
+                var diff = Math.Abs(peak.Mass - quantMass);
+                if (diff <= bin && peak.Intensity > maxIntensity * threshold * 0.01) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         private (List<AlignmentChromPeakFeature>, string) CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks,
-            List<List<AlignmentChromPeakFeature>> alignments,
+            List<List<AlignmentChromPeakFeature>> alignments, List<double> quantMasses,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
             var results = new List<AlignmentChromPeakFeature>();
             var peakInfos = new List<ChromatogramPeakInfo>();
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 var spectra = DataAccess.GetAllSpectra(rawDataAccess);
-                foreach ((var peak, var alignment) in peaks.Zip(alignments)) {
+                foreach ((var peak, var alignment, var quantmass) in peaks.Zip(alignments, quantMasses)) {
                     var align = peak;
                     if (align == null) {
-                        align = GapFilling(spectra, alignment);
+                        align = GapFilling(spectra, alignment, quantmass, analysisFile.AnalysisFileId);
                     }
                     results.Add(align);
 
@@ -192,12 +298,13 @@ namespace CompMs.MsdialCore.Algorithm
             return (results, file);
         }
 
-        private AlignmentChromPeakFeature GapFilling(List<RawSpectrum> spectra, List<AlignmentChromPeakFeature> alignment) {
-            return GapFiller.GapFilling(
-                spectra, Comparer.GetCenter(alignment.Select(x => x.ChromXsTop)),
-                Param.Ms1AlignmentTolerance, (float)alignment.Average(x => x.Mass),
-                Param.IonMode, Param.SmoothingMethod, Param.SmoothingLevel,
-                Param.IsForceInsertForGapFilling);
+        private AlignmentChromPeakFeature GapFilling(List<RawSpectrum> spectra, List<AlignmentChromPeakFeature> alignment, double quantmass, int fileID) {
+            var features = alignment.Where(n => n != null);
+            var chromXCenter = Comparer.GetCenter(features);
+            if (quantmass > 0) chromXCenter.Mz = new MzValue(quantmass);
+
+            return GapFiller.GapFilling(this.AProcessFactory,
+                spectra, chromXCenter, Comparer.GetAveragePeakWidth(features), fileID);
         }
 
         private AlignmentResultContainer PackingSpots(List<AlignmentSpotProperty> alignmentSpots) {
@@ -703,10 +810,17 @@ namespace CompMs.MsdialCore.Algorithm
             else return true;
         }
 
-        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile) {
-            var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-            chromatogram.Sort(Comparer);
-            return chromatogram;
+        private List<IMSScanProperty> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile, MachineCategory category) {
+            if (category == MachineCategory.GCMS) {
+                var msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
+                msdecResults.Sort(Comparer);
+                return new List<IMSScanProperty>(msdecResults);
+            }
+            else {
+                var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+                chromatogram.Sort(Comparer);
+                return new List<IMSScanProperty>(chromatogram);
+            }
         }
 
         private List<AlignmentSpotProperty> PackingAlignmentsToSpots(List<List<AlignmentChromPeakFeature>> alignments) {

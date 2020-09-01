@@ -29,8 +29,8 @@ namespace CompMs.MsdialCore.MSDec {
         public string Splash { get; set; }
 
         public List<double> ModelMasses { get; set; } = new List<double>();
-        public float ModelPeakPurity { get; set; }
-        public float ModelPeakQuality { get; set; }
+        public float ModelPeakPurity { get; set; } // converted to PeakPureValue in AlignmentChromPeakFeature
+        public float ModelPeakQuality { get; set; } // converted to IdealSlopeValue in AlignmentChromPeakFeature
         public float SignalNoiseRatio { get; set; }
         public float EstimatedNoise { get; set; }
         public float AmplitudeScore { get; set; }

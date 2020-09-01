@@ -19,7 +19,8 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
     {
         private const int versionNumber = 1;
 
-        public static void JointAligner(ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult, List<MspFormatCompoundInformationBean> mspDB, Action<int> reportAction)
+        public static void JointAligner(ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult, 
+            List<MspFormatCompoundInformationBean> mspDB, Action<int> reportAction)
         {
             var masterMS1DecResults = PeakAlignment.getJointAlignerMasterList(files, param);
             masterMS1DecResults = getRefinedMS1DecResults(masterMS1DecResults, param.AlignmentIndexType);
@@ -815,6 +816,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
 
         private static void gapfillingVS1(int fileID, List<RawSpectrum> spectrumList, AlignedPeakPropertyBean alignedPeakProperty, 
             AlignmentPropertyBean alignmentSpot, AnalysisParamOfMsdialGcms param, FiehnRiCoefficient fiehnRiCoeff, FiehnRiCoefficient revFiehnRiCoeff) {
+            
             var centralRT = alignmentSpot.CentralRetentionTime;
             var centralRI = alignmentSpot.CentralRetentionIndex;
             var maxRt = centralRT + param.RetentionTimeAlignmentTolerance;

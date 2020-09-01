@@ -19,6 +19,10 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public AlignmentIndexType AlignmentIndexType { get; set; } = AlignmentIndexType.RT;
         [Key(153)]
         public float RetentionIndexAlignmentTolerance { get; set; } = 20;
+        [Key(154)]
+        public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
+        [Key(155)]
+        public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
 
         public MsdialGcmsParameter() { this.MachineCategory = MachineCategory.GCMS; }
 
@@ -32,6 +36,8 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Retention type", RetentionType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Alignment index type", AlignmentIndexType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Retention index alignment tolerance", RetentionIndexAlignmentTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Replace quant mass by user defined value", IsReplaceQuantmassByUserDefinedValue.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
 
             return pStrings;
         }
