@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(16)]
         public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
         [IgnoreMember]
-        public bool IsIonMobility => MachineCategory == MachineCategory.LCIMMS || MachineCategory == MachineCategory.IMMS;
+        public bool IsIonMobility => MachineCategory == MachineCategory.LCIMMS; // || MachineCategory == MachineCategory.IMMS;
         //[Key(17)]
         //public bool IsAIF { get; set; } = false;
 

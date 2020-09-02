@@ -14,9 +14,9 @@ namespace CompMs.MsdialLcMsApi.DataObj
 {
     public class LcmsPeakComparer : PeakComparer
     {
-        private double _mztol;
-        private double _rttol;
-        private double _factor;
+        private readonly double _mztol;
+        private readonly double _rttol;
+        private readonly double _factor;
 
         public LcmsPeakComparer(double mztol, double rttol, double factor) {
             _mztol = mztol;

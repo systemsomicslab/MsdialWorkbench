@@ -19,8 +19,10 @@ namespace CompMs.MsdialCore.DataObj
         public abstract double GetSimilality(IMSScanProperty x, IMSScanProperty y);
 
         public virtual ChromXs GetCenter(IEnumerable<IChromatogramPeakFeature> chromFeatures) {
-            var chromXs = new ChromXs(chromFeatures.Select(n => n.ChromXsTop).Average(p => p.RT.Value), ChromXType.RT, ChromXUnit.Min);
-            chromXs.Mz = new MzValue(chromFeatures.Argmax(n => n.PeakHeightTop).Mass);
+            var chromXs = new ChromXs(chromFeatures.Select(n => n.ChromXsTop).Average(p => p.RT.Value), ChromXType.RT, ChromXUnit.Min)
+            {
+                Mz = new MzValue(chromFeatures.Argmax(n => n.PeakHeightTop).Mass)
+            };
             return chromXs;
         }
 
