@@ -59,6 +59,8 @@ namespace CompMs.MsdialCore.Parameter {
         public Ionization Ionization { get; set; } = Ionization.ESI;
         [Key(16)]
         public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
+        [IgnoreMember]
+        public bool IsIonMobility => MachineCategory == MachineCategory.LCIMMS || MachineCategory == MachineCategory.IMMS;
         //[Key(17)]
         //public bool IsAIF { get; set; } = false;
 

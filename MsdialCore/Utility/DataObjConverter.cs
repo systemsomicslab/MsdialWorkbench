@@ -4,7 +4,6 @@ using System.Linq;
 
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
@@ -157,6 +156,46 @@ namespace CompMs.MsdialCore.Utility
                     ).FileID;
             }
             return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID;
+        }
+
+        public static void SetDefaultCompoundInformation(AlignmentSpotProperty alignmentSpot) {
+            alignmentSpot.AdductType.AdductIonName = string.Empty;
+            alignmentSpot.PeakCharacter.Charge = 1;
+            alignmentSpot.Name = string.Empty;
+
+            // reset text db
+            SetDefaultCompoundInformation(alignmentSpot.TextDbBasedMatchResult);
+
+            // reset msp db
+            alignmentSpot.MSRawID2MspBasedMatchResult.Select(kvp => kvp.Value).ToList().ForEach(result => SetDefaultCompoundInformation(result));
+        }
+
+        public static void SetDefaultCompoundInformation(MsScanMatchResult scanMatchResult) {
+            scanMatchResult.LibraryID = -1;
+            scanMatchResult.TotalScore = -1;
+
+            scanMatchResult.WeightedDotProduct = -1;
+            scanMatchResult.SimpleDotProduct = -1;
+            scanMatchResult.ReverseDotProduct = -1;
+            scanMatchResult.MatchedPeaksCount = -1;
+            scanMatchResult.MatchedPeaksPercentage = -1;
+            scanMatchResult.EssentialFragmentMatchedScore = -1;
+
+            scanMatchResult.RtSimilarity = -1;
+            scanMatchResult.RiSimilarity = -1;
+            scanMatchResult.CcsSimilarity = -1;
+            scanMatchResult.IsotopeSimilarity = -1;
+            scanMatchResult.AcurateMassSimilarity = -1;
+
+            scanMatchResult.IsPrecursorMzMatch = false;
+            scanMatchResult.IsSpectrumMatch = false;
+            scanMatchResult.IsRtMatch = false;
+            scanMatchResult.IsRiMatch = false;
+            scanMatchResult.IsCcsMatch = false;
+            scanMatchResult.IsLipidClassMatch = false;
+            scanMatchResult.IsLipidChainsMatch = false;
+            scanMatchResult.IsLipidPositionMatch = false;
+            scanMatchResult.IsOtherLipidMatch = false;
         }
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.Enum;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
+using CompMs.Common.Parser;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -19,11 +21,12 @@ namespace CompMs.MsdialCore.Algorithm
     {
         PeakComparer Comparer { get; set; }
         ParameterBase Param { get; set; }
-        AlignmentProcessFactory AProcessFactory { get; set; }
-       
-        public PeakAligner(PeakComparer comparer, ParameterBase param) {
+        IupacDatabase Iupac { get; set; }
+
+        public PeakAligner(PeakComparer comparer, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
             Param = param;
+            Iupac = iupac;
         }
 
         public PeakAligner(PeakComparer comparer, ParameterBase param, AlignmentProcessFactory factory) {
@@ -40,6 +43,29 @@ namespace CompMs.MsdialCore.Algorithm
             var alignments = AlignAll(master, analysisFiles);
             var alignmentSpots = CollectPeakSpots(analysisFiles, alignmentFile, alignments, spotSerializer);
             var alignmentResult = PackingSpots(alignmentSpots);
+
+            IsotopeAnalysis(alignmentResult);
+
+            var alignedSpots = GetRefinedAlignmentSpotProperties(alignmentResult.AlignmentSpotProperties);
+
+            var minInt = (double)alignmentResult.AlignmentSpotProperties.Min(spot => spot.HeightMin);
+            var maxInt = (double)alignmentResult.AlignmentSpotProperties.Max(spot => spot.HeightMax);
+
+            if (maxInt > 1) maxInt = Math.Log(maxInt, 2); else maxInt = 1;
+            if (minInt > 1) minInt = Math.Log(minInt, 2); else minInt = 0;
+
+            for (int i = 0; i < alignedSpots.Count; i++) {
+                var relativeValue = (float)((Math.Log(alignedSpots[i].HeightMax, 2) - minInt)
+                    / (maxInt - minInt));
+                if (relativeValue < 0)
+                    relativeValue = 0;
+                else if (relativeValue > 1)
+                    relativeValue = 1;
+                alignedSpots[i].RelativeAmplitudeValue = relativeValue;
+            }
+
+            alignmentResult.AlignmentSpotProperties = alignedSpots;
+            alignmentResult.TotalAlignmentSpotCount = alignedSpots.Count;
 
             return alignmentResult;
         }
@@ -61,8 +87,7 @@ namespace CompMs.MsdialCore.Algorithm
             return master;
         }
 
-        // TODO: too late. O(n2) 
-        private void MergeChromatogramPeaks(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
+        private void MergeChromatogramPeaks(List<ChromatogramPeakFeature> masters, List<ChromatogramPeakFeature> targets) {
             foreach (var target in targets) {
                 var samePeakExists = false;
                 foreach (var master in masters) {
@@ -89,8 +114,8 @@ namespace CompMs.MsdialCore.Algorithm
             return result;
         }
 
-        // TODO: too late.
-        private List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<IMSScanProperty> peaks, IReadOnlyList<IMSScanProperty> master) {
+        // TODO: too slow.
+        private List<AlignmentChromPeakFeature> AlignPeaksToMaster(IEnumerable<ChromatogramPeakFeature> peaks, IReadOnlyList<ChromatogramPeakFeature> master) {
             var n = master.Count;
             var result = Enumerable.Repeat<AlignmentChromPeakFeature>(null, n).ToList();
             var maxMatchs = new double[n];
@@ -288,17 +313,503 @@ namespace CompMs.MsdialCore.Algorithm
             };
         }
 
-        private List<IMSScanProperty> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile, MachineCategory category) {
-            if (category == MachineCategory.GCMS) {
-                var msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
-                msdecResults.Sort(Comparer);
-                return new List<IMSScanProperty>(msdecResults);
+        private void IsotopeAnalysis(AlignmentResultContainer alignmentResult) {
+            foreach (var spot in alignmentResult.AlignmentSpotProperties) {
+                if (Param.TrackingIsotopeLabels || spot.IsReferenceMatched) {
+                    spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
+                    spot.PeakCharacter.IsotopeWeightNumber = 0;
+                }
+                if (!spot.IsReferenceMatched) {
+                    spot.AdductType.AdductIonName = string.Empty;
+                }
+            }
+            if (Param.TrackingIsotopeLabels) return;
+
+            IsotopeEstimator.Process(alignmentResult.AlignmentSpotProperties, Param, Iupac);
+        }
+
+        private ObservableCollection<AlignmentSpotProperty> GetRefinedAlignmentSpotProperties(ObservableCollection<AlignmentSpotProperty> alignmentSpots) {
+            if (alignmentSpots.Count <= 1) return alignmentSpots;
+
+            var param = Param;
+
+            var alignmentSpotList = new List<AlignmentSpotProperty>(alignmentSpots);
+            if (Param.OnlyReportTopHitInTextDBSearch) { //to remove duplicate identifications
+
+                alignmentSpotList = alignmentSpotList.OrderByDescending(spot => spot.MspID).ToList();
+
+                var currentLibraryId = alignmentSpotList[0].MspID;
+                var currentPeakId = 0;
+
+                for (int i = 1; i < alignmentSpotList.Count; i++) {
+                    if (alignmentSpotList[i].MspID < 0) break;
+                    if (alignmentSpotList[i].MspID != currentLibraryId) {
+                        currentLibraryId = alignmentSpotList[i].MspID;
+                        currentPeakId = i;
+                        continue;
+                    }
+                    else {
+                        if (alignmentSpotList[currentPeakId].MspBasedMatchResult.TotalScore < alignmentSpotList[i].MspBasedMatchResult.TotalScore) {
+                            DataObjConverter.SetDefaultCompoundInformation(alignmentSpotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            DataObjConverter.SetDefaultCompoundInformation(alignmentSpotList[i]);
+                        }
+                    }
+                }
+
+                alignmentSpotList = alignmentSpotList.OrderByDescending(n => n.TextDbID).ToList();
+
+                currentLibraryId = alignmentSpotList[0].TextDbID;
+                currentPeakId = 0;
+
+                for (int i = 1; i < alignmentSpotList.Count; i++) {
+                    if (alignmentSpotList[i].TextDbID < 0) break;
+                    if (alignmentSpotList[i].TextDbID != currentLibraryId) {
+                        currentLibraryId = alignmentSpotList[i].TextDbID;
+                        currentPeakId = i;
+                        continue;
+                    }
+                    else {
+                        if (alignmentSpotList[currentPeakId].TextDbBasedMatchResult.TotalScore < alignmentSpotList[i].TextDbBasedMatchResult.TotalScore) {
+                            DataObjConverter.SetDefaultCompoundInformation(alignmentSpotList[currentPeakId]);
+                            currentPeakId = i;
+                        }
+                        else {
+                            DataObjConverter.SetDefaultCompoundInformation(alignmentSpotList[i]);
+                        }
+                    }
+                }
+            }
+
+            //cleaning duplicate spots
+            var cSpots = new List<AlignmentSpotProperty>();
+            var donelist = new List<int>();
+
+            foreach (var spot in alignmentSpotList.Where(spot => spot.MspID >= 0 && !spot.Name.Contains("w/o"))) {
+                TryMergeToMaster(spot, cSpots, donelist, param);
+            }
+
+            foreach (var spot in alignmentSpotList.Where(spot => spot.TextDbID >= 0 && !spot.Name.Contains("w/o"))) {
+                TryMergeToMaster(spot, cSpots, donelist, param);
+            }
+
+            foreach (var spot in alignmentSpotList) {
+                if (spot.MspID >= 0 && !spot.Name.Contains("w/o")) continue;
+                if (spot.TextDbID >= 0 && !spot.Name.Contains("w/o")) continue;
+                if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
+                TryMergeToMaster(spot, cSpots, donelist, param);
+            }
+
+            // further cleaing by blank features
+            var fcSpots = new List<AlignmentSpotProperty>();
+            int blankNumber = 0;
+            int sampleNumber = 0;
+            foreach (var value in param.FileID_AnalysisFileType.Values) {
+                if (value == Common.Enum.AnalysisFileType.Blank) blankNumber++;
+                if (value == Common.Enum.AnalysisFileType.Sample) sampleNumber++;
+            }
+
+            if (blankNumber > 0 && param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange) {
+              
+                foreach (var spot in cSpots) {
+                    var sampleMax = 0.0;
+                    var sampleAve = 0.0;
+                    var blankAve = 0.0;
+                    var nonMinValue = double.MaxValue;
+
+                    foreach (var peak in spot.AlignedPeakProperties) {
+                        var filetype = param.FileID_AnalysisFileType[peak.FileID];
+                        if (filetype == Common.Enum.AnalysisFileType.Blank) {
+                            blankAve += peak.PeakHeightTop;
+                        }
+                        else if (filetype == Common.Enum.AnalysisFileType.Sample) {
+                            if (peak.PeakHeightTop > sampleMax)
+                                sampleMax = peak.PeakHeightTop;
+                            sampleAve += peak.PeakHeightTop;
+                        }
+
+                        if (nonMinValue > peak.PeakHeightTop && peak.PeakHeightTop > 0.0001) {
+                            nonMinValue = peak.PeakHeightTop;
+                        }
+                    }
+
+                    sampleAve = sampleAve / sampleNumber;
+                    blankAve = blankAve / blankNumber;
+                    if (blankAve == 0) {
+                        if (nonMinValue != double.MaxValue)
+                            blankAve = nonMinValue * 0.1;
+                        else
+                            blankAve = 1.0;
+                    }
+
+                    var blankThresh = blankAve * param.FoldChangeForBlankFiltering;
+                    var sampleThresh = param.BlankFiltering == Common.Enum.BlankFiltering.SampleMaxOverBlankAve ? sampleMax : sampleAve;
+                
+                    if (sampleThresh < blankThresh) {
+                        if (param.IsKeepRemovableFeaturesAndAssignedTagForChecking) {
+
+                            if (param.IsKeepRefMatchedMetaboliteFeatures
+                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && !spot.Name.Contains("w/o")) {
+
+                            }
+                            else if (param.IsKeepSuggestedMetaboliteFeatures
+                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && spot.Name.Contains("w/o")) {
+
+                            }
+                            else {
+                                spot.FeatureFilterStatus.IsBlankFiltered = true;
+                            }
+                        }
+                        else {
+
+                            if (param.IsKeepRefMatchedMetaboliteFeatures
+                             && (spot.MspID >= 0 || spot.TextDbID >= 0) && !spot.Name.Contains("w/o")) {
+
+                            }
+                            else if (param.IsKeepSuggestedMetaboliteFeatures
+                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && spot.Name.Contains("w/o")) {
+
+                            }
+                            else {
+                                continue;
+                            }
+                        }
+                    }
+
+                    fcSpots.Add(spot);
+                }
             }
             else {
-                var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-                chromatogram.Sort(Comparer);
-                return new List<IMSScanProperty>(chromatogram);
+                fcSpots = cSpots;
             }
+
+            fcSpots = fcSpots.OrderBy(n => n.MassCenter).ToList();
+            if (param.IsIonMobility) {
+                foreach (var spot in fcSpots) {
+                    spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.OrderBy(p => p.TimesCenter.Value));
+                }
+            }
+
+            List<int> newIdList;
+            if (param.IsIonMobility) {
+                newIdList = new List<int>();
+                foreach (var spot in fcSpots) {
+                    newIdList.Add(spot.MasterAlignmentID);
+                    foreach (var dspot in spot.AlignmentDriftSpotFeatures) {
+                        newIdList.Add(dspot.MasterAlignmentID);
+                    }
+                }
+            }
+            else {
+                newIdList = fcSpots.Select(x => x.AlignmentID).ToList();
+            }
+            var masterID = 0;
+            for (int i = 0; i < fcSpots.Count; i++) {
+                fcSpots[i].AlignmentID = i;
+                if (param.IsIonMobility) {
+                    fcSpots[i].MasterAlignmentID = masterID;
+                    masterID++;
+                    var driftSpots = fcSpots[i].AlignmentDriftSpotFeatures;
+                    for (int j = 0; j < driftSpots.Count; j++) {
+                        driftSpots[j].MasterAlignmentID = masterID;
+                        driftSpots[j].AlignmentID = j;
+                        driftSpots[j].ParentAlignmentID = i;
+                        masterID++;
+                    }
+                }
+            }
+
+            //checking alignment spot variable correlations
+            var rtMargin = 0.06F;
+            AssignLinksByIonAbundanceCorrelations(fcSpots, rtMargin);
+
+            // assigning peak characters from the identified spots
+            AssignLinksByIdentifiedIonFeatures(fcSpots);
+
+            // assigning peak characters from the representative file information
+            fcSpots = fcSpots.OrderByDescending(spot => spot.HeightAverage).ToList();
+            foreach (var fcSpot in fcSpots) {
+
+                var repFileID = fcSpot.RepresentativeFileID;
+                var repIntensity = fcSpot.AlignedPeakProperties[repFileID].PeakHeightTop;
+                for (int i = 0; i < fcSpot.AlignedPeakProperties.Count; i++) {
+                    var peak = fcSpot.AlignedPeakProperties[i];
+                    if (peak.PeakHeightTop > repIntensity) {
+                        repFileID = i;
+                        repIntensity = peak.PeakHeightTop;
+                    }
+                }
+
+                var repProp = fcSpot.AlignedPeakProperties[repFileID];
+                var repLinks = repProp.PeakCharacter.PeakLinks;
+                foreach (var rLink in repLinks) {
+                    var rLinkID = rLink.LinkedPeakID;
+                    var rLinkProp = rLink.Character;
+                    if (rLinkProp == Common.Enum.PeakLinkFeatureEnum.Isotope) continue; // for isotope labeled tracking
+                    foreach (var rSpot in fcSpots) {
+                        if (rSpot.AlignedPeakProperties[repFileID].PeakID == rLinkID) {
+                            if (rLinkProp == Common.Enum.PeakLinkFeatureEnum.Adduct) {
+                                if (rSpot.PeakCharacter.AdductType.AdductIonName != string.Empty) continue;
+                                var adductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
+                                if (rSpot.PeakCharacter.Charge != adductCharge) continue;
+                                adductCharge = AdductIonParser.GetChargeNumber(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
+                                if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
+
+                                RegisterLinks(fcSpot, rSpot, rLinkProp);
+                                rSpot.AdductType.AdductIonName = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
+                                if (fcSpot.AdductType.AdductIonName == string.Empty) {
+                                    fcSpot.AdductType.AdductIonName = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
+                                }
+                            }
+                            else {
+                                RegisterLinks(fcSpot, rSpot, rLinkProp);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            #region // finalize adduct features
+            foreach (var fcSpot in fcSpots.Where(spot => spot.AdductType.AdductIonName == string.Empty)) {
+                var chargeNum = fcSpot.PeakCharacter.Charge;
+                if (param.IonMode == Common.Enum.IonMode.Positive) {
+                    if (chargeNum >= 2) {
+                        fcSpot.AdductType.AdductIonName = "[M+" + chargeNum + "H]" + chargeNum + "+";
+                    }
+                    else {
+                        fcSpot.AdductType.AdductIonName = "[M+H]+";
+                    }
+                }
+                else {
+                    if (chargeNum >= 2) {
+                        fcSpot.AdductType.AdductIonName = "[M-" + chargeNum + "H]" + chargeNum + "-";
+                    }
+                    else {
+                        fcSpot.AdductType.AdductIonName = "[M-H]-";
+                    }
+                }
+            }
+            #endregion
+
+            // assign putative group IDs
+            fcSpots = fcSpots.OrderBy(n => n.AlignmentID).ToList();
+            AssignPutativePeakgroupIDs(fcSpots);
+
+            return new ObservableCollection<AlignmentSpotProperty>(fcSpots);
+        }
+
+        private static void TryMergeToMaster(AlignmentSpotProperty spot, List<AlignmentSpotProperty> cSpots, List<int> donelist, ParameterBase param) {
+            var spotRt = spot.TimesCenter.Value;
+            var spotMz = spot.MassCenter;
+
+            var flg = false;
+            var rtTol = param.RetentionTimeAlignmentTolerance < 0.1 ? param.RetentionTimeAlignmentTolerance : 0.1;
+            foreach (var cSpot in cSpots.Where(n => Math.Abs(n.MassCenter - spotMz) < param.Ms1AlignmentTolerance)) {
+                var cSpotRt = cSpot.TimesCenter.Value;
+                if (Math.Abs(cSpotRt - spotRt) < rtTol * 0.5) {
+                    flg = true;
+                    break;
+                }
+            }
+            if (!flg && !donelist.Contains(spot.AlignmentID)) {
+                cSpots.Add(spot);
+                donelist.Add(spot.AlignmentID);
+            }
+        }
+
+        private static void AssignLinksByIonAbundanceCorrelations(List<AlignmentSpotProperty> alignSpots, float rtMargin) {
+            if (alignSpots == null || alignSpots.Count == 0) return;
+            if (alignSpots[0].AlignedPeakProperties == null || alignSpots[0].AlignedPeakProperties.Count == 0) return;
+
+            if (alignSpots[0].AlignedPeakProperties.Count() > 9) {
+                alignSpots = alignSpots.OrderBy(n => n.TimesCenter.Value).ToList();
+                foreach (var spot in alignSpots) {
+                    if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
+                    var spotRt = spot.TimesCenter.Value;
+                    var startScanIndex = SearchCollection.LowerBound(
+                        alignSpots,
+                        new AlignmentSpotProperty { TimesCenter = new Common.Components.ChromXs(spotRt - rtMargin - 0.01f) },
+                        (a, b) => a.TimesCenter.Value.CompareTo(b.TimesCenter.Value)
+                        );
+
+                    var searchedSpots = new List<AlignmentSpotProperty>();
+
+                    for (int i = startScanIndex; i < alignSpots.Count; i++) {
+                        if (spot.AlignmentID == alignSpots[i].AlignmentID) continue;
+                        if (alignSpots[i].TimesCenter.Value < spotRt - rtMargin) continue;
+                        if (alignSpots[i].PeakCharacter.IsotopeWeightNumber > 0) continue;
+                        if (alignSpots[i].TimesCenter.Value > spotRt + rtMargin) break;
+
+                        searchedSpots.Add(alignSpots[i]);
+                    }
+
+                    AlignmentSpotVariableCorrelationSearcher(spot, searchedSpots);
+                }
+            }
+        }
+
+        private static void AlignmentSpotVariableCorrelationSearcher(AlignmentSpotProperty spot, List<AlignmentSpotProperty> searchedSpots)
+        {
+            var sampleCount = spot.AlignedPeakProperties.Count;
+            var spotPeaks = spot.AlignedPeakProperties;
+
+            foreach (var searchSpot in searchedSpots) {
+
+                var searchedSpotPeaks = searchSpot.AlignedPeakProperties;
+
+                double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
+                for (int i = 0; i < sampleCount; i++) {
+                    sum1 += spotPeaks[i].PeakHeightTop;
+                    sum2 += spotPeaks[i].PeakHeightTop;
+                }
+                mean1 = (double)(sum1 / sampleCount);
+                mean2 = (double)(sum2 / sampleCount);
+
+                for (int i = 0; i < sampleCount; i++) {
+                    covariance += (spotPeaks[i].PeakHeightTop - mean1) * (searchedSpotPeaks[i].PeakHeightTop - mean2);
+                    sqrt1 += Math.Pow(spotPeaks[i].PeakHeightTop - mean1, 2);
+                    sqrt2 += Math.Pow(searchedSpotPeaks[i].PeakHeightTop - mean2, 2);
+                }
+                if (sqrt1 == 0 || sqrt2 == 0)
+                    continue;
+                else {
+                    var correlation = (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
+                    if (correlation >= 0.95) {
+                        spot.AlignmentSpotVariableCorrelations.Add(
+                            new AlignmentSpotVariableCorrelation() {
+                                CorrelateAlignmentID = searchSpot.AlignmentID,
+                                CorrelationScore = (float)correlation
+                            });
+                        spot.PeakCharacter.IsLinked = true;
+                        spot.PeakCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+                            LinkedPeakID = searchSpot.AlignmentID,
+                            Character = Common.Enum.PeakLinkFeatureEnum.CorrelSimilar
+                        });
+                    }
+                }
+            }
+
+            if (spot.AlignmentSpotVariableCorrelations.Count > 1)
+                spot.AlignmentSpotVariableCorrelations = spot.AlignmentSpotVariableCorrelations.OrderBy(n => n.CorrelateAlignmentID).ToList();
+        }
+
+        private static void AssignLinksByIdentifiedIonFeatures(List<AlignmentSpotProperty> cSpots) {
+            foreach (var cSpot in cSpots) {
+                if ((cSpot.MspID >= 0 || cSpot.TextDbID >= 0) && !cSpot.Name.Contains("w/o")) {
+
+                    var repFileID = cSpot.RepresentativeFileID;
+                    var repProp = cSpot.AlignedPeakProperties[repFileID];
+                    var repLinks = repProp.PeakCharacter.PeakLinks;
+
+                    foreach (var rLink in repLinks) {
+                        var rLinkID = rLink.LinkedPeakID;
+                        var rLinkProp = rLink.Character;
+                        if (rLinkProp == Common.Enum.PeakLinkFeatureEnum.Isotope) continue; // for isotope tracking
+                        foreach (var rSpot in cSpots) {
+                            if (rSpot.AlignedPeakProperties[repFileID].PeakID == rLinkID) {
+
+                                if ((rSpot.MspID >= 0 || rSpot.TextDbID >= 0) && !rSpot.Name.Contains("w/o")) {
+                                    if (rLinkProp == Common.Enum.PeakLinkFeatureEnum.Adduct) {
+                                        if (cSpot.AdductType.AdductIonName == rSpot.AdductType.AdductIonName) continue;
+                                        RegisterLinks(cSpot, rSpot, rLinkProp);
+                                    }
+                                    else {
+                                        RegisterLinks(cSpot, rSpot, rLinkProp);
+                                    }
+                                }
+                                else {
+                                    if (rLinkProp == Common.Enum.PeakLinkFeatureEnum.Adduct) {
+                                        var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
+                                        if (rAdductCharge == rSpot.PeakCharacter.Charge) {
+                                            rSpot.AdductType.AdductIonName = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
+                                            RegisterLinks(cSpot, rSpot, rLinkProp);
+                                        }
+                                    }
+                                    else {
+                                        RegisterLinks(cSpot, rSpot, rLinkProp);
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void RegisterLinks(AlignmentSpotProperty cSpot, AlignmentSpotProperty rSpot, Common.Enum.PeakLinkFeatureEnum rLinkProp) {
+            if (cSpot.PeakCharacter.PeakLinks.Count(n => n.LinkedPeakID == rSpot.AlignmentID && n.Character == rLinkProp) == 0) {
+                cSpot.PeakCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+                    LinkedPeakID = rSpot.AlignmentID,
+                    Character = rLinkProp
+                });
+                cSpot.PeakCharacter.IsLinked = true;
+            }
+            if (rSpot.PeakCharacter.PeakLinks.Count(n => n.LinkedPeakID == cSpot.AlignmentID && n.Character == rLinkProp) == 0) {
+                rSpot.PeakCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+                    LinkedPeakID = cSpot.AlignmentID,
+                    Character = rLinkProp
+                });
+                rSpot.PeakCharacter.IsLinked = true;
+            }
+        }
+
+        private static void AssignPutativePeakgroupIDs(List<AlignmentSpotProperty> alignedSpots) {
+            var groupID = 0;
+            foreach (var spot in alignedSpots) {
+                if (spot.PeakCharacter.PeakGroupID >= 0) continue;
+                if (spot.PeakCharacter.PeakLinks.Count == 0) {
+                    spot.PeakCharacter.PeakGroupID = groupID;
+                }
+                else {
+                    var crawledPeaks = new List<int>();
+                    spot.PeakCharacter.PeakGroupID = groupID;
+                    RecPeakGroupAssignment(spot, alignedSpots, groupID, crawledPeaks);
+                }
+                groupID++;
+            }
+        }
+
+        private static void RecPeakGroupAssignment(AlignmentSpotProperty spot, List<AlignmentSpotProperty> alignedSpots, 
+            int groupID, List<int> crawledPeaks) {
+            if (spot.PeakCharacter.PeakLinks == null || spot.PeakCharacter.PeakLinks.Count == 0) return;
+
+            foreach (var linkedPeak in spot.PeakCharacter.PeakLinks) {
+                var linkedPeakID = linkedPeak.LinkedPeakID;
+                var character = linkedPeak.Character;
+                if (character == Common.Enum.PeakLinkFeatureEnum.ChromSimilar) continue;
+                if (character == Common.Enum.PeakLinkFeatureEnum.CorrelSimilar) continue;
+                if (character == Common.Enum.PeakLinkFeatureEnum.FoundInUpperMsMs) continue;
+                if (crawledPeaks.Contains(linkedPeakID)) continue;
+
+                alignedSpots[linkedPeakID].PeakCharacter.PeakGroupID = groupID;
+                crawledPeaks.Add(linkedPeakID);
+
+                if (isCrawledPeaks(alignedSpots[linkedPeakID].PeakCharacter.PeakLinks, crawledPeaks, spot.AlignmentID)) continue;
+                RecPeakGroupAssignment(alignedSpots[linkedPeakID], alignedSpots, groupID, crawledPeaks);
+            }
+        }
+
+        private static bool isCrawledPeaks(List<LinkedPeakFeature> peakLinks, List<int> crawledPeaks, int peakID) {
+            if (peakLinks.Count(n => n.LinkedPeakID != peakID) == 0) return true;
+            var frag = false;
+            foreach (var linkID in peakLinks.Select(n => n.LinkedPeakID)) {
+                if (crawledPeaks.Contains(linkID)) continue;
+                frag = true;
+                break;
+            }
+            if (frag == true) return false;
+            else return true;
+        }
+
+        private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile) {
+            var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            chromatogram.Sort(Comparer);
+            return chromatogram;
         }
 
         private List<AlignmentSpotProperty> PackingAlignmentsToSpots(List<List<AlignmentChromPeakFeature>> alignments) {

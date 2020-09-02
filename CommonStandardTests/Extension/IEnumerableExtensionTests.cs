@@ -8,15 +8,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace CompMs.Common.Extension.Tests
 {
     [TestClass()]
-    public class IEnumerableExtensionTests
-    {
-        class SampleClass
-        {
+    public class IEnumerableExtensionTests {
+        class SampleClass {
             public int Data { get; set; }
         }
 
-        class SampleClass2 : IComparable<SampleClass2>
-        {
+        class SampleClass2 : IComparable<SampleClass2> {
             public int Data { get; set; }
 
             public int CompareTo(SampleClass2 other) {
@@ -165,6 +162,41 @@ namespace CompMs.Common.Extension.Tests
             };
 
             Assert.AreEqual(x, xs.Argmin(e => e.Data, (a, b) => b.CompareTo(a)));
+        }
+
+        [TestMethod()]
+        public void ZipTest1() {
+            var actuals = new List<int> { 1, 2, 3 }.Zip(new List<int> { 4, 5, 6 }, new List<int> { 7, 8, 9 });
+            var expects = new List<(int, int, int)> { (1, 4, 7), (2, 5, 8), (3, 6, 9) };
+
+            foreach ((var expect, var actual) in expects.Zip(actuals)) {
+                (var e1, var e2, var e3) = expect;
+                (var a1, var a2, var a3) = actual;
+                Assert.AreEqual(e1, a1);
+                Assert.AreEqual(e2, a2);
+                Assert.AreEqual(e3, a3);
+            }
+        }
+
+        [TestMethod()]
+        public void SequenceTest1() {
+            var actuals = new List<List<int>> {
+                new List<int> {  1,  2,  3,  4,  5},
+                new List<int> {  6,  7,  8,  9, 10},
+                new List<int> { 11, 12, 13, 14, 15},
+                new List<int> { 16, 17, 18, 19, 20},
+            }.Sequence();
+            var expects = new List<List<int>> {
+                new List<int> {  1,  6, 11, 16},
+                new List<int> {  2,  7, 12, 17},
+                new List<int> {  3,  8, 13, 18},
+                new List<int> {  4,  9, 14, 19},
+                new List<int> {  5, 10, 15, 20},
+            };
+
+            foreach ((var expect, var actual) in expects.Zip(actuals)) {
+                CollectionAssert.AreEqual(expect, actual);
+            }
         }
     }
 }
