@@ -21,6 +21,7 @@ namespace CompMs.MsdialCore.Algorithm
             var smoothingMethod = AProcessFactory.SmoothingMethod;
             var smoothingLevel = AProcessFactory.SmoothingLevel;
             var isForceInsert = AProcessFactory.IsForceInsert;
+            var centralMz = center.Mz.Value;
             var mzTol = Math.Max(AProcessFactory.MzTol, 0.005f);
             var result = alignmentChromPeakFeature;
             var peaklist = AProcessFactory.PeaklistOnChromCenter(center, peakWidth, spectrumCollection, fileID);
