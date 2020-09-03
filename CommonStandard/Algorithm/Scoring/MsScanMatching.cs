@@ -1093,12 +1093,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DEGSE:
                     return LipidMsmsCharacterization.JudgeIfDehydroErgoSESpecies(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
-
                 //add 20200812
                 case LbmClass.OxTG:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
-
                     return LipidMsmsCharacterization.JudgeIfOxTriacylglycerol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, totalOxidized, adduct);
@@ -1111,6 +1109,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
                         sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
+
+
                 default:
                     return null;
             }

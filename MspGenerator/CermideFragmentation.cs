@@ -172,7 +172,7 @@ namespace CompMs.MspGenerator
         }
         public static void CerApFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //  {"Cer_AP" ,new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+" }    },
+            //   {   "Cer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
             var sphMass = sphingo3OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
 
@@ -214,10 +214,10 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
 
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 300;
+                var fra01int = adduct != "[M+H]+" ? 999 : 300;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
@@ -234,12 +234,19 @@ namespace CompMs.MspGenerator
                 var fra07comment = "[Sph-2H2O+H]+";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
                     var fra02mass = fra01mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra02int = 999;
                     var fra02comment = "[M-H2O+H]+";
-                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    if (adduct == "[M+H]+")
+                    {
+                        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    }
+                    else if (adduct == "[M+H-H2O]+")
+                    {
+                        fra02mass = fra01mass;
+                    }
 
                     var fra03mass = fra02mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra03int = 400;
@@ -259,12 +266,13 @@ namespace CompMs.MspGenerator
                     var fra08comment = "[Sph-3H2O+H]+";
                     fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
                 }
+
             }
         }
 
         public static void CerNsFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //{ "Cer_NS" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" , "[M+Na]+"}    },
+            // {   "Cer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
@@ -330,10 +338,10 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra11mass + "\t" + fra11int + "\t" + fra11comment);
 
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 50;
+                var fra01int = adduct == "[M+H]+" ? 50 : adduct == "[M+Na]+" ? 999 : 100;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
@@ -351,12 +359,19 @@ namespace CompMs.MspGenerator
                 var fra07comment = "[Sph-2H2O+H]+";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
                     var fra02mass = fra01mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra02int = 100;
                     var fra02comment = "[M-H2O+H]+";
-                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    if (adduct == "[M+H]+")
+                    {
+                        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    }
+                    else if (adduct == "[M+H-H2O]+")
+                    {
+                        fra02mass = fra01mass;
+                    }
 
                     var fra03mass = fra02mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra03int = 100;
@@ -380,7 +395,7 @@ namespace CompMs.MspGenerator
         }
         public static void CerNdsFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //{ "Cer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" , "[M+Na]+"}    },
+            //  {   "Cer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
@@ -446,10 +461,10 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra11mass + "\t" + fra11int + "\t" + fra11comment);
 
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 50;
+                var fra01int = adduct == "[M+H]+" ? 50 : adduct == "[M+Na]+" ? 999 : 100;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
@@ -468,12 +483,19 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
 
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
                     var fra02mass = fra01mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra02int = 100;
                     var fra02comment = "[M-H2O+H]+";
-                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    if (adduct == "[M+H]+")
+                    {
+                        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    }
+                    else if (adduct == "[M+H-H2O]+")
+                    {
+                        fra02mass = fra01mass;
+                    }
 
                     var fra03mass = fra02mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra03int = 100;
@@ -723,6 +745,9 @@ namespace CompMs.MspGenerator
 
         public static void CerHFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
+            //{ "Cer_HS" ,    new List<string>() { "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+            //{ "Cer_HDS" ,    new List<string>() { "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             //if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
@@ -742,10 +767,10 @@ namespace CompMs.MspGenerator
             //    var fra02comment = "[M-H]-";
             //    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             //}
-            if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 5;
+                var fra01int = adduct != "[M+H]+" ? 999 : 5;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
@@ -763,9 +788,21 @@ namespace CompMs.MspGenerator
                 var fra07comment = "[Sph-2H2O+H]+";
 
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
                     fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+
+                    var fra02mass = fra01mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
+                    var fra02int = 999;
+                    var fra02comment = "[M-H2O+H]+";
+                    if (adduct == "[M+H]+")
+                    {
+                        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    }
+                    else if (adduct == "[M+H-H2O]+")
+                    {
+                        fra02mass = fra01mass;
+                    }
 
 
                     var fra08mass = fra07mass - 12;
@@ -779,7 +816,8 @@ namespace CompMs.MspGenerator
 
         public static void HexCerApFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //{ "HexCer_AP" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" , "[M+Na]+"}    },
+            //{   "HexCer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+
             var sphMass = sphingo3OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
 
@@ -831,12 +869,15 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
 
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 50;
+                var fra01int = adduct == "[M+H]+" ? 50 : adduct == "[M+Na]+" ? 999 : 1;
                 var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+                {
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
 
                 var fra05mass = sphMass + MassDictionary.Proton - MassDictionary.H2OMass;
                 var fra05int = 200;
@@ -847,8 +888,10 @@ namespace CompMs.MspGenerator
                 var fra06comment = "[Sph-2H2O+H]+";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
+                    fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
+
                     var fra02mass = fra01mass - MassDictionary.C6H10O5;
                     var fra02int = 500;
                     var fra02comment = "[M-C6H10O5+H]+";
@@ -876,7 +919,8 @@ namespace CompMs.MspGenerator
 
         public static void HexCerNFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //{ "HexCer_NDS" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" , "[M+Na]+"}    },
+            //{ "HexCer_NDS" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+            //{ "HexCer_NS" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
 
@@ -922,12 +966,15 @@ namespace CompMs.MspGenerator
                 var fra07comment = "[C6H11O6]-";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 50;
+                var fra01int = adduct != "[M+H]+" ? 999 : 50;
                 var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+                {
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
 
                 var fra05mass = sphMass + MassDictionary.Proton - MassDictionary.H2OMass;
                 var fra05int = 200;
@@ -938,8 +985,10 @@ namespace CompMs.MspGenerator
                 var fra06comment = "[Sph-2H2O+H]+";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
+                    fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
+
                     var fra02mass = fra01mass - MassDictionary.C6H10O5;
                     var fra02int = 50;
                     var fra02comment = "[M-C6H10O5+H]+";
@@ -972,7 +1021,8 @@ namespace CompMs.MspGenerator
 
         public static void HexCerHFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
-            //{   "HexCerO" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-",  "[M+Na]+" , }    },
+            //{ "HexCer_HS" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
+            //{ "HexCer_HDS" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
 
@@ -1009,10 +1059,10 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
 
             }
-            else if (adduct == "[M+H]+" || adduct == "[M+Na]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+Na]+" || adduct == "[M+H-H2O]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = adduct == "[M+Na]+" ? 999 : 50;
+                var fra01int = adduct != "[M+H]+" ? 999 : 50;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
@@ -1025,12 +1075,19 @@ namespace CompMs.MspGenerator
                 var fra07comment = "[Sph-2H2O+H]+";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
 
-                if (adduct == "[M+H]+")
+                if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
-                    var fra02mass = fra01mass - MassDictionary.H2OMass;
+                    var fra02mass = fra01mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                     var fra02int = 999;
                     var fra02comment = "[M-H2O+H]+";
-                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    if (adduct == "[M+H]+")
+                    {
+                        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                    }
+                    else if (adduct == "[M+H-H2O]+")
+                    {
+                        fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
+                    }
 
                     var fra03mass = fra01mass - MassDictionary.C6H10O5 - MassDictionary.H2OMass;
                     var fra03int = 700;
@@ -2159,11 +2216,11 @@ namespace CompMs.MspGenerator
 
         public static void cerEbdsFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx, int extraAcylCarbon, int extraAcylDouble, int extraAcylOx)
         {
-            //    { "Cer_EBDS" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", }    },
+            //   {   "Cer_EBDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    }
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             var extraAcylMass = acylMassCalc(extraAcylCarbon, extraAcylDouble, extraAcylOx);
-            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
             {
                 var fra01mass = 0.0;
                 var fra01int = 0;
@@ -2206,11 +2263,11 @@ namespace CompMs.MspGenerator
 
         public static void acylHexCerFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx, int extraAcylCarbon, int extraAcylDouble, int extraAcylOx)
         {
-            //    { "AHexCer" ,    new List<string>() { "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-" }    },
+            //{   "AHexCer" , new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             var extraAcylMass = acylMassCalc(extraAcylCarbon, extraAcylDouble, extraAcylOx);
-            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
             {
                 var fra01mass = 0.0;
                 //var fra01int = 0;
@@ -2263,12 +2320,15 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra09mass + "\t" + fra09int + "\t" + fra09comment);
 
             }
-            else if (adduct == "[M+H]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
             {
-                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
                 var fra01int = 150;
                 var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                if (adduct == "[M+H]+")
+                {
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
 
                 var fra02mass = fra01mass - MassDictionary.H2OMass;
                 var fra02int = 999;
@@ -2373,7 +2433,7 @@ namespace CompMs.MspGenerator
 
         public static void cerEosFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx, int extraAcylCarbon, int extraAcylDouble, int extraAcylOx)
         {
-            //    { "Cer_EOS" ,    new List<string>() { "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" }    },
+            // {   "Cer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             var extraAcylMass = acylMassCalc(extraAcylCarbon, extraAcylDouble, extraAcylOx);
@@ -2420,12 +2480,15 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
             }
 
-            else if (adduct == "[M+H]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
             {
-                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
                 var fra01int = 300;
                 var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                if (adduct == "[M+H]+")
+                {
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
 
                 var fra02mass = fra01mass - MassDictionary.H2OMass;
                 var fra02int = 999;
@@ -2456,7 +2519,7 @@ namespace CompMs.MspGenerator
 
         public static void hexCerEosFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx, int extraAcylCarbon, int extraAcylDouble, int extraAcylOx)
         {
-            //    { "HexCer_EOS" ,    new List<string>() { "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-" }    },
+            //    {   "HexCer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }     },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
             var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
             var extraAcylMass = acylMassCalc(extraAcylCarbon, extraAcylDouble, extraAcylOx);
@@ -2502,12 +2565,15 @@ namespace CompMs.MspGenerator
                 var fra07comment = "NL of EFA+C6H10O5";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
             }
-            else if (adduct == "[M+H]+")
+            else if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
             {
-                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01mass = exactMass + adductDic.adductIonDic["[M+H]+"].AdductIonMass;
                 var fra01int = 50;
                 var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                if (adduct == "[M+H]+")
+                {
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
 
                 var fra02mass = fra01mass - MassDictionary.C6H10O5;
                 var fra02int = 500;

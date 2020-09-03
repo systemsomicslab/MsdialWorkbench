@@ -19,27 +19,16 @@ namespace CompMs.MspGenerator
         {
             var predictedList = new List<string>();
             var headerLine = "";
-            var predictedFileList = new List<string>(Directory.GetFiles(predictedFilesDirectry));
 
             if (File.Exists(dbFileName))
             {
-                using (var sr = new StreamReader(dbFileName, false))
-                {
-                    headerLine = sr.ReadLine();
-                    while (sr.Peek() > -1)
-                    {
-                        var line = sr.ReadLine();
-                        if (line == null || line.Contains("InChIKey")) { continue; }
-                        var lineArray = line.Split('\t');
-                        if (lineArray.Length < 11) { continue; }
-                        predictedList.Add(line);
-                    }
-                }
+                File.Delete(dbFileName);
             }
             else
             {
                 File.Create(dbFileName).Close();
             }
+            var predictedFileList = new List<string>(Directory.GetFiles(predictedFilesDirectry));
 
             foreach (var predictedFile in predictedFileList)
             {
@@ -51,7 +40,7 @@ namespace CompMs.MspGenerator
                         var line = sr.ReadLine();
                         if (line == null || line.Contains("InChIKey")) { continue; }
                         var lineArray = line.Split('\t');
-                        if (lineArray.Length < 11) { continue; }
+                        if (lineArray.Length < 12) { continue; }
                         predictedList.Add(line);
                     }
                 }
@@ -111,7 +100,7 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            var tempCsvFilePath = outputFolderPath + "\\" + "temp.csv";
+            var tempCsvFilePath = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
             var counter = 0;
             using (var sw = new StreamWriter(tempCsvFilePath, false, Encoding.ASCII))
             {
@@ -195,7 +184,7 @@ namespace CompMs.MspGenerator
                 {
                     errCount = errCount + 1;
                     errList.Add(query.InChIKey + "\t" + query.SMILES);
-                    Console.WriteLine("Error at {0}", query.InChIKey);
+                    //Console.WriteLine("Error at {0}", query.InChIKey);
                 }
 
                 if (inchikeyToPredictedCcs.ContainsKey(query.InChIKey))
@@ -212,13 +201,13 @@ namespace CompMs.MspGenerator
                 {
                     errCount = errCount + 1;
                     errList.Add(query.InChIKey + "\t" + query.SMILES);
-                    Console.WriteLine("Error at {0}", query.InChIKey);
+                    //Console.WriteLine("Error at {0}", query.InChIKey);
                 }
             }
 
             if (errCount > 0)
             {
-                var tempCsvFilePath2 = outputFolderPath + "\\" + "temp2.txt";
+                var tempCsvFilePath2 = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_notfound.txt";
                 errList = errList.Distinct().ToList();
 
                 using (var sw = new StreamWriter(tempCsvFilePath2, false, Encoding.ASCII))
@@ -230,7 +219,7 @@ namespace CompMs.MspGenerator
                     }
                 }
 
-                Console.WriteLine("empty parameters found...see temp2.txt");
+                Console.WriteLine("empty parameters found...see txt file");
                 Console.ReadKey();
             }
             else
