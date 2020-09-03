@@ -68,5 +68,42 @@ namespace CompMs.Common.Extension {
         public static T Argmin<T, U>(this IEnumerable<T> xs, Func<T, U> func, Comparison<U> comp) {
             return xs.Select(x => (x, y: func(x))).Aggregate((acc, p) => comp(acc.y, p.y) > 0 ? p : acc).x;
         }
+
+        public static IEnumerable<List<T>> Sequence<T>(this IEnumerable<IEnumerable<T>> xss) {
+            var enumerators = xss.Select(xs => xs.GetEnumerator()).ToList();
+            var remain = true;
+            while (remain) {
+                var result = new List<T>();
+                foreach(var enumerator in enumerators) {
+                    if (enumerator.MoveNext()) {
+                        result.Add(enumerator.Current);
+                    }
+                    else {
+                        remain = false;
+                        break;
+                    }
+                }
+                if (remain) yield return result;
+            }
+        }
+
+        public static IEnumerable<List<T>> Sequence<T>(this IReadOnlyCollection<IEnumerable<T>> xss) {
+            var n = xss.Count;
+            var enumerators = xss.Select(xs => xs.GetEnumerator()).ToList();
+            var remain = true;
+            while (remain) {
+                var result = new List<T>(n);
+                foreach(var enumerator in enumerators) {
+                    if (enumerator.MoveNext()) {
+                        result.Add(enumerator.Current);
+                    }
+                    else {
+                        remain = false;
+                        break;
+                    }
+                }
+                if (remain) yield return result;
+            }
+        }
     }
 }

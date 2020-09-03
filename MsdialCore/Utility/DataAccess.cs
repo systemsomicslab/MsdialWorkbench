@@ -980,6 +980,7 @@ namespace CompMs.MsdialCore.Utility {
             var category = param.MachineCategory;
             var code = 999; // unknown
             var mspSearchParam = param.MspSearchParam;
+            if (result == null) return code;
             if (category == MachineCategory.GCMS) {
                 if (result.IsSpectrumMatch) code = 440; //440: EI-MS matched
                 if (result.IsRiMatch || result.IsRtMatch) code = 340; //340: RT/RI+EI-MS matched
