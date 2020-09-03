@@ -3438,6 +3438,7 @@ namespace CompMs.Common.Lipidomics {
             // pattern [8] SM 30:1;2O(FA 14:0)
             // pattern [9] ST 28:2;O;Hex;PA 12:0_12:0
             // pattern [10] SE 28:2/8:0
+            // pattern [11] TG 16:0_16:1_18:0;O(FA 16:0)
             var headerString = moleculeString.Split(' ')[0].Trim();
             string chainString = string.Empty;
             if (headerString == "SE" || headerString == "ST") {
@@ -3459,7 +3460,15 @@ namespace CompMs.Common.Lipidomics {
             } 
             else if (chainString.Contains("(FA")) {  // pattern 3
                 var regexes = Regex.Match(chainString, pattern3).Groups;
-                chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                var chain1strings = regexes["chain1"].Value;
+                if (chain1strings.Contains("_")) {
+                    chains = new List<string>();
+                    foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
+                    chains.Add(regexes["chain2"].Value);
+                }
+                else {
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                }
                 //Console.WriteLine();
             }
             else if (chainString.Contains("(O-") && chainString.Contains("/")) { // pattern 2
@@ -3973,6 +3982,8 @@ namespace CompMs.Common.Lipidomics {
                 case "MG": return LbmClass.MG;
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
+                case "OxTG": return LbmClass.OxTG;
+                case "FAHFATG": return LbmClass.FAHFATG;
                 case "EtherDG": return LbmClass.EtherDG;
                 case "EtherTG": return LbmClass.EtherTG;
 
@@ -4031,6 +4042,8 @@ namespace CompMs.Common.Lipidomics {
                 case "PMeOH": return LbmClass.PMeOH;
                 case "PEtOH": return LbmClass.PEtOH;
                 case "PBtOH": return LbmClass.PBtOH;
+                case "MMPE": return LbmClass.MMPE;
+                case "DMPE": return LbmClass.DMPE;
 
                 case "LNAPE": return LbmClass.LNAPE;
                 case "LNAPS": return LbmClass.LNAPS;
@@ -4054,6 +4067,8 @@ namespace CompMs.Common.Lipidomics {
                 case "CASE": return LbmClass.CASE;
                 case "SISE": return LbmClass.SISE;
                 case "STSE": return LbmClass.STSE;
+                case "EGSE": return LbmClass.EGSE;
+                case "DEGSE": return LbmClass.DEGSE;
 
                 case "AHexCS": return LbmClass.AHexCS;
                 case "AHexBRS": return LbmClass.AHexBRS;
@@ -4081,6 +4096,9 @@ namespace CompMs.Common.Lipidomics {
                 case "GLCAE": return LbmClass.GLCAE;
                 case "TDCAE": return LbmClass.TDCAE;
                 case "TLCAE": return LbmClass.TLCAE;
+                case "LCAE": return LbmClass.LCAE;
+                case "KLCAE": return LbmClass.KLCAE;
+                case "KDCAE": return LbmClass.KDCAE;
 
                 case "Vitamin_E": return LbmClass.Vitamin_E;
                 case "Vitamin E": return LbmClass.Vitamin_E;
@@ -4131,6 +4149,7 @@ namespace CompMs.Common.Lipidomics {
                 case "PI-Cer": return LbmClass.PI_Cer;
                 case "PE-Cer+O": return LbmClass.PE_Cer;
                 case "PI-Cer+O": return LbmClass.PI_Cer;
+                case "MIPC": return LbmClass.MIPC;
 
                 case "Cer_ADS": return LbmClass.Cer_ADS;
                 case "Cer_AS": return LbmClass.Cer_AS;
@@ -4384,6 +4403,8 @@ namespace CompMs.Common.Lipidomics {
                 case "MG": return "Glycerolipids";
                 case "DG": return "Glycerolipids";
                 case "TG": return "Glycerolipids";
+                case "OxTG": return "Glycerolipids";
+                case "FAHFATG": return "Glycerolipids";
                 case "EtherDG": return "Glycerolipids";
                 case "EtherTG": return "Glycerolipids";
                 case "LDGTS": return "Glycerolipids";
@@ -4447,6 +4468,8 @@ namespace CompMs.Common.Lipidomics {
                 case "PMeOH": return "Glycerophospholipids";
                 case "PEtOH": return "Glycerophospholipids";
                 case "PBtOH": return "Glycerophospholipids";
+                case "MMPE": return "Glycerophospholipids";
+                case "DMPE": return "Glycerophospholipids";
 
                 case "LNAPE": return "Glycerophospholipids";
                 case "LNAPS": return "Glycerophospholipids";
@@ -4484,6 +4507,8 @@ namespace CompMs.Common.Lipidomics {
                 case "CASE": return "SterolLipids";
                 case "SISE": return "SterolLipids";
                 case "STSE": return "SterolLipids";
+                case "EGSE": return "SterolLipids";
+                case "DEGSE": return "SterolLipids";
                 case "AHexCS": return "SterolLipids";
                 case "AHexBRS": return "SterolLipids";
                 case "AHexCAS": return "SterolLipids";
@@ -4495,6 +4520,9 @@ namespace CompMs.Common.Lipidomics {
                 case "GLCAE": return "SterolLipids";
                 case "TDCAE": return "SterolLipids";
                 case "TLCAE": return "SterolLipids";
+                case "LCAE": return "SterolLipids";
+                case "KLCAE": return "SterolLipids";
+                case "KDCAE": return "SterolLipids";
                 case "Vitamin_D": return "SterolLipids";
                 case "Vitamin D": return "SterolLipids";
                 case "BileAcid": return "SterolLipids";
@@ -4566,6 +4594,7 @@ namespace CompMs.Common.Lipidomics {
                 case "PE-Cer+O": return "Sphingolipids";
                 case "PI_Cer+O": return "Sphingolipids";
                 case "PE_Cer+O": return "Sphingolipids";
+                case "MIPC": return "Sphingolipids";
 
                 case "SM": return "Sphingolipids";
                 case "SHexCer": return "Sphingolipids";

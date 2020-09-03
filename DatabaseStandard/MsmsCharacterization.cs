@@ -13921,10 +13921,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, int sn3Carbon, int sn3Double, int sn4Carbon, int sn4Double,
            int totalOxidized, double score)
         {
-
+            var totalOxidizedString = totalOxidized == 1 ? "" : totalOxidized.ToString();
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
-            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double;
-            var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidized + "O";
+            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1;
+            var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidizedString + "O";
             var totalName = lipidClass + " " + totalString;
 
             var acyls = new List<int[]>() {
@@ -13944,7 +13944,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
             var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
-            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + totalOxidized + "O";
+            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + totalOxidizedString + "O";
             var sn4ChainString = sn4CarbonCount + ":" + sn4DbCount;
 
             //var chainString = sn1ChainString + "-" + sn2ChainString + "-" + sn3ChainString;

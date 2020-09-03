@@ -11750,7 +11750,7 @@ namespace CompMs.Common.Lipidomics {
             return null;
         }
 
-        //add 20200812
+        //add 20200812 // TG 8:0_8:0_8:0;1O(FA 12:0)
         public static LipidMolecule JudgeIfFahfaTriacylglycerol(IMSScanProperty msScanProp, double ms2Tolerance,
                double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PS 46:6, totalCarbon = 46 and totalDoubleBond = 6
                int minSn1Carbon, int maxSn1Carbon, int minSn1DoubleBond, int maxSn1DoubleBond,

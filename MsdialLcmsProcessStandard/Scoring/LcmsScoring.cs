@@ -195,7 +195,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
             var compClass = query.CompoundClass;
             var adductname = query.AdductIonBean.AdductIonName;
             var comment = query.Comment;
-            //if (compClass == "SM") {
+            //if (compClass == "FAHFATG") {
             //    Console.WriteLine();
             //}
             //if (compClass == "SM" && comment == "SPLASH") {
