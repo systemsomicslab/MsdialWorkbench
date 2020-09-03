@@ -2127,7 +2127,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -141.019094261 (C2H8NO4P)
-                    var threshold = 10.0;
+                    var threshold = 0.5;
                     var diagnosticMz = theoreticalMz - 141.019094261;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -6456,9 +6456,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
-                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    if (isClassIonFound == !true || isClassIon2Found == !true) return null;
+                    if (isClassIon2Found == false) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -12043,7 +12043,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                             if (foundCount >= 3)
                                             { // 3 chains must be observed.
                                                 var molecule = getFahfaTriacylglycerolMoleculeObjAsLevel2("TG", LbmClass.FAHFATG, sn1Carbon, sn1Double,
-                                                    sn2Carbon, sn2Double, sn3Carbon, sn3Double, sn4Carbon, sn4Double, 1, averageIntensity);
+                                                    sn2Carbon, sn2Double, sn3Carbon, sn3Double, sn4Carbon, sn4Double, 0, averageIntensity);
                                                 candidates.Add(molecule);
                                             }
                                         }
@@ -13924,7 +13924,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
             var totalDB = sn1Double + sn2Double + sn3Double + sn4Double;
-            var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidized + "O";
+            var totalString = totalCarbon + ":" + totalDB ; // + ";" + totalOxidized + "O";
             var totalName = lipidClass + " " + totalString;
 
             var acyls = new List<int[]>() {
