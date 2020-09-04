@@ -9,6 +9,8 @@ namespace CompMs.MsdialGcMsApi.DataObj
 {
     public class GcmsAlignmentRefiner : AlignmentRefiner
     {
+        public GcmsAlignmentRefiner(MsdialGcmsParameter param) : base(param) { }
+
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignmentSpotList) {
             var cSpots = new List<AlignmentSpotProperty>();
             var param = _param as MsdialGcmsParameter;

@@ -98,21 +98,21 @@ namespace CompMs.MsdialCore.Utility
 
                 AlignedPeakProperties = alignment,
 
-                PeakCharacter = representative.PeakCharacter,
+                PeakCharacter = representative.PeakCharacter, // TODO: need to change to deep copy
                 IonMode = representative.IonMode,
 
                 Name = representative.Name,
-                Formula = representative.Formula,
+                Formula = representative.Formula, // TODO: need to change to deep copy ?
                 Ontology = representative.Ontology,
                 SMILES = representative.SMILES,
                 InChIKey = representative.InChIKey,
 
                 CollisionCrossSection = representative.CollisionCrossSection,
 
-                MSRawID2MspIDs = representative.MSRawID2MspIDs,
-                TextDbIDs = representative.TextDbIDs,
-                MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult,
-                TextDbBasedMatchResult = representative.TextDbBasedMatchResult,
+                MSRawID2MspIDs = representative.MSRawID2MspIDs, // TODO: need to change to deep copy ?
+                TextDbIDs = new List<int>(representative.TextDbIDs),
+                MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult, // TODO: need to change to deep copy ?
+                TextDbBasedMatchResult = representative.TextDbBasedMatchResult, // TODO: need to change to deep copy ?
 
                 HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop),
                 HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop),
@@ -127,8 +127,8 @@ namespace CompMs.MsdialCore.Utility
                 EstimatedNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.EstimatedNoise),
                 EstimatedNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.EstimatedNoise),
 
-                TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop,
-                TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop,
+                TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop, // TODO: need to change to deep copy ?
+                TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop, // TODO: need to change to deep copy ?
 
                 MassMin = (float)alignedPeaks.Min(peak => peak.Mass),
                 MassMax = (float)alignedPeaks.Max(peak => peak.Mass),
@@ -157,46 +157,6 @@ namespace CompMs.MsdialCore.Utility
                     ).FileID;
             }
             return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID;
-        }
-
-        public static void SetDefaultCompoundInformation(AlignmentSpotProperty alignmentSpot) {
-            alignmentSpot.AdductType.AdductIonName = string.Empty;
-            alignmentSpot.PeakCharacter.Charge = 1;
-            alignmentSpot.Name = string.Empty;
-
-            // reset text db
-            SetDefaultCompoundInformation(alignmentSpot.TextDbBasedMatchResult);
-
-            // reset msp db
-            alignmentSpot.MSRawID2MspBasedMatchResult.Select(kvp => kvp.Value).ToList().ForEach(result => SetDefaultCompoundInformation(result));
-        }
-
-        public static void SetDefaultCompoundInformation(MsScanMatchResult scanMatchResult) {
-            scanMatchResult.LibraryID = -1;
-            scanMatchResult.TotalScore = -1;
-
-            scanMatchResult.WeightedDotProduct = -1;
-            scanMatchResult.SimpleDotProduct = -1;
-            scanMatchResult.ReverseDotProduct = -1;
-            scanMatchResult.MatchedPeaksCount = -1;
-            scanMatchResult.MatchedPeaksPercentage = -1;
-            scanMatchResult.EssentialFragmentMatchedScore = -1;
-
-            scanMatchResult.RtSimilarity = -1;
-            scanMatchResult.RiSimilarity = -1;
-            scanMatchResult.CcsSimilarity = -1;
-            scanMatchResult.IsotopeSimilarity = -1;
-            scanMatchResult.AcurateMassSimilarity = -1;
-
-            scanMatchResult.IsPrecursorMzMatch = false;
-            scanMatchResult.IsSpectrumMatch = false;
-            scanMatchResult.IsRtMatch = false;
-            scanMatchResult.IsRiMatch = false;
-            scanMatchResult.IsCcsMatch = false;
-            scanMatchResult.IsLipidClassMatch = false;
-            scanMatchResult.IsLipidChainsMatch = false;
-            scanMatchResult.IsLipidPositionMatch = false;
-            scanMatchResult.IsOtherLipidMatch = false;
         }
     }
 }

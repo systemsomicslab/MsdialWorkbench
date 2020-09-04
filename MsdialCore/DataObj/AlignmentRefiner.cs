@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -49,11 +50,11 @@ namespace CompMs.MsdialCore.DataObj
                     }
                     else {
                         if (alignments[currentPeakId].MspBasedMatchResult.TotalScore < alignments[i].MspBasedMatchResult.TotalScore) {
-                            DataObjConverter.SetDefaultCompoundInformation(alignments[currentPeakId]);
+                            SetDefaultCompoundInformationInMspSearch(alignments[currentPeakId]);
                             currentPeakId = i;
                         }
                         else {
-                            DataObjConverter.SetDefaultCompoundInformation(alignments[i]);
+                            SetDefaultCompoundInformationInMspSearch(alignments[i]);
                         }
                     }
                 }
@@ -74,11 +75,11 @@ namespace CompMs.MsdialCore.DataObj
                     }
                     else {
                         if (alignments[currentPeakId].TextDbBasedMatchResult.TotalScore < alignments[i].TextDbBasedMatchResult.TotalScore) {
-                            DataObjConverter.SetDefaultCompoundInformation(alignments[currentPeakId]);
+                            SetDefaultCompoundInformationInTextSearch(alignments[currentPeakId]);
                             currentPeakId = i;
                         }
                         else {
-                            DataObjConverter.SetDefaultCompoundInformation(alignments[i]);
+                            SetDefaultCompoundInformationInTextSearch(alignments[i]);
                         }
                     }
                 }
@@ -169,6 +170,28 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             return fcSpots;
+        }
+
+        static void SetDefaultCompoundInformationInMspSearch(AlignmentSpotProperty alignmentSpot) {
+            var textdb = alignmentSpot.TextDbBasedMatchResult;
+            if (textdb == null || textdb.Name != alignmentSpot.Name) {
+                alignmentSpot.AdductType.AdductIonName = string.Empty;
+                alignmentSpot.PeakCharacter.Charge = 1;
+                alignmentSpot.Name = string.Empty;
+            }
+
+            alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+        }
+
+        static void SetDefaultCompoundInformationInTextSearch(AlignmentSpotProperty alignmentSpot) {
+            var mspdb = alignmentSpot.MspBasedMatchResult;
+            if (mspdb == null || mspdb.Name != alignmentSpot.Name) {
+                alignmentSpot.AdductType.AdductIonName = string.Empty;
+                alignmentSpot.PeakCharacter.Charge = 1;
+                alignmentSpot.Name = string.Empty;
+            }
+
+            alignmentSpot.TextDbBasedMatchResult = null;
         }
     }
 }

@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 
 namespace CompMs.MsdialLcMsApi.DataObj
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param) : base(param) { }
+
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
-            var donelist = new List<int>();
+            var donelist = new HashSet<int>();
 
             foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && !spot.Name.Contains("w/o"))) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
@@ -35,7 +39,7 @@ namespace CompMs.MsdialLcMsApi.DataObj
         }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) {
-            alignments = alignments.OrderBy(n => n.MassCenter).ToList();
+            alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
             if (_param.IsIonMobility) {
                 foreach (var spot in alignments) {
                     spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.OrderBy(p => p.TimesCenter.Value));
@@ -79,7 +83,8 @@ namespace CompMs.MsdialLcMsApi.DataObj
             AssignLinksByIdentifiedIonFeatures(alignments);
 
             // assigning peak characters from the representative file information
-            alignments = alignments.OrderByDescending(spot => spot.HeightAverage).ToList();
+            alignments.Sort((x, y) => x.HeightAverage.CompareTo(y.HeightAverage));
+            alignments.Reverse();
             foreach (var fcSpot in alignments) {
 
                 var repFileID = fcSpot.RepresentativeFileID;
@@ -145,18 +150,18 @@ namespace CompMs.MsdialLcMsApi.DataObj
             #endregion
 
             // assign putative group IDs
-            alignments = alignments.OrderBy(n => n.AlignmentID).ToList();
+            alignments.Sort((x, y) => x.AlignmentID.CompareTo(y.AlignmentID));
             AssignPutativePeakgroupIDs(alignments);
         }
 
         protected override void PostProcess(List<AlignmentSpotProperty> alignments) { }
 
-        private static void TryMergeToMaster(AlignmentSpotProperty spot, List<AlignmentSpotProperty> cSpots, List<int> donelist, ParameterBase param) {
+        private static void TryMergeToMaster(AlignmentSpotProperty spot, List<AlignmentSpotProperty> cSpots, HashSet<int> donelist, ParameterBase param) {
             var spotRt = spot.TimesCenter.Value;
             var spotMz = spot.MassCenter;
 
             var flg = false;
-            var rtTol = param.RetentionTimeAlignmentTolerance < 0.1 ? param.RetentionTimeAlignmentTolerance : 0.1;
+            var rtTol = Math.Min(param.RetentionTimeAlignmentTolerance, 0.1);
             foreach (var cSpot in cSpots.Where(n => Math.Abs(n.MassCenter - spotMz) < param.Ms1AlignmentTolerance)) {
                 var cSpotRt = cSpot.TimesCenter.Value;
                 if (Math.Abs(cSpotRt - spotRt) < rtTol * 0.5) {
@@ -204,40 +209,23 @@ namespace CompMs.MsdialLcMsApi.DataObj
         {
             var sampleCount = spot.AlignedPeakProperties.Count;
             var spotPeaks = spot.AlignedPeakProperties;
+            var peaks = spotPeaks.Select(peak => peak.PeakHeightTop).ToArray();
 
             foreach (var searchSpot in searchedSpots) {
 
                 var searchedSpotPeaks = searchSpot.AlignedPeakProperties;
-
-                double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
-                for (int i = 0; i < sampleCount; i++) {
-                    sum1 += spotPeaks[i].PeakHeightTop;
-                    sum2 += spotPeaks[i].PeakHeightTop;
-                }
-                mean1 = (double)(sum1 / sampleCount);
-                mean2 = (double)(sum2 / sampleCount);
-
-                for (int i = 0; i < sampleCount; i++) {
-                    covariance += (spotPeaks[i].PeakHeightTop - mean1) * (searchedSpotPeaks[i].PeakHeightTop - mean2);
-                    sqrt1 += Math.Pow(spotPeaks[i].PeakHeightTop - mean1, 2);
-                    sqrt2 += Math.Pow(searchedSpotPeaks[i].PeakHeightTop - mean2, 2);
-                }
-                if (sqrt1 == 0 || sqrt2 == 0)
-                    continue;
-                else {
-                    var correlation = (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
-                    if (correlation >= 0.95) {
-                        spot.AlignmentSpotVariableCorrelations.Add(
-                            new AlignmentSpotVariableCorrelation() {
-                                CorrelateAlignmentID = searchSpot.AlignmentID,
-                                CorrelationScore = (float)correlation
-                            });
-                        spot.PeakCharacter.IsLinked = true;
-                        spot.PeakCharacter.PeakLinks.Add(new LinkedPeakFeature() {
-                            LinkedPeakID = searchSpot.AlignmentID,
-                            Character = PeakLinkFeatureEnum.CorrelSimilar
+                var correlation = BasicMathematics.Coefficient(peaks, searchedSpotPeaks.Select(peak => peak.PeakHeightTop).ToArray());
+                if (correlation >= 0.95) {
+                    spot.AlignmentSpotVariableCorrelations.Add(
+                        new AlignmentSpotVariableCorrelation() {
+                            CorrelateAlignmentID = searchSpot.AlignmentID,
+                            CorrelationScore = (float)correlation
                         });
-                    }
+                    spot.PeakCharacter.IsLinked = true;
+                    spot.PeakCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+                        LinkedPeakID = searchSpot.AlignmentID,
+                        Character = PeakLinkFeatureEnum.CorrelSimilar
+                    });
                 }
             }
 
