@@ -88,12 +88,8 @@ namespace CompMs.MsdialCore.DataObj
 
         protected virtual List<AlignmentSpotProperty> FilterByBlank(List<AlignmentSpotProperty> alignments) {
             var fcSpots = new List<AlignmentSpotProperty>();
-            int blankNumber = 0;
-            int sampleNumber = 0;
-            foreach (var value in _param.FileID_AnalysisFileType.Values) {
-                if (value == AnalysisFileType.Blank) blankNumber++;
-                if (value == AnalysisFileType.Sample) sampleNumber++;
-            }
+            int blankNumber = _param.FileID_AnalysisFileType.Values.Count(v => v == AnalysisFileType.Blank);
+            int sampleNumber = _param.FileID_AnalysisFileType.Values.Count(v => v == AnalysisFileType.Sample);
 
             if (blankNumber > 0 && _param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange) {
               
@@ -119,8 +115,8 @@ namespace CompMs.MsdialCore.DataObj
                         }
                     }
 
-                    sampleAve = sampleAve / sampleNumber;
-                    blankAve = blankAve / blankNumber;
+                    sampleAve /= sampleNumber;
+                    blankAve /= blankNumber;
                     if (blankAve == 0) {
                         if (nonMinValue != double.MaxValue)
                             blankAve = nonMinValue * 0.1;
@@ -132,36 +128,20 @@ namespace CompMs.MsdialCore.DataObj
                     var sampleThresh = _param.BlankFiltering == BlankFiltering.SampleMaxOverBlankAve ? sampleMax : sampleAve;
                 
                     if (sampleThresh < blankThresh) {
-                        if (_param.IsKeepRemovableFeaturesAndAssignedTagForChecking) {
 
-                            if (_param.IsKeepRefMatchedMetaboliteFeatures
-                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && !spot.Name.Contains("w/o")) {
+                        if (_param.IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched) {
 
-                            }
-                            else if (_param.IsKeepSuggestedMetaboliteFeatures
-                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && spot.Name.Contains("w/o")) {
+                        }
+                        else if (_param.IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested) {
 
-                            }
-                            else {
-                                spot.FeatureFilterStatus.IsBlankFiltered = true;
-                            }
+                        }
+                        else if (_param.IsKeepRemovableFeaturesAndAssignedTagForChecking) {
+                            spot.FeatureFilterStatus.IsBlankFiltered = true;
                         }
                         else {
-
-                            if (_param.IsKeepRefMatchedMetaboliteFeatures
-                             && (spot.MspID >= 0 || spot.TextDbID >= 0) && !spot.Name.Contains("w/o")) {
-
-                            }
-                            else if (_param.IsKeepSuggestedMetaboliteFeatures
-                              && (spot.MspID >= 0 || spot.TextDbID >= 0) && spot.Name.Contains("w/o")) {
-
-                            }
-                            else {
-                                continue;
-                            }
+                            continue;
                         }
                     }
-
                     fcSpots.Add(spot);
                 }
             }

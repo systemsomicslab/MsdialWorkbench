@@ -43,7 +43,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
             var actuals = refiner.Refine(alignments);
 
-            Assert.AreEqual(4, actuals.Count);
+            Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
                 AreEqual(expect, actual);
         }
@@ -180,6 +180,210 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
         }
 
         [TestMethod()]
+        public void RefineBlankFilterBySampleMax() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Blank },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleMaxOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = true,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = true,
+                IsKeepRefMatchedMetaboliteFeatures = true,
+                IsKeepSuggestedMetaboliteFeatures = true,
+            };
+            var refiner = new LcmsAlignmentRefiner(param);
+
+            var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var alignment in alignments) alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            foreach (var alignment in alignments) alignment.TextDbBasedMatchResult = null;
+            alignments[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            alignments[1].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            alignments[2].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+            alignments[3].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            alignments[4].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            alignments[5].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+
+            var expects = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var expect in expects) expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            foreach (var expect in expects) expect.TextDbBasedMatchResult = null;
+            expects[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            expects[1].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            expects[2].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+            expects[3].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            expects[4].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            expects[5].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+
+            expects[0].FeatureFilterStatus.IsBlankFiltered = true;
+            expects[3].FeatureFilterStatus.IsBlankFiltered = true;
+            for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
+            var actuals = refiner.Refine(alignments);
+
+            Assert.AreEqual(expects.Count, actuals.Count);
+            foreach ((var expect, var actual) in expects.Zip(actuals))
+                AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
+        public void RefineBlankFilterBySampleAve() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Blank },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleAveOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = true,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = true,
+                IsKeepRefMatchedMetaboliteFeatures = true,
+                IsKeepSuggestedMetaboliteFeatures = true,
+            };
+            var refiner = new LcmsAlignmentRefiner(param);
+
+            var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var alignment in alignments) alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            foreach (var alignment in alignments) alignment.TextDbBasedMatchResult = null;
+            alignments[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            alignments[1].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            alignments[2].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+            alignments[3].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            alignments[4].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            alignments[5].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+
+            var expects = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var expect in expects) expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            foreach (var expect in expects) expect.TextDbBasedMatchResult = null;
+            expects[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            expects[1].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            expects[2].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+            expects[3].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 900), BuildAlignmentChromPeakFeature(fileid: 3, peak: 900), 
+            };
+            expects[4].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 700), 
+            };
+            expects[5].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                BuildAlignmentChromPeakFeature(fileid: 0, peak: 15000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 5000), 
+                BuildAlignmentChromPeakFeature(fileid: 2, peak: 1100), BuildAlignmentChromPeakFeature(fileid: 3, peak: 1100), 
+            };
+
+            expects[0].FeatureFilterStatus.IsBlankFiltered = true;
+            expects[1].FeatureFilterStatus.IsBlankFiltered = true;
+            expects[3].FeatureFilterStatus.IsBlankFiltered = true;
+            expects[4].FeatureFilterStatus.IsBlankFiltered = true;
+            for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
+            var actuals = refiner.Refine(alignments);
+
+            Assert.AreEqual(expects.Count, actuals.Count);
+            foreach ((var expect, var actual) in expects.Zip(actuals))
+                AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
         public void RefineMergeOrderTest() {
             var param = new MsdialLcmsParameter
             {
@@ -235,11 +439,67 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             expects.RemoveAt(0);
             expects.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
             for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
 
             var actuals = refiner.Refine(alignments);
 
             Assert.AreEqual(7, actuals.Count);
+            foreach ((var expect, var actual) in expects.Zip(actuals))
+                AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
+        public void RefineMergeCompressSpotsTest() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleMaxOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = false,
+                IsKeepRefMatchedMetaboliteFeatures = false,
+                IsKeepSuggestedMetaboliteFeatures = false,
+            };
+            var refiner = new LcmsAlignmentRefiner(param);
+
+            var alignments = BatchBuildAlignmentSpotProperty(10, d_time: 10, d_mass: 10);
+            alignments[1].MassCenter = alignments[0].MassCenter + param.Ms1AlignmentTolerance * 0.99;
+            alignments[1].TimesCenter = alignments[0].TimesCenter;
+            alignments[3].MassCenter = alignments[2].MassCenter;
+            alignments[3].TimesCenter.RT.Value = alignments[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99;
+            alignments[5].MassCenter = alignments[4].MassCenter;
+            alignments[5].TimesCenter.RT.Value = alignments[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            alignments[7].TimesCenter.RT.Value = alignments[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            alignments[9].MassCenter = alignments[8].MassCenter + param.Ms1AlignmentTolerance * 0.99;
+            
+
+            var expects = BatchBuildAlignmentSpotProperty(10, d_time: 10, d_mass: 10);
+            expects[1].MassCenter = expects[0].MassCenter + param.Ms1AlignmentTolerance * 0.99;
+            expects[1].TimesCenter = expects[0].TimesCenter;
+            expects[3].MassCenter = expects[2].MassCenter;
+            expects[3].TimesCenter.RT.Value = expects[2].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.99;
+            expects[5].MassCenter = expects[4].MassCenter;
+            expects[5].TimesCenter.RT.Value = expects[4].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            expects[7].TimesCenter.RT.Value = expects[6].TimesCenter.RT.Value + param.RetentionTimeAlignmentTolerance * 0.5 * 0.99;
+            expects[9].MassCenter = expects[8].MassCenter + param.Ms1AlignmentTolerance * 0.99;
+
+            expects.RemoveAt(5);
+            expects.RemoveAt(1);
+            for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
+            for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
+            
+            var actuals = refiner.Refine(alignments);
+
+            Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
                 AreEqual(expect, actual);
         }
@@ -485,6 +745,69 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
         }
 
         [TestMethod()]
+        public void RefineLinkCorrelationIsotopeTest() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample },
+                    { 4, AnalysisFileType.Sample }, { 5, AnalysisFileType.Sample },
+                    { 6, AnalysisFileType.Sample }, { 7, AnalysisFileType.Sample },
+                    { 8, AnalysisFileType.Sample }, { 9, AnalysisFileType.Sample },
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleMaxOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = true,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = true,
+                IsKeepRefMatchedMetaboliteFeatures = true,
+                IsKeepSuggestedMetaboliteFeatures = true,
+            };
+            var refiner = new LcmsAlignmentRefiner(param);
+
+            var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            alignments[0].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            alignments[1].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            alignments[2].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            alignments[2].PeakCharacter.IsotopeWeightNumber = 1;
+            alignments[3].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+
+
+            var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
+            expects[0].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            expects[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> {
+                new LinkedPeakFeature { Character = PeakLinkFeatureEnum.CorrelSimilar, LinkedPeakID = 1},
+            };
+            expects[0].AlignmentSpotVariableCorrelations = new List<AlignmentSpotVariableCorrelation> {
+                new AlignmentSpotVariableCorrelation { CorrelateAlignmentID = 1, CorrelationScore = 1f},
+            };
+            expects[1].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            expects[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> {
+                new LinkedPeakFeature { Character = PeakLinkFeatureEnum.CorrelSimilar, LinkedPeakID = 0},
+            };
+            expects[1].AlignmentSpotVariableCorrelations = new List<AlignmentSpotVariableCorrelation> {
+                new AlignmentSpotVariableCorrelation { CorrelateAlignmentID = 0, CorrelationScore = 1f},
+            };
+            expects[2].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            expects[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[2].AlignmentSpotVariableCorrelations = new List<AlignmentSpotVariableCorrelation> { };
+            expects[2].PeakCharacter.IsotopeWeightNumber = 1;
+            expects[3].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
+            expects[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[3].AlignmentSpotVariableCorrelations = new List<AlignmentSpotVariableCorrelation> { };
+
+            var actuals = refiner.Refine(alignments);
+
+            Assert.AreEqual(expects.Count, actuals.Count);
+            foreach ((var expect, var actual) in expects.Zip(actuals))
+                AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
         public void RefineRegisterLinksTest() {
             var param = new MsdialLcmsParameter
             {
@@ -650,6 +973,144 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
         }
 
         [TestMethod()]
+        public void RefineRegisterLinksOnlyRefMatchedTest() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleMaxOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = false,
+                IsKeepRefMatchedMetaboliteFeatures = false,
+                IsKeepSuggestedMetaboliteFeatures = false,
+            };
+            var refiner = new LcmsAlignmentRefiner(param);
+
+            var alignments = BatchBuildAlignmentSpotProperty(7, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var alignment in alignments) alignment.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
+            for (int i = 0; i < 4; i++) {
+                foreach ((var spots, var peak) in alignments.Zip(BatchBuildAlignmentChromPeakFeature(n: 7, d_peak: 100 + i))) {
+                    spots.AlignedPeakProperties.Add(peak);
+                }
+            }
+            foreach (var alignment in alignments) alignment.RepresentativeFileID = 1;
+            alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[1].TextDbBasedMatchResult = null;
+            alignments[2].TextDbBasedMatchResult = null;
+            alignments[1].Name = alignments[2].Name = "Unknown";
+            foreach (var kvp in alignments[3].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
+            foreach (var kvp in alignments[4].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
+            alignments[3].TextDbBasedMatchResult = null;
+            alignments[4].TextDbBasedMatchResult = null;
+            alignments[3].Name = "w/o MS2: " + alignments[3].Name;
+            alignments[4].Name = "w/o MS2: " + alignments[4].Name;
+
+            alignments[1].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            alignments[2].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            alignments[3].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            alignments[4].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            alignments[5].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            alignments[6].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+
+            var expects = BatchBuildAlignmentSpotProperty(n: 7, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            foreach (var expect in expects) expect.RepresentativeFileID = 1;
+            foreach (var expect in expects) expect.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
+            for (int i = 0; i < 4; i++) {
+                foreach ((var spots, var peak) in expects.Zip(BatchBuildAlignmentChromPeakFeature(n: 7, d_peak: 100 + i))) {
+                    spots.AlignedPeakProperties.Add(peak);
+                }
+            }
+            // Unknown
+            expects[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[1].TextDbBasedMatchResult = null;
+            expects[2].TextDbBasedMatchResult = null;
+            expects[1].Name = expects[2].Name = "Unknown";
+            // Suggested
+            foreach (var kvp in expects[3].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
+            foreach (var kvp in expects[4].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
+            expects[3].TextDbBasedMatchResult = null;
+            expects[4].TextDbBasedMatchResult = null;
+            expects[3].Name = "w/o MS2: " + expects[3].Name;
+            expects[4].Name = "w/o MS2: " + expects[4].Name;
+
+            for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
+
+            expects[1].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[2].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 5, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[3].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[4].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[4].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 5, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[5].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[5].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 2, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.ChromSimilar },
+                new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+            expects[6].AlignedPeakProperties[1].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
+            expects[6].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
+            {
+                new LinkedPeakFeature {LinkedPeakID = 5, Character = PeakLinkFeatureEnum.ChromSimilar },
+            };
+
+            alignments.ForEach(alignment => Console.WriteLine($"{alignment.Name}"));
+            var actuals = refiner.Refine(alignments);
+
+            actuals.ForEach(actual => Console.WriteLine($"{actual.Name}"));
+            Assert.AreEqual(expects.Count, actuals.Count);
+            foreach ((var expect, var actual) in expects.Zip(actuals))
+                AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
         public void RefinePeakGroupTest() {
             var param = new MsdialLcmsParameter
             {
@@ -673,7 +1134,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             var alignments = BatchBuildAlignmentSpotProperty(8, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) alignment.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
             for (int i = 0; i < 4; i++) {
-                foreach ((var spots, var peak) in alignments.Zip(BatchBuildAlignmentChromPeakFeature(8, param.RetentionTimeAlignmentTolerance))) {
+                foreach ((var spots, var peak) in alignments.Zip(BatchBuildAlignmentChromPeakFeature(n: 8, d_peak: 100))) {
                     spots.AlignedPeakProperties.Add(peak);
                 }
             }
@@ -717,7 +1178,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             foreach (var expect in expects) expect.RepresentativeFileID = 0;
             foreach (var expect in expects) expect.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
             for (int i = 0; i < 4; i++) {
-                foreach ((var spots, var peak) in expects.Zip(BatchBuildAlignmentChromPeakFeature(8, param.RetentionTimeAlignmentTolerance))) {
+                foreach ((var spots, var peak) in expects.Zip(BatchBuildAlignmentChromPeakFeature(n: 8, d_peak: 100))) {
                     spots.AlignedPeakProperties.Add(peak);
                 }
             }
@@ -864,15 +1325,15 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 );
         }
         void AreEqual(AlignmentChromPeakFeature expected, AlignmentChromPeakFeature actual, string message = "") {
-            Assert.AreEqual(expected.FileID, actual.FileID, message);
-            Assert.AreEqual(expected.PeakHeightTop, actual.PeakHeightTop, message);
-            AreEqual(expected.PeakCharacter, actual.PeakCharacter, message);
+            Assert.AreEqual(expected.FileID, actual.FileID, "FileID in " + message);
+            Assert.AreEqual(expected.PeakHeightTop, actual.PeakHeightTop, "PeakHeightTop in " + message);
+            AreEqual(expected.PeakCharacter, actual.PeakCharacter, "PeakCharacter in " + message);
         }
         void AreEqual(MsScanMatchResult expected, MsScanMatchResult actual, string message = "") {
             if (expected == null && actual == null) return;
             if (expected == null || actual == null) Assert.Fail(message);
-            Assert.AreEqual(expected.TotalScore, actual.TotalScore, message);
-            Assert.AreEqual(expected.LibraryID, actual.LibraryID, message);
+            Assert.AreEqual(expected.TotalScore, actual.TotalScore, "TotalScore in " + message);
+            Assert.AreEqual(expected.LibraryID, actual.LibraryID, "LibraryID in " + message);
         }
         void AreEqual(IonFeatureCharacter expected, IonFeatureCharacter actual, string message = "") {
             Assert.AreEqual(expected.IsotopeWeightNumber, actual.IsotopeWeightNumber, "IsotopeWightNumber in " + message);
@@ -905,7 +1366,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             var result = new AlignmentSpotProperty
             {
                 MasterAlignmentID = id, AlignmentID = id, RepresentativeFileID = 2,
-                MassCenter = 100 + d_mass, TimesCenter = new ChromXs(20 + d_time), HeightAverage = 10000,
+                MassCenter = 100 + d_mass, TimesCenter = new ChromXs(20 + d_time),
                 MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
                 {
                     {0, BuildMsScanMatchResult(0, 0.1f) },
@@ -926,6 +1387,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 }
             };
             result.Name = result.TextDbBasedMatchResult.Name;
+            result.HeightAverage = (float)result.AlignedPeakProperties.Average(peak => peak.PeakHeightTop);
             return result;
         }
 
@@ -938,7 +1400,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
         }
 
         MsScanMatchResult BuildMsScanMatchResult(int id = 0, float score = 1) {
-            return new MsScanMatchResult { TotalScore = score, LibraryID = id, Name = "Metabolite" + id };
+            return new MsScanMatchResult { TotalScore = score, LibraryID = id, Name = "Metabolite" + id, IsSpectrumMatch = true };
         }
 
         IonFeatureCharacter BuildIonFeatureCharacter(int weight = 0, int charge = 1) {
