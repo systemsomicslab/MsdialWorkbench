@@ -41,11 +41,11 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                 intensities[i] += intensities[i - 1];
             }
 
-            for (int i = 0; i < smoothingLevel; i++) {
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
                 intensities[i + smoothingLevel] += peaklist[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
             }
 
-            for (int i = 0; i < smoothingLevel; i++) {
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
                 intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
             }
 
@@ -78,11 +78,11 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                 intensities[i] += intensities[i - 1];
             }
 
-            for (int i = 0; i < smoothingLevel; i++) {
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
                 intensities[i + smoothingLevel] += peaklist[i].Intensity * (smoothingLevel - i);
             }
 
-            for (int i = 0; i < smoothingLevel; i++) {
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
                 intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * (smoothingLevel - i);
             }
 

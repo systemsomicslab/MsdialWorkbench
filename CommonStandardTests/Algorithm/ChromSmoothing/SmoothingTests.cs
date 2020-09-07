@@ -105,6 +105,35 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
         }
 
         [TestMethod()]
+        public void SimpleMovingAverageShortListTest() {
+            var chrom = new List<ChromatogramPeak>
+            {
+                new ChromatogramPeak
+                {
+                    ID = 0, ChromXs = new ChromXs(100), Mass = 200, Intensity = 1000000
+                },
+                new ChromatogramPeak
+                {
+                    ID = 1, ChromXs = new ChromXs(200), Mass = 200, Intensity = 5000000
+                },
+                new ChromatogramPeak
+                {
+                    ID = 2, ChromXs = new ChromXs(300), Mass = 200, Intensity = 3000000
+                },
+            };
+
+            var expected = Original_SimpleMovingAverage(chrom, 5);
+            var actual = Smoothing.SimpleMovingAverage(chrom, 5);
+
+            foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+                Assert.AreEqual(peak1.ID, peak2.ID);
+                Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
+                Assert.AreEqual(peak1.Mass, peak2.Mass);
+                Assert.AreEqual(peak1.Intensity, peak2.Intensity, 0.00001);
+            }
+        }
+
+        [TestMethod()]
         public void LinearWeightedMovingAverageTest() {
             var rand = new Random(4869);
             // var rand = new Random();
@@ -143,5 +172,35 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
             Console.WriteLine($"Original method: {times_original.Average()}");
             Console.WriteLine($"New method: {times_new.Average()}");
         }
+
+        [TestMethod()]
+        public void LinearWeightedMovingAverageShortListTest() {
+            var chrom = new List<ChromatogramPeak>
+            {
+                new ChromatogramPeak
+                {
+                    ID = 0, ChromXs = new ChromXs(100), Mass = 200, Intensity = 1000000
+                },
+                new ChromatogramPeak
+                {
+                    ID = 1, ChromXs = new ChromXs(200), Mass = 200, Intensity = 5000000
+                },
+                new ChromatogramPeak
+                {
+                    ID = 2, ChromXs = new ChromXs(300), Mass = 200, Intensity = 3000000
+                },
+            };
+
+            var expected = Original_LinearWeightedMovingAverage(chrom, 5);
+            var actual = Smoothing.LinearWeightedMovingAverage(chrom, 5);
+
+            foreach ((var peak1, var peak2) in expected.Zip(actual)) {
+                Assert.AreEqual(peak1.ID, peak2.ID);
+                Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
+                Assert.AreEqual(peak1.Mass, peak2.Mass);
+                Assert.AreEqual(peak1.Intensity, peak2.Intensity, 0.00001);
+            }
+        }
+
     }
 }
