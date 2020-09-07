@@ -12,9 +12,9 @@ namespace CompMs.MsdialGcMsApi.DataObj
         public GcmsAlignmentRefiner(MsdialGcmsParameter param) : base(param) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignmentSpotList) {
-            var cSpots = new List<AlignmentSpotProperty>();
-            var param = _param as MsdialGcmsParameter;
+            if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;
 
+            var cSpots = new List<AlignmentSpotProperty>();
             foreach (var spot in alignmentSpotList.Where(n => n.MspID >= 0)) {
                 cSpots.Add(spot); // first, identifid spots are stored for this priority.
             }
@@ -61,11 +61,12 @@ namespace CompMs.MsdialGcMsApi.DataObj
         protected override void PostProcess(List<AlignmentSpotProperty> alignments) {
             var param = _param as MsdialGcmsParameter;
             if (param.AlignmentIndexType == AlignmentIndexType.RT)
-                alignments = alignments.OrderBy(n => n.TimesCenter.RT.Value).ThenBy(n => n.QuantMass).ToList();
+                alignments.Sort((a, b) => (a.TimesCenter.RT.Value, a.QuantMass).CompareTo((b.TimesCenter.RT.Value, b.QuantMass)));
             else
-                alignments = alignments.OrderBy(n => n.TimesCenter.RI.Value).ThenBy(n => n.QuantMass).ToList();
+                alignments.Sort((a, b) => (a.TimesCenter.RI.Value, a.QuantMass).CompareTo((b.TimesCenter.RI.Value, b.QuantMass)));
             for (int i = 0; i < alignments.Count; i++) {
                 alignments[i].AlignmentID = i;
+                alignments[i].MasterAlignmentID = i;
             }
         }
 
