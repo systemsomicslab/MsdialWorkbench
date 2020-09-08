@@ -24,16 +24,16 @@ namespace CompMs.MsdialCore.Algorithm
     {
         PeakComparer Comparer { get; set; }
         AlignmentRefiner Refiner { get; set; }
+        AlignmentProcessFactory AProcessFactory { get; set; }
         ParameterBase Param { get; set; }
         IupacDatabase Iupac { get; set; }
-        AlignmentProcessFactory AProcessFactory { get; set; }
 
-        public PeakAligner(PeakComparer comparer, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac, AlignmentProcessFactory factory) {
+        public PeakAligner(PeakComparer comparer, AlignmentProcessFactory factory, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
+            AProcessFactory = factory;
             Refiner = refiner;
             Param = param;
             Iupac = iupac;
-            AProcessFactory = factory;
         }
 
         public AlignmentResultContainer Alignment(

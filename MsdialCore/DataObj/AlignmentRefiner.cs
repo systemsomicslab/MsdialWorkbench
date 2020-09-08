@@ -35,7 +35,7 @@ namespace CompMs.MsdialCore.DataObj
             return filtered;
         }
 
-        protected virtual void Deduplicate(List<AlignmentSpotProperty> alignments) {
+        protected virtual void Deduplicate(List<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)
             if (_param.OnlyReportTopHitInMspSearch) { //to remove duplicate identifications
                 alignments = alignments.OrderByDescending(spot => spot.MspID).ToList();
 

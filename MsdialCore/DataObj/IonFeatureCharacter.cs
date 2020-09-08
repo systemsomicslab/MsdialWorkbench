@@ -26,5 +26,9 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsLinked { get; set; } = false;
         [Key(8)]
         public int AdductParent { get; set; } = -1; // the peak id which is used to annotate the adduct type for this peak is insearted.
+
+        public IonFeatureCharacter() {
+            PeakLinks = new List<LinkedPeakFeature>();
+        }
     }
 }

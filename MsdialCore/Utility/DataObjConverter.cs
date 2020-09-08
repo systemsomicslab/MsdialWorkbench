@@ -98,11 +98,14 @@ namespace CompMs.MsdialCore.Utility
 
                 AlignedPeakProperties = alignment,
 
-                PeakCharacter = representative.PeakCharacter, // TODO: need to change to deep copy
+                // PeakCharacter = representative.PeakCharacter, // TODO: need to change to deep copy
+                PeakCharacter = new IonFeatureCharacter(),
+                AdductType = new Common.DataObj.Property.AdductIon(),
                 IonMode = representative.IonMode,
 
                 Name = representative.Name,
-                Formula = representative.Formula, // TODO: need to change to deep copy ?
+                // Formula = representative.Formula, // TODO: need to change to deep copy ?
+                Formula = new Common.DataObj.Property.Formula(),
                 Ontology = representative.Ontology,
                 SMILES = representative.SMILES,
                 InChIKey = representative.InChIKey,

@@ -4,23 +4,26 @@ using System.Linq;
 
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialDimsCore.Parameter;
 
 namespace CompMs.MsdialDimsCore.DataObj
 {
     public class DimsAlignmentRefiner : AlignmentRefiner
     {
+        public DimsAlignmentRefiner(MsdialDimsParameter param) : base(param) { }
+
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var spots = alignments.OrderBy(spot => spot.MassCenter).ToList();
-            var master = new List<AlignmentSpotProperty> { new AlignmentSpotProperty { MassCenter = double.MaxValue } }; // add sentinel
+            var master = new List<AlignmentSpotProperty> {
+                new AlignmentSpotProperty { MassCenter = double.MinValue },
+                new AlignmentSpotProperty { MassCenter = double.MaxValue } }; // add sentinel
             var ms1Tol = _param.Ms1AlignmentTolerance;
 
             master = MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched), master, ms1Tol);
             master = MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched), master, ms1Tol);
             master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber == 0), master, ms1Tol);
 
-            master.RemoveAt(master.Count - 1); // remove sentinel
-
-            return master.ToList();
+            return master.Skip(1).Take(master.Count - 2).ToList(); // skip sentinel
         }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) {

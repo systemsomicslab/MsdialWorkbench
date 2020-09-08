@@ -63,8 +63,8 @@ namespace CompMs.MsdialCore.Algorithm
                 var range = 5;
 
                 id = minId;
-                leftId = id - 1;
-                rightId = id + 1;
+                leftId = Math.Max(id - 1, 0);
+                rightId = Math.Min(id + 1, sPeaklist.Count - 1);
 
                 var limit = Math.Max(id - range, 0);
                 while (limit < leftId) {
