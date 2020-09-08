@@ -18,13 +18,23 @@ namespace CompMs.Graphics.Base
             manager = manager_;
         }
 
-        public double ValueToRenderPosition(object value) {
+        public AxisValue TranslateToAxisValue(object value) {
+            return manager.TranslateToAxisValue(value);
+        }
+
+        public double TranslateToRenderPoint(AxisValue value) {
             return manager.TranslateToRenderPoint(value);
         }
-        public AxisValue RenderPositionToValue(double value) {
+
+        public double TranslateToRenderPoint(object value) {
+            return manager.TranslateToRenderPoint(value);
+        }
+
+        public AxisValue TranslateFromRenderPoint(double value) {
             return manager.TranslateFromRenderPoint(value);
         }
-        public List<double> ValuesToRenderPositions(IEnumerable<object> values) {
+
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values) {
             return manager.TranslateToRenderPoints(values);
         }
     }

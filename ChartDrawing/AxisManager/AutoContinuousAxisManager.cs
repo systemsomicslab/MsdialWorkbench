@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,17 +40,18 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         #region field
-        private Type dataType;
+        protected Type dataType;
+        protected PropertyInfo vProp;
         #endregion
 
         void SetMinAndMaxValues() {
             if (ValuePropertyName == null || ItemsSource == null || dataType == null)
                 return;
 
-            var propInfo = dataType.GetProperty(ValuePropertyName);
+            vProp = dataType.GetProperty(ValuePropertyName);
             double min = double.MaxValue, max = double.MinValue;
             foreach (var o in ItemsSource) {
-                var v = Convert.ToDouble((IConvertible)propInfo.GetValue(o));
+                var v = Convert.ToDouble((IConvertible)vProp.GetValue(o));
                 min = Math.Min(min, v);
                 max = Math.Max(max, v);
             }
@@ -57,15 +59,20 @@ namespace CompMs.Graphics.AxisManager
             MaxValue = max;
         }
 
+        protected virtual void SetAxisStates() {
+            if (ItemsSource != null) {
+                var enumerator = ItemsSource?.GetEnumerator();
+                if (enumerator == null || !enumerator.MoveNext()) return;
+                dataType = enumerator.Current.GetType();
+            }
+        }
+
         #region Event handler
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = d as AutoContinuousAxisManager;
             if (axis == null) return;
 
-            var enumerator = axis.ItemsSource?.GetEnumerator();
-            if (enumerator == null || !enumerator.MoveNext()) return;
-            axis.dataType = enumerator.Current.GetType();
-
+            axis.SetAxisStates();
             axis.SetMinAndMaxValues();
         }
 
@@ -73,6 +80,7 @@ namespace CompMs.Graphics.AxisManager
             var axis = d as AutoContinuousAxisManager;
             if (axis == null) return;
 
+            axis.SetAxisStates();
             axis.SetMinAndMaxValues();
         }
         #endregion

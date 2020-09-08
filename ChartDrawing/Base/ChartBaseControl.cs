@@ -109,9 +109,9 @@ namespace CompMs.Graphics.Core.Base
         {
             double x = 0, y = 0;
             if (HorizontalAxis != null)
-                x = HorizontalAxis.RenderPositionToValue(p.X / ActualWidth).Value;
+                x = HorizontalAxis.TranslateFromRenderPoint(p.X / ActualWidth).Value;
             if (VerticalAxis != null)
-                y = VerticalAxis.RenderPositionToValue(p.Y / ActualHeight).Value;
+                y = VerticalAxis.TranslateFromRenderPoint(p.Y / ActualHeight).Value;
             return new Point(x, y);
         }
 

@@ -137,8 +137,8 @@ namespace CompMs.Graphics.Heatmap
 
             visualChildren.Clear();
             double zmax = double.MinValue, zmin = double.MaxValue;
-            double xwidth = (HorizontalAxis.ValueToRenderPosition(1d) - HorizontalAxis.ValueToRenderPosition(0d)) * ActualWidth;
-            double ywidth = (VerticalAxis.ValueToRenderPosition(1d) - VerticalAxis.ValueToRenderPosition(0d)) * ActualHeight;
+            double xwidth = (HorizontalAxis.TranslateToRenderPoint(1d) - HorizontalAxis.TranslateToRenderPoint(0d)) * ActualWidth;
+            double ywidth = (VerticalAxis.TranslateToRenderPoint(1d) - VerticalAxis.TranslateToRenderPoint(0d)) * ActualHeight;
             foreach(var o in cv)
             {
                 var z = zPropertyReflection.GetValue(o);
@@ -152,8 +152,8 @@ namespace CompMs.Graphics.Heatmap
                 var y = vPropertyReflection.GetValue(o);
 
                 double xx, yy, zz;
-                xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-                yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
+                xx = HorizontalAxis.TranslateToRenderPoint(x) * ActualWidth;
+                yy = VerticalAxis.TranslateToRenderPoint(y) * ActualHeight;
 
                 if (xx == double.NaN || yy == double.NaN) continue;
 

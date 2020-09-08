@@ -128,7 +128,7 @@ namespace CompMs.Graphics.Dendrogram
 
             Tree.PreOrder(root, e => ypos[e.To] = ypos[e.From] + e.Distance);
             var ymax = ypos.Max();
-            ypos = ypos.Select(y => VerticalAxis.ValueToRenderPosition(ymax - y) * ActualHeight).ToArray();
+            ypos = ypos.Select(y => VerticalAxis.TranslateToRenderPoint(ymax - y) * ActualHeight).ToArray();
             
             foreach(var o in cv)
             {
@@ -136,13 +136,13 @@ namespace CompMs.Graphics.Dendrogram
                 var id = (int)idPropertyReflection.GetValue(o);
 
                 if (x is double)
-                    xpos[id] = HorizontalAxis.ValueToRenderPosition((double)x) * ActualWidth;
+                    xpos[id] = HorizontalAxis.TranslateToRenderPoint((double)x) * ActualWidth;
                 else if (x is string)
-                    xpos[id] = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+                    xpos[id] = HorizontalAxis.TranslateToRenderPoint(x) * ActualWidth;
                 else if (x is IConvertible)
-                    xpos[id] = HorizontalAxis.ValueToRenderPosition(x as IConvertible) * ActualWidth;
+                    xpos[id] = HorizontalAxis.TranslateToRenderPoint(x as IConvertible) * ActualWidth;
                 else
-                    xpos[id] = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+                    xpos[id] = HorizontalAxis.TranslateToRenderPoint(x) * ActualWidth;
 
                 used[id] = true;
             }
