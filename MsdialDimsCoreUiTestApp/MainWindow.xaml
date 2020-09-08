@@ -210,9 +210,16 @@
                               Grid.Row="1" />
 
                 <!-- Ms2 spectrum -->
-                <view:MS2SpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
-                                         Margin="0,0,5,5"
-                                         Grid.Row="2"/>
+                <TabControl Grid.Row="2">
+                    <TabItem Header="Simple" Background="{StaticResource ThemeBrush}">
+                        <view:MS2SpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                                                 Margin="0,0,5,5"/>
+                    </TabItem>
+                    <TabItem Header="Reverse" Background="{StaticResource ThemeBrush}">
+                        <view:MS2ReverseSpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                                                        Margin="0,0,5,5"/>
+                    </TabItem>
+                </TabControl>
                 
             </Grid>
 

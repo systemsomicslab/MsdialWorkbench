@@ -27,6 +27,10 @@ namespace CompMs.Graphics.Core.Base
         public int CompareTo(AxisValue other) {
             return Value.CompareTo(other.Value);
         }
+
+        public override string ToString() {
+            return Value.ToString();
+        }
     }
 
     public class AxisValueTypeConverter : TypeConverter

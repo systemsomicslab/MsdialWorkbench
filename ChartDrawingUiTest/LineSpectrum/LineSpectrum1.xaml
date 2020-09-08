@@ -28,6 +28,7 @@
                                                  TargetPropertyName="X" ValuePropertyName="Y"
                                                  TargetRange="{Binding Range, Source={StaticResource HorizontalAxis}}"
                                                  ChartMargin="0.05"
+                                                 Bounds="0,0"
                                                  IsFlipped="True"/>
     </Page.Resources>
     <Grid DataContext="{StaticResource LineSpectrumVM}">

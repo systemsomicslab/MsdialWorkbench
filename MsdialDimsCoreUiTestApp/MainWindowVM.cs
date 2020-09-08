@@ -350,8 +350,9 @@ namespace MsdialDimsCoreUiTestApp
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
                         Centroids = ScalingSpectrumPeaks(feature.Spectrum),
-                        RefMatched = feature.Name != string.Empty && !feature.Name.Contains("w/o"),
-                        Suggested = feature.Name.Contains("w/o"),
+                        MspMatch = feature.MspID() < 0 ? null : mspDB[feature.MspID()],
+                        RefMatched = feature.IsReferenceMatched(),
+                        Suggested = feature.IsAnnotationSuggested(),
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
@@ -421,13 +422,13 @@ namespace MsdialDimsCoreUiTestApp
         }
     }
 
-    internal class Ms2Info
-    {
+    internal class Ms2Info {
         public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
         public int PeakID { get; set; }
         public double Mass { get; set; }
         public double Intensity { get; set; }
         public List<SpectrumPeak> Centroids { get; set; }
+        public MoleculeMsReference MspMatch {get;set;}
         public bool RefMatched { get; set; }
         public bool Suggested { get; set; }
         public bool Ms2Acquired { get; set; }

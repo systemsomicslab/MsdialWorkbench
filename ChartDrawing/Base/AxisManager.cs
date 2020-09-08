@@ -24,7 +24,12 @@ namespace CompMs.Graphics.Core.Base
         #region DependencyProperty
         public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
             nameof(Range), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnRangeChanged)
+            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnRangeChanged, CoerceRangeValue)
+            );
+
+        public static readonly DependencyProperty BoundsProperty = DependencyProperty.Register(
+            nameof(Bounds), typeof(Range), typeof(AxisManager),
+            new PropertyMetadata(null, OnBoundsChanged)
             );
 
         public static readonly DependencyProperty InitialRangeProperty = DependencyProperty.Register(
@@ -62,6 +67,11 @@ namespace CompMs.Graphics.Core.Base
         public Range Range {
             get => (Range)GetValue(RangeProperty);
             set => SetValue(RangeProperty, value);
+        }
+
+        public Range Bounds {
+            get => (Range)GetValue(BoundsProperty);
+            set => SetValue(BoundsProperty, value);
         }
 
         public Range InitialRange {
@@ -131,6 +141,16 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Event
+        static object CoerceRangeValue(DependencyObject d, object value) {
+            var axis = d as AxisManager;
+
+            var bounds = axis.Bounds;
+            if (bounds == null || !(value is Range range)) return value;
+            if (bounds.Minimum < range.Minimum) range.Minimum = bounds.Minimum;
+            if (bounds.Maximum > range.Maximum) range.Maximum = bounds.Maximum;
+            return range;
+        }
+
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is AxisManager axis)
                 axis.Range = (Range)e.NewValue;
@@ -143,6 +163,12 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
+        static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is AxisManager axis) {
+                axis.Range = axis.Range;
+            }
+        }
+
         static void OnIsFlippedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is AxisManager axis) {
@@ -152,9 +178,6 @@ namespace CompMs.Graphics.Core.Base
         }
         #endregion
 
-        public virtual List<LabelTickData> GetLabelTicks()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract List<LabelTickData> GetLabelTicks();
     }
 }

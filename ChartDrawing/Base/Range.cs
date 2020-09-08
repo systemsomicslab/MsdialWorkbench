@@ -28,7 +28,7 @@ namespace CompMs.Graphics.Core.Base
 
             var values = text.Split(',');
 
-            if (values.Length != 2) throw new ArgumentException();
+            if (values.Length != 2) return null;
 
             if (!double.TryParse(values[0].Trim(), out var min)) return null;
             if (!double.TryParse(values[1].Trim(), out var max)) return null;
