@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.Graphics.Core.Base
 {
+    [TypeConverter(typeof(AxisValueTypeConverter))]
     public struct AxisValue
     {
         public double Value { get; }
@@ -36,7 +37,7 @@ namespace CompMs.Graphics.Core.Base
                     return new AxisValue(v);
                 }
             }
-            throw new ArgumentException();
+            return null;
         }
     }
 }

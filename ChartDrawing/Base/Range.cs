@@ -24,14 +24,14 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-            if (!(value is string text)) throw new ArgumentException();
+            if (!(value is string text)) return null;
 
             var values = text.Split(',');
 
             if (values.Length != 2) throw new ArgumentException();
 
-            if (!double.TryParse(values[0].Trim(), out var min)) throw new ArgumentException();
-            if (!double.TryParse(values[1].Trim(), out var max)) throw new ArgumentException();
+            if (!double.TryParse(values[0].Trim(), out var min)) return null;
+            if (!double.TryParse(values[1].Trim(), out var max)) return null;
 
             return new Range(new AxisValue(min), new AxisValue(max));
         }

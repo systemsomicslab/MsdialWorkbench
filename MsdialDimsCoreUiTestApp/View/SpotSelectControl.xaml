@@ -11,11 +11,16 @@
              x:Name="SpotSelector"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
-                                       MinValue="{Binding DataContext.Ms1Area.Top, Source={x:Reference Name=SpotSelector}}"
-                                       MaxValue="{Binding DataContext.Ms1Area.Bottom, Source={x:Reference Name=SpotSelector}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="IntensityAxisManager"
+                                           ItemsSource="{Binding DataContext.AlignmentContainer.AlignmentSpotProperties, Source={x:Reference Name=SpotSelector}}"
+                                           ValuePropertyName="HeightMax"
+                                           Min="0"
+                                           ChartMargin="0.02, 0.05"
+                                           IsFlipped="True" />
+        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
+                                           ItemsSource="{Binding DataContext.AlignmentContainer.AlignmentSpotProperties, Source={x:Reference Name=SpotSelector}}"
+                                           ValuePropertyName="MassCenter"
+                                           ChartMargin="0.02, 0.02" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -32,7 +37,7 @@
         </Grid.RowDefinitions>
         <scatter:ScatterControl x:Name="PeakScatter"
                                 ItemsSource="{Binding AlignmentContainer.AlignmentSpotProperties}"
-                                HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
                                 RangeX="{Binding Range, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                 RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
@@ -40,7 +45,7 @@
                                 VerticalPropertyName="HeightMax"
                                 Grid.Row="0" Grid.Column="3" />
         <axis:HorizontalAxisControl x:Name="MzAxis"
-                                    DataContext="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                    DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                     HorizontalAxis="{Binding AxisMapper}"
                                     LabelTicks="{Binding LabelTicks}"
                                     RangeX="{Binding Range}"

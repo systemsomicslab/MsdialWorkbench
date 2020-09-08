@@ -8,6 +8,8 @@
 
     <view:SmilesToImageConverter x:Key="SmilesToImage" />
 
+    <SolidColorBrush x:Key="ThemeBrush" Color="LightSteelBlue" />
+
     <DataTemplate DataType="{x:Type local:Ms2Info}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="PeakID: "/>
@@ -31,6 +33,8 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions >
+                    <RowDefinition />
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -70,9 +74,89 @@
                 <TextBlock Text="{Binding InChIKey}"
                            TextWrapping="Wrap"
                            Grid.Column="1" Grid.Row="4" />
+                <TextBlock Text="Mass: "
+                           Grid.Column="0" Grid.Row="5" />
+                <TextBlock Text="{Binding Mass}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="5" />
+                <TextBlock Text="Intensity: "
+                           Grid.Column="0" Grid.Row="6" />
+                <TextBlock Text="{Binding PeakHeightTop}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="6" />
                 <Image Source="{Binding SMILES, Converter={StaticResource SmilesToImage}}"
                        Stretch="Uniform"
-                       Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" />
+                       Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" />
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type do:AlignmentSpotProperty}">
+        <Border BorderThickness="1"
+                BorderBrush="Gray"
+                HorizontalAlignment="Stretch"
+                Padding="5,2"
+                Margin="0,2" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions >
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Name: "
+                           Grid.Column="0" Grid.Row="0" />
+                <TextBlock Grid.Column="1" Grid.Row="0" >
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="{Binding Name}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Name}" Value="">
+                                    <Setter Property="Text" Value="Unknown" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="Formula: "
+                           Grid.Column="0" Grid.Row="1" />
+                <TextBlock Text="{Binding Formula}"
+                           Grid.Column="1" Grid.Row="1" />
+                <TextBlock Text="Ontology: "
+                           Grid.Column="0" Grid.Row="2" />
+                <TextBlock Text="{Binding Ontology}"
+                           Grid.Column="1" Grid.Row="2" />
+                <TextBlock Text="SMILES: "
+                           Grid.Column="0" Grid.Row="3" />
+                <TextBlock Text="{Binding SMILES}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="3" />
+                <TextBlock Text="InCHIKey: "
+                           Grid.Column="0" Grid.Row="4" />
+                <TextBlock Text="{Binding InChIKey}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="4" />
+                <TextBlock Text="Mass: "
+                           Grid.Column="0" Grid.Row="5" />
+                <TextBlock Text="{Binding MassCenter}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="5" />
+                <TextBlock Text="Intensity: "
+                           Grid.Column="0" Grid.Row="6" />
+                <TextBlock Text="{Binding HeightMax}"
+                           TextWrapping="Wrap"
+                           Grid.Column="1" Grid.Row="6" />
+                <Image Source="{Binding SMILES, Converter={StaticResource SmilesToImage}}"
+                       Stretch="Uniform"
+                       Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" />
             </Grid>
         </Border>
     </DataTemplate>
