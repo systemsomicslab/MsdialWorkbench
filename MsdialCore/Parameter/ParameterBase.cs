@@ -361,6 +361,8 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsLabPrivate { get; set; } = false;
         [Key(139)]
         public bool IsLabPrivateVersionTada { get; set; } = false;
+        [Key(149)]
+        public bool QcAtLeastFilter { get; set; } = false;
 
         //Tracking of isotope labeles
         [Key(140)]
@@ -379,6 +381,7 @@ namespace CompMs.MsdialCore.Parameter {
         // corrdec
         [Key(146)]
         public CorrDecParam CorrDecParam { get; set; } = new CorrDecParam();
+
 
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();

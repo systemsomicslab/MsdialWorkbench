@@ -350,9 +350,9 @@ namespace MsdialDimsCoreUiTestApp
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
                         Centroids = ScalingSpectrumPeaks(feature.Spectrum),
-                        MspMatch = feature.MspID() < 0 ? null : mspDB[feature.MspID()],
-                        RefMatched = feature.IsReferenceMatched(),
-                        Suggested = feature.IsAnnotationSuggested(),
+                        MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
+                        RefMatched = feature.IsReferenceMatched,
+                        Suggested = feature.IsAnnotationSuggested,
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
