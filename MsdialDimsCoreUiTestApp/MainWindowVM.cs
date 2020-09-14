@@ -242,6 +242,7 @@ namespace MsdialDimsCoreUiTestApp
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
             var aligner = new PeakAligner(
                 new DimsPeakComparer(param.Ms1AlignmentTolerance),
+                new DimsPeakJoiner(param.Ms1AlignmentTolerance, param.Ms1AlignmentFactor),
                 new DimsAlignmentProcessFactory(analysisFiles.ToList(), param),
                 new DimsAlignmentRefiner(param),
                 param, iupac);

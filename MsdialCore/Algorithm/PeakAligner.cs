@@ -21,13 +21,15 @@ namespace CompMs.MsdialCore.Algorithm
     public class PeakAligner
     {
         PeakComparer Comparer { get; set; }
+        PeakJoiner Joiner { get; set; }
         AlignmentRefiner Refiner { get; set; }
         AlignmentProcessFactory AProcessFactory { get; set; }
         ParameterBase Param { get; set; }
         IupacDatabase Iupac { get; set; }
 
-        public PeakAligner(PeakComparer comparer, AlignmentProcessFactory factory, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
+        public PeakAligner(PeakComparer comparer, PeakJoiner joiner, AlignmentProcessFactory factory, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
+            Joiner = joiner;
             AProcessFactory = factory;
             Refiner = refiner;
             Param = param;
@@ -60,40 +62,10 @@ namespace CompMs.MsdialCore.Algorithm
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
                 var target = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
-                if (Param.IsIonMobility)
-                    MergeChromatogramPeaksIm(master, target);
-                else
-                    MergeChromatogramPeaks(master, target);
+                master = Joiner.MergeChromatogramPeaks(master, target);
             }
 
             return master;
-        }
-
-        // TODO: too slow. O(nm) 
-        private void MergeChromatogramPeaks(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
-            foreach (var target in targets) {
-                if (!masters.Any(m => Comparer.Equals(m, target))) {
-                    masters.Add(target);
-                }
-            }
-        }
-
-        private void MergeChromatogramPeaksIm(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
-            var masters_itr = masters.Cast<ChromatogramPeakFeature>();
-            var targets_itr = targets.Cast<ChromatogramPeakFeature>();
-            foreach (var target in targets_itr) {
-                var master_sim = masters_itr.Where(m => Comparer.Equals(m, target)).ToArray();
-                if (master_sim.Length == 0) {
-                    masters.Add(target);
-                }
-                foreach (var master in master_sim) {
-                    foreach (var tdrift in target.DriftChromFeatures) {
-                        if (!master.DriftChromFeatures.Any(mdrift => Comparer.Equals(mdrift, tdrift))) {
-                            master.DriftChromFeatures.Add(tdrift);
-                        }
-                    }
-                }
-            }
         }
 
         private List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<IMSScanProperty> masters, IEnumerable<AnalysisFileBean> analysisFiles) {
@@ -144,66 +116,10 @@ namespace CompMs.MsdialCore.Algorithm
             
             foreach (var analysisFile in analysisFiles) {
                 var chromatogram = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
-                if (Param.IsIonMobility) {
-                    AlignPeaksToSpotsIm(chromatogram, result, analysisFile.AnalysisFileId);
-                }
-                else {
-                    AlignPeaksToMaster(chromatogram, master, result, analysisFile.AnalysisFileId);
-                }
+                Joiner.AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
             }
             
             return result;
-        }
-
-        // TODO: too slow.
-        private void AlignPeaksToMaster(IEnumerable<IMSScanProperty> peaks, IReadOnlyList<IMSScanProperty> master, IList<AlignmentSpotProperty> spots, int fileId) {
-            var n = master.Count;
-            var maxMatchs = new double[n];
-
-            foreach (var peak in peaks) {
-                // TODO: check tolerance
-                int? matchIdx = null;
-                double matchFactor = double.MinValue;
-                for (var i = 0; i < n; i++) {
-                    var factor = Comparer.GetSimilality(master[i], peak);
-                    if (factor > maxMatchs[i] && factor > matchFactor) {
-                        matchIdx = i;
-                        matchFactor = factor;
-                    }
-                }
-                if (matchIdx.HasValue)
-                    DataObjConverter.SetAlignmentChromPeakFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], peak, Param.MachineCategory);
-            }
-        }
-
-        private void AlignPeaksToSpotsIm(IEnumerable<IMSScanProperty> peaks, IList<AlignmentSpotProperty> spots, int fileId) {
-            var chromatogram = peaks.Cast<ChromatogramPeakFeature>();
-            var maxMatchs = new Dictionary<int, double>();
-
-            foreach (var peak in chromatogram) {
-                foreach (var drift in peak.DriftChromFeatures) {
-                    int? matchId = null;
-                    double matchFactor = double.MinValue;
-                    foreach (var spot in spots) {
-                        foreach (var sdrift in spot.AlignmentDriftSpotFeatures) {
-                            var factor = 0; // Comparer.GetSimilality(drift, sdrift);
-                            if (factor > maxMatchs[sdrift.MasterAlignmentID] && factor > matchFactor) {
-                                matchId = sdrift.MasterAlignmentID;
-                                matchFactor = factor;
-                            }
-                        }
-                    }
-                    if (matchId.HasValue) {
-                        var driftspot = spots.SelectMany(v => v.AlignmentDriftSpotFeatures).FirstOrDefault(v => v.MasterAlignmentID == matchId);
-                        var dpeak = driftspot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == fileId);
-                        DataObjConverter.SetAlignmentChromPeakFeature(dpeak, drift, Param.MachineCategory);
-
-                        var spot = spots.FirstOrDefault(v => v.MasterAlignmentID == driftspot.ParentAlignmentID);
-                        var apeak = spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == fileId);
-                        DataObjConverter.SetAlignmentChromPeakFeature(apeak, peak, Param.MachineCategory);
-                    }
-                }
-            }
         }
 
         protected virtual List<AlignmentSpotProperty> FilterAlignments(
@@ -258,7 +174,7 @@ namespace CompMs.MsdialCore.Algorithm
             }
             var result = new List<AlignmentSpotProperty>();
             foreach (var spot in spots)
-                result.Add(RepackingSpot(spot));
+                result.Add(PackingSpot(spot));
 
             SerializeSpotInfo(result, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
             foreach (var f in files)
@@ -458,10 +374,10 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        private AlignmentSpotProperty RepackingSpot(AlignmentSpotProperty spot) {
+        private AlignmentSpotProperty PackingSpot(AlignmentSpotProperty spot) {
             var childs = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.Count);
             foreach (var child in spot.AlignmentDriftSpotFeatures)
-                childs.Add(RepackingSpot(child));
+                childs.Add(PackingSpot(child));
 
             var result = DataObjConverter.ConvertFeatureToSpot(spot.AlignedPeakProperties);
             result.AlignmentDriftSpotFeatures = childs;

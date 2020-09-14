@@ -21,70 +21,78 @@ namespace CompMs.MsdialCore.Utility
             return result;
         }
             
+        public static void SetAlignmentChromPeakFeatureFromMSDecResult(AlignmentChromPeakFeature alignmentPeak, MSDecResult peak) {
+            alignmentPeak.MasterPeakID = peak.ScanID;
+            alignmentPeak.PeakID = peak.ScanID;
+            alignmentPeak.SeekPointToDCLFile = peak.SeekPoint;
+            alignmentPeak.MS1RawSpectrumID = peak.RawSpectrumID;
+            alignmentPeak.MS1RawSpectrumIdTop = peak.RawSpectrumID;
+            alignmentPeak.ChromXsTop = peak.ChromXs;
+            alignmentPeak.ChromXsLeft = peak.ModelPeakChromatogram[0].ChromXs;
+            alignmentPeak.ChromXsRight = peak.ModelPeakChromatogram[peak.ModelPeakChromatogram.Count - 1].ChromXs;
+            alignmentPeak.PeakHeightTop = peak.ModelPeakHeight;
+            alignmentPeak.PeakAreaAboveZero = peak.ModelPeakArea;
+            alignmentPeak.Mass = peak.ModelPeakMz;
+            alignmentPeak.IonMode = peak.IonMode;
+            alignmentPeak.MSRawID2MspIDs = new Dictionary<int, List<int>>() { { peak.RawSpectrumID, peak.MspIDs } };
+            alignmentPeak.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>() { { peak.RawSpectrumID, peak.MspBasedMatchResult } };
+            alignmentPeak.PeakShape = new ChromatogramPeakShape()
+            {
+                EstimatedNoise = peak.EstimatedNoise, SignalToNoise = peak.SignalNoiseRatio, AmplitudeScoreValue = peak.AmplitudeScore,
+                PeakPureValue = peak.ModelPeakPurity, IdealSlopeValue = peak.ModelPeakQuality
+            };
+        }
+
+        public static void SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(AlignmentChromPeakFeature alignmentPeak, ChromatogramPeakFeature peak) {
+            alignmentPeak.MasterPeakID = peak.MasterPeakID;
+            alignmentPeak.PeakID = peak.PeakID;
+            alignmentPeak.ParentPeakID = peak.ParentPeakID;
+            alignmentPeak.SeekPointToDCLFile = peak.SeekPointToDCLFile;
+            alignmentPeak.MS1RawSpectrumID = peak.ScanID;
+            alignmentPeak.MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop;
+            alignmentPeak.MS2RawSpectrumID = peak.MS2RawSpectrumID;
+            alignmentPeak.MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE;
+            alignmentPeak.ChromScanIdLeft = peak.ChromScanIdLeft;
+            alignmentPeak.ChromScanIdRight = peak.ChromScanIdRight;
+            alignmentPeak.ChromScanIdTop = peak.ChromScanIdTop;
+            alignmentPeak.MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop;
+            alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
+            alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
+            alignmentPeak.MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop;
+            alignmentPeak.MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft;
+            alignmentPeak.MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight;
+            alignmentPeak.ChromXsLeft = peak.ChromXsLeft;
+            alignmentPeak.ChromXsTop = peak.ChromXsTop;
+            alignmentPeak.ChromXsRight = peak.ChromXsRight;
+            alignmentPeak.PeakHeightLeft = peak.PeakHeightLeft;
+            alignmentPeak.PeakHeightTop = peak.PeakHeightTop;
+            alignmentPeak.PeakHeightRight = peak.PeakHeightRight;
+            alignmentPeak.PeakAreaAboveZero = peak.PeakAreaAboveZero;
+            alignmentPeak.PeakAreaAboveBaseline = peak.PeakAreaAboveBaseline;
+            alignmentPeak.Mass = peak.Mass;
+            alignmentPeak.IonMode = peak.IonMode;
+            alignmentPeak.Name = peak.Name;
+            alignmentPeak.Formula = peak.Formula;
+            alignmentPeak.Ontology = peak.Ontology;
+            alignmentPeak.SMILES = peak.SMILES;
+            alignmentPeak.InChIKey = peak.InChIKey;
+            alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
+            alignmentPeak.MSRawID2MspIDs = peak.MSRawID2MspIDs;
+            alignmentPeak.TextDbIDs = peak.TextDbIDs;
+            alignmentPeak.MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult;
+            alignmentPeak.TextDbBasedMatchResult = peak.TextDbBasedMatchResult;
+            alignmentPeak.PeakCharacter = peak.PeakCharacter;
+            alignmentPeak.PeakShape = peak.PeakShape;
+        }
+
         public static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature alignmentPeak, IMSScanProperty peakobj, MachineCategory category) {
             if (category == MachineCategory.GCMS) {
                 var peak = (MSDecResult)peakobj;
-                alignmentPeak.MasterPeakID = peak.ScanID;
-                alignmentPeak.PeakID = peak.ScanID;
-                alignmentPeak.SeekPointToDCLFile = peak.SeekPoint;
-                alignmentPeak.MS1RawSpectrumID = peak.RawSpectrumID;
-                alignmentPeak.MS1RawSpectrumIdTop = peak.RawSpectrumID;
-                alignmentPeak.ChromXsTop = peak.ChromXs;
-                alignmentPeak.ChromXsLeft = peak.ModelPeakChromatogram[0].ChromXs;
-                alignmentPeak.ChromXsRight = peak.ModelPeakChromatogram[peak.ModelPeakChromatogram.Count - 1].ChromXs;
-                alignmentPeak.PeakHeightTop = peak.ModelPeakHeight;
-                alignmentPeak.PeakAreaAboveZero = peak.ModelPeakArea;
-                alignmentPeak.Mass = peak.ModelPeakMz;
-                alignmentPeak.IonMode = peak.IonMode;
-                alignmentPeak.MSRawID2MspIDs = new Dictionary<int, List<int>>() { { peak.RawSpectrumID, peak.MspIDs } };
-                alignmentPeak.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>() { { peak.RawSpectrumID, peak.MspBasedMatchResult } };
-                alignmentPeak.PeakShape = new ChromatogramPeakShape()
-                {
-                    EstimatedNoise = peak.EstimatedNoise, SignalToNoise = peak.SignalNoiseRatio, AmplitudeScoreValue = peak.AmplitudeScore,
-                    PeakPureValue = peak.ModelPeakPurity, IdealSlopeValue = peak.ModelPeakQuality
-                };
+                SetAlignmentChromPeakFeatureFromMSDecResult(alignmentPeak, peak);
             }
             else {
                 var peak = (ChromatogramPeakFeature)peakobj;
-                alignmentPeak.MasterPeakID = peak.MasterPeakID;
-                alignmentPeak.PeakID = peak.PeakID;
-                alignmentPeak.ParentPeakID = peak.ParentPeakID;
-                alignmentPeak.SeekPointToDCLFile = peak.SeekPointToDCLFile;
-                alignmentPeak.MS1RawSpectrumID = peak.ScanID;
-                alignmentPeak.MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop;
-                alignmentPeak.MS2RawSpectrumID = peak.MS2RawSpectrumID;
-                alignmentPeak.MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE;
-                alignmentPeak.ChromScanIdLeft = peak.ChromScanIdLeft;
-                alignmentPeak.ChromScanIdRight = peak.ChromScanIdRight;
-                alignmentPeak.ChromScanIdTop = peak.ChromScanIdTop;
-                alignmentPeak.MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop;
-                alignmentPeak.MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft;
-                alignmentPeak.MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight;
-                alignmentPeak.MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop;
-                alignmentPeak.MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft;
-                alignmentPeak.MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight;
-                alignmentPeak.ChromXsLeft = peak.ChromXsLeft;
-                alignmentPeak.ChromXsTop = peak.ChromXsTop;
-                alignmentPeak.ChromXsRight = peak.ChromXsRight;
-                alignmentPeak.PeakHeightLeft = peak.PeakHeightLeft;
-                alignmentPeak.PeakHeightTop = peak.PeakHeightTop;
-                alignmentPeak.PeakHeightRight = peak.PeakHeightRight;
-                alignmentPeak.PeakAreaAboveZero = peak.PeakAreaAboveZero;
-                alignmentPeak.PeakAreaAboveBaseline = peak.PeakAreaAboveBaseline;
-                alignmentPeak.Mass = peak.Mass;
-                alignmentPeak.IonMode = peak.IonMode;
-                alignmentPeak.Name = peak.Name;
-                alignmentPeak.Formula = peak.Formula;
-                alignmentPeak.Ontology = peak.Ontology;
-                alignmentPeak.SMILES = peak.SMILES;
-                alignmentPeak.InChIKey = peak.InChIKey;
-                alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
-                alignmentPeak.MSRawID2MspIDs = peak.MSRawID2MspIDs;
-                alignmentPeak.TextDbIDs = peak.TextDbIDs;
-                alignmentPeak.MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult;
-                alignmentPeak.TextDbBasedMatchResult = peak.TextDbBasedMatchResult;
-                alignmentPeak.PeakCharacter = peak.PeakCharacter;
-                alignmentPeak.PeakShape = peak.PeakShape;
+                SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(alignmentPeak, peak);
             }
         }
 
