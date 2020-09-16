@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;

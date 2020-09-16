@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
@@ -22,15 +20,15 @@ namespace CompMs.MsdialCore.Algorithm
     {
         PeakComparer Comparer { get; set; }
         PeakJoiner Joiner { get; set; }
+        GapFiller Filler { get; set; }
         AlignmentRefiner Refiner { get; set; }
-        AlignmentProcessFactory AProcessFactory { get; set; }
         ParameterBase Param { get; set; }
         IupacDatabase Iupac { get; set; }
 
-        public PeakAligner(PeakComparer comparer, PeakJoiner joiner, AlignmentProcessFactory factory, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
+        public PeakAligner(PeakComparer comparer, PeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
             Joiner = joiner;
-            AProcessFactory = factory;
+            Filler = filler;
             Refiner = refiner;
             Param = param;
             Iupac = iupac;
@@ -163,13 +161,12 @@ namespace CompMs.MsdialCore.Algorithm
 
             var files = new List<string>();
             var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-            var quantMasses = GetQuantmassDictionary(analysisFiles, spots);
 
             foreach ((var analysisFile, var idx) in analysisFiles.WithIndex()) {
                 var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
                 foreach (var spot in spots)
                     peaks.Add(spot.AlignedPeakProperties[idx]);
-                var file = CollectAlignmentPeaks(analysisFile, peaks, spots, quantMasses, chromPeakInfoSerializer);
+                var file = CollectAlignmentPeaks(analysisFile, peaks, spots, chromPeakInfoSerializer);
                 files.Add(file);
             }
             var result = new List<AlignmentSpotProperty>();
@@ -184,110 +181,17 @@ namespace CompMs.MsdialCore.Algorithm
             return result;
         }
 
-        private List<double> GetQuantmassDictionary(IReadOnlyList<AnalysisFileBean> analysisFiles, List<AlignmentSpotProperty> spots) {
-            var sampleNum = analysisFiles.Count;
-            var peakNum = spots.Count;
-            var quantmasslist = Enumerable.Repeat<double>(-1, peakNum).ToList();
-
-            if (Param.MachineCategory != MachineCategory.GCMS) return quantmasslist;
-
-            var isReplaceMode = !this.AProcessFactory.MspDB.IsEmptyOrNull();
-            var bin = this.Param.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
-            for (int i = 0; i < peakNum; i++) {
-                var alignment = spots[i].AlignedPeakProperties;
-                var repFileID = DataObjConverter.GetRepresentativeFileID(alignment);
-                
-                if (isReplaceMode && alignment[repFileID].MspID() >= 0) {
-                    var refQuantMass = this.AProcessFactory.MspDB[alignment[repFileID].MspID()].QuantMass;
-                    if (refQuantMass >= this.Param.MassRangeBegin && refQuantMass <= this.Param.MassRangeEnd) {
-                        quantmasslist[i] = refQuantMass; continue;
-                    }
-                }
-
-                var dclFile = analysisFiles[repFileID].DeconvolutionFilePath;
-                var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, alignment[repFileID].SeekPointToDCLFile);
-                var spectrum = msdecResult.Spectrum;
-                var quantMassDict = new Dictionary<double, List<double>>();
-                var maxPeakHeight = alignment.Max(n => n.PeakHeightTop);
-                var repQuantMass = alignment[repFileID].Mass;
-
-                foreach (var feature in alignment.Where(n => n.PeakHeightTop > maxPeakHeight * 0.1)) {
-                    var quantMass = Math.Round(feature.Mass, bin);
-                    if (!quantMassDict.Keys.Contains(quantMass))
-                        quantMassDict[quantMass] = new List<double>() { feature.Mass };
-                    else
-                        quantMassDict[quantMass].Add(feature.Mass);
-                }
-                var maxQuant = 0.0; var maxCount = 0;
-                foreach (var pair in quantMassDict)
-                    if (pair.Value.Count > maxCount) { maxCount = pair.Value.Count; maxQuant = pair.Key; }
-
-                var quantMassCandidate = quantMassDict[maxQuant].Average();
-                var basepeakMz = 0.0;
-                var basepeakIntensity = 0.0;
-                var isQuantMassExist = isQuantMassExistInSpectrum(quantMassCandidate, spectrum, this.Param.CentroidMs1Tolerance, 10.0F, out basepeakMz, out basepeakIntensity);
-                if (AProcessFactory.IsRepresentativeQuantMassBasedOnBasePeakMz) {
-                    quantmasslist[i] = basepeakMz; continue;
-                }
-                if (isQuantMassExist) {
-                    quantmasslist[i] = quantMassCandidate; continue;
-                }
-
-                var isSuitableQuantMassExist = false;
-                foreach (var peak in spectrum) {
-                    if (peak.Mass < repQuantMass - bin) continue;
-                    if (peak.Mass > repQuantMass + bin) break;
-                    var diff = Math.Abs(peak.Mass - repQuantMass);
-                    if (diff <= bin && peak.Intensity > basepeakIntensity * 10.0 * 0.01) {
-                        isSuitableQuantMassExist = true;
-                        break;
-                    }
-                }
-                if (isSuitableQuantMassExist)
-                    quantmasslist[i] = repQuantMass;
-                else
-                    quantmasslist[i] = basepeakMz;
-            }
-            return quantmasslist;
-        }
-
-        // spectrum should be ordered by m/z value
-        private static bool isQuantMassExistInSpectrum(double quantMass, List<SpectrumPeak> spectrum, float bin, float threshold,
-            out double basepeakMz, out double basepeakIntensity) {
-
-            basepeakMz = 0.0;
-            basepeakIntensity = 0.0;
-            foreach (var peak in spectrum) {
-                if (peak.Intensity > basepeakIntensity) {
-                    basepeakIntensity = peak.Intensity;
-                    basepeakMz = peak.Mass;
-                }
-            }
-
-            var maxIntensity = basepeakIntensity;
-            foreach (var peak in spectrum) {
-                if (peak.Mass < quantMass - bin) continue;
-                if (peak.Mass > quantMass + bin) break;
-                var diff = Math.Abs(peak.Mass - quantMass);
-                if (diff <= bin && peak.Intensity > maxIntensity * threshold * 0.01) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
         private string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks,
-            List<AlignmentSpotProperty> spots, List<double> quantMasses,
+            List<AlignmentSpotProperty> spots,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
             var peakInfos = new List<ChromatogramPeakInfo>();
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 var spectra = DataAccess.GetAllSpectra(rawDataAccess);
-                foreach ((var peak, var spot, var quantmass) in peaks.Zip(spots, quantMasses)) {
+                foreach ((var peak, var spot) in peaks.Zip(spots)) {
                     if (peak.PeakID < 0) {
-                        GapFilling(spectra, spot.AlignedPeakProperties, quantmass, analysisFile.AnalysisFileId);
+                        Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
                     }
 
                     var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
@@ -307,15 +211,6 @@ namespace CompMs.MsdialCore.Algorithm
             var file = Path.GetTempFileName();
             serializer?.SerializeAllToFile(file, peakInfos);
             return file;
-        }
-
-        private void GapFilling(List<RawSpectrum> spectra, List<AlignmentChromPeakFeature> peaks, double quantmass, int fileID) {
-            var features = peaks.Where(p => p.PeakID >= 0);
-            var chromXCenter = Comparer.GetCenter(features);
-            if (quantmass > 0) chromXCenter.Mz = new MzValue(quantmass);
-
-            foreach (var peak in peaks.Where(p => p.PeakID < 0))
-                GapFiller.GapFilling(this.AProcessFactory, spectra, chromXCenter, Comparer.GetAveragePeakWidth(features), fileID, peak);
         }
 
         private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {

@@ -57,10 +57,9 @@ namespace CompMs.MsdialDimsCore.DataObj
 
         public override List<ChromatogramPeak> PeaklistOnChromCenter(ChromXs center, double peakWidth, List<RawSpectrum> spectrumList, int fileID) {
             RawPeakElement[] peakElements;
-            if (peakElementsMemo.ContainsKey(fileID))
-                peakElements = peakElementsMemo[fileID];
-            else
-                peakElements = peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrumList); // TODO: remove cache (too much memory use)
+            if (!peakElementsMemo.ContainsKey(fileID))
+                peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrumList); // TODO: remove cache (too much memory use)
+            peakElements = peakElementsMemo[fileID];
             var peaklist = DataAccess.ConvertRawPeakElementToChromatogramPeakList(peakElements, center.Mz.Value - peakWidth * 2.0, center.Mz.Value + peakWidth * 2.0);
             return peaklist;
         }

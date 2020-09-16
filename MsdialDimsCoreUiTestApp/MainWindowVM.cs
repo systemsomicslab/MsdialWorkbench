@@ -243,7 +243,7 @@ namespace MsdialDimsCoreUiTestApp
             var aligner = new PeakAligner(
                 new DimsPeakComparer(param.Ms1AlignmentTolerance),
                 new DimsPeakJoiner(param.Ms1AlignmentTolerance, param.Ms1AlignmentFactor),
-                new DimsAlignmentProcessFactory(analysisFiles.ToList(), param),
+                new DimsGapFiller(param),
                 new DimsAlignmentRefiner(param),
                 param, iupac);
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);

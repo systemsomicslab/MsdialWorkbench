@@ -5,6 +5,7 @@ using System.Linq;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -12,42 +13,78 @@ using CompMs.MsdialCore.Utility;
 
 namespace CompMs.MsdialCore.Algorithm
 {
-    public class GapFiller
+    public abstract class GapFiller
     {
-        public static void GapFilling(AlignmentProcessFactory AProcessFactory,
-            List<RawSpectrum> spectrumCollection, 
-            ChromXs center, double peakWidth, int fileID, AlignmentChromPeakFeature alignmentChromPeakFeature
-            ) {
-            var smoothingMethod = AProcessFactory.SmoothingMethod;
-            var smoothingLevel = AProcessFactory.SmoothingLevel;
-            var isForceInsert = AProcessFactory.IsForceInsert;
-            var centralMz = center.Mz.Value;
-            var mzTol = Math.Max(AProcessFactory.MzTol, 0.005f);
-            var result = alignmentChromPeakFeature;
-            var peaklist = AProcessFactory.PeaklistOnChromCenter(center, peakWidth, spectrumCollection, fileID);
-            var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+        protected abstract double AxTol { get; }
+        protected SmoothingMethod smoothingMethod;
+        protected int smoothingLevel;
+        protected bool isForceInsert; 
 
+        public GapFiller(SmoothingMethod smoothingMethod, int smoothingLevel, bool isForceInsert) {
+            this.smoothingMethod = smoothingMethod;
+            this.smoothingLevel = smoothingLevel;
+            this.isForceInsert = isForceInsert;
+        }
+
+        public GapFiller(ParameterBase param) : this(param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
+
+        public void GapFill(List<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+            var peaks = spot.AlignedPeakProperties;
+            var filtered = peaks.Where(peak => peak.PeakID >= 0);
+            var chromXCenter = GetCenter(filtered);
+            var peakWidth = GetAveragePeakWidth(filtered);
+
+            var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
+            GapFill(spectra, chromXCenter, peakWidth, fileID, target);
+        }
+
+        protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks);
+        protected abstract double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
+
+        public void GapFill(
+            List<RawSpectrum> spectrumCollection, ChromXs center, double peakWidth,
+            int fileID, AlignmentChromPeakFeature alignmentChromPeakFeature
+            ) {
+            var result = alignmentChromPeakFeature;
             result.PeakID = -2;
 
+            var smoothingMethod = this.smoothingMethod;
+            var smoothingLevel = this.smoothingLevel;
+            var sPeaklist = GetPeaks(spectrumCollection, center, peakWidth, fileID, smoothingMethod, smoothingLevel);
             if (sPeaklist == null || sPeaklist.Count == 0) return;
 
+            var centralAx = center.Value;
+            var axTol = AxTol;
+            (var candidates, var minId) = GetPeakTopCandidates(sPeaklist, centralAx, axTol);
+
+            var isForceInsert = this.isForceInsert;
+            (var id, var leftId, var rightId) = GetPeakRange(candidates, sPeaklist, minId, centralAx, isForceInsert);
+            if (id == -1 || leftId == -1 || rightId == -1) return;
+
+            SetAlignmentChromPeakFeature(result, sPeaklist, id, leftId, rightId);
+        }
+
+        protected abstract List<ChromatogramPeak> GetPeaks(
+            List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID,
+            SmoothingMethod smoothingMethod, int smoothingLevel);
+
+        protected virtual (List<ChromatogramPeak>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {
             var candidates = new List<ChromatogramPeak>();
             var minId = -1;
             var minDiff = double.MaxValue;
 
-            // TODO: need generalization
-            var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { Mass = centralMz - mzTol }, (a, b) => a.Mass.CompareTo(b.Mass));
+            var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { ChromXs = new ChromXs(centralAx - axTol) }, (a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
             for (int i = start; i < sPeaklist.Count; i++) {
                 if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
-                if (sPeaklist[i].Mass < centralMz - mzTol) continue;
-                if (centralMz + mzTol < sPeaklist[i].Mass) break;
+                if (sPeaklist[i].ChromXs.Value < centralAx - axTol) continue;
+                if (centralAx + axTol < sPeaklist[i].ChromXs.Value) break;
 
                 if (   sPeaklist[i-2].Intensity <= sPeaklist[i-1].Intensity && sPeaklist[i-1].Intensity <= sPeaklist[i].Intensity && sPeaklist[i].Intensity > sPeaklist[i+1].Intensity
                     || sPeaklist[i-1].Intensity < sPeaklist[i].Intensity && sPeaklist[i].Intensity >= sPeaklist[i+1].Intensity && sPeaklist[i+1].Intensity >= sPeaklist[i+2].Intensity) {
                     candidates.Add(sPeaklist[i]);
                 }
 
-                var diff = Math.Abs(sPeaklist[i].Mass - centralMz);
+                var diff = Math.Abs(sPeaklist[i].ChromXs.Value - centralAx);
                 if (diff < minDiff) {
                     minDiff = diff;
                     minId = i;
@@ -56,10 +93,14 @@ namespace CompMs.MsdialCore.Algorithm
 
             if (minId == -1) minId = sPeaklist.Count / 2;
 
+            return (candidates, minId);
+        }
+
+        protected virtual (int, int, int) GetPeakRange(List<ChromatogramPeak> candidates, List<ChromatogramPeak> sPeaklist, int minId, double centralAx, bool isForceInsert) {
             int id, leftId, rightId;
 
             if (candidates.Count == 0) {
-                if (!isForceInsert) return;
+                if (!isForceInsert) return (-1, -1, -1);
                 var range = 5;
 
                 id = minId;
@@ -78,8 +119,7 @@ namespace CompMs.MsdialCore.Algorithm
                 }
             }
             else {
-                var min = candidates.Min(cand => (Math.Abs(cand.Mass = centralMz), cand.ID));
-                id = min.ID;
+                id = candidates.Argmin(cand => Math.Abs(cand.ChromXs.Value - centralAx)).ID;
 
                 var margin = 2;
 
@@ -95,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm
                     ++rightId;
                 }
 
-                if (!isForceInsert && (id - leftId < 2 || rightId - id < 2)) return;
+                if (!isForceInsert && (id - leftId < 2 || rightId - id < 2)) return (-1, -1, -1);
 
                 for(int i = leftId + 1; i <= rightId - 1; i++) {
                     if (sPeaklist[i - 1].Intensity <= sPeaklist[i].Intensity && sPeaklist[i].Intensity > sPeaklist[i + 1].Intensity
@@ -105,9 +145,12 @@ namespace CompMs.MsdialCore.Algorithm
                         }
                     }
                 }
-
             }
 
+            return (id, leftId, rightId);
+        }
+
+        protected virtual void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
             double peakAreaAboveZero = 0d;
             for (int i = leftId; i < rightId; i++)
                 peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].Mass - sPeaklist[i].Mass);
@@ -123,35 +166,6 @@ namespace CompMs.MsdialCore.Algorithm
             result.PeakHeightLeft = sPeaklist[leftId].Intensity;
             result.PeakHeightRight = sPeaklist[rightId].Intensity;
             result.PeakAreaAboveZero = peakAreaAboveZero;
-
-            return;
-
-        }
-
-        public void GapFilling(
-            AlignmentProcessFactory AProcessFactory,
-            List<RawSpectrum> spectrumCollection,
-            AlignmentSpotProperty alignmentSpotProperty,
-            AlignmentChromPeakFeature alignmentChromPeakFeature,
-            ChromXs center, double averagePeakWidth, int fileID
-            ) {
-            GapFilling(AProcessFactory,
-                spectrumCollection, alignmentSpotProperty, alignmentChromPeakFeature,
-                center, averagePeakWidth, fileID);
-        }
-
-        
-        public static AlignmentChromPeakFeature GapFilling(
-            AlignmentProcessFactory AProcessFactory,
-            List<RawSpectrum> spectrumCollection,
-            ChromXs center,
-            double peakWidth, int fileID
-            ) {
-            var result = new AlignmentChromPeakFeature();
-
-            GapFilling(AProcessFactory, spectrumCollection, center, peakWidth, fileID, result);
-
-            return result;
         }
     }
 }
