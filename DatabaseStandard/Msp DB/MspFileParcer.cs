@@ -600,6 +600,7 @@ namespace Rfx.Riken.OsakaUniv
             var invalidChars = Path.GetInvalidFileNameChars();
             var counter = 0;
             foreach (var record in mspRecords) {
+
                 var filename = record.Name;
                 if (filename == string.Empty)
                     filename = "Query_" + counter;

@@ -103,11 +103,13 @@ namespace Riken.Metabolomics.StructureFinder.Statistics
                     if (rawdata.PrecursorType.Contains("[M]")) protonOffset = 0;
                     
                     var nContainer = MoleculeConverter.DictionaryToAtomContainer(nFragment.AtomDictionary, nFragment.BondDictionary);
-                    var nSmiles = MoleculeConverter.AtomContainerToSmiles(nContainer);
                     var nNeutralLossExactMass = nFragment.AtomDictionary.Sum(n => n.Value.AtomMass);
+                    if (nNeutralLossExactMass < 12) continue;
+
                     var nExperimentalLoss = exactMassOfStructure + protonOffset - (matchedFragMass - assignedAdductMass);
                     var nMassDifference = nExperimentalLoss - nNeutralLossExactMass; //Experimental loss - theoretical loss
-
+                    var nSmiles = MoleculeConverter.AtomContainerToSmiles(nContainer);
+                  
                     matchedNeutralLosses.Add(new MatchedIon() {
                         Exactmass = nNeutralLossExactMass,
                         MatchedIntensity = (int)intensity,

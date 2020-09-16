@@ -3650,6 +3650,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.MG: return "MG";
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
+                case LbmClass.OxTG: return "OxTG";
+                case LbmClass.FAHFATG: return "FAHFATG";
                 case LbmClass.EtherTG: return "EtherTG";
                 case LbmClass.EtherDG: return "EtherDG";
                 case LbmClass.LPC: return "LPC";
@@ -3691,6 +3693,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.PMeOH: return "PMeOH";
                 case LbmClass.PEtOH: return "PEtOH";
                 case LbmClass.PBtOH: return "PBtOH";
+                case LbmClass.MMPE: return "MMPE";
+                case LbmClass.DMPE: return "DMPE";
                 case LbmClass.LNAPE: return "LNAPE";
                 case LbmClass.LNAPS: return "LNAPS";
                 case LbmClass.DGDG: return "DGDG";
@@ -3707,6 +3711,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.CASE: return "CASE";
                 case LbmClass.SISE: return "SISE";
                 case LbmClass.STSE: return "STSE";
+                case LbmClass.EGSE: return "EGSE";
+                case LbmClass.DEGSE: return "DEGSE";
                 case LbmClass.AHexCS: return "AHexCS";
                 case LbmClass.AHexBRS: return "AHexBRS";
                 case LbmClass.AHexCAS: return "AHexCAS";
@@ -3717,6 +3723,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GLCAE: return "GLCAE";
                 case LbmClass.TDCAE: return "TDCAE";
                 case LbmClass.TLCAE: return "TLCAE";
+                case LbmClass.LCAE: return "LCAE";
+                case LbmClass.KLCAE: return "KLCAE";
+                case LbmClass.KDCAE: return "KDCAE";
                 case LbmClass.Cholesterol: return "Cholesterol";
                 case LbmClass.CholesterolSulfate: return "CholesterolSulfate";
                 case LbmClass.SHex: return "SHex";
@@ -3762,6 +3771,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.Hex3Cer: return "Hex3Cer";
                 case LbmClass.PE_Cer: return "PE-Cer";
                 case LbmClass.PI_Cer: return "PI-Cer";
+                case LbmClass.MIPC: return "MIPC";
                 case LbmClass.CerP: return "CerP";
                 case LbmClass.SM: return "SM";
                 case LbmClass.SHexCer: return "SHexCer";

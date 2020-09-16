@@ -18,6 +18,7 @@ using NCDK.Graphs;
 using NCDK.Default;
 using NCDK.Tools.Manipulator;
 using NCDK.IO.Iterator;
+using CompMs.Common.Extension;
 //using net.sf.jniinchi;
 
 namespace Riken.Metabolomics.StructureFinder.Utility
@@ -157,7 +158,22 @@ namespace Riken.Metabolomics.StructureFinder.Utility
                 smiles = smilesGenerator.Create(implicitHydrizedContainer);
             }
             catch (CDKException ex) {
+                Console.WriteLine(ex.Message);
+            }
+            catch (KeyNotFoundException ex) {
+                Console.WriteLine(ex.Message);
+            }
 
+            if (smiles.IsEmptyOrNull()) {
+                try {
+                    smiles = smilesGenerator.Create(container);
+                }
+                catch (CDKException ex) {
+                    Console.WriteLine(ex.Message);
+                }
+                catch (KeyNotFoundException ex) {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             return smiles;

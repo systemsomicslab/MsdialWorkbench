@@ -248,9 +248,11 @@ namespace NCDK.QSAR.Descriptors.Moleculars
         /// <returns>An ArrayList containing the descriptors in the order described above.</returns>
         public Result Calculate(IAtomContainer container, AtomWeightingType type = AtomWeightingType.Unity)
         {
-            if (!GeometryUtil.Has3DCoordinates(container))
-                throw new ThreeDRequiredException("Molecule must have 3D coordinates");
-
+            if (!GeometryUtil.Has3DCoordinates(container)) {
+                Console.WriteLine("Error: Molecule must have 3D coordinates");
+                return null;
+                //throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            }
             double sum = 0.0;
             var ac = (IAtomContainer)container.Clone();
 

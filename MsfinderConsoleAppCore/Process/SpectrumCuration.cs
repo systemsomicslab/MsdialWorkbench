@@ -77,7 +77,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 if (!FormulaStringParcer.IsOrganicFormula(storage.Formula)) continue;
 
                 var formula = FormulaStringParcer.OrganicElementsReader(storage.Formula);
-                if (adduct != "[M-H]-" && adduct != "[M+H]+" && adduct != "[M-2H]-" && adduct != "[M]+") continue;
+                //if (adduct != "[M-H]-" && adduct != "[M+H]+" && adduct != "[M-2H]-" && adduct != "[M]+") continue;
+                if (adduct != "[M-H]-" && adduct != "[M+H]+") continue;
                 //if (!MolecularFormulaUtility.IsFormulaCHNOSP(formula)) continue;
 
                 var lastStorage = mergedMsps[mergedMsps.Count - 1];
@@ -100,6 +101,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                     Name = storage.InchiKey.Split('-')[0] + "_" + storage.AdductIonBean.AdductIonName + "_" + storage.IonMode,
                     PrecursorMz = storage.PrecursorMz,
                     PrecursorType = storage.AdductIonBean.AdductIonName,
+                    RetentionTime = storage.RetentionTime,
+                    Ccs = storage.CollisionCrossSection,
                     Formula = storage.Formula,
                     Ontology = storage.Ontology,
                     InchiKey = storage.InchiKey,
@@ -222,6 +225,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             sw.WriteLine("SMILES: " + rawdata.Smiles);
             sw.WriteLine("INCHIKEY: " + rawdata.InchiKey);
             sw.WriteLine("IONMODE: " + rawdata.IonMode);
+            sw.WriteLine("RETENTIONTIME: " + rawdata.RetentionTime);
+            sw.WriteLine("CCS: " + rawdata.Ccs);
             sw.WriteLine("Comment: " + rawdata.Comment);
             sw.WriteLine("Num Peaks: " + curatedProductIons.Count);
 
