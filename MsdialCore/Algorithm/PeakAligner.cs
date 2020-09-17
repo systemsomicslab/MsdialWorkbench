@@ -18,15 +18,15 @@ namespace CompMs.MsdialCore.Algorithm
 {
     public class PeakAligner
     {
-        protected PeakComparer Comparer { get; set; }
+        protected DataAccessor Accessor { get; set; }
         protected PeakJoiner Joiner { get; set; }
         protected GapFiller Filler { get; set; }
         protected AlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
         protected IupacDatabase Iupac { get; set; }
 
-        public PeakAligner(PeakComparer comparer, PeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
-            Comparer = comparer;
+        public PeakAligner(DataAccessor accessor, PeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
+            Accessor = accessor;
             Joiner = joiner;
             Filler = filler;
             Refiner = refiner;
@@ -55,11 +55,11 @@ namespace CompMs.MsdialCore.Algorithm
             var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
             if (referenceFile == null) return new List<IMSScanProperty>();
 
-            var master = GetChromatogramPeakFeatures(referenceFile, Param.MachineCategory);
+            var master = Accessor.GetMSScanProperties(referenceFile);
             foreach (var analysisFile in analysisFiles) {
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
-                var target = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
+                var target = Accessor.GetMSScanProperties(analysisFile);
                 master = Joiner.MergeChromatogramPeaks(master, target);
             }
 
@@ -113,7 +113,7 @@ namespace CompMs.MsdialCore.Algorithm
             var result = GetSpots(master, analysisFiles);
             
             foreach (var analysisFile in analysisFiles) {
-                var chromatogram = GetChromatogramPeakFeatures(analysisFile, Param.MachineCategory);
+                var chromatogram = Accessor.GetMSScanProperties(analysisFile);
                 Joiner.AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
             }
             
@@ -254,20 +254,6 @@ namespace CompMs.MsdialCore.Algorithm
                 TotalAlignmentSpotCount = spots.Count,
                 AlignmentSpotProperties = spots,
             };
-        }
-
-
-        private List<IMSScanProperty> GetChromatogramPeakFeatures(AnalysisFileBean analysisFile, MachineCategory category) {
-            if (category == MachineCategory.GCMS) {
-                var msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
-                msdecResults.Sort(Comparer);
-                return new List<IMSScanProperty>(msdecResults);
-            }
-            else {
-                var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-                chromatogram.Sort(Comparer);
-                return new List<IMSScanProperty>(chromatogram);
-            }
         }
 
         private AlignmentSpotProperty PackingSpot(AlignmentSpotProperty spot) {

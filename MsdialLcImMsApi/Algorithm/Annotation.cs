@@ -56,12 +56,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 var msdecResult = msdecResults[driftPeak.MasterPeakID];
                 LcImMsMsMatchMethod(chromPeak, driftPeak, msdecResult, isotopes, mspDB, textDB, param);
 
-                if (driftPeak.MspID() >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult.TotalScore) {
+                if (driftPeak.MspID >= 0 && maxMspMatchedScore > driftPeak.MspBasedMatchResult.TotalScore) {
                     maxMspMatchedScore = driftPeak.MspBasedMatchResult.TotalScore;
                     maxMspMatchedDriftSpotID = driftPeak.PeakID;
                 }
 
-                if (driftPeak.TextDbID() >= 0 && maxTextDBMatchedScore > driftPeak.TextDbBasedMatchResult.TotalScore) {
+                if (driftPeak.TextDbID >= 0 && maxTextDBMatchedScore > driftPeak.TextDbBasedMatchResult.TotalScore) {
                     maxTextDBMatchedScore = driftPeak.TextDbBasedMatchResult.TotalScore;
                     maxTextDBMatchedDriftSpotID = driftPeak.PeakID;
                 }
@@ -69,12 +69,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             if (maxMspMatchedScore >= 0) {
                 chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
-                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered()], chromPeak.MspBasedMatchResult);
+                DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered], chromPeak.MspBasedMatchResult);
             }
 
             if (maxTextDBMatchedDriftSpotID >= 0) {
                 chromPeak.TextDbBasedMatchResult = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbBasedMatchResult.Clone();
-                DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered()], chromPeak.TextDbBasedMatchResult, true);
+                DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered], chromPeak.TextDbBasedMatchResult, true);
             }
         }
 

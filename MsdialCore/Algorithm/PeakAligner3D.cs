@@ -9,14 +9,13 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
-using CompMs.RawDataHandler.Core;
 
 namespace CompMs.MsdialCore.Algorithm
 {
     public class PeakAligner3D : PeakAligner
     {
         protected GapFiller3D Filler3d { get; set; }
-        public PeakAligner3D(PeakComparer comparer, PeakJoiner joiner, GapFiller3D filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) : base(comparer, joiner, filler, refiner, param, iupac) {
+        public PeakAligner3D(DataAccessor accessor, PeakJoiner joiner, GapFiller3D filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) : base(accessor, joiner, filler, refiner, param, iupac) {
             Filler3d = filler;
         }
 
