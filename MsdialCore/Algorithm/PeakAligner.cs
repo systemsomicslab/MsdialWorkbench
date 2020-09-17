@@ -101,7 +101,7 @@ namespace CompMs.MsdialCore.Algorithm
                 spot.AlignedPeakProperties = peaks;
 
                 if (scanProp is ChromatogramPeakFeature chrom)
-                    spot.AlignmentDriftSpotFeatures = InitSpots(chrom.DriftChromFeatures, analysisFiles, ref masterId, spot.MasterAlignmentID);
+                    spot.AlignmentDriftSpotFeatures = InitSpots(chrom.DriftChromFeatures, analysisFiles, ref masterId, spot.AlignmentID);
 
                 spots.Add(spot);
             }

@@ -29,6 +29,7 @@ namespace CompMs.MsdialCore.DataObj
             Deduplicate(spots);
             var cleaned = GetCleanedSpots(spots);
             var filtered = FilterByBlank(cleaned);
+            SetAlignmentID(filtered);
             SetLinks(filtered);
             PostProcess(filtered);
 
@@ -152,6 +153,8 @@ namespace CompMs.MsdialCore.DataObj
 
             return fcSpots;
         }
+
+        protected virtual void SetAlignmentID(List<AlignmentSpotProperty> alignments) { }
 
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
             foreach (var fcSpot in alignments.Where(spot => spot.AdductType.AdductIonName == string.Empty)) {

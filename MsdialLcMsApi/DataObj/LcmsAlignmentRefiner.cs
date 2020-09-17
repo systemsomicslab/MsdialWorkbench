@@ -38,28 +38,15 @@ namespace CompMs.MsdialLcMsApi.DataObj
             return cSpots;
         }
 
-        protected override void SetLinks(List<AlignmentSpotProperty> alignments) {
+        protected override void SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
-            if (_param.IsIonMobility) {
-                foreach (var spot in alignments) {
-                    spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.OrderBy(p => p.TimesCenter.Value));
-                }
-            }
 
-            var masterID = 0;
             for (int i = 0; i < alignments.Count; i++) {
                 alignments[i].MasterAlignmentID = alignments[i].AlignmentID = i;
-                if (_param.IsIonMobility) {
-                    alignments[i].MasterAlignmentID = masterID++;
-                    var driftSpots = alignments[i].AlignmentDriftSpotFeatures;
-                    for (int j = 0; j < driftSpots.Count; j++) {
-                        driftSpots[j].MasterAlignmentID = masterID++;
-                        driftSpots[j].AlignmentID = j;
-                        driftSpots[j].ParentAlignmentID = i;
-                    }
-                }
             }
+        }
 
+        protected override void SetLinks(List<AlignmentSpotProperty> alignments) {
             //checking alignment spot variable correlations
             var rtMargin = 0.06F;
             AssignLinksByIonAbundanceCorrelations(alignments, rtMargin);
