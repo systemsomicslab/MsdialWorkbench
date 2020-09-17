@@ -34,6 +34,15 @@ namespace CompMs.MsdialCore.Algorithm
             Iupac = iupac;
         }
 
+        public PeakAligner(AlignmentProcessFactory factory) {
+            Accessor = factory.CreateDataAccessor();
+            Joiner = factory.CreatePeakJoiner();
+            Filler = factory.CreateGapFiller();
+            Refiner = factory.CreateAlignmentRefiner();
+            Param = factory.Parameter;
+            Iupac = factory.Iupac;
+        }
+
         public AlignmentResultContainer Alignment(
             IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
             ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {

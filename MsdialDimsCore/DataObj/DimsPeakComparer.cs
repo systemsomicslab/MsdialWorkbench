@@ -39,29 +39,4 @@ namespace CompMs.MsdialDimsCore.DataObj
             return chromFeatures.Max(n => n.PeakWidth(ChromXType.Mz));
         }
     }
-
-    public class DimsAlignmentProcessFactory : AlignmentProcessFactory {
-        private MsdialDimsParameter Param;
-        private List<AnalysisFileBean> Files;
-        private Dictionary<int, RawPeakElement[]> peakElementsMemo = new Dictionary<int, RawPeakElement[]>();
-
-        public DimsAlignmentProcessFactory(List<AnalysisFileBean> files, MsdialDimsParameter param) {
-            this.Files = files;
-            this.Param = param;
-            this.IonMode = param.IonMode;
-            this.SmoothingMethod = param.SmoothingMethod;
-            this.SmoothingLevel = param.SmoothingLevel;
-            this.MzTol = param.Ms1AlignmentTolerance;
-            this.IsForceInsert = param.IsForceInsertForGapFilling;
-        }
-
-        public override List<ChromatogramPeak> PeaklistOnChromCenter(ChromXs center, double peakWidth, List<RawSpectrum> spectrumList, int fileID) {
-            RawPeakElement[] peakElements;
-            if (!peakElementsMemo.ContainsKey(fileID))
-                peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrumList); // TODO: remove cache (too much memory use)
-            peakElements = peakElementsMemo[fileID];
-            var peaklist = DataAccess.ConvertRawPeakElementToChromatogramPeakList(peakElements, center.Mz.Value - peakWidth * 2.0, center.Mz.Value + peakWidth * 2.0);
-            return peaklist;
-        }
-    }
 }

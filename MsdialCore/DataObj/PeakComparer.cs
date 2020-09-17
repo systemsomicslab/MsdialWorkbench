@@ -34,26 +34,4 @@ namespace CompMs.MsdialCore.DataObj
             return obj.GetHashCode();
         }
     }
-
-    public abstract class AlignmentProcessFactory {
-        public List<MoleculeMsReference> MspDB;
-        public bool IsRepresentativeQuantMassBasedOnBasePeakMz;
-
-        public IonMode IonMode;
-        public SmoothingMethod SmoothingMethod;
-        public int SmoothingLevel;
-        public double MzTol;
-        public double RtTol;
-        public double RiTol;
-        public double DtTol;
-        public bool IsForceInsert;
-
-        public virtual List<ChromatogramPeak> PeaklistOnChromCenter(ChromXs center, double peakWidth, List<RawSpectrum> spectrumList, int fileID = -1) {
-            return new List<ChromatogramPeak>();
-        }
-
-        public virtual int ChromStartIndex(List<ChromatogramPeak> peaks, ChromXs center, double tolerance) {
-            return SearchCollection.LowerBound(peaks, new ChromatogramPeak { ChromXs = new ChromXs(center.RT.Value - tolerance) }, (a, b) => a.ChromXs.RT.Value.CompareTo(b.ChromXs.RT.Value));
-        }
-    }
 }

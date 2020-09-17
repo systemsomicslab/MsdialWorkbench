@@ -19,7 +19,7 @@ namespace CompMs.MsdialLcMsApi.DataObj
             _mzfactor = mzfactor;
         }
 
-        public LcmsPeakJoiner(double mztol, double rttol) : this(mztol, 1, rttol, 1) { }
+        public LcmsPeakJoiner(double rttol, double mztol) : this(rttol, 1, mztol, 1) { }
 
         protected override bool Equals(IMSScanProperty x, IMSScanProperty y) {
             return Math.Abs(x.PrecursorMz - y.PrecursorMz) <= _mztol && Math.Abs(x.ChromXs.RT.Value - y.ChromXs.RT.Value) <= _rttol;

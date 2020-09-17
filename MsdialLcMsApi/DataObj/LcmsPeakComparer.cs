@@ -50,32 +50,4 @@ namespace CompMs.MsdialLcMsApi.DataObj
             return chromFeatures.Max(n => n.PeakWidth(ChromXType.RT));
         }
     }
-
-    public class LcmsAlignmentProcessFactory : AlignmentProcessFactory {
-        private MsdialLcmsParameter Param;
-        private List<AnalysisFileBean> Files;
-
-        public LcmsAlignmentProcessFactory(List<AnalysisFileBean> files, MsdialLcmsParameter param) {
-            this.Files = files;
-            this.Param = param;
-            this.IonMode = param.IonMode;
-            this.SmoothingMethod = param.SmoothingMethod;
-            this.SmoothingLevel = param.SmoothingLevel;
-            this.MzTol = param.Ms1AlignmentTolerance;
-            this.RtTol = param.RetentionTimeAlignmentTolerance;
-            this.IsForceInsert = param.IsForceInsertForGapFilling;
-        }
-
-        public override List<ChromatogramPeak> PeaklistOnChromCenter(ChromXs center, double peakWidth, List<RawSpectrum> spectrumList, int fileID = -1) {
-
-            var mzTol = Param.Ms1AlignmentTolerance;
-            mzTol = Math.Max(mzTol, 0.005f);
-            peakWidth = Math.Max(peakWidth, 0.2f);
-
-            var peaklist = DataAccess.GetMs1Peaklist(spectrumList, center.Mz.Value, mzTol, Param.IonMode, 
-                ChromXType.RT, ChromXUnit.Min, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
-            return peaklist;
-        }
-
-    }
 }

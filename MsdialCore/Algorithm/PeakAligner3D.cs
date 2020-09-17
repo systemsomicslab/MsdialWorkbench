@@ -19,6 +19,10 @@ namespace CompMs.MsdialCore.Algorithm
             Filler3d = filler;
         }
 
+        public PeakAligner3D(AlignmentProcessFactory factory) : base(factory) {
+            Filler3d = factory.CreateGapFiller() as GapFiller3D;
+        }
+
         protected override string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks, List<AlignmentSpotProperty> spots,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {

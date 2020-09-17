@@ -12,6 +12,17 @@ namespace CompMs.MsdialLcImMsApi.DataObj
     {
         private readonly double _rttol, _mztol, _dttol, _rtfactor, _mzfactor, _dtfactor;
 
+        public LcimmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor, double dttol, double dtfactor) {
+            _rttol = rttol;
+            _rtfactor = rtfactor;
+            _mztol = mztol;
+            _mzfactor = mzfactor;
+            _dttol = dttol;
+            _dtfactor = dtfactor;
+        }
+
+        public LcimmsPeakJoiner(double rttol, double mztol, double dttol) : this(rttol, 1, mztol, 1, dttol, 1) { }
+
         public override List<IMSScanProperty> MergeChromatogramPeaks(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
             var masters_itr = masters.Cast<ChromatogramPeakFeature>();
             var targets_itr = targets.Cast<ChromatogramPeakFeature>();
