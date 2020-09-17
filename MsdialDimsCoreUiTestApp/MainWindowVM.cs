@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using CompMs.Common.DataObj;
@@ -22,9 +21,8 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
 using System.Windows.Input;
 using CompMs.Common.DataObj.Property;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialDimsCore.DataObj;
 using CompMs.Common.DataObj.Database;
+using CompMs.MsdialDimsCore.Algorithm.Alignment;
 
 namespace MsdialDimsCoreUiTestApp
 {

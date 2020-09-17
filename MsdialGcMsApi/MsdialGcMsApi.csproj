@@ -10,4 +10,8 @@
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Algorithm\Alignment\" />
+  </ItemGroup>
+
 </Project>
