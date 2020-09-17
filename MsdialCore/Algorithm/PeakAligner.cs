@@ -18,12 +18,12 @@ namespace CompMs.MsdialCore.Algorithm
 {
     public class PeakAligner
     {
-        PeakComparer Comparer { get; set; }
-        PeakJoiner Joiner { get; set; }
-        GapFiller Filler { get; set; }
-        AlignmentRefiner Refiner { get; set; }
-        ParameterBase Param { get; set; }
-        IupacDatabase Iupac { get; set; }
+        protected PeakComparer Comparer { get; set; }
+        protected PeakJoiner Joiner { get; set; }
+        protected GapFiller Filler { get; set; }
+        protected AlignmentRefiner Refiner { get; set; }
+        protected ParameterBase Param { get; set; }
+        protected IupacDatabase Iupac { get; set; }
 
         public PeakAligner(PeakComparer comparer, PeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
             Comparer = comparer;
@@ -162,10 +162,10 @@ namespace CompMs.MsdialCore.Algorithm
             var files = new List<string>();
             var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
 
-            foreach ((var analysisFile, var idx) in analysisFiles.WithIndex()) {
+            foreach (var analysisFile in analysisFiles) {
                 var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
                 foreach (var spot in spots)
-                    peaks.Add(spot.AlignedPeakProperties[idx]);
+                    peaks.Add(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == analysisFile.AnalysisFileId));
                 var file = CollectAlignmentPeaks(analysisFile, peaks, spots, chromPeakInfoSerializer);
                 files.Add(file);
             }
@@ -181,7 +181,7 @@ namespace CompMs.MsdialCore.Algorithm
             return result;
         }
 
-        private string CollectAlignmentPeaks(
+        protected virtual string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks,
             List<AlignmentSpotProperty> spots,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
@@ -190,10 +190,11 @@ namespace CompMs.MsdialCore.Algorithm
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 var spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 foreach ((var peak, var spot) in peaks.Zip(spots)) {
-                    if (peak.PeakID < 0) {
+                    if (spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                         Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
                     }
 
+                    // UNDONE: retrieve spectrum data
                     var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
                     var peaklist = DataAccess.GetMs1Peaklist(
                         spectra, (float)peak.Mass,

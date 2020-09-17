@@ -166,7 +166,6 @@ namespace CompMs.MsdialCore.Utility
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray();
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Argmax(align =>
-                    // UNDONE: MSRawID2MspBasedMatchResult has no element.
                     (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop)
                     ).FileID;
             }

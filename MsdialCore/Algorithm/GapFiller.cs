@@ -33,35 +33,31 @@ namespace CompMs.MsdialCore.Algorithm
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
             var peakWidth = GetAveragePeakWidth(filtered);
+            var peaklist = GetPeaks(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
+            if (peaklist == null || peaklist.Count == 0) return;
 
             var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
-            GapFill(spectra, chromXCenter, peakWidth, fileID, target);
+            GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
         protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected abstract double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
 
-        public void GapFill(
-            List<RawSpectrum> spectrumCollection, ChromXs center, double peakWidth,
-            int fileID, AlignmentChromPeakFeature alignmentChromPeakFeature
+        protected void GapFillCore(
+            List<ChromatogramPeak> peaklist, ChromXs center, double axTol,
+            AlignmentChromPeakFeature alignmentChromPeakFeature
             ) {
             var result = alignmentChromPeakFeature;
             result.PeakID = -2;
 
-            var smoothingMethod = this.smoothingMethod;
-            var smoothingLevel = this.smoothingLevel;
-            var sPeaklist = GetPeaks(spectrumCollection, center, peakWidth, fileID, smoothingMethod, smoothingLevel);
-            if (sPeaklist == null || sPeaklist.Count == 0) return;
-
             var centralAx = center.Value;
-            var axTol = AxTol;
-            (var candidates, var minId) = GetPeakTopCandidates(sPeaklist, centralAx, axTol);
+            (var candidates, var minId) = GetPeakTopCandidates(peaklist, centralAx, axTol);
 
             var isForceInsert = this.isForceInsert;
-            (var id, var leftId, var rightId) = GetPeakRange(candidates, sPeaklist, minId, centralAx, isForceInsert);
+            (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, centralAx, isForceInsert);
             if (id == -1 || leftId == -1 || rightId == -1) return;
 
-            SetAlignmentChromPeakFeature(result, sPeaklist, id, leftId, rightId);
+            SetAlignmentChromPeakFeature(result, peaklist, id, leftId, rightId);
         }
 
         protected abstract List<ChromatogramPeak> GetPeaks(

@@ -144,10 +144,9 @@ namespace CompMs.MsdialGcMsApi.DataObj
 
             var bin = Bin;
             var maxPeakHeight = peaks.Max(peak => peak.PeakHeightTop);
-            var quantMassAveragePair = peaks.Where(peak => peak.PeakHeightTop > maxPeakHeight * 0.1)
-                                            .GroupBy(peak => Math.Round(peak.Mass, bin))
-                                            .Select(group => (Count: group.Count(), Average: group.Average(peak => peak.Mass)));
-            var quantMassCandidate = quantMassAveragePair.Argmax(cap => cap.Count).Average;
+            var quantMassGroup = peaks.Where(peak => peak.PeakHeightTop > maxPeakHeight * 0.1)
+                                      .GroupBy(peak => Math.Round(peak.Mass, bin));
+            var quantMassCandidate = quantMassGroup.Argmax(group => group.Count()).Average(peak => peak.Mass);
             var isQuantMassExist = SuitableQuantMassExists(quantMassCandidate, basepeak.Intensity, spectrum, param.CentroidMs1Tolerance, 10.0F * 0.01);
             if (isQuantMassExist) {
                 return quantMassCandidate;
