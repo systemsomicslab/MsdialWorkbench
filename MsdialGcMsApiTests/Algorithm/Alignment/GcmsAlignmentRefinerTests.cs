@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialGcMsApi.DataObj;
+using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 
-namespace CompMs.MsdialGcMsApi.DataObj.Tests
+namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
 {
     [TestClass()]
     public class GcmsAlignmentRefinerTests

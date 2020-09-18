@@ -17,4 +17,8 @@
     <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Algorithm\Alignment\" />
+  </ItemGroup>
+
 </Project>

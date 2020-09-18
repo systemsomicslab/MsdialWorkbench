@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialLcMsApi.DataObj;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 
-namespace CompMs.MsdialLcMsApi.DataObj.Tests
+namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
     [TestClass()]
     public class LcmsAlignmentRefinerTests
