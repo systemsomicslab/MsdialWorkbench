@@ -9,6 +9,17 @@ namespace MsdialPrivateConsoleApp {
     class Program {
         static void Main(string[] args) {
 
+            //var mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp";
+            //var inchikeytable = @"D:\9_Spectral library curations\Distributed MSPs\inchikey_classyfire_table.txt";
+            //var new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15-For-Statistics.msp";
+
+            //MspManager.CurateOntologyField(mspfile, inchikeytable, new_mspfile);
+
+            //mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp";
+            //new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Neg-VS15-For-Statistics.msp";
+
+            //MspManager.CurateOntologyField(mspfile, inchikeytable, new_mspfile);
+
             //var directory = @"D:\1_PaperForLipoquality\ReviewerOnlyMaterials\SpectralKit to evalue FDR from Supplementary Data 2"; // please change this directory for your PC
 
             //var rttols = new List<float>();
@@ -166,29 +177,29 @@ namespace MsdialPrivateConsoleApp {
 
             //LipidomicsResultCuration.ConvertTxtToBoxplotFormat(@"D:\1_PaperForLipoquality\Raw data\Result\1_3_QuantDataHumanPlasma\QuantFiles\TAG_Quant.txt", @"D:\1_PaperForLipoquality\Raw data\Result\1_3_QuantDataHumanPlasma\QuantFiles\TAG_Quant_boxplot.csv");
 
-            LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Negative_True positive and negative spectral kit.txt",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
-               Rfx.Riken.OsakaUniv.IonMode.Negative, 1.5F, 0.01F, 0.05F, -1.0F,
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Negative_True positive and negative spectral kit msp");
+            //LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Negative_True positive and negative spectral kit.txt",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
+            //   Rfx.Riken.OsakaUniv.IonMode.Negative, 1.5F, 0.01F, 0.05F, -1.0F,
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Negative_True positive and negative spectral kit msp");
 
-            LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Positive_True positive and negative spectral kit.txt",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
-               Rfx.Riken.OsakaUniv.IonMode.Positive, 1.5F, 0.01F, 0.05F, -1.0F,
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Positive_True positive and negative spectral kit msp");
+            //LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Positive_True positive and negative spectral kit.txt",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
+            //   Rfx.Riken.OsakaUniv.IonMode.Positive, 1.5F, 0.01F, 0.05F, -1.0F,
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\DDA_Positive_True positive and negative spectral kit msp");
 
-            LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Negative_True positive and negative spectral kit.txt",
-              @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
-              @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
-              Rfx.Riken.OsakaUniv.IonMode.Negative, 1.5F, 0.01F, 0.05F, 10F,
-              @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Negative_True positive and negative spectral kit msp");
+            //LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Negative_True positive and negative spectral kit.txt",
+            //  @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
+            //  @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
+            //  Rfx.Riken.OsakaUniv.IonMode.Negative, 1.5F, 0.01F, 0.05F, 10F,
+            //  @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Negative_True positive and negative spectral kit msp");
 
-            LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Positive_True positive and negative spectral kit.txt",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
-               Rfx.Riken.OsakaUniv.IonMode.Positive, 1.5F, 0.01F, 0.05F, 10F,
-               @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Positive_True positive and negative spectral kit msp");
+            //LipidomicsResultCuration.AnnotationForTestQueries(@"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Positive_True positive and negative spectral kit.txt",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\LipidMsmsBinaryDB-VS68-AritaM.lbm2",
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\lbmqueries.txt",
+            //   Rfx.Riken.OsakaUniv.IonMode.Positive, 1.5F, 0.01F, 0.05F, 10F,
+            //   @"D:\1_PaperForLipoquality\Raw data\Result\6_3_SpectralAnnotationTest\PASEF_Positive_True positive and negative spectral kit msp");
 
             //LipidomicsResultCuration.ConvertUnrealizedLipidsToUnknownsInSpectralKit(
             //    @"D:\1_PaperForLipoquality\Raw data\Result\6_1_SpectralAnnotationKit\DDA_Neg_Spec.txt",

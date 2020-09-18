@@ -113,7 +113,9 @@ namespace NCDK.Aromaticities
 
                 if (order == BondOrder.Unset)
                 {
-                    throw new ArgumentException("Aromaticity model requires that bond orders must be set");
+                    Console.WriteLine("Aromaticity model requires that bond orders must be set. Here, replaced by Single");
+                    order = BondOrder.Single;
+                    //throw new ArgumentException("Aromaticity model requires that bond orders must be set");
                 }
                 else if (order == BondOrder.Double)
                 {

@@ -225,8 +225,11 @@ namespace NCDK.QSAR.Descriptors.Moleculars
         {
             container = (IAtomContainer)container.Clone();
 
-            if (!GeometryUtil.Has3DCoordinates(container))
-                throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            if (!GeometryUtil.Has3DCoordinates(container)) {
+                Console.WriteLine("Error: Molecule must have 3D coordinates");
+                return null;
+                //throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            }
 
             var peoe = new GasteigerMarsiliPartialCharges();
             peoe.AssignGasteigerMarsiliSigmaPartialCharges(container, true);
