@@ -149,6 +149,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApiTests", "Msdia
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApp", "MsdialGuiApp\MsdialGuiApp.csproj", "{276317C3-B877-445B-A950-1DE2B5414ACF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiffReaderClientTestApp", "WiffReaderClientTestApp\WiffReaderClientTestApp.csproj", "{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -447,12 +449,16 @@ Global
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal
