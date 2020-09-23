@@ -380,6 +380,7 @@ namespace CompMs.MspGenerator
 
                 case "EGSE":
                 case "DEGSE":
+                case "DSMSE":
 
                     OtherLipidMspGenerator.singleAcylChainWithSteroidalLipidGenerator(chain1, lipidClass, output);
                     break;
@@ -499,11 +500,11 @@ namespace CompMs.MspGenerator
             var metaList = new List<string>();
             var meta = new MetaProperty();
 
-            var adducts = new List<string>() { "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-" };
+            var adducts = new List<string>() { "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-","[M-2H]2-", "[M+H-H2O]+"};
 
             using (var sw = new StreamWriter(Path.GetDirectoryName(outputFile) + "\\" + Path.GetFileNameWithoutExtension(outputFile) + "_meta.txt", false, Encoding.ASCII))
             {
-                sw.WriteLine(String.Join("\t", new string[] { "NAME", "ExactMass","LogP", "Formula", "SMILES","InChIKey", "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-" }));
+                sw.WriteLine(String.Join("\t", new string[] { "NAME", "ExactMass","LogP", "Formula", "SMILES","InChIKey", "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M-2H]2-", "[M+H-H2O]+" }));
 
                 using (var sr = new StreamReader(inputFile, Encoding.ASCII))
                 {

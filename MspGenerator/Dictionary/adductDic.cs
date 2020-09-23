@@ -246,8 +246,11 @@ namespace CompMs.MspGenerator
 
                 {"LipidA", new List<string>(){ "[M-H]-" } },
 
+
+                //added steroid
                 {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
                 {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"DSMSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
 
     };
 

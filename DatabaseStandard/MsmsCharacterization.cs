@@ -6075,11 +6075,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -6302,11 +6302,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6448,11 +6448,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
-                    // seek -H2O
-                    var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    // calc -H2O
+                    //var threshold = 1.0;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6594,11 +6594,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6739,11 +6739,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
-                    // seek -H2O
+                    // calc -H2O
                     //var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6879,11 +6879,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7317,11 +7317,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     // seek -2H2O
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
@@ -7447,11 +7447,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
+                    // calc [M-H]-
+                    var theoreticalMz2 = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz + H2O : theoreticalMz ;
+
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833;
+                    var diagnosticMz = theoreticalMz2 - 162.052833;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
@@ -8211,11 +8214,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             else if (adduct.IonMode == IonMode.Positive)
             {
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - H2O;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // HexCer exclude
@@ -8398,12 +8401,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
                     //var threshold = 10.0;
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-
@@ -8509,11 +8512,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             else if (adduct.IonMode == IonMode.Positive)
             {
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
+                    // calc [M-H]-
+                    var theoreticalMz2 = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz + H2O : theoreticalMz;
+
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833;
+                    var diagnosticMz = theoreticalMz2 - 162.052833;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
@@ -8827,11 +8833,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
 
@@ -8914,11 +8920,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-  // reject HexCer-EOS
@@ -9001,7 +9007,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             else if (adduct.IonMode == IonMode.Positive)
             {
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
@@ -9065,7 +9071,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                         acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, "+O");
                                         candidates.Add(molecule);
                                     }
-                                    else if (ceramideQueryFoundCount >= 1 || exAcylQueryFoundCount == 1)
+                                    else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
                                         extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
@@ -11135,6 +11141,33 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     candidates.Add(molecule);
 
                     return returnAnnotationResult("SE", LbmClass.DEGSE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfDesmosterolSpecies(ObservableCollection<double[]> spectrum, double ms2Tolerance, float theoreticalMz,
+            int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    // seek 367.335928  sterol structure (Desmosterol - H2O)
+                    var threshold = 10;
+                    var diagnosticMz = 367.335928;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    var steroidalModificationClass = "ester";
+                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.DSMSE, "27:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    candidates.Add(molecule);
+
+                    return returnAnnotationResult("SE", LbmClass.DSMSE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
