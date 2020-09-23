@@ -87,39 +87,55 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(27)]
         public string AnnotationCodeCorrDec { get; set; } = string.Empty;
 
-        public MsScanMatchResult MspBasedMatchResult() { // get result having max score
-            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
-            else {
-                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+        [IgnoreMember]
+        public MsScanMatchResult MspBasedMatchResult { // get result having max score
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+                }
             }
         }
 
-        public int TextDbID() {
-            if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
-            else return -1;
-        }
-
-        public int MspID() {
-            if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
-            else {
-                return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+        [IgnoreMember]
+        public int TextDbID {
+            get {
+                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
+                else return -1;
             }
         }
 
-        public bool IsReferenceMatched() {
-            if (TextDbID() >= 0) return true;
-            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
-            return false;
+        [IgnoreMember]
+        public int MspID {
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+                }
+            }
         }
 
-        public bool IsAnnotationSuggested() {
-            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
-            return false;
+        [IgnoreMember]
+        public bool IsReferenceMatched {
+            get {
+                if (TextDbID >= 0) return true;
+                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch)) return true;
+                return false;
+            }
         }
 
-        public bool IsUnknown() {
-            if (MspID() < 0 && TextDbID() < 0) return true;
-            return false;
+        [IgnoreMember]
+        public bool IsAnnotationSuggested {
+            get {
+                return MspID >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsUnknown {
+            get {
+                return MspID < 0 && TextDbID < 0;
+            }
         }
 
 

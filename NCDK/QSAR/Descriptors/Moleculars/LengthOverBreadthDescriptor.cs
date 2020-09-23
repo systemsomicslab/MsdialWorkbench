@@ -80,8 +80,11 @@ namespace NCDK.QSAR.Descriptors.Moleculars
         /// <returns>LOBMAX and LOBMIN in that order</returns>
         public Result Calculate(IAtomContainer container)
         {
-            if (!GeometryUtil.Has3DCoordinates(container))
-                throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            if (!GeometryUtil.Has3DCoordinates(container)) {
+                Console.WriteLine("Error: Molecule must have 3D coordinates");
+                return null;
+                //throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            }
 
             double angle = 10.0;
             double maxLOB = 0;

@@ -122,11 +122,33 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
             if (isUseRetentionIndex) {
-                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
             }
             else {
-                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, result.WeightedDotProduct, param.IsUseTimeForAnnotationScoring);
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
+            }
+            return result;
+        }
+
+        public static double GetIntegratedSpectraSimilarity(MsScanMatchResult result) {
+            var dotproductFact = 3.0;
+            var revDotproductFact = 2.0;
+            var matchedRatioFact = 1.0;
+            return (dotproductFact * result.WeightedDotProduct + revDotproductFact * result.ReverseDotProduct + matchedRatioFact * result.MatchedPeaksPercentage) /
+                (dotproductFact + revDotproductFact + matchedRatioFact);
+        }
+
+        public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
+            if (isUseRetentionIndex) {
+                result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore);
+            }
+            else {
+                result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore);
             }
             return result;
         }
@@ -166,6 +188,47 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var result = new MsScanMatchResult() {
                 Name = name, LibraryID = refID, InChIKey = refSpec.InChIKey, WeightedDotProduct = (float)weightedDotProduct,
+                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
+                AcurateMassSimilarity = (float)ms1Similarity,
+                MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isSpecMatch, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+            };
+
+            return result;
+        }
+
+        public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
+           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+            var isSpecMatch = false;
+            var isRtMatch = false;
+            var isRiMatch = false;
+            var isMs1Match = false;
+
+            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+
+            if (weightedDotProduct >= param.WeightedDotProductCutOff &&
+                simpleDotProduct >= param.SimpleDotProductCutOff &&
+                reverseDotProduct >= param.ReverseDotProductCutOff &&
+                matchedPeaksScores[0] >= param.MatchedPeaksPercentageCutOff &&
+                matchedPeaksScores[1] >= param.MinimumSpectrumMatch) {
+                isSpecMatch = true;
+            }
+
+            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
+            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
+
+            var ms1Tol = param.Ms1Tolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            if (scanProp.PrecursorMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
+            }
+            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
+
+            var result = new MsScanMatchResult() {
+                WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
                 MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
@@ -1743,7 +1806,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             return totalScore;
         }
 
-        public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT) {
+        public static double GetTotalSimilarity(double rtSimilarity, double eiSimilarity, bool isUseRT = true) {
             if (rtSimilarity < 0 || !isUseRT) {
                 return eiSimilarity;
             }

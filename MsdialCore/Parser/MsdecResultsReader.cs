@@ -96,6 +96,27 @@ namespace CompMs.MsdialCore.Parser {
             }
         }
 
+        public static MSDecResult ReadMSDecResult(string file, long seekPoint) {
+            using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+                var buffer = new byte[7];
+                fs.Seek(0, SeekOrigin.Begin);
+                fs.Read(buffer, 0, 7);
+
+                var name = Encoding.ASCII.GetString(buffer, 0, 2);
+                var DCL_VERSION = BitConverter.ToInt32(buffer, 2);
+                var isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
+
+                if (DCL_VERSION == 1) {
+                    fs.Seek(seekPoint, SeekOrigin.Begin);
+                    return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+
+
         public static MSDecResult ReadMSDecResult(string file, long seekPoint, int version, bool isAnnotationInfoIncluded) {
             using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
                 if (version == 1) {

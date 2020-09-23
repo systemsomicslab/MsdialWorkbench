@@ -20,6 +20,7 @@ namespace CompMs.Common.Lipidomics {
         private const double Proton = 1.00727641974;
         private const double H2O = 18.010564684;
         private const double Sugar162 = 162.052823422;
+        private const double Na = 22.98977;
 
         // spectrum should be centroided, purified by absolute- and relative abundance cut off values
         // spectrum must be ordered by intensity
@@ -5980,11 +5981,12 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
                 {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -6200,11 +6202,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6344,11 +6346,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
-                    // calc -H2O
-                    //var threshold = 1.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                    // seek -H2O
+                    var threshold = 1.0;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6485,11 +6487,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -H2O
                     var threshold = 1.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6623,11 +6625,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
-                    // calc -H2O
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                    // seek -H2O
                     //var threshold = 1.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
@@ -6761,11 +6763,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive) { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+") 
-                { 
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7179,11 +7181,11 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -H2O
                     var threshold = 1.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     // seek -2H2O
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz - H2O;
@@ -7309,17 +7311,14 @@ namespace CompMs.Common.Lipidomics {
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
-                    // calc [M-H]-
-                    var theoreticalMz2 = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz + H2O : theoreticalMz;
-
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz2 - 162.052833 ;
+                    var diagnosticMz = theoreticalMz - 162.052833;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - H2O;
+                    var diagnosticMz2 = adductform == "[M+H]+" ? diagnosticMz - H2O : adductform == "[M+H-H2O]+" ? diagnosticMz : diagnosticMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound == !true || isClassIon2Found == !true) return null;
@@ -8059,11 +8058,11 @@ namespace CompMs.Common.Lipidomics {
                 }
             }
             else if (adduct.IonMode == IonMode.Positive) {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                { 
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -H2O
                     var threshold = 5.0;
-                    var diagnosticMz = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - H2O;
+                    var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // HexCer exclude
@@ -8345,17 +8344,14 @@ namespace CompMs.Common.Lipidomics {
                 }
             }
             else if (adduct.IonMode == IonMode.Positive) {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
-                    // calc [M-H]-
-                    var theoreticalMz2 = adduct.AdductIonName == "[M+H-H2O]+" ? theoreticalMz + H2O : theoreticalMz;
-
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz2 - 162.052833;
+                    var diagnosticMz = theoreticalMz - 162.052833;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - H2O;
+                    var diagnosticMz2 = adductform == "[M+H]+" ? diagnosticMz - H2O : adductform == "[M+H-H2O]+" ? diagnosticMz : diagnosticMz - Na - H2O;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound == !true || isClassIon2Found == !true) return null;
@@ -8817,8 +8813,8 @@ namespace CompMs.Common.Lipidomics {
                 }
             }
             else if (adduct.IonMode == IonMode.Positive) {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+") 
-                {
+                var adductform = adduct.AdductIonName;
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") { 
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++) {
                         for (int sphDouble = minSphDoubleBond; sphDouble <= maxSphDoubleBond; sphDouble++) {
@@ -11651,8 +11647,8 @@ namespace CompMs.Common.Lipidomics {
 
                             if (foundCount > 1)
                             {
-                                var molecule = getPhospholipidMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, sphCarbon, sphDouble,
-                                    acylCarbon, acylDouble, averageIntensity);
+                                var molecule = getCeramideMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "d", sphCarbon, sphDouble,
+                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
@@ -11693,7 +11689,7 @@ namespace CompMs.Common.Lipidomics {
 
                             if (foundCount == 1)
                             {
-                                var molecule = getPhospholipidMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, sphCarbon, sphDouble,
+                                var molecule = getCeramideMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
@@ -11789,7 +11785,7 @@ namespace CompMs.Common.Lipidomics {
             return null;
         }
 
-        //add 20200812
+        //add 20200812 // TG 8:0_8:0_8:0;1O(FA 12:0)
         public static LipidMolecule JudgeIfFahfaTriacylglycerol(IMSScanProperty msScanProp, double ms2Tolerance,
                double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PS 46:6, totalCarbon = 46 and totalDoubleBond = 6
                int minSn1Carbon, int maxSn1Carbon, int minSn1DoubleBond, int maxSn1DoubleBond,

@@ -73,7 +73,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(21)]
         public double PeakAreaAboveBaseline { get; set; }
         [Key(22)]
-        public double Mass { get; set; }
+        public double Mass { get; set; } // for quant mass in gcms
 
         public double PeakWidth(ChromXType type) {
             switch (type) {

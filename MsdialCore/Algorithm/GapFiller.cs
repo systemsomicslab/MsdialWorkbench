@@ -14,19 +14,17 @@ namespace CompMs.MsdialCore.Algorithm
 {
     public class GapFiller
     {
-        public static void GapFilling(
+        public static void GapFilling(AlignmentProcessFactory AProcessFactory,
             List<RawSpectrum> spectrumCollection, 
-            float centralMz, float mzTol, float mzPeakWidth,
-            IonMode ionMode, SmoothingMethod smoothingMethod, int smoothingLevel,
-            bool isForceInsert, AlignmentChromPeakFeature alignmentChromPeakFeature
+            ChromXs center, double peakWidth, int fileID, AlignmentChromPeakFeature alignmentChromPeakFeature
             ) {
-
-            mzTol = Math.Max(mzTol, 0.005f);
-            mzPeakWidth = Math.Max(mzPeakWidth, 0.2f);
-
+            var smoothingMethod = AProcessFactory.SmoothingMethod;
+            var smoothingLevel = AProcessFactory.SmoothingLevel;
+            var isForceInsert = AProcessFactory.IsForceInsert;
+            var centralMz = center.Mz.Value;
+            var mzTol = Math.Max(AProcessFactory.MzTol, 0.005f);
             var result = alignmentChromPeakFeature;
-
-            var peaklist = DataAccess.GetMs1Peaklist(spectrumCollection, centralMz, mzPeakWidth * 1.5f, ionMode);
+            var peaklist = AProcessFactory.PeaklistOnChromCenter(center, peakWidth, spectrumCollection, fileID);
             var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
 
             result.PeakID = -2;
@@ -37,6 +35,7 @@ namespace CompMs.MsdialCore.Algorithm
             var minId = -1;
             var minDiff = double.MaxValue;
 
+            // TODO: need generalization
             var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { Mass = centralMz - mzTol }, (a, b) => a.Mass.CompareTo(b.Mass));
             for (int i = start; i < sPeaklist.Count; i++) {
                 if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
@@ -130,46 +129,27 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public void GapFilling(
+            AlignmentProcessFactory AProcessFactory,
             List<RawSpectrum> spectrumCollection,
             AlignmentSpotProperty alignmentSpotProperty,
             AlignmentChromPeakFeature alignmentChromPeakFeature,
-            float centralMz, float mzTol,
-            float averagePeakWidth,
-            ParameterBase param
+            ChromXs center, double averagePeakWidth, int fileID
             ) {
-            GapFilling(
+            GapFilling(AProcessFactory,
                 spectrumCollection, alignmentSpotProperty, alignmentChromPeakFeature,
-                centralMz, mzTol, averagePeakWidth,
-                param.IonMode, param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling);
+                center, averagePeakWidth, fileID);
         }
 
-        public void GapFilling(
-            List<RawSpectrum> spectrumCollection,
-            AlignmentSpotProperty alignmentSpotProperty,
-            AlignmentChromPeakFeature alignmentChromPeakFeature,
-            float centralMz, float mzTol,
-            float averagePeakWidth,
-            IonMode ionMode, SmoothingMethod smoothingMethod, int smoothingLevel,
-            bool isForceInsert
-            ) {
-
-            GapFilling(spectrumCollection, centralMz, mzTol, averagePeakWidth, ionMode, smoothingMethod, smoothingLevel, isForceInsert, alignmentChromPeakFeature);
-
-            alignmentChromPeakFeature.PeakShape.EstimatedNoise = Math.Max(alignmentSpotProperty.EstimatedNoiseAve, 1.0f);
-            var peakHeight = alignmentChromPeakFeature.PeakHeightTop - Math.Min(alignmentChromPeakFeature.PeakHeightLeft, alignmentChromPeakFeature.PeakHeightRight);
-            alignmentChromPeakFeature.PeakShape.SignalToNoise = (float)peakHeight / alignmentSpotProperty.EstimatedNoiseAve;
-        }
-
+        
         public static AlignmentChromPeakFeature GapFilling(
+            AlignmentProcessFactory AProcessFactory,
             List<RawSpectrum> spectrumCollection,
             ChromXs center,
-            float mzTol, float mzPeakWidth, IonMode ionMode,
-            SmoothingMethod smoothingMethod, int smoothingLevel,
-            bool isForceInsert
+            double peakWidth, int fileID
             ) {
             var result = new AlignmentChromPeakFeature();
 
-            GapFilling(spectrumCollection, (float)center.Mz.Value, mzTol, mzPeakWidth, ionMode, smoothingMethod, smoothingLevel, isForceInsert, result);
+            GapFilling(AProcessFactory, spectrumCollection, center, peakWidth, fileID, result);
 
             return result;
         }

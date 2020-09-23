@@ -3,55 +3,86 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 
 namespace CompMs.MsdialCore.Utility
 {
     public class DataObjConverter
     {
-        public static AlignmentChromPeakFeature ConvertToAlignmentChromPeakFeature(ChromatogramPeakFeature peak) {
-            return new AlignmentChromPeakFeature {
-                MasterPeakID = peak.MasterPeakID,
-                PeakID = peak.PeakID,
-                ParentPeakID = peak.ParentPeakID,
-                SeekPointToDCLFile = peak.SeekPointToDCLFile,
-                MS1RawSpectrumID = peak.ScanID,
-                MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop,
-                MS2RawSpectrumID = peak.MS2RawSpectrumID,
-                MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE,
-                ChromScanIdLeft = peak.ChromScanIdLeft,
-                ChromScanIdRight = peak.ChromScanIdRight,
-                ChromScanIdTop = peak.ChromScanIdTop,
-                MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop,
-                MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft,
-                MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight,
-                MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop,
-                MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft,
-                MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight,
-                ChromXsLeft = peak.ChromXsLeft,
-                ChromXsTop = peak.ChromXsTop,
-                ChromXsRight = peak.ChromXsRight,
-                PeakHeightLeft = peak.PeakHeightLeft,
-                PeakHeightTop = peak.PeakHeightTop,
-                PeakHeightRight = peak.PeakHeightRight,
-                PeakAreaAboveZero = peak.PeakAreaAboveZero,
-                PeakAreaAboveBaseline = peak.PeakAreaAboveBaseline,
-                Mass = peak.Mass,
-                IonMode = peak.IonMode,
-                Name = peak.Name,
-                Formula = peak.Formula,
-                Ontology = peak.Ontology,
-                SMILES = peak.SMILES,
-                InChIKey = peak.InChIKey,
-                CollisionCrossSection = peak.CollisionCrossSection,
-                MSRawID2MspIDs = peak.MSRawID2MspIDs,
-                TextDbIDs = peak.TextDbIDs,
-                MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult,
-                TextDbBasedMatchResult = peak.TextDbBasedMatchResult,
-                PeakCharacter = peak.PeakCharacter,
-                PeakShape = peak.PeakShape,
-            };
+        public static AlignmentChromPeakFeature ConvertToAlignmentChromPeakFeature(IMSScanProperty peakobj, MachineCategory category) {
+            
+            if (category == MachineCategory.GCMS) {
+                var peak = (MSDecResult)peakobj;
+                return new AlignmentChromPeakFeature {
+                    MasterPeakID = peak.ScanID,
+                    PeakID = peak.ScanID,
+                    SeekPointToDCLFile = peak.SeekPoint,
+                    MS1RawSpectrumID = peak.RawSpectrumID,
+                    MS1RawSpectrumIdTop = peak.RawSpectrumID,
+                    ChromXsTop = peak.ChromXs,
+                    ChromXsLeft = peak.ModelPeakChromatogram[0].ChromXs,
+                    ChromXsRight = peak.ModelPeakChromatogram[peak.ModelPeakChromatogram.Count - 1].ChromXs,
+                    PeakHeightTop = peak.ModelPeakHeight,
+                    PeakAreaAboveZero = peak.ModelPeakArea,
+                    Mass = peak.ModelPeakMz,
+                    IonMode = peak.IonMode,
+                    MSRawID2MspIDs = new Dictionary<int, List<int>>() { { peak.RawSpectrumID, peak.MspIDs } },
+                    MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>() { { peak.RawSpectrumID, peak.MspBasedMatchResult } },
+                    PeakShape = new ChromatogramPeakShape() {
+                        EstimatedNoise = peak.EstimatedNoise, SignalToNoise = peak.SignalNoiseRatio, AmplitudeScoreValue = peak.AmplitudeScore,
+                        PeakPureValue = peak.ModelPeakPurity, IdealSlopeValue = peak.ModelPeakQuality
+                    },
+                };
+            }
+            else {
+                var peak = (ChromatogramPeakFeature)peakobj;
+                return new AlignmentChromPeakFeature {
+                    MasterPeakID = peak.MasterPeakID,
+                    PeakID = peak.PeakID,
+                    ParentPeakID = peak.ParentPeakID,
+                    SeekPointToDCLFile = peak.SeekPointToDCLFile,
+                    MS1RawSpectrumID = peak.ScanID,
+                    MS1RawSpectrumIDatAccumulatedMS1 = peak.MS1AccumulatedMs1RawSpectrumIdTop,
+                    MS2RawSpectrumID = peak.MS2RawSpectrumID,
+                    MS2RawSpectrumID2CE = peak.MS2RawSpectrumID2CE,
+                    ChromScanIdLeft = peak.ChromScanIdLeft,
+                    ChromScanIdRight = peak.ChromScanIdRight,
+                    ChromScanIdTop = peak.ChromScanIdTop,
+                    MS1RawSpectrumIdTop = peak.MS1RawSpectrumIdTop,
+                    MS1RawSpectrumIdLeft = peak.MS1RawSpectrumIdLeft,
+                    MS1RawSpectrumIdRight = peak.MS1RawSpectrumIdRight,
+                    MS1AccumulatedMs1RawSpectrumIdTop = peak.MS1AccumulatedMs1RawSpectrumIdTop,
+                    MS1AccumulatedMs1RawSpectrumIdLeft = peak.MS1AccumulatedMs1RawSpectrumIdLeft,
+                    MS1AccumulatedMs1RawSpectrumIdRight = peak.MS1AccumulatedMs1RawSpectrumIdRight,
+                    ChromXsLeft = peak.ChromXsLeft,
+                    ChromXsTop = peak.ChromXsTop,
+                    ChromXsRight = peak.ChromXsRight,
+                    PeakHeightLeft = peak.PeakHeightLeft,
+                    PeakHeightTop = peak.PeakHeightTop,
+                    PeakHeightRight = peak.PeakHeightRight,
+                    PeakAreaAboveZero = peak.PeakAreaAboveZero,
+                    PeakAreaAboveBaseline = peak.PeakAreaAboveBaseline,
+                    Mass = peak.Mass,
+                    IonMode = peak.IonMode,
+                    Name = peak.Name,
+                    Formula = peak.Formula,
+                    Ontology = peak.Ontology,
+                    SMILES = peak.SMILES,
+                    InChIKey = peak.InChIKey,
+                    CollisionCrossSection = peak.CollisionCrossSection,
+                    MSRawID2MspIDs = peak.MSRawID2MspIDs,
+                    TextDbIDs = peak.TextDbIDs,
+                    MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult,
+                    TextDbBasedMatchResult = peak.TextDbBasedMatchResult,
+                    PeakCharacter = peak.PeakCharacter,
+                    PeakShape = peak.PeakShape,
+                };
+            }
         }
 
         public static AlignmentSpotProperty ConvertFeatureToSpot(List<AlignmentChromPeakFeature> alignment) {
@@ -125,7 +156,47 @@ namespace CompMs.MsdialCore.Utility
                     (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop)
                     ).FileID;
             }
-            return alignment.Max(align => (align.TextDbBasedMatchResult?.TotalScore, align.FileID)).FileID;
+            return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID;
+        }
+
+        public static void SetDefaultCompoundInformation(AlignmentSpotProperty alignmentSpot) {
+            alignmentSpot.AdductType.AdductIonName = string.Empty;
+            alignmentSpot.PeakCharacter.Charge = 1;
+            alignmentSpot.Name = string.Empty;
+
+            // reset text db
+            SetDefaultCompoundInformation(alignmentSpot.TextDbBasedMatchResult);
+
+            // reset msp db
+            alignmentSpot.MSRawID2MspBasedMatchResult.Select(kvp => kvp.Value).ToList().ForEach(result => SetDefaultCompoundInformation(result));
+        }
+
+        public static void SetDefaultCompoundInformation(MsScanMatchResult scanMatchResult) {
+            scanMatchResult.LibraryID = -1;
+            scanMatchResult.TotalScore = -1;
+
+            scanMatchResult.WeightedDotProduct = -1;
+            scanMatchResult.SimpleDotProduct = -1;
+            scanMatchResult.ReverseDotProduct = -1;
+            scanMatchResult.MatchedPeaksCount = -1;
+            scanMatchResult.MatchedPeaksPercentage = -1;
+            scanMatchResult.EssentialFragmentMatchedScore = -1;
+
+            scanMatchResult.RtSimilarity = -1;
+            scanMatchResult.RiSimilarity = -1;
+            scanMatchResult.CcsSimilarity = -1;
+            scanMatchResult.IsotopeSimilarity = -1;
+            scanMatchResult.AcurateMassSimilarity = -1;
+
+            scanMatchResult.IsPrecursorMzMatch = false;
+            scanMatchResult.IsSpectrumMatch = false;
+            scanMatchResult.IsRtMatch = false;
+            scanMatchResult.IsRiMatch = false;
+            scanMatchResult.IsCcsMatch = false;
+            scanMatchResult.IsLipidClassMatch = false;
+            scanMatchResult.IsLipidChainsMatch = false;
+            scanMatchResult.IsLipidPositionMatch = false;
+            scanMatchResult.IsOtherLipidMatch = false;
         }
     }
 }

@@ -72,7 +72,21 @@ namespace Riken.Metabolomics.MsfinderConsoleApp
             //Console.WriteLine("IsOutputRedirected: {0}", Console.IsOutputRedirected);
             //Console.WriteLine("IsErrorRedirected:  {0}", Console.IsErrorRedirected);
 
+
             return MainProcess.Run(args);
+
+            //// temp
+            //new SpectrumCuration()
+            //  .CombineDuplicatesBasedOnMolecularFormulaAssignment(
+            //  @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\MSMS-RIKEN-Pos-VS15-For-Statistics.msp",
+            //  @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\MSMS-RIKEN-Pos-VS15-Combined.msp");
+
+            //new SpectrumCuration()
+            //  .CombineDuplicatesBasedOnMolecularFormulaAssignment(
+            //  @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\MSMS-RIKEN-Neg-VS15-For-Statistics.msp",
+            //  @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\MSMS-RIKEN-Neg-VS15-Combined.msp");
+
+            //return 1;
         }
     }
 }

@@ -24,6 +24,7 @@ using System.Windows.Input;
 using CompMs.Common.DataObj.Property;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialDimsCore.DataObj;
+using CompMs.Common.DataObj.Database;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -76,6 +77,7 @@ namespace MsdialDimsCoreUiTestApp
         private Rect ms1Area, ms2Area;
         private List<MoleculeMsReference> mspDB, textDB;
         private MsdialDimsParameter param;
+        private IupacDatabase iupac;
         private Dictionary<int, Stream> rawChromatogramStreams;
 
         public MainWindowVM()
@@ -172,8 +174,11 @@ namespace MsdialDimsCoreUiTestApp
                 }
             };
 
+            iupac = IupacResourceParser.GetIUPACDatabase();
+
             mspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
             mspDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+
 
             // textDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out _);
             // textDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
@@ -189,7 +194,7 @@ namespace MsdialDimsCoreUiTestApp
                 stream.Seek(0, SeekOrigin.Begin);
                 rawChromatogramStreams[analysisFile.AnalysisFileId] = stream;
             }
-            RunAlignment(analysisFiles, alignmentFiles[0]);
+            RunAlignment(analysisFiles, alignmentFiles[0], iupac);
 
             SelectionChangedCmd = new SelectionChangedCommand(this);
 
@@ -232,8 +237,8 @@ namespace MsdialDimsCoreUiTestApp
             MsdialSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
         }
 
-        private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile) {
-            var aligner = new PeakAligner(new DimsPeakComparer(param.Ms1AlignmentTolerance), param);
+        private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
+            var aligner = new PeakAligner(new DimsPeakComparer(param.Ms1AlignmentTolerance), param, iupac);
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
         }

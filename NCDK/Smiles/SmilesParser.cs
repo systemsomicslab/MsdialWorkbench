@@ -224,19 +224,25 @@ namespace NCDK.Smiles
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine($"Error parsing CXSMILES: {e.Message}", e);
+                        return null;
                         // e.StackTrace
-                        throw new InvalidSmilesException($"Error parsing CXSMILES: {e.Message}", e);
+                        //throw new InvalidSmilesException($"Error parsing CXSMILES: {e.Message}", e);
                     }
                 }
                 return mol;
             }
             catch (IOException e)
             {
-                throw new InvalidSmilesException($"could not parse '{smiles}', {e.Message}", e);
+                Console.WriteLine($"could not parse '{smiles}', {e.Message}", e);
+                return null;
+                //throw new InvalidSmilesException($"could not parse '{smiles}', {e.Message}", e);
             }
             catch (Exception e)
             {
-                throw new InvalidSmilesException($"could not parse '{smiles}'", e);
+                Console.WriteLine($"could not parse '{smiles}'", e);
+                return null;
+                //throw new InvalidSmilesException($"could not parse '{smiles}'", e);
             }
         }
 

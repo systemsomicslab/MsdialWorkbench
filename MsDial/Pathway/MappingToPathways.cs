@@ -371,7 +371,7 @@ namespace Riken.Metabolomics.Msdial.Pathway {
             var isBoxPlot = mainWindow.ProjectProperty.IsBoxPlotForAlignmentResult;
 
             // initialization
-            var lipidNameToVariables = getLipidNameToVariables(files);
+            var lipidNameToVariables = getLipidNameToVariables(files, alignedSpots[0].IonAbundanceUnit);
             if (isInChIKeyAsKey) {
                 setMetabolicPathwayProperties(nodes, alignedSpots, files, project, displayMode, mspDB, textDB, allNodes, isBoxPlot);
             }
@@ -437,13 +437,14 @@ namespace Riken.Metabolomics.Msdial.Pathway {
             window.Show();
         }
 
-        private static Dictionary<string, AlignmentPropertyBean> getLipidNameToVariables(ObservableCollection<AnalysisFileBean> files) {
+        private static Dictionary<string, AlignmentPropertyBean> getLipidNameToVariables(ObservableCollection<AnalysisFileBean> files, IonAbundanceUnit unit) {
             // initialization
             var mappedClasses = LipidomicsConverter.GetLipidClasses();
             var lipidNameToVariables = new Dictionary<string, AlignmentPropertyBean>();
             foreach (var lipidclass in mappedClasses) {
                 lipidNameToVariables[lipidclass] = new AlignmentPropertyBean() {
                     MetaboliteName = lipidclass,
+                    IonAbundanceUnit = unit,
                     AlignedPeakPropertyBeanCollection = new ObservableCollection<AlignedPeakPropertyBean>()
                 };
                 foreach (var file in files) {

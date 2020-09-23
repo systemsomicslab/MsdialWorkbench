@@ -3436,6 +3436,7 @@ namespace Riken.Metabolomics.Lipidomics {
             // pattern [8] SM 30:1;2O(FA 14:0)
             // pattern [9] ST 28:2;O;Hex;PA 12:0_12:0
             // pattern [10] SE 28:2/8:0
+            // pattern [11] TG 16:0_16:1_18:0;O(FA 16:0)
             var headerString = moleculeString.Split(' ')[0].Trim();
             string chainString = string.Empty;
             if (headerString == "SE" || headerString == "ST") {
@@ -3457,7 +3458,15 @@ namespace Riken.Metabolomics.Lipidomics {
             } 
             else if (chainString.Contains("(FA")) {  // pattern 3
                 var regexes = Regex.Match(chainString, pattern3).Groups;
-                chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                var chain1strings = regexes["chain1"].Value;
+                if (chain1strings.Contains("_")) {
+                    chains = new List<string>();
+                    foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
+                    chains.Add(regexes["chain2"].Value);
+                }
+                else {
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                }
                 //Console.WriteLine();
             }
             else if (chainString.Contains("(O-") && chainString.Contains("/")) { // pattern 2
@@ -3641,6 +3650,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.MG: return "MG";
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
+                case LbmClass.OxTG: return "OxTG";
+                case LbmClass.FAHFATG: return "FAHFATG";
                 case LbmClass.EtherTG: return "EtherTG";
                 case LbmClass.EtherDG: return "EtherDG";
                 case LbmClass.LPC: return "LPC";
@@ -3682,6 +3693,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.PMeOH: return "PMeOH";
                 case LbmClass.PEtOH: return "PEtOH";
                 case LbmClass.PBtOH: return "PBtOH";
+                case LbmClass.MMPE: return "MMPE";
+                case LbmClass.DMPE: return "DMPE";
                 case LbmClass.LNAPE: return "LNAPE";
                 case LbmClass.LNAPS: return "LNAPS";
                 case LbmClass.DGDG: return "DGDG";
@@ -3698,6 +3711,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.CASE: return "CASE";
                 case LbmClass.SISE: return "SISE";
                 case LbmClass.STSE: return "STSE";
+                case LbmClass.EGSE: return "EGSE";
+                case LbmClass.DEGSE: return "DEGSE";
                 case LbmClass.AHexCS: return "AHexCS";
                 case LbmClass.AHexBRS: return "AHexBRS";
                 case LbmClass.AHexCAS: return "AHexCAS";
@@ -3708,6 +3723,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GLCAE: return "GLCAE";
                 case LbmClass.TDCAE: return "TDCAE";
                 case LbmClass.TLCAE: return "TLCAE";
+                case LbmClass.LCAE: return "LCAE";
+                case LbmClass.KLCAE: return "KLCAE";
+                case LbmClass.KDCAE: return "KDCAE";
                 case LbmClass.Cholesterol: return "Cholesterol";
                 case LbmClass.CholesterolSulfate: return "CholesterolSulfate";
                 case LbmClass.SHex: return "SHex";
@@ -3753,6 +3771,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.Hex3Cer: return "Hex3Cer";
                 case LbmClass.PE_Cer: return "PE-Cer";
                 case LbmClass.PI_Cer: return "PI-Cer";
+                case LbmClass.MIPC: return "MIPC";
                 case LbmClass.CerP: return "CerP";
                 case LbmClass.SM: return "SM";
                 case LbmClass.SHexCer: return "SHexCer";
@@ -3977,6 +3996,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "MG": return LbmClass.MG;
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
+                case "OxTG": return LbmClass.OxTG;
+                case "FAHFATG": return LbmClass.FAHFATG;
                 case "EtherDG": return LbmClass.EtherDG;
                 case "EtherTG": return LbmClass.EtherTG;
 
@@ -4035,6 +4056,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "PMeOH": return LbmClass.PMeOH;
                 case "PEtOH": return LbmClass.PEtOH;
                 case "PBtOH": return LbmClass.PBtOH;
+                case "MMPE": return LbmClass.MMPE;
+                case "DMPE": return LbmClass.DMPE;
 
                 case "LNAPE": return LbmClass.LNAPE;
                 case "LNAPS": return LbmClass.LNAPS;
@@ -4060,6 +4083,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "CASE": return LbmClass.CASE;
                 case "SISE": return LbmClass.SISE;
                 case "STSE": return LbmClass.STSE;
+                case "EGSE": return LbmClass.EGSE;
+                case "DEGSE": return LbmClass.DEGSE;
 
                 case "AHexCS": return LbmClass.AHexCS;
                 case "AHexBRS": return LbmClass.AHexBRS;
@@ -4087,6 +4112,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GLCAE": return LbmClass.GLCAE;
                 case "TDCAE": return LbmClass.TDCAE;
                 case "TLCAE": return LbmClass.TLCAE;
+                case "LCAE": return LbmClass.LCAE;
+                case "KLCAE": return LbmClass.KLCAE;
+                case "KDCAE": return LbmClass.KDCAE;
 
                 case "Vitamin_E": return LbmClass.Vitamin_E;
                 case "Vitamin E": return LbmClass.Vitamin_E;
@@ -4163,6 +4191,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "PI_Cer": return LbmClass.PI_Cer;
                 case "PE_Cer+O": return LbmClass.PE_Cer;
                 case "PI_Cer+O": return LbmClass.PI_Cer;
+                case "MIPC": return LbmClass.MIPC;
 
                 case "CerP": return LbmClass.CerP;
 
@@ -4390,6 +4419,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "MG": return "Glycerolipids";
                 case "DG": return "Glycerolipids";
                 case "TG": return "Glycerolipids";
+                case "OxTG": return "Glycerolipids";
+                case "FAHFATG": return "Glycerolipids";
                 case "EtherDG": return "Glycerolipids";
                 case "EtherTG": return "Glycerolipids";
                 case "LDGTS": return "Glycerolipids";
@@ -4453,6 +4484,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "PMeOH": return "Glycerophospholipids";
                 case "PEtOH": return "Glycerophospholipids";
                 case "PBtOH": return "Glycerophospholipids";
+                case "MMPE": return "Glycerophospholipids";
+                case "DMPE": return "Glycerophospholipids";
 
                 case "LNAPE": return "Glycerophospholipids";
                 case "LNAPS": return "Glycerophospholipids";
@@ -4490,6 +4523,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "CASE": return "SterolLipids";
                 case "SISE": return "SterolLipids";
                 case "STSE": return "SterolLipids";
+                case "EGSE": return "SterolLipids";
+                case "DEGSE": return "SterolLipids";
                 case "AHexCS": return "SterolLipids";
                 case "AHexBRS": return "SterolLipids";
                 case "AHexCAS": return "SterolLipids";
@@ -4501,6 +4536,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GLCAE": return "SterolLipids";
                 case "TDCAE": return "SterolLipids";
                 case "TLCAE": return "SterolLipids";
+                case "LCAE": return "SterolLipids";
+                case "KLCAE": return "SterolLipids";
+                case "KDCAE": return "SterolLipids";
                 case "Vitamin_D": return "SterolLipids";
                 case "Vitamin D": return "SterolLipids";
                 case "BileAcid": return "SterolLipids";
@@ -4572,6 +4610,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "PE-Cer+O": return "Sphingolipids";
                 case "PI_Cer+O": return "Sphingolipids";
                 case "PE_Cer+O": return "Sphingolipids";
+                case "MIPC": return "Sphingolipids";
 
                 case "SM": return "Sphingolipids";
                 case "SHexCer": return "Sphingolipids";
@@ -4581,6 +4620,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "SL+O": return "Sphingolipids";
                 case "GM3": return "Sphingolipids";
                 case "GM3[NeuAc]": return "Sphingolipids";
+
+
 
                 default: return "Unassigned lipid";
             }

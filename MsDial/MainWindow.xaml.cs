@@ -771,7 +771,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
-            if (this.MainWindowTitle.Contains("-tada") || this.MainWindowTitle.Contains("-beta")) return;
+            if (this.MainWindowTitle.Contains("-tada") || this.MainWindowTitle.Contains("-beta") || this.MainWindowTitle.Contains("-dev")) return;
             Mouse.OverrideCursor = Cursors.Wait;
             var window = new ShortMessageWindow() {
                 Owner = mainWindow,
