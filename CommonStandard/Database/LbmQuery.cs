@@ -36,7 +36,7 @@ namespace Rfx.Riken.OsakaUniv
         SSulfate, BAHex, BASulfate,
         Others, Unknown, SPLASH, EtherSMGDG, SMGDG, Vitamin_D,
         LCAE, KLCAE, KDCAE,
-        MMPE, DMPE, MIPC, EGSE, DEGSE,
+        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
         OxTG, FAHFATG,
 
         // new version

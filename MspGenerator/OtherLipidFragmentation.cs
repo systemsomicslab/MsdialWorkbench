@@ -168,7 +168,7 @@ namespace CompMs.MspGenerator
             // {"Ergosterol",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+NH4]+" } },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, chain1Ox);
 
-            if (adduct == "[M+H]+"|| adduct == "[M+NH4]+"|| adduct == "[M+Na]+")
+            if (adduct == "[M+H]+" || adduct == "[M+NH4]+" || adduct == "[M+Na]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
                 var fra01int = adduct == "[M+NH4]+" ? 5 : 200;
@@ -176,9 +176,42 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
 
-                    var fra02mass = exactMass + MassDictionary.Proton;
+                var fra02mass = exactMass + MassDictionary.Proton;
                 if (adduct == "[M+NH4]+")
-                { 
+                {
+                    var fra02int = 10;
+                    var fra02comment = "[M+H]+";
+                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                }
+
+                //var fra03mass = fra01mass - MassDictionary.H2OMass;
+                //var fra03int = 50;
+                //var fra03comment = "NL of H2O";
+                //fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra02mass - chain1Mass - MassDictionary.OxygenMass;
+                var fra04int = 999;
+                var fra04comment = "[sterol base structure]+";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+            }
+        }
+
+        public static void desmosterolEsterFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain1Ox)
+        {
+            // {"Ergosterol",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+NH4]+" } },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, chain1Ox);
+
+            if (adduct == "[M+H]+" || adduct == "[M+NH4]+" || adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = adduct == "[M+NH4]+" ? 5 : 200;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                if (adduct == "[M+NH4]+")
+                {
                     var fra02int = 10;
                     var fra02comment = "[M+H]+";
                     fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);

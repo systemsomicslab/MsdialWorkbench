@@ -2058,7 +2058,7 @@ namespace CompMs.MspGenerator
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
-                var fra02mass = fra01mass - acylMass + 2 * MassDictionary.HydrogenMass;
+                var fra02mass = fra01mass - acylMass;
                 var fra02int = 10;
                 var fra02comment = "acyl loss";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);

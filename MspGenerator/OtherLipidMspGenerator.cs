@@ -614,6 +614,14 @@ namespace CompMs.MspGenerator
                                 name = "SE 28:4" + "/" + chain1String;
                                 break;
 
+                            case "DSMSE":
+                                headerSmiles = smilesHeaderDict[lipidClass];
+                                rawSmiles = headerSmiles + chain1Smiles + "%10";
+                                meta = Common.getMetaProperty(rawSmiles);
+                                OtherLipidFragmentation.desmosterolEsterFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain1Ox);
+                                name = "SE 27:2" + "/" + chain1String;
+                                break;
+
 
                             case "AHexBRS":
                             case "AHexCAS":

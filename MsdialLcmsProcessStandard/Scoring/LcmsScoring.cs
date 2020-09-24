@@ -925,6 +925,11 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond,
                         sn3Carbon, sn3Carbon, sn3DbBond, sn3DbBond, adduct);
+                //add 20200923
+                case LbmClass.DSMSE:
+                    return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+
 
                 default:
                     return null;

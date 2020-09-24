@@ -6366,7 +6366,7 @@ namespace CompMs.Common.Lipidomics {
                         {
 
                             var acylCarbon = totalCarbon - sphCarbon;
-                           // if (acylCarbon < minSphCarbon) { break; }
+                            // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = diagnosticMz2 - acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
@@ -8235,12 +8235,12 @@ namespace CompMs.Common.Lipidomics {
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
                     //var threshold = 10.0;
-                    var diagnosticMz = 
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz:
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-
@@ -8642,11 +8642,11 @@ namespace CompMs.Common.Lipidomics {
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
 
@@ -8728,11 +8728,11 @@ namespace CompMs.Common.Lipidomics {
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-  // reject HexCer-EOS
@@ -8871,7 +8871,7 @@ namespace CompMs.Common.Lipidomics {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
                                         acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, "+O");
                                         candidates.Add(molecule);
-                                    } else if (ceramideQueryFoundCount >= 1 || exAcylQueryFoundCount == 1) {
+                                    } else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1) {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
                                         extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
                                         candidates.Add(molecule);
@@ -10913,6 +10913,34 @@ namespace CompMs.Common.Lipidomics {
                     candidates.Add(molecule);
 
                     return returnAnnotationResult("SE", LbmClass.DEGSE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfDesmosterolSpecies(IMSScanProperty msScanProp, double ms2Tolerance, float theoreticalMz,
+        int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    // seek 367.335928  sterol structure (Desmosterol - H2O)
+                    var threshold = 10;
+                    var diagnosticMz = 367.335928;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    var steroidalModificationClass = "ester";
+                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.DSMSE, "27:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    candidates.Add(molecule);
+
+                    return returnAnnotationResult("SE", LbmClass.DSMSE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
