@@ -25,13 +25,5 @@ namespace MsdialDimsCoreUiTestApp.View
         public SpotSelectControl() {
             InitializeComponent();
         }
-
-        public AxisManager HorizontalAxis {
-            get { return (AxisManager)GetValue(HorizontalAxisProperty); }
-            set { SetValue(HorizontalAxisProperty, value); }
-        }
-
-        public static readonly DependencyProperty HorizontalAxisProperty =
-            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(SpotSelectControl), new PropertyMetadata(null));
     }
 }

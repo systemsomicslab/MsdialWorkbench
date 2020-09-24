@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using CompMs.Common.DataObj;
@@ -22,9 +21,8 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
 using System.Windows.Input;
 using CompMs.Common.DataObj.Property;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialDimsCore.DataObj;
 using CompMs.Common.DataObj.Database;
+using CompMs.MsdialDimsCore.Algorithm.Alignment;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -65,7 +63,8 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref alignmentContainer, value);
         }
 
-        public ICommand SelectionChangedCmd { get; }
+        public ICommand FileChangedCmd { get; }
+        public ICommand AlignmentChangedCmd { get; }
 
         private ChromatogramSerializer<ChromatogramSpotInfo> chromSpotSerializer;
         private ChromatogramSerializer<ChromatogramPeakInfo> chromPeakSerializer;
@@ -88,28 +87,28 @@ namespace MsdialDimsCoreUiTestApp
             var textLibraryFile = @"C:\Users\YUKI MATSUZAWA\works\data\textlib\TestLibrary.txt";
             analysisFiles = new ObservableCollection<AnalysisFileBean> {
                 new AnalysisFileBean { AnalysisFileId = 0,
-                                       // AnalysisFileName = "703_Egg2 Egg White",
-                                       // AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\703_Egg2 Egg White.abf",
+                                       AnalysisFileName = "703_Egg2 Egg White",
+                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\703_Egg2 Egg White.abf",
                                        // AnalysisFileName = "Neg_Infusion_IDA_Liver1",
                                        // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver1.abf",
-                                       AnalysisFileName = "Neg_MSMSALL_Liver1",
-                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver1.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver1",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver1.abf",
                                        PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
                 new AnalysisFileBean { AnalysisFileId = 1,
-                                       // AnalysisFileName = "704_Egg2 Egg Yolk",
-                                       // AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf",
+                                       AnalysisFileName = "704_Egg2 Egg Yolk",
+                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf",
                                        // AnalysisFileName = "Neg_Infusion_IDA_Liver2",
                                        // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver2.abf",
-                                       AnalysisFileName = "Neg_MSMSALL_Liver2",
-                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver2.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver2",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver2.abf",
                                        PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                /*
                 new AnalysisFileBean { AnalysisFileId = 2,
                                        // AnalysisFileName = "Neg_Infusion_IDA_Liver3",
                                        // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver3.abf",
                                        AnalysisFileName = "Neg_MSMSALL_Liver3",
                                        AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver3.abf",
                                        PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
-                /*
                 new AnalysisFileBean { AnalysisFileId = 3,
                                        AnalysisFileName = "Neg_MSMSALL_Muscle1",
                                        AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Muscle1.abf",
@@ -153,8 +152,8 @@ namespace MsdialDimsCoreUiTestApp
                 new AlignmentFileBean {
                     FileID = 0,
                     FileName = "Alignment 1",
-                    FilePath = System.IO.Path.GetTempFileName(),
-                    EicFilePath = System.IO.Path.GetTempFileName(),
+                    FilePath = Path.GetTempFileName(),
+                    EicFilePath = Path.GetTempFileName(),
                 },
             };
 
@@ -196,7 +195,8 @@ namespace MsdialDimsCoreUiTestApp
             }
             RunAlignment(analysisFiles, alignmentFiles[0], iupac);
 
-            SelectionChangedCmd = new SelectionChangedCommand(this);
+            FileChangedCmd = new FileChangedCommand(this);
+            AlignmentChangedCmd = new AlignmentChangedCommand(this);
 
             ReadAndSetMs1RawSpectrum(analysisFiles[0].AnalysisFileId);
             ReadAndSetMs1Peaks(analysisFiles[0].PeakAreaBeanInformationFilePath);
@@ -220,7 +220,7 @@ namespace MsdialDimsCoreUiTestApp
                                      .Where(spectra => spectra.Spectrum != null)
                                      .Argmax(spectra => spectra.Spectrum.Length);
 
-            var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
             if (stream != null)
                 chromPeakSerializer?.Serialize(stream, new ChromatogramPeakInfo(analysisFileBean.AnalysisFileId, sChromPeaks, -1, -1, -1));
@@ -238,7 +238,8 @@ namespace MsdialDimsCoreUiTestApp
         }
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
-            var aligner = new PeakAligner(new DimsPeakComparer(param.Ms1AlignmentTolerance), param, iupac);
+            var factory = new DimsAlignmentProcessFactory(param, iupac);
+            var aligner = factory.CreatePeakAliner();
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
         }
@@ -305,7 +306,7 @@ namespace MsdialDimsCoreUiTestApp
             foreach (var feature in chromFeatures) {
                 if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID <= spectra.Count - 1) {
                     var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
-                    var spectrumPeaks = ComponentsConverter.ConvertToSpectrumPeaks(peakElements);
+                    var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
                     var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
                     feature.Spectrum = centroidSpec;
                 }
@@ -344,8 +345,9 @@ namespace MsdialDimsCoreUiTestApp
                         Mass = feature.Mass,
                         Intensity = feature.PeakHeightTop,
                         Centroids = ScalingSpectrumPeaks(feature.Spectrum),
-                        RefMatched = feature.Name != string.Empty && !feature.Name.Contains("w/o"),
-                        Suggested = feature.Name.Contains("w/o"),
+                        MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
+                        RefMatched = feature.IsReferenceMatched,
+                        Suggested = feature.IsAnnotationSuggested,
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
@@ -373,11 +375,11 @@ namespace MsdialDimsCoreUiTestApp
             AlignmentContainer = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
         }
 
-        public class SelectionChangedCommand : ICommand
+        public class FileChangedCommand : ICommand
         {
             MainWindowVM mainWindowVM;
 
-            public SelectionChangedCommand(MainWindowVM mainWindowVM) {
+            public FileChangedCommand(MainWindowVM mainWindowVM) {
                 this.mainWindowVM = mainWindowVM;
             }
 
@@ -394,15 +396,34 @@ namespace MsdialDimsCoreUiTestApp
             }
         }
 
+        public class AlignmentChangedCommand : ICommand
+        {
+            MainWindowVM mainWindowVM;
+
+            public AlignmentChangedCommand(MainWindowVM mainWindowVM) {
+                this.mainWindowVM = mainWindowVM;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter) {
+                return true;
+            }
+
+            public void Execute(object parameter) {
+                var alignmentFile = parameter as AlignmentFileBean;
+                mainWindowVM.ReadAndSetAlignmentResultContainer(alignmentFile.FileID);
+            }
+        }
     }
 
-    internal class Ms2Info
-    {
+    internal class Ms2Info {
         public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
         public int PeakID { get; set; }
         public double Mass { get; set; }
         public double Intensity { get; set; }
         public List<SpectrumPeak> Centroids { get; set; }
+        public MoleculeMsReference MspMatch {get;set;}
         public bool RefMatched { get; set; }
         public bool Suggested { get; set; }
         public bool Ms2Acquired { get; set; }

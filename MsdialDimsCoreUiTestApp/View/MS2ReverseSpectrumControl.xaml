@@ -9,22 +9,24 @@
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             x:Name="MS2Chart"
+             x:Name="MS2RevChart"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="MassAxisManager"
-                                       MinValue="{Binding DataContext.Ms2Area.Left, Source={x:Reference Name=MS2Chart}}"
-                                       MaxValue="{Binding DataContext.Ms2Area.Right, Source={x:Reference Name=MS2Chart}}" />
-        <manager:ContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                       MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
-                                       MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
-                                       IsFlipped="True"/>
-        <manager:ContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                       MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
-                                       MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
-                                       Min="{Binding Min, Source={StaticResource MeasureIntensityAxisManager}, Mode=TwoWay}"
-                                       Max="{Binding Max, Source={StaticResource MeasureIntensityAxisManager}, Mode=TwoWay}"/>
-        <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
+        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
+                                           ItemsSource="{Binding ItemsSource/Centroids, Source={x:Reference Name=MS2RevChart}}"
+                                           ValuePropertyName="Mass"
+                                           ChartMargin="0.05"/>
+        <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
+                                           ItemsSource="{Binding ItemsSource/Centroids, Source={x:Reference Name=MS2RevChart}}"
+                                           ValuePropertyName="Intensity"
+                                           Bounds="0,0"
+                                           ChartMargin="0,0.05"
+                                           IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
+                                           ItemsSource="{Binding ItemsSource/MspMatch.Spectrum, Source={x:Reference Name=MS2RevChart}}"
+                                           ValuePropertyName="Intensity"
+                                           Bounds="0,0"
+                                           ChartMargin="0,0.05"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -42,7 +44,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                      ItemsSource="{Binding Ms2Features/Centroids}"
+                                      ItemsSource="{Binding ItemsSource/Centroids, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                       RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
@@ -50,32 +52,17 @@
                                       HorizontalPropertyName="Mass"
                                       VerticalPropertyName="Intensity"
                                       Grid.Row="0" Grid.Column="3" />
-        <spectrum:LineSpectrumControl x:Name="MS2Det"
-                               ItemsSource="{Binding Ms2Features/Detected/Spectrum}"
+        <spectrum:LineSpectrumControl x:Name="MS2Ref"
+                               ItemsSource="{Binding ItemsSource/MspMatch.Spectrum, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
                                RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
-                               Visibility="{Binding IsDetectedDisplay, Converter={StaticResource BoolVisibilityConverter}}"
                                Grid.Row="2" Grid.Column="3" >
             <spectrum:LineSpectrumControl.LinePen>
                 <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-            </spectrum:LineSpectrumControl.LinePen>
-        </spectrum:LineSpectrumControl>
-        <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                               ItemsSource="{Binding Ms2Features/References/Spectrum}"
-                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                               RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                               RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                               HorizontalPropertyName="Mass"
-                               VerticalPropertyName="Intensity"
-                               Visibility="{Binding IsReferenceDisplay, Converter={StaticResource BoolVisibilityConverter}}"
-                               Grid.Row="2" Grid.Column="3" >
-            <spectrum:LineSpectrumControl.LinePen>
-                <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="true"/>
             </spectrum:LineSpectrumControl.LinePen>
         </spectrum:LineSpectrumControl>
         <axis:HorizontalAxisControl x:Name="MzAxis"

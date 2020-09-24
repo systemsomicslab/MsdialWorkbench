@@ -176,7 +176,7 @@ namespace CompMs.MsdialCore.Algorithm {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 if (peak.PeakCharacter.AdductParent < 0)
                     peak.PeakCharacter.AdductParent = peak.PeakID;
-                if (peak.IsAdductTypeFormatted()) continue;
+                if (peak.IsAdductTypeFormatted) continue;
 
                 if (peak.PeakCharacter.Charge >= 2) {
 
@@ -293,7 +293,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             if (isAcetateAdduct == false && isFormateAdduct == false) return;
 
-            foreach (var peak in chromPeakFeatures.Where(n => !n.IsAdductTypeFormatted() && n.MS2RawSpectrumID >= 0 && n.PeakCharacter.IsotopeWeightNumber == 0)) {
+            foreach (var peak in chromPeakFeatures.Where(n => !n.IsAdductTypeFormatted && n.MS2RawSpectrumID >= 0 && n.PeakCharacter.IsotopeWeightNumber == 0)) {
 
                 var spectrum = !peak.Spectrum.IsEmptyOrNull() 
                     ? peak.Spectrum 
@@ -411,7 +411,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         // just copied from the previous adduct estimator, should be checked for the improvement
         private void assignLinksBasedOnAdductPairingMethod(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
-            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && !n.IsAdductTypeFormatted())) {
+            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && !n.IsAdductTypeFormatted)) {
                 var flg = false;
                 var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
 
@@ -428,7 +428,7 @@ namespace CompMs.MsdialCore.Algorithm {
                         searchedPrecursors.Add(new SearchedPrecursor() { PrecursorMz = searchedPrecursorMz, AdductIon = searchedAdduct });
                     }
 
-                    foreach (var searchedPeak in chromPeakFeatures.Where(n => !n.PeakCharacter.IsLinked && peak.PeakID != n.PeakID && !n.IsAdductTypeFormatted())) {
+                    foreach (var searchedPeak in chromPeakFeatures.Where(n => !n.PeakCharacter.IsLinked && peak.PeakID != n.PeakID && !n.IsAdductTypeFormatted)) {
                         foreach (var searchedPrecursor in searchedPrecursors) {
 
                             var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
@@ -462,7 +462,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
 
-            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted())) {
+            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted)) {
                 var centralAdduct = peak.AdductType;
                 var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(peak.Mass,
                     centralAdduct.AdductIonAccurateMass,
@@ -479,7 +479,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 foreach (var searchedPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID)) {
                     foreach (var searchedPrecursor in searchedPrecursors) {
                         var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
-                        if (searchedPeak.IsReferenceMatched()) {
+                        if (searchedPeak.IsReferenceMatched) {
                             continue;
                         }
 
@@ -501,7 +501,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-                if (peak.IsUnknown() || peak.IsAnnotationSuggested()) continue;
+                if (peak.IsUnknown || peak.IsAnnotationSuggested) continue;
 
                 //adduct null check
                 if (peak.AdductType == null) continue;
@@ -527,7 +527,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
                         if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
 
-                            if (searchedPeak.IsReferenceMatched()) {
+                            if (searchedPeak.IsReferenceMatched) {
                                 if (searchedPeak.AdductType.AdductIonName != searchedPrecursor.AdductIon.AdductIonName)
                                     continue;
                             }
@@ -550,7 +550,7 @@ namespace CompMs.MsdialCore.Algorithm {
         private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 
-                if (peak.IsUnknown() || peak.IsAnnotationSuggested()) continue;
+                if (peak.IsUnknown || peak.IsAnnotationSuggested) continue;
                 if (!peak.IsValidInChIKey()) continue;
                 var inchikey = peak.InChIKey;
                 var shortInChIKey = inchikey.Substring(0, 14);
@@ -562,7 +562,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     
                     if (peak.PeakID == cPeak.PeakID) continue;
                     if (cPeakCharacter.IsLinked) continue;
-                    if (cPeak.IsUnknown() || cPeak.IsAnnotationSuggested()) continue;
+                    if (cPeak.IsUnknown || cPeak.IsAnnotationSuggested) continue;
                     if (!cPeak.IsValidInChIKey()) continue;
 
                     var cInchikey = cPeak.InChIKey;

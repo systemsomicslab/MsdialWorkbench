@@ -143,7 +143,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciexWiff1FileReader", "Sci
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciexWiff1ReaderTestApp", "SciexWiff1ReaderTestApp\SciexWiff1ReaderTestApp.csproj", "{F4940B0A-0247-4160-A3EC-31B0FB59BE61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciexWiff1ReaderTestVS2", "SciexWiff1ReaderTestVS2\SciexWiff1ReaderTestVS2.csproj", "{54B25F56-E06A-4886-8FEA-333186443660}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcMsApiTests", "MsdialLcMsApiTests\MsdialLcMsApiTests.csproj", "{2773E213-04B6-47E2-8277-F86D1D3DA50B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApiTests", "MsdialGcMsApiTests\MsdialGcMsApiTests.csproj", "{2A96DFA5-15F7-4850-ADE6-7B8268D3ED85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiApp", "MsdialGuiApp\MsdialGuiApp.csproj", "{276317C3-B877-445B-A950-1DE2B5414ACF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiffReaderClientTestApp", "WiffReaderClientTestApp\WiffReaderClientTestApp.csproj", "{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -431,10 +437,22 @@ Global
 		{F4940B0A-0247-4160-A3EC-31B0FB59BE61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4940B0A-0247-4160-A3EC-31B0FB59BE61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4940B0A-0247-4160-A3EC-31B0FB59BE61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54B25F56-E06A-4886-8FEA-333186443660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54B25F56-E06A-4886-8FEA-333186443660}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54B25F56-E06A-4886-8FEA-333186443660}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54B25F56-E06A-4886-8FEA-333186443660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2773E213-04B6-47E2-8277-F86D1D3DA50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2773E213-04B6-47E2-8277-F86D1D3DA50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2773E213-04B6-47E2-8277-F86D1D3DA50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2773E213-04B6-47E2-8277-F86D1D3DA50B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A96DFA5-15F7-4850-ADE6-7B8268D3ED85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A96DFA5-15F7-4850-ADE6-7B8268D3ED85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A96DFA5-15F7-4850-ADE6-7B8268D3ED85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A96DFA5-15F7-4850-ADE6-7B8268D3ED85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{276317C3-B877-445B-A950-1DE2B5414ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{276317C3-B877-445B-A950-1DE2B5414ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{276317C3-B877-445B-A950-1DE2B5414ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A301A6AB-B2E8-4E30-9F6F-611DB1521F04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

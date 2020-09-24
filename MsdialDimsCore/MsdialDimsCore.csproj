@@ -15,6 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Algorithm\" />
+    <Folder Include="Algorithm\Alignment\" />
     <Folder Include="Common\" />
   </ItemGroup>
 

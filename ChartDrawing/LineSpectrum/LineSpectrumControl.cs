@@ -124,9 +124,9 @@ namespace CompMs.Graphics.LineSpectrum
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
-                var yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
-                var y0 = VerticalAxis.ValueToRenderPosition(0) * ActualHeight;
+                var xx = HorizontalAxis.TranslateToRenderPoint(x) * ActualWidth;
+                var yy = VerticalAxis.TranslateToRenderPoint(y) * ActualHeight;
+                var y0 = VerticalAxis.TranslateToRenderPoint(0) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

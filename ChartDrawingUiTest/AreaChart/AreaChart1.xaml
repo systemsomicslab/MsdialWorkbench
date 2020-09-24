@@ -12,17 +12,17 @@
       Title="AreaChart1">
     <Page.Resources>
         <local:AreaChartVM1 x:Key="AreaChartVM"/>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding MinX, Source={StaticResource AreaChartVM}}"
-                                       MaxValue="{Binding MaxX, Source={StaticResource AreaChartVM}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding MinY, Source={StaticResource AreaChartVM}}"
-                                       MaxValue="{Binding MaxY, Source={StaticResource AreaChartVM}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource AreaChartVM}}" />
+        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                           ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                           ValuePropertyName="X"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                           ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                           ValuePropertyName="Y"
+                                           ChartMargin="0.05"
+                                           IsFlipped="True"/>
     </Page.Resources>
     <Grid DataContext="{StaticResource AreaChartVM}">
         <Grid.ColumnDefinitions>

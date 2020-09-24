@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace CompMs.Graphics.Core.Base
 {
-    public struct AxisValue
+    [TypeConverter(typeof(AxisValueTypeConverter))]
+    public struct AxisValue : IComparable<AxisValue>
     {
         public double Value { get; }
         public AxisValue(double val) {
@@ -21,6 +22,14 @@ namespace CompMs.Graphics.Core.Base
 
         public static implicit operator AxisValue(double val) {
             return new AxisValue(val);
+        }
+
+        public int CompareTo(AxisValue other) {
+            return Value.CompareTo(other.Value);
+        }
+
+        public override string ToString() {
+            return Value.ToString();
         }
     }
 
@@ -36,7 +45,7 @@ namespace CompMs.Graphics.Core.Base
                     return new AxisValue(v);
                 }
             }
-            throw new ArgumentException();
+            return null;
         }
     }
 }

@@ -9,19 +9,19 @@ namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
     public class MsdialGcmsParameter : ParameterBase {
         
-        [Key(149)]
-        public string RiDictionaryFilePath { get; set; } = string.Empty;
         [Key(150)]
-        public RiCompoundType RiCompoundType { get; set; } = RiCompoundType.Alkanes;
+        public string RiDictionaryFilePath { get; set; } = string.Empty;
         [Key(151)]
-        public RetentionType RetentionType { get; set; } = RetentionType.RT;
+        public RiCompoundType RiCompoundType { get; set; } = RiCompoundType.Alkanes;
         [Key(152)]
-        public AlignmentIndexType AlignmentIndexType { get; set; } = AlignmentIndexType.RT;
+        public RetentionType RetentionType { get; set; } = RetentionType.RT;
         [Key(153)]
-        public float RetentionIndexAlignmentTolerance { get; set; } = 20;
+        public AlignmentIndexType AlignmentIndexType { get; set; } = AlignmentIndexType.RT;
         [Key(154)]
-        public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
+        public float RetentionIndexAlignmentTolerance { get; set; } = 20;
         [Key(155)]
+        public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
+        [Key(156)]
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
 
         public MsdialGcmsParameter() { this.MachineCategory = MachineCategory.GCMS; }

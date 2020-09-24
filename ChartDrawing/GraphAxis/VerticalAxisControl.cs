@@ -119,7 +119,7 @@ namespace CompMs.Graphics.GraphAxis
             visualChildren.Clear();
 
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double basePoint = VerticalAxis.ValueToRenderPosition(0d);
+            double basePoint = VerticalAxis.TranslateToRenderPoint(0d);
 
             var labelTicks = LabelTicks.Where(data => RangeY.Minimum <= data.Center && data.Center <= RangeY.Maximum).ToList();
             if (labelTicks.Count > 100)
@@ -143,7 +143,7 @@ namespace CompMs.Graphics.GraphAxis
                         toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
                 }
 
-                var center = VerticalAxis.ValueToRenderPosition(data.Center) * actualHeight;
+                var center = VerticalAxis.TranslateToRenderPoint(data.Center) * actualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(actualWidth / 2, center) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
@@ -153,7 +153,7 @@ namespace CompMs.Graphics.GraphAxis
                 {
                     case TickType.LongTick:
                         dc.DrawLine(TickPen, new Point(actualWidth, center), new Point(actualWidth - LongTickSize, center));
-                        var maxHeight = VerticalAxis.ValueToRenderPosition(data.Width) - basePoint;
+                        var maxHeight = VerticalAxis.TranslateToRenderPoint(data.Width) - basePoint;
                         var formattedText = new FormattedText(
                             toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),

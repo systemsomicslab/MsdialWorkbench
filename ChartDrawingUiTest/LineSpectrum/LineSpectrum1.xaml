@@ -13,20 +13,23 @@
       Title="LineSpectrum1">
     <Page.Resources>
         <local:LineSpecrumVM1 x:Key="LineSpectrumVM"/>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding MinX, Source={StaticResource LineSpectrumVM}}"
-                                       MaxValue="{Binding MaxX, Source={StaticResource LineSpectrumVM}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding MinY, Source={StaticResource LineSpectrumVM}}"
-                                       MaxValue="{Binding MaxY, Source={StaticResource LineSpectrumVM}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource LineSpectrumVM}}" />
         <CollectionViewSource x:Key="FilteredSeriesView"
                               Source="{Binding Series, Source={StaticResource LineSpectrumVM}}"
                               Filter="DataFilter" />
+        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
+                                       MinValue="{Binding MinX, Source={StaticResource LineSpectrumVM}}"
+                                       MaxValue="{Binding MaxX, Source={StaticResource LineSpectrumVM}}"
+                                       ChartMargin="0.05" />
+        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
+                                                 ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                 TargetAxisMapper="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                                 TargetPropertyName="X" ValuePropertyName="Y"
+                                                 TargetRange="{Binding Range, Source={StaticResource HorizontalAxis}}"
+                                                 ChartMargin="0.05"
+                                                 Bounds="0,0"
+                                                 IsFlipped="True"/>
     </Page.Resources>
     <Grid DataContext="{StaticResource LineSpectrumVM}">
         <Grid.ColumnDefinitions>
