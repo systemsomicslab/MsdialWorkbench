@@ -3713,6 +3713,7 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.STSE: return "STSE";
                 case LbmClass.EGSE: return "EGSE";
                 case LbmClass.DEGSE: return "DEGSE";
+                case LbmClass.DSMSE: return "DSMSE";
                 case LbmClass.AHexCS: return "AHexCS";
                 case LbmClass.AHexBRS: return "AHexBRS";
                 case LbmClass.AHexCAS: return "AHexCAS";
@@ -4079,6 +4080,7 @@ namespace CompMs.Common.Lipidomics {
                 case "STSE": return LbmClass.STSE;
                 case "EGSE": return LbmClass.EGSE;
                 case "DEGSE": return LbmClass.DEGSE;
+                case "DSMSE": return LbmClass.DSMSE;
 
                 case "AHexCS": return LbmClass.AHexCS;
                 case "AHexBRS": return LbmClass.AHexBRS;
@@ -4519,6 +4521,7 @@ namespace CompMs.Common.Lipidomics {
                 case "STSE": return "SterolLipids";
                 case "EGSE": return "SterolLipids";
                 case "DEGSE": return "SterolLipids";
+                case "DSMSE": return "SterolLipids";
                 case "AHexCS": return "SterolLipids";
                 case "AHexBRS": return "SterolLipids";
                 case "AHexCAS": return "SterolLipids";

@@ -51,13 +51,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SciexWiff1ReaderTestVS2\SciexWiff1ReaderTestVS2.csproj">
-      <Project>{54b25f56-e06a-4886-8fea-333186443660}</Project>
-      <Name>SciexWiff1ReaderTestVS2</Name>
+    <ProjectReference Include="..\SciexWiff1FileReader\SciexWiff1FileReader.csproj">
+      <Project>{45db0399-67eb-4318-a764-b61d8dd2c5c4}</Project>
+      <Name>SciexWiff1FileReader</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
