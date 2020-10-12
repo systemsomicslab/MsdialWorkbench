@@ -20,6 +20,7 @@ namespace CompMs.MspGenerator
             { "[M+HCOO]-",new AdductIon(){ AdductIonName= "[M+HCOO]-", AdductIonMass = MassDictionary.HCOOadduct ,AdductSurfix ="FA", IonMode ="Negative"} },
             { "[M+CH3COO]-",new AdductIon(){ AdductIonName= "[M+CH3COO]-", AdductIonMass = MassDictionary.CH3COOadduct ,AdductSurfix ="Hac", IonMode ="Negative"} },
             { "[M-2H]2-",new AdductIon(){ AdductIonName= "[M-2H]2-", AdductIonMass = -MassDictionary.Proton ,AdductSurfix ="2H-", IonMode ="Negative"} },
+            { "[M+H-H2O]+",new AdductIon(){ AdductIonName= "[M+H-H2O]+", AdductIonMass = MassDictionary.Proton-MassDictionary.H2OMass ,AdductSurfix ="H-H2O", IonMode ="Positive"} },
         };
 
         public static Dictionary<string, string>
@@ -33,6 +34,7 @@ namespace CompMs.MspGenerator
                     { "FA_Neg","[M+HCOO]-" },
                     { "Hac_Neg","[M+CH3COO]-"},
                     { "2H-_Neg","[M-2H]2-"},
+                    { "H-H2O_Pos","[M+H-H2O]+"},
         };
 
 
@@ -47,7 +49,11 @@ namespace CompMs.MspGenerator
                 {   "PS" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+Na]+"}    },
                 {   "PA" ,    new List<string>(){ "[M-H]-" }    },
                 {   "PMeOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }    }, 
-                {   "PEtOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }   }, 
+                {   "PEtOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }   },
+                {   "MMPE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
+                {   "DMPE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
+
+
             // (GP)glycerophosphoLipids mono acyl(ester) chains
                 {   "LPC" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+" , }    },
                 {   "LPCSN1" ,    new List<string>(){ "[M+H]+" }    },
@@ -120,24 +126,27 @@ namespace CompMs.MspGenerator
 
             //cer 2chains
                 {   "Cer_ADS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-"}    },
-                {   "Cer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
+                {   "Cer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
                 {   "Cer_AS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-"}    },
                 {   "Cer_BDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-"}    },
                 {   "Cer_BS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-" }    },
-                {   "Cer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
+                {   "Cer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
                 {   "Cer_NP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "Cer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "Cer_HS" ,    new List<string>(){ "[M+H]+", "[M+Na]+" }    },
-                {   "Cer_HDS" ,    new List<string>(){ "[M+H]+", "[M+Na]+" }    },
-                {   "HexCer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "HexCer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "HexCer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "HexCer_HS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
-                {   "HexCer_HDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
+                {   "Cer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "Cer_HS" ,    new List<string>(){ "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "Cer_HDS" ,    new List<string>(){ "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "HexCer_AP" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "HexCer_NDS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "HexCer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
+                {   "HexCer_HS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
+                {   "HexCer_HDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
                 {   "GM3" ,    new List<string>(){ "[M+NH4]+", "[M-H]-"   }    },
                 {   "CerP" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
                 {   "Hex2Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "Hex3Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
+
+                {   "MIPC" ,    new List<string>(){ "[M+H]+" , "[M-H]-" }    },
+
 
             //cer 2chains and chain conbination
                 {   "SM" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+"  }    },
@@ -153,10 +162,10 @@ namespace CompMs.MspGenerator
             //cer 3chains and chain conbination
                 {   "ASM" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-"}    },
                 {   "Cer_EODS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-"}    },
-                {   "Cer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-"}    },
-                {   "HexCer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-"}    },
-                {   "Cer_EBDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-"  , }    },
-                {   "AHexCer" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-"}    },
+                {   "Cer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+" }    },
+                {   "HexCer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },
+                {   "Cer_EBDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },  // "[M+H-H2O]+" is not use
+                {   "AHexCer" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },
 
             //cer 1 chains
                 {   "Sph" ,    new List<string>(){ "[M+H]+"  }    },
@@ -173,7 +182,7 @@ namespace CompMs.MspGenerator
                 {   "NAGlySer_FAHFA" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
                 {   "NAOrn_FAHFA" ,    new List<string>(){ "[M+H]+"  }    },
             //single chain
-                {   "CAR" ,    new List<string>(){ "[M]+" }    },
+                {   "CAR" ,    new List<string>(){ "[M+H]+" }    },
                 {   "VAE" ,    new List<string>(){ "[M+H]+", "[M+Na]+"  , }    },
                 {   "NAE" ,    new List<string>(){ "[M+H]+"  }    },
                 {   "NAGly_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
@@ -236,6 +245,12 @@ namespace CompMs.MspGenerator
                 {"Ac4PIM2", new List<string>(){ "[M-H]-" } },
 
                 {"LipidA", new List<string>(){ "[M-H]-" } },
+
+
+                //added steroid
+                {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+                {"DSMSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
 
     };
 

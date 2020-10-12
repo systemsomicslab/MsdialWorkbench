@@ -118,7 +118,10 @@ namespace CompMs.Graphics.GraphAxis
 
             visualChildren.Clear();
 
-            var labelTicks = LabelTicks.Where(data => MinY <= data.Center && data.Center <= MaxY).ToList();
+            double actualWidth = ActualWidth, actualHeight = ActualHeight;
+            double basePoint = VerticalAxis.TranslateToRenderPoint(0d);
+
+            var labelTicks = LabelTicks.Where(data => RangeY.Minimum <= data.Center && data.Center <= RangeY.Maximum).ToList();
             if (labelTicks.Count > 100)
                 labelTicks = labelTicks.Where(data => data.TickType == TickType.LongTick).ToList();
             if (labelTicks.Count > 100)
@@ -140,28 +143,29 @@ namespace CompMs.Graphics.GraphAxis
                         toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
                 }
 
-                var center = VerticalAxis.ValueToRenderPosition(data.Center) * ActualHeight;
+                var center = VerticalAxis.TranslateToRenderPoint(data.Center) * actualHeight;
 
-                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, center) };
+                var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(actualWidth / 2, center) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
                 switch (data.TickType)
                 {
                     case TickType.LongTick:
-                        dc.DrawLine(TickPen, new Point(ActualWidth, center), new Point(ActualWidth - LongTickSize, center));
+                        dc.DrawLine(TickPen, new Point(actualWidth, center), new Point(actualWidth - LongTickSize, center));
+                        var maxHeight = VerticalAxis.TranslateToRenderPoint(data.Width) - basePoint;
                         var formattedText = new FormattedText(
                             toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),
                             LabelSize, LabelBrush, 1)
                         {
-                            MaxTextWidth = Math.Max(1, ActualWidth - LongTickSize),
-                            MaxTextHeight = Math.Max(1, Math.Abs(VerticalAxis.ValueToRenderPosition(data.Width) - VerticalAxis.ValueToRenderPosition(0d)) * ActualHeight),
+                            MaxTextWidth = Math.Max(1, actualWidth - LongTickSize),
+                            MaxTextHeight = Math.Max(1, Math.Min(1, Math.Abs(maxHeight)) * actualHeight), 
                         };
-                        dc.DrawText(formattedText, new Point(ActualWidth - LongTickSize - formattedText.Width, center - formattedText.Height / 2));
+                        dc.DrawText(formattedText, new Point(actualWidth - LongTickSize - formattedText.Width, center - formattedText.Height / 2));
                         break;
                     case TickType.ShortTick:
-                        dc.DrawLine(TickPen, new Point(ActualWidth, center), new Point(ActualWidth - ShortTickSize, center));
+                        dc.DrawLine(TickPen, new Point(actualWidth, center), new Point(actualWidth - ShortTickSize, center));
                         break;
                 }
                 dc.Close();

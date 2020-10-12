@@ -79,10 +79,11 @@ namespace CompMs.MspGenerator
 
 
 
-        public static void runPaDEL(string workingDirectry, string padelDescriptortypes, string padelProgramPath)
+        public static void runPaDEL(string workingDirectry, string padelDescriptortypes, string padelProgramPath, string toPredictFile)
         {
             var padelDescriptortypesPath = padelDescriptortypes;
-            var outputSdfFolderPath = workingDirectry + @"\sdf\";
+            var toPredictFileName = Path.GetFileNameWithoutExtension(toPredictFile);
+            var outputSdfFolderPath = workingDirectry + @"\sdf\" + toPredictFileName + "\\";
             var sdfFileName = Directory.GetFiles(outputSdfFolderPath);
             var outputFolderPath = workingDirectry + @"\PadelResult\";
             if (!Directory.Exists(outputFolderPath))
@@ -93,7 +94,8 @@ namespace CompMs.MspGenerator
             var padelOutFile = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(sdfFileName[0]) + ".csv";
             var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 1 -maxruntime 30000";
 
-            Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
+            Process p = Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
+            p.WaitForExit();
             //Console.ReadKey();
         }
 
@@ -337,7 +339,7 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            var ccsResultDic = new Dictionary<string, List<string>>();
+            var ccsResultDic = new Dictionary<string, Dictionary<string, string>>();
             var ccsAdductHeaderList = new List<string>();
 
             var ccsResultFiles = new List<string>(Directory.GetFiles(workingDirectry, "CCSpred_" + toPredictFileName + "*.txt"));
@@ -355,14 +357,29 @@ namespace CompMs.MspGenerator
                     {
                         var line = sr.ReadLine();
                         var lineArray = line.Split(' ');
+                        var checkAdductString = lineArray[1] + adduct;
                         if (!ccsResultDic.ContainsKey(lineArray[1]))
                         {
-                            ccsResultDic.Add(lineArray[1], new List<string>() { lineArray[2] });
+                            var adductCcs = new Dictionary<string, string>() { { adduct, lineArray[2] } };
+                            if (!ccsResultDic.ContainsValue(adductCcs))
+                            {
+                                //adductCcs.Add(adduct, lineArray[2]);
+                                ccsResultDic.Add(lineArray[1], adductCcs);
+                            }
                         }
                         else
                         {
-                            ccsResultDic[lineArray[1]].Add(lineArray[2]);
+                            var adductCcs = ccsResultDic[lineArray[1]];
+                            //var adductCcs = new Dictionary<string, string>() { { adduct, lineArray[2] } };
+                            if (!adductCcs.ContainsKey(adduct))
+                            {
+                                //adductCcs.Add(adduct, lineArray[2]);
+                                adductCcs.Add(adduct, lineArray[2]);
+                                ccsResultDic.Remove(lineArray[1]);
+                                ccsResultDic.Add(lineArray[1], adductCcs);
+                            }
                         }
+
                     }
                 }
             }
@@ -399,12 +416,16 @@ namespace CompMs.MspGenerator
                         }
                         resultLine.Add(rtResultValue);
 
-                        var cssResultValue = new List<string>();
                         if (ccsResultDic.ContainsKey(lineArray[0]))
                         {
-                            cssResultValue = ccsResultDic[lineArray[0]].ToList();
+                            var cssResultValueList = new List<string>();
+                            var cssResult = ccsResultDic[lineArray[0]];
+                            foreach (var item in ccsAdductHeaderList)
+                            {
+                                cssResultValueList.Add(cssResult[item]);
+                            }
+                            resultLine.AddRange(cssResultValueList);
                         }
-                        resultLine.AddRange(cssResultValue);
 
                         sw.WriteLine(string.Join("\t", resultLine));
                     }

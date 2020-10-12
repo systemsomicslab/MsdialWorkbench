@@ -56,9 +56,6 @@
     <Reference Include="DynamicInterop, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicInterop.0.9.1\lib\netstandard2.0\DynamicInterop.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, PublicKeyToken=cd8b63ad3d691a37, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.Signed.4.9.0\lib\net461\MathNet.Numerics.dll</HintPath>
-    </Reference>
     <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
       <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
     </Reference>
@@ -67,9 +64,6 @@
     </Reference>
     <Reference Include="Microsoft.Win32.Registry, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Registry.4.5.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
-    </Reference>
-    <Reference Include="NCDK, Version=1.5.6.0, Culture=neutral, PublicKeyToken=7b3355892b3327a8, processorArchitecture=MSIL">
-      <HintPath>..\packages\NCDK.1.5.6\lib\net461\NCDK.dll</HintPath>
     </Reference>
     <Reference Include="RDotNet, Version=1.8.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\R.NET.1.8.2\lib\netstandard2.0\RDotNet.dll</HintPath>
@@ -124,6 +118,7 @@
     <Compile Include="Property\Adduct.cs" />
     <Compile Include="Property\FattyAcid.cs" />
     <Compile Include="Property\MetaProperty.cs" />
+    <Compile Include="qsarDescriptorOnNcdk.cs" />
     <Compile Include="RtCcsPredictUsingR.cs" />
     <Compile Include="RtCcsPredictManager.cs" />
   </ItemGroup>
@@ -132,9 +127,17 @@
       <Project>{eb161441-a663-485f-8cd6-d1d5794f7ad9}</Project>
       <Name>CommonStandard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj">
+      <Project>{ba6683c6-0cd8-4b04-b7dc-1a9eb5aa0b31}</Project>
+      <Name>DatabaseStandard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MsdialCommon\MsdialCommon.csproj">
       <Project>{049645f4-4ea5-41a2-b369-22d23fb09040}</Project>
       <Name>MsdialCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NCDK\NCDK.csproj">
+      <Project>{7976aefc-8382-47d3-ba50-55fa18babadf}</Project>
+      <Name>NCDK</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

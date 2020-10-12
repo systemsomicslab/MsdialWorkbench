@@ -48,12 +48,13 @@ namespace Rfx.Riken.OsakaUniv
             var analysisFiles = mainWindow.AnalysisFiles;
             var param = mainWindow.AnalysisParamForLC;
             var alignmentFile = mainWindow.AlignmentFiles[mainWindow.AlignmentFiles.Count - 1];
+            var iupacRef = mainWindow.IupacReference;
 
             try
             {
                 await Task.Run(() =>
                 {
-                    ProcessGapFilling.Execute(projectProperty, rdamProperty, analysisFiles, alignmentFile, param, alignmentResult, progress => ReportProgress(progress));
+                    ProcessGapFilling.Execute(projectProperty, rdamProperty, analysisFiles, alignmentFile, param, iupacRef, alignmentResult, progress => ReportProgress(progress));
                 });
             }
             catch

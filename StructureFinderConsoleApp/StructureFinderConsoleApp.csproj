@@ -38,6 +38,9 @@
     <Reference Include="cdk-1.4.19, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3e322fcfc9127863" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BondPathStatistics.cs" />
+    <Compile Include="Code4NPR2020.cs" />
     <Compile Include="MergeFragmentInfoManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
@@ -62,6 +67,10 @@
     <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj">
       <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
       <Name>MolecularFormulaFinderStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NCDK\NCDK.csproj">
+      <Project>{7976AEFC-8382-47D3-BA50-55FA18BABADF}</Project>
+      <Name>NCDK</Name>
     </ProjectReference>
     <ProjectReference Include="..\StructureFinderStandard\StructureFinderStandard.csproj">
       <Project>{0001b4ac-83ae-4011-b314-085c8d3f6157}</Project>

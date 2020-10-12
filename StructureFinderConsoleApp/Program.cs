@@ -1,4 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.StructureFinder.NcdkDescriptor;
+using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.StructureFinder.Fragmenter;
 using Riken.Metabolomics.StructureFinder.SpectralAssigner;
 using Riken.Metabolomics.StructureFinder.Statistics;
@@ -18,6 +19,39 @@ namespace StructureFinderConsoleApp
         [STAThread]
         static void Main(string[] args)
         {
+            /// code for Natural Product Reports 2020
+            //Code4NPR2020.GenerateStructureTableFromMSPs();
+            //Code4NPR2020.ExtractClassyFireOntologies();
+            //Code4NPR2020.CheckInChIKeyExistence();
+            //Code4NPR2020.CheckCoverageOfMspMsfinder();
+            //Code4NPR2020.CalculateTop50MostCommonFunctionalGroups2020();
+            //Code4NPR2020.CheckCoverageOfTop50FG();
+            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\");
+            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\msp\");
+
+            //var files = System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\", "*.txt", SearchOption.TopDirectoryOnly);
+            //foreach (var file in files) {
+            //    var filename = System.IO.Path.GetFileNameWithoutExtension(file);
+            //    var output = System.IO.Path.GetDirectoryName(file) + "\\" + filename + "-DR.txt";
+
+            //    BondPathStatistics.RemoveDuplicatePIandNL(file, output);
+            //    Console.WriteLine("Finishi: {0}", file);
+            //}
+
+            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi"
+            //    , "*.txt", SearchOption.TopDirectoryOnly)
+            //    , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos.txt");
+
+            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl"
+            //   , "*.txt", SearchOption.TopDirectoryOnly)
+            //   , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl\Merged fragment info-NL-Pos.txt");
+
+
+
+            /// NCDK descriptor test
+            //var smi = "O=C(O)CCCCC";
+            //NcdkDescriptor.GenerateAllNCDKDescriptors(smi);
+
             ////Calculate bond statistics
             #region
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\MoNA and MassBank curations\Fragment database\Negative\MSPs\");
@@ -109,24 +143,24 @@ namespace StructureFinderConsoleApp
 
 
 
-            //after InChiKeys of fragments are generated...
+            ////after InChiKeys of fragments are generated...
             BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Merged fragment info-PI-Neg.txt"
                 , @"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Fragment statistics result-PI-Neg.txt");
 
-            //BondPathStatistics.ExportHrStatistics(@"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\Merged fragment info-PI-Neg.txt"
-            //    , @"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\HR statistics result-PI-Neg.txt");
+            ////BondPathStatistics.ExportHrStatistics(@"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\Merged fragment info-PI-Neg.txt"
+            ////    , @"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\HR statistics result-PI-Neg.txt");
 
-            BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Negative\NL statistics\Merged fragment info-NL-Neg.txt"
-                , @"D:\MoNA and MassBank curations\Fragment database\Negative\NL statistics\Fragment statistics result-NL-Neg.txt");
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Negative\NL statistics\Merged fragment info-NL-Neg.txt"
+            //    , @"D:\MoNA and MassBank curations\Fragment database\Negative\NL statistics\Fragment statistics result-NL-Neg.txt");
 
-            //BondPathStatistics.ExportHrStatistics(@"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Positive\Merged fragment info-PI-Pos.txt"
-            //    , @"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Positive\HR statistics result-PI-Pos.txt");
+            ////BondPathStatistics.ExportHrStatistics(@"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Positive\Merged fragment info-PI-Pos.txt"
+            ////    , @"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Positive\HR statistics result-PI-Pos.txt");
 
-            BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Positive\PI statistics\Merged fragment info-PI-Pos.txt"
-               , @"D:\MoNA and MassBank curations\Fragment database\Positive\PI statistics\Fragment statistics result-PI-Pos.txt");
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Positive\PI statistics\Merged fragment info-PI-Pos.txt"
+            //   , @"D:\MoNA and MassBank curations\Fragment database\Positive\PI statistics\Fragment statistics result-PI-Pos.txt");
 
-            BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Positive\NL statistics\Merged fragment info-NL-Pos.txt"
-                , @"D:\MoNA and MassBank curations\Fragment database\Positive\NL statistics\Fragment statistics result-NL-Pos.txt");
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Positive\NL statistics\Merged fragment info-NL-Pos.txt"
+            //    , @"D:\MoNA and MassBank curations\Fragment database\Positive\NL statistics\Fragment statistics result-NL-Pos.txt");
 
 
 

@@ -66,11 +66,19 @@ namespace Rfx.Riken.OsakaUniv
                     ((AlignmentPropertyBean)alignProp).AlignedDriftSpots != null && ((AlignmentPropertyBean)alignProp).AlignedDriftSpots.Count > 0) {
                     continue;
                 }
+                var ontology = DataAccessLcUtility.GetOntologyOfAlignmentObj(alignProp, mainWindow.PostIdentificationTxtDB, mainWindow.MspDB);
 
                 if (i != internalStandardID) {
                     var metName = metaboliteName == null || metaboliteName == string.Empty ? "Unknown" : metaboliteName;
-                    var brush = Brushes.DeepSkyBlue;
-                    var rgba = new byte[] { brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A };
+
+                    var color = Colors.Gray;
+                    var rgba = new byte[] { color.R, color.G, color.B, color.A }; 
+                    if (MetaboliteColorCode.metabolite_colorcode.ContainsKey(ontology))
+                    {
+                        var colorcode = MetaboliteColorCode.metabolite_colorcode[ontology];
+                        var rgb = colorcode.Trim(new char[] { 'r', 'g', 'b', '(', ')' }).Split(',').Select(s => Convert.ToByte(s)).ToArray();
+                        Array.Copy(rgb, 0, rgba, 0, 3);
+                    }
 
                     if (isIdentified && !metName.Contains("Unknown") && !metName.Contains("w/o")) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
@@ -299,7 +307,7 @@ namespace Rfx.Riken.OsakaUniv
                 double average = 0, stdev = 0, minValue = 0, twentyfive = 0, median = 0, seventyfive = 0, maxValue = 0;
                 calculateChartProperties(dict.Value, out average, out stdev, out minValue,
                     out twentyfive, out median, out seventyfive, out maxValue);
-
+                if (!classnameToOrder.ContainsKey(dict.Key)) continue;
                 var barElement = new BarElement()
                 {
                     Id = classnameToOrder[dict.Key],

@@ -19,8 +19,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.Parser {
-    public sealed class MspFileParcer {
-        private MspFileParcer() { }
+    public sealed class MspFileParser {
+        private MspFileParser() { }
         static IupacDatabase IupacDatabase = IupacResourceParser.GetIUPACDatabase();
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace CompMs.Common.Parser {
         /// <returns></returns>
         public static List<MoleculeMsReference> LbmFileReader(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueries(queries);
+            var tQueries = getTrueQueryStrings(queries);
             if (tQueries.Count == 0) return null;
 
             var mspDB = new List<MoleculeMsReference>();
@@ -166,7 +166,7 @@ namespace CompMs.Common.Parser {
 
         public static List<MoleculeMsReference> ReadSerializedLbmLibrary(string file, List<LbmQuery> queries,
             IonMode ionMode, SolventType solventType, CollisionType collisionType) {
-            var tQueries = getTrueQueries(queries);
+            var tQueries = getTrueQueryStrings(queries);
             if (tQueries.Count == 0) return null;
 
             var usedMspDB = new List<MoleculeMsReference>();
@@ -193,7 +193,7 @@ namespace CompMs.Common.Parser {
             return queries;
         }
 
-        private static bool queryCheck(MoleculeMsReference mspRecord, List<LbmQuery> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
+        private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries, IonMode ionMode, SolventType solventType, CollisionType collosionType) {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
             if (mspRecord.IonMode != ionMode) return false;
             if (ionMode == IonMode.Negative) {
@@ -204,29 +204,15 @@ namespace CompMs.Common.Parser {
                     return false;
                 }
             }
-            foreach (var query in queries) {
-                if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
-                    return true;
-                }
-                if (query.LbmClass.ToString() == mspRecord.CompoundClass) {
-                    if (query.AdductType.AdductIonName == mspRecord.AdductType.AdductIonName) {
-                        return true;
-                    }
-                }
+            if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
+                return true;
             }
-
+            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.AdductIonName)) return true;
             return false;
         }
 
-        private static bool queryCheck(MoleculeMsReference mspRecord, List<LbmQuery> queries) {
-            foreach (var query in queries) {
-                if (query.LbmClass.ToString() == mspRecord.CompoundClass) {
-                    if (query.AdductType.AdductIonName == mspRecord.AdductType.AdductIonName) {
-                        return true;
-                    }
-                }
-            }
-
+        private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries) {
+            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.AdductIonName)) return true;
             return false;
         }
 
@@ -240,6 +226,19 @@ namespace CompMs.Common.Parser {
             return tQueries;
         }
 
+        /// <summary>
+        /// return lipidclass + "_" + adduct list
+        /// </summary>
+        /// <param name="queries"></param>
+        /// <returns></returns>
+        private static List<string> getTrueQueryStrings(List<LbmQuery> queries) {
+            var tQueries = new List<string>();
+            foreach (var query in queries) {
+                if (query.IsSelected == true) tQueries.Add(query.LbmClass + "_" + query.AdductType.AdductIonName);
+            }
+
+            return tQueries;
+        }
 
 
         public static void ReadMspField(string wkstr, out string fieldName, out string fieldValue) {

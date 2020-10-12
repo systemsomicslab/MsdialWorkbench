@@ -533,7 +533,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -594,42 +594,45 @@ namespace Rfx.Riken.OsakaUniv {
                     TargetClass = "Any others"
                 });
 
+                if (this.ProjectProp.IsLabPrivateVersion) {
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "FA 18:0(d3)",
+                        Concentration = 160,
+                        DilutionRate = 0.001,
+                        MolecularWeight = 287.502,
+                        PeakID = -1,
+                        TargetClass = "FA"
+                    });
 
-                //compounds.Add(new StandardCompound() {
-                //    StandardName = "FA 18:0(d3)",
-                //    Concentration = 160,
-                //    DilutionRate = 0.001,
-                //    MolecularWeight = 287.502,
-                //    PeakID = -1,
-                //    TargetClass = "FA"
-                //});
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "FA 18:0(d3)",
+                        Concentration = 160,
+                        DilutionRate = 0.001,
+                        MolecularWeight = 287.502,
+                        PeakID = -1,
+                        TargetClass = "FAHFA"
+                    });
+                }
+                else {
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "FA"
+                    });
 
-                //compounds.Add(new StandardCompound() {
-                //    StandardName = "FA 18:0(d3)",
-                //    Concentration = 160,
-                //    DilutionRate = 0.001,
-                //    MolecularWeight = 287.502,
-                //    PeakID = -1,
-                //    TargetClass = "FAHFA"
-                //});
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "FAHFA"
+                    });
+                }
 
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "FA"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "FAHFA"
-                });
 
                 // level 3
                 compounds.Add(new StandardCompound() {
@@ -1102,7 +1105,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1111,7 +1114,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1120,7 +1123,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1129,7 +1132,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1138,7 +1141,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1147,7 +1150,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1156,7 +1159,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1165,7 +1168,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1174,7 +1177,7 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
@@ -1183,11 +1186,101 @@ namespace Rfx.Riken.OsakaUniv {
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "CE 18:1(d7)",
-                    Concentration = 25,
+                    Concentration = 37.98468,
                     DilutionRate = 0.015625,
                     MolecularWeight = 658.16,
                     PeakID = -1,
                     TargetClass = "STSE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "CE 18:1(d7)",
+                    Concentration = 37.98468,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 658.16,
+                    PeakID = -1,
+                    TargetClass = "LCAE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "CE 18:1(d7)",
+                    Concentration = 37.98468,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 658.16,
+                    PeakID = -1,
+                    TargetClass = "KLCAE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "CE 18:1(d7)",
+                    Concentration = 37.98468,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 658.16,
+                    PeakID = -1,
+                    TargetClass = "KDCAE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "CE 18:1(d7)",
+                    Concentration = 37.98468,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 658.16,
+                    PeakID = -1,
+                    TargetClass = "EGSE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "CE 18:1(d7)",
+                    Concentration = 37.98468,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 658.16,
+                    PeakID = -1,
+                    TargetClass = "DEGSE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "PE 15:0_18:1(d7)",
+                    Concentration = 35.1605,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 711.025,
+                    PeakID = -1,
+                    TargetClass = "MMPE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "PE 15:0_18:1(d7)",
+                    Concentration = 35.1605,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 711.025,
+                    PeakID = -1,
+                    TargetClass = "DMPE"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "PI 15:0_18:1(d7)",
+                    Concentration = 28.91795,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 847.13,
+                    PeakID = -1,
+                    TargetClass = "MIPC"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "TG 15:0_18:1_15:0(d7)",
+                    Concentration = 30.7743,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 812.366,
+                    PeakID = -1,
+                    TargetClass = "OxTG"
+                });
+
+                compounds.Add(new StandardCompound() {
+                    StandardName = "TG 15:0_18:1_15:0(d7)",
+                    Concentration = 30.7743,
+                    DilutionRate = 0.015625,
+                    MolecularWeight = 812.366,
+                    PeakID = -1,
+                    TargetClass = "FAHFATG"
                 });
 
                 compounds.Add(new StandardCompound() {

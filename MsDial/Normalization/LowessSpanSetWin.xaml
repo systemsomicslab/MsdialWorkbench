@@ -25,6 +25,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <local:DoubleToStringConverter x:Key="doubleToStringConverter" />
     </Window.Resources>
     
     <Grid>
@@ -35,7 +36,17 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Column="0" Content="Span:" VerticalAlignment="Center" HorizontalAlignment="Left" />
-        <TextBox Grid.Column="0" Text="{Binding Path=LowessSpan, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="30" HorizontalAlignment="Stretch" Margin="40,0,5,0" />
+
+        <TextBox Grid.Column="0" 
+                 Name="TextBox_LowessSpan"
+                 VerticalAlignment="Center" VerticalContentAlignment="Center" Height="30" HorizontalAlignment="Stretch" Margin="40,0,5,0">
+            <TextBox.Text>
+                <Binding Path="LowessSpan"
+                         UpdateSourceTrigger="PropertyChanged"
+                         Converter="{StaticResource doubleToStringConverter}"
+                         ConverterParameter='#,0.#####' />
+            </TextBox.Text>
+        </TextBox>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal">
             <Label Content="QC number: " VerticalAlignment="Center" Margin="0,0,0,0" />

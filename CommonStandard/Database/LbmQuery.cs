@@ -35,7 +35,9 @@ namespace Rfx.Riken.OsakaUniv
         CSPHex, BRSPHex, CASPHex, SISPHex, STSPHex, Cer_HDS, HexCer_HDS,
         SSulfate, BAHex, BASulfate,
         Others, Unknown, SPLASH, EtherSMGDG, SMGDG, Vitamin_D,
-        LCAE, KLCAE, KDCAE
+        LCAE, KLCAE, KDCAE,
+        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
+        OxTG, FAHFATG,
 
         // new version
         //CerP, SM,

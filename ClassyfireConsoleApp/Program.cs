@@ -10,8 +10,8 @@ namespace ClassyfireConsoleApp {
     class Program {
         static void Main(string[] args) {
 
-            //ClassifyInChIKeys(@"D:\MoNA and MassBank curations\Fragment database\Classyfire\originallist.txt",
-            //    @"D:\MoNA and MassBank curations\Fragment database\Classyfire\result-of-originallist.txt");
+            //ClassifyInChIKeys(@"D:\Paper of Natural Product Reports\Statistics\key4classyfire.txt",
+            //    @"D:\Paper of Natural Product Reports\Statistics\key4classyfire_result.txt");
 
             //ClassifyInChIKeys(@"D:\PROJECT for MSFINDER\Classyfire results\MINE contents.txt",
             //   @"D:\PROJECT for MSFINDER\Classyfire results\MINE contents-inchikeyclassyfied.txt");
@@ -19,14 +19,14 @@ namespace ClassyfireConsoleApp {
             //ClassifyInChIKeys(@"D:\PROJECT for MSFINDER\Classyfire results\MSMS DB contents.txt",
             //   @"D:\PROJECT for MSFINDER\Classyfire results\MSMS DB contents-inchikeyclassyfied.txt");
 
-            //RetrieveEntryIDs(@"D:\MoNA and MassBank curations\Fragment database\Classyfire\IDs of originallist.txt",
-            //    @"D:\MoNA and MassBank curations\Fragment database\Classyfire\results of IDs of originallist.txt");
+            //RetrieveEntryIDs(@"D:\Paper of Natural Product Reports\Statistics\key4smilesclassyfire_id_result.txt",
+            //   @"D:\Paper of Natural Product Reports\Statistics\key4smilesclassyfire_id_result_retrieved.txt");
 
             //ClassifySmilesCodes(@"D:\PROJECT for MSFINDER\FindMetDatabase\Small Molecular SDFs\20180128_Downloaded\3. Merged metabolite file\MsfinderDb-unclassified-inchikey-smiles-vs2.txt",
             //    @"D:\PROJECT for MSFINDER\FindMetDatabase\Small Molecular SDFs\20180128_Downloaded\3. Merged metabolite file\MsfinderDb-unclassified-inchikey-smiles-vs2-IDs.txt");
 
-            ClassifySmilesCodes(@"D:\MoNA and MassBank curations\Fragment database\Classyfire\originallist.txt",
-                @"D:\MoNA and MassBank curations\Fragment database\Classyfire\IDs of originallist.txt");
+            //ClassifySmilesCodes(@"D:\Paper of Natural Product Reports\Statistics\key4smilesclassyfire.txt",
+            //   @"D:\Paper of Natural Product Reports\Statistics\key4smilesclassyfire_id_result.txt");
 
 
             //ClassifySmilesCodes(@"D:\PROJECT for MSFINDER\Classyfire results\MINE contents-inchikeyclassyfied-unclassified-secondtrialIDs.txt",

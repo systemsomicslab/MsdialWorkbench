@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Extension;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,25 @@ namespace CompMs.Common.Utility {
                     fs.Close();
             }
             return false;
+        }
 
+        public static bool IsFileExist(string file) {
+            return !file.IsEmptyOrNull() && System.IO.File.Exists(file);
+        }
+
+        public static bool IsExceedFilePathMax(string filepath, string directory, string filename, string extention, out string recFilePath) {
+            var MaxLength = 240;
+            recFilePath = filepath;
+            if (filepath.Length < MaxLength) return false;
+            else {
+                recFilePath = directory + "\\";
+                for (int i = 0; i < filename.Length; i++) {
+                    if (MaxLength < recFilePath.Length + extention.Length - 1) break;
+                    recFilePath += filename[i];
+                }
+                recFilePath += extention;
+                return true;
+            }
         }
     }
 }

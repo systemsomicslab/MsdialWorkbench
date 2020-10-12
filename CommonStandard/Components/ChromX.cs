@@ -9,6 +9,10 @@ namespace CompMs.Common.Components
     public enum ChromXUnit { Min, Sec, Msec, Mz, None }
 
     [Union(0, typeof(ChromXs))]
+    [Union(1, typeof(RetentionTime))]
+    [Union(2, typeof(RetentionIndex))]
+    [Union(3, typeof(MzValue))]
+    [Union(4, typeof(DriftTime))]
     [MessagePackObject]
     public abstract class ChromX
     {

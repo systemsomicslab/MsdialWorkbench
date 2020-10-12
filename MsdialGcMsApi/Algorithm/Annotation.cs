@@ -18,6 +18,13 @@ using System.Text;
 
 namespace CompMs.MsdialGcMsApi.Algorithm {
     public class Annotation {
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Annotation(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
 
         /// <summary>
         /// ref must be ordered by retention time or retention index
@@ -30,12 +37,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         public void MainProcess(List<MSDecResult> ms1DecResults, List<MoleculeMsReference> mspDB, 
             MsdialGcmsParameter param, Dictionary<int, float> carbon2RtDict, Action<int> reportAction) {
 
-            var saveObj = new MsdialDataStorage() {
-                ParameterBase = param
-            };
-
-
-
+            
             Console.WriteLine("Annotation started");
             SetRetentionIndexForMS1DecResults(ms1DecResults, param, carbon2RtDict);
 
@@ -64,9 +66,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             rTolerance *= factor;
 
             RetrieveMspBounds(mspDB, rType, rValue, rTolerance, out int startID, out int endID);
-
+            //Console.WriteLine("ID {0}, Start {1}, End {2}", msdecResult.ScanID, startID, endID);
             var matchedQueries = new List<MsScanMatchResult>();
-            for (int i = startID; i <= endID; i++) {
+            for (int i = startID; i < endID; i++) {
                 var refQuery = mspDB[i];
                 var refRetention = rType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 if (Math.Abs(rValue - refRetention) < rTolerance) {
@@ -111,7 +113,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
 
         public void SetRetentionIndexForMS1DecResults(List<MSDecResult> ms1DecResults,
             MsdialGcmsParameter param, Dictionary<int, float> carbon2RtDict) {
-            if (!carbon2RtDict.IsEmptyOrNull()) {
+            if (carbon2RtDict.IsEmptyOrNull()) {
                 return;
             }
 

@@ -771,7 +771,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
-            if (this.MainWindowTitle.Contains("-tada") || this.MainWindowTitle.Contains("-beta")) return;
+            if (this.MainWindowTitle.Contains("-tada") || this.MainWindowTitle.Contains("-beta") || this.MainWindowTitle.Contains("-dev")) return;
             Mouse.OverrideCursor = Cursors.Wait;
             var window = new ShortMessageWindow() {
                 Owner = mainWindow,
@@ -1110,6 +1110,108 @@ namespace Rfx.Riken.OsakaUniv
                 this.analysisProcessed = true;
                 menuItemRefresh();
 
+            }
+        }
+
+        private void exportFDLipidmicsResult_Click(object sender, RoutedEventArgs e) {
+            var exportFolder = @"D:\fd_collection\Analysis\alignment_results";
+            var filepaths = new List<(string, string)> {
+                #region
+                /*
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Actinidiaceae_Collection4_Negative\2020_8_12_12_12_24.mtd2", "Actinidiaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Actinidiaceae_Collection4_Positive\2020_8_12_12_18_26.mtd2", "Actinidiaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Actinidiaceae_Collection5_Negative\2020_8_12_12_31_0.mtd2", "Actinidiaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Actinidiaceae_Collection5_Positive\2020_8_12_13_10_3.mtd2", "Actinidiaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Amaryllidaceae_Collection5_Negative\2020_8_12_14_5_31.mtd2", "Amaryllidaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Amaryllidaceae_Collection5_Positive\2020_8_12_14_13_35.mtd2", "Amaryllidaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Apiaceae_Collection5_Negative\2020_8_12_14_31_13.mtd2", "Apiaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Apiaceae_Collection5_Positive\2020_8_12_14_33_48.mtd2", "Apiaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Asteraceae_Collection5_Negative\2020_8_12_14_45_47.mtd2", "Asteraceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Asteraceae_Collection5_Positive\2020_8_12_14_50_14.mtd2", "Asteraceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Basellaceae_Collection5_Negative\2020_8_12_15_0_10.mtd2", "Basellaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Basellaceae_Collection5_Positive\2020_8_12_15_6_36.mtd2", "Basellaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Brassicaceae_Collection4_Negative\2020_8_12_15_15_52.mtd2", "Brassicaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Brassicaceae_Collection4_Positive\2020_8_12_15_17_25.mtd2", "Brassicaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Brassicaceae_Collection5_Negative\2020_8_12_15_25_39.mtd2", "Brassicaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Brassicaceae_Collection5_Positive\2020_8_12_15_28_44.mtd2", "Brassicaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Bromeliaceae_Collection5_Negative\2020_8_12_15_36_46.mtd2", "Bromeliaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Bromeliaceae_Collection5_Positive\2020_8_12_15_39_25.mtd2", "Bromeliaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Caprifoliaceae_Collection5_Negative\2020_8_12_15_46_9.mtd2", "Caprifoliaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Caprifoliaceae_Collection5_Positive\2020_8_12_15_49_2.mtd2", "Caprifoliaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Cucurbitaceae_Collection4_Negative\2020_8_12_15_55_35.mtd2", "Cucurbitaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Cucurbitaceae_Collection4_Positive\2020_8_12_15_59_18.mtd2", "Cucurbitaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Cucurbitaceae_Collection5_Negative\2020_8_12_16_7_49.mtd2", "Cucurbitaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Cucurbitaceae_Collection5_Positive\2020_8_12_16_11_8.mtd2", "Cucurbitaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Dioscoreaceae_Collection4_Negative\2020_8_12_16_15_17.mtd2", "Dioscoreaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Dioscoreaceae_Collection4_Positive\2020_8_12_16_17_58.mtd2", "Dioscoreaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Dioscoreaceae_Collection5_Negative\2020_8_12_16_19_54.mtd2", "Dioscoreaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Dioscoreaceae_Collection5_Positive\2020_8_12_16_21_54.mtd2", "Dioscoreaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Ebenaceae_Collection5_Negative\2020_8_12_16_23_50.mtd2", "Ebenaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Ebenaceae_Collection5_Positive\2020_8_12_16_26_3.mtd2", "Ebenaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Equisetaceae_Collection4_Negative\2020_8_12_16_27_59.mtd2", "Equisetaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Equisetaceae_Collection4_Positive\2020_8_12_16_30_31.mtd2", "Equisetaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Equisetaceae_Collection5_Negative\2020_8_12_16_32_12.mtd2", "Equisetaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Equisetaceae_Collection5_Positive\2020_8_12_16_34_27.mtd2", "Equisetaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Euphorbiaceae_Collection4_Negative\2020_8_12_16_37_19.mtd2", "Euphorbiaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Euphorbiaceae_Collection4_Positive\2020_8_12_16_38_53.mtd2", "Euphorbiaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Euphorbiaceae_Collection5_Negative\2020_8_12_16_40_32.mtd2", "Euphorbiaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Euphorbiaceae_Collection5_Positive\2020_8_12_16_42_17.mtd2", "Euphorbiaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Fabaceae_Collection4_Negative\2020_8_12_16_43_58.mtd2", "Fabaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Fabaceae_Collection4_Positive\2020_8_12_16_46_27.mtd2", "Fabaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Fabaceae_Collection5_Negative\2020_8_12_16_48_34.mtd2", "Fabaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Fabaceae_Collection5_Positive\2020_8_12_16_50_24.mtd2", "Fabaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Lauraceae_Collection4_Negative\2020_8_12_16_51_52.mtd2", "Lauraceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Lauraceae_Collection4_Positive\2020_8_12_16_53_46.mtd2", "Lauraceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Lauraceae_Collection5_Negative\2020_8_12_16_55_58.mtd2", "Lauraceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Lauraceae_Collection5_Positive\2020_8_12_16_58_43.mtd2", "Lauraceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Malvaceae_Collection5_Negative\2020_8_12_17_1_6.mtd2", "Malvaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Malvaceae_Collection5_Positive\2020_8_12_17_2_58.mtd2", "Malvaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Musaceae_Collection4_Negative\2020_8_12_17_4_55.mtd2", "Musaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Musaceae_Collection4_Positive\2020_8_12_17_7_3.mtd2", "Musaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Musaceae_Collection5_Negative\2020_8_12_17_9_1.mtd2", "Musaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Musaceae_Collection5_Positive\2020_8_12_17_10_52.mtd2", "Musaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Pedaliaceae_Collection4_Negative\2020_8_12_17_13_15.mtd2", "Pedaliaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Pedaliaceae_Collection4_Positive\2020_8_12_17_15_10.mtd2", "Pedaliaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Pedaliaceae_Collection5_Negative\2020_8_12_17_17_5.mtd2", "Pedaliaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Pedaliaceae_Collection5_Positive\2020_8_12_17_19_11.mtd2", "Pedaliaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Poaceae_Collection4_Negative\2020_8_12_17_21_13.mtd2", "Poaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Poaceae_Collection4_Positive\2020_8_12_17_24_50.mtd2", "Poaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Poaceae_Collection5_Negative\2020_8_12_17_32_7.mtd2", "Poaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Poaceae_Collection5_Positive\2020_8_12_17_37_8.mtd2", "Poaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Polygonaceae_Collection4_Negative\2020_8_12_17_38_44.mtd2", "Polygonaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Polygonaceae_Collection4_Positive\2020_8_12_17_40_48.mtd2", "Polygonaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rosaceae_Collection4_Negative\2020_8_12_17_42_46.mtd2", "Rosaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rosaceae_Collection4_Positive\2020_8_12_17_46_32.mtd2", "Rosaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rosaceae_Collection5_Negative\2020_8_12_17_48_58.mtd2", "Rosaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rosaceae_Collection5_Positive\2020_8_12_17_52_57.mtd2", "Rosaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rutaceae_Collection5_Negative\2020_8_12_18_3_50.mtd2", "Rutaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Rutaceae_Collection5_Positive\2020_8_12_18_6_50.mtd2", "Rutaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Saururaceae_Collection4_Negative\2020_8_12_18_8_40.mtd2", "Saururaceae_Collection4_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Saururaceae_Collection4_Positive\2020_8_12_18_10_22.mtd2", "Saururaceae_Collection4_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Saururaceae_Collection5_Negative\2020_8_12_18_13_8.mtd2", "Saururaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Saururaceae_Collection5_Positive\2020_8_12_18_15_4.mtd2", "Saururaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Solanaceae_Collection5_Negative\2020_8_12_18_17_13.mtd2", "Solanaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Solanaceae_Collection5_Positive\2020_8_12_18_19_16.mtd2", "Solanaceae_Collection5_Positive"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Zingiberaceae_Collection5_Negative\2020_8_12_18_21_21.mtd2", "Zingiberaceae_Collection5_Negative"),
+                (@"\\mtbdt\Mtb_info\data\FD_Collection\Projects\Zingiberaceae_Collection5_Positive\2020_8_12_18_23_32.mtd2", "Zingiberaceae_Collection5_Positive"),
+                */
+                #endregion
+            };
+
+            foreach ((var filepath, var outdir) in filepaths) {
+                this.saveProperty = MessagePackHandler.LoadFromFile<SavePropertyBean>(filepath);
+                openProjectMenuPropertySetting(filepath);
+                FocusedFileID = 0;
+
+                var alignmentResult = MessagePackHandler.LoadFromFile<AlignmentResultBean>(this.AlignmentFiles[this.AlignmentFiles.Count - 1].FilePath);
+                var analysisFiles = mainWindow.AnalysisFiles;
+
+                var output = Path.Combine(exportFolder, outdir);
+                ProjectProperty.ExportFolderPath = output;
+
+                ProjectProperty.RawDatamatrix = true;
+                ProjectProperty.SnMatrixExport = true;
+                DataExportLcUtility.AlignmentResultExport(this, AlignmentFiles.Count - 1, -1);
             }
         }
 

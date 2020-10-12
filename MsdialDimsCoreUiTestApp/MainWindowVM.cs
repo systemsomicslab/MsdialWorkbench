@@ -1,180 +1,170 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using CompMs.Common.DataObj;
-using CompMs.Graphics.Core.GraphAxis;
-using CompMs.Graphics.Core.LineChart;
-using CompMs.Graphics.Core.Scatter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Parameter;
-using Rfx.Riken.OsakaUniv;
 
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
-using CompMs.Common.Enum;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Common;
+using System.Windows.Input;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Database;
+using CompMs.MsdialDimsCore.Algorithm.Alignment;
 
 namespace MsdialDimsCoreUiTestApp
 {
-    internal class MainWindowVM : ViewModelBase
+    internal class MainWindowVM : INotifyPropertyChanged
     {
-        public DrawingLineChart DrawingMS1
-        {
-            get => drawingMS1;
-            set
-            {
-                var tmp = drawingMS1;
-                if (SetProperty(ref drawingMS1, value))
-                {
-                    if (tmp != null)
-                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged(nameof(DrawingMS1));
-                    if (drawingMS1 != null)
-                        drawingMS1.PropertyChanged += (s, e) => OnPropertyChanged(nameof(DrawingMS1));
-                }
-            }
+        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
+            get => analysisFiles;
+            set => SetProperty(ref analysisFiles, value);
         }
 
-        public DrawingContinuousHorizontalAxis DrawingMS1HorizontalAxis
-        {
-            get => drawingMS1HorizontalAxis;
-            set => SetProperty(ref drawingMS1HorizontalAxis, value);
+        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
+            get => alignmentFiles;
+            set => SetProperty(ref alignmentFiles, value);
         }
 
-        public DrawingContinuousVerticalAxis DrawingMS1VerticalAxis
-        {
-            get => drawingMS1VerticalAxis;
-            set => SetProperty(ref drawingMS1VerticalAxis, value);
+        public Rect Ms1Area {
+            get => ms1Area;
+            set => SetProperty(ref ms1Area, value);
         }
 
-        public DrawingLineChart DrawingMS2
-        {
-            get => drawingMS2;
-            set
-            {
-                var tmp = drawingMS2;
-                if (SetProperty(ref drawingMS2, value))
-                {
-                    if (tmp != null)
-                        tmp.PropertyChanged -= (s, e) => OnPropertyChanged(nameof(DrawingMS2));
-                    if (drawingMS2 != null)
-                        drawingMS2.PropertyChanged += (s, e) => OnPropertyChanged(nameof(DrawingMS2));
-                }
-            }
+        public Rect Ms2Area {
+            get => ms2Area;
+            set => SetProperty(ref ms2Area, value);
         }
 
-        public DrawingScatter DrawingMS2Scatter
-        {
-            get => drawingMS2Scatter;
-            set => SetProperty(ref drawingMS2Scatter, value);
+        public ObservableCollection<ChromatogramPeak> Ms1Peaks {
+            get => ms1Peaks;
+            set => SetProperty(ref ms1Peaks, value);
         }
 
-        public DrawingContinuousHorizontalAxis DrawingMS2HorizontalAxis
-        {
-            get => drawingMS2HorizontalAxis;
-            set => SetProperty(ref drawingMS2HorizontalAxis, value);
+        public ObservableCollection<Ms2Info> Ms2Features {
+            get => ms2Features;
+            set => SetProperty(ref ms2Features, value);
         }
 
-        public DrawingContinuousVerticalAxis DrawingMS2VerticalAxis
-        {
-            get => drawingMS2VerticalAxis;
-            set => SetProperty(ref drawingMS2VerticalAxis, value);
+        public AlignmentResultContainer AlignmentContainer {
+            get => alignmentContainer;
+            set => SetProperty(ref alignmentContainer, value);
         }
 
-        public RawSpectrum SelectedSpectrum
-        {
-            get => selectedSpectrum;
-            set => SetProperty(ref selectedSpectrum, value);
-        }
+        public ICommand FileChangedCmd { get; }
+        public ICommand AlignmentChangedCmd { get; }
 
-        public List<RawSpectrum> Spectrums
-        {
-            get => spectrums;
-            set => SetProperty(ref spectrums, value);
-        }
-
-        public List<ChromatogramPeakFeature> ChromatogramPeakFeatures
-        {
-            get => chromatogramPeakFeatures;
-            set => SetProperty(ref chromatogramPeakFeatures, value);
-        }
-
-        private DrawingLineChart drawingMS1;
-        private DrawingContinuousHorizontalAxis drawingMS1HorizontalAxis;
-        private DrawingContinuousVerticalAxis drawingMS1VerticalAxis;
-        private DrawingLineChart drawingMS2;
-        private DrawingScatter drawingMS2Scatter;
-        private DrawingContinuousHorizontalAxis drawingMS2HorizontalAxis;
-        private DrawingContinuousVerticalAxis drawingMS2VerticalAxis;
-        private RawSpectrum selectedSpectrum;
-        private List<RawSpectrum> spectrums;
-        private List<ChromatogramPeakFeature> chromatogramPeakFeatures;
-
-        void OnChartPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "DrawingMS1":
-                    if (DrawingMS1 != null)
-                    {
-                        var area = DrawingMS1.InitialArea;
-                        DrawingMS1.InitialArea = new Rect(new Point(area.X, Math.Max(0, area.Y)), area.BottomRight);
-                    }
-                    break;
-                case "DrawingMS2":
-                    if (DrawingMS2 != null)
-                    {
-                        var area = DrawingMS2.InitialArea;
-                        DrawingMS2.InitialArea = new Rect(new Point(area.X, Math.Max(0, area.Y)), area.BottomRight);
-                    }
-                    break;
-                case "SelectedSpectrum":
-                    DrawingMS2 = new DrawingLineChart()
-                    {
-                        XPositions = SelectedSpectrum.Spectrum.Select(spectra => spectra.Mz).ToArray(),
-                        YPositions = SelectedSpectrum.Spectrum.Select(spectra => spectra.Intensity).ToArray(),
-                    };
-                    /*
-                    DrawingMS2Scatter = new DrawingScatter()
-                    {
-                        XPositions = ChromatogramPeakFeatures.Where(feature => feature.MS2RawSpectrumID == SelectedSpectrum.ScanNumber)
-                                                             .Select(feature => feature.ChromXsTop.Mz.Value).ToArray(),
-                        YPositions = ChromatogramPeakFeatures.Where(feature => feature.MS2RawSpectrumID == SelectedSpectrum.ScanNumber)
-                                                             .Select(feature => feature.PeakHeightTop).ToArray(),
-                    };
-                    */
-                    DrawingMS2HorizontalAxis = new DrawingContinuousHorizontalAxis()
-                    {
-                        MinX = DrawingMS2.XPositions.Min(),
-                        MaxX = DrawingMS2.XPositions.Max(),
-                    };
-                    DrawingMS2VerticalAxis = new DrawingContinuousVerticalAxis()
-                    {
-                        MinY = DrawingMS2.YPositions.Min(),
-                        MaxY = DrawingMS2.YPositions.Max(),
-                    };
-                    break;
-            }
-        }
+        private ChromatogramSerializer<ChromatogramSpotInfo> chromSpotSerializer;
+        private ChromatogramSerializer<ChromatogramPeakInfo> chromPeakSerializer;
+        private ObservableCollection<AnalysisFileBean> analysisFiles;
+        private ObservableCollection<AlignmentFileBean> alignmentFiles;
+        private ObservableCollection<ChromatogramPeak> ms1Peaks;
+        private ObservableCollection<Ms2Info> ms2Features;
+        private AlignmentResultContainer alignmentContainer;
+        private Rect ms1Area, ms2Area;
+        private List<MoleculeMsReference> mspDB, textDB;
+        private MsdialDimsParameter param;
+        private IupacDatabase iupac;
+        private Dictionary<int, Stream> rawChromatogramStreams;
 
         public MainWindowVM()
         {
             // testfiles
-            var filepath = @"C:\Users\Matsuzawa\workspace\riken\abf\704_Egg2 Egg Yolk.abf";
-            var lbmFile = @"C:\Users\Matsuzawa\workspace\riken\MSDIAL_LipidDB_Test.lbm2";
-            var param = new MsdialDimsParameter() {
+            var lbmFile = @"C:\Users\YUKI MATSUZAWA\works\data\lbm\MSDIAL_LipidDB_Test.lbm2";
+            // var lbmFile = @"C:\Users\YUKI MATSUZAWA\works\data\lbm\LipidMsmsBinaryDB-VS68-AritaM.lbm2";
+            var textLibraryFile = @"C:\Users\YUKI MATSUZAWA\works\data\textlib\TestLibrary.txt";
+            analysisFiles = new ObservableCollection<AnalysisFileBean> {
+                new AnalysisFileBean { AnalysisFileId = 0,
+                                       AnalysisFileName = "703_Egg2 Egg White",
+                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\703_Egg2 Egg White.abf",
+                                       // AnalysisFileName = "Neg_Infusion_IDA_Liver1",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver1.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver1",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver1.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 1,
+                                       AnalysisFileName = "704_Egg2 Egg Yolk",
+                                       AnalysisFilePath = @"C:\Users\YUKI MATSUZAWA\works\data\sciex_msmsall\704_Egg2 Egg Yolk.abf",
+                                       // AnalysisFileName = "Neg_Infusion_IDA_Liver2",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver2.abf",
+                                       // AnalysisFileName = "Neg_MSMSALL_Liver2",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver2.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                /*
+                new AnalysisFileBean { AnalysisFileId = 2,
+                                       // AnalysisFileName = "Neg_Infusion_IDA_Liver3",
+                                       // AnalysisFilePath = @"D:\infusion_project\data\abf\infusion_IDA_Negative\20200717_Neg_Infusion_IDA_Liver3.abf",
+                                       AnalysisFileName = "Neg_MSMSALL_Liver3",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Liver3.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 3,
+                                       AnalysisFileName = "Neg_MSMSALL_Muscle1",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Muscle1.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 4,
+                                       AnalysisFileName = "Neg_MSMSALL_Muscle2",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Muscle2.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 5,
+                                       AnalysisFileName = "Neg_MSMSALL_Muscle3",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Muscle3.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 6,
+                                       AnalysisFileName = "Neg_MSMSALL_Plasma1",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Plasma1.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 7,
+                                       AnalysisFileName = "Neg_MSMSALL_Plasma2",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Plasma2.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 8,
+                                       AnalysisFileName = "Neg_MSMSALL_Plasma3",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_Plasma3.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 9,
+                                       AnalysisFileName = "Neg_MSMSALL_WAT1",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_WAT1.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 10,
+                                       AnalysisFileName = "Neg_MSMSALL_WAT2",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_WAT2.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                new AnalysisFileBean { AnalysisFileId = 11,
+                                       AnalysisFileName = "Neg_MSMSALL_WAT3",
+                                       AnalysisFilePath = @"D:\infusion_project\data\abf\MSMSALL_Negative\20200717_Neg_MSMSALL_WAT3.abf",
+                                       PeakAreaBeanInformationFilePath = System.IO.Path.GetTempFileName() },
+                */
+            };
+
+            alignmentFiles = new ObservableCollection<AlignmentFileBean> {
+                new AlignmentFileBean {
+                    FileID = 0,
+                    FileName = "Alignment 1",
+                    FilePath = Path.GetTempFileName(),
+                    EicFilePath = Path.GetTempFileName(),
+                },
+            };
+
+            param = new MsdialDimsParameter() {
                 IonMode = CompMs.Common.Enum.IonMode.Negative,
-                MspFilePath = lbmFile, 
+                MspFilePath = lbmFile,
+                TextDBFilePath = textLibraryFile,
                 TargetOmics = CompMs.Common.Enum.TargetOmics.Lipidomics,
-                LipidQueryContainer = new CompMs.Common.Query.LipidQueryBean() { 
-                    SolventType = CompMs.Common.Enum.SolventType.HCOONH4
+                LipidQueryContainer = new CompMs.Common.Query.LipidQueryBean() {
+                    SolventType = CompMs.Common.Enum.SolventType.HCOONH4,
+                    LbmQueries = LbmQueryParcer.GetLbmQueries(true),
                 },
                 MspSearchParam = new CompMs.Common.Parameter.MsRefSearchParameterBase() {
                     WeightedDotProductCutOff = 0.1F, SimpleDotProductCutOff = 0.1F,
@@ -183,53 +173,81 @@ namespace MsdialDimsCoreUiTestApp
                 }
             };
 
-            var spectras = DataAccess.GetAllSpectra(filepath);
-            var ms1spectra = spectras.Where(spectra => spectra.MsLevel == 1)
-                                     .Where(spectra => spectra.Spectrum != null)
-                                     .Max(spectra => (length: spectra.Spectrum.Length, spectra: spectra))
-                                     .spectra;
-            var ms1spectrum = ms1spectra.Spectrum
-                                        .Select(peak => (Mz: peak.Mz, Intensity: peak.Intensity));
-            DrawingMS1 = new DrawingLineChart()
-            {
-                XPositions = ms1spectrum.Select(spectra => spectra.Mz).ToArray(),
-                YPositions = ms1spectrum.Select(spectra => spectra.Intensity).ToArray(),
-            };
-            DrawingMS1HorizontalAxis = new DrawingContinuousHorizontalAxis()
-            {
-                MinX = DrawingMS1.XPositions.Min(),
-                MaxX = DrawingMS1.XPositions.Max(),
-            };
-            DrawingMS1VerticalAxis = new DrawingContinuousVerticalAxis()
-            {
-                MinY = DrawingMS1.YPositions.Min(),
-                MaxY = DrawingMS1.YPositions.Max(),
-            };
-            var ms2spectra = spectras.Where(spectra => spectra.MsLevel == 2)
-                                     .Where(spectra => spectra.Spectrum != null)
-                                     .ToList();
-            Spectrums = ms2spectra;
+            iupac = IupacResourceParser.GetIUPACDatabase();
 
-            var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
-            var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
-            var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
-            ChromatogramPeakFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1spectra, spectras);
+            mspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
+            mspDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
 
-            PropertyChanged += OnChartPropertyChanged;
+
+            // textDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out _);
+            // textDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
+
+            chromSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+            chromPeakSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPS1", ChromXType.Mz);
+
+            rawChromatogramStreams = new Dictionary<int, Stream>();
+
+            foreach (var analysisFile in analysisFiles) {
+                var stream = new MemoryStream();
+                RunAnnotation(analysisFile, mspDB, textDB, stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                rawChromatogramStreams[analysisFile.AnalysisFileId] = stream;
+            }
+            RunAlignment(analysisFiles, alignmentFiles[0], iupac);
+
+            FileChangedCmd = new FileChangedCommand(this);
+            AlignmentChangedCmd = new AlignmentChangedCommand(this);
+
+            ReadAndSetMs1RawSpectrum(analysisFiles[0].AnalysisFileId);
+            ReadAndSetMs1Peaks(analysisFiles[0].PeakAreaBeanInformationFilePath);
         }
 
-        bool SetProperty<T, U>(ref T property, U value, [CallerMemberName]string propertyname = "") where U : T
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void RaisePropertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+
+        bool SetProperty<T>(ref T property, T value, [CallerMemberName]string propertyname = "")
         {
             if (value == null && property == null || value.Equals(property)) return false;
             property = value;
-            OnPropertyChanged(propertyname);
+            RaisePropertyChanged(propertyname);
             return true;
-        } 
+        }
+
+        private void RunAnnotation(AnalysisFileBean analysisFileBean, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, Stream stream = null) {
+            var spectras = DataAccess.GetAllSpectra(analysisFileBean.AnalysisFilePath);
+            var ms1spectra = spectras.Where(spectra => spectra.MsLevel == 1)
+                                     .Where(spectra => spectra.Spectrum != null)
+                                     .Argmax(spectra => spectra.Spectrum.Length);
+
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1spectra.Spectrum);
+            var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+            if (stream != null)
+                chromPeakSerializer?.Serialize(stream, new ChromatogramPeakInfo(analysisFileBean.AnalysisFileId, sChromPeaks, -1, -1, -1));
+
+            var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
+            var chromatogramPeakFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1spectra, spectras);
+            SetSpectrumPeaks(chromatogramPeakFeatures, spectras);
+
+            foreach (var feature in chromatogramPeakFeatures) {
+                var isotopes = DataAccess.GetIsotopicPeaks(spectras, feature.MS1RawSpectrumIdTop, (float)feature.Mass, param.CentroidMs1Tolerance);
+                _ = CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param, isotopes);
+            }
+
+            MsdialSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
+        }
+
+        private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
+            var factory = new DimsAlignmentProcessFactory(param, iupac);
+            var aligner = factory.CreatePeakAliner();
+            var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
+            CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+        }
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, List<RawSpectrum> allSpectra) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
             var ms2SpecObjects = allSpectra.Where(n => n.MsLevel == 2 && n.Precursor != null).OrderBy(n => n.Precursor.SelectedIonMz).ToList();
-            
+
             foreach (var result in peakPickResults) {
 
                 // here, the chrom scan ID should be matched to the scan number of RawSpectrum Element
@@ -241,25 +259,25 @@ namespace MsdialDimsCoreUiTestApp
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
-                peakFeature.MS2RawSpectrumIDs = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
-                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumIDs, allSpectra);
+                peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
                 peakFeatures.Add(peakFeature);
 
                 // result check
-                Console.WriteLine("Peak ID={0}, Scan ID={1}, MZ={2}, MS2SpecID={3}, Height={4}, Area={5}", 
+                Console.WriteLine("Peak ID={0}, Scan ID={1}, MZ={2}, MS2SpecID={3}, Height={4}, Area={5}",
                     peakFeature.PeakID, peakFeature.ChromScanIdTop, peakFeature.ChromXsTop.Mz.Value, peakFeature.MS2RawSpectrumID, peakFeature.PeakHeightTop, peakFeature.PeakAreaAboveZero);
             }
 
             return peakFeatures;
         }
 
-        private int GetRepresentativeMS2RawSpectrumID(List<int> ms2RawSpectrumIDs, List<RawSpectrum> allSpectra) {
-            if (ms2RawSpectrumIDs.Count == 0) return -1;
+        private int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {
+            if (ms2RawSpectrumID2CE.Count == 0) return -1;
 
             var maxIntensity = 0.0;
             var maxIntensityID = -1;
-            for (int i = 0; i < ms2RawSpectrumIDs.Count; i++) {
-                var specID = ms2RawSpectrumIDs[i];
+            foreach (var pair in ms2RawSpectrumID2CE) {
+                var specID = pair.Key;
                 var specObj = allSpectra[specID];
                 if (specObj.TotalIonCurrent > maxIntensity) {
                     maxIntensity = specObj.TotalIonCurrent;
@@ -269,64 +287,145 @@ namespace MsdialDimsCoreUiTestApp
             return maxIntensityID;
         }
 
-        /// <summary>
-        /// currently, the mass tolerance is based on ad hoc (maybe can be added to parameter obj.)
-        /// the mass tolerance is considered by the basic quadrupole mass resolution.
-        /// </summary>
-        /// <param name="precursorMz"></param>
-        /// <param name="allSpectra"></param>
-        /// <param name="mzTolerance"></param>
-        /// <returns></returns>
-        private List<int> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
-            var IDs = new List<int>();
-            var startID = GetSpectrumObjectStartIndexByPrecursorMz(precursorMz, mzTolerance, ms2SpecObjects);
+        private Dictionary<int, double> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
+            var ID2CE = new Dictionary<int, double>();
+            var target = new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz - mzTolerance } };
+            var startID =  SearchCollection.LowerBound(ms2SpecObjects, target, (a, b) => a.Precursor.SelectedIonMz.CompareTo(b.Precursor.SelectedIonMz));
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
                 var spec = ms2SpecObjects[i];
                 var precursorMzObj = spec.Precursor.SelectedIonMz;
                 if (precursorMzObj < precursorMz - mzTolerance) continue;
                 if (precursorMzObj > precursorMz + mzTolerance) break;
 
-                IDs.Add(spec.ScanNumber);
+                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }
-            return IDs; // maybe, in msmsall, the id count is always one but for just in case
+            return ID2CE; // maybe, in msmsall, the id count is always one but for just in case
         }
 
-        private int GetSpectrumObjectStartIndexByPrecursorMz(double targetedMass, double massTolerance, List<RawSpectrum> ms2SpecObjects) {
-            if (ms2SpecObjects.Count == 0) return 0;
-            var targetMass = targetedMass - massTolerance;
-            int startIndex = 0, endIndex = ms2SpecObjects.Count - 1;
-            int counter = 0;
-
-            if (targetMass > ms2SpecObjects[endIndex].Precursor.SelectedIonMz) return endIndex;
-
-            while (counter < 5) {
-                if (ms2SpecObjects[startIndex].Precursor.SelectedIonMz <= targetMass && targetMass < ms2SpecObjects[(startIndex + endIndex) / 2].Precursor.SelectedIonMz) {
-                    endIndex = (startIndex + endIndex) / 2;
+        private void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, List<RawSpectrum> spectra) {
+            foreach (var feature in chromFeatures) {
+                if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID <= spectra.Count - 1) {
+                    var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
+                    var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
+                    var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
+                    feature.Spectrum = centroidSpec;
                 }
-                else if (ms2SpecObjects[(startIndex + endIndex) / 2].Precursor.SelectedIonMz <= targetMass && targetMass < ms2SpecObjects[endIndex].Precursor.SelectedIonMz) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
+                Console.WriteLine("Peak ID={0}, Scan ID={1}, Spectrum count={2}", feature.PeakID, feature.ScanID, feature.Spectrum.Count);
             }
-            return startIndex;
         }
 
+        private List<SpectrumPeak> ScalingSpectrumPeaks(IEnumerable<SpectrumPeak> spectrumPeaks)
+        {
+            if (!spectrumPeaks.Any()) return new List<SpectrumPeak>();
+            var min = spectrumPeaks.Min(peak => peak.Intensity);
+            var width = spectrumPeaks.Max(peak => peak.Intensity) - min;
 
-        private RawSpectrum getMs1SpectraInMsmsAllData(List<RawSpectrum> spectra) {
-            var maxSpecCount = -1.0;
-            var maxSpecCountID = -1;
+            return spectrumPeaks.Select(peak => new SpectrumPeak(peak.Mass, (peak.Intensity - min) / width)).ToList();
+        }
 
-            foreach (var item in spectra.Select((value, index) => new { value, index })
-                .Where(n => n.value.MsLevel == 1 && n.value.Spectrum != null && n.value.Spectrum.Length > 0)) {
-                var spec = item.value;
-                if (spec.Spectrum.Length > maxSpecCount) {
-                    maxSpecCount = spec.Spectrum.Length;
-                    maxSpecCountID = item.index;
-                }
+        private (List<MsScanMatchResult> Msp, List<MsScanMatchResult> Text) CalculateAndSetAnnotatedReferences(
+            ChromatogramPeakFeature chromatogramPeakFeature, 
+            List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
+            MsdialDimsParameter param, List<IsotopicPeak> isotopes)
+        {
+            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
+            Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
+            return (mspResult, textResult);
+        }
+
+        void ReadAndSetMs1Peaks(string serializedPeakPath) {
+            var chromatogramPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(serializedPeakPath);
+
+            Ms2Features = new ObservableCollection<Ms2Info>(
+                chromatogramPeakFeatures.Select(feature =>
+                    new Ms2Info
+                    {
+                        ChromatogramPeakFeature = feature,
+                        PeakID = feature.PeakID,
+                        Mass = feature.Mass,
+                        Intensity = feature.PeakHeightTop,
+                        Centroids = ScalingSpectrumPeaks(feature.Spectrum),
+                        MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
+                        RefMatched = feature.IsReferenceMatched,
+                        Suggested = feature.IsAnnotationSuggested,
+                        Ms2Acquired = feature.Spectrum.Count != 0,
+                    }
+                ));
+            Ms2Area = new Rect(param.Ms2MassRangeBegin, 0, param.Ms2MassRangeEnd, 1);
+        }
+
+        void ReadAndSetMs1RawSpectrum(int id) {
+            var stream = rawChromatogramStreams[id];
+            var peakInfo = chromPeakSerializer.Deserialize(stream);
+            var peaks = peakInfo.Chromatogram.Cast<ChromatogramPeak>();
+            foreach (var peak in peaks)
+                peak.Mass = peak.ChromXs.Mz.Value;
+            Ms1Peaks = new ObservableCollection<ChromatogramPeak>(peaks);
+
+            Ms1Area = new Rect(new Point(Ms1Peaks.Min(peak => peak.Mass), Ms1Peaks.Min(peak => peak.Intensity)),
+                               new Point(Ms1Peaks.Max(peak => peak.Mass), Ms1Peaks.Max(peak => peak.Intensity)));
+
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+
+        void ReadAndSetAlignmentResultContainer(int id) {
+            var alignmentFile = alignmentFiles.FirstOrDefault(alignment => alignment.FileID == id);
+            if (alignmentFile == null) return;
+
+            AlignmentContainer = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
+        }
+
+        public class FileChangedCommand : ICommand
+        {
+            MainWindowVM mainWindowVM;
+
+            public FileChangedCommand(MainWindowVM mainWindowVM) {
+                this.mainWindowVM = mainWindowVM;
             }
 
-            if (maxSpecCountID < 0) return null;
-            return spectra[maxSpecCountID];
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter) {
+                return true;
+            }
+
+            public void Execute(object parameter) {
+                var analysisFile = parameter as AnalysisFileBean;
+                mainWindowVM.ReadAndSetMs1RawSpectrum(analysisFile.AnalysisFileId);
+                mainWindowVM.ReadAndSetMs1Peaks(analysisFile.PeakAreaBeanInformationFilePath);
+            }
         }
+
+        public class AlignmentChangedCommand : ICommand
+        {
+            MainWindowVM mainWindowVM;
+
+            public AlignmentChangedCommand(MainWindowVM mainWindowVM) {
+                this.mainWindowVM = mainWindowVM;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter) {
+                return true;
+            }
+
+            public void Execute(object parameter) {
+                var alignmentFile = parameter as AlignmentFileBean;
+                mainWindowVM.ReadAndSetAlignmentResultContainer(alignmentFile.FileID);
+            }
+        }
+    }
+
+    internal class Ms2Info {
+        public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
+        public int PeakID { get; set; }
+        public double Mass { get; set; }
+        public double Intensity { get; set; }
+        public List<SpectrumPeak> Centroids { get; set; }
+        public MoleculeMsReference MspMatch {get;set;}
+        public bool RefMatched { get; set; }
+        public bool Suggested { get; set; }
+        public bool Ms2Acquired { get; set; }
     }
 }

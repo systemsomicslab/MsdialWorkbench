@@ -7,6 +7,7 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -59,8 +60,6 @@ namespace CompMs.MsdialCore.DataObj {
         public int PeakID { get; set; } // sequential IDs from the same dimmension e.g. RT vs MZ or IM vs MZ
         [Key(13)]
         public int ParentPeakID { get; set; } // for LC-IM-MS/MS. The parent peak ID generating the daughter peak IDs
-        [Key(14)]
-        public int DeconvolutionID { get; set; } // 
         [Key(15)]
         public long SeekPointToDCLFile { get; set; } // deconvoluted spectrum is stored in dcl file, and this is the seek pointer
 
@@ -85,17 +84,17 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(18)]
         public int MS2RawSpectrumID { get; set; } // representative ID
         [Key(19)]
-        public List<int> MS2RawSpectrumIDs { get; set; } = new List<int>();
+        public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; } = new Dictionary<int, double>();
 
         // set for IMMScanProperty
         [Key(20)]
         public int ScanID { get; set; } // same as MS1RawSpectrumID
-        [Key(21)]
-        public double PrecursorMz { get; set; } // in LC-MS/MS same as Mass
+        [IgnoreMember]
+        public double PrecursorMz { get => Mass; set => Mass = value; } // in LC-MS/MS same as Mass
         [Key(22)]
         public IonMode IonMode { get; set; }
-        [Key(23)]
-        public ChromXs ChromXs { get; set; } // same as ChromXsTop
+        [IgnoreMember]
+        public ChromXs ChromXs { get => ChromXsTop; set => ChromXsTop = value; } // same as ChromXsTop
         [Key(24)]
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         public void AddPeak(double mass, double intensity, string comment = null) {
@@ -129,9 +128,12 @@ namespace CompMs.MsdialCore.DataObj {
             PeakCharacter.AdductType = adductIon;
             PeakCharacter.Charge = adductIon.ChargeNumber;
         }
-        public bool IsAdductTypeFormatted() {
-            if (AdductType == null || !AdductType.FormatCheck || AdductType.AdductIonName == null || AdductType.AdductIonName == string.Empty) return false;
-            return true;
+        [IgnoreMember]
+        public bool IsAdductTypeFormatted {
+            get {
+                if (AdductType == null || !AdductType.FormatCheck || AdductType.AdductIonName == null || AdductType.AdductIonName == string.Empty) return false;
+                return true;
+            }
         }
 
         [Key(31)]
@@ -139,39 +141,96 @@ namespace CompMs.MsdialCore.DataObj {
 
         // molecule annotation results
         // IDs to link properties
-        [Key(32)]
-        public int MspID { get; set; } = -1; // representative msp id
-        [Key(48)]
-        public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
+        //[Key(32)]
+        //public int MspID { get; set; } = -1; // representative msp id
+        //[Key(48)]
+        //public int MspIDWhenOrdered { get; set; } = -1; // representative msp id
         [Key(33)]
-        public List<int> MspIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
-        [Key(34)]
-        public int TextDbID { get; set; }// representative text id
-        [Key(49)]
-        public int TextDbIDWhenOrdered { get; set; }// representative text id
+        public Dictionary<int, List<int>> MSRawID2MspIDs { get; set; } = new Dictionary<int, List<int>>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS). ID list having the metabolite candidates exceeding the threshold
+        [Key(36)]
+        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
+       
+        //[Key(34)]
+        //public int TextDbID { get; set; }// representative text id
+        //[Key(49)]
+        //public int TextDbIDWhenOrdered { get; set; }// representative text id
         [Key(35)]
         public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
-
-        public bool IsReferenceMatched() {
-            if (TextDbID >= 0) return true;
-            if (MspID >= 0 && MspBasedMatchResult.IsSpectrumMatch) return true;
-            return false;
-        }
-
-        public bool IsAnnotationSuggested() {
-            if (MspID >= 0 && !MspBasedMatchResult.IsSpectrumMatch) return true;
-            return false;
-        }
-
-        public bool IsUnknown() {
-            if (MspID < 0 && TextDbID < 0) return true;
-            return false;
-        }
-
-        [Key(36)]
-        public MsScanMatchResult MspBasedMatchResult { get; set; } = new MsScanMatchResult();
         [Key(37)]
-        public MsScanMatchResult TextDbBasedMatchResult { get; set; } = new MsScanMatchResult();
+        public MsScanMatchResult TextDbBasedMatchResult { get; set; } = null;
+        
+        [IgnoreMember]
+        public MsScanMatchResult MspBasedMatchResult { // get result having max score
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+                else {
+                    return MSRawID2MspBasedMatchResult.Argmax(n => n.Value.TotalScore).Value;
+                }
+            }
+        }
+
+        [IgnoreMember]
+        public int TextDbID {
+            get {
+                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
+                else return -1;
+            }
+        }
+
+        [IgnoreMember]
+        public int TextDbIDWhenOrdered {
+            get {
+                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryIDWhenOrdered;
+                else return -1;
+            }
+        }
+
+        [IgnoreMember]
+        public int MspID {
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+                }
+            }
+        }
+
+        [IgnoreMember]
+        public int MspIDWhenOrdered {
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryIDWhenOrdered)).LibraryIDWhenOrdered;
+                }
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsReferenceMatched {
+            get {
+                if (TextDbID >= 0) return true;
+                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
+                return false;
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsAnnotationSuggested {
+            get {
+                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
+                return false;
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsUnknown {
+            get {
+                if (MspID < 0 && TextDbID < 0) return true;
+                return false;
+            }
+        }
+
+      
         [Key(38)]
         public string Comment { get; set; }
 

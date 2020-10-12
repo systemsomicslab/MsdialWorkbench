@@ -43,6 +43,7 @@ namespace Rfx.Riken.OsakaUniv
                 ofd.Filter = "IBF file(*.ibf)|*.ibf";
             }
             else {
+                //ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2";
                 ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf";
             }
             ofd.Title = "Import analysis files";

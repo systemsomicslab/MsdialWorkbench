@@ -14,6 +14,14 @@ using System.Text;
 
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Ms2Dec {
+        public double InitialProgress { get; set; } = 30.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Ms2Dec(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
+       
         public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
@@ -22,6 +30,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             foreach (var spot in chromPeakFeatures) {
                 var result = GetMS2DecResult(spectrumList, spot, param, summary, targetCE);
                 result.ScanID = spot.PeakID;
+                ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
             }
             return msdecResults;
         }
@@ -29,9 +38,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         public MSDecResult GetMS2DecResult(List<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param, 
             ChromatogramPeaksDataSummary summary, double targetCE = -1) { // targetCE is used in multiple CEs option
-            
+
+            // check target CE ID
+            var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
+
             //first, the MS/MS spectrum at the scan point of peak top is stored.
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataTypeMS2, chromPeakFeature.MS2RawSpectrumID, 
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, targetSpecID, 
                 param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
@@ -45,7 +57,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (param.MethodType == Common.Enum.MethodType.ddMSMS) {
+            if (param.AcquisitionType == Common.Enum.AcquisitionType.DDA) {
                 return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
             }
 
@@ -99,6 +111,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     }
                 }
                 msdecResult.ChromXs = chromPeakFeature.ChromXs;
+                msdecResult.RawSpectrumID = targetSpecID;
                 msdecResult.PrecursorMz = precursorMz;
                 return msdecResult;
             }

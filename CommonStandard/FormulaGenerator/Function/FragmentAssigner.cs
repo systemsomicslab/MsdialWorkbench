@@ -364,7 +364,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
         {
             List<SpectrumPeak> ms2Peaklist;
 
-            if (rawData.SpectrumType == DataType.Centroid) ms2Peaklist = rawData.Ms2Spectrum;
+            if (rawData.SpectrumType == MSDataType.Centroid) ms2Peaklist = rawData.Ms2Spectrum;
             else ms2Peaklist = SpectralCentroiding.Centroid(rawData.Ms2Spectrum);
 
             if (ms2Peaklist == null) return new List<SpectrumPeak>();
@@ -381,7 +381,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
         {
             List<SpectrumPeak> ms1Peaklist;
 
-            if (rawData.SpectrumType == DataType.Centroid) ms1Peaklist = rawData.Ms1Spectrum;
+            if (rawData.SpectrumType == MSDataType.Centroid) ms1Peaklist = rawData.Ms1Spectrum;
             else ms1Peaklist = SpectralCentroiding.Centroid(rawData.Ms1Spectrum);
 
             if (ms1Peaklist == null) return new List<SpectrumPeak>();
@@ -395,11 +395,11 @@ namespace CompMs.Common.FormulaGenerator.Function {
         /// <param name="peaklist"></param>
         /// <param name="dataType"></param>
         /// <returns></returns>
-        public static List<SpectrumPeak> GetCentroidSpectrum(List<SpectrumPeak> peaklist, DataType dataType, double threshold)
+        public static List<SpectrumPeak> GetCentroidSpectrum(List<SpectrumPeak> peaklist, MSDataType dataType, double threshold)
         {
             List<SpectrumPeak> cPeaklist;
 
-            if (dataType == DataType.Centroid) cPeaklist = peaklist;
+            if (dataType == MSDataType.Centroid) cPeaklist = peaklist;
             else cPeaklist = SpectralCentroiding.Centroid(peaklist, threshold);
 
             if (cPeaklist == null) return new List<SpectrumPeak>();

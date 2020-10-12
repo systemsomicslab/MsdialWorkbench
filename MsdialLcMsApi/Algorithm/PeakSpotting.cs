@@ -16,8 +16,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.CoreProcess = new PeakSpottingCore() { InitialProgress = initialProgress, ProgressMax = progressMax };
         }
 
-        public List<ChromatogramPeakFeature> Run(List<RawSpectrum> spectrumList, MsdialLcmsParameter param, Action<int> reportAction) {
-            return CoreProcess.Execute3DFeatureDetection(spectrumList, param, param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min, reportAction);
+        public List<ChromatogramPeakFeature> Run(RawMeasurement rawObj, MsdialLcmsParameter param, Action<int> reportAction) {
+            return CoreProcess.Execute3DFeatureDetection(rawObj, param, param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min, reportAction);
         }
     }
 }

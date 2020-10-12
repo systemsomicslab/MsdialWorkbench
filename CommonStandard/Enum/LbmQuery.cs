@@ -38,7 +38,10 @@ namespace CompMs.Common.Enum {
         SPE, SHex, SPEHex, SPGHex, CSLPHex, BRSLPHex, CASLPHex, SISLPHex, STSLPHex,
         CSPHex, BRSPHex, CASPHex, SISPHex, STSPHex, 
         SSulfate, BAHex, BASulfate,
-        LCAE, KLCAE, KDCAE
+        LCAE, KLCAE, KDCAE,
+        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE, 
+        OxTG, FAHFATG,
+
     }
 
     /// <summary>

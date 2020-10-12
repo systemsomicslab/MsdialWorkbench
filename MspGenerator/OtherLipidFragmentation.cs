@@ -6,37 +6,37 @@ namespace CompMs.MspGenerator
 {
     public class OtherLipidFragmentation
     {
-        //template
-        public static void XXFragment(List<string> fragmentList, string adduct, double exactMass, double chain1Mass, double chain2Mass)
-        {
-            //{ "**" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" }    },
-            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
-            {
-                var fra01mass = 0.0;
-                var fra01int = 0;
-                var fra01comment = "";
-                if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
-                {
-                    fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                    fra01int = 10;
-                    fra01comment = adduct;
-                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
-                }
-                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
-                var fra02int = 999;
-                var fra02comment = "[M-H]-";
-                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
-            }
-            else if (adduct == "[M+H]+")
-            {
-                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 50;
-                var fra01comment = adduct;
-                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
-            }
+        ////template
+        //public static void XXFragment(List<string> fragmentList, string adduct, double exactMass, double chain1Mass, double chain2Mass)
+        //{
+        //    //{ "**" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-" }    },
+        //    if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-" || adduct == "[M-H]-")
+        //    {
+        //        var fra01mass = 0.0;
+        //        var fra01int = 0;
+        //        var fra01comment = "";
+        //        if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+        //        {
+        //            fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+        //            fra01int = 10;
+        //            fra01comment = adduct;
+        //            fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+        //        }
+        //        var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+        //        var fra02int = 999;
+        //        var fra02comment = "[M-H]-";
+        //        fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+        //    }
+        //    else if (adduct == "[M+H]+")
+        //    {
+        //        var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+        //        var fra01int = 50;
+        //        var fra01comment = adduct;
+        //        fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+        //    }
 
-        }
-        //template end
+        //}
+        ////template end
 
         public static void cholesterylEsterFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain1Ox)
         {
@@ -163,6 +163,73 @@ namespace CompMs.MspGenerator
             }
         }
 
+        public static void ergosterolEsterFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain1Ox)
+        {
+            // {"Ergosterol",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+NH4]+" } },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, chain1Ox);
+
+            if (adduct == "[M+H]+" || adduct == "[M+NH4]+" || adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = adduct == "[M+NH4]+" ? 5 : 200;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                if (adduct == "[M+NH4]+")
+                {
+                    var fra02int = 10;
+                    var fra02comment = "[M+H]+";
+                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                }
+
+                //var fra03mass = fra01mass - MassDictionary.H2OMass;
+                //var fra03int = 50;
+                //var fra03comment = "NL of H2O";
+                //fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra02mass - chain1Mass - MassDictionary.OxygenMass;
+                var fra04int = 999;
+                var fra04comment = "[sterol base structure]+";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+            }
+        }
+
+        public static void desmosterolEsterFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain1Ox)
+        {
+            // {"Ergosterol",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+NH4]+" } },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, chain1Ox);
+
+            if (adduct == "[M+H]+" || adduct == "[M+NH4]+" || adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = adduct == "[M+NH4]+" ? 5 : 200;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                if (adduct == "[M+NH4]+")
+                {
+                    var fra02int = 10;
+                    var fra02comment = "[M+H]+";
+                    fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+                }
+
+                //var fra03mass = fra01mass - MassDictionary.H2OMass;
+                //var fra03int = 50;
+                //var fra03comment = "NL of H2O";
+                //fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra02mass - chain1Mass - MassDictionary.OxygenMass;
+                var fra04int = 999;
+                var fra04comment = "[sterol base structure]+";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+            }
+        }
+
+
         public static void aHexSteroidalEsterFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain1Ox)
         {
             //{ "AHexBRS" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
@@ -216,7 +283,7 @@ namespace CompMs.MspGenerator
         {
             //                {   "ACar" ,    new List<string>(){ "[M]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
-            if (adduct == "[M]+")
+            if (adduct == "[M+H]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
                 var fra01int = 999;

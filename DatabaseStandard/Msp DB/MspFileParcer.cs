@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Utility;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -599,13 +600,17 @@ namespace Rfx.Riken.OsakaUniv
             var invalidChars = Path.GetInvalidFileNameChars();
             var counter = 0;
             foreach (var record in mspRecords) {
+
                 var filename = record.Name;
                 if (filename == string.Empty)
                     filename = "Query_" + counter;
                 var converted = string.Concat(
                   filename.Select(c => invalidChars.Contains(c) ? '_' : c));
 
-                var filepath = folderpath + "\\" + counter.ToString("0000") + "_" + converted + ".msp";
+                var filepath = folderpath + "\\" + counter.ToString("00000") + "_" + converted + ".msp";
+                if (CompMs.Common.Utility.ErrorHandler.IsExceedFilePathMax(filepath, folderpath, counter.ToString("00000") + "_" + converted, ".msp", out string recFilePath)) {
+                    filepath = recFilePath;
+                }
                 using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                     writeMspFields(record, sw);
                 }

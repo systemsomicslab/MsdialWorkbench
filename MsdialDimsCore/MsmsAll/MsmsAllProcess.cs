@@ -40,16 +40,16 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             var iupacDB = IupacResourceParser.GetIUPACDatabase();
             List<MoleculeMsReference> mspDB = null;
             if (param.TargetOmics == TargetOmics.Metablomics) {
-                mspDB = MspFileParcer.MspFileReader(param.MspFilePath);
+                mspDB = MspFileParser.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
                 var extension = System.IO.Path.GetExtension(param.MspFilePath);
                 if (extension == ".lbm2") {
-                    mspDB = MspFileParcer.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.ReadSerializedLbmLibrary(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
                 else {
-                    mspDB = MspFileParcer.LbmFileReader(param.MspFilePath, lbmQueries,
+                    mspDB = MspFileParser.LbmFileReader(param.MspFilePath, lbmQueries,
                         param.IonMode, param.LipidQueryContainer.SolventType, param.LipidQueryContainer.CollisionType);
                 }
             }
@@ -61,7 +61,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             // the following parser is used to safely obtain the information
             var ms1Spectrum = getMs1SpectraInMsmsAllData(spectra);
             if (ms1Spectrum == null) return new ProcessError(true, specEmptyError);
-            var chromPeaks = ComponentsConverter.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
             var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             var chromFeatures = GetChromatogramPeakFeatures(peakPickResults, ms1Spectrum, spectra);
@@ -74,11 +74,11 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             Console.WriteLine("Annotation started...");
             foreach (var item in chromFeatures.Select((value, index) => new { value, index })) {
                 var feature = item.value;
-                AnnotationProcess.Run(feature, mspDB, param.MspSearchParam, param.TargetOmics);
+                AnnotationProcess.Run(feature, mspDB, null, param.MspSearchParam, param.TargetOmics, null, out _, out _);
                 Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
 
-            PeakCharacterEstimator.Process(spectra, chromFeatures, null, param, null);
+            new PeakCharacterEstimator(90, 10).Process(spectra, chromFeatures, null, param, null);
 
             return new ProcessError();
         }
@@ -91,7 +91,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 }
                 else {
                     var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
-                    var spectrumPeaks = ComponentsConverter.ConvertToSpectrumPeaks(peakElements);
+                    var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
                     var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
                     feature.Spectrum = centroidSpec;
                 }
@@ -116,8 +116,8 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 peakFeature.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
-                peakFeature.MS2RawSpectrumIDs = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
-                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumIDs, allSpectra);
+                peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
                 peakFeatures.Add(peakFeature);
 
                 // result check
@@ -128,19 +128,20 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             return peakFeatures;
         }
 
-        private int GetRepresentativeMS2RawSpectrumID(List<int> ms2RawSpectrumIDs, List<RawSpectrum> allSpectra) {
-            if (ms2RawSpectrumIDs.Count == 0) return -1;
+        private int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {
+            if (ms2RawSpectrumID2CE.Count == 0) return -1;
 
             var maxIntensity = 0.0;
             var maxIntensityID = -1;
-            for (int i = 0; i < ms2RawSpectrumIDs.Count; i++) {
-                var specID = ms2RawSpectrumIDs[i];
+            foreach (var pair in ms2RawSpectrumID2CE) {
+                var specID = pair.Key;
                 var specObj = allSpectra[specID];
                 if (specObj.TotalIonCurrent > maxIntensity) {
                     maxIntensity = specObj.TotalIonCurrent;
                     maxIntensityID = specID;
                 }
             }
+            
             return maxIntensityID;
         }
 
@@ -152,8 +153,8 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
         /// <param name="allSpectra"></param>
         /// <param name="mzTolerance"></param>
         /// <returns></returns>
-        private List<int> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
-            var IDs = new List<int>();
+        private Dictionary<int, double> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
+            var ID2CE = new Dictionary<int, double>();
             var startID = GetSpectrumObjectStartIndexByPrecursorMz(precursorMz, mzTolerance, ms2SpecObjects);
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
                 var spec = ms2SpecObjects[i];
@@ -161,9 +162,9 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 if (precursorMzObj < precursorMz - mzTolerance) continue;
                 if (precursorMzObj > precursorMz + mzTolerance) break;
 
-                IDs.Add(spec.ScanNumber);
+                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }
-            return IDs; // maybe, in msmsall, the id count is always one but for just in case
+            return ID2CE; // maybe, in msmsall, the id count is always one but for just in case
         }
 
         private int GetSpectrumObjectStartIndexByPrecursorMz(double targetedMass, double massTolerance, List<RawSpectrum> ms2SpecObjects) {

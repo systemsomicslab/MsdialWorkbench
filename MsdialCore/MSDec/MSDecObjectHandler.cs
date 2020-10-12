@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.MSDec {
+
+    // this method is for ms/ms spectrum deconvolution
     public sealed class MSDecObjectHandler {
         private MSDecObjectHandler() { }
         public static List<SpectrumPeak> ReplaceDeconvolutedIsopicIonsToOriginalPrecursorIons(MSDecResult result, List<SpectrumPeak> curatedSpectra,
@@ -31,6 +33,7 @@ namespace CompMs.MsdialCore.MSDec {
             var result = new MSDecResult();
 
             result.ChromXs = chromPeakFeature.ChromXs;
+            result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
             result.PrecursorMz = chromPeakFeature.Mass;
             result.ModelPeakMz = (float)chromPeakFeature.Mass;
             result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
@@ -41,6 +44,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             var result = new MSDecResult();
             result.ChromXs = chromPeakFeature.ChromXs;
+            result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
             result.PrecursorMz = chromPeakFeature.Mass;
             result.ModelPeakMz = (float)chromPeakFeature.Mass;
             result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;

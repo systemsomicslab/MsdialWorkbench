@@ -9,8 +9,8 @@ namespace CompMs.Common.Enum {
     public enum CollisionType { CID, HCD }
     public enum SolventType { CH3COONH4, HCOONH4 }
     public enum SeparationType { Chromatography, IonMobility, Infusion }
-    public enum DataType { Centroid, Profile }
-    public enum MethodType { ddMSMS, diMSMS }
+    public enum MSDataType { Centroid, Profile }
+    public enum AcquisitionType { DDA, SWATH, AIF }
     public enum AnalysisFileType { Sample, Standard, QC, Blank }
     public enum RetentionType { RI, RT }
     public enum RiCompoundType { Alkanes, Fames }

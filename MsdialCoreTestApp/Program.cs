@@ -1,12 +1,23 @@
-﻿using CompMs.MsdialCore.Utility;
+﻿using CompMs.App.MsdialConsole.Process;
+using CompMs.MsdialCore.Utility;
+using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 using System;
 
-namespace MsdialCoreTestApp {
+namespace CompMs.App.MsdialConsole {
     class Program {
         static void Main(string[] args) {
-            //var filepath = @"C:\Users\hiroshi.tsugawa\Desktop\MsdialTestData\SWATH_NEG\Nega_Swath_Chlamydomonas_1.mzML";
-            var filepath = @"D:\PROJECT_SCIEX_MSMSALL\ABF\704_Egg2 Egg Yolk.abf";
-            RawDataDump.Dump(filepath);
+            //gcms
+            args = new string[] {
+                "gcms"
+                , "-i"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+                , "-o"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+                , "-m"
+                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
+                , "-p" };
+            MainProcess.Run(args);
         }
     }
 }

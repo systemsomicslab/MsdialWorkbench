@@ -75,7 +75,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(0)]
         public RetentionTimeCorrectionParam RetentionTimeCorrectionParam { get; set; } = new RetentionTimeCorrectionParam();
         [Key(1)]
-        public List<MoleculeMsReference> StandardLibrary { get; set; }
+        public List<MoleculeMsReference> StandardLibrary { get; set; } = new List<MoleculeMsReference>();
 
         // to keep manual modification results. foreach(var sample in SampleCellInfoListList){foreach(var std in sample){Console.Write("cell info: " + cell);}}
         [Key(2)]

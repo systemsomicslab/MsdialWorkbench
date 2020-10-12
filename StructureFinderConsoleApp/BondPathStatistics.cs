@@ -1055,7 +1055,7 @@ namespace StructureFinderConsoleApp
         public static void StatisticsOfMatchedFragmentIons(string folderPath)
         {
             Console.WriteLine(folderPath);
-            var param = new AnalysisParamOfMsfinder() { Mass2Tolerance = 0.01F, RelativeAbundanceCutOff = 10, MassTolType = MassToleranceType.Da, TreeDepth = 2 };
+            var param = new AnalysisParamOfMsfinder() { Mass2Tolerance = 0.025F, RelativeAbundanceCutOff = 1, MassTolType = MassToleranceType.Da, TreeDepth = 2 };
             var files = System.IO.Directory.GetFiles(folderPath, "*.msp", System.IO.SearchOption.TopDirectoryOnly);
             var neutralLossFile = System.IO.Path.GetDirectoryName(files[0]) + "-NL.txt";
             var productIonFile = System.IO.Path.GetDirectoryName(files[0]) + "-PI.txt";

@@ -119,8 +119,11 @@ namespace NCDK.QSAR.Descriptors.Moleculars
             var factory = CDK.IsotopeFactory;
             factory.ConfigureAtoms(container);
 
-            if (!GeometryUtil.Has3DCoordinates(container))
-                throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            if (!GeometryUtil.Has3DCoordinates(container)) {
+                Console.WriteLine("Error: Molecule must have 3D coordinates");
+                return null;
+                //throw new ThreeDRequiredException("Molecule must have 3D coordinates");
+            }
 
             var retval = new List<double>(7);
 

@@ -756,7 +756,8 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             }
         }
 
-        public static void WriteData(StreamWriter sw, ObservableCollection<AlignedPeakPropertyBean> peaks, string exportType, bool replaceZeroToHalf, float nonZeroMin, List<BasicStats> statsList) {
+        public static void WriteData(StreamWriter sw, ObservableCollection<AlignedPeakPropertyBean> peaks, string exportType,
+            bool replaceZeroToHalf, float nonZeroMin, List<BasicStats> statsList) {
             for (int i = 0; i < peaks.Count; i++) {
                 var spotValue = GetSpotValue(peaks[i], exportType);
 
@@ -779,7 +780,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
                 case "Height": return Math.Round(spotProperty.Variable, 0).ToString();
                 case "Normalized": return spotProperty.NormalizedVariable.ToString();
                 case "Area": return Math.Round(spotProperty.Area, 0).ToString();
-                case "Id": return spotProperty.MasterPeakID.ToString();
+                case "Id": return spotProperty.DriftTime > 0 ? spotProperty.MasterPeakID.ToString() : spotProperty.PeakID.ToString();
                 case "RT": return Math.Round(spotProperty.RetentionTime, 3).ToString();
                 case "Mobility": return Math.Round(spotProperty.DriftTime, 5).ToString();
                 case "CCS": return Math.Round(spotProperty.Ccs, 3).ToString();

@@ -87,8 +87,51 @@ namespace Rfx.Riken.OsakaUniv
             // Set Mouse Position
             this.rightButtonStartClickPoint = Mouse.GetPosition(this);
 
-            if (this.rightButtonStartClickPoint.X >= this.ActualWidth - this.rightMargin && this.rightButtonStartClickPoint.Y > this.topMargin && this.rightButtonStartClickPoint.Y < this.ActualHeight - this.bottomMargin) this.rightMouseButtonChromatogramUpDownZoom = true;
+            if (this.rightButtonStartClickPoint.X >= this.ActualWidth - this.rightMargin && 
+                this.rightButtonStartClickPoint.Y > this.topMargin && 
+                this.rightButtonStartClickPoint.Y < this.ActualHeight - this.bottomMargin) this.rightMouseButtonChromatogramUpDownZoom = true;
         }
+
+        private void userControl_MouseWheel(object sender, MouseWheelEventArgs e) {
+            if (this.massSpectrogramViewModel == null) return;
+
+            this.currentMousePoint = Mouse.GetPosition(this);
+
+            var peakInformation = this.massSpectrogramLeftRotateFE.getDataPositionOnMousePoint(this.currentMousePoint);
+            if (peakInformation == null) return;
+
+            float newMinX = float.MaxValue;
+            float newMaxX = float.MinValue;
+            float newMaxY = float.MinValue;
+
+            float intensity = peakInformation[0];
+            float mass = peakInformation[1];
+
+            if (e.Delta > 0) {
+                newMinX = (float)mass - (float)((mass - (float)this.massSpectrogramViewModel.DisplayRangeMassMin) * 0.9);
+                newMaxX = (float)mass + (float)(((float)this.massSpectrogramViewModel.DisplayRangeMassMax - mass) * 0.9);
+                newMaxY = (float)this.massSpectrogramViewModel.DisplayRangeIntensityMax * 0.9F;
+            }
+            else {
+                newMinX = (float)mass - (float)((mass - (float)this.massSpectrogramViewModel.DisplayRangeMassMin) * 1.1);
+                newMaxX = (float)mass + (float)(((float)this.massSpectrogramViewModel.DisplayRangeMassMax - mass) * 1.1);
+                newMaxY = (float)this.massSpectrogramViewModel.DisplayRangeIntensityMax * 1.1F;
+            }
+
+            if (this.currentMousePoint.X >= this.ActualWidth - this.rightMargin &&
+                this.currentMousePoint.Y > this.topMargin &&
+                this.currentMousePoint.Y < this.ActualHeight - this.bottomMargin) {
+                if (newMaxY > this.massSpectrogramViewModel.MaxIntensity) {
+                    this.massSpectrogramViewModel.DisplayRangeIntensityMax = this.massSpectrogramViewModel.MaxIntensity;
+                }
+                else {
+                    this.massSpectrogramViewModel.DisplayRangeIntensityMax = newMaxY;
+                }
+            }
+
+            RefreshUI();
+        }
+
 
         private void userControl_MouseMove(object sender, MouseEventArgs e)
         {
@@ -110,7 +153,7 @@ namespace Rfx.Riken.OsakaUniv
                         float newMinIntensity = float.MaxValue;
                         float newMaxIntensity = float.MinValue;
 
-                        mousePointIntensity = peakInformation[1];
+                        //mousePointIntensity = peakInformation[1];
 
                         // Mouse On Y-Axis                
                         if (Mouse.GetPosition(this).Y - this.rightButtonEndClickPoint.Y < 0)

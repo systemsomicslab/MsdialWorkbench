@@ -71,7 +71,7 @@ namespace CompMs.MsdialCore.MSDec {
         public int ChromScanOfPeakLeft { get; set; }
         public int ChromScanOfPeakRight { get; set; }
 
-        public List<float> ModelMzList { get; set; }
+        public List<double> ModelMzList { get; set; }
 
         public double IdealSlopeValue { get; set; }
         public double SharpnessValue { get; set; }
@@ -89,7 +89,7 @@ namespace CompMs.MsdialCore.MSDec {
 
         public ModelChromatogram() {
             Peaks = new List<ChromatogramPeak>();
-            ModelMzList = new List<float>();
+            ModelMzList = new List<double>();
             RdamScanOfPeakTop = 0;
             ChromScanOfPeakTop = 0;
             ChromScanOfPeakLeft = 0;
@@ -124,7 +124,7 @@ namespace CompMs.MsdialCore.MSDec {
         public List<float> TwoLeftIntensityArray { get; set; }
         public List<float> TwoRightInetnsityArray { get; set; }
 
-        public List<float> ModelMzList { get; set; }
+        public List<double> ModelMzList { get; set; }
         public float Sharpness { get; set; }
         public float EstimatedNoise { get; set; }
 
@@ -138,7 +138,7 @@ namespace CompMs.MsdialCore.MSDec {
             OneRightIntensityArray = new List<float>();
             TwoLeftIntensityArray = new List<float>();
             TwoRightInetnsityArray = new List<float>();
-            ModelMzList = new List<float>();
+            ModelMzList = new List<double>();
             Sharpness = 0.0F;
             EstimatedNoise = 1.0F;
         }
@@ -147,11 +147,9 @@ namespace CompMs.MsdialCore.MSDec {
     public sealed class MSDecHandler {
         private MSDecHandler() { }
 
-        private const double initialProgress = 30.0;
-        private const double progressMax = 30.0;
-
         #region gcms
-        public static List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param, Action<int> reportAction) {
+        public static List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
+            ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
@@ -191,6 +189,7 @@ namespace CompMs.MsdialCore.MSDec {
 
                 if (msdecResult != null && msdecResult.Spectrum.Count > 0) {
                     msdecResult.ScanID = counter;
+                    msdecResult.RawSpectrumID = modelChromatograms[i].RdamScanOfPeakTop;
                     msdecResult.Spectrum = getRefinedMsDecSpectrum(msdecResult.Spectrum, param);
                     msdecResult.Splash = calculateSplash(msdecResult.Spectrum);
                     msdecResults.Add(msdecResult);
@@ -200,7 +199,7 @@ namespace CompMs.MsdialCore.MSDec {
 
                     counter++;
                 }
-                progressReports(i, modelChromatograms.Count, reportAction);
+                ReportProgress.Show(initialProgress, progressMax, i, modelChromatograms.Count, reportAction);
             }
 
             foreach (var ms1DecResult in msdecResults) {
@@ -543,7 +542,7 @@ namespace CompMs.MsdialCore.MSDec {
            MsDecBin[] msdecBins, int chromScanOfPeakTop, ParameterBase param) {
             var rdamScan = msdecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.CentroidMs1Tolerance; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
-            var focusedMs1Spectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.DataType, rdamScan, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
+            var focusedMs1Spectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, rdamScan, param.AmplitudeCutoff, param.MassRangeBegin, param.MassRangeEnd);
             focusedMs1Spectrum = ExcludeMasses(focusedMs1Spectrum, param.ExcludedMassList);
             if (focusedMs1Spectrum.Count == 0) return new List<List<ChromatogramPeak>>();
 
@@ -1109,11 +1108,6 @@ namespace CompMs.MsdialCore.MSDec {
                 ms1SpectrumList.Add(spectrum);
             }
             return ms1SpectrumList;
-        }
-
-        private static void progressReports(float focusedMass, float endMass, Action<int> reportAction) {
-            var progress = initialProgress + focusedMass / endMass * progressMax;
-            reportAction?.Invoke((int)progress);
         }
     }
 }

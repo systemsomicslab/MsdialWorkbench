@@ -10,30 +10,6 @@ namespace CompMs.Common.Utility {
     public sealed class ComponentsConverter {
         private ComponentsConverter() { }
 
-        public static List<SpectrumPeak> ConvertToSpectrumPeaks(RawPeakElement[] peakElements) {
-            var peaks = new List<SpectrumPeak>();
-            foreach (var peak in peakElements) {
-                peaks.Add(new SpectrumPeak(peak.Mz, peak.Intensity));
-            }
-            return peaks;
-        }
-
-        /// <summary>
-        /// from the list of m/z and intensity
-        /// the list of scan (auto), times (by m/z), m/z, and intensity is created
-        /// </summary>
-        /// <param name="spectrum"></param>
-        /// <returns></returns>
-        public static List<ChromatogramPeak> ConvertRawPeakElementToChromatogramPeakList(RawPeakElement[] spectrum) {
-            var chromPeaks = new List<ChromatogramPeak>();
-            for (int i = 0; i < spectrum.Length; i++) {
-                var mz = spectrum[i].Mz;
-                var intensity = spectrum[i].Intensity;
-                chromPeaks.Add(new ChromatogramPeak(i, mz, intensity, new MzValue(mz)));
-            }
-            return chromPeaks;
-        }
-
         public static string GetSpectrumString(RawPeakElement[] spectrum, char mz_abs_separator = ':', char peaks_separater = ' ') {
             if (spectrum == null || spectrum.Length == 0)
                 return string.Empty;

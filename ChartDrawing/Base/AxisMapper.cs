@@ -9,23 +9,33 @@ namespace CompMs.Graphics.Base
 {
     public class AxisMapper
     {
-        public double InitialMin => manager.InitialMin;
-        public double InitialMax => manager.InitialMax;
+        public double InitialMin => manager.InitialRange.Minimum;
+        public double InitialMax => manager.InitialRange.Maximum;
 
-        private AxisManager manager;
+        private CompMs.Graphics.Core.Base.AxisManager manager;
 
-        public AxisMapper(AxisManager manager_)
-        {
+        public AxisMapper(CompMs.Graphics.Core.Base.AxisManager manager_) {
             manager = manager_;
         }
 
-        public double ValueToRenderPosition(object value)
-        {
-            return manager.ValueToRenderPosition(value);
+        public AxisValue TranslateToAxisValue(object value) {
+            return manager.TranslateToAxisValue(value);
         }
-        public double RenderPositionToValue(double value)
-        {
-            return manager.RenderPositionToValue(value);
+
+        public double TranslateToRenderPoint(AxisValue value) {
+            return manager.TranslateToRenderPoint(value);
+        }
+
+        public double TranslateToRenderPoint(object value) {
+            return manager.TranslateToRenderPoint(value);
+        }
+
+        public AxisValue TranslateFromRenderPoint(double value) {
+            return manager.TranslateFromRenderPoint(value);
+        }
+
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values) {
+            return manager.TranslateToRenderPoints(values);
         }
     }
 }

@@ -17,13 +17,20 @@ using System.Text;
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Annotation {
 
+        public double InitialProgress { get; set; } = 60.0;
+        public double ProgressMax { get; set; } = 30.0;
+
+        public Annotation(double InitialProgress, double ProgressMax) {
+            this.InitialProgress = InitialProgress;
+            this.ProgressMax = ProgressMax;
+        }
+
         // mspDB must be sorted by precursor mz
         // textDB must be sorted by precursor mz
         public void MainProcess(List<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialLcmsParameter param, Action<int> reportAction) {
 
-            Console.WriteLine("Annotation started");
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 // count of chrompeakfeatures and msdecresults should be same
                 var chromPeak = chromPeakFeatures[i];
@@ -31,7 +38,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 if (chromPeak.PeakCharacter.IsotopeWeightNumber == 0) {
                     LcMsMsMatchMethod(chromPeak, msdecResult, spectrumList, mspDB, textDB, param);
                 }
-                Console.WriteLine("Done {0}/{1}", i, chromPeakFeatures.Count);
+                //Console.WriteLine("Done {0}/{1}", i, chromPeakFeatures.Count);
+                ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count(), reportAction);
             }
         }
 
@@ -75,12 +83,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
-                        chromPeak.MspBasedMatchResult = result;
-                        chromPeak.MspID = result.LibraryID;
-                        chromPeak.MspIDWhenOrdered = result.LibraryIDWhenOrdered;
+                        chromPeak.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = result;
                         DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[result.LibraryIDWhenOrdered], result);
+                        chromPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID] = new List<int>();
                     }
-                    chromPeak.MspIDs.Add(result.LibraryID);
+                    chromPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID].Add(result.LibraryID);
                 }
             }
 
@@ -104,8 +111,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
                         chromPeak.TextDbBasedMatchResult = result;
-                        chromPeak.TextDbID = result.LibraryID;
-                        chromPeak.TextDbIDWhenOrdered = result.LibraryIDWhenOrdered;
                         DataAccess.SetMoleculeMsProperty(chromPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     chromPeak.TextDbIDs.Add(result.LibraryID);

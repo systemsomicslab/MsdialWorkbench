@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
+using CompMs.Common.Extension;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.LineChart
@@ -30,7 +31,7 @@ namespace CompMs.Graphics.LineChart
 
         public static readonly DependencyProperty LinePenProperty = DependencyProperty.Register(
             nameof(LinePen), typeof(Pen), typeof(LineChartControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+            new PropertyMetadata(null)
             );
         #endregion
 
@@ -65,88 +66,78 @@ namespace CompMs.Graphics.LineChart
         private Type dataType;
         private PropertyInfo hPropertyReflection;
         private PropertyInfo vPropertyReflection;
+        private DrawingVisual dv;
+        private Data[] datas;
         #endregion
 
-        protected override void Update()
-        {
-            if (  hPropertyReflection == null
-               || vPropertyReflection == null
-               || HorizontalAxis == null
-               || VerticalAxis == null
-               || LinePen == null
-               || cv == null
-               )
-                return;
+        public LineChartControl() : base() {
+            var pen = new Pen(Brushes.Black, 1) { LineJoin = PenLineJoin.Bevel };
+            pen.Freeze();
+            LinePen = pen;
 
-            visualChildren.Clear();
-
-            var dv = new DrawingVisual
-            {
-                Clip = new RectangleGeometry(new Rect(RenderSize))
-            };
-            var dc = dv.RenderOpen();
-            var lineGeometry = new PathGeometry();
-            var path = new PathFigure();
-            if (cv.Count != 0)
-            {
-                path.StartPoint = ValueToRenderPosition(
-                    hPropertyReflection.GetValue(cv.GetItemAt(0)),
-                    vPropertyReflection.GetValue(cv.GetItemAt(0))
-                    );
-                for (int i = 1; i < cv.Count; ++i)
-                {
-                    var o = cv.GetItemAt(i);
-
-                    path.Segments.Add(new LineSegment()
-                    {
-                        Point = ValueToRenderPosition(
-                            hPropertyReflection.GetValue(o),
-                            vPropertyReflection.GetValue(o)
-                            )
-                    });
-                }
-            }
-            path.Freeze();
-            lineGeometry.Figures = new PathFigureCollection { path };
-            dc.DrawGeometry(null, LinePen, lineGeometry);
-            dc.Close();
+            dv = new DrawingVisual { Clip = new RectangleGeometry(new Rect(RenderSize)) };
             visualChildren.Add(dv);
         }
 
-        Point ValueToRenderPosition(object x, object y)
+        protected override void Update()
         {
-            double xx, yy;
-            if (x is double)
-                xx = HorizontalAxis.ValueToRenderPosition((double)x) * ActualWidth;
-            else if (x is IConvertible)
-                xx = HorizontalAxis.ValueToRenderPosition(x as IConvertible) * ActualWidth;
-            else
-                xx = HorizontalAxis.ValueToRenderPosition(x) * ActualWidth;
+            if (  HorizontalAxis == null
+               || VerticalAxis == null
+               || LinePen == null
+               || datas == null
+               )
+                return;
 
-            if (y is double)
-                yy = VerticalAxis.ValueToRenderPosition((double)y) * ActualHeight;
-            else if (y is IConvertible)
-                yy = VerticalAxis.ValueToRenderPosition(y as IConvertible) * ActualHeight;
-            else
-                yy = VerticalAxis.ValueToRenderPosition(y) * ActualHeight;
-            return new Point(xx, yy);
+            var dc = dv.RenderOpen();
+
+            var points = ValuesToRenderPositions(datas, ActualWidth, ActualHeight);
+
+            if (points.Count != 0)
+                for (int i = 1; i < points.Count; ++i)
+                    dc.DrawLine(LinePen, points[i - 1], points[i]);
+            
+            dc.Close();
+        }
+
+        List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
+            var points = new List<Point>(ds.Count);
+
+            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x));
+            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y));
+
+            return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
+        }
+
+        void SetHorizontalDatas() {
+            if (dataType == null || HorizontalPropertyName == null) return;
+
+            hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
+            foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
+                datas[idx].x = hPropertyReflection.GetValue(obj);
+        }
+
+        void SetVerticalDatas() {
+            if (dataType == null || VerticalPropertyName == null) return;
+
+            vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+            foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
+                datas[idx].y = vPropertyReflection.GetValue(obj);
         }
 
         #region Event handler
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as LineChartControl;
-            if (chart == null) return;
+            if (chart == null || chart.ItemsSource == null) return;
 
             var enumerator = chart.ItemsSource.GetEnumerator();
-            enumerator.MoveNext();
+            if (!enumerator.MoveNext()) return;
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
+            chart.datas = Enumerable.Range(0, chart.cv.Count).Select(_ => new Data()).ToArray();
 
-            if (chart.HorizontalPropertyName != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
-            if (chart.VerticalPropertyName != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
+            chart.SetHorizontalDatas();
+            chart.SetVerticalDatas();
 
             chart.Update();
         }
@@ -156,8 +147,7 @@ namespace CompMs.Graphics.LineChart
             var chart = d as LineChartControl;
             if (chart == null) return;
 
-            if (chart.dataType != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+            chart.SetHorizontalDatas();
 
             chart.Update();
         }
@@ -167,11 +157,21 @@ namespace CompMs.Graphics.LineChart
             var chart = d as LineChartControl;
             if (chart == null) return;
 
-            if (chart.dataType != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+            chart.SetVerticalDatas();
 
             chart.Update();
         }
+
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
+            dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+            base.OnRenderSizeChanged(sizeInfo);
+        }
         #endregion
+
+        class Data
+        {
+            public object x, y;
+        }
     }
+
 }

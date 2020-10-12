@@ -1,13 +1,33 @@
 ﻿using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.Utility {
     public sealed class RetentionIndexHandler {
         private RetentionIndexHandler() { }
-        
+
+        public static Dictionary<int, float> GetRiDictionary(string filePath) {
+            var dict = new Dictionary<int, float>();
+            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line == string.Empty) break;
+                    var lineArray = line.Split('\t');
+                    if (lineArray.Length < 2) continue;
+
+                    int carbon; float rt;
+                    if (int.TryParse(lineArray[0], out carbon) && float.TryParse(lineArray[1], out rt))
+                        dict[carbon] = rt;
+                }
+            }
+            if (dict.Count == 0) return null;
+            return dict;
+        }
+
         public static float GetRetentionIndexByAlkanes(Dictionary<int, float> retentionIndexDictionary, float retentionTime) {
             var leftCarbon = retentionIndexDictionary.Min(n => n.Key);
             var rightCarbon = retentionIndexDictionary.Max(n => n.Key);
@@ -39,7 +59,7 @@ namespace CompMs.Common.Utility {
             }
         }
 
-        public static float ConvertKovatsRiToRetentiontime(Dictionary<int, float> retentionIndexDictionary, float retentionIndex) {
+        public static double ConvertKovatsRiToRetentiontime(Dictionary<int, float> retentionIndexDictionary, double retentionIndex) {
             var leftCarbon = retentionIndexDictionary.Min(n => n.Key);
             var rightCarbon = retentionIndexDictionary.Max(n => n.Key);
             var leftRtValue = retentionIndexDictionary[leftCarbon];
@@ -97,26 +117,24 @@ namespace CompMs.Common.Utility {
             };
         }
 
-        public static float CalculateFiehnRi(FiehnRiCoefficient fiehnRiCoeff, float retentionTime) {
-            var retentionIndex = 0.0F;
+        public static double CalculateFiehnRi(FiehnRiCoefficient fiehnRiCoeff, double retentionTime) {
+            var retentionIndex = 0.0;
             if (retentionTime <= fiehnRiCoeff.BeginCoeff.EndRt) {
-                retentionIndex = (float)(fiehnRiCoeff.BeginCoeff.A * retentionTime
-                    + fiehnRiCoeff.BeginCoeff.B);
+                retentionIndex = fiehnRiCoeff.BeginCoeff.A * retentionTime + fiehnRiCoeff.BeginCoeff.B;
             }
             else if (retentionTime > fiehnRiCoeff.PolyCoeff.BeginRt && retentionTime < fiehnRiCoeff.PolyCoeff.EndRt) {
-                retentionIndex = (float)(fiehnRiCoeff.PolyCoeff.A * Math.Pow(retentionTime, 5) +
+                retentionIndex = fiehnRiCoeff.PolyCoeff.A * Math.Pow(retentionTime, 5) +
                     fiehnRiCoeff.PolyCoeff.B * Math.Pow(retentionTime, 4) +
                     fiehnRiCoeff.PolyCoeff.C * Math.Pow(retentionTime, 3) + fiehnRiCoeff.PolyCoeff.D * Math.Pow(retentionTime, 2) +
-                    fiehnRiCoeff.PolyCoeff.E * retentionTime + fiehnRiCoeff.PolyCoeff.F);
+                    fiehnRiCoeff.PolyCoeff.E * retentionTime + fiehnRiCoeff.PolyCoeff.F;
             }
             else if (retentionTime >= fiehnRiCoeff.EndCoeff.BeginRt) {
-                retentionIndex = (float)(fiehnRiCoeff.EndCoeff.A * retentionTime +
-                    fiehnRiCoeff.EndCoeff.B);
+                retentionIndex = fiehnRiCoeff.EndCoeff.A * retentionTime + fiehnRiCoeff.EndCoeff.B;
             }
             return retentionIndex;
         }
 
-        public static float ConvertFiehnRiToRetentionTime(FiehnRiCoefficient revFiehnRiCoeff, float retentionIndex) {
+        public static double ConvertFiehnRiToRetentionTime(FiehnRiCoefficient revFiehnRiCoeff, double retentionIndex) {
             var convertedRt = CalculateFiehnRi(revFiehnRiCoeff, retentionIndex);
             //return convertedFiehnRi * 0.001F / 60.0F;
             return convertedRt;

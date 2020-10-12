@@ -7,6 +7,13 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using MessagePack;
+using CompMs.MsdialCore.Properties;
+using Accord;
+using System.Linq;
+using CompMs.Common.Parser;
+using System.IO;
+using System.Text;
+using CompMs.Common.Extension;
 
 namespace CompMs.MsdialCore.Parameter {
 
@@ -14,36 +21,36 @@ namespace CompMs.MsdialCore.Parameter {
     public class ParameterBase {
 
         [Key(0)]
-        public DateTime ProjectDate { get; set; }
+        public DateTime ProjectStartDate { get; set; } = DateTime.Now;
         [Key(1)]
-        public DateTime FinalSavedDate { get; set; }
+        public DateTime FinalSavedDate { get; set; } = DateTime.Now;
         [Key(2)]
-        public string MsdialVersionNumber { get; set; }
+        public string MsdialVersionNumber { get; set; } = Resources.VERSION;
 
 
         // Project container
         [Key(3)]
-        public string ProjectFolderPath { get; set; }
+        public string ProjectFolderPath { get; set; } = string.Empty;
         [Key(4)]
-        public string ProjectFilePath { get; set; }
+        public string ProjectFilePath { get; set; } = string.Empty;
         [Key(5)]
-        public Dictionary<int, string> FileID_ClassName { get; set; }
+        public Dictionary<int, string> FileID_ClassName { get; set; } = new Dictionary<int, string>();
         [Key(6)]
-        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; }
+        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; } = new Dictionary<int, AnalysisFileType>();
         [Key(7)]
         public bool IsBoxPlotForAlignmentResult { get; set; }
         [Key(8)]
-        public Dictionary<string, int> ClassnameToOrder { get; set; }
+        public Dictionary<string, int> ClassnameToOrder { get; set; } = new Dictionary<string, int>();
         [Key(9)]
-        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; }
+        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
 
         // Project type
         [Key(10)]
-        public MethodType MethodType { get; set; } = MethodType.ddMSMS;
+        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
         [Key(11)]
-        public DataType DataType { get; set; } = DataType.Profile;
+        public MSDataType MSDataType { get; set; } = MSDataType.Profile;
         [Key(12)]
-        public DataType DataTypeMS2 { get; set; } = DataType.Profile;
+        public MSDataType MS2DataType { get; set; } = MSDataType.Profile;
         [Key(13)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
         [Key(14)]
@@ -51,11 +58,9 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(15)]
         public Ionization Ionization { get; set; } = Ionization.ESI;
         [Key(16)]
-        public SeparationType SeparationType { get; set; } = SeparationType.Chromatography;
-        [Key(17)]
-        public bool IsAIF { get; set; } = false;
-
-
+        public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
+        //[Key(17)]
+        //public bool IsAIF { get; set; } = false;
 
         // Project metadata
         [Key(18)]
@@ -78,6 +83,8 @@ namespace CompMs.MsdialCore.Parameter {
         public string IsotopeTextDBFilePath { get; set; } = string.Empty;
         [Key(26)]
         public string CompoundListInTargetModePath { get; set; } = string.Empty;
+        [Key(147)]
+        public string CompoundListForRtCorrectionPath { get; set; } = string.Empty;
         [Key(27)]
         public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
 
@@ -121,8 +128,6 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsSnMatrixExport { get; set; }
         [Key(45)]
         public bool IsExportedAsMzTabM { get; set; }
-
-        // Other
 
 
         // Process parameters
@@ -174,7 +179,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(66)]
         public float Ms1AlignmentFactor { get; set; } = 0.5F;
         [Key(67)]
-        public float SpectrumSimilarityAlignmentFactor { get; set; } = 59F;
+        public float SpectrumSimilarityAlignmentFactor { get; set; } = 0.5F;
         [Key(68)]
         public float Ms1AlignmentTolerance { get; set; } = 0.015F;
         [Key(69)]
@@ -189,7 +194,10 @@ namespace CompMs.MsdialCore.Parameter {
 
         // spectral library search
         [Key(73)]
-        public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() { SolventType = SolventType.CH3COONH4 };
+        public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() { 
+            SolventType = SolventType.CH3COONH4,
+            LbmQueries = LbmQueryParcer.GetLbmQueries(false)
+        };
         [Key(74)]
         public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
 
@@ -223,6 +231,8 @@ namespace CompMs.MsdialCore.Parameter {
         public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
         [Key(86)]
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
+        [Key(148)]
+        public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
 
 
         // Post-alignment and filtering
@@ -241,13 +251,13 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(93)]
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get; set; } = true;
         [Key(94)]
-        public bool IsKeepIdentifiedMetaboliteFeatures { get; set; } = true;
+        public bool IsKeepRefMatchedMetaboliteFeatures { get; set; } = true;
         [Key(95)]
         public bool IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples { get; set; } = false;
         [Key(96)]
         public BlankFiltering BlankFiltering { get; set; } = BlankFiltering.SampleMaxOverBlankAve;
         [Key(97)]
-        public bool IsKeepAnnotatedMetaboliteFeatures { get; set; } = false;
+        public bool IsKeepSuggestedMetaboliteFeatures { get; set; } = false;
         [Key(98)]
         public float FoldChangeForBlankFiltering { get; set; } = 5;
 
@@ -341,17 +351,321 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(135)]
         public RetentionTimeCorrectionCommon RetentionTimeCorrectionCommon { get; set; } = new RetentionTimeCorrectionCommon();
         [Key(136)]
-        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = null;
+        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = new List<MoleculeMsReference>();
         [Key(137)]
-        public List<StandardCompound> StandardCompounds { get; set; } = null;
+        public List<StandardCompound> StandardCompounds { get; set; } = new List<StandardCompound>();
 
+        [Key(138)]
+        public bool IsLabPrivate { get; set; } = false;
+        [Key(139)]
+        public bool IsLabPrivateVersionTada { get; set; } = false;
+        [Key(149)]
+        public bool QcAtLeastFilter { get; set; } = false;
+
+        //Tracking of isotope labeles
+        [Key(140)]
+        public bool TrackingIsotopeLabels { get; set; } = false;
+        [Key(141)]
+        public bool UseTargetFormulaLibrary { get; set; } = false;
+        [Key(142)]
+        public IsotopeTrackingDictionary IsotopeTrackingDictionary { get; set; } = new IsotopeTrackingDictionary();
+        [Key(143)]
+        public int NonLabeledReferenceID { get; set; } = 0;
+        [Key(144)]
+        public bool SetFullyLabeledReferenceFile { get; set; } = false;
+        [Key(145)]
+        public int FullyLabeledReferenceID { get; set; } = 0;
+
+        // corrdec
+        [Key(146)]
+        public CorrDecParam CorrDecParam { get; set; } = new CorrDecParam();
+
+
+        public virtual List<string> ParametersAsText() {
+            var pStrings = new List<string>();
+            pStrings.Add("# Project information");
+            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project file path", ProjectFilePath.ToString() }));
+
+            pStrings.Add(String.Join(": ", new string[] { "Acquisition type", AcquisitionType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 data type", MSDataType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS2 data type", MS2DataType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Ion mode", IonMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Target omics", TargetOmics.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Ionization", Ionization.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Machine category", MachineCategory.ToString() }));
+
+            pStrings.Add(String.Join(": ", new string[] { "Instrument type", InstrumentType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Instrument", Instrument.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Authors", Authors.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "License", License.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Comment", Comment.ToString() }));
+
+            pStrings.Add(String.Join(": ", new string[] { "Msp file path", MspFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Text DB file path", TextDBFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for RT correction", CompoundListForRtCorrectionPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Searched adduct ions", String.Join(",", SearchedAdductIons.Select(n => n.AdductIonName).ToArray()) }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# FileID ClassName");
+            foreach (var item in FileID_ClassName.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value }));
+           
+            pStrings.Add("\r\n");
+            pStrings.Add("# FileID AnalysisFileType");
+            foreach (var item in FileID_AnalysisFileType.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Classname order");
+            foreach (var item in ClassnameToOrder.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, item.Value.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Classname ColorBytes");
+            foreach (var item in ClassnameToColorBytes.OrEmptyIfNull()) pStrings.Add(String.Join(": ", new string[] { "Class name=" + item.Key, String.Join(",", item.Value.ToArray()) }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Export");
+            pStrings.Add(String.Join(": ", new string[] { "Export spectra file format", ExportSpectraFileFormat.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Export spectra type", ExportSpectraType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Mat file export folder path", MatExportFolderPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Export folder path", ExportFolderPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Height matrix export", IsHeightMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Normalized height matrix export", IsNormalizedMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Representative spectra export", IsRepresentativeSpectraExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Peak ID matrix export", IsPeakIdMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention time matrix export", IsRetentionTimeMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass matrix export", IsMassMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MSMS included matrix export", IsMsmsIncludedMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Unique mass matrix export", IsUniqueMsMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Peak area matrix export", IsPeakAreaMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Parameter export", IsParameterExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "GNPS export", IsGnpsExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Molecular networking export", IsMolecularNetworkingExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "SN matrix export", IsSnMatrixExport.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Export as mztabM format", IsExportedAsMzTabM.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Process parameters");
+            pStrings.Add(String.Join(": ", new string[] { "Process option", ProcessOption.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Number of threads", NumThreads.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Feature detection parameters");
+            pStrings.Add(String.Join(": ", new string[] { "Smoothing method", SmoothingMethod.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Smoothing level", SmoothingLevel.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Minimum peak height", MinimumAmplitude.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Minimum peak width", MinimumDatapoints.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Average peak width", AveragePeakWidth.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass slice width", MassSliceWidth.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention time begin", RetentionTimeBegin.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention time end", RetentionTimeEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 mass range begin", MassRangeBegin.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 mass range end", MassRangeEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS2 mass range begin", Ms2MassRangeBegin.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS2 mass range end", Ms2MassRangeEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for centroid", CentroidMs1Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS2 tolerance for centroid", CentroidMs2Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Accuracy type", AccuracyType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Max charge number", MaxChargeNumber.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Considering Br and Cl for isotopes", IsBrClConsideredForIsotopes.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Exclude mass list", 
+                String.Join(";", ExcludedMassList.Select(n => String.Join(" ", new string[] { n.Mass.ToString(), n.MassTolerance.ToString() })))}));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Deconvolution");
+            pStrings.Add(String.Join(": ", new string[] { "Sigma window value", SigmaWindowValue.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Amplitude cut off", AmplitudeCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Target CE", TargetCE.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# MSP-based annotation");
+            pStrings.Add(String.Join(": ", new string[] { "RT tolerance for MSP-based annotation", MspSearchParam.RtTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RI tolerance for MSP-based annotation", MspSearchParam.RiTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for MSP-based annotation", MspSearchParam.CcsTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass range begin for MSP-based annotation", MspSearchParam.MassRangeBegin.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass range end for MSP-based annotation", MspSearchParam.MassRangeEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", MspSearchParam.RelativeAmpCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Absolute amplitude cutoff for MSP-based annotation", MspSearchParam.AbsoluteAmpCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Weighted dot product cutoff", MspSearchParam.WeightedDotProductCutOff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Simple dot product cutoff", MspSearchParam.SimpleDotProductCutOff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Reverse dot product cutoff", MspSearchParam.ReverseDotProductCutOff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Matched peaks percentage cutoff", MspSearchParam.MatchedPeaksPercentageCutOff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Minimum spectrum match", MspSearchParam.MinimumSpectrumMatch.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for MSP-based annotation", MspSearchParam.TotalScoreCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for MSP-based annotation", MspSearchParam.Ms1Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS2 tolerance for MSP-based annotation", MspSearchParam.Ms2Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation scoring", MspSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation filtering", MspSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation scoring", MspSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use CCS for MSP-based annotation filtering", MspSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Only report top hit for MSP-based annotation", OnlyReportTopHitInMspSearch.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Execute annotation process only for alignment file", IsIdentificationOnlyPerformedForAlignmentFile.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Solvent type", LipidQueryContainer.SolventType.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Searched lipid class",  
+                String.Join(";", LipidQueryContainer.LbmQueries.Where(n => n.IsSelected).Select(n => String.Join(" ", new string[] { n.LbmClass.ToString(), n.AdductType.AdductIonName })).ToArray()) }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Text-based annotation");
+            pStrings.Add(String.Join(": ", new string[] { "RT tolerance for Text-based annotation", TextDbSearchParam.RtTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RI tolerance for Text-based annotation", TextDbSearchParam.RiTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CCS tolerance for Text-based annotation", TextDbSearchParam.CcsTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for Text-based annotation", TextDbSearchParam.TotalScoreCutoff.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Accurate ms1 tolerance for Text-based annotation", TextDbSearchParam.Ms1Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation scoring", TextDbSearchParam.IsUseTimeForAnnotationScoring.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for Text-based annotation filtering", TextDbSearchParam.IsUseTimeForAnnotationFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation scoring", TextDbSearchParam.IsUseCcsForAnnotationScoring.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use CCS for Text-based annotation filtering", TextDbSearchParam.IsUseCcsForAnnotationFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Only report top hit for Text-based annotation", OnlyReportTopHitInTextDBSearch.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Retention index dictionary information");
+            foreach (var item in FileIdRiInfoDictionary) pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, item.Value.DictionaryFilePath }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Alignment parameters");
+            pStrings.Add(String.Join(": ", new string[] { "Alignment reference file ID", AlignmentReferenceFileID.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention time tolerance for alignment", RetentionTimeAlignmentTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention time factor for alignment", RetentionTimeAlignmentFactor.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Spectrum similarity tolerance for alignment", SpectrumSimilarityAlignmentTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Spectrum similarity factor for alignment", SpectrumSimilarityAlignmentFactor.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for alignment", Ms1AlignmentTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 factor for alignment", Ms1AlignmentFactor.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Force insert peaks in gap filling", IsForceInsertForGapFilling.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Filtering");
+            pStrings.Add(String.Join(": ", new string[] { "Peak count filter", PeakCountFilter.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "N percent detected in one group", NPercentDetectedInOneGroup.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Remove feature based on peak height fold-change", IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Blank filtering", BlankFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Sample max / blank average", SampleMaxOverBlankAverage.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Sample average / blank average", SampleAverageOverBlankAverage.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Keep reference matched metabolites", IsKeepRefMatchedMetaboliteFeatures.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Keep suggested metabolites", IsKeepSuggestedMetaboliteFeatures.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Keep removable features and assigned tag for checking", IsKeepRemovableFeaturesAndAssignedTagForChecking.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Replace true zero values with 1/2 of minimum peak height over all samples", IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Retention time correction");
+            pStrings.Add(String.Join(": ", new string[] { "Execute RT correction", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction with smoothing for RT diff", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.doSmoothing.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "User setting intercept", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.UserSettingIntercept.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT diff calc method", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.RtDiffCalcMethod.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Interpolation method", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.InterpolationMethod.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (begin)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodBegin.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (end)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Internal standards for RT alignment", String.Join(",", RetentionTimeCorrectionCommon.StandardLibrary.Where(n => n.IsTargetMolecule).Select(n => n.Name).ToArray()) }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# Isotope tracking setting");
+            pStrings.Add(String.Join(": ", new string[] { "Tracking isotope label", TrackingIsotopeLabels.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Set fully labeled reference file", SetFullyLabeledReferenceFile.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Non labeled reference ID", NonLabeledReferenceID.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Fully labeled reference ID", FullyLabeledReferenceID.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Isotope tracking dictionary ID", IsotopeTrackingDictionary.SelectedID.ToString() }));
+
+            pStrings.Add("\r\n");
+            pStrings.Add("# CorrDec settings");
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec execute", CorrDecParam.CanExcute.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec MS2 tolerance", CorrDecParam.MS2Tolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum MS2 peak height", CorrDecParam.MinMS2Intensity.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum number of detected samples", CorrDecParam.MinNumberOfSample.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec exclude highly correlated spots", CorrDecParam.MinCorr_MS1.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum correlation coefficient (MS2)", CorrDecParam.MinCorr_MS2.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec margin 1 (target precursor)", CorrDecParam.CorrDiff_MS1.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec margin 2 (coeluted precursor)", CorrDecParam.CorrDiff_MS2.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum detected rate", CorrDecParam.MinDetectedPercentToVisualize.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum MS2 relative intensity", CorrDecParam.MinMS2RelativeIntensity.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec remove peaks larger than precursor", CorrDecParam.RemoveAfterPrecursor.ToString() }));
+
+            return pStrings;
+        }
+
+        public void SaveParameter(string filepath, List<string> paramTexts) {
+            using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
+                foreach (var text in paramTexts) sw.WriteLine(text);
+            }
+        }
+
+        public void SaveParameter(string filepath) {
+            var paramTexts = ParametersAsText();
+            SaveParameter(filepath, paramTexts);
+        }
     }
 
+
+
+    [MessagePackObject]
     public class RiDictionaryInfo {
-        
+
+        [Key(0)]
         public string DictionaryFilePath { get; set; } = string.Empty;
+        [Key(1)]
         public Dictionary<int, float> RiDictionary { get; set; } = new Dictionary<int, float>(); // int: carbon number, float: retention time
     }
 
+    [MessagePackObject]
+    public class IsotopeTrackingDictionary {
+       
+        public IsotopeTrackingDictionary() {
+            IsotopeElements = new List<IsotopeElement>() {
+                new IsotopeElement() { ElementName = "13C", MassDifference = 1.003354838F },
+                new IsotopeElement() { ElementName = "15N", MassDifference = 0.997034893F },
+                new IsotopeElement() { ElementName = "34S", MassDifference = 1.9957959F },
+                new IsotopeElement() { ElementName = "18O", MassDifference = 1.9979535F },
+                new IsotopeElement() { ElementName = "13C+15N", MassDifference = 2.000389731F },
+                new IsotopeElement() { ElementName = "13C+34S", MassDifference = 2.999150738F },
+                new IsotopeElement() { ElementName = "15N+34S", MassDifference = 2.992830793F },
+                new IsotopeElement() { ElementName = "13C+15S+34S", MassDifference = 3.996185631F },
+                new IsotopeElement() { ElementName = "Deuterium", MassDifference = 1.006276745F }
+            };
+        }
 
+        [Key(0)]
+        public List<IsotopeElement> IsotopeElements { get; set; } = new List<IsotopeElement>();
+        [Key(1)]
+        public int SelectedID { get; set; } = 0;
+    }
+
+    [MessagePackObject]
+    public class IsotopeElement {
+        [Key(0)]
+        public string ElementName { get; set; } = string.Empty;
+        [Key(1)]
+        public float MassDifference { get; set; } = 0.0F;
+    }
+
+    [MessagePackObject]
+    public class CorrDecParam {
+        [Key(0)]
+        public int MinMS2Intensity { get; set; } = 1000;
+        [Key(1)]
+        public float MS2Tolerance { get; set; } = 0.01f;
+        [Key(2)]
+        public float MinCorr_MS1 { get; set; } = 0.9f;
+        [Key(3)]
+        public float MinCorr_MS2 { get; set; } = 0.7f;
+        [Key(4)]
+        public float CorrDiff_MS1 { get; set; } = 0.2f;
+        [Key(5)]
+        public float CorrDiff_MS2 { get; set; } = 0.1f;
+        [Key(6)]
+        public float MinDetectedPercentToVisualize { get; set; } = 0.5f;
+        [Key(7)]
+        public bool RemoveAfterPrecursor { get; set; } = true;
+        [Key(8)]
+        public int MinNumberOfSample { get; set; } = 3;
+        [Key(9)]
+        public float MinMS2RelativeIntensity { get; set; } = 2;
+        [Key(10)]
+        public bool CanExcute { get; set; } = true;
+        public CorrDecParam() { }
+    }
 }

@@ -2,9 +2,12 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -33,7 +36,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(8)]
         public List<AlignmentChromPeakFeature> AlignedPeakProperties { get; set; } = new List<AlignmentChromPeakFeature>();
         [Key(9)]
-        public List<AlignmentSpotProperty> AlignmentDriftSpotFeature { get; set; } = null;
+        public List<AlignmentSpotProperty> AlignmentDriftSpotFeatures { get; set; } = null;
         [Key(53)]
         public List<IsotopicPeak> IsotopicPeaks { get; set; } = new List<IsotopicPeak>(); // isotopes from representative file id
 
@@ -42,6 +45,8 @@ namespace CompMs.MsdialCore.DataObj {
         public IonFeatureCharacter PeakCharacter { get; set; }
         [Key(11)]
         public IonMode IonMode { get; set; }
+        [Key(54)]
+        public AdductIon AdductType { get; set; }
 
         // Annotation
         // set for IMoleculeProperty (for representative)
@@ -62,18 +67,18 @@ namespace CompMs.MsdialCore.DataObj {
 
         // molecule annotation results
         // IDs to link properties
-        [Key(18)]
-        public int MspID { get; set; } // representative msp id
+        //[Key(18)]
+        //public int MspID { get; set; } // representative msp id
         [Key(19)]
-        public List<int> MspIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
-        [Key(20)]
-        public int TextDbID { get; set; }// representative text id
+        public Dictionary<int, List<int>> MSRawID2MspIDs { get; set; } = new Dictionary<int, List<int>>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS). ID list having the metabolite candidates exceeding the threshold
+        //[Key(20)]
+        //public int TextDbID { get; set; }// representative text id
         [Key(21)]
         public List<int> TextDbIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(22)]
         public int IsotopeTrackTextDbID { get; set; }// representative text id
         [Key(23)]
-        public MsScanMatchResult MspBasedMatchResult { get; set; }
+        public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
         [Key(24)]
         public MsScanMatchResult TextDbBasedMatchResult { get; set; }
         [Key(25)]
@@ -82,6 +87,58 @@ namespace CompMs.MsdialCore.DataObj {
         public string AnnotationCode { get; set; } = string.Empty;
         [Key(27)]
         public string AnnotationCodeCorrDec { get; set; } = string.Empty;
+
+        [IgnoreMember]
+        public MsScanMatchResult MspBasedMatchResult { // get result having max score
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value)).Value;
+                }
+            }
+        }
+
+        [IgnoreMember]
+        public int TextDbID {
+            get {
+                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
+                else return -1;
+            }
+        }
+
+        [IgnoreMember]
+        public int MspID {
+            get {
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                else {
+                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+                }
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsReferenceMatched {
+            get {
+                if (TextDbID >= 0) return true;
+                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch)) return true;
+                return false;
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsAnnotationSuggested {
+            get {
+                return MspID >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
+            }
+        }
+
+        [IgnoreMember]
+        public bool IsUnknown {
+            get {
+                return MspID < 0 && TextDbID < 0;
+            }
+        }
+
 
         [Key(28)]
         public List<int> CorrDecLibraryIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (for AIF project)
@@ -139,6 +196,8 @@ namespace CompMs.MsdialCore.DataObj {
         public float RelativeAmplitudeValue { get; set; }
         [Key(51)]
         public float MonoIsotopicPercentage { get; set; }
+        [Key(55)]
+        public bool IsMsmsAssigned { get; set; }
 
         [Key(52)]
         public List<AlignmentSpotVariableCorrelation> AlignmentSpotVariableCorrelations { get; set; } = new List<AlignmentSpotVariableCorrelation>();

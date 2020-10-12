@@ -5,22 +5,22 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ChartDrawingUiTest.LineChart"
       mc:Ignorable="d" 
-      xmlns:base="clr-namespace:CompMs.Graphics.Base;assembly=ChartDrawing"
+      xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LineChart4">
     <Page.Resources>
         <local:LineChartVM4 x:Key="LineChartVM"/>
-        <base:ContinuousAxisManager x:Key="HorizontalAxis"
-                                    MinValue="{Binding MinX, Source={StaticResource LineChartVM}}"
-                                    MaxValue="{Binding MaxX, Source={StaticResource LineChartVM}}"
-                                    ChartMargin="0.05" />
-        <base:ContinuousAxisManager x:Key="VerticalAxis"
-                                    MinValue="{Binding MinY, Source={StaticResource LineChartVM}}"
-                                    MaxValue="{Binding MaxY, Source={StaticResource LineChartVM}}"
-                                    ChartMargin="0.05"
-                                    IsFlipped="True"/>
+        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
+                                       MinValue="{Binding MinX, Source={StaticResource LineChartVM}}"
+                                       MaxValue="{Binding MaxX, Source={StaticResource LineChartVM}}"
+                                       ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="VerticalAxis"
+                                       MinValue="{Binding MinY, Source={StaticResource LineChartVM}}"
+                                       MaxValue="{Binding MaxY, Source={StaticResource LineChartVM}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource LineChartVM}}" />
     </Page.Resources>
@@ -42,24 +42,20 @@
                                    ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                   MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                   MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                   MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}}"
+                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
                                    HorizontalPropertyName="X"
                                    VerticalPropertyName="Y" >
             </line:LineChartControl>
         </Border>
         <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    MinX="{Binding Min, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    MaxX="{Binding Max, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                  MinY="{Binding Min, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                  MaxY="{Binding Max, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />
     </Grid>
