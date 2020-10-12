@@ -8402,12 +8402,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
                     //var threshold = 10.0;
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-
@@ -8831,11 +8831,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
 
@@ -8918,11 +8918,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
-                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // calc [M-H]-
-                    var diagnosticMz =
+                    var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
                     // seek [[M-C6H10O5-H]-  // reject HexCer-EOS
@@ -9069,7 +9069,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                         acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, "+O");
                                         candidates.Add(molecule);
                                     }
-                                    else if (ceramideQueryFoundCount >= 1 || exAcylQueryFoundCount == 1)
+                                    else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount == 1)
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
                                         extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
@@ -11139,6 +11139,33 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     candidates.Add(molecule);
 
                     return returnAnnotationResult("SE", LbmClass.DEGSE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfDesmosterolSpecies(ObservableCollection<double[]> spectrum, double ms2Tolerance, float theoreticalMz,
+            int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    // seek 367.335928  sterol structure (Desmosterol - H2O)
+                    var threshold = 10;
+                    var diagnosticMz = 367.335928;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    var steroidalModificationClass = "ester";
+                    var molecule = getSteroidalEtherMoleculeObj("SE", LbmClass.DSMSE, "27:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    candidates.Add(molecule);
+
+                    return returnAnnotationResult("SE", LbmClass.DSMSE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -13925,7 +13952,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, int sn3Carbon, int sn3Double, int sn4Carbon, int sn4Double,
            int totalOxidized, double score)
         {
-            var totalOxidizedString = totalOxidized == 1 ? "" : totalOxidized.ToString();
+            var totalOxidizedString = "2";
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
             var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1;
             var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidizedString + "O";
@@ -13949,7 +13976,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
             var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
-            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + totalOxidizedString + "O";
+            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + "O";
             var sn4ChainString = sn4CarbonCount + ":" + sn4DbCount;
 
             //var chainString = sn1ChainString + "-" + sn2ChainString + "-" + sn3ChainString;

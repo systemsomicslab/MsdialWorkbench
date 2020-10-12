@@ -654,6 +654,10 @@ namespace Riken.Metabolomics.Lipidomics
                             sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond,
                             sn3MinCarbon, sn3MaxCarbon, sn3MinDbBond, sn3MaxDbBond, adduct);
                         break;
+                    //add 20200923
+                    case LbmClass.DSMSE:
+                        return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
 
 
 

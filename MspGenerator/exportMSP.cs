@@ -8,42 +8,44 @@ using NCDK.Smiles;
 using NCDK.Tools.Manipulator;
 using NCDK.Graphs.InChI;
 using System.Collections;
+using CompMs.Common.Parser;
+
 
 namespace CompMs.MspGenerator
 {
     public class ExportMSP
     {
-        public static void exportMspFile(StreamWriter sw, double precursorMZ, string formula, string name, string smiles, string InChIKey, 
+        public static void exportMspFile(StreamWriter sw, double precursorMZ, string formula, string name, string smiles, string InChIKey,
             string adduct, string ionmode, string lipidClass, List<string> flagmentList)
         {
             flagmentList.Sort();
 
             var peaks = new List<Peak>();
 
-            for(int i = 0;i<flagmentList.Count;i++)
+            for (int i = 0; i < flagmentList.Count; i++)
             {
                 var mz = Double.Parse(flagmentList[i].Split('\t')[0]);
                 var intensity = int.Parse(flagmentList[i].Split('\t')[1]);
                 var comment = flagmentList[i].Split('\t')[2];
-                if (i == 0) 
+                if (i == 0)
                 {
-                    peaks.Add(new Peak() 
-                    { 
-                        Mz = mz, 
-                        Intensity = intensity ,
+                    peaks.Add(new Peak()
+                    {
+                        Mz = mz,
+                        Intensity = intensity,
                         Comment = comment
-                    }); 
-                    continue; 
+                    });
+                    continue;
                 }
-                
-                var mz2 = Double.Parse(flagmentList[i-1].Split('\t')[0]);
-                var intensity2 = int.Parse(flagmentList[i-1].Split('\t')[1]);
 
-                if (mz == mz2) 
+                var mz2 = Double.Parse(flagmentList[i - 1].Split('\t')[0]);
+                var intensity2 = int.Parse(flagmentList[i - 1].Split('\t')[1]);
+
+                if (mz == mz2)
                 {
-                    peaks.RemoveRange(peaks.Count-1,1);
+                    peaks.RemoveRange(peaks.Count - 1, 1);
                     intensity = intensity > intensity2 ? intensity : intensity2;
-                    if (intensity > 999) 
+                    if (intensity > 999)
                     {
                         intensity = 999;
                     }
@@ -56,7 +58,7 @@ namespace CompMs.MspGenerator
                     Comment = comment
                 });
             }
-            peaks = peaks.OrderBy(n => -n.Mz ).ToList();
+            peaks = peaks.OrderBy(n => -n.Mz).ToList();
 
             sw.WriteLine(String.Join(": ", new string[] { "NAME", name }));
             sw.WriteLine(String.Join(": ", new string[] { "PRECURSORMZ", precursorMZ.ToString() }));
@@ -75,7 +77,7 @@ namespace CompMs.MspGenerator
             //spectrum list
             foreach (var peak in peaks)
             {
-                sw.WriteLine(peak.Mz + "\t" + peak.Intensity 
+                sw.WriteLine(peak.Mz + "\t" + peak.Intensity
                     // + "\t\"" + peak.Comment +"\""
                     );
             };
@@ -221,5 +223,30 @@ namespace CompMs.MspGenerator
 
         }
 
+        public static void fromMspToChkLib(string inputFile, string outputFile)
+        {
+            var mspDB = MspFileParser.MspFileReader(inputFile);
+            var libList = new List<string>();
+            foreach (var item in mspDB)
+            {
+                var lbmClass = item.CompoundClass;
+                var formula = item.Formula;
+                var adduct = item.AdductType;
+                var exactMass = item.PrecursorMz;
+
+                var libString = lbmClass + " " + formula + "\t" + exactMass + "\t" + adduct;
+                libList.Add(libString);
+            }
+            libList = libList.Distinct().ToList();
+            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+            {
+                foreach(var item in libList)
+                {
+                    sw.WriteLine(item);
+
+                }
+            }
+
+        }
     }
 }

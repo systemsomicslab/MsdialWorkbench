@@ -14,6 +14,8 @@ namespace SciexWiff1ReaderTestApp {
     class Program {
         static Stopwatch sw = new Stopwatch();
         static void Main(string[] args) {
+
+
             /*
             var spectrum = new Wiff1ReaderDotNet4().ReadSciexWiff1Data(@"\\mtbdt\Mtb_info\data\MS-DIAL demo files\Raw\HILIC-Pos-SWATH-25Da.wiff", 0, 1, out string errorString);
             foreach (var spec in spectrum) {

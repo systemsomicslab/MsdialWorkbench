@@ -142,10 +142,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"F:\takahashi\20200902_uchino-san_request\chk\";
-            var testFilename = @"\HexCer18-1-22-1.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200923PECerAHexCerDesmoSTChk\AHexCer\chk\";
+            var testFilename = @"\AHexCer65-5_3O.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"library.txt";
+            var reffile = testFolder + @"AHexCer_H_Pos.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
