@@ -176,7 +176,7 @@ namespace Rfx.Riken.OsakaUniv
 
             dg.UpdateLayout();
         }
-        #endregion        
+        #endregion
     }
 
     public class AlignmentSpotTableViewerVM : ViewModelBase
@@ -202,7 +202,7 @@ namespace Rfx.Riken.OsakaUniv
 
         // MS-FINDER
         public DelegateCommand ChangetToMsFinderExportWindow { get; set; }
-        
+
         // Ctrl + D
         public DelegateCommand CtrlDCommand { get; set; }
 
@@ -563,7 +563,7 @@ namespace Rfx.Riken.OsakaUniv
             var w = new Rfx.Riken.OsakaUniv.ForAIF.MsFinderExporterSettingWin(source);
             w.Owner = this.alignmentTableViewer;
             w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            w.Show();    
+            w.Show();
         }
 
         private void button_checkAll_click(object sender, RoutedEventArgs e)
@@ -588,7 +588,7 @@ namespace Rfx.Riken.OsakaUniv
                     spot.Checked = true;
                 }
             }
-            
+
             var content = isAllChecked ? "Check all" : "Uncheck all";
             ((Button)sender).Content = content;
         }
@@ -621,7 +621,7 @@ namespace Rfx.Riken.OsakaUniv
         public AlignmentPropertyBean AlignmentPropertyBean { get; set; }
         public AlignedDriftSpotPropertyBean AlignedDriftSpotPropertyBean { get; set; }
         public string ShortInchiKey { get; set; } = "";
-        public BitmapSource Image { get; set; }
+        public DrawingImage Image { get; set; }
         private int height = 40;
         private int width = 200;
 
@@ -687,7 +687,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public AlignmentSpotRow(AlignmentPropertyBean alignmentPropertyBean,
             ObservableCollection<AnalysisFileBean> analysisFiles,
-            ProjectPropertyBean projectProp, int width, 
+            ProjectPropertyBean projectProp, int width,
             List<MspFormatCompoundInformationBean> msp, BarChartDisplayMode mode, bool isBoxPlot) {
             AlignmentPropertyBean = alignmentPropertyBean;
             this.width = width;
@@ -696,10 +696,10 @@ namespace Rfx.Riken.OsakaUniv
                 ShortInchiKey = inchiKey.Split('-')[0];
             }
 
-            Image = getBitmapImageFromAlignment(alignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+            Image = GetDrawingImageFromAlignment(alignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
         }
 
-        public AlignmentSpotRow(AlignmentPropertyBean alignmentPropertyBean, 
+        public AlignmentSpotRow(AlignmentPropertyBean alignmentPropertyBean,
             List<MspFormatCompoundInformationBean> msp)
         {
             AlignmentPropertyBean = alignmentPropertyBean;
@@ -713,9 +713,9 @@ namespace Rfx.Riken.OsakaUniv
             BarChartDisplayMode mode, bool isBoxPlot) {
 
             if (this.Mobility > 0)
-                Image = getBitmapImageFromAlignment(AlignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+                Image = GetDrawingImageFromAlignment(AlignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
             else
-                Image = getBitmapImageFromAlignment(AlignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+                Image = GetDrawingImageFromAlignment(AlignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
 
             OnPropertyChanged("Image");
         }
@@ -736,13 +736,24 @@ namespace Rfx.Riken.OsakaUniv
             return new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).DrawBarChart2BitmapSource(barChartBean);
         }
 
+        private DrawingImage GetDrawingImageFromAlignment(AlignmentPropertyBean alignmentPropertyBean,
+            ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
+            BarChartDisplayMode mode, bool isBoxPlot) {
+            DrawingImage image = null;
+            App.Current.Dispatcher.Invoke(() => {
+                var barChartBean = MsDialStatistics.GetBarChartBean(alignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+                image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean);
+            });
+            return image;
+        }
+
         #region ion mobility
         public AlignmentSpotRow(
-            int peakID, AlignmentPropertyBean alignedSpot, 
+            int peakID, AlignmentPropertyBean alignedSpot,
             AlignedDriftSpotPropertyBean alignedDriftSpotPropertyBean,
             ObservableCollection<AnalysisFileBean> analysisFiles,
             ProjectPropertyBean projectProp, int width,
-            List<MspFormatCompoundInformationBean> msp, 
+            List<MspFormatCompoundInformationBean> msp,
             BarChartDisplayMode mode, bool isBoxPlot) {
             AlignmentPropertyBean = alignedSpot;
             AlignedDriftSpotPropertyBean = alignedDriftSpotPropertyBean;
@@ -765,7 +776,7 @@ namespace Rfx.Riken.OsakaUniv
                     var inchiKey = msp[alignedDriftSpotPropertyBean.LibraryID].InchiKey;
                     ShortInchiKey = inchiKey.Split('-')[0];
                 }
-                Image = getBitmapImageFromAlignment(alignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+                Image = GetDrawingImageFromAlignment(alignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
             }
             else {
                 this.Type = alignedSpot.AdductIonName;
@@ -779,10 +790,10 @@ namespace Rfx.Riken.OsakaUniv
                     var inchiKey = msp[alignedSpot.LibraryID].InchiKey;
                     ShortInchiKey = inchiKey.Split('-')[0];
                 }
-                Image = getBitmapImageFromAlignment(alignedSpot, analysisFiles, projectProp, mode, isBoxPlot);
+                Image = GetDrawingImageFromAlignment(alignedSpot, analysisFiles, projectProp, mode, isBoxPlot);
             }
             this.width = width;
-            
+
         }
 
         public AlignmentSpotRow(AlignedDriftSpotPropertyBean alignedDriftSpotPropertyBean,
@@ -796,7 +807,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public void Update_ImageOnDrift(ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
             BarChartDisplayMode mode, bool isBoxPlot) {
-            Image = getBitmapImageFromAlignment(AlignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+            Image = GetDrawingImageFromAlignment(AlignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
             OnPropertyChanged("Image");
         }
 
@@ -805,11 +816,20 @@ namespace Rfx.Riken.OsakaUniv
             AlignedDriftSpotPropertyBean.UpdateStatisticalValues();
         }
 
-        private BitmapSource getBitmapImageFromAlignment(AlignedDriftSpotPropertyBean alignedDriftSpotPropertyBean, 
+        private BitmapSource getBitmapImageFromAlignment(AlignedDriftSpotPropertyBean alignedDriftSpotPropertyBean,
             ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
             BarChartDisplayMode mode, bool isBoxPlot) {
             var barChartBean = MsDialStatistics.GetBarChartBean(alignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
             return new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).DrawBarChart2BitmapSource(barChartBean);
+        }
+
+        private DrawingImage GetDrawingImageFromAlignment(AlignedDriftSpotPropertyBean alignedDriftSpotPropertyBean,
+            ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
+            BarChartDisplayMode mode, bool isBoxPlot) {
+            var barChartBean = MsDialStatistics.GetBarChartBean(alignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+            DrawingImage image = null;
+            App.Current.Dispatcher.Invoke(() => image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean));
+            return image;
         }
         #endregion
     }

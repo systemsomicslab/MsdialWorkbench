@@ -190,12 +190,13 @@ namespace Rfx.Riken.OsakaUniv
             else
             {
                 var rows = new AlignmentSpotRow[alignmentProperty.Count];
-                Parallel.For(0, alignmentProperty.Count, (i) =>
-                {
+                //Parallel.For(0, alignmentProperty.Count, (i) =>
+                for (int i = 0; i < alignmentProperty.Count; i++) {
                     rows[i] = new AlignmentSpotRow(alignmentProperty[i], analysisFiles,
                        project, width, mainWindow.MspDB, barChartDisplayMode, isBoxPlot);
                     AddProgress();
-                });
+                    //                });
+                }
                 source = new ObservableCollection<AlignmentSpotRow>(rows);
             }
             GC.Collect();
