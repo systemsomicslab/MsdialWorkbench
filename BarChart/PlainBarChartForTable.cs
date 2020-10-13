@@ -51,8 +51,7 @@ namespace Common.BarChart
             height = h; width = w; dpix = x; dpiy = y;
         }
 
-        public BitmapSource DrawBarChart2BitmapSource(BarChartBean barChartBean, bool isAllRequiredElements = false) {
-
+        private void SetBarChartDrawingVisual(BarChartBean barChartBean, bool isAllRequiredElements = false) {
             this.barChartBean = barChartBean;
             if (isAllRequiredElements == false)
                 this.drawingVisual = GetBarChartDrawingVisual((double)width, (double)height);
@@ -62,6 +61,17 @@ namespace Common.BarChart
                 barchartUI.TopMarginForLabel = 10;
                 this.drawingVisual = new Common.BarChart.BarChartFE(barChartBean, barchartUI).GetBarChartDrawingVisual((double)width, (double)height);
             }
+        }
+
+        public DrawingImage GetDrawingImage(BarChartBean barChartBean, bool isAllRequiredElements = false) {
+            SetBarChartDrawingVisual(barChartBean, isAllRequiredElements);
+            var drawingImage = new DrawingImage(this.drawingVisual.Drawing);
+            drawingImage.Freeze();
+            return drawingImage;
+        }
+
+        public BitmapSource DrawBarChart2BitmapSource(BarChartBean barChartBean, bool isAllRequiredElements = false) {
+            SetBarChartDrawingVisual(barChartBean, isAllRequiredElements);
 
             RenderTargetBitmap renderTargetBitmap = null;
             try {
@@ -174,8 +184,7 @@ namespace Common.BarChart
                     this.drawingContext.DrawLine(errorPen, new Point(xPoint, yPointMin), new Point(xPoint, yPointMax));
                     this.drawingContext.DrawLine(errorPen, new Point(xPoint - this.errorWidth, yPointMax), new Point(xPoint + this.errorWidth, yPointMax));
                     this.drawingContext.DrawLine(errorPen, new Point(xPoint - this.errorWidth, yPointMin), new Point(xPoint + this.errorWidth, yPointMin));
-                }
-                else {
+                } else {
                     var min = this.barChartBean.MinValue;
                     var boxMax = elements[i].MaxValue;
                     var box75 = elements[i].SeventyFiveValue;
@@ -245,10 +254,10 @@ namespace Common.BarChart
             this.errorLineLength = this.errorWidth * 0.5; if (this.errorLineLength > 2) this.errorLineLength = 2.0;
             if (this.barWidth < 0) return;
         }
-        
+
 
         private void drawBackground(double drawWidth, double drawHeight) {
-            // Draw background, graphRegion, x-axis, y-axis 
+            // Draw background, graphRegion, x-axis, y-axis
             #region
             this.drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, drawWidth, drawHeight));
             this.drawingContext.DrawRectangle(this.graphBackGround, this.graphBorder, new Rect(new Point(this.leftMargin, this.topMargin), new Size(drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
@@ -275,8 +284,7 @@ namespace Common.BarChart
                 byte b = color.B;
 
                 returnSolidColorBrush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
-            }
-            catch {
+            } catch {
                 returnSolidColorBrush = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
             }
             return returnSolidColorBrush;

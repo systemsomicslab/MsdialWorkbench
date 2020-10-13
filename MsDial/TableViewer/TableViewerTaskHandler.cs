@@ -58,7 +58,7 @@ namespace Rfx.Riken.OsakaUniv
             pbw.ProgressView.Value = 0;
             pbw.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            stepSize = num / maxProgressValue;                
+            stepSize = num / maxProgressValue;
         }
         private void AddProgress() {
             progressValues += 1;
@@ -168,7 +168,7 @@ namespace Rfx.Riken.OsakaUniv
             if (isIonMobility)
             {
                 //for (var i = 0; i < alignmentProperty.Count; i++)
-                // Thread safe list 
+                // Thread safe list
                 var rows = new System.Collections.Concurrent.ConcurrentBag<AlignmentSpotRow>();
                 Parallel.For(0, alignmentProperty.Count, (i) =>
                 {
@@ -264,6 +264,5 @@ namespace Rfx.Riken.OsakaUniv
             this.pbw.Close();
         }
         #endregion
-
     }
 }

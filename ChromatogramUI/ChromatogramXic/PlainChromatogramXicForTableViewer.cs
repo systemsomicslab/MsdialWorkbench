@@ -53,6 +53,14 @@ namespace Rfx.Riken.OsakaUniv
             height = h; width = w; dpix = x; dpiy = y;
         }
 
+        public DrawingImage GetChromatogramDrawingImage(ChromatogramXicViewModel chromatogramXicViewModel) {
+            this.chromatogramXicViewModel = chromatogramXicViewModel;
+            this.drawingVisual = chromatogramDrawingVisual((double)width, (double)height);
+            var image = new DrawingImage(drawingVisual.Drawing);
+            image.Freeze();
+            return image;
+        }
+
         public BitmapSource DrawChromatogramXic2BitmapSource(ChromatogramXicViewModel chromatogramXicViewModel) {
             this.chromatogramXicViewModel = chromatogramXicViewModel;
 
@@ -110,8 +118,8 @@ namespace Rfx.Riken.OsakaUniv
             float intensity;
             float mzValue;
 
-            // 1. Draw background, graphRegion, x-axis, y-axis 
-            #region 
+            // 1. Draw background, graphRegion, x-axis, y-axis
+            #region
             this.drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, drawWidth, drawHeight));
             this.drawingContext.DrawRectangle(this.graphBackGround, this.graphBorder, new Rect(new Point(this.leftMargin, this.topMargin), new Size(drawWidth - this.leftMargin - this.rightMargin, drawHeight - this.bottomMargin - this.topMargin)));
             this.drawingContext.DrawLine(this.graphAxis, new Point(this.leftMargin - this.axisFromGraphArea, drawHeight - this.bottomMargin), new Point(drawWidth - this.rightMargin, drawHeight - this.bottomMargin));
@@ -144,8 +152,8 @@ namespace Rfx.Riken.OsakaUniv
 
             // 5-1. Initialize Graph Plot Start
             #region
-            pathFigure = new PathFigure() { StartPoint = new Point(0.0, 0.0) }; // PathFigure for GraphLine 
-            areaPathFigure = new PathFigure(); // PathFigure for GraphLine 
+            pathFigure = new PathFigure() { StartPoint = new Point(0.0, 0.0) }; // PathFigure for GraphLine
+            areaPathFigure = new PathFigure(); // PathFigure for GraphLine
             graphBrush = combineAlphaAndColor(0.25, chromatogramBean.DisplayBrush);// Set Graph Brush
             graphPen = new Pen(chromatogramBean.DisplayBrush, chromatogramBean.LineTickness); // Set Graph Pen
             graphPenPeakEdge = new Pen(chromatogramBean.DisplayBrush, chromatogramBean.LineTickness * 1.5); // Set Graph Pen
@@ -178,21 +186,21 @@ namespace Rfx.Riken.OsakaUniv
                         areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
                     }
                     if (flagLeft && retentionTime >= this.chromatogramXicViewModel.TargetLeftRt) {
-                        areaPathFigure.StartPoint = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket); // PathFigure for GraphLine 
+                        areaPathFigure.StartPoint = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket); // PathFigure for GraphLine
                         areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
                         flagFill = true; flagLeft = false;
                     }
                     else if (flagRight && retentionTime > this.chromatogramXicViewModel.TargetRightRt) {
-                        areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket) }); // PathFigure for GraphLine 
+                        areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket) }); // PathFigure for GraphLine
                         flagFill = false; flagRight = false;
                     }
 
                     //if (Math.Abs(retentionTime - this.chromatogramXicViewModel.TargetRt) < 0.0001)
-                    //    this.drawingContext.DrawLine(new Pen(Brushes.Red, 1.0), new Point(this.xs, this.ys), 
+                    //    this.drawingContext.DrawLine(new Pen(Brushes.Red, 1.0), new Point(this.xs, this.ys),
                     //        new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
-                    if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond    
+                    if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond
                 }
-                areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, 0) }); // PathFigure for GraphLine 
+                areaPathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, 0) }); // PathFigure for GraphLine
                 areaPathFigure.Freeze();
                 areaPathGeometry = new PathGeometry(new PathFigure[] { areaPathFigure });
                 areaPathGeometry.Freeze();
@@ -214,7 +222,7 @@ namespace Rfx.Riken.OsakaUniv
                     pathFigure.Segments.Add(new LineSegment() { Point = new Point(this.xs, this.ys) });
 
                     if (Math.Abs(retentionTime - this.chromatogramXicViewModel.TargetRt) < 0.0001) this.drawingContext.DrawLine(new Pen(Brushes.Red, 1.0), new Point(this.xs, this.ys), new Point(this.xs, this.bottomMargin + (0 - (float)this.chromatogramXicViewModel.DisplayRangeIntensityMin) * this.yPacket));
-                    if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond    
+                    if (i == -1 + chromatogramBean.ChromatogramDataPointCollection.Count || retentionTime > this.chromatogramXicViewModel.DisplayRangeRtMax + 5) break;// Use Data till +5 second beyond
                 }
             }
             #endregion
@@ -227,7 +235,7 @@ namespace Rfx.Riken.OsakaUniv
             pathGeometry.Freeze();
             #endregion
 
-            this.drawingContext.DrawGeometry(null, graphPen, pathGeometry); // Draw Chromatogram Graph Line  
+            this.drawingContext.DrawGeometry(null, graphPen, pathGeometry); // Draw Chromatogram Graph Line
             #endregion
 
             this.drawingContext.Pop();// Reset Drawing Region

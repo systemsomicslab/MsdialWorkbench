@@ -2325,8 +2325,8 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Chose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
-            if (this.AnalysisFiles.Count <= 5) {
-                MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (this.AnalysisFiles.Count <= 3) {
+                MessageBox.Show("Sorry, it requires >3 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             PeakViewDataAccessRefresh();
@@ -2349,9 +2349,9 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Chose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
-            if (this.AnalysisFiles.Count <= 5)
+            if (this.AnalysisFiles.Count <= 3)
             {
-                MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Sorry, it requires >3 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var filePath = projectProperty.ProjectFolderPath + "\\" + alignmentFiles[focusedAlignmentFileID].FileName + "_CorrelationBasedDecRes_Raw_0.cbd";
@@ -2373,9 +2373,9 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Chose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
-            if (this.AnalysisFiles.Count <= 5)
+            if (this.AnalysisFiles.Count <= 3)
             {
-                MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Sorry, it requires >3 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             PeakViewDataAccessRefresh();
@@ -2396,9 +2396,9 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("Chose an alignment file from the file navigator.",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
-            if (this.AnalysisFiles.Count <= 5)
+            if (this.AnalysisFiles.Count <= 3)
             {
-                MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Sorry, it requires >3 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             SetAifViewerControllerForCorrDec();
