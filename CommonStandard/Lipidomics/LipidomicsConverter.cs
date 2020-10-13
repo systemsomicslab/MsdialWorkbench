@@ -3738,6 +3738,7 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.CoQ: return "CoQ";
                 case LbmClass.CAR: return "CAR";
                 case LbmClass.FA: return "FA";
+                case LbmClass.OxFA: return "OxFA";
                 case LbmClass.NAE: return "NAE";
                 case LbmClass.NAGly: return "NAGly";
                 case LbmClass.NAGlySer: return "NAGlySer";
@@ -4122,6 +4123,7 @@ namespace CompMs.Common.Lipidomics {
 
                 case "CAR": return LbmClass.CAR;
                 case "FA": return LbmClass.FA;
+                case "OxFA": return LbmClass.OxFA;
                 case "FAHFA": return LbmClass.FAHFA;
 
                 case "NAE": return LbmClass.NAE;
@@ -4410,6 +4412,7 @@ namespace CompMs.Common.Lipidomics {
 
                 case "CAR": return "FattyAcyls";
                 case "FA": return "FattyAcyls";
+                case "OxFA": return "FattyAcyls";
                 case "FAHFA": return "FattyAcyls";
 
                 case "MG": return "Glycerolipids";

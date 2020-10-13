@@ -52,6 +52,7 @@ namespace Common.BarChart
         }
 
         public BitmapSource DrawBarChart2BitmapSource(BarChartBean barChartBean, bool isAllRequiredElements = false) {
+
             this.barChartBean = barChartBean;
             if (isAllRequiredElements == false)
                 this.drawingVisual = GetBarChartDrawingVisual((double)width, (double)height);
@@ -62,8 +63,26 @@ namespace Common.BarChart
                 this.drawingVisual = new Common.BarChart.BarChartFE(barChartBean, barchartUI).GetBarChartDrawingVisual((double)width, (double)height);
             }
 
-            var renderTargetBitmap = new RenderTargetBitmap(width * dpix /96, height * dpiy / 96, dpix, dpiy, PixelFormats.Pbgra32);
-            renderTargetBitmap.Render(this.drawingVisual);
+            RenderTargetBitmap renderTargetBitmap = null;
+            try {
+                renderTargetBitmap = new RenderTargetBitmap(width * dpix / 96, height * dpiy / 96, dpix, dpiy, PixelFormats.Pbgra32);
+                renderTargetBitmap.Render(this.drawingVisual);
+
+                //GC.Collect();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
+            }
+            catch (System.Runtime.InteropServices.COMException ex) {
+                Console.WriteLine(ex.Message);
+                
+                //GC.Collect();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
+                return null;
+            }
+            finally {
+
+            }
 
             var encoder = new BmpBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
@@ -75,14 +94,31 @@ namespace Common.BarChart
             }
 
             var bitmapSource = ConvertBitmap(bmap);
+            if (bitmapSource == null) return null;
+
             bitmapSource.Freeze();
             return bitmapSource;
         }
 
         public static BitmapSource ConvertBitmap(System.Drawing.Bitmap bmp) {
-            IntPtr hBitmap = bmp.GetHbitmap();
+            IntPtr hBitmap = IntPtr.Zero;
             try {
+                hBitmap = bmp.GetHbitmap();
                 return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            }
+            catch (System.ArgumentException ex) {
+                Console.WriteLine(ex.Message);
+                //GC.Collect();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
+                return null;
+            }
+            catch (System.Runtime.InteropServices.ExternalException ex) {
+                Console.WriteLine(ex.Message);
+                //GC.Collect();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
+                return null;
             }
             finally {
                 DeleteObject(hBitmap);

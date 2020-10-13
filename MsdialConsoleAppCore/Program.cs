@@ -25,15 +25,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp
 
             #region arg[] examples
             //GC - MS test using netCDF
-            args = new string[] {
-                "gcms"
-                , "-i"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
-                , "-o"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
-                , "-m"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
-                , "-p" };
+            //args = new string[] {
+            //    "gcms"
+            //    , "-i"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //    , "-o"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //    , "-m"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
+            //    , "-p" };
 
             //LC-DDA test using abf (as centroid mode)
             //args = new string[] {

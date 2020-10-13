@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="Metabolomic Pathway" Version="20190108" Organism="Homo sapiens">
   <Graphics BoardWidth="2889.630030040868" BoardHeight="2197.210005726482" />
-  <DataNode TextLabel="All others" GraphId="d8079" Type="Metabolite">
-    <Graphics CenterX="310.9611903720263" CenterY="640.9232848665099" Width="160.0" Height="160.0" ZOrder="33618" FontSize="12" />
-    <Xref Database="InChIKey" ID="AAAAAAAAAAAAAA-AAAAAAAAAA-A" />
-  </DataNode>
   <DataNode TextLabel="3-PG" GraphId="c65e0" Type="Metabolite">
     <Graphics CenterX="1047.0411389063825" CenterY="905.7864366644931" Width="80.0" Height="80.0" ZOrder="32768" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="InChIKey" ID="OSJPPGNTCRNQQC-UWTATZPHSA-N" />
