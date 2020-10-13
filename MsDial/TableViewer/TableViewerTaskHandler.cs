@@ -190,9 +190,9 @@ namespace Rfx.Riken.OsakaUniv
             else
             {
                 var rows = new AlignmentSpotRow[alignmentProperty.Count];
-                var option = new ParallelOptions { MaxDegreeOfParallelism = 5 };
-                Parallel.For(0, alignmentProperty.Count, option, (i) =>
-                {
+                //var option = new ParallelOptions { MaxDegreeOfParallelism = 5 };
+                //Parallel.For(0, alignmentProperty.Count, option, (i) =>
+                Parallel.For(0, alignmentProperty.Count, (i) => {
                     rows[i] = new AlignmentSpotRow(alignmentProperty[i], analysisFiles,
                        project, width, mainWindow.MspDB, barChartDisplayMode, isBoxPlot);
                     AddProgress();
