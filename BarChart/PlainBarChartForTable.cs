@@ -66,6 +66,7 @@ namespace Common.BarChart
         public DrawingImage GetDrawingImage(BarChartBean barChartBean, bool isAllRequiredElements = false) {
             SetBarChartDrawingVisual(barChartBean, isAllRequiredElements);
             var drawingImage = new DrawingImage(this.drawingVisual.Drawing);
+            drawingImage.Freeze();
             return drawingImage;
         }
 

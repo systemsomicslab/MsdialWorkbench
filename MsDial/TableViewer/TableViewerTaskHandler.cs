@@ -58,7 +58,7 @@ namespace Rfx.Riken.OsakaUniv
             pbw.ProgressView.Value = 0;
             pbw.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            stepSize = num / maxProgressValue;                
+            stepSize = num / maxProgressValue;
         }
         private void AddProgress() {
             progressValues += 1;
@@ -168,7 +168,7 @@ namespace Rfx.Riken.OsakaUniv
             if (isIonMobility)
             {
                 //for (var i = 0; i < alignmentProperty.Count; i++)
-                // Thread safe list 
+                // Thread safe list
                 var rows = new System.Collections.Concurrent.ConcurrentBag<AlignmentSpotRow>();
                 Parallel.For(0, alignmentProperty.Count, (i) =>
                 {
@@ -190,13 +190,11 @@ namespace Rfx.Riken.OsakaUniv
             else
             {
                 var rows = new AlignmentSpotRow[alignmentProperty.Count];
-                //Parallel.For(0, alignmentProperty.Count, (i) =>
-                for (int i = 0; i < alignmentProperty.Count; i++) {
+                Parallel.For(0, alignmentProperty.Count, (i) => {
                     rows[i] = new AlignmentSpotRow(alignmentProperty[i], analysisFiles,
                        project, width, mainWindow.MspDB, barChartDisplayMode, isBoxPlot);
                     AddProgress();
-                    //                });
-                }
+                });
                 source = new ObservableCollection<AlignmentSpotRow>(rows);
             }
             GC.Collect();
@@ -264,6 +262,5 @@ namespace Rfx.Riken.OsakaUniv
             this.pbw.Close();
         }
         #endregion
-
     }
 }

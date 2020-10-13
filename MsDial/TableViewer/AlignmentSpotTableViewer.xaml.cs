@@ -51,7 +51,7 @@ namespace Rfx.Riken.OsakaUniv
                 ((DataGridTemplateColumn)dg.Columns[dg.Columns.Count - 1]).Width = new DataGridLength(450);
             }
         }
-    
+
 
         private void Button_ShowCompTable_Click(object sender, RoutedEventArgs e) {
             compoundGroupWindow = new TableViewer.IdentifiedCompoundGroup(this, MspDB);
@@ -740,10 +740,8 @@ namespace Rfx.Riken.OsakaUniv
             ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
             BarChartDisplayMode mode, bool isBoxPlot) {
             DrawingImage image = null;
-            App.Current.Dispatcher.Invoke(() => {
-                var barChartBean = MsDialStatistics.GetBarChartBean(alignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
-                image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean);
-            });
+            var barChartBean = MsDialStatistics.GetBarChartBean(alignmentPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
+            image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean);
             return image;
         }
 
@@ -827,8 +825,7 @@ namespace Rfx.Riken.OsakaUniv
             ObservableCollection<AnalysisFileBean> analysisFiles, ProjectPropertyBean projectProp,
             BarChartDisplayMode mode, bool isBoxPlot) {
             var barChartBean = MsDialStatistics.GetBarChartBean(alignedDriftSpotPropertyBean, analysisFiles, projectProp, mode, isBoxPlot);
-            DrawingImage image = null;
-            App.Current.Dispatcher.Invoke(() => image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean));
+            DrawingImage image = new Common.BarChart.PlainBarChartForTable(height, width, 150, 150).GetDrawingImage(barChartBean);
             return image;
         }
         #endregion
