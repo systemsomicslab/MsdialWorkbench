@@ -52,7 +52,7 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         #region field
-        private Dictionary<object, double> converter;
+        private Dictionary<object, AxisValue> converter;
         private Type dataType;
         private PropertyInfo dPropertyReflection;
         private PropertyInfo iPropertyReflection;
@@ -91,43 +91,27 @@ namespace CompMs.Graphics.AxisManager
             return result;
         }
 
-        public override double TranslateToRenderPoint(object value)
-        {
-            double min = Min, max = Max;
-            bool isFlipped = IsFlipped;
-
-            if (value is double d)
-                return TranslateToRenderPointCore(d, min, max, isFlipped);
-            else if (converter.ContainsKey(value))
-                return base.TranslateToRenderPointCore(converter[value], min, max, isFlipped);
-            else
-                return double.NaN;
-        }
-
-        public override List<double> TranslateToRenderPoints(IEnumerable<object> values) {
-            double min = Min, max = Max;
-            bool isFlipped = IsFlipped;
-
-            return values.Select(value =>
-                converter.ContainsKey(value)
-                    ? base.TranslateToRenderPointCore(converter[value], min, max, isFlipped)
-                    : double.NaN
-                ).ToList();
+        public override AxisValue TranslateToAxisValue(object value) {
+            if (converter.ContainsKey(value))
+                return converter[value];
+            return base.TranslateToAxisValue(value);
         }
 
         private void UpdateConverter()
         {
             if (ItemsSource == null) return;
 
-            converter = new Dictionary<object, double>();
+            converter = new Dictionary<object, AxisValue>();
+
+            var items = ItemsSource.Cast<object>();
+            if (iPropertyReflection != null)
+                items = items.Select(iPropertyReflection.GetValue).Distinct();
+            else
+                items = items.Distinct();
 
             var cnt = 0d;
-            if (iPropertyReflection != null)
-                foreach(object item in ItemsSource)
-                    converter[iPropertyReflection.GetValue(item)] = 0.5 + cnt++;
-            else
-                foreach(object item in ItemsSource)
-                    converter[item] = 0.5 + cnt++;
+            foreach (var item in items)
+                converter[item] = 0.5 + cnt++;
 
             InitialRange = new Range(minimum: 0d, maximum: cnt);
 

@@ -62,6 +62,7 @@
     <Compile Include="AreaChart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
+    <Compile Include="Bar\BarControl.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\AxisValue.cs" />

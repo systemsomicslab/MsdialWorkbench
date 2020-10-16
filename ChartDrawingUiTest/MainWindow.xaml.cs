@@ -10,6 +10,7 @@ using ChartDrawingUiTest.Scatter;
 using ChartDrawingUiTest.LineSpectrum;
 using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
+using ChartDrawingUiTest.Bar;
 using ChartDrawingUiTest.Chromatogram;
 using ChartDrawingUiTest.DataGrid;
 using ChartDrawingUiTest.Controls;
@@ -32,6 +33,7 @@ namespace ChartDrawingUiTest
                 typeof(LineSpectrum1),
                 typeof(Dendrogram5),
                 typeof(Heatmap4),
+                typeof(Bar1),
                 typeof(Chromatogram1),
                 typeof(FileOpenControl1),
                 typeof(DataGrid1),

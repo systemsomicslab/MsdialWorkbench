@@ -67,6 +67,10 @@
       <DependentUpon>AreaChart1.xaml</DependentUpon>
     </Compile>
     <Compile Include="AreaChart\AreaChartVM1.cs" />
+    <Compile Include="Bar\Bar1.xaml.cs">
+      <DependentUpon>Bar1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\BarVM1.cs" />
     <Compile Include="Controls\FileOpenControl1.xaml.cs">
       <DependentUpon>FileOpenControl1.xaml</DependentUpon>
     </Compile>
@@ -99,6 +103,10 @@
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
     <Page Include="AreaChart\AreaChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

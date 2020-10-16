@@ -146,7 +146,7 @@ namespace CompMs.Graphics.GraphAxis
                 var center = HorizontalAxis.TranslateToRenderPoint(data.Center) * actualWidth;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(center, actualHeight / 2) };
-                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+                // dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
                 switch (data.TickType)
