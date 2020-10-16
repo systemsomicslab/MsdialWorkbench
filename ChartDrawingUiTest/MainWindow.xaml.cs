@@ -12,6 +12,7 @@ using ChartDrawingUiTest.Dendrogram;
 using ChartDrawingUiTest.Heatmap;
 using ChartDrawingUiTest.Chromatogram;
 using ChartDrawingUiTest.DataGrid;
+using ChartDrawingUiTest.Controls;
 
 namespace ChartDrawingUiTest
 {
@@ -32,6 +33,7 @@ namespace ChartDrawingUiTest
                 typeof(Dendrogram5),
                 typeof(Heatmap4),
                 typeof(Chromatogram1),
+                typeof(FileOpenControl1),
                 typeof(DataGrid1),
             };
             pageType = pages.ToDictionary(type => type.Name);

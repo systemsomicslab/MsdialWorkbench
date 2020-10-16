@@ -72,6 +72,7 @@
     <Compile Include="Base\ChartMargin.cs" />
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
+    <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
     <Compile Include="Converter\EnumTypeToValuesConverter.cs" />
     <Compile Include="Adorner\RubberAdorner.cs" />
@@ -94,11 +95,16 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="Window\FileBrowseDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
