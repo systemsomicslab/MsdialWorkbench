@@ -195,7 +195,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
             var compClass = query.CompoundClass;
             var adductname = query.AdductIonBean.AdductIonName;
             var comment = query.Comment;
-            //if (compClass == "FAHFATG") {
+            //if (compClass == "TG_EST") {
             //    Console.WriteLine();
             //}
             //if (compClass == "SM" && comment == "SPLASH") {
@@ -700,7 +700,8 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                         totalCarbon, totalDbBond, adduct);
                     
                 case LbmClass.NAGly:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -711,7 +712,8 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                     
                     
                 case LbmClass.NAGlySer:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -749,7 +751,8 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                     
 
                 case LbmClass.NAOrn:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -916,7 +919,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                     return LipidMsmsCharacterization.JudgeIfOxTriacylglycerol(spectrum, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, totalOxidized, adduct);
-                case LbmClass.FAHFATG:
+                case LbmClass.TG_EST:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     sn3Carbon = molecule.Sn3CarbonCount;

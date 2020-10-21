@@ -871,20 +871,20 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
         private static void generateHexhexcernsSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
         {
             var adductString = adduct.AdductIonName;
-            var filepath = outputfolder + "\\" + "HexHexCer_NS" + "_" + adductString + ".txt";
+            var filepath = outputfolder + "\\" + "Hex2Cer" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C12H21O10");
             var sphingoHydroxyCount = 2;
             var acylHydroxyCount = 0;
-            commonCeramideGenerator(filepath, "HexHexCer_NS", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, sphingoHydroxyCount, acylHydroxyCount);
+            commonCeramideGenerator(filepath, "Hex2Cer", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, sphingoHydroxyCount, acylHydroxyCount);
         }
         private static void generateHexhexhexcernsSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
         {
             var adductString = adduct.AdductIonName;
-            var filepath = outputfolder + "\\" + "HexHexHexCer_NS" + "_" + adductString + ".txt";
+            var filepath = outputfolder + "\\" + "Hex3Cer" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C18H31O15");
             var sphingoHydroxyCount = 2;
             var acylHydroxyCount = 0;
-            commonCeramideGenerator(filepath, "HexHexHexCer_NS", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, sphingoHydroxyCount, acylHydroxyCount);
+            commonCeramideGenerator(filepath, "Hex3Cer", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, sphingoHydroxyCount, acylHydroxyCount);
         }
         private static void generateAcylcerbdsSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
         {

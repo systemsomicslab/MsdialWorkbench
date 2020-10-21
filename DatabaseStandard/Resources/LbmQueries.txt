@@ -316,7 +316,7 @@ DEGSE	[M+NH4]+	Positive	TRUE
 DEGSE	[M+Na]+	Positive	TRUE
 DSMSE	[M+NH4]+	Positive	TRUE
 OxTG	[M+NH4]+	Positive	TRUE
-FAHFATG	[M+NH4]+	Positive	TRUE
+TG_EST	[M+NH4]+	Positive	TRUE
 MIPC	[M-H]-	Negative	TRUE
 MIPC	[M+H]+	Positive	TRUE
 LCAE	[M-H]-	Negative	TRUE

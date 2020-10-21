@@ -7115,6 +7115,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                     if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
 
+                    // seek [M-C18H30O15-H]- // reject Hex3Cer
+                    var threshold5 = 1;
+                    var diagnosticMz5 = diagnosticMz3 - 162.052833;
+                    var isClassIon5Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
+                    if (isClassIon5Found) return null;
+
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
                         var diagnosticMz4 = theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
@@ -7154,6 +7160,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
 
                     if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found) return null;
+
+                    // seek [M-C18H30O15-H]- // reject Hex3Cer
+                    var threshold5 = 1;
+                    var diagnosticMz5 = diagnosticMz3 - 162.052833;
+                    var isClassIon5Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
+                    if (isClassIon5Found) return null;
+
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -9896,7 +9909,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O3;G", LbmClass.GDCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("BA 24:1;O3;G", LbmClass.GDCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
 
@@ -9912,7 +9925,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O3;G", LbmClass.GDCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("BA 24:1;O3;G", LbmClass.GDCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
 
@@ -9940,7 +9953,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O2;G", LbmClass.GLCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("BA 24:1;O2;G", LbmClass.GLCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
 
@@ -9956,7 +9969,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O2;G", LbmClass.GLCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("BA 24:1;O2;G", LbmClass.GLCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -9984,7 +9997,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O3;T", LbmClass.TDCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("BA 24:1;O3;T", LbmClass.TDCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
@@ -9999,7 +10012,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O3;T", LbmClass.TDCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("BA 24:1;O3;T", LbmClass.TDCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -10027,7 +10040,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O2;T", LbmClass.TLCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("BA 24:1;O2;T", LbmClass.TLCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
 
@@ -10043,7 +10056,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O2;T", LbmClass.TLCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("BA 24:1;O2;T", LbmClass.TLCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -11190,10 +11203,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexBRS, "28:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexBRS, "28:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexBRS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexBRS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11216,10 +11229,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexBRS, "28:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexBRS, "28:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexBRS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexBRS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11243,10 +11256,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexCAS, "28:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexCAS, "28:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexCAS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexCAS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11269,10 +11282,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexCAS, "28:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexCAS, "28:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexCAS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexCAS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11296,10 +11309,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexCS, "27:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexCS, "27:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexCS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexCS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11322,10 +11335,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexCS, "27:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexCS, "27:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexCS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexCS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11349,10 +11362,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexSIS, "29:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexSIS, "29:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexSIS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexSIS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11375,10 +11388,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexSIS, "29:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexSIS, "29:1", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexSIS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexSIS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11402,10 +11415,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexSTS, "29:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexSTS, "29:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexSTS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexSTS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11428,10 +11441,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
                     var steroidalModificationClass = "AHex";
-                    var molecule = getSteroidalEtherMoleculeObj("ST", LbmClass.AHexSTS, "29:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
+                    var molecule = getSteroidalEtherMoleculeObj("ASG", LbmClass.AHexSTS, "29:2", steroidalModificationClass, totalCarbon, totalDoubleBond);
                     candidates.Add(molecule);
 
-                    return returnAnnotationResult("ST", LbmClass.AHexSTS, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("ASG", LbmClass.AHexSTS, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
@@ -11998,7 +12011,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return null;
         }
 
-        //add 20200812
+        //add 20200812  lipid class name change FAHFATG -> TG_EST
         public static LipidMolecule JudgeIfFahfaTriacylglycerol(ObservableCollection<double[]> spectrum, double ms2Tolerance,
                double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PS 46:6, totalCarbon = 46 and totalDoubleBond = 6
                int minSn1Carbon, int maxSn1Carbon, int minSn1DoubleBond, int maxSn1DoubleBond,
@@ -12073,7 +12086,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                                             if (foundCount >= 3)
                                             { // 3 chains must be observed.
-                                                var molecule = getFahfaTriacylglycerolMoleculeObjAsLevel2("TG", LbmClass.FAHFATG, sn1Carbon, sn1Double,
+                                                var molecule = getFahfaTriacylglycerolMoleculeObjAsLevel2("TG", LbmClass.TG_EST, sn1Carbon, sn1Double,
                                                     sn2Carbon, sn2Double, sn3Carbon, sn3Double, sn4Carbon, sn4Double, 0, averageIntensity);
                                                 candidates.Add(molecule);
                                             }
@@ -12084,7 +12097,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         }
                     }
                     if (candidates == null || candidates.Count == 0) return null;
-                    return returnAnnotationResult("TG", LbmClass.FAHFATG, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("TG", LbmClass.TG_EST, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 1, candidates, 4);
                 }
             }
@@ -12317,16 +12330,24 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         private static LipidMolecule getNacylphospholipidMoleculeObjAsLevel2(string lipidClass, LbmClass lbmClass,
           int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, double score)
         {
-
+            var lipidHeader = "";
+            if(lbmClass == LbmClass.LNAPE)
+            {
+                lipidHeader = "LPE-N";
+            }
+            else if(lbmClass == LbmClass.LNAPS)
+            {
+                lipidHeader = "LPS-N";
+            }
             var totalCarbon = sn1Carbon + sn2Carbon;
             var totalDB = sn1Double + sn2Double;
             var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString;
+            var totalName = lipidHeader + " (FA)" + totalString;
 
             var sn1ChainString = sn1Carbon + ":" + sn1Double;
-            var sn2ChainString = "N-" + sn2Carbon + ":" + sn2Double;
-            var chainString = sn1ChainString + "/" + sn2ChainString;
-            var lipidName = lipidClass + " " + chainString;
+            var sn2ChainString = sn2Carbon + ":" + sn2Double;
+            //var chainString = sn1ChainString + "/" + sn2ChainString;
+            var lipidName = lipidHeader + " (FA " + sn2ChainString + ")" + sn1ChainString;
 
             return new LipidMolecule()
             {
@@ -13679,7 +13700,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalCarbon = sn1Carbon + sn2Carbon;
             var totalDB = sn1Double + sn2Double;
-            var totalString = totalCarbon + ":" + totalDB;
+            var totalString = totalCarbon + ":" + totalDB + ";O";
             var totalName = lipidClass + " " + totalString;
 
             //
@@ -13694,7 +13715,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
-            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
+            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount + ";O";
             var chainString = sn1ChainString + "/" + sn2ChainString;
             var lipidName = lipidClass + " " + chainString;
 
@@ -13723,8 +13744,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalCarbon = sn1Carbon + sn2Carbon;
             var totalDB = sn1Double + sn2Double;
-            var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString + surfix;
+            var totalString = totalCarbon + ":" + totalDB + ";O";
+            var totalName = lipidClass + " " + totalString;
 
             //
             var acyls = new List<int[]>() {
@@ -13738,9 +13759,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
-            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
+            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount + ";O";
             var chainString = sn1ChainString + "/" + sn2ChainString;
-            var lipidName = lipidClass + " " + chainString + surfix;
+            var lipidName = lipidClass + " " + chainString;
 
             return new LipidMolecule()
             {
@@ -13952,11 +13973,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
            int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, int sn3Carbon, int sn3Double, int sn4Carbon, int sn4Double,
            int totalOxidized, double score)
         {
-            var totalOxidizedString = totalOxidized == 1 ? "" : totalOxidized.ToString();
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
-            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1;
-            var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidizedString + "O";
-
+            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double;
+            var totalString = totalCarbon + ":" + totalDB + ";O2";
             var totalName = lipidClass + " " + totalString;
 
             var acyls = new List<int[]>() {
@@ -13976,7 +13995,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
             var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
-            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + totalOxidizedString + "O";
+            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";O";
             var sn4ChainString = sn4CarbonCount + ":" + sn4DbCount;
 
             //var chainString = sn1ChainString + "-" + sn2ChainString + "-" + sn3ChainString;

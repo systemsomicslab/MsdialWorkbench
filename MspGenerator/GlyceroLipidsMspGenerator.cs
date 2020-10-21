@@ -414,13 +414,17 @@ namespace CompMs.MspGenerator
                                 break;
                             case "LNAPE":
                                 GlycerolipidFragmentation.lnapeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
-                                name = "LNAPE " + chain1String + "/N-" + chain2String;
-                                shortName = "LNAPE " + totalChain + ":" + totalBond;
+                                //name = "LNAPE " + chain1String + "/N-" + chain2String;
+                                //shortName = "LNAPE " + totalChain + ":" + totalBond;
+                                name = "LPE-N (FA " + chain2String + ")" + chain1String;
+                                shortName = "LPE-N (FA)" + totalChain + ":" + totalBond;
                                 break;
                             case "LNAPS":
                                 GlycerolipidFragmentation.lnapsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
-                                name = "LNAPS " + chain1String + "/N-" + chain2String;
-                                shortName = "LNAPS " + totalChain + ":" + totalBond;
+                                //name = "LNAPS " + chain1String + "/N-" + chain2String;
+                                //shortName = "LNAPS " + totalChain + ":" + totalBond;                                
+                                name = "LPS-N (FA " + chain2String + ")" + chain1String;
+                                shortName = "LPS-N (FA)" + totalChain + ":" + totalBond;
                                 break;
 
                             default:
@@ -1138,7 +1142,7 @@ namespace CompMs.MspGenerator
                         switch (lipidClass)
                         {
                             //normal
-                            case "FAHFATG": // 
+                            case "TG_EST": // 
                                 name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";1O(FA " + chain4String + ")";
                                 GlycerolipidFragmentation.fahfaTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
                                 break;

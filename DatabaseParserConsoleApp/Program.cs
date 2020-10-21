@@ -19,11 +19,13 @@ namespace DatabaseParserConsoleApp {
             runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
             //convertAsciiToBinary();
 
+            // 
 
             //testLipidChalacterizationMethods();
 
             Console.WriteLine("Finish");
             Console.ReadLine();
+
         }
 
         private static void testLipidChalacterizationMethods() {
@@ -142,10 +144,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20200923PECerAHexCerDesmoSTChk\AHexCer\chk\";
-            var testFilename = @"\AHexCer65-5_3O.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201014_Hex3Cer\";
+            var testFilename = @"\Hex3Cer_agingLung_18-1-24-0.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"AHexCer_H_Pos.txt";
+            var reffile = testFolder + @"\Library.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
@@ -157,7 +159,7 @@ namespace DatabaseParserConsoleApp {
         }
 
         private static void runLipidMassGenerator() {
-            var path = @"F:\takahashi\20200902_uchino-san_request\chk\";
+            var path = @"D:\takahashi\desktop\Tsugawa-san_work\20201014_Hex3Cer\hex2hex3cer\";
             //LipidMassLibraryGenerator.Run(path, LbmClass.PC, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 4, 88, 0, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.PC, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 4, 88, 0, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.PE, AdductIonParcer.GetAdductIonBean("[M-H]-"), 4, 88, 0, 24, 0);
@@ -309,8 +311,10 @@ namespace DatabaseParserConsoleApp {
             //LipidMassLibraryGenerator.Run(path, LbmClass.EtherLPC, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 2, 44, 0, 12, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.Hex2Cer, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 6, 90, 1, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.Hex2Cer, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 6, 90, 1, 24, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.Hex2Cer, AdductIonParcer.GetAdductIonBean("[M+H]+"), 6, 90, 1, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.Hex3Cer, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 6, 90, 1, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.Hex3Cer, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 6, 90, 1, 24, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.Hex3Cer, AdductIonParcer.GetAdductIonBean("[M+H]+"), 6, 90, 1, 24, 0);
             ////LipidMassLibraryGenerator.Run(path, LbmClass.AcylCer_BDS, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 8, 134, 0, 36, 0);
             ////LipidMassLibraryGenerator.Run(path, LbmClass.AcylCer_BDS, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 8, 134, 0, 36, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.AHexCer, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 8, 134, 1, 36, 0);
