@@ -55,6 +55,13 @@
             <RibbonTab Header="File"/>
             <RibbonTab Header="Process"/>
             <RibbonTab Header="Help"/>
+            <RibbonTab Header="MS2">
+                <RibbonGroup Header="Annotation filter">
+                    <RibbonCheckBox Label="RefMatched" IsChecked="{Binding RefMatchedChecked}"/>
+                    <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
+                    <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
+                </RibbonGroup>
+            </RibbonTab>
         </Ribbon>
 
         <Grid Grid.Row="1">
@@ -148,7 +155,7 @@
                               Grid.Row="1" />
 
                 <!-- Peak selector -->
-                <ListBox ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                <ListBox ItemsSource="{Binding Ms2CollectionView}"
                          IsSynchronizedWithCurrentItem="True"
                          Grid.Row="2" />
                 
@@ -175,7 +182,7 @@
                     <TabItem Header="File"
                              Background="{StaticResource ThemeBrush}">
                         <view:PeakSelectControl HorizontalAxis="{Binding Source={StaticResource MassAxisManager}}"
-                                                ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                                                ItemsSource="{Binding Ms2CollectionView}"
                                                 Margin="0,5,5,0" />
                     </TabItem>
                     <TabItem Header="Alignment"
@@ -197,7 +204,7 @@
                 <TabControl Grid.Row="0">
                     <TabItem Header="File"
                              Background="{StaticResource ThemeBrush}">
-                        <ContentControl Content="{Binding SelectedValue/ChromatogramPeakFeature, ElementName=PeaksSelector}"/>
+                        <ContentControl Content="{Binding Ms2CollectionView/ChromatogramPeakFeature}"/>
                     </TabItem>
                     <TabItem Header="Alignment"
                              Background="{StaticResource ThemeBrush}">
@@ -212,11 +219,11 @@
                 <!-- Ms2 spectrum -->
                 <TabControl Grid.Row="2">
                     <TabItem Header="Simple" Background="{StaticResource ThemeBrush}">
-                        <view:MS2SpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                        <view:MS2SpectrumControl ItemsSource="{Binding Ms2CollectionView}"
                                                  Margin="0,0,5,5"/>
                     </TabItem>
                     <TabItem Header="Reverse" Background="{StaticResource ThemeBrush}">
-                        <view:MS2ReverseSpectrumControl ItemsSource="{Binding SelectedValue, ElementName=PeaksSelector}"
+                        <view:MS2ReverseSpectrumControl ItemsSource="{Binding Ms2CollectionView}"
                                                         Margin="0,0,5,5"/>
                     </TabItem>
                 </TabControl>

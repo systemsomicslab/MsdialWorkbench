@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -176,6 +177,11 @@ namespace CompMs.Graphics.Scatter
                 visualChildren.Add(new AnnotatedDrawingVisual(o));
         }
 
+        private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            SetDrawingVisuals();
+            Update();
+        }
+
         #region Event handler
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -187,13 +193,18 @@ namespace CompMs.Graphics.Scatter
 
             if (chart.ItemsSource == null) return;
 
+            if (e.NewValue is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            }
+            if (e.OldValue is INotifyCollectionChanged collectionOld) {
+                collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
+            }
+
             var enumerator = chart.ItemsSource.GetEnumerator();
             if (!enumerator.MoveNext()) return;
 
             chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
-
-            chart.SetDrawingVisuals();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -202,6 +213,7 @@ namespace CompMs.Graphics.Scatter
             if (chart.SelectedItem != null)
                 chart.cv.MoveCurrentTo(chart.SelectedItem);
 
+            chart.SetDrawingVisuals();
             chart.Update();
         }
 
@@ -235,9 +247,9 @@ namespace CompMs.Graphics.Scatter
             if (chart.cv != null)
                 chart.cv.MoveCurrentTo(e.NewValue);
         }
-        #endregion
+#endregion
 
-        #region Mouse event
+#region Mouse event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
@@ -288,6 +300,6 @@ namespace CompMs.Graphics.Scatter
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }
-        #endregion
+#endregion
     }
 }

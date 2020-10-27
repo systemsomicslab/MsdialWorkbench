@@ -6,23 +6,24 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using CompMs.Common.DataObj;
-using CompMs.MsdialCore.Utility;
-using CompMs.MsdialDimsCore.Parameter;
+using System.Windows.Data;
+using System.Windows.Input;
 
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore.Common;
-using System.Windows.Input;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Database;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Common;
+using CompMs.MsdialDimsCore.Parameter;
 
 namespace MsdialDimsCoreUiTestApp
 {
@@ -63,6 +64,26 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref alignmentContainer, value);
         }
 
+        public bool RefMatchedChecked {
+            get => refMatchedChecked;
+            set => SetProperty(ref refMatchedChecked, value);
+        }
+
+        public bool SuggestedChecked {
+            get => suggestedChecked;
+            set => SetProperty(ref suggestedChecked, value);
+        }
+
+        public bool UnknownChecked {
+            get => unknownChecked;
+            set => SetProperty(ref unknownChecked, value);
+        }
+
+        public ICollectionView Ms2CollectionView {
+            get => ms2CollectionView;
+            set => SetProperty(ref ms2CollectionView, value);
+        }
+
         public ICommand FileChangedCmd { get; }
         public ICommand AlignmentChangedCmd { get; }
 
@@ -78,6 +99,8 @@ namespace MsdialDimsCoreUiTestApp
         private MsdialDimsParameter param;
         private IupacDatabase iupac;
         private Dictionary<int, Stream> rawChromatogramStreams;
+        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
+        private ICollectionView ms2CollectionView;
 
         public MainWindowVM()
         {
@@ -200,6 +223,11 @@ namespace MsdialDimsCoreUiTestApp
 
             ReadAndSetMs1RawSpectrum(analysisFiles[0].AnalysisFileId);
             ReadAndSetMs1Peaks(analysisFiles[0].PeakAreaBeanInformationFilePath);
+
+            Ms2CollectionView = CollectionViewSource.GetDefaultView(Ms2Features);
+            Ms2CollectionView.Filter += Ms2InfoFilter;
+
+            PropertyChanged += FilterPropertyChanged;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -348,9 +376,17 @@ namespace MsdialDimsCoreUiTestApp
                         MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
                         RefMatched = feature.IsReferenceMatched,
                         Suggested = feature.IsAnnotationSuggested,
+                        Unknown = feature.IsUnknown,
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
+
+            if (Ms2CollectionView != null) {
+                Ms2CollectionView.Filter -= Ms2InfoFilter;
+            }
+            Ms2CollectionView = CollectionViewSource.GetDefaultView(Ms2Features);
+            Ms2CollectionView.Filter += Ms2InfoFilter;
+
             Ms2Area = new Rect(param.Ms2MassRangeBegin, 0, param.Ms2MassRangeEnd, 1);
         }
 
@@ -373,6 +409,21 @@ namespace MsdialDimsCoreUiTestApp
             if (alignmentFile == null) return;
 
             AlignmentContainer = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
+        }
+
+        bool Ms2InfoFilter(object obj) {
+            var ms2 = (Ms2Info)obj;
+
+            return RefMatchedChecked && ms2.RefMatched
+                || SuggestedChecked && ms2.Suggested
+                || UnknownChecked && ms2.Unknown;
+        }
+
+        void FilterPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(RefMatchedChecked)
+                || e.PropertyName == nameof(SuggestedChecked)
+                || e.PropertyName == nameof(UnknownChecked))
+                Ms2CollectionView.Refresh();
         }
 
         public class FileChangedCommand : ICommand
@@ -426,6 +477,7 @@ namespace MsdialDimsCoreUiTestApp
         public MoleculeMsReference MspMatch {get;set;}
         public bool RefMatched { get; set; }
         public bool Suggested { get; set; }
+        public bool Unknown { get; set; }
         public bool Ms2Acquired { get; set; }
     }
 }
