@@ -13747,7 +13747,7 @@ namespace CompMs.Common.Lipidomics {
            int totalOxidized, double score)
         {
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
-            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double;
+            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1;
             var totalString = totalCarbon + ":" + totalDB + ";O2";
             var totalName = lipidClass + " " + totalString;
 

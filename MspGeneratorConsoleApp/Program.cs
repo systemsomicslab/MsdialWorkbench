@@ -23,12 +23,37 @@ namespace CompMs.MspGenerator
             }
 
             {
+                ///////old
+                //////NCDKを利用したdescriptorの出力 (string inputFile, string outputFile)
+                ////// inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
+                ////// 1行目(ヘッダー行)が"InChIKey"、"SMILES"となっている列を認識してdescriptorを算出する。
+                //////qsarDescriptorOnNcdk.outputDescriptors
+                //////    (@"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.txt",
+                //////     @"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.out.txt");
+
+            }
+
+            {
+                // C#上のXGBoostでRT、CCSのpredictionをおこなう
                 //NCDKを利用したdescriptorの出力 (string inputFile, string outputFile)
                 // inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
                 // 1行目(ヘッダー行)が"InChIKey"、"SMILES"となっている列を認識してdescriptorを算出する。
-                //qsarDescriptorOnNcdk.outputDescriptors
-                //    (@"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.txt",
-                //     @"D:\takahashi\desktop\Tsugawa-san_work\20200630_NCDK-QSAR_treat\test\ToCheck.out.txt");
+                //RtCcsPredictOnDotNet.GenerateQsarDescriptorFile
+                //    (@"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\new_descriptor\master_20201023_01.tsv",
+                //     @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\new_descriptor\master_20201023_01_out.tsv");
+
+
+                // RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
+
+                var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\new_descriptor\test\";
+                var outFile = @"\PredictResult.txt";
+                var rtTrainFile = @"master_20201023_out.tsv";
+                var rtTestFile = @"master_20201023_out_test.tsv";
+                var ccsTrainFile = @"masterCCS_20201023_out.tsv";
+                var ccsTestFile = @"masterCCS_20201023_out_test.tsv";
+
+                RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(workingFolder, outFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile);
+
 
             }
 
@@ -106,15 +131,15 @@ namespace CompMs.MspGenerator
 
             //// mtb-info上で最終的なmspを出力
             // 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
-            var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
-            Common.jointMspFiles(mspFolder, exportFileName);
-            //結合したファイルを下記フォルダに移動
-            workingDirectry = mspFolder + @"\LBM\";
-            System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            //
-            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-                 mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20200923.txt", workingDirectry);
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
+            //Common.jointMspFiles(mspFolder, exportFileName);
+            ////結合したファイルを下記フォルダに移動
+            //workingDirectry = mspFolder + @"\LBM\";
+            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+            ////
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20200923.txt", workingDirectry);
 
             ///tool
             ///Inchikey And Smiles List From Msp
