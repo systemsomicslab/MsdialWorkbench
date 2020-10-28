@@ -6599,7 +6599,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -H2O
                     var threshold = 1.0;
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
@@ -6744,7 +6745,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -H2O
                     //var threshold = 1.0;
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
@@ -6884,7 +6886,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -H2O
                     var threshold = 5.0;
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
@@ -7335,7 +7338,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -H2O
                     var threshold = 1.0;
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
@@ -7465,7 +7469,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
                     var diagnosticMz = theoreticalMz - 162.052833;
@@ -8229,7 +8234,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             else if (adduct.IonMode == IonMode.Positive)
             {
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -H2O
                     var threshold = 5.0;
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : adductform == "[M+H-H2O]+" ? theoreticalMz : theoreticalMz - Na - H2O;
@@ -8527,7 +8533,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             else if (adduct.IonMode == IonMode.Positive)
             {
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
                     var diagnosticMz = theoreticalMz - 162.052833;
@@ -9019,7 +9026,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             else if (adduct.IonMode == IonMode.Positive)
             {
                 var adductform = adduct.AdductIonName;
-                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+") {
+                if (adductform == "[M+H]+" || adductform == "[M+Na]+" || adductform == "[M+H-H2O]+")
+                {
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
                     {
@@ -9863,7 +9871,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O4", LbmClass.DCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("SE 24:1;O4", LbmClass.DCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
 
@@ -9879,7 +9887,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O4", LbmClass.DCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("SE 24:1;O4", LbmClass.DCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
 
 
@@ -10084,7 +10092,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:1;O3", LbmClass.LCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("SE 24:1;O3", LbmClass.LCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
@@ -10099,7 +10107,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:1;O3", LbmClass.LCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("SE 24:1;O3", LbmClass.LCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -10134,7 +10142,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:2;O4", LbmClass.KLCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("SE 24:2;O4", LbmClass.KLCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
@@ -10149,7 +10157,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:2;O4", LbmClass.KLCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("SE 24:2;O4", LbmClass.KLCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -10177,7 +10185,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var candidates = new List<LipidMolecule>();
 
-                    return returnAnnotationResult("ST 24:2;O4", LbmClass.KDCAE, string.Empty, theoreticalMz, adduct,
+                    return returnAnnotationResult("SE 24:2;O4", LbmClass.KDCAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
@@ -10192,7 +10200,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                 var candidates = new List<LipidMolecule>();
 
-                return returnAnnotationResult("ST 24:2;O4", LbmClass.KDCAE, string.Empty, theoreticalMz, adduct,
+                return returnAnnotationResult("SE 24:2;O4", LbmClass.KDCAE, string.Empty, theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
             }
             return null;
@@ -12331,11 +12339,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
           int sn1Carbon, int sn1Double, int sn2Carbon, int sn2Double, double score)
         {
             var lipidHeader = "";
-            if(lbmClass == LbmClass.LNAPE)
+            if (lbmClass == LbmClass.LNAPE)
             {
                 lipidHeader = "LPE-N";
             }
-            else if(lbmClass == LbmClass.LNAPS)
+            else if (lbmClass == LbmClass.LNAPS)
             {
                 lipidHeader = "LPS-N";
             }
@@ -13743,8 +13751,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         {
 
             var totalCarbon = sn1Carbon + sn2Carbon;
-            var totalDB = sn1Double + sn2Double;
-            var totalString = totalCarbon + ":" + totalDB + ";O";
+            var totalDB = sn1Double + sn2Double + 1;
+            var totalString = totalCarbon + ":" + totalDB + ";2O";
             var totalName = lipidClass + " " + totalString;
 
             //
@@ -13974,7 +13982,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
            int totalOxidized, double score)
         {
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon + sn4Carbon;
-            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1; 
+            var totalDB = sn1Double + sn2Double + sn3Double + sn4Double + 1;
             var totalString = totalCarbon + ":" + totalDB + ";O2";
             var totalName = lipidClass + " " + totalString;
 

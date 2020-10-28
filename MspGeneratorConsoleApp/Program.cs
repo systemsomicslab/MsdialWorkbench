@@ -52,7 +52,7 @@ namespace CompMs.MspGenerator
                 var ccsTrainFile = @"masterCCS_20201023_out.tsv";
                 var ccsTestFile = @"masterCCS_20201023_out_test.tsv";
 
-                RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(workingFolder, outFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile);
+                //RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(workingFolder, outFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile);
 
 
             }
@@ -165,7 +165,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201014_LipidClassName_change\newMSP\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201014_LipidClassName_change\newMSP2\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -368,16 +368,16 @@ namespace CompMs.MspGenerator
             ////// single Acyl Chain With Steroidal Lipid
             ////
             //{
-            //faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
+            faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
 
-            //Common.switchingLipid(faChain1, "DCAE", outputFolder);
+            Common.switchingLipid(faChain1, "DCAE", outputFolder);
             //Common.switchingLipid(faChain1, "GDCAE", outputFolder);
             //Common.switchingLipid(faChain1, "GLCAE", outputFolder);
             //Common.switchingLipid(faChain1, "TDCAE", outputFolder);
             //Common.switchingLipid(faChain1, "TLCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "KLCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "KDCAE", outputFolder);
-            //Common.switchingLipid(faChain1, "LCAE", outputFolder);
+            Common.switchingLipid(faChain1, "KLCAE", outputFolder);
+            Common.switchingLipid(faChain1, "KDCAE", outputFolder);
+            Common.switchingLipid(faChain1, "LCAE", outputFolder);
             //Common.switchingLipid(faChain1, "AHexBRS", outputFolder);
             //Common.switchingLipid(faChain1, "AHexCAS", outputFolder);
             //Common.switchingLipid(faChain1, "AHexCS", outputFolder);
@@ -455,7 +455,7 @@ namespace CompMs.MspGenerator
 
             //// no chain steroidal lipid
             //{
-            //Common.switchingLipid("BAHex", outputFolder);
+            Common.switchingLipid("BAHex", outputFolder);
             //Common.switchingLipid("BASulfate", outputFolder);
             //Common.switchingLipid("SHex", outputFolder);
             //Common.switchingLipid("SPE", outputFolder);

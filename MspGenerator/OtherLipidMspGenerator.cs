@@ -572,9 +572,9 @@ namespace CompMs.MspGenerator
                             case "KDCAE":
                             case "LCAE":
                                 var cholicAcid = new Dictionary<string, string>()
-                                { {"DCAE","ST 24:1;O4" },{"GDCAE","BA 24:1;O4;G" },{"GLCAE","BA 24:1;O3;G"},
-                                    {"TDCAE","BA 24:1;O4;T"},{"TLCAE","BA 24:1;O3;T"},{ "KLCAE","ST 24:2;O4"},
-                                    { "KDCAE","ST 24:2;O5"},{"LCAE","ST 24:1;O3" } };
+                                { {"DCAE","SE 24:1;O4" },{"GDCAE","BA 24:1;O4;G" },{"GLCAE","BA 24:1;O3;G"},
+                                    {"TDCAE","BA 24:1;O4;T"},{"TLCAE","BA 24:1;O3;T"},{ "KLCAE","SE 24:2;O4"},
+                                    { "KDCAE","SE 24:2;O5"},{"LCAE","SE 24:1;O3" } };
                                 headerSmiles = smilesHeaderDict[lipidClass];
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -845,6 +845,10 @@ namespace CompMs.MspGenerator
                             case "BAHex":
                                 name = lipid.Value + ";Hex";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
+                                if(headerSmiles=="ST")
+                                {
+                                    headerSmiles = "SG";
+                                }
                                 rawSmiles = headerSmiles + "C1OC(CO)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 smiles = rawSmiles;
