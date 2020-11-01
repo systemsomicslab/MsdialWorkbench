@@ -3231,6 +3231,7 @@ namespace Riken.Metabolomics.Lipidomics {
 
             //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
             //try convertion
+            var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
             
             // for oxidized moiety parser
@@ -3269,6 +3270,7 @@ namespace Riken.Metabolomics.Lipidomics {
             var doublebond = chainString.Split(':')[1];
             int.TryParse(carbon, out carbonCount);
             int.TryParse(doublebond, out doubleBondCount);
+            if (isPlasmenyl) doubleBondCount++;
         }
 
         private static void setChainProperties(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {

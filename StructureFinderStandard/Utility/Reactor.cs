@@ -123,15 +123,18 @@ namespace Riken.Metabolomics.StructureFinder.Utility
                 errorMessage = "ExplicitHydrogenAdder was not passed.";
                 return null;
             }
-
+            Console.WriteLine("ok1");
             var acidicProtons = new List<AcidicProton>();
             var methoxymOxigens = new List<MethoxymOxigen>();
             var atomBondsDict = MoleculeConverter.GetAtomBondsDictionary(atomContainer); // get atom to bonds dictionary
+            Console.WriteLine("ok2");
 
             var numberedContainer = moleculeNumberingWithReactionPlaceCount(atomContainer, atomBondsDict, out acidicProtons, out methoxymOxigens);
+            Console.WriteLine("ok3");
 
             if (acidicProtons.Count < tmsCount || methoxymOxigens.Count < meoxCount) return null;
             var derivatizedContainer = ConvertToDerivatizedCompound(numberedContainer, atomBondsDict, acidicProtons, methoxymOxigens, tmsCount, meoxCount);
+            Console.WriteLine("ok4");
 
             return derivatizedContainer;
         }
@@ -157,7 +160,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
 
                 //remove atom and bond of ketone
                 atomContainer.RemoveAtom(meoxOxygen.KetoneOxygen);
-                atomContainer.RemoveBond(meoxOxygen.ConnectedBond);
+                //atomContainer.RemoveBond(meoxOxygen.ConnectedBond);
 
                 //create new bond
                 //var newBond = new Bond(meoxOxygen.NextCarbonToKetoneOxygen, meoxMoiety.Atoms[0], BondOrder.Double);
@@ -196,7 +199,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
 
                 //remove atom and bond of acidic proton
                 atomContainer.RemoveAtom(acidicProton.AcidicProtonAtom);
-                atomContainer.RemoveBond(acidicProton.ConnectedBond);
+                //atomContainer.RemoveBond(acidicProton.ConnectedBond);
 
                 //create new bond
                 var tmsMoiety = getTmsMoiety(); //preparation of TMS moiety
@@ -210,27 +213,33 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             return atomContainer;
         }
 
+        public static void Test() {
+            var element = ChemicalElement.Si;
+            var atom = new Atom(element);
+           // Console.WriteLine();
+        }
+
         private static IAtomContainer getTmsMoiety()
         {
             var container = new AtomContainer();
 
             #region // create atoms
-            var atomSi = new Atom(new ChemicalElement("Si"));
-            var atomC1 = new Atom(new ChemicalElement("C"));
-            var atomC2 = new Atom(new ChemicalElement("C"));
-            var atomC3 = new Atom(new ChemicalElement("C"));
+            var atomSi = new Atom(ChemicalElement.Si);
+            var atomC1 = new Atom(ChemicalElement.C);
+            var atomC2 = new Atom(ChemicalElement.C);
+            var atomC3 = new Atom(ChemicalElement.C);
 
-            var atomH1forC1 = new Atom(new ChemicalElement("H"));
-            var atomH2forC1 = new Atom(new ChemicalElement("H"));
-            var atomH3forC1 = new Atom(new ChemicalElement("H"));
+            var atomH1forC1 = new Atom(ChemicalElement.H);
+            var atomH2forC1 = new Atom(ChemicalElement.H);
+            var atomH3forC1 = new Atom(ChemicalElement.H);
 
-            var atomH1forC2 = new Atom(new ChemicalElement("H"));
-            var atomH2forC2 = new Atom(new ChemicalElement("H"));
-            var atomH3forC2 = new Atom(new ChemicalElement("H"));
+            var atomH1forC2 = new Atom(ChemicalElement.H);
+            var atomH2forC2 = new Atom(ChemicalElement.H);
+            var atomH3forC2 = new Atom(ChemicalElement.H);
 
-            var atomH1forC3 = new Atom(new ChemicalElement("H"));
-            var atomH2forC3 = new Atom(new ChemicalElement("H"));
-            var atomH3forC3 = new Atom(new ChemicalElement("H"));
+            var atomH1forC3 = new Atom(ChemicalElement.H);
+            var atomH2forC3 = new Atom(ChemicalElement.H);
+            var atomH3forC3 = new Atom(ChemicalElement.H);
             #endregion
 
             #region // create bonds
@@ -273,12 +282,12 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             var container = new AtomContainer();
 
             #region // create atoms
-            var atomN = new Atom(new ChemicalElement("N"));
-            var atomO = new Atom(new ChemicalElement("O"));
-            var atomC = new Atom(new ChemicalElement("C"));
-            var atomH1 = new Atom(new ChemicalElement("H"));
-            var atomH2 = new Atom(new ChemicalElement("H"));
-            var atomH3 = new Atom(new ChemicalElement("H"));
+            var atomN = new Atom(ChemicalElement.N);
+            var atomO = new Atom(ChemicalElement.O);
+            var atomC = new Atom(ChemicalElement.C);
+            var atomH1 = new Atom(ChemicalElement.H);
+            var atomH2 = new Atom(ChemicalElement.H);
+            var atomH3 = new Atom(ChemicalElement.H);
             #endregion
 
             #region // create bonds
@@ -452,11 +461,11 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var container = new AtomContainer();
 
-            var atomC = new Atom(new ChemicalElement("C"));
-            var atomH1 = new Atom(new ChemicalElement("H"));
-            var atomH2 = new Atom(new ChemicalElement("H"));
-            var atomH3 = new Atom(new ChemicalElement("H"));
-            var atomH4 = new Atom(new ChemicalElement("H"));
+            var atomC = new Atom(ChemicalElement.C);
+            var atomH1 = new Atom(ChemicalElement.H);
+            var atomH2 = new Atom(ChemicalElement.H);
+            var atomH3 = new Atom(ChemicalElement.H);
+            var atomH4 = new Atom(ChemicalElement.H);
 
             var bond_CH1 = new Bond(atomC, atomH1, BondOrder.Single);
             var bond_CH2 = new Bond(atomC, atomH2, BondOrder.Single);

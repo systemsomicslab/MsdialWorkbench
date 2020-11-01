@@ -6109,12 +6109,12 @@ namespace Rfx.Riken.OsakaUniv
         {
             //Console.WriteLine((e.Source as MenuItem).Parent.ToString());
 
-            var target = ((((e.Source as MenuItem).Parent as MenuItem)).Parent as ContextMenu).PlacementTarget;
+            //var target = ((((e.Source as MenuItem).Parent as MenuItem)).Parent as ContextMenu).PlacementTarget;
 
-            if (target.GetType() == typeof(PairwisePlotPeakViewUI) && this.focusedFileID < 0) return;
-            if (target.GetType() == typeof(PairwisePlotAlignmentViewUI) && this.focusedAlignmentFileID < 0) return;
+            //if (target.GetType() == typeof(PairwisePlotPeakViewUI) && this.focusedFileID < 0) return;
+            //if (target.GetType() == typeof(PairwisePlotAlignmentViewUI) && this.focusedAlignmentFileID < 0) return;
 
-            var isAlignmentView = target.GetType() == typeof(PairwisePlotAlignmentViewUI) ? true : false;
+            var isAlignmentView = this.pairwisePlotFocus == PairwisePlotFocus.alignmentView ? true : false;
 
             var window = new MrmprobsExportWin();
             window.Owner = this;
@@ -6128,12 +6128,12 @@ namespace Rfx.Riken.OsakaUniv
         private void contextMenu_MrmprobsRefExportCopyAs_Click(object sender, RoutedEventArgs e)
         {
             //var target = ((e.Source as MenuItem).Parent as ContextMenu).PlacementTarget;
-            var target = ((((e.Source as MenuItem).Parent as MenuItem)).Parent as ContextMenu).PlacementTarget;
+            //var target = ((((e.Source as MenuItem).Parent as MenuItem)).Parent as ContextMenu).PlacementTarget;
 
-            if (target.GetType() == typeof(PairwisePlotPeakViewUI) && this.focusedFileID < 0) return;
-            if (target.GetType() == typeof(PairwisePlotAlignmentViewUI) && this.focusedAlignmentFileID < 0) return;
+            //if (target.GetType() == typeof(PairwisePlotPeakViewUI) && this.focusedFileID < 0) return;
+            //if (target.GetType() == typeof(PairwisePlotAlignmentViewUI) && this.focusedAlignmentFileID < 0) return;
 
-            var isAlignmentView = target.GetType() == typeof(PairwisePlotAlignmentViewUI) ? true : false;
+            var isAlignmentView = this.pairwisePlotFocus == PairwisePlotFocus.alignmentView ? true : false;
 
             if (this.projectProperty.Ionization == Ionization.ESI) {
 

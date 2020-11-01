@@ -19,6 +19,7 @@ namespace StructureFinderConsoleApp
         [STAThread]
         static void Main(string[] args)
         {
+            Derivatization.Test();
             /// code for Natural Product Reports 2020
             //Code4NPR2020.GenerateStructureTableFromMSPs();
             //Code4NPR2020.ExtractClassyFireOntologies();
@@ -144,8 +145,8 @@ namespace StructureFinderConsoleApp
 
 
             ////after InChiKeys of fragments are generated...
-            BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Merged fragment info-PI-Neg.txt"
-                , @"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Fragment statistics result-PI-Neg.txt");
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Merged fragment info-PI-Neg.txt"
+            //    , @"D:\MoNA and MassBank curations\Fragment database\Negative\PI statistics\Fragment statistics result-PI-Neg.txt");
 
             ////BondPathStatistics.ExportHrStatistics(@"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\Merged fragment info-PI-Neg.txt"
             ////    , @"D:\MoNA and MassBank curations\MS fragmenter statistics\20170802-Result of product ion-Step 1\Duplicate removed-Step 2\Negative\HR statistics result-PI-Neg.txt");

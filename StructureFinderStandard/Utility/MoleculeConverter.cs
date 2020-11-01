@@ -487,16 +487,25 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             var structures = new List<Structure>();
 
             var syncObj = new object();
-            Parallel.ForEach(queries, query => {
+            //Parallel.ForEach(queries, query => {
+            //    var error = string.Empty;
+            //    var structure = ExistStructureQueryToStructure(query, databaseQueries, out error, tmsCount, meoxCount);
+            //    if (error != string.Empty) Debug.WriteLine(error);
+            //    if (structure != null) {
+            //        lock (syncObj) {
+            //            structures.Add(structure);
+            //        }
+            //    }
+            //});
+            foreach (var query in queries) {
                 var error = string.Empty;
+                Console.WriteLine(query.Smiles);
                 var structure = ExistStructureQueryToStructure(query, databaseQueries, out error, tmsCount, meoxCount);
                 if (error != string.Empty) Debug.WriteLine(error);
                 if (structure != null) {
-                    lock (syncObj) {
-                        structures.Add(structure);
-                    }
+                    structures.Add(structure);
                 }
-            });
+            };
             return structures;
         }
 
