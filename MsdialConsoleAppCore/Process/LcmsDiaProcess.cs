@@ -60,7 +60,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                         var decPathList = new List<string>();
                         var path = file.AnalysisFilePropertyBean.DeconvolutionFilePath;
                         for (var j = 0; j < projectProp.Ms2LevelIdList.Count; j++) {
-                            decPathList.Add(Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + "." + j + ".dcl");
+                            decPathList.Add(Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + j + ".dcl"));
 
                         }
                         file.AnalysisFilePropertyBean.DeconvolutionFilePathList = decPathList;
@@ -189,7 +189,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                             f.RetentionTimeCorrectionBean.StandardList, f.RetentionTimeCorrectionBean.OriginalRt.ToArray());
                 }
                 var StdCommonList = Msdial.Common.Utility.RtCorrection.MakeCommonStdList(new ObservableCollection<AnalysisFileBean>(analysisFiles), lcmsParam.RetentionTimeCorrectionCommon.StandardLibrary);
-                var filePath = projectProp.ProjectFolderPath + "\\" + Path.GetFileNameWithoutExtension(projectProp.ProjectFilePath);
+                var filePath = Path.Combine(projectProp.ProjectFolderPath, Path.GetFileNameWithoutExtension(projectProp.ProjectFilePath));
                 //Msdial.Common.Export.DataExportAsPdf.ExportRetentionTimeCorrectionAll(filePath, analysisFiles, lcmsParam, lcmsParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam, StdCommonList);
                 using (var sw = new StreamWriter(filePath + "RetentionTime.txt")) {
                     PrivateMethodTargetCompoundExport.ExportRetentionTimeCorrectionResults(sw, analysisFiles);
@@ -238,9 +238,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("Gap filling finished");
 
                 if (projectProp.CheckAIF) {
-                    alignmentFile.SpectraFilePath = System.IO.Path.GetDirectoryName(alignmentFile.FilePath) + "\\" + alignmentFile.FileName + ".0.dcl";
+                    alignmentFile.SpectraFilePath = Path.Combine(System.IO.Path.GetDirectoryName(alignmentFile.FilePath), alignmentFile.FileName + ".0.dcl");
                     for (var i = 0; i < projectProp.Ms2LevelIdList.Count; i++) {
-                        var specFilePath = System.IO.Path.GetDirectoryName(alignmentFile.FilePath) + "\\" + alignmentFile.FileName + "." + i + ".dcl";
+                        var specFilePath = Path.Combine(System.IO.Path.GetDirectoryName(alignmentFile.FilePath), alignmentFile.FileName + "." + i + ".dcl");
                         ProcessAlignmentFinalization.Execute(new ObservableCollection<AnalysisFileBean>(analysisFiles), specFilePath,
                             alignmentResult, lcmsParam, projectProp, mspDB, null, null, i + 1);
                     }
@@ -250,7 +250,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("Finalization finished");
 
                 //export
-                var outputFile = outputfolder + "\\" + alignmentFile.FileName + ".msdial";
+                var outputFile = Path.Combine(outputfolder, alignmentFile.FileName + ".msdial");
                 ResultExportForLC.ExportAlignmentResult(outputFile, alignmentFile, alignmentResult, mspDB, txtDB, analysisFiles, lcmsParam);
             }
 
@@ -258,8 +258,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("Excute CorrDec");
                 Msdial.Lcms.Dataprocess.Algorithm.CorrDecBase.CreateMs2SpectraGroup(projectProp, alignmentFile, new ObservableCollection<AnalysisFileBean>(analysisFiles), alignmentResult, lcmsParam, null);
                  System.Threading.Tasks.Parallel.For(0, projectProp.Ms2LevelIdList.Count, numDec => {
-                    var decFilePath = projectProp.ProjectFolderPath + "\\" + alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg";
-                    var filePath = projectProp.ProjectFolderPath + "\\" + alignmentFile.FileName + "_CorrelationBasedDecRes_Raw_" + numDec + ".cbd";
+                    var decFilePath = Path.Combine(projectProp.ProjectFolderPath, alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg");
+                    var filePath = Path.Combine(projectProp.ProjectFolderPath, alignmentFile.FileName + "_CorrelationBasedDecRes_Raw_" + numDec + ".cbd");
                     Msdial.Lcms.Dataprocess.Algorithm.CorrDecHandler.WriteCorrelationDecRes(lcmsParam.AnalysisParamOfMsdialCorrDec, projectProp, alignmentResult.AlignmentPropertyBeanCollection, analysisFiles.Count, filePath, decFilePath, null);
                 });
             }

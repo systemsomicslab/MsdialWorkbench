@@ -20,7 +20,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
         public static string TemporaryDirectoryHandler(ProjectPropertyBean projectPropertyBean, bool isCreate = false, bool isRemove = false)
         {
             var dt = projectPropertyBean.ProjectDate;
-            var dirname = projectPropertyBean.ProjectFolderPath + "\\" + "project_" + dt.ToString("yyyy_MM_dd_HH_mm_ss") + "Tmp";
+            var dirname = Path.Combine(projectPropertyBean.ProjectFolderPath, "project_" + dt.ToString("yyyy_MM_dd_HH_mm_ss") + "Tmp");
             if (isCreate && !Directory.Exists(dirname))
                 Directory.CreateDirectory(dirname);
             if (isRemove && Directory.Exists(dirname))
@@ -80,7 +80,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         }
                         for (var numDec = 0; numDec < projectPropertyBean.Ms2LevelIdList.Count; numDec++)
                         {
-                            var filename = dirname + "\\" + alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File" + i + ".pll";
+                            var filename = Path.Combine(dirname, alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File" + i + ".pll");
                             CreateTemporaryFileForMsGrouping.WriteMsPeakList(rawPeakListList[numDec].PeakList, projectPropertyBean, filename);
                         }
                     }
@@ -105,7 +105,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                                 rawPeakListList[0].PeakList[j] = getTargetPeaks(spectrumCollection, peakAreaBean.Ms2LevelDatapointNumber, param.AnalysisParamOfMsdialCorrDec.MinMS2Intensity, isCentroid);
                             }
                         }
-                        var filename = dirname + "\\" + alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File" + i + ".pll";
+                        var filename = Path.Combine(dirname, alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File" + i + ".pll");
                         CreateTemporaryFileForMsGrouping.WriteMsPeakList(rawPeakListList[numDec].PeakList, projectPropertyBean, filename);
                     }
                 }
@@ -119,8 +119,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             var dirname = TemporaryDirectoryHandler(projectPropertyBean, isCreate: false, isRemove: false);
             //System.Threading.Tasks.Parallel.For(0, projectPropertyBean.Ms2LevelIdList.Count, numDec => {
             for (var numDec = 0; numDec < projectPropertyBean.Ms2LevelIdList.Count; numDec++) {
-                var filename_in = dirname + "\\" + alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File";
-                var filename_out = projectPropertyBean.ProjectFolderPath + "\\" + alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg";
+                var filename_in = Path.Combine(dirname, alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File");
+                var filename_out = Path.Combine(projectPropertyBean.ProjectFolderPath, alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg");
                 CreateMzIntGroupListFile.WriteMsGroupListList(filename_out, filename_in, analysisFileBeanCollection.Count,
                     alignmentResult.AlignmentPropertyBeanCollection.Count, param.AnalysisParamOfMsdialCorrDec.MinNumberOfSample, param.CentroidMs2Tolerance,
                     param.AnalysisParamOfMsdialCorrDec.MinMS2Intensity, param.AnalysisParamOfMsdialCorrDec.MinMS2RelativeIntensity, reportAction);
@@ -128,8 +128,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             if(projectPropertyBean.Ms2LevelIdList.Count == 0)
             {
                 var numDec = 0;
-                var filename_in = dirname + "\\" + alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File";
-                var filename_out = projectPropertyBean.ProjectFolderPath + "\\" + alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg";
+                var filename_in = Path.Combine(dirname, alignmentFile.FileName + "_peaklist_RawMs" + numDec + "_File");
+                var filename_out = Path.Combine(projectPropertyBean.ProjectFolderPath, alignmentFile.FileName + "_MsGrouping_Raw_" + numDec + ".mfg");
                 CreateMzIntGroupListFile.WriteMsGroupListList(filename_out, filename_in, analysisFileBeanCollection.Count,
                     alignmentResult.AlignmentPropertyBeanCollection.Count, param.AnalysisParamOfMsdialCorrDec.MinNumberOfSample, param.CentroidMs2Tolerance,
                     param.AnalysisParamOfMsdialCorrDec.MinMS2Intensity, param.AnalysisParamOfMsdialCorrDec.MinMS2RelativeIntensity, reportAction);

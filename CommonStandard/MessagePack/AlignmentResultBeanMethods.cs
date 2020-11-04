@@ -2,6 +2,7 @@
 using System.Linq;
 using System.IO;
 using Rfx.Riken.OsakaUniv;
+using System.Collections.Generic;
 
 namespace CompMs.Common.MessagePack
 {
@@ -55,7 +56,12 @@ namespace CompMs.Common.MessagePack
                     var counter = 0;
                     foreach (var b in collection)
                     {
-                        var filePaths = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + "_AlignedPeakPropertyBeans\\AlignedPeakPropertyBean_" + counter + ".arf" + version;
+                        var paths = new string[] {
+                            Path.GetDirectoryName(path),
+                            Path.GetFileNameWithoutExtension(path) + "_AlignedPeakPropertyBeans",
+                            "AlignedPeakPropertyBean_" + counter + ".arf" + version
+                        };
+                        var filePaths = Path.Combine(paths);
                         b.AlignedPeakPropertyBeanCollection = MessagePackHandler.LoadFromFile<ObservableCollection<AlignedPeakPropertyBean>>(filePaths);
                         counter++;
                     }
@@ -70,7 +76,7 @@ namespace CompMs.Common.MessagePack
             var fileName = Path.GetFileNameWithoutExtension(path);
             var folder = Path.GetDirectoryName(path);
             var ext = Path.GetExtension(path);
-            return folder + "\\" + fileName + "_PeakProperties" + ext;
+            return Path.Combine(folder, fileName + "_PeakProperties" + ext);
         }
     }
 }

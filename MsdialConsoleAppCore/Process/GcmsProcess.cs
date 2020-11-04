@@ -45,7 +45,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             var projectProp = new ProjectPropertyBean() {
                 ProjectDate = dt,
                 ProjectFolderPath = inputFolder,
-                ProjectFilePath = inputFolder + "//" + projectFile + ".mtd",
+                ProjectFilePath = Path.Combine(inputFolder, projectFile + ".mtd"),
                 Ionization = Ionization.EI
             };
 
@@ -212,7 +212,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("All processing finished");
 
                 //export
-                var outputFile = outputfolder + "\\" + alignmentFile.FileName + ".msdial";
+                var outputFile = Path.Combine(outputfolder, alignmentFile.FileName + ".msdial");
                 var ms1DecResults = DataStorageGcUtility.ReadMS1DecResults(alignmentFile.SpectraFilePath);
                 ResultExportForGC.ExportAlignmentResult(outputFile, alignmentResult, ms1DecResults, analysisFiles, mspDB, gcmsParam, "Height");
             }

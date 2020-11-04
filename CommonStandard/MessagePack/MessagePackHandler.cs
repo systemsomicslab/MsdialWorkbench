@@ -75,7 +75,7 @@ namespace CompMs.Common.MessagePack {
             var fileDir = Path.GetDirectoryName(path);
             var fileName = Path.GetFileNameWithoutExtension(path);
             var extention = Path.GetExtension(path);
-            return fileDir + "\\" + fileName + tag + extention;
+            return Path.Combine(fileDir, fileName + tag + extention);
         }
 
     }
