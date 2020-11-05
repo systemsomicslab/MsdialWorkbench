@@ -354,7 +354,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "DG": return new SolidColorBrush(Color.FromArgb(180, 0, 255, 0)); // lime
                 case "TG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 0)); // green
                 case "OxTG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 20)); // green modified
-                case "FAHFATG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 40)); // green modified
+                case "TG_EST": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 40)); // green modified
                 case "EtherDG": return new SolidColorBrush(Color.FromArgb(180, 0, 204, 0)); // lime
                 case "EtherTG": return new SolidColorBrush(Color.FromArgb(180, 0, 51, 0)); // green
                 case "MGDG": return new SolidColorBrush(Color.FromArgb(180, 0, 0, 255)); // blue

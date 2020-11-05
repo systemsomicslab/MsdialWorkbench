@@ -330,26 +330,27 @@ namespace CompMs.MspGenerator
                         {
                             case "FAHFA":
                                 OtherLipidFragmentation.fahfaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
-                                name = lipidClass + " " + chain2String + "/" + chain1String;
+                                name = lipidClass + " " + chain2String + "/" + chain1String + ";O";
                                 break;
                             case "NAGlySer_FAHFA":
                                 OtherLipidFragmentation.fahfaGlySerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAGlySer";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String;
+                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
                                 break;
                             case "NAGly_FAHFA":
                                 OtherLipidFragmentation.fahfaGlyFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAGly";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String;
+                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
                                 break;
                             case "NAOrn_FAHFA":
                                 OtherLipidFragmentation.fahfaOrnFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAOrn";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String;
+                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
                                 break;
                             case "AAHFA":
                                 OtherLipidFragmentation.aahfaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
-                                name = lipidClass + " " + chain2String + "/" + chain1String;
+                                exportLipidClassName = "FAHFA";
+                                name = lipidClass + " " + chain2String + "/" + chain1String + ";O";
                                 break;
 
                         }
@@ -571,9 +572,9 @@ namespace CompMs.MspGenerator
                             case "KDCAE":
                             case "LCAE":
                                 var cholicAcid = new Dictionary<string, string>()
-                                { {"DCAE","ST 24:1;O4" },{"GDCAE","ST 24:1;O4;G" },{"GLCAE","ST 24:1;O3;G"},
-                                    {"TDCAE","ST 24:1;O4;T"},{"TLCAE","ST 24:1;O3;T"},{ "KLCAE","ST 24:2;O4"},
-                                    { "KDCAE","ST 24:2;O5"},{"LCAE","ST 24:1;O3" } };
+                                { {"DCAE","SE 24:1;O4" },{"GDCAE","BA 24:1;O4;G" },{"GLCAE","BA 24:1;O3;G"},
+                                    {"TDCAE","BA 24:1;O4;T"},{"TLCAE","BA 24:1;O3;T"},{ "KLCAE","SE 24:2;O4"},
+                                    { "KDCAE","SE 24:2;O5"},{"LCAE","SE 24:1;O3" } };
                                 headerSmiles = smilesHeaderDict[lipidClass];
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -629,7 +630,7 @@ namespace CompMs.MspGenerator
                             case "AHexSIS":
                             case "AHexSTS":
                                 var ahexCags = new Dictionary<string, string>()
-                                { {"AHexBRS","ST 28:2;O;Hex" },{"AHexCAS","ST 28:1;O;Hex" },{"AHexCS","ST 27:1;O;Hex" },{"AHexSIS","ST 29:1;O;Hex"},{"AHexSTS","ST 29:2;O;Hex"} };
+                                { {"AHexBRS","ASG 28:2;O;Hex" },{"AHexCAS","ASG 28:1;O;Hex" },{"AHexCS","ASG 27:1;O;Hex" },{"AHexSIS","ASG 29:1;O;Hex"},{"AHexSTS","ASG 29:2;O;Hex"} };
                                 headerSmiles = smilesHeaderDict[lipidClass];
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -742,7 +743,7 @@ namespace CompMs.MspGenerator
                             case "SISLPHex":
                             case "STSLPHex":
                                 var LPHex = new Dictionary<string, string>()
-                                { {"BRSLPHex","ST 28:2;O;Hex;LPA " },{"CASLPHex","ST 28:1;O;Hex;LPA " },{"CSLPHex","ST 27:1;O;Hex;LPA " },{"SISLPHex","ST 29:1;O;Hex;LPA "},{"STSLPHex","ST 29:2;O;Hex;LPA "} };
+                                { {"BRSLPHex","SG 28:2;O;Hex;LPA " },{"CASLPHex","SG 28:1;O;Hex;LPA " },{"CSLPHex","SG 27:1;O;Hex;LPA " },{"SISLPHex","SG 29:1;O;Hex;LPA "},{"STSLPHex","SG 29:2;O;Hex;LPA "} };
                                 name = LPHex[lipidClass] + chain1String;
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -754,7 +755,7 @@ namespace CompMs.MspGenerator
                             case "SISPHex":
                             case "STSPHex":
                                 var PHex = new Dictionary<string, string>()
-                                { {"BRSPHex","ST 28:2;O;Hex;PA " },{"CASPHex","ST 28:1;O;Hex;PA " },{"CSPHex","ST 27:1;O;Hex;PA " },{"SISPHex","ST 29:1;O;Hex;PA "},{"STSPHex","ST 29:2;O;Hex;PA "} };
+                                { {"BRSPHex","SG 28:2;O;Hex;PA " },{"CASPHex","SG 28:1;O;Hex;PA " },{"CSPHex","SG 27:1;O;Hex;PA " },{"SISPHex","SG 29:1;O;Hex;PA "},{"STSPHex","SG 29:2;O;Hex;PA "} };
                                 name = PHex[lipidClass] + chain1String + "_" + chain2String;
                                 shortName = PHex[lipidClass] + totalChain + ":" + totalBond;
                                 if (adductIon == "[M+NH4]+")
@@ -798,11 +799,11 @@ namespace CompMs.MspGenerator
         {
             var smileslist = new List<string>();
             var cholicAcids = new Dictionary<string, string>()
-                                { {"LCA", "ST 24:1;O3"},{"7KLCA", "ST 24:2;O3"},{"DCA", "ST 24:1;O4"},{"CA", "ST 24:1;O5"},{"GLCA", "ST 24:1;O3;G"},
-                                    {"GDCA", "ST 24:1;O4;G"},{"GCA", "ST 24:1;O5;G"},{"TLCA", "ST 24:1;O3;T"},{"TDCA", "ST 24:1;O4;T"},{"TCA", "ST 24:1;O5;T"},
+                                { {"LCA", "ST 24:1;O3"},{"7KLCA", "ST 24:2;O3"},{"DCA", "ST 24:1;O4"},{"CA", "ST 24:1;O5"},{"GLCA", "BA 24:1;O3;G"},
+                                    {"GDCA", "BA 24:1;O4;G"},{"GCA", "BA 24:1;O5;G"},{"TLCA", "BA 24:1;O3;T"},{"TDCA", "BA 24:1;O4;T"},{"TCA", "BA 24:1;O5;T"},
                                 };
             var cags = new Dictionary<string, string>()
-                                {{"CE","ST 27:1" },{"BRSE","SE 28:2" },{"CASE","SE 28:1" },{"SISE","SE 29:1"},{"STSE","SE 29:2"} ,{ "Cholestan","ST 27:0"} };
+                                {{"CE","27:1" },{"BRSE","28:2" },{"CASE","28:1" },{"SISE","29:1"},{"STSE","29:2"} ,{ "Cholestan","27:0"} };
 
             var lipidDic = new Dictionary<string, string>();
 
@@ -844,6 +845,10 @@ namespace CompMs.MspGenerator
                             case "BAHex":
                                 name = lipid.Value + ";Hex";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
+                                if(headerSmiles=="ST")
+                                {
+                                    headerSmiles = "SG";
+                                }
                                 rawSmiles = headerSmiles + "C1OC(CO)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 smiles = rawSmiles;
@@ -859,7 +864,7 @@ namespace CompMs.MspGenerator
 
                                 break;
                             case "SHex":
-                                name = lipid.Value + ";O;Hex";
+                                name = "SG " + lipid.Value + ";O;Hex";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "C1%10OC(CO)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -869,7 +874,7 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "SPE":
-                                name = lipid.Value + ";O;PE";
+                                name = "ST " + lipid.Value + ";O;PE";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "P%10(O)(=O)OCCN";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -878,7 +883,7 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "SPEHex":
-                                name = lipid.Value + ";O;Hex;PE";
+                                name = "SG " + lipid.Value + ";O;Hex;PE";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "C1%10OC(COP(O)(=O)OCCN)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -887,7 +892,7 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "SPGHex":
-                                name = lipid.Value + ";O;Hex;PG";
+                                name = "SG " + lipid.Value + ";O;Hex;PG";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "C1%10OC(COP(O)(=O)OCC(O)CO)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
@@ -896,7 +901,7 @@ namespace CompMs.MspGenerator
                                 break;
 
                             case "SSulfate":
-                                name = lipid.Value + ";O;S";
+                                name = "ST " + lipid.Value + ";O;S";
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "S%10(O)(=O)=O";
                                 meta = Common.getMetaProperty(rawSmiles);

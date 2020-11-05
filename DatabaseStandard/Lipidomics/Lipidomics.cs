@@ -488,7 +488,7 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
 
                     case LbmClass.NAGly:
-                        if (totalOxidized > 0)
+                        if (totalCarbon < 29)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
@@ -501,7 +501,7 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
 
                     case LbmClass.NAGlySer:
-                        if (totalOxidized > 0)
+                        if (totalCarbon < 29)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized,adduct);
@@ -541,7 +541,7 @@ namespace Riken.Metabolomics.Lipidomics
                         break;
 
                     case LbmClass.NAOrn:
-                        if (totalOxidized > 0)
+                        if (totalCarbon < 29)
                         {
                             result = LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized,adduct);
@@ -648,7 +648,7 @@ namespace Riken.Metabolomics.Lipidomics
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond,
                             sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, totalOxidized, adduct);
                         break;
-                    case LbmClass.FAHFATG:
+                    case LbmClass.TG_EST:
                         result = LipidMsmsCharacterization.JudgeIfFahfaTriacylglycerol(spectrum, ms2tol, refMz,
                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond,
                             sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond,

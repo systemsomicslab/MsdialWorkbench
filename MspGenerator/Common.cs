@@ -227,7 +227,7 @@ namespace CompMs.MspGenerator
                     GlyceroLipidsMspGenerator.twoAndOneSetCainsGlyceroLipidGenerator(chain1, chain2, lipidClass, output);
                     break;
                 //three and one set chains
-                case "FAHFATG": // 
+                case "TG_EST": // 
                     GlyceroLipidsMspGenerator.fahfaTgGlyceroLipidGenerator(chain1, chain2, lipidClass, output);
                     break;
                 //FAHFA

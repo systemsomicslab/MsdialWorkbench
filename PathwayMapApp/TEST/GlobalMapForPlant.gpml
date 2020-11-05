@@ -1349,7 +1349,7 @@
     <Graphics CenterX="3134.320276470008" CenterY="1820.1667204905782" Width="80.0" Height="80.0" ZOrder="33391" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
-  <DataNode TextLabel="FAHFATG" GraphId="ee30d" Type="Metabolite">
+  <DataNode TextLabel="TG_EST" GraphId="ee30d" Type="Metabolite">
     <Graphics CenterX="3222.9633188209305" CenterY="1820.1667204905782" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33392" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>

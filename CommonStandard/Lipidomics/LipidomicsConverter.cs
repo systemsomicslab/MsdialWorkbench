@@ -3436,14 +3436,15 @@ namespace CompMs.Common.Lipidomics {
             // pattern [4] Cer 14:0;2O/12:0;(3OH)(FA 12:0) -> [0]14:0;2O, [1]12:0;(3OH), [3]12:0
             // pattern [5] Cer 14:1;2O/12:0;(2OH)
             // pattern [6] DGDG O-8:0_2:0
-            // pattern [7] LNAPS 2:0/N-2:0
+            // pattern [7] LNAPS 2:0/N-2:0 
             // pattern [8] SM 30:1;2O(FA 14:0)
             // pattern [9] ST 28:2;O;Hex;PA 12:0_12:0
             // pattern [10] SE 28:2/8:0
             // pattern [11] TG 16:0_16:1_18:0;O(FA 16:0)
+            // pattern [12]  LPE-N (FA 16:0)18:1  (LNAPE,LNAPS)
             var headerString = moleculeString.Split(' ')[0].Trim();
             string chainString = string.Empty;
-            if (headerString == "SE" || headerString == "ST") {
+            if (headerString == "SE" || headerString == "ST" || headerString == "SG" || headerString == "BA" || headerString == "ASG") {
                 RetrieveSterolHeaderChainStrings(moleculeString, out headerString, out chainString);
             }
             else {
@@ -3455,6 +3456,7 @@ namespace CompMs.Common.Lipidomics {
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
+            var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
 
             if (chainString.Contains("/") && chainString.Contains("(FA")) { // pattern 4
                 var regexes = Regex.Match(chainString, pattern4).Groups;
@@ -3468,7 +3470,14 @@ namespace CompMs.Common.Lipidomics {
                     foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
                     chains.Add(regexes["chain2"].Value);
                 }
-                else {
+                else if (chain1strings == "") // pattern 12
+                {
+                    regexes = Regex.Match(chainString, pattern12).Groups;
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                    Console.WriteLine();
+                }
+                else
+                {
                     chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
                 }
                 //Console.WriteLine();
@@ -3653,7 +3662,7 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
                 case LbmClass.OxTG: return "OxTG";
-                case LbmClass.FAHFATG: return "FAHFATG";
+                case LbmClass.TG_EST: return "TG_EST";
                 case LbmClass.EtherTG: return "EtherTG";
                 case LbmClass.EtherDG: return "EtherDG";
                 case LbmClass.LPC: return "LPC";
@@ -3997,7 +4006,7 @@ namespace CompMs.Common.Lipidomics {
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
                 case "OxTG": return LbmClass.OxTG;
-                case "FAHFATG": return LbmClass.FAHFATG;
+                case "TG_EST": return LbmClass.TG_EST;
                 case "EtherDG": return LbmClass.EtherDG;
                 case "EtherTG": return LbmClass.EtherTG;
 
@@ -4421,7 +4430,7 @@ namespace CompMs.Common.Lipidomics {
                 case "DG": return "Glycerolipids";
                 case "TG": return "Glycerolipids";
                 case "OxTG": return "Glycerolipids";
-                case "FAHFATG": return "Glycerolipids";
+                case "TG_EST": return "Glycerolipids";
                 case "EtherDG": return "Glycerolipids";
                 case "EtherTG": return "Glycerolipids";
                 case "LDGTS": return "Glycerolipids";

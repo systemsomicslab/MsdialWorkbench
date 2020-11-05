@@ -887,7 +887,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, adduct);
 
                 case LbmClass.NAGly:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlyOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -898,7 +899,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAGlySer:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylGlySerOxFa(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -936,7 +938,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
 
                 case LbmClass.NAOrn:
-                    if (totalOxidized > 0) {
+                    if (totalCarbon < 29)
+                    {
                         return LipidMsmsCharacterization.JudgeIfNAcylOrnOxFa(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
                     }
@@ -1100,7 +1103,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfOxTriacylglycerol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                         sn2Carbon, sn2Carbon, sn2DbBond, sn2DbBond, totalOxidized, adduct);
-                case LbmClass.FAHFATG:
+                case LbmClass.TG_EST:
                     sn2Carbon = molecule.Sn2CarbonCount;
                     sn2DbBond = molecule.Sn2DoubleBondCount;
                     sn3Carbon = molecule.Sn3CarbonCount;

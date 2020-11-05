@@ -1280,7 +1280,7 @@ namespace Rfx.Riken.OsakaUniv {
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
                     PeakID = -1,
-                    TargetClass = "FAHFATG"
+                    TargetClass = "TG_EST"
                 });
 
                 compounds.Add(new StandardCompound() {

@@ -673,7 +673,7 @@
     <Graphics CenterX="693.4314850516663" CenterY="475.45640609585155" Width="80.0" Height="80.0" ZOrder="33146" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
-  <DataNode TextLabel="FAHFATG" GraphId="ef9ff" Type="Metabolite">
+  <DataNode TextLabel="TG_EST" GraphId="ef9ff" Type="Metabolite">
     <Graphics CenterX="2082.9633188209305" CenterY="408.1667204905782" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33147" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>

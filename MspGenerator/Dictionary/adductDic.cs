@@ -121,7 +121,7 @@ namespace CompMs.MspGenerator
 
             // (GL) four acyl chains
                 {   "CL" ,    new List<string>(){ "[M-H]-", "[M+NH4]+", "[M-2H]2-", }    },
-                {   "FAHFATG" ,    new List<string>(){  "[M+NH4]+"  }    },
+                {   "TG_EST" ,    new List<string>(){  "[M+NH4]+"  }    },
 
 
             //cer 2chains
