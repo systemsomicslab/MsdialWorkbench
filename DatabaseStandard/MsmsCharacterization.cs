@@ -7132,12 +7132,6 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         if (isClassIon4Found) return null;
                     }
 
-                    // seek [M-C18H30O15-H]- // reject Hex3Cer
-                    var threshold5 = 1;
-                    var diagnosticMz5 = diagnosticMz3 - 162.052833;
-                    var isClassIon5Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
-                    if (isClassIon5Found) return null;
-
                     // from here, acyl level annotation is executed.
                     //   may be not found fragment to define sphingo and acyl chain
                     var candidates = new List<LipidMolecule>();

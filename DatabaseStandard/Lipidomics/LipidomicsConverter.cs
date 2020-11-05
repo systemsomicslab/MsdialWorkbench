@@ -3014,7 +3014,7 @@ namespace Riken.Metabolomics.Lipidomics {
 
         public static string GetLipidHeaderString(string lipidname) {
             var lipidHeader = lipidname.Split(' ')[0];
-            if (lipidHeader == "SE" || lipidHeader == "ST") {
+            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG") {
                 var dummyString = string.Empty;
                 RetrieveSterolHeaderChainStrings(lipidname, out lipidHeader, out dummyString);
             }
