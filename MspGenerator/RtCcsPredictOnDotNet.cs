@@ -73,19 +73,12 @@ namespace CompMs.MspGenerator
 
 
 
-        public static void mergeRtAndCcsResultFiles2(string workingDirectry, string outFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile)
+        public static void mergeRtAndCcsResultFiles2(string resultFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile,int rtTreeDepth, int ccsTreeDepth, int rtTreeNum, int ccsTreeNum)
         {
-            var outputFolderPath = workingDirectry + @"\predictResult\";
-            if (!Directory.Exists(outputFolderPath))
-            {
-                Directory.CreateDirectory(outputFolderPath);
-            }
-
-            var resultFile = outputFolderPath + "\\" + outFile;
 
             var allResultDic = new Dictionary<string, List<string>>();
-            var rtResultDic = RtPredictionOnXgboost(workingDirectry + rtTrainFile, workingDirectry + rtTestFile);
-            var ccsResultDic = CcsPredictionOnXgboost(workingDirectry + ccsTrainFile, workingDirectry + ccsTestFile);
+            var rtResultDic = RtPredictionOnXgboost(rtTrainFile, rtTestFile, rtTreeDepth, rtTreeNum);
+            var ccsResultDic = CcsPredictionOnXgboost(ccsTrainFile, ccsTestFile, ccsTreeDepth, ccsTreeNum);
 
             var ccsAdductHeaderList = new List<string>();
             foreach (var item in adductscoreDic)
@@ -121,28 +114,16 @@ namespace CompMs.MspGenerator
                     }
                     sw.WriteLine(string.Join("\t", writeLineItem));
                 }
-            }
-
-            using (var sw = new StreamWriter(resultFile+"CCS.txt", false, Encoding.ASCII))
-            {
-                var headerList = new List<string>();
-
-                headerList.Add("InChIKey");
-                headerList.Add("SMILES");
-                headerList.Add("RT");
-                headerList.AddRange(ccsAdductHeaderList);
-                var headerItem = string.Join("\t", headerList);
-                sw.WriteLine(headerItem);
-
-                //to test code
+                // to print ccs
                 foreach (var ccsItem in ccsResultDic)
                 {
                     var writeLineItem = new List<string>();
                     writeLineItem.Add(ccsItem.Key);
-                    writeLineItem.Add(ccsItem.Value.ToString());
+
                     // add CCS result 
                     if (ccsResultDic.ContainsKey(ccsItem.Key))
                     {
+
                         var ccsResultValueList = new List<string>();
                         var ccsResult = ccsResultDic[ccsItem.Key];
                         foreach (var adduct in ccsAdductHeaderList)
@@ -152,11 +133,12 @@ namespace CompMs.MspGenerator
                     }
                     sw.WriteLine(string.Join("\t", writeLineItem));
                 }
+
             }
 
         }
 
-        public static Dictionary<string, float> RtPredictionOnXgboost(string rtTrainFile, string testFile)
+        public static Dictionary<string, float> RtPredictionOnXgboost(string rtTrainFile, string testFile, int rtTreeDepth, int rtTreeNum)
         {
             // read trainFile and set to array
             var vectorsTrain = new List<XGVector<Array>>();
@@ -171,7 +153,7 @@ namespace CompMs.MspGenerator
 
                 var headerArray = headerLine.Split('\t');
                 var headerArrayUpper = headerLine.ToUpper().Split('\t');
-                int smilesOrder = Array.IndexOf(headerArrayUpper, "SMILES");
+                int descriptorStartOrder = Array.IndexOf(headerArrayUpper, "RT");
 
                 var line = "";
                 while ((line = sr.ReadLine()) != null)
@@ -179,7 +161,7 @@ namespace CompMs.MspGenerator
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
-                    for (var i = smilesOrder + 1; i < lineArray.Length; i++)
+                    for (var i = descriptorStartOrder; i < lineArray.Length; i++)
                     {
                         var item = float.Parse(lineArray[i]);
                         if (headerArray[i] == "RT")
@@ -217,6 +199,7 @@ namespace CompMs.MspGenerator
                 int smilesOrder = Array.IndexOf(headerArrayUpper, "SMILES");
                 int inchikeyOrder = Array.IndexOf(headerArrayUpper, "INCHIKEY");
 
+                int descriptorStartOrder = Math.Max(smilesOrder, inchikeyOrder) + 1;
 
                 var line = "";
                 while ((line = sr.ReadLine()) != null)
@@ -224,10 +207,16 @@ namespace CompMs.MspGenerator
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
+                    if (smilesOrder > -1)
+                    {
+                        inchikeyList.Add(lineArray[inchikeyOrder] + '\t' + lineArray[smilesOrder]);
+                    }
+                    else
+                    {
+                        inchikeyList.Add(lineArray[inchikeyOrder]);
+                    }
 
-                    inchikeyList.Add(lineArray[inchikeyOrder] + '\t' + lineArray[smilesOrder]);
-
-                    for (var i = smilesOrder + 1; i < lineArray.Length; i++)
+                    for (var i = descriptorStartOrder; i < lineArray.Length; i++)
                     {
                         var item = float.Parse(lineArray[i]);
                         if (headerArray[i] == "RT")
@@ -249,8 +238,10 @@ namespace CompMs.MspGenerator
                     vectorsTest.Add(newVector);
                 }
             }
-
-            var xgbc = new XGBoost.XGBRegressor();
+            int maxDepth = rtTreeDepth; //default=3; use tune result
+            float learningRate = 0.1F;
+            int nEstimators = rtTreeNum;
+            var xgbc = new XGBoost.XGBRegressor(maxDepth, learningRate, nEstimators);
             XGBArray arrTrain = ConvertToXGBArray(vectorsTrain);
             xgbc.Fit(arrTrain.Vectors, arrTrain.Target);
 
@@ -261,6 +252,7 @@ namespace CompMs.MspGenerator
             var rtDic = new Dictionary<string, float>();
             for (int i = 0; i < inchikeyList.Count; i++)
             {
+                if (rtDic.ContainsKey(inchikeyList[i])) { continue; };
                 rtDic.Add(inchikeyList[i], outcomeTest[i]);
             }
 
@@ -270,7 +262,7 @@ namespace CompMs.MspGenerator
         }
 
 
-        public static Dictionary<string, Dictionary<string, float>> CcsPredictionOnXgboost(string rtTrainFile, string testFile)
+        public static Dictionary<string, Dictionary<string, float>> CcsPredictionOnXgboost(string rtTrainFile, string testFile, int ccsTreeDepth, int ccsTreeNum)
         {
             // read trainFile and set to array
             var trainArrayList = new List<XGBArray>();
@@ -286,7 +278,7 @@ namespace CompMs.MspGenerator
 
                 var headerArray = headerLine.Split('\t');
                 var headerArrayUpper = headerLine.ToUpper().Split('\t');
-                int smilesOrder = Array.IndexOf(headerArrayUpper, "SMILES");
+                int descriptorStartOrder = Array.IndexOf(headerArrayUpper, "CCS");
 
                 var line = "";
                 while ((line = sr.ReadLine()) != null)
@@ -294,7 +286,7 @@ namespace CompMs.MspGenerator
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
-                    for (var i = smilesOrder + 1; i < lineArray.Length; i++)
+                    for (var i = descriptorStartOrder; i < lineArray.Length; i++)
                     {
                         var item = float.Parse(lineArray[i]);
                         if (headerArray[i] == "CCS")
@@ -329,7 +321,7 @@ namespace CompMs.MspGenerator
                 var headerArray = headerLine.Split('\t');
                 var headerArrayUpper = headerLine.ToUpper().Split('\t');
 
-                int smilesOrder = Array.IndexOf(headerArray, "SMILES");
+                int smilesOrder = Array.IndexOf(headerArrayUpper, "SMILES");
                 int inchikeyOrder = Array.IndexOf(headerArrayUpper, "INCHIKEY");
 
 
@@ -339,10 +331,18 @@ namespace CompMs.MspGenerator
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
+                    int descriptorStartOrder = Math.Max(smilesOrder, inchikeyOrder) + 1;
 
-                    inchikeyList.Add(lineArray[inchikeyOrder] + '\t' + lineArray[smilesOrder]);
+                    if (smilesOrder > -1)
+                    {
+                        inchikeyList.Add(lineArray[inchikeyOrder] + '\t' + lineArray[smilesOrder]);
+                    }
+                    else
+                    {
+                        inchikeyList.Add(lineArray[inchikeyOrder]);
+                    }
 
-                    for (var i = smilesOrder + 1; i < lineArray.Length; i++)
+                    for (var i = descriptorStartOrder; i < lineArray.Length; i++)
                     {
                         var item = float.Parse(lineArray[i]);
                         if (headerArray[i] == "AdductScore")
@@ -374,7 +374,28 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            var xgbc = new XGBoost.XGBRegressor();
+            int maxDepth = ccsTreeDepth; //default=3; use tune result
+            float learningRate = 0.025F;
+            int nEstimators = ccsTreeNum;
+            bool silent = true;
+            string objective = "reg:linear";
+            int nThread = -1;
+            float gamma = 0;
+            int minChildWeight = 1;
+            int maxDeltaStep = 0;
+            float subsample = 1;
+            float colSampleByTree = 1;
+            float colSampleByLevel = 1;
+            float regAlpha = 0;
+            float regLambda = 1;
+            float scalePosWeight = 1;
+            float baseScore = 0.5F;
+            int seed = 0;
+            float missing = float.NaN;
+
+            var xgbc = new XGBoost.XGBRegressor(maxDepth , learningRate, nEstimators, silent, 
+                objective , nThread, gamma , minChildWeight, maxDeltaStep, subsample, colSampleByTree,
+                colSampleByLevel, regAlpha, regLambda, scalePosWeight, baseScore , seed , missing );
             XGBArray arrTrain = ConvertToXGBArray(vectorsTrain);
             xgbc.Fit(arrTrain.Vectors, arrTrain.Target);
 
@@ -387,19 +408,201 @@ namespace CompMs.MspGenerator
 
             for (int i = 0; i < inchikeyList.Count; i++)
             {
+                if (ccsResultDic.ContainsKey(inchikeyList[i])) { continue; };
                 var ccsAdductResult = new Dictionary<string, float>();
                 foreach (var item in adductscoreDic)
                 {
                     ccsAdductResult.Add(item.Key, outcomeTest[count]);
                     count = count + 1;
                 }
-
                 ccsResultDic.Add(inchikeyList[i], ccsAdductResult);
             }
 
             //Console.ReadKey();
             return ccsResultDic;
         }
+
+        public static void ExtractDescriptorToPredict(string descriptorFile, string descriptorListFile)
+        {
+            var descriptorList = new List<string>();
+            var newFileName = Path.GetDirectoryName(descriptorFile) + "\\" + Path.GetFileNameWithoutExtension(descriptorFile) + "_Extracted.tsv";
+            using (var srList = new StreamReader(descriptorListFile, true))
+            {
+                var headerLine = srList.ReadLine();
+                var line = "";
+                while ((line = srList.ReadLine()) != null)
+                {
+                    var lineArray = line.Split(' ');
+                    descriptorList.Add(lineArray[1]);
+                }
+                descriptorList.Add("RT");
+                descriptorList.Add("CCS");
+                descriptorList.Add("AdductScore");
+
+            }
+
+            using (var sw = new StreamWriter(newFileName, false, Encoding.ASCII))
+            {
+                using (var sr = new StreamReader(descriptorFile, true))
+                {
+                    var headerLine = sr.ReadLine();
+                    headerLine = headerLine.Replace("-", ".");
+                    headerLine = headerLine.Replace("*", ".");
+
+                    var headerArray = headerLine.Split('\t');
+                    var headerArrayUpper = headerLine.ToUpper().Split('\t');
+                    var descriptorStartOrder = Math.Max(Array.IndexOf(headerArrayUpper, "INCHIKEY"), Array.IndexOf(headerArrayUpper, "SMILES")) + 1;
+
+                    var newHeaderList = new List<string>();
+                    for (int i = 0; i < descriptorStartOrder; i++)
+                    {
+                        newHeaderList.Add(headerArray[i]);
+                    }
+                    for (int i = descriptorStartOrder; i < headerArray.Length; i++)
+                    {
+                        if (descriptorList.Contains(headerArray[i]))
+                        {
+                            newHeaderList.Add(headerArray[i]);
+                        }
+                    }
+
+                    var newHeaderLine = string.Join("\t", newHeaderList);
+                    sw.WriteLine(newHeaderLine);
+
+                    var line = "";
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var lineArray = line.Split('\t');
+                        var newLineList = new List<string>();
+                        for (int i = 0; i < descriptorStartOrder; i++)
+                        {
+                            newLineList.Add(lineArray[i]);
+                        }
+
+                        for (int i = descriptorStartOrder; i < lineArray.Length; i++)
+                        {
+                            if (descriptorList.Contains(headerArray[i]))
+                            {
+                                newLineList.Add(lineArray[i]);
+                            }
+                        }
+
+                        sw.WriteLine(string.Join("\t", newLineList));
+
+
+                    }
+                }
+
+            }
+
+        }
+
+        public static void ExtractDescriptorToPredictFromPadel(string padelOutFileName, string rtDescriptorListFile, string ccsDescriptorListFile)
+        {
+            var newRtDescriptorFileName = Path.GetDirectoryName(padelOutFileName) + "\\" + Path.GetFileNameWithoutExtension(padelOutFileName) + "_ExtractedFromPadelResult_RT.tsv";
+            var newCcsDescriptorFileName = Path.GetDirectoryName(padelOutFileName) + "\\" + Path.GetFileNameWithoutExtension(padelOutFileName) + "_ExtractedFromPadelResult_CCS.tsv";
+
+            var rtSelectedDescriptorHeader = "Name\tRT";
+            var ccsSelectedDescriptorHeader = "Name\tCCS\tMass";
+
+            using (var sr = new StreamReader(rtDescriptorListFile, true))
+            {
+                while (sr.Peek() > -1)
+                {
+                    var line = sr.ReadLine();
+                    rtSelectedDescriptorHeader = rtSelectedDescriptorHeader + "\t" + line;
+                }
+            }
+            using (var sr = new StreamReader(ccsDescriptorListFile, false))
+            {
+                while (sr.Peek() > -1)
+                {
+                    var line = sr.ReadLine();
+                    ccsSelectedDescriptorHeader = ccsSelectedDescriptorHeader + "\t" + line;
+                }
+            }
+
+            using (var sw = new StreamWriter(newRtDescriptorFileName, false, Encoding.ASCII))
+            {
+                using (var sr = new StreamReader(padelOutFileName, true))
+                {
+                    var headerLine = sr.ReadLine();
+                    var headerArray = headerLine.Split(',');
+                    var selectDescriptorArray = rtSelectedDescriptorHeader.Split('\t');
+
+                    sw.WriteLine(rtSelectedDescriptorHeader.Replace("Name", "InChIKey"));
+
+                    var line = "";
+
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var lineArray = line.Split(',');
+                        var newLineList = new List<string>();
+                        var lineDic = new Dictionary<string, string>();
+
+                        for (int i = 0; i < lineArray.Length; i++)
+                        {
+                            lineDic.Add(headerArray[i], lineArray[i]);
+                        }
+                        foreach (var item in selectDescriptorArray)
+                        {
+                            if (lineDic.ContainsKey(item))
+                            {
+                                newLineList.Add(lineDic[item]);
+                            }
+                            else
+                            {
+                                newLineList.Add("0"); // maybe case of "RT"
+                            }
+                        }
+
+                        sw.WriteLine(string.Join("\t", newLineList).Replace("\"", ""));
+                    }
+                }
+            }
+            using (var sw = new StreamWriter(newCcsDescriptorFileName, false, Encoding.ASCII))
+            {
+                using (var sr = new StreamReader(padelOutFileName, true))
+                {
+                    var headerLine = sr.ReadLine();
+                    var headerArray = headerLine.Split(',');
+                    var selectDescriptorArray = ccsSelectedDescriptorHeader.Split('\t');
+
+                    sw.WriteLine(ccsSelectedDescriptorHeader.Replace("Name", "InChIKey"));
+
+                    var line = "";
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var lineArray = line.Split(',');
+                        var newLineList = new List<string>();
+                        var lineDic = new Dictionary<string, string>();
+
+                        for (int i = 0; i < lineArray.Length; i++)
+                        {
+                            lineDic.Add(headerArray[i], lineArray[i]);
+                        }
+                        foreach (var item in selectDescriptorArray)
+                        {
+                            if (lineDic.ContainsKey(item))
+                            {
+                                newLineList.Add(lineDic[item]);
+                            }
+                            else if(item =="Mass")
+                            {
+                                newLineList.Add(lineDic["MW"]);
+                            }
+                            else
+                            {
+                                newLineList.Add("0");
+                            }
+                        }
+
+                        sw.WriteLine(string.Join("\t", newLineList).Replace("\"", ""));
+                    }
+                }
+            }
+        }
+
 
         public static XGBArray ConvertToXGBArray(List<XGVector<Array>> vectorsTrain)
         {

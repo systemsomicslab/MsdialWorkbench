@@ -335,17 +335,20 @@ namespace CompMs.MspGenerator
                             case "NAGlySer_FAHFA":
                                 OtherLipidFragmentation.fahfaGlySerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAGlySer";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                //name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                name = exportLipidClassName + " " + chain1String + ";O(FA " + chain2String + ")";
                                 break;
                             case "NAGly_FAHFA":
                                 OtherLipidFragmentation.fahfaGlyFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAGly";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                //name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                name = exportLipidClassName + " " + chain1String + ";O(FA " + chain2String + ")";
                                 break;
                             case "NAOrn_FAHFA":
                                 OtherLipidFragmentation.fahfaOrnFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 exportLipidClassName = "NAOrn";
-                                name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                //name = exportLipidClassName + " " + chain2String + "/" + chain1String + ";O";
+                                name = exportLipidClassName + " " + chain1String + ";O(FA " + chain2String + ")";
                                 break;
                             case "AAHFA":
                                 OtherLipidFragmentation.aahfaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
@@ -844,11 +847,11 @@ namespace CompMs.MspGenerator
                         {
                             case "BAHex":
                                 name = lipid.Value + ";Hex";
-                                headerSmiles = smilesHeaderDict[lipid.Key];
-                                if(headerSmiles=="ST")
+                                if(name.Contains("ST") )
                                 {
-                                    headerSmiles = "SG";
+                                    name=name.Replace("ST","SG");
                                 }
+                                headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "C1OC(CO)C(O)C(O)C1O";
                                 meta = Common.getMetaProperty(rawSmiles);
                                 smiles = rawSmiles;

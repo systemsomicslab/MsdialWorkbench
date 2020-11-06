@@ -415,7 +415,7 @@ namespace CompMs.MspGenerator
                 var fra02comment = "[M-H]-";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
 
-                var fra03mass = sphMass - MassDictionary.Proton - MassDictionary.NitrogenMass - 12 * 2 - MassDictionary.HydrogenMass * 5 - MassDictionary.OxygenMass;
+                var fra03mass = sphMass - MassDictionary.Proton - MassDictionary.NitrogenMass - 12 * 2 - MassDictionary.HydrogenMass * 7 - MassDictionary.OxygenMass;
                 var fra03int = 300;
                 var fra03comment = "[Sph-NCCO-3H]-";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
@@ -2105,6 +2105,52 @@ namespace CompMs.MspGenerator
             }
         }
         public static void piCerdAddOFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
+        {
+            //{   "PICer_d+O" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
+            var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
+            var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = fra01mass - MassDictionary.C6H10O5;
+                var fra02int = 5;
+                var fra02comment = "NL of C6H10O5";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra01mass - acylMass;
+                var fra03int = 5;
+                var fra03comment = "NL of Acyl";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = MassDictionary.C6H10O5 + MassDictionary.OxygenMass * 3 + MassDictionary.PhosphorusMass + MassDictionary.Electron;
+                var fra04int = 150;
+                var fra04comment = "C6H10O8P-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = MassDictionary.OxygenMass * 3 + MassDictionary.PhosphorusMass + MassDictionary.Electron;
+                var fra05int = 200;
+                var fra05comment = "PO3-";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+            }
+            else if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = fra01mass - MassDictionary.C6H10O5 - (MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass + MassDictionary.HydrogenMass * 3);
+                var fra02int = 5;
+                var fra02comment = "NL of C6H13O9P";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+        }
+
+        public static void piCerFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
             //{   "PICer_d+O" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
