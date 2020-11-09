@@ -92,7 +92,7 @@ namespace CompMs.MspGenerator
             }
 
             var padelOutFile = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(sdfFileName[0]) + ".csv";
-            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 1 -maxruntime 30000";
+            var padelOption = " -dir " + outputSdfFolderPath + @" -file " + padelOutFile + " -2d -descriptortypes " + padelDescriptortypesPath + " -threads 1 -maxruntime 300000";
 
             Process p = Process.Start("java.exe", "-jar " + padelProgramPath + "PaDEL-Descriptor.jar " + padelOption);
             p.WaitForExit();

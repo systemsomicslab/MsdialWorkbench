@@ -208,6 +208,14 @@ namespace CompMs.MspGenerator
                             //sphMass = sphMass + MassDictionary.OxygenMass;
                             acylOx = acylOx + 1;
                         }
+                        else if (lipidClass == "PI_Cer_d") //NS //add 20201029
+                        {
+                            if (AcylChainDic.sphingoBaseSDictionary.ContainsKey(chainArray[0]) == false) { continue; }
+                            sphSmiles = new List<string>(AcylChainDic.sphingoBaseSDictionary[chainArray[0]])[3];
+                            if (AcylChainDic.FattyAcylChainDictionary.ContainsKey(chainArray[1]) == false) { continue; }
+                            acylSmiles = new List<string>(AcylChainDic.FattyAcylChainDictionary[chainArray[1]])[3];
+                            //sphMass = sphMass + MassDictionary.OxygenMass;
+                        }
                         else if (lipidClass == "MIPC") //AP
                         {
                             if (AcylChainDic.sphingoBasePDictionary.ContainsKey(chainArray[0]) == false) { continue; }
@@ -443,6 +451,19 @@ namespace CompMs.MspGenerator
                                     name = shortName;
                                 }
                                 CermideFragmentation.piCerdAddOFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
+                                break;
+
+                            case "PI_Cer_d":
+                                name = "PI-Cer " + chainArray[0] + ";2O/" + chainArray[1] ;
+                                shortName = "PI-Cer " + totalChain + ":" + totalBond + ";2O";
+                                exportLipidClassName = "PI_Cer";
+                                if (adduct.IonMode == "Positive")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.piCerFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
 
                             default:

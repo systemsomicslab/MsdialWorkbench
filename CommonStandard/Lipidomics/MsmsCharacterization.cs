@@ -10365,7 +10365,7 @@ namespace CompMs.Common.Lipidomics
                             if ((sn1Carbon == 16 && sn1Double == 2) || (sn2Carbon == 16 && sn2Double == 2)) continue;
 
 
-                            var sn2Loss = diagnosticMz - fattyacidProductIon(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass;
+                            var sn2Loss = diagnosticMz - fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2GlyLoss = sn2Loss - (12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2);
                             var sn2H2OGlyLoss = sn2GlyLoss - H2O;
 
@@ -10424,7 +10424,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
-                            var sn2Loss = theoreticalMz - fattyacidProductIon(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass;
+                            var sn2Loss = theoreticalMz - fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2CO2Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 2;
                             var sn2 = fattyacidProductIon(sn1Carbon, sn1Double);
 
@@ -10484,7 +10484,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
-                            var sn2Loss = diagnosticMz - fattyacidProductIon(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass;
+                            var sn2Loss = diagnosticMz - fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2SerLoss = sn2Loss - (12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
                             var sn2SerGlyLoss = sn2SerLoss - (12 * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
                             var ser = (12 * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
@@ -10538,7 +10538,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
 
-                                var sn2Loss = theoreticalMz - fattyacidProductIon(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass;
+                                var sn2Loss = theoreticalMz - fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                                 var sn2CH2OLoss = sn2Loss - 12 - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
                                 var sn2CH2O3Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 3 - MassDiffDictionary.HydrogenMass * 2;
                                 var sn2 = fattyacidProductIon(sn1Carbon, sn1Double);
@@ -11089,7 +11089,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
-                            var sn2Loss = theoreticalMz - fattyacidProductIon(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass;
+                            var sn2Loss = theoreticalMz - fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2H2OLoss = sn2Loss - H2O;
                             var sn1Fragment = sn1Carbon * 12 + ((sn1Carbon - (sn1Double + 1)) * 2 - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass + Proton;
 
@@ -13907,9 +13907,12 @@ namespace CompMs.Common.Lipidomics
             var sn2DbCount = acyls[1][1];
 
 
-            var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
-            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount + ";O";
-            var chainString = sn1ChainString + "/" + sn2ChainString;
+            //var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
+            //var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount + ";O";
+            //var chainString = sn1ChainString + "/" + sn2ChainString;
+            var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount + ";O";
+            var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
+            var chainString = sn1ChainString + "(FA " + sn2ChainString + ")";
             var lipidName = lipidClass + " " + chainString;
 
             return new LipidMolecule()

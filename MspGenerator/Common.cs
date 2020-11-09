@@ -191,6 +191,7 @@ namespace CompMs.MspGenerator
                 case "PE_Cer_d":
                 case "PE_Cer_d+O":
                 case "PI_Cer_d+O":
+                case "PI_Cer_d":
                     CeramideMspGenerator.twoChainsCeramideGenerator(chain1, chain2, lipidClass, output);
                     break;
 
