@@ -1761,7 +1761,7 @@ namespace CompMs.MspGenerator
                 var fra02comment = "M-H2O-CH2O4S";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
 
-                var fra03mass = fra01mass - acylMass + MassDictionary.HydrogenMass * 2;
+                var fra03mass = fra01mass - acylMass;// + MassDictionary.HydrogenMass * 2;
                 var fra03int = 50;
                 var fra03comment = "SN2 acyl loss";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
@@ -1804,7 +1804,7 @@ namespace CompMs.MspGenerator
                 var fra03comment = "[M-H2O+H]+";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
 
-                var fra04mass = fra02mass - acylMass + MassDictionary.HydrogenMass * 2;
+                var fra04mass = fra02mass - acylMass;// + MassDictionary.HydrogenMass * 2;
                 var fra04int = 500;
                 var fra04comment = "SN2 loss";
                 fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);

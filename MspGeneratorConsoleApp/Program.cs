@@ -73,8 +73,8 @@ namespace CompMs.MspGenerator
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20201029_lipidLibraryChk\20201106FAHFAmide\predict\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\20201106140354_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20201029_lipidLibraryChk\20201109FAHFA-SL\predict\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt\20201109142647_calc.txt"; // 計算させたいInChIKeyとSMILESのリスト
             var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
             var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
             var descriptorSelecerCSSFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
@@ -91,7 +91,7 @@ namespace CompMs.MspGenerator
 
             //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath, toPredictFileName);//networkDriveではうまくいかない？
 
-            var padelOutFileName = workingDirectry + @"\PadelResult\20201106140354_notfound.csv"; // PaDELで出力されたファイル(csv)
+            //var padelOutFileName = workingDirectry + @"\PadelResult\20201109142647_calc.csv"; // PaDELで出力されたファイル(csv)
 
             //RtCcsPredictManager.selectDescriptor(workingDirectry, padelOutFileName, descriptorSelecerRTFile, descriptorSelecerCSSFile);
 
@@ -102,17 +102,17 @@ namespace CompMs.MspGenerator
             /////// CCS predict
             ////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
-            //// RT and CCS predict
+            ////// RT and CCS predict
             //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
-            // 上記で算出したpredict結果をmerge
+            //// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
 
 
-            //var outputResultFolderPath = workingDirectry;// + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
-            //var mspFilePath = workingDirectry + @"\Msp20201106134041.jointedmsp"; //mergeするmspファイル
-            //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20201106.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            var outputResultFolderPath = workingDirectry;// + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
+            var mspFilePath = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM" + @"\Msp20201109135951.jointedmsp"; //mergeするmspファイル
+            var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+            var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20201109.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
@@ -156,7 +156,7 @@ namespace CompMs.MspGenerator
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
             ////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20201102.txt", workingDirectry);
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20201106.txt", workingDirectry);
 
 
 
@@ -177,7 +177,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201029_lipidLibraryChk\20201106FAHFAmide\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201029_lipidLibraryChk\20201109FAHFA-SL\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -455,25 +455,25 @@ namespace CompMs.MspGenerator
 
             //    ////others 2 chains
             //    {
-            //        faChain1 = Common.GenerateAcylChains(8, 0, 28, 12);
-            //        faChain2 = Common.GenerateAcylChains(2, 0, 28, 12);
-            //        Common.switchingLipid(minimumChains, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-            //        Common.switchingLipid(minimumChains, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-            //    }
+            //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //faChain2 = Common.GenerateAcylChains(2, 0, 28, 6);
+            //Common.switchingLipid(faChain1, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //Common.switchingLipid(faChain1, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+                                                                                    //    }
 
 
             //    ////N - Acyl amine
             //    ///
             //    {
-                    //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
-                    //faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
-                    //Common.switchingLipid(faChain1, faChain2, "NAGlySer_FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-                    //Common.switchingLipid(faChain1, faChain2, "NAGly_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
-                    //Common.switchingLipid(faChain1, faChain2, "NAOrn_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
+            //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //Common.switchingLipid(faChain1, faChain2, "NAGlySer_FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //Common.switchingLipid(faChain1, faChain2, "NAGly_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
+            //Common.switchingLipid(faChain1, faChain2, "NAOrn_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
 
-                    //Common.switchingLipid(faChain1, "NAGlySer_OxFA", outputFolder);  // faChain1 = HFA
-                    //Common.switchingLipid(faChain1, "NAGly_OxFA", outputFolder);     // faChain1 = HFA
-                    //Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
+            //Common.switchingLipid(faChain1, "NAGlySer_OxFA", outputFolder);  // faChain1 = HFA
+            //Common.switchingLipid(faChain1, "NAGly_OxFA", outputFolder);     // faChain1 = HFA
+            //Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
             //    }
 
             //    // no chain steroidal lipid
