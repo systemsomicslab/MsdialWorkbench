@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             Console.WriteLine("Importing libraries...");
             var iupacDB = IupacResourceParser.GetIUPACDatabase();
             List<MoleculeMsReference> mspDB = null;
-            if (param.TargetOmics == TargetOmics.Metablomics) {
+            if (param.TargetOmics == TargetOmics.Metabolomics) {
                 mspDB = MspFileParser.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);

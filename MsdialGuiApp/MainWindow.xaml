@@ -6,6 +6,9 @@
               xmlns:local="clr-namespace:CompMs.App.Msdial"
               mc:Ignorable="d"
               Title="MSDIAL" Height="800" Width="1280">
+    <RibbonWindow.DataContext>
+        <local:MainWindowVM />
+    </RibbonWindow.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,7 +17,9 @@
         <Ribbon>
             <Ribbon.QuickAccessToolBar>
                 <RibbonQuickAccessToolBar>
-                    <RibbonButton SmallImageSource="{StaticResource New_project_is}"/>
+                    <RibbonButton SmallImageSource="{StaticResource New_project_is}"
+                                  Command="{Binding CreateNewProjectCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
                     <RibbonButton SmallImageSource="{StaticResource Open_is}"/>
                     <RibbonButton SmallImageSource="{StaticResource Save_is}"/>
                 </RibbonQuickAccessToolBar>
@@ -26,6 +31,8 @@
                 <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
                                        KeyTip="F">
                     <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
+                                               Command="{Binding CreateNewProjectCommand}"
+                                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                                KeyTip="N"/>
                     <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
                                                KeyTip="O"/>
@@ -182,7 +189,6 @@
             </RibbonTab>
         </Ribbon>
         <Grid Grid.Row="1">
-            <Image Source="{StaticResource Alignment_result_export_di}"/>
         </Grid>
     </Grid>
 </RibbonWindow>

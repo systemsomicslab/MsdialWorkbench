@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(13)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
         [Key(14)]
-        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metablomics;
+        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metabolomics;
         [Key(15)]
         public Ionization Ionization { get; set; } = Ionization.ESI;
         [Key(16)]

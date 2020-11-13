@@ -50,20 +50,21 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CBoolNegativeConverter.cs" />
     <Compile Include="ColorPicker\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\DataGridWithCheckBox.cs" />
+    <Compile Include="Converter\BooleanToEnumConverter.cs" />
     <Compile Include="Converter\BoolToYesNoConverter.cs" />
     <Compile Include="Common\DataGridHelper.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
+    <Compile Include="Converter\CBoolNegativeConverter.cs" />
     <Compile Include="Converter\MethodTypeDdMsmsEnumToBoolConverter.cs" />
     <Compile Include="Converter\MethodTypeDiMsmsEnumToBoolConverter.cs" />
     <Compile Include="Converter\PercentSliderToLabelConverter.cs" />
     <Compile Include="Converter\DoubleToStringConverter.cs" />
-    <Compile Include="RadioButtonConverter.cs" />
+    <Compile Include="Converter\RadioButtonConverter.cs" />
     <Compile Include="Validator\PositiveDoubleNumericValidation.cs" />
     <Compile Include="Validator\PositiveIntNumericValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

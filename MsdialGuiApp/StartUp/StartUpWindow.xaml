@@ -1,0 +1,568 @@
+﻿<Window x:Class="CompMs.App.Msdial.StartUp.StartUpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.StartUp"
+        xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+        mc:Ignorable="d"
+        SizeToContent="Height"
+        d:DataContext="{d:DesignInstance Type={x:Type local:StartUpWindowVM}}"
+        Name="StartUpWindowView"
+        Title="Start up a project" Height="700" Width="700">
+
+    <Window.Resources>
+        <converter:BooleanToEnumConverter x:Key="BTEConverter"/>
+        <converter:CBoolNegativeConverter x:Key="NegativeConverter"/>
+        <BooleanToVisibilityConverter x:Key="BTVConverter" />
+
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ToolTipErrorStyleDataGrid" TargetType="{x:Type DataGrid}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <TextBlock Text="Project file path:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,0,0" DockPanel.Dock="Left"/>
+            <Button Content="Browse" Command="{Binding ProjectFolderSelectCommand}"
+                    Width="60" Height="25" Margin="0,5,5,5" DockPanel.Dock="Right">
+                <Button.ToolTip>Select a project folder which should be the same as the directory includeing abf files.</Button.ToolTip>
+            </Button>
+            <TextBox Style="{StaticResource ToolTipErrorStyle}"
+                     Text="{Binding Path=ProjectFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="25" Margin="20,5,10,5"/>
+        </DockPanel>
+
+        <GroupBox Header="Ionization type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                
+                <RadioButton Name="RadioButton_ESI" Content="Soft ionization (LC/MS, LC/MS/MS, or precursor-oriented GC/MS/MS)"
+                             IsChecked="{Binding Ionization, Converter={StaticResource BTEConverter}, ConverterParameter=ESI, Mode=TwoWay}"
+                             HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Row="0" >
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Type 1: When you analyze an ESI type data like LC/MS or LS/MS/MS, select this option." />
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+
+                <RadioButton Name="RadioButton_EI" Content="Hard ionization (GC/MS)"
+                             IsChecked="{Binding Ionization, Converter={StaticResource BTEConverter}, ConverterParameter=EI, Mode=TwoWay}"
+                             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Grid.Row="1">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Type 2: When you analyze an EI type data like GC/MS, select this option." />
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Separation type" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <RadioButton Name="RadioButton_Separation_GCorLC" Content="Chromatography (GC, LC, CE, or SFC)"
+                             IsChecked="{Binding SeparationType, Converter={StaticResource BTEConverter}, ConverterParameter=Chromatography}"
+                             Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Type 1: When you analyze GC or LC data, please select this option." />
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+
+                <RadioButton Name="RadioButton_Separation_LCIM" Content="Ion mobility (now coupled with liquid chromatography)"
+                             IsChecked="{Binding SeparationType, Converter={StaticResource BTEConverter}, ConverterParameter=IonMobility}"
+                             Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Type 2: When you analyze LC-IM(ion mobility data), please select this option." />
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Name="GroupBox_MethodType" Header="MS method type"
+                  IsEnabled="{Binding IsChecked, ElementName=RadioButton_EI, Converter={StaticResource NegativeConverter}}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton Name="RadioButton_DataDependentMSMS" 
+                             Content="Conventional LC/MS or data dependent MS/MS" 
+                             IsChecked="{Binding AcquisitionType, Converter={StaticResource BTEConverter}, ConverterParameter=DDA}"
+                             Grid.Row="0" HorizontalAlignment="Left" 
+                             VerticalAlignment="Center" Margin="10,0,0,0">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Type 1: When you analyze a data set from data dependent MS/MS, select this option." />
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+
+                <Grid Visibility="{Binding IsChecked, ElementName=RadioButton_Separation_GCorLC, Converter={StaticResource BTVConverter}}"
+                      Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="11*"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton Name="RadioButton_DataIndependentMSMS_SWATH" 
+                                 Content="SWATH-MS or conventional All-ions method" 
+                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource BTEConverter}, ConverterParameter=SWATH}"
+                                 Grid.Column="0" HorizontalAlignment="Left" 
+                                 VerticalAlignment="Top" Margin="10,10,0,0">
+                        <ToolTipService.ToolTip>
+
+                            <ToolTip>
+                                <TextBlock>
+                                  Type 2:  
+                                <LineBreak /> 
+                                  When you analyze a data set from data independent MS/MS, select this option. 
+                                <LineBreak /> 
+                                  Moreover, you have to import the experiment information including
+                                <LineBreak /> 
+                                  &quot;Experiment ID&quot;, &quot;Scan or Swath&quot;, and &quot;Mass range&quot;.
+                                <LineBreak /> 
+                                  Please see the downloadable format. 
+                                <LineBreak /> 
+                                  For SWATH users, utilize &quot;Sample Information&quot; of PeakView software. 
+                                <LineBreak /> 
+                                  It's quite easy to get that kind of information.
+                                </TextBlock>
+                            </ToolTip>
+
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+
+                    <RadioButton x:Name="RadioButton_DataIndependentMSMS_AIF" Content="All-ions with multiple CEs (cycled like 0V-10V-40V)"
+                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource BTEConverter}, ConverterParameter=AIF}"
+                                 Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                 Margin="10,10,0,0" Height="15" Width="300" Grid.ColumnSpan="2">
+                        <ToolTipService.ToolTip>
+
+                            <ToolTip>
+                                <TextBlock>
+                                  Type 3:  
+                                <LineBreak /> 
+                                  When you analyze a data set from data independent MS/MS, select this option. 
+                                <LineBreak /> 
+                                  Moreover, you have to import the experiment information including 
+                                <LineBreak /> 
+                                  &quot;Experiment ID&quot;, &quot;Scan or AIF&quot;, &quot;Mass range&quot;, &quot;Name&quot; and &quot;Deconvolution Target (1:Yes, 0:No)&quot;.
+                                <LineBreak /> 
+                                 Please see the downloadable format..
+                                </TextBlock>
+                            </ToolTip>
+
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                </Grid>
+
+                <RadioButton Name="RadioButton_DataIndependentMSMS" 
+                             Content="Data independent MS/MS" 
+                             IsChecked="{Binding AcquisitionType, Converter={StaticResource BTEConverter}, ConverterParameter=SWATH}"
+                             Visibility="{Binding IsChecked, ElementName=RadioButton_Separation_LCIM, Converter={StaticResource BTVConverter}}"
+                             Grid.Row="1" HorizontalAlignment="Left" 
+                             VerticalAlignment="Top" Margin="10,10,0,0">
+                    <ToolTipService.ToolTip>
+
+                        <ToolTip>
+                            <TextBlock>
+                              Type 2:  
+                            <LineBreak /> 
+                              When you analyze a data set from data independent MS/MS, select this option. 
+                            </TextBlock>
+                        </ToolTip>
+
+                    </ToolTipService.ToolTip>
+                </RadioButton>
+
+            </Grid>
+        </GroupBox>
+
+        <Grid Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Name="GroupBox_DataType" Header="Data type (MS1)" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton Name="RadioButton_ProfileMode"
+                                 Content="Profile data"
+                                 IsChecked="{Binding MS1DataType, Converter={StaticResource BTEConverter}, ConverterParameter=Profile}"
+                                 Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                  Check carefully this option for your own data sets. Usually, as long as you use abf converter, please set this option as follows:
+                                <LineBreak /> 
+                                  AB Sciex: Profile
+                                <LineBreak /> 
+                                  Agilent LC-QTOF: Centroid
+                                <LineBreak /> 
+                                  Bruker LC-QTOF or FT-ICR: Centroid
+                                <LineBreak /> 
+                                  Thermo Orbitrap: Profile
+                                <LineBreak /> 
+                                  Waters LC-QTOF: Centroid
+                                <LineBreak /> 
+                                  mzML: up to your setting in ProteoWizard.
+                                <LineBreak /> 
+                                  However, the above setting actually depends on your instrument setting. 
+                                <LineBreak /> 
+                                  As long as you use the default sets, the above should be fine.
+                                <LineBreak /> 
+                                  If not, please set Centroid first by a file, and look at the peak shape if it's like centroid or profile.
+                                </TextBlock>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+
+                    <RadioButton Name="RadioButton_CentroidMode"
+                                 Content="Centroid data"
+                                 IsChecked="{Binding MS1DataType, Converter={StaticResource BTEConverter}, ConverterParameter=Centroid}"
+                                 Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                  Check carefully this option for your own data sets. Usually, as long as you use abf converter, please set this option as follows:
+                                <LineBreak /> 
+                                  AB Sciex: Profile
+                                <LineBreak /> 
+                                  Agilent LC-QTOF: Centroid
+                                <LineBreak /> 
+                                  Bruker LC-QTOF or FT-ICR: Centroid
+                                <LineBreak /> 
+                                  Thermo Orbitrap: Profile
+                                <LineBreak /> 
+                                  Waters LC-QTOF: Centroid
+                                <LineBreak /> 
+                                  mzML: up to your setting in ProteoWizard.
+                                <LineBreak /> 
+                                  However, the above setting actually depends on your instrument setting. 
+                                <LineBreak /> 
+                                  As long as you use the default sets, the above should be fine.
+                                <LineBreak /> 
+                                  If not, please set Centroid first by a file, and look at the peak shape if it's like centroid or profile.
+                                </TextBlock>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                </Grid>
+
+            </GroupBox>
+
+            <GroupBox Name="GroupBox_DataTypeMS2" Header="Data type (MS/MS)"
+                      IsEnabled="{Binding IsChecked, ElementName=RadioButton_EI, Converter={StaticResource NegativeConverter}}"
+                      Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton Name="RadioButton_ProfileModeMS2"
+                                 Content="Profile data"
+                                 IsChecked="{Binding MS2DataType, Converter={StaticResource BTEConverter}, ConverterParameter=Profile}"
+                                 Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                  Basically, select the same mode as the data type of MS1.
+                                <LineBreak /> 
+                                  The reason why we separated the mode selections is that we found that Thermo LTQ-Orbitrap often stores the different data types
+                                <LineBreak /> 
+                                  in MS1 and MS/MS. Most frequent is that MS1 should be 'profile' mode while MS/MS should be 'centroid' mode.
+                                </TextBlock>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+
+                    <RadioButton Name="RadioButton_CentroidModeMS2"
+                                 Content="Centroid data"
+                                 IsChecked="{Binding MS2DataType, Converter={StaticResource BTEConverter}, ConverterParameter=Centroid}"
+                                 Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                  Basically, select the same mode as the data type of MS1.
+                                <LineBreak /> 
+                                  The reason why we separated the mode selections is that we found that Thermo LTQ-Orbitrap often stores the different data types
+                                <LineBreak /> 
+                                  in MS1 and MS/MS. Most frequent is that MS1 should be 'profile' mode while MS/MS should be 'centroid' mode.
+                                </TextBlock>
+                            </ToolTip>
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                </Grid>
+
+            </GroupBox>
+
+        </Grid>
+
+        <Grid Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Name="GroupBox_IonMode" Header="Ion mode" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton Name="RadioButton_PositiveMode"
+                                 Content="Positive ion mode"
+                                 IsChecked="{Binding IonMode, Converter={StaticResource BTEConverter}, ConverterParameter=Positive}"
+                                 Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Necessary for adduct ion setting" />
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                    <RadioButton Name="RadioButton_NegativeMode"
+                                 Content="Negative ion mode"
+                                 IsChecked="{Binding IonMode, Converter={StaticResource BTEConverter}, ConverterParameter=Negative}"
+                                 Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Necessary for adduct ion setting" />
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Name="GroupBox_TargetOmics" Header="Target omics" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <RadioButton Name="RadioButton_Metabolomics"
+                                 Content="Metabolomics"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BTEConverter}, ConverterParameter=Metabolomics}"
+                                 Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+
+                        <ToolTipService.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                Identification method is optimized for metabolomics.
+                                <LineBreak />
+                                You have to use your own spectral (MSP) library for compound identifications.
+                                </TextBlock>
+                            </ToolTip>
+
+                        </ToolTipService.ToolTip>
+
+                    </RadioButton>
+                    <RadioButton Name="RadioButton_Lipidomics"
+                                 Content="Lipidomics"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BTEConverter}, ConverterParameter=Lipidomics}"
+                                 IsEnabled="{Binding IsChecked, ElementName=RadioButton_EI, Converter={StaticResource NegativeConverter}}"
+                                 Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+
+                            <ToolTip>
+                                <TextBlock>
+                                Identification method is optimized for lipidomics.
+                                <LineBreak />
+                                You can use MSDIAL internal LipidBlast MS/MS library for lipid identifications.
+                                </TextBlock>
+                            </ToolTip>
+
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+
+        <Grid Grid.Row="6">
+
+
+
+            <Expander Header="Advanced: add further meta data"
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Top" 
+                      ExpandDirection="Down">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Label Content="----Optional information for MassBank-, MoNA-, and NIST (MSP) format export----" 
+                           FontStyle="Italic"
+                           VerticalAlignment="Top" HorizontalAlignment="Center" 
+                           Margin="5,2,0,0" Grid.ColumnSpan="2" Grid.Row="0"/>
+
+                    <DockPanel Grid.Column="0" Grid.Row="1" Margin="0">
+
+                        <StackPanel Orientation="Vertical" DockPanel.Dock="Left">
+
+                            <Label Content="Instrument trype: " Height="30" VerticalAlignment="Center" Margin="2,0,0,0" />
+                            <Label Content="Instrument: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+                            <Label Content="Authors: " Height="30" VerticalAlignment="Center" Margin="2,0,0,0" />
+                            <Label Content="License: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+                            <Label Content="Collision energy: " Height="30" VerticalAlignment="Center"  Margin="2,0,0,0" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical">
+
+                            <TextBox Name="TextBox_InstrumentType" 
+                                     Text="{Binding InstrumentType, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Left" 
+                                     Height="25" Margin="5,2.5,5,2.5">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_Instrument" 
+                                     Text="{Binding Instrument, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Left" 
+                                     Height="25" Margin="5,2.5,5,2.5">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <TextBox Name="TextBox_Authors" 
+                                     Text="{Binding Authors, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Left" 
+                                     Height="25" Margin="5,2.5,5,2.5">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita" />
+                                </ToolTipService.ToolTip>
+
+                            </TextBox>
+
+                            <TextBox Name="TextBox_License" 
+                                     Text="{Binding License, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Left" 
+                                     Height="25" Margin="5,2.5,5,2.5">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="ex. CC-BY" />
+                                </ToolTipService.ToolTip>
+
+                            </TextBox>
+
+                            <TextBox Name="TextBox_CollisionEnergy" 
+                                     Text="{Binding CollisionEnergy, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
+                                     VerticalAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     HorizontalAlignment="Stretch" 
+                                     HorizontalContentAlignment="Left" 
+                                     Height="25" Margin="5,2.5,5,2.5">
+
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)" />
+                                </ToolTipService.ToolTip>
+
+                            </TextBox>
+
+                        </StackPanel>
+
+                    </DockPanel>
+
+                    <DockPanel Grid.Column="1" Grid.Row="1">
+                        <Label Content="Comment: " Margin="7,3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" DockPanel.Dock="Left"/>
+
+                        <TextBox Name="TextBox_Comment"
+                                 Text="{Binding Path=Comment, UpdateSourceTrigger=PropertyChanged}" 
+                                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" 
+                                 Margin="20,3,5,10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                            <ToolTipService.ToolTip>
+                                <ToolTip> Add comment. </ToolTip>
+                            </ToolTipService.ToolTip>
+
+                        </TextBox>
+                    </DockPanel>
+
+                </Grid>
+            </Expander>
+
+        </Grid>
+
+        <Button Name="Button_Next" 
+                Command="{Binding ContinueProcessCommand, UpdateSourceTrigger=PropertyChanged}" 
+                CommandParameter="{Binding ElementName=StartUpWindowView}"
+                Content="Next" 
+                Grid.Row="7" Width="60"  Height="25" 
+                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,5,5,5" />
+    </Grid>
+</Window>

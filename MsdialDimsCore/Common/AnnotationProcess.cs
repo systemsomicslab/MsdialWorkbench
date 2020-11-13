@@ -44,7 +44,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = null;
                 if (omics == TargetOmics.Lipidomics)
                     getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(feature, refSpec, param, isotopes, refSpec.IsotopicPeaks);
-                else if (omics == TargetOmics.Metablomics)
+                else if (omics == TargetOmics.Metabolomics)
                     getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(feature, refSpec, param, isotopes, refSpec.IsotopicPeaks);
 
                 mspResults = GetMatchResults(mspDB, feature.Mass, ms1Tol, getMatchResult);

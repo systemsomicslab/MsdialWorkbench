@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Controls.Ribbon" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -56,6 +57,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="MainWindowVM.cs" />
+    <Compile Include="StartUp\StartUpWindow.xaml.cs">
+      <DependentUpon>StartUpWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StartUp\StartUpWindowVM.cs" />
+    <Compile Include="Utility\ParameterFactory.cs" />
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -72,6 +80,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="StartUp\StartUpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -98,6 +110,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonMVVM\CommonMVVM.csproj">
+      <Project>{D7BC52DE-CDF0-4F78-B23E-EF2434D14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{EB161441-A663-485F-8CD6-D1D5794F7AD9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj">
+      <Project>{B39EB5F8-713A-49CC-B0E9-B4040687CB81}</Project>
+      <Name>MsdialCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj">
+      <Project>{1D3CE027-CDD7-446E-A190-AE99A129CEB3}</Project>
+      <Name>MsdialDimsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj">
+      <Project>{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}</Project>
+      <Name>MsdialGcMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
+      <Project>{0750647B-1DFC-49DC-ADFB-16235E22AA88}</Project>
+      <Name>MsdialLcImMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj">
+      <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
+      <Name>MsdialLcMsApi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

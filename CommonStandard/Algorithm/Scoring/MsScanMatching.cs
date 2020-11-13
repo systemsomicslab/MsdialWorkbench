@@ -1516,7 +1516,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 (dotProductFactor * spectraSimilarity + revesrseDotProdFactor * reverseSearchSimilarity + presensePercentageFactor * presenceSimilarity) /
                 (dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             if (!isUseRT) {
                 if (isotopeSimilarity < 0) {
@@ -1568,7 +1568,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 (dotProductFactor * spectraSimilarity + revesrseDotProdFactor * reverseSearchSimilarity + presensePercentageFactor * presenceSimilarity) /
                 (dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             var useRtScore = true;
             var useCcsScore = true;
@@ -1751,7 +1751,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var msmsSimilarity = dotProductSimilarity;
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             if (!isUseRT) {
                 if (isotopeSimilarity < 0) {

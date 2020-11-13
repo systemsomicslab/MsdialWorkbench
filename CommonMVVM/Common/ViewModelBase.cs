@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Input;
 
@@ -171,5 +172,22 @@ namespace Rfx.Riken.OsakaUniv
         #endregion // Required Methods for INotifyPropertyChanged
 
         
+    }
+}
+
+namespace CompMs.CommonMVVM
+{
+    public class ViewModelBase : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnProertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+
+        protected bool SetProperty<T>(ref T prop, T value, [CallerMemberName]string propertyname = "") {
+            if (Equals(prop, value)) return false;
+            prop = value;
+            OnProertyChanged(propertyname);
+            return true;
+        }
     }
 }
