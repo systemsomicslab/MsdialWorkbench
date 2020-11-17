@@ -278,6 +278,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "STSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 45)); // chocolate modified
                 case "EGSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 50)); // chocolate modified
                 case "DEGSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 55)); // chocolate modified
+                case "DSMSE": return new SolidColorBrush(Color.FromArgb(180, 210, 145, 60)); // chocolate modified
                 case "AHexBRS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
                 case "AHexCAS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
                 case "AHexCS": return new SolidColorBrush(Color.FromArgb(180, 200, 165, 20)); // chocolate modified
@@ -298,6 +299,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "SISPHex": return new SolidColorBrush(Color.FromArgb(180, 129, 49, 9)); // saddlebrown modified
                 case "STSPHex": return new SolidColorBrush(Color.FromArgb(180, 129, 49, 9)); // saddlebrown modified
                 case "FA": return new SolidColorBrush(Color.FromArgb(180, 139, 69, 19)); // saddlebrown
+                case "OxFA": return new SolidColorBrush(Color.FromArgb(180, 89, 39, 49)); // saddlebrown modified
                 case "FAHFA": return new SolidColorBrush(Color.FromArgb(180, 148, 0, 211)); // darkviolet
                 case "LDGTS": return new SolidColorBrush(Color.FromArgb(180, 255, 0, 0)); // red
                 case "LPC": return new SolidColorBrush(Color.FromArgb(180, 50, 205, 50)); // limegreen
@@ -352,7 +354,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "DG": return new SolidColorBrush(Color.FromArgb(180, 0, 255, 0)); // lime
                 case "TG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 0)); // green
                 case "OxTG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 20)); // green modified
-                case "FAHFATG": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 40)); // green modified
+                case "TG_EST": return new SolidColorBrush(Color.FromArgb(180, 0, 128, 40)); // green modified
                 case "EtherDG": return new SolidColorBrush(Color.FromArgb(180, 0, 204, 0)); // lime
                 case "EtherTG": return new SolidColorBrush(Color.FromArgb(180, 0, 51, 0)); // green
                 case "MGDG": return new SolidColorBrush(Color.FromArgb(180, 0, 0, 255)); // blue

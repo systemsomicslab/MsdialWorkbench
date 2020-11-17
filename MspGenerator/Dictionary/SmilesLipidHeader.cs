@@ -80,7 +80,7 @@ namespace CompMs.MspGenerator
             {"EtherTG", "C(O%10)C(O%11)C(O%12)."},
 
             {"CL", "OC(COP(O)(=O)OCC(O%10)C(O%11))COP(O)(=O)OCC(O%12)C(O%13)."},
-            {"FAHFATG", "C(O%11)C(O%12)C(O%13)."},
+            {"TG_EST", "C(O%11)C(O%12)C(O%13)."},
 
             {"MMPE", "C(O%10)C(O%11)COP(O)(=O)OCCNC."},
             {"DMPE", "C(O%10)C(O%11)COP(O)(=O)OCCN(C)C."},

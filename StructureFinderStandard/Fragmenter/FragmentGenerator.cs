@@ -229,7 +229,7 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
         private static Atom getHydrogenAtom()
         {
             //var iAtom = new Atom( new Element("H"));
-            var iAtom = new Atom(new ChemicalElement("H"));
+            var iAtom = new Atom(ChemicalElement.H);
 
             iAtom.FormalCharge = 0;
             iAtom.Valency = 1;

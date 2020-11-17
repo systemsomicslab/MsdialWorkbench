@@ -25,15 +25,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp
 
             #region arg[] examples
             //GC - MS test using netCDF
-            args = new string[] {
-                "gcms"
-                , "-i"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
-                , "-o"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
-                , "-m"
-                , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
-                , "-p" };
+            //args = new string[] {
+            //    "gcms"
+            //    , "-i"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //    , "-o"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //    , "-m"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
+            //    , "-p" };
 
             //LC-DDA test using abf (as centroid mode)
             //args = new string[] {
@@ -75,6 +75,16 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MsdialConsoleApp demo files\LCMS_DIA\Msdial-lcms-dia-Param.txt"
             //    , "-o"
             //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MsdialConsoleApp demo files\LCMS_DIA" };
+
+            //LC-DIA(AIF) test using ABF (as centroid mode)
+            //args = new string[] {
+            //    "lcmsdia"
+            //    , "-i"
+            //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs"
+            //    , "-m"
+            //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs\Msdial-lcms-dia-Param.txt"
+            //    , "-o"
+            //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs" };
             #endregion
 
             /*

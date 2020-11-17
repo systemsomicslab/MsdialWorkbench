@@ -527,10 +527,10 @@ namespace Rfx.Riken.OsakaUniv
                         correlDecResMsViewer.Closed += closedMethod_correlDecResMsViewer;
                     }
                     else {
-                        if(this.CommonProp.AnalysisFiles.Count > 5)
+                        if(this.CommonProp.AnalysisFiles.Count > 3)
                             MessageBox.Show("Please run correlation based deconvolution. \n(Menu -> Data Processing -> Correlation based deconvolution)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         else {
-                            MessageBox.Show("Sorry, it requires >5 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show("Sorry, it requires >3 samples", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }

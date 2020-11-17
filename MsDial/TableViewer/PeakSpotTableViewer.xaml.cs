@@ -13,6 +13,7 @@ using Msdial.Lcms.Dataprocess.Utility;
 using Msdial.Gcms.Dataprocess.Utility;
 using Msdial.Gcms.Dataprocess.Algorithm;
 using CompMs.Common.DataObj;
+using System.Windows.Media;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -61,7 +62,7 @@ namespace Rfx.Riken.OsakaUniv
         private void changeColumnForGC() {
             this.Width = 1000;
             var dg = DataGrid_RawData;
-            
+
             // change column Binding & Header
             ((DataGridTextColumn)dg.Columns[0]).Binding = new Binding("Ms1DecRes.Ms1DecID");
             ((DataGridTextColumn)dg.Columns[1]).Binding = new Binding("Ms1DecRes.RetentionTime") { StringFormat = "0.00" };
@@ -74,10 +75,10 @@ namespace Rfx.Riken.OsakaUniv
             ((DataGridTextColumn)dg.Columns[9]).Binding = new Binding("Ms1DecRes.SignalNoiseRatio") { StringFormat = "0.0" };
 
             // remove
-            dg.Columns.RemoveAt(8); // remove Gaussian Sim 
+            dg.Columns.RemoveAt(8); // remove Gaussian Sim
             dg.Columns.RemoveAt(5); // remove Comment
             dg.Columns.RemoveAt(3); // remove Type
-            
+
             // add RI
             var RIcolumn = new DataGridTextColumn() {
                 Header = "RI",
@@ -98,7 +99,7 @@ namespace Rfx.Riken.OsakaUniv
         private void changeColumnForIonMobility() {
             this.Width = 1380;
             var dg = DataGrid_RawData;
-            
+
             ((DataGridTextColumn)dg.Columns[0]).Binding = new Binding("PeakID");
             ((DataGridTextColumn)dg.Columns[1]).Binding = new Binding("RT") { StringFormat = "0.00" };
             ((DataGridTextColumn)dg.Columns[2]).Binding = new Binding("Mz");
@@ -241,7 +242,7 @@ namespace Rfx.Riken.OsakaUniv
             this.peakSpotTableViewer.doubleSlider_RtFilter.UpperSlider.ValueChanged += rtUpperSlider_ValueChanged;
             this.Settings.RtSliderLowerValue = (float)this.peakSpotTableViewer.doubleSlider_RtFilter.LowerSlider.Value;
             this.Settings.RtSliderUpperValue = (float)this.peakSpotTableViewer.doubleSlider_RtFilter.UpperSlider.Value;
-          
+
             // textBox -> slider
             this.Settings.PropertyChanged -= settings_propertyChanged;
             this.Settings.PropertyChanged += settings_propertyChanged;
@@ -261,7 +262,7 @@ namespace Rfx.Riken.OsakaUniv
             this.peakSpotTableViewer.doubleSlider_RtFilter.UpperValue = this.peakSpotTableViewer.doubleSlider_RtFilter.Maximum;
             this.peakSpotTableViewer.doubleSlider_RtFilter.Minimum = this.source.Min(x => x.PeakAreaBean.RtAtPeakTop);
             this.peakSpotTableViewer.doubleSlider_RtFilter.LowerValue = this.peakSpotTableViewer.doubleSlider_RtFilter.Minimum;
- 
+
         }
 
         private void setSlidersForIonMobility() {
@@ -280,7 +281,7 @@ namespace Rfx.Riken.OsakaUniv
 
         }
 
-        private void setSlidersForGC() { 
+        private void setSlidersForGC() {
             setCommonSlider();
             // mz
             this.peakSpotTableViewer.doubleSlider_MzFilter.Maximum = this.source.Max(x => x.Ms1DecRes.BasepeakMz);
@@ -535,7 +536,7 @@ namespace Rfx.Riken.OsakaUniv
         public MS1DecResult Ms1DecRes { get; set; }
         public PeakAreaBean PeakAreaBean { set; get; }
         public DriftSpotBean DriftSpotBean { set; get; }
-        public BitmapSource Image { set; get; }
+        public DrawingImage Image { set; get; }
 
         // for ion mobility
         public float RT { get; set; }
@@ -581,7 +582,7 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
-        
+
 
         #endregion
 
@@ -590,7 +591,7 @@ namespace Rfx.Riken.OsakaUniv
         public PeakSpotRow(int id, PeakAreaBean pab, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             PeakAreaBean = pab;
             PeakID = id;
-            Image = getBitmapImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
+            Image = GetDrawingImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
         }
 
         public PeakSpotRow(int id, PeakAreaBean pab, DriftSpotBean dsb, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
@@ -610,7 +611,7 @@ namespace Rfx.Riken.OsakaUniv
                 Area = dsb.AreaAboveZero;
                 Gaussian = dsb.GaussianSimilarityValue;
                 SN = dsb.SignalToNoise;
-                Image = getBitmapImageForLC(pab, dsb, spectrumCollection, projectPropertyBean, analysisParametersBean);
+                Image = GetDrawingImageForLC(pab, dsb, spectrumCollection, projectPropertyBean, analysisParametersBean);
             }
             else {
                 RT = pab.RtAtPeakTop;
@@ -624,7 +625,7 @@ namespace Rfx.Riken.OsakaUniv
                 Area = pab.AreaAboveZero;
                 Gaussian = pab.GaussianSimilarityValue;
                 SN = pab.SignalToNoise;
-                Image = getBitmapImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
+                Image = GetDrawingImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
             }
 
         }
@@ -633,7 +634,7 @@ namespace Rfx.Riken.OsakaUniv
         public PeakSpotRow(PeakAreaBean pab, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             PeakAreaBean = pab;
             PeakID = pab.PeakID;
-            Image = getBitmapImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
+            Image = GetDrawingImageForLC(pab, spectrumCollection, projectPropertyBean, analysisParametersBean);
         }
 
         //GC
@@ -641,17 +642,22 @@ namespace Rfx.Riken.OsakaUniv
             ProjectPropertyBean projectPropertyBean, AnalysisParamOfMsdialGcms analysisParamGC) {
             PeakID = ms1DecResult.Ms1DecID;
             Ms1DecRes = ms1DecResult;
-            Image = getBitmapImageForGC(ms1DecResult, spectrumCollectionGC, analysisParamGC);
+            Image = GetDrawingImageForGC(ms1DecResult, spectrumCollectionGC, analysisParamGC);
         }
         #endregion
 
         // Ion mobility
+        private DrawingImage GetDrawingImageForLC(PeakAreaBean peakSpot, DriftSpotBean driftSpot, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean project, AnalysisParametersBean param) {
+            var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakSpot, driftSpot, param, project);
+            var img = new PlainChromatogramXicForTableViewer(height, width, 100, 100).GetChromatogramDrawingImage(chromatogramXicVM);
+            return img;
+        }
         private BitmapSource getBitmapImageForLC(PeakAreaBean peakSpot, DriftSpotBean driftSpot, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean project, AnalysisParametersBean param) {
             var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakSpot, driftSpot, param, project);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
         }
 
-        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RawSpectrum> spectrumCollection, 
+        private static ChromatogramXicViewModel getChromatogramXicViewModelForLC(ObservableCollection<RawSpectrum> spectrumCollection,
             PeakAreaBean peakSpot, DriftSpotBean driftSpot, AnalysisParametersBean param, ProjectPropertyBean projectPropertyBean) {
             float targetMz = peakSpot.AccurateMass;
             float targetRt = peakSpot.RtAtPeakTop;
@@ -668,7 +674,7 @@ namespace Rfx.Riken.OsakaUniv
             //var smoothedPeaklist = DataAccessLcUtility.GetSmoothedPeaklist(
             //    DataAccessLcUtility.GetDriftChromatogramByRtMz(
             //        spectrumCollection, targetRt, param.AccumulatedRtRagne,
-            //        targetMz, param.CentroidMs1Tolerance, minDt, maxDt), 
+            //        targetMz, param.CentroidMs1Tolerance, minDt, maxDt),
             //    param.SmoothingMethod, param.SmoothingLevel);
             var smoothedPeaklist = DataAccessLcUtility.GetSmoothedPeaklist(
                 DataAccessLcUtility.GetDriftChromatogramByRtMz(
@@ -680,13 +686,18 @@ namespace Rfx.Riken.OsakaUniv
             return new ChromatogramXicViewModel(chromatogramBean, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None,
                 ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, 0, "", targetMz,
                 param.CentroidMs1Tolerance,
-                driftSpot.DriftTimeAtPeakTop, 
-                driftSpot.DriftTimeAtLeftPeakEdge, 
-                driftSpot.DriftTimeAtRightPeakEdge, 
+                driftSpot.DriftTimeAtPeakTop,
+                driftSpot.DriftTimeAtLeftPeakEdge,
+                driftSpot.DriftTimeAtRightPeakEdge,
                 true);
         }
 
         // LC
+        private DrawingImage GetDrawingImageForLC(PeakAreaBean peakAreaBean, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
+            var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakAreaBean, analysisParametersBean, projectPropertyBean);
+            var img = new PlainChromatogramXicForTableViewer(height, width, 100, 100).GetChromatogramDrawingImage(chromatogramXicVM);
+            return img;
+        }
         private BitmapSource getBitmapImageForLC(PeakAreaBean peakAreaBean, ObservableCollection<RawSpectrum> spectrumCollection, ProjectPropertyBean projectPropertyBean, AnalysisParametersBean analysisParametersBean) {
             var chromatogramXicVM = getChromatogramXicViewModelForLC(spectrumCollection, peakAreaBean, analysisParametersBean, projectPropertyBean);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
@@ -700,15 +711,21 @@ namespace Rfx.Riken.OsakaUniv
             float Begin = targetLeftRt - (targetRightRt - targetLeftRt) * 1.5f;
             float End = targetRightRt + (targetRightRt - targetLeftRt) * 1.5f;
             List<double[]> smoothedPeaklist = DataAccessLcUtility.GetSmoothedPeaklist(DataAccessLcUtility.GetMs1Peaklist(spectrumCollection, projectPropertyBean, targetMz, analysisParametersBean.CentroidMs1Tolerance, Begin, End), analysisParametersBean.SmoothingMethod, analysisParametersBean.SmoothingLevel);
-            ChromatogramBean chromatogramBean = new ChromatogramBean(true, System.Windows.Media.Brushes.Blue, 1, "", targetMz, 
+            ChromatogramBean chromatogramBean = new ChromatogramBean(true, System.Windows.Media.Brushes.Blue, 1, "", targetMz,
                 new ObservableCollection<double[]>(smoothedPeaklist), new ObservableCollection<PeakAreaBean>() { peakAreaBean });
             return new ChromatogramXicViewModel(chromatogramBean, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None,
-                ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, 0, "", targetMz, 
-                analysisParametersBean.CentroidMs1Tolerance, 
+                ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, 0, "", targetMz,
+                analysisParametersBean.CentroidMs1Tolerance,
                 targetRt, targetLeftRt, targetRightRt, true);
         }
 
         // GC
+        private DrawingImage GetDrawingImageForGC(MS1DecResult ms1dec, List<RawSpectrum> spectrumCollectionGC, AnalysisParamOfMsdialGcms analysisParamGC) {
+            var chromatogramXicVM = getChromatogramXicVM(spectrumCollectionGC, ms1dec, analysisParamGC);
+            var image = new PlainChromatogramXicForTableViewer(height, width, 100, 100).GetChromatogramDrawingImage(chromatogramXicVM);
+            return image;
+        }
+
         private BitmapSource getBitmapImageForGC(MS1DecResult ms1dec, List<RawSpectrum> spectrumCollectionGC, AnalysisParamOfMsdialGcms analysisParamGC) {
             var chromatogramXicVM = getChromatogramXicVM(spectrumCollectionGC, ms1dec, analysisParamGC);
             return new PlainChromatogramXicForTableViewer(height, width, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
@@ -727,16 +744,16 @@ namespace Rfx.Riken.OsakaUniv
             //foreach (var peak in ms1dec.BasepeakChromatogram) { peaklist.Add(new double[] { peak.ScanNumber, peak.RetentionTime, peak.Mz, peak.Intensity }); }
             var smoothedPeaklist = DataAccessGcUtility.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
             var chromatogramBean = new ChromatogramBean(true, System.Windows.Media.Brushes.Blue, 1, "", targetMz, param.MassSliceWidth, new ObservableCollection<double[]>(smoothedPeaklist));
-            return new ChromatogramXicViewModel(chromatogramBean, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None, 
+            return new ChromatogramXicViewModel(chromatogramBean, ChromatogramEditMode.Display, ChromatogramDisplayLabel.None,
                 ChromatogramQuantitativeMode.Height, ChromatogramIntensityMode.Relative, 0, "", targetMz, param.MassAccuracy,
                 targetRt, targetLeftRt, targetRightRt, true);
 
         }
 
         #region old programs
-        /* 
-         * 
-        
+        /*
+         *
+
        public PeakSpotRow(PeakAreaBean pab, List<RAW_Spectrum> spectrumCollectionGC, MS1DecResult ms1DecResult,
             ProjectPropertyBean projectPropertyBean, AnalysisParamOfMsdialGcms analysisParamGC) {
             PeakAreaBean = pab;

@@ -121,7 +121,7 @@ namespace CompMs.MspGenerator
 
             // (GL) four acyl chains
                 {   "CL" ,    new List<string>(){ "[M-H]-", "[M+NH4]+", "[M-2H]2-", }    },
-                {   "FAHFATG" ,    new List<string>(){  "[M+NH4]+"  }    },
+                {   "TG_EST" ,    new List<string>(){  "[M+NH4]+"  }    },
 
 
             //cer 2chains
@@ -156,6 +156,7 @@ namespace CompMs.MspGenerator
                 {   "PE_Cer_d" ,    new List<string>(){ "[M-H]-" }    },
                 {   "PE_Cer_d+O" ,    new List<string>(){ "[M-H]-" }    },
                 {   "PI_Cer_d+O" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
+                {   "PI_Cer_d" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
                 {   "SHexCer" ,    new List<string>(){ "[M+H]+", "[M-H]-" }    },
                 {   "SHexCer+O" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+NH4]+" }    },
 
@@ -164,7 +165,7 @@ namespace CompMs.MspGenerator
                 {   "Cer_EODS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-"}    },
                 {   "Cer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+" }    },
                 {   "HexCer_EOS" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },
-                {   "Cer_EBDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },  // "[M+H-H2O]+" is not use
+                {   "Cer_EBDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M-H]-" }    },  // "[M+H-H2O]+" is not use
                 {   "AHexCer" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+H-H2O]+", "[M-H]-" }    },
 
             //cer 1 chains

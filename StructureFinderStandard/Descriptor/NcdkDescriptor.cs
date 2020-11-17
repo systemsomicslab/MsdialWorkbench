@@ -70,7 +70,7 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             LargestChainDescriptors(atomContainer);
             LargestPiSystemDescriptors(atomContainer);
             // LengthOverBreadthDescriptors(atomContainer); // 3D
-            LongestAliphaticChainDescriptors(atomContainer);
+            // LongestAliphaticChainDescriptors(atomContainer);  // some structure cause stack over flow
             MannholdLogPDescriptors(atomContainer);
             MdeDescriptors(atomContainer);
             // MomentOfInertiaDescriptors(atomContainer); // 3D
@@ -81,7 +81,7 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             SmallRingDescriptors(atomContainer);
             SpiroAtomCountDescriptors(atomContainer);
             TpsaDescriptors(atomContainer);
-            VabcDescriptors(atomContainer);
+            // VabcDescriptors(atomContainer);  // NaN return
             VadjMaDescriptors(atomContainer);
             WeightDescriptors(atomContainer);
             WeightedPathDescriptors(atomContainer);

@@ -4681,22 +4681,23 @@ namespace Rfx.Riken.OsakaUniv
 
         private static void writeFieldsAsMrmprobsReferenceFormat(StreamWriter sw, string name, double precursorMz, double rt, double rtBegin, double rtEnd, double ms1Tolerrance, double ms2Tolerance, int topN, bool isIncludeMslevel1, bool isUseMs1LevelForQuant, MS2DecResult ms2DecResult)
         {
-            if ((isIncludeMslevel1 == false || isUseMs1LevelForQuant == true) && ms2DecResult.MassSpectra.Count == 0) return;
-
-            var massSpec = ms2DecResult.MassSpectra.OrderByDescending(n => n[1]).ToList();
-            var baseIntensity = 0.0;
-            if (isUseMs1LevelForQuant) baseIntensity = ms2DecResult.Ms1PeakHeight;
-            else baseIntensity = massSpec[0][1];
-
+            if (isIncludeMslevel1 == false && ms2DecResult.MassSpectra.Count == 0) return;
             if (isIncludeMslevel1)
             {
-                var tqRatio = Math.Round(ms2DecResult.Ms1PeakHeight / baseIntensity * 100, 0);
+                var tqRatio = 99;
                 if (isUseMs1LevelForQuant) tqRatio = 100;
                 if (tqRatio == 100 && !isUseMs1LevelForQuant) tqRatio = 99; // 100 is used just once for the target (quantified) m/z trace. Otherwise, non-100 value should be used.
                 writeFieldsAsMrmprobsReferenceFormat(sw, name, precursorMz, precursorMz, rt, tqRatio, rtBegin, rtEnd, ms1Tolerrance, ms2Tolerance, 1, "NA");
             }
 
             if (topN == 1 && isIncludeMslevel1) return;
+            if (ms2DecResult.MassSpectra == null || ms2DecResult.MassSpectra.Count == 0) return;
+
+            var massSpec = ms2DecResult.MassSpectra.OrderByDescending(n => n[1]).ToList();
+            var baseIntensity = 0.0;
+            
+            if (isUseMs1LevelForQuant) baseIntensity = ms2DecResult.Ms1PeakHeight;
+            else baseIntensity = massSpec[0][1];
 
             for (int i = 0; i < massSpec.Count; i++)
             {

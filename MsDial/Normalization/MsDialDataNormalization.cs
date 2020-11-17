@@ -110,7 +110,7 @@ namespace Rfx.Riken.OsakaUniv
                 double ticOnDrift = 0.0;
                 var alignedSpots = alignResult.AlignmentPropertyBeanCollection;
                 for (int j = 0; j < alignedSpots.Count; j++) {
-                    if (alignedSpots[j].LibraryID >= 0 || alignedSpots[j].PostIdentificationLibraryID >= 0)
+                    if ((alignedSpots[j].LibraryID >= 0 && !alignedSpots[j].MetaboliteName.Contains("w/o")) || alignedSpots[j].PostIdentificationLibraryID >= 0)
                         tic += alignedSpots[j].AlignedPeakPropertyBeanCollection[i].Variable;
 
                     if (isMobility) {

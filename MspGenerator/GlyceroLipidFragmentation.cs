@@ -3492,7 +3492,7 @@ namespace CompMs.MspGenerator
 
         public static void fahfaTgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
         {
-            //{ "FAHFATG" ,    new List<string>() { "[M+NH4]+" }    },
+            //{ "TG_EST" ,    new List<string>() { "[M+NH4]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
             var chain2Mass = acylChainMass(chain2Carbon, chain2Double, 0);
             var chain3Mass = acylChainMass(chain3Carbon, chain3Double, 0) + MassDictionary.OxygenMass;

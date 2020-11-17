@@ -238,7 +238,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="DG" GraphId="aa14d" Type="Metabolite">
-    <Graphics CenterX="1341.9742034631704" CenterY="1223.7032418167137" Width="80.0" Height="80.0" ZOrder="32815" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1341.9742034631704" CenterY="1222.2337341017978" Width="80.0" Height="80.0" ZOrder="32815" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="TG" GraphId="b28d0" Type="Metabolite">
@@ -569,8 +569,8 @@
     <Graphics CenterX="1461.8937745087476" CenterY="1339.8301509339474" Width="80.0" Height="80.0" ZOrder="33021" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
-  <DataNode TextLabel="FAHFATG" GraphId="f9ed3" Type="Metabolite">
-    <Graphics CenterX="1198.2212944931646" CenterY="1223.7032418167137" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33023" FontSize="12" Valign="Middle" Color="0000ff" />
+  <DataNode TextLabel="TG_EST" GraphId="f9ed3" Type="Metabolite">
+    <Graphics CenterX="1198.2212944931646" CenterY="1222.2337341017978" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33023" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="MMPE" GraphId="c4c95" Type="Metabolite">
@@ -795,7 +795,7 @@
   <Interaction GraphId="id344f8fd6">
     <Graphics ZOrder="12288" LineThickness="1.0">
       <Point X="1341.9742034631704" Y="1011.1078033876986" GraphRef="b28d0" RelX="0.0" RelY="1.0" />
-      <Point X="1341.9742034631704" Y="1183.7032418167137" GraphRef="aa14d" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
+      <Point X="1341.9742034631704" Y="1182.2337341017978" GraphRef="aa14d" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
@@ -942,7 +942,7 @@
   <Interaction GraphId="id7cbf958c">
     <Graphics ZOrder="12288" LineThickness="1.0">
       <Point X="1463.5399330270639" Y="147.62520085029476" GraphRef="e1062" RelX="0.0" RelY="-1.0" />
-      <Point X="1463.5399330270639" Y="119.7193349598362" ArrowHead="Arrow" />
+      <Point X="1463.5399330270639" Y="119.7193349598362" GraphRef="f38e5" RelX="0.0" RelY="1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
@@ -983,7 +983,7 @@
   </Interaction>
   <Interaction GraphId="id87084428">
     <Graphics ZOrder="12288" LineThickness="1.0">
-      <Point X="1381.9742034631704" Y="1223.7032418167137" GraphRef="aa14d" RelX="1.0" RelY="0.0" />
+      <Point X="1381.9742034631704" Y="1222.2337341017978" GraphRef="aa14d" RelX="1.0" RelY="0.0" />
       <Point X="2302.93149963902" Y="1223.7032418167137" GraphRef="ff9fe" RelX="-1.0" RelY="0.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
@@ -998,7 +998,7 @@
   <Interaction GraphId="id8b34e832">
     <Graphics ZOrder="12288" LineThickness="1.0">
       <Point X="1341.9742034631704" Y="1299.8301509339474" GraphRef="b0336" RelX="0.0" RelY="-1.0" />
-      <Point X="1341.9742034631704" Y="1263.7032418167137" GraphRef="aa14d" RelX="0.0" RelY="1.0" ArrowHead="Arrow" />
+      <Point X="1341.9742034631704" Y="1262.2337341017978" GraphRef="aa14d" RelX="0.0" RelY="1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
@@ -1166,13 +1166,13 @@
   <Interaction GraphId="idbdede056">
     <Graphics ZOrder="12288" LineThickness="1.0">
       <Point X="1501.9937773986958" Y="745.6461806394448" GraphRef="d826a" RelX="-1.0" RelY="0.5" />
-      <Point X="1361.9742034631704" Y="1183.7032418167137" GraphRef="aa14d" RelX="0.5" RelY="-1.0" ArrowHead="Arrow" />
+      <Point X="1361.9742034631704" Y="1182.2337341017978" GraphRef="aa14d" RelX="0.5" RelY="-1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
   <Interaction GraphId="idc160ebbc">
     <Graphics ZOrder="12288" LineThickness="1.0">
-      <Point X="1341.9742034631704" Y="1263.7032418167137" GraphRef="aa14d" RelX="0.0" RelY="1.0" />
+      <Point X="1341.9742034631704" Y="1262.2337341017978" GraphRef="aa14d" RelX="0.0" RelY="1.0" />
       <Point X="1341.9742034631704" Y="1299.8301509339474" GraphRef="b0336" RelX="0.0" RelY="-1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
@@ -1193,7 +1193,7 @@
   </Interaction>
   <Interaction GraphId="idc8461698">
     <Graphics ZOrder="12288" LineThickness="1.0">
-      <Point X="1341.9742034631704" Y="1183.7032418167137" GraphRef="aa14d" RelX="0.0" RelY="-1.0" />
+      <Point X="1341.9742034631704" Y="1182.2337341017978" GraphRef="aa14d" RelX="0.0" RelY="-1.0" />
       <Point X="1341.9742034631704" Y="1011.1078033876986" GraphRef="b28d0" RelX="0.0" RelY="1.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
@@ -1656,21 +1656,21 @@
   <Interaction GraphId="e5624">
     <Graphics ZOrder="33022" LineThickness="1.0">
       <Point X="1421.8937745087476" Y="1339.8301509339474" GraphRef="d355f" RelX="-1.0" RelY="0.0" />
-      <Point X="1381.9742034631704" Y="1243.7032418167137" GraphRef="aa14d" RelX="1.0" RelY="0.5" />
+      <Point X="1381.9742034631704" Y="1242.2337341017978" GraphRef="aa14d" RelX="1.0" RelY="0.5" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
   <Interaction GraphId="a8228">
     <Graphics ZOrder="33024" LineThickness="1.0">
-      <Point X="1238.2212944931646" Y="1223.7032418167137" />
-      <Point X="1301.9742034631704" Y="1223.7032418167137" GraphRef="aa14d" RelX="-1.0" RelY="0.0" />
+      <Point X="1238.2212944931646" Y="1222.2337341017978" GraphRef="f9ed3" RelX="1.0" RelY="0.0" />
+      <Point X="1301.9742034631704" Y="1222.2337341017978" GraphRef="aa14d" RelX="-1.0" RelY="0.0" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
   <Interaction GraphId="f2a3e">
     <Graphics ZOrder="33025" LineThickness="1.0">
       <Point X="1077.7224789942431" Y="1222.233734101798" GraphRef="d0f7a" RelX="1.0" RelY="0.0" />
-      <Point X="1158.2212944931646" Y="1222.4476603357623" />
+      <Point X="1158.2212944931646" Y="1222.2337341017978" GraphRef="f9ed3" RelX="-1.0" RelY="0.0" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
@@ -1683,7 +1683,7 @@
   </Interaction>
   <Interaction GraphId="d7e95">
     <Graphics ZOrder="33029" LineThickness="1.0">
-      <Point X="2141.3971044146824" Y="1147.0189771312143" />
+      <Point X="2141.3971044146824" Y="1147.0189771312143" GraphRef="e4c2d" RelX="1.0" RelY="0.0" />
       <Point X="2177.428850446426" Y="1146.860246972484" GraphRef="c4c95" RelX="-1.0" RelY="0.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />

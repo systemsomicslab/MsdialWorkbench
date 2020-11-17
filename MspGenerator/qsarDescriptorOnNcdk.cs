@@ -604,8 +604,17 @@ namespace CompMs.MspGenerator
         public static Dictionary<string, string> bcutDescriptor(IAtomContainer atom)
         {
             var BCUT = new BCUTDescriptor();
-            var bcut = BCUT.Calculate(atom);
+            var bcut = new BCUTDescriptor.Result(null);
             var bcutValues = new Dictionary<string, string>();
+            try
+            {
+                bcut = BCUT.Calculate(atom);
+            }
+            catch (Exception)
+            {
+                bcutValues.Add("BCUT", "NA");
+                return bcutValues;
+            }
             if (bcut.Values == null)
             {
                 bcutValues.Add("BCUT", "NA");

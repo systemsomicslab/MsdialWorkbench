@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="lipid_plant" Version="20181227" Organism="Anopheles gambiae">
-  <Graphics BoardWidth="2510.992705164916" BoardHeight="1462.6815995894156" />
+  <Graphics BoardWidth="2554.992705164916" BoardHeight="1929.440704933104" />
   <DataNode TextLabel="ER" GraphId="c6cdf">
     <Graphics CenterX="779.4683219402339" CenterY="56.129123431934126" Width="90.0" Height="25.0" ZOrder="32768" FontSize="12" Valign="Middle" />
     <Xref Database="" ID="" />
@@ -158,7 +158,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="PI" GraphId="e9909" Type="Metabolite">
-    <Graphics CenterX="1202.4355329911348" CenterY="154.51350047191914" Width="80.0" Height="80.0" ZOrder="32983" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1202.4355329911348" CenterY="153.24123584087593" Width="80.0" Height="80.0" ZOrder="32983" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="LPA" GraphId="aaa56" Type="Metabolite">
@@ -330,7 +330,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Others" GraphId="b9526">
-    <Graphics CenterX="1631.7051628399374" CenterY="56.439200951314035" Width="90.0" Height="25.0" ZOrder="33057" FontSize="12" Valign="Middle" />
+    <Graphics CenterX="1628.7051628399374" CenterY="56.439200951314035" Width="90.0" Height="25.0" ZOrder="33057" FontSize="12" Valign="Middle" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SM" GraphId="a9210" Type="Metabolite">
@@ -342,7 +342,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CE" GraphId="e46ff" Type="Metabolite">
-    <Graphics CenterX="1724.933932476923" CenterY="804.2254931785626" Width="80.0" Height="80.0" ZOrder="33060" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1723.8421169389092" CenterY="962.394583332281" Width="80.0" Height="80.0" ZOrder="33060" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="EtherPE" GraphId="fdc8d" Type="Metabolite">
@@ -354,7 +354,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Cholesterol" GraphId="aa28a" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="804.2254931785626" Width="80.0" Height="80.0" ZOrder="33063" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1633.4704661178196" CenterY="962.394583332281" Width="80.0" Height="80.0" ZOrder="33063" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="EtherOxPE" GraphId="af21d" Type="Metabolite">
@@ -370,11 +370,11 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexCAS" GraphId="e7517" Type="Metabolite">
-    <Graphics CenterX="2082.9633188209245" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33070" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2081.8715032829095" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33070" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexCS" GraphId="c5b84" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980126" CenterY="804.2254931785626" Width="80.0" Height="80.0" ZOrder="33071" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1814.2137677599987" CenterY="962.394583332281" Width="80.0" Height="80.0" ZOrder="33071" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexCer" GraphId="e2069" Type="Metabolite">
@@ -382,15 +382,15 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexSIS" GraphId="ec044" Type="Metabolite">
-    <Graphics CenterX="1724.933932476923" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33073" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1723.8421169389092" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33073" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexSTS" GraphId="cea83" Type="Metabolite">
-    <Graphics CenterX="2082.9633188209245" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33074" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2081.8715032829095" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33074" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="AHexBRS" GraphId="f63f9" Type="Metabolite">
-    <Graphics CenterX="1724.933932476923" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33075" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1723.8421169389092" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33075" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="ASM" GraphId="b79ac" Type="Metabolite">
@@ -398,19 +398,19 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="BASulfate" GraphId="f2bf7" Type="Metabolite">
-    <Graphics CenterX="1724.9339324769228" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33077" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1723.842116938909" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33077" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="BileAcid" GraphId="b75cb" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33078" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1633.4704661178196" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33078" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="BRSE" GraphId="cca2e" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33079" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1633.4704661178196" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33079" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CASE" GraphId="aee86" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700081" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33080" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1993.2284609319943" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33080" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Cer-EBDS" GraphId="be0da" Type="Metabolite">
@@ -430,7 +430,7 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="DCAE" GraphId="afa0b" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980124" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33085" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1814.2137677599985" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33085" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="DGCC" GraphId="e2870" Type="Metabolite">
@@ -538,11 +538,11 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SHex" GraphId="fdc8e" Type="Metabolite">
-    <Graphics CenterX="1724.933932476923" CenterY="1070.1546202312893" Width="79.99999999999997" Height="80.00000000000003" ZOrder="33112" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1723.8421169389092" CenterY="1228.3237103850074" Width="79.99999999999997" Height="80.00000000000003" ZOrder="33112" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SISE" GraphId="da81a" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33113" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1633.4704661178196" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33113" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SL" GraphId="c8b1e" Type="Metabolite">
@@ -550,11 +550,11 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SSulfate" GraphId="e99f6" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33115" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1633.4704661178196" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33115" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="STSE" GraphId="bdf9d" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700081" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33116" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1993.2284609319943" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33116" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="VAE" GraphId="fc4bc" Type="Metabolite">
@@ -570,27 +570,27 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Ac4PIM2" GraphId="d90b9" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700181" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33121" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1994.3202764700181" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33121" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Ac3PIM2" GraphId="af7f4" Type="Metabolite">
-    <Graphics CenterX="1905.6772341191017" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33122" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1905.6772341191017" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33122" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="LipidA" GraphId="a91f1" Type="Metabolite">
-    <Graphics CenterX="1634.5622816558334" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33123" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1634.5622816558334" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33123" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Ac2PIM2" GraphId="d3e69" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980124" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33124" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1815.3055832980124" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33124" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="Ac2PIM1" GraphId="a1492" Type="Metabolite">
-    <Graphics CenterX="1724.933932476923" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33125" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1724.933932476923" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33125" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="MIPC" GraphId="e1643" Type="Metabolite">
-    <Graphics CenterX="2082.96331882093" CenterY="1264.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33126" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2082.96331882093" CenterY="804.7267896349258" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33126" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SMGDG" GraphId="e40cb" Type="Metabolite">
@@ -598,71 +598,71 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="KDCAE" GraphId="a907f" Type="Metabolite">
-    <Graphics CenterX="2171.6063611718323" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33128" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2170.514545633818" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33128" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="KLCAE" GraphId="db615" Type="Metabolite">
-    <Graphics CenterX="2260.249403522739" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33129" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2259.157587984725" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33129" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="LCAE" GraphId="dd6fb" Type="Metabolite">
-    <Graphics CenterX="2082.9633188209245" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33130" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2081.8715032829095" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33130" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="EGSE" GraphId="df375" Type="Metabolite">
-    <Graphics CenterX="2082.9633188209245" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33131" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2081.8715032829095" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33131" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="DEGSE" GraphId="c8e6e" Type="Metabolite">
-    <Graphics CenterX="2171.6063611718323" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33132" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2170.514545633818" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33132" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="DSMSE" GraphId="f062d" Type="Metabolite">
-    <Graphics CenterX="2260.249403522739" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33133" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2259.157587984725" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33133" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SPEHex" GraphId="e018a" Type="Metabolite">
-    <Graphics CenterX="1905.677234119102" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33134" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1904.585418581088" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33134" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SPGHex" GraphId="e6864" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700081" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33135" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1993.2284609319943" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33135" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SPE" GraphId="ee695" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980124" CenterY="1070.154620231283" Width="80.0" Height="80.0" ZOrder="33136" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1814.2137677599985" CenterY="1228.323710385001" Width="80.0" Height="80.0" ZOrder="33136" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SISPHex" GraphId="fcd06" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980126" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33137" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1814.2137677599987" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33137" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="SISLPHex" GraphId="d37f9" Type="Metabolite">
-    <Graphics CenterX="1905.677234119102" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33138" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1904.585418581088" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33138" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CASPHex" GraphId="e9188" Type="Metabolite">
-    <Graphics CenterX="2171.6063611718328" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33139" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2170.5145456338187" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33139" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CASLPHex" GraphId="aa5ee" Type="Metabolite">
-    <Graphics CenterX="2260.2494035227396" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33140" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2259.1575879847255" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33140" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="BRSPHex" GraphId="ea466" Type="Metabolite">
-    <Graphics CenterX="1815.3055832980124" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33141" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1814.2137677599985" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33141" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="BRSLPHex" GraphId="a1a92" Type="Metabolite">
-    <Graphics CenterX="1905.6772341191017" CenterY="892.86853552947" Width="80.0" Height="80.0" ZOrder="33142" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1904.5854185810879" CenterY="1051.0376256831887" Width="80.0" Height="80.0" ZOrder="33142" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="STSPHex" GraphId="e3c41" Type="Metabolite">
-    <Graphics CenterX="2171.6063611718328" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33143" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2170.5145456338187" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33143" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="STSLPHex" GraphId="aac45" Type="Metabolite">
-    <Graphics CenterX="2260.24940352274" CenterY="981.5115778803774" Width="80.0" Height="80.0" ZOrder="33144" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2259.157587984726" CenterY="1139.6806680340956" Width="80.0" Height="80.0" ZOrder="33144" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="OxFA" GraphId="cdf08" Type="Metabolite">
@@ -673,7 +673,7 @@
     <Graphics CenterX="693.4314850516663" CenterY="475.45640609585155" Width="80.0" Height="80.0" ZOrder="33146" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
-  <DataNode TextLabel="FAHFATG" GraphId="ef9ff" Type="Metabolite">
+  <DataNode TextLabel="TG_EST" GraphId="ef9ff" Type="Metabolite">
     <Graphics CenterX="2082.9633188209305" CenterY="408.1667204905782" Width="80.00000000000001" Height="80.00000000000001" ZOrder="33147" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
@@ -686,11 +686,11 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CSLPHex" GraphId="adf16" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700081" CenterY="804.2254931785626" Width="80.0" Height="80.0" ZOrder="33150" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1993.2284609319943" CenterY="962.394583332281" Width="80.0" Height="80.0" ZOrder="33150" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="CSPHex" GraphId="b09af" Type="Metabolite">
-    <Graphics CenterX="1905.677234119102" CenterY="804.2254931785626" Width="80.0" Height="80.0" ZOrder="33151" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1904.585418581088" CenterY="962.394583332281" Width="80.0" Height="80.0" ZOrder="33151" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="EtherOxPC" GraphId="e9013" Type="Metabolite">
@@ -698,19 +698,23 @@
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="TDCAE" GraphId="ddcef" Type="Metabolite">
-    <Graphics CenterX="2350.6210543438274" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33153" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2349.5292388058133" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33153" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="TLCAE" GraphId="df720" Type="Metabolite">
-    <Graphics CenterX="2440.992705164916" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33154" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="2439.900889626902" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33154" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="GDCAE" GraphId="d1d05" Type="Metabolite">
-    <Graphics CenterX="1905.677234119102" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33155" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1904.585418581088" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33155" FontSize="12" Valign="Middle" Color="0000ff" />
     <Xref Database="" ID="" />
   </DataNode>
   <DataNode TextLabel="GLCAE" GraphId="d0374" Type="Metabolite">
-    <Graphics CenterX="1994.3202764700081" CenterY="1167.440704933104" Width="80.0" Height="80.0" ZOrder="33156" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Graphics CenterX="1993.2284609319943" CenterY="1325.609795086822" Width="80.0" Height="80.0" ZOrder="33156" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="" ID="" />
+  </DataNode>
+  <DataNode TextLabel="Sterols" GraphId="af7ff">
+    <Graphics CenterX="1627.6133473019236" CenterY="886.6082911050323" Width="90.0" Height="25.0" ZOrder="33161" FontSize="12" Valign="Middle" />
     <Xref Database="" ID="" />
   </DataNode>
   <Interaction GraphId="id13d1934">
@@ -793,7 +797,7 @@
   <Interaction GraphId="id31a779db">
     <Graphics ZOrder="12288" LineThickness="1.0">
       <Point X="1105.6353022047656" Y="176.14570668129983" GraphRef="c4399" RelX="1.0" RelY="0.0" />
-      <Point X="1162.4355329911348" Y="154.51350047191914" GraphRef="e9909" RelX="-1.0" RelY="0.0" ArrowHead="Arrow" />
+      <Point X="1162.4355329911348" Y="153.24123584087593" GraphRef="e9909" RelX="-1.0" RelY="0.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
@@ -1170,14 +1174,14 @@
   </Interaction>
   <Interaction GraphId="idd4a0d8e0">
     <Graphics ZOrder="12288" LineThickness="1.0">
-      <Point X="1242.4355329911348" Y="134.51350047191914" GraphRef="e9909" RelX="1.0" RelY="-0.5" />
+      <Point X="1242.4355329911348" Y="133.24123584087593" GraphRef="e9909" RelX="1.0" RelY="-0.5" />
       <Point X="1308.9837708911816" Y="89.73059833654997" GraphRef="e43ae" RelX="-1.0" RelY="0.0" ArrowHead="Arrow" />
     </Graphics>
     <Xref Database="" ID="" />
   </Interaction>
   <Interaction GraphId="idd5d4aa78">
     <Graphics ZOrder="12288" LineThickness="1.0">
-      <Point X="1244.5980985306828" Y="152.9818496110631" />
+      <Point X="1242.4355329911348" Y="153.24123584087593" GraphRef="e9909" RelX="1.0" RelY="0.0" />
       <Point X="1424.1408639774725" Y="153.24123584087593" GraphRef="bcfd6" RelX="-1.0" RelY="0.0" />
     </Graphics>
     <Xref Database="" ID="" />

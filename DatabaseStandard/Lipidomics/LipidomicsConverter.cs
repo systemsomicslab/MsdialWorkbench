@@ -3014,7 +3014,7 @@ namespace Riken.Metabolomics.Lipidomics {
 
         public static string GetLipidHeaderString(string lipidname) {
             var lipidHeader = lipidname.Split(' ')[0];
-            if (lipidHeader == "SE" || lipidHeader == "ST") {
+            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG") {
                 var dummyString = string.Empty;
                 RetrieveSterolHeaderChainStrings(lipidname, out lipidHeader, out dummyString);
             }
@@ -3231,6 +3231,7 @@ namespace Riken.Metabolomics.Lipidomics {
 
             //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
             //try convertion
+            var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
             
             // for oxidized moiety parser
@@ -3269,6 +3270,7 @@ namespace Riken.Metabolomics.Lipidomics {
             var doublebond = chainString.Split(':')[1];
             int.TryParse(carbon, out carbonCount);
             int.TryParse(doublebond, out doubleBondCount);
+            if (isPlasmenyl) doubleBondCount++;
         }
 
         private static void setChainProperties(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {
@@ -3437,9 +3439,11 @@ namespace Riken.Metabolomics.Lipidomics {
             // pattern [9] ST 28:2;O;Hex;PA 12:0_12:0
             // pattern [10] SE 28:2/8:0
             // pattern [11] TG 16:0_16:1_18:0;O(FA 16:0)
+            // pattern [12]  LPE-N (FA 16:0)18:1  (LNAPE,LNAPS)
             var headerString = moleculeString.Split(' ')[0].Trim();
             string chainString = string.Empty;
-            if (headerString == "SE" || headerString == "ST") {
+            if (headerString == "SE" || headerString == "ST" || headerString == "SG" || headerString == "BA" || headerString == "ASG")
+            {
                 RetrieveSterolHeaderChainStrings(moleculeString, out headerString, out chainString);
             }
             else {
@@ -3451,6 +3455,7 @@ namespace Riken.Metabolomics.Lipidomics {
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
+            var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
 
             if (chainString.Contains("/") && chainString.Contains("(FA")) { // pattern 4
                 var regexes = Regex.Match(chainString, pattern4).Groups;
@@ -3464,7 +3469,14 @@ namespace Riken.Metabolomics.Lipidomics {
                     foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
                     chains.Add(regexes["chain2"].Value);
                 }
-                else {
+                else if (chain1strings == "") // pattern 12
+                {
+                    regexes = Regex.Match(chainString, pattern12).Groups;
+                    chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
+                    Console.WriteLine();
+                }
+                else
+                {
                     chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
                 }
                 //Console.WriteLine();
@@ -3651,7 +3663,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
                 case LbmClass.OxTG: return "OxTG";
-                case LbmClass.FAHFATG: return "FAHFATG";
+                case LbmClass.TG_EST: return "TG_EST";
                 case LbmClass.EtherTG: return "EtherTG";
                 case LbmClass.EtherDG: return "EtherDG";
                 case LbmClass.LPC: return "LPC";
@@ -3740,6 +3752,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.CoQ: return "CoQ";
                 case LbmClass.CAR: return "CAR";
                 case LbmClass.FA: return "FA";
+                case LbmClass.OxFA: return "OxFA";
                 case LbmClass.NAE: return "NAE";
                 case LbmClass.NAGly: return "NAGly";
                 case LbmClass.NAGlySer: return "NAGlySer";
@@ -3998,7 +4011,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
                 case "OxTG": return LbmClass.OxTG;
-                case "FAHFATG": return LbmClass.FAHFATG;
+                case "TG_EST": return LbmClass.TG_EST;
                 case "EtherDG": return LbmClass.EtherDG;
                 case "EtherTG": return LbmClass.EtherTG;
 
@@ -4128,6 +4141,7 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 case "CAR": return LbmClass.CAR;
                 case "FA": return LbmClass.FA;
+                case "OxFA": return LbmClass.OxFA;
                 case "FAHFA": return LbmClass.FAHFA;
 
                 case "NAE": return LbmClass.NAE;
@@ -4416,13 +4430,14 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 case "CAR": return "FattyAcyls";
                 case "FA": return "FattyAcyls";
+                case "OxFA": return "FattyAcyls";
                 case "FAHFA": return "FattyAcyls";
 
                 case "MG": return "Glycerolipids";
                 case "DG": return "Glycerolipids";
                 case "TG": return "Glycerolipids";
                 case "OxTG": return "Glycerolipids";
-                case "FAHFATG": return "Glycerolipids";
+                case "TG_EST": return "Glycerolipids";
                 case "EtherDG": return "Glycerolipids";
                 case "EtherTG": return "Glycerolipids";
                 case "LDGTS": return "Glycerolipids";

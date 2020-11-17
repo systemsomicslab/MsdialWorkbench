@@ -61,7 +61,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to June 12th, 2020.
+        ///   Looks up a localized string similar to Nov 1th, 2020.
         /// </summary>
         internal static string DATE {
             get {
@@ -119,7 +119,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MS-FINDER ver. 3.45.
+        ///   Looks up a localized string similar to MS-FINDER ver. 3.46.
         /// </summary>
         internal static string VERSION {
             get {

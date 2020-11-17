@@ -110,7 +110,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("Ti"));
+            var type = new AtomType(ChemicalElement.Ti);
             type.AtomicNumber = 22;
             type.AtomTypeName = "Ti";
             type.ExactMass = 47.948;
@@ -127,7 +127,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("Si"));
+            var type = new AtomType(ChemicalElement.Si);
             type.AtomicNumber = 14;
             type.AtomTypeName = "Si";
             type.ExactMass = 27.976927;
@@ -147,7 +147,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("C"));
+            var type = new AtomType(ChemicalElement.C);
             type.AtomicNumber = 6;
             type.AtomTypeName = "C";
             type.ExactMass = 12;
@@ -168,7 +168,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("N"));
+            var type = new AtomType(ChemicalElement.N);
             type.AtomicNumber = 7;
             type.AtomTypeName = "N";
             type.ExactMass = 14.003074;
@@ -190,7 +190,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
 
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("O"));
+            var type = new AtomType(ChemicalElement.O);
             type.AtomicNumber = 8;
             type.AtomTypeName = "O";
             type.ExactMass = 15.994915;
@@ -211,7 +211,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("P"));
+            var type = new AtomType(ChemicalElement.P);
             type.AtomicNumber = 15;
             type.AtomTypeName = "P";
             type.ExactMass = 30.973763;
@@ -232,7 +232,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
         {
             var neighbors = atomContainer.GetConnectedBonds(atom);
 
-            var type = new AtomType(new ChemicalElement("S"));
+            var type = new AtomType(ChemicalElement.S);
             type.AtomicNumber = 16;
             type.AtomTypeName = "S";
             type.ExactMass = 31.972072;

@@ -191,6 +191,7 @@ namespace CompMs.MspGenerator
                 case "PE_Cer_d":
                 case "PE_Cer_d+O":
                 case "PI_Cer_d+O":
+                case "PI_Cer_d":
                     CeramideMspGenerator.twoChainsCeramideGenerator(chain1, chain2, lipidClass, output);
                     break;
 
@@ -227,7 +228,7 @@ namespace CompMs.MspGenerator
                     GlyceroLipidsMspGenerator.twoAndOneSetCainsGlyceroLipidGenerator(chain1, chain2, lipidClass, output);
                     break;
                 //three and one set chains
-                case "FAHFATG": // 
+                case "TG_EST": // 
                     GlyceroLipidsMspGenerator.fahfaTgGlyceroLipidGenerator(chain1, chain2, lipidClass, output);
                     break;
                 //FAHFA
