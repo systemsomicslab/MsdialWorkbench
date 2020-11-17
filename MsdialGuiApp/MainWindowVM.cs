@@ -1,7 +1,9 @@
-﻿using CompMs.App.Msdial.StartUp;
+﻿using CompMs.App.Msdial.Property;
+using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -39,13 +41,25 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> createNewProjectCommand;
 
         private void CreateNewProject(Window window) {
-            storage = new MsdialDataStorage();
+            Storage = new MsdialDataStorage();
 
             //Get IUPAC reference
-            storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase();
+            var iupacdb = IupacResourceParser.GetIUPACDatabase();
+            Storage.IupacDatabase = iupacdb;
 
             // Set parameterbase
-            storage.ParameterBase = ProcessStartUp(window);
+            var parameter = ProcessStartUp(window);
+            if (parameter == null) return;
+            Storage.ParameterBase = parameter;
+
+            // Set analysis file property
+            var analysisFiles = ProcessSetAnalysisFile(window);
+            if (analysisFiles.IsEmptyOrNull()) return;
+            Storage.AnalysisFiles = analysisFiles;
+            ParameterFactory.SetParameterFromAnalysisFiles(parameter, analysisFiles);
+
+            // Set analysis param
+            
         }
 
         private ParameterBase ProcessStartUp(Window owner) {
@@ -65,6 +79,29 @@ namespace CompMs.App.Msdial
 
             ParameterFactory.SetParameterFromStartUpVM(parameter, startUpWindowVM);
             return parameter;
+        }
+
+        private List<AnalysisFileBean> ProcessSetAnalysisFile(Window owner) {
+            var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
+            {
+                ProjectFolderPath = Storage.ParameterBase.ProjectFolderPath,
+                MachineCategory = Storage.ParameterBase.MachineCategory,
+            };
+            var afpsw = new AnalysisFilePropertySetWindow()
+            {
+                DataContext = analysisFilePropertySetWindowVM,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            var afpsw_result = afpsw.ShowDialog();
+            if (afpsw_result != true) return new List<AnalysisFileBean>();
+
+            return analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+        }
+
+        private void ProcessSetAnalysisParameter(Window owner) {
+            
         }
         #endregion
     }

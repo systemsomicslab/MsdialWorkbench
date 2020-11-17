@@ -65,6 +65,7 @@
     <Compile Include="Converter\PercentSliderToLabelConverter.cs" />
     <Compile Include="Converter\DoubleToStringConverter.cs" />
     <Compile Include="Converter\RadioButtonConverter.cs" />
+    <Compile Include="Validator\FileNameCharacterValidation.cs" />
     <Compile Include="Validator\PositiveDoubleNumericValidation.cs" />
     <Compile Include="Validator\PositiveIntNumericValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

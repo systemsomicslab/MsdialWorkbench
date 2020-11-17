@@ -1,5 +1,9 @@
-﻿using CompMs.App.Msdial.StartUp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Property;
+using CompMs.App.Msdial.StartUp;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -44,6 +48,29 @@ namespace CompMs.App.Msdial.Utility
             parameter.License = vm.License;
             // parameter.ColliionEnergy = vm.CollisionEnergy;
             parameter.Comment = vm.Comment;
+        }
+
+        public static void SetParameterFromAnalysisFiles(ParameterBase parameter, IList<AnalysisFileBean> files) {
+            parameter.FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>();
+            parameter.FileID_ClassName = new Dictionary<int, string>();
+            foreach (var analysisfile in files) {
+                parameter.FileID_ClassName[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileClass;
+                parameter.FileID_AnalysisFileType[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileType;
+            }
+
+            parameter.ClassnameToOrder = new Dictionary<string, int>();
+            parameter.ClassnameToColorBytes = new Dictionary<string, List<byte>>();
+            foreach (var (classId, idx) in files.Select(analysisfile => analysisfile.AnalysisFileClass).Distinct().WithIndex()) {
+                parameter.ClassnameToOrder[classId] = idx;
+                var brush = ChartBrushes.SolidColorBrushList[idx];
+                parameter.ClassnameToColorBytes[classId] = new List<byte> { brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A };
+            }
+
+            parameter.IsBoxPlotForAlignmentResult = false;
+            var classNumAve = files.GroupBy(analysisfile => analysisfile.AnalysisFileType)
+                                   .Average(group => group.Count());
+            if (classNumAve > 4)
+                parameter.IsBoxPlotForAlignmentResult = true;
         }
     }
 }
