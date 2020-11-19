@@ -38,6 +38,9 @@
     <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
       <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -65,6 +68,38 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="LC\AdductView.xaml.cs">
+      <DependentUpon>AdductView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\AnalysisParamSetForLcVM.cs" />
+    <Compile Include="LC\AnalysisParamSetForLcWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForLcWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\DeconvolutionView.xaml.cs">
+      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\MobilityView.xaml.cs">
+      <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\PeakDetectionView.xaml.cs">
+      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\UserDefinedAdductSetVM.cs" />
+    <Compile Include="LC\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindowVM.cs" />
     <Compile Include="Property\AnalysisFilePropertySetWindowVM.cs" />
     <Compile Include="Property\AnalysisFilePropertySetWindow.xaml.cs">
@@ -76,6 +111,46 @@
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
     <Page Include="Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AdductView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AlignmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AnalysisParamSetForLcWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\DataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\DeconvolutionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\IdentificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\IsotopeTrackView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\PeakDetectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\UserDefinedAdductSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -161,8 +236,6 @@
       <Name>MsdialLcMsApi</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LC\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

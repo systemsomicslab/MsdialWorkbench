@@ -179,6 +179,12 @@ namespace CompMs.CommonMVVM
 {
     public class ViewModelBase : INotifyPropertyChanged
     {
+        public bool HasViewError {
+            get => hasViewError;
+            set => SetProperty(ref hasViewError, value);
+        }
+        private bool hasViewError;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnProertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));

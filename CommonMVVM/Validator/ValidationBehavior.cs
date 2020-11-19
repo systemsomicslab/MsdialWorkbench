@@ -9,7 +9,7 @@ using System.Windows.Interactivity;
 
 namespace CompMs.CommonMVVM.Validator
 {
-    public class ValidationBehavior : Behavior<DependencyObject>
+    public class ValidationBehavior : Microsoft.Xaml.Behaviors.Behavior<DependencyObject>
     {
         private int errorCount = 0;
 

@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -54,12 +57,14 @@
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\DataGridWithCheckBox.cs" />
+    <Compile Include="Common\DynamicViewModelBase.cs" />
     <Compile Include="Converter\BooleanToEnumConverter.cs" />
     <Compile Include="Converter\BoolToYesNoConverter.cs" />
     <Compile Include="Common\DataGridHelper.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Converter\CBoolNegativeConverter.cs" />
+    <Compile Include="Converter\ToPercentageConverter.cs" />
     <Compile Include="Converter\MethodTypeDdMsmsEnumToBoolConverter.cs" />
     <Compile Include="Converter\MethodTypeDiMsmsEnumToBoolConverter.cs" />
     <Compile Include="Converter\PercentSliderToLabelConverter.cs" />

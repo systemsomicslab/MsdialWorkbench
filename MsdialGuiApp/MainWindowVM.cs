@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using CompMs.App.Msdial.LC;
 
 namespace CompMs.App.Msdial
 {
@@ -59,7 +60,9 @@ namespace CompMs.App.Msdial
             ParameterFactory.SetParameterFromAnalysisFiles(parameter, analysisFiles);
 
             // Set analysis param
-            
+            ProcessSetAnalysisParameter(window);
+
+            Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
         }
 
         private ParameterBase ProcessStartUp(Window owner) {
@@ -101,7 +104,18 @@ namespace CompMs.App.Msdial
         }
 
         private void ProcessSetAnalysisParameter(Window owner) {
-            
+            var analysisParamSetVM = new AnalysisParamSetForLcVM(Storage.ParameterBase as MsdialLcmsParameter, Storage.AnalysisFiles);
+            var apsw = new AnalysisParamSetForLcWindow
+            {
+                DataContext = analysisParamSetVM,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+
+            var apsw_result = apsw.ShowDialog();
+            if (apsw_result != true) return;
+
+            return;
         }
         #endregion
     }

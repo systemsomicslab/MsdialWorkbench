@@ -10,8 +10,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -109,6 +107,8 @@ namespace CompMs.App.Msdial.Property
         }
 
         private bool ValidateAnalysisFilePropertySetWindow(Window window) {
+            if (HasViewError)
+                return false;
             if (AnalysisFilePropertyCollection.IsEmptyOrNull())
                 return false;
             var invalidChars = Path.GetInvalidFileNameChars();

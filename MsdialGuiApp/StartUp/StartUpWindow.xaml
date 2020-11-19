@@ -3,13 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:CompMs.App.Msdial.StartUp"
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+        xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         mc:Ignorable="d"
         SizeToContent="Height"
         d:DataContext="{d:DesignInstance Type={x:Type local:StartUpWindowVM}}"
         Name="StartUpWindowView"
         Title="Start up a project" Height="700" Width="700">
+    <i:Interaction.Behaviors>
+        <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
 
     <Window.Resources>
         <converter:BooleanToEnumConverter x:Key="BTEConverter"/>

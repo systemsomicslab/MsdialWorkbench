@@ -1,9 +1,37 @@
 ﻿<Application x:Class="CompMs.App.Msdial.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CompMs.App.Msdial"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <ResourceDictionary Source="Icons.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <ControlTemplate x:Key="InputErrorTemplate">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                    <AdornedElementPlaceholder/>
+                </DockPanel>
+            </ControlTemplate>
+            <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                        <Setter Property="BorderBrush" Value="Pink" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="GeneralToolTipErrorStyle" TargetType="ContentControl">
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        <Setter Property="BorderBrush" Value="Pink"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

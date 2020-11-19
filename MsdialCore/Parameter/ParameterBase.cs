@@ -206,7 +206,7 @@ namespace CompMs.MsdialCore.Parameter {
         public bool OnlyReportTopHitInMspSearch { get; set; } = false;
         [Key(76)]
         public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
-            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
+            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 0.85F
         };
         [Key(77)]
         public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;

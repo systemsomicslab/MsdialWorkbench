@@ -91,7 +91,8 @@ namespace CompMs.App.Msdial.StartUp
 
         #region Field
         private string projectFilePath;
-        private string instrumentType, instrument, authors, license, collisionEnergy, comment;
+        private string instrumentType = string.Empty, instrument = string.Empty, authors = string.Empty;
+        private string license = string.Empty, collisionEnergy = string.Empty, comment = string.Empty;
         private Ionization ionization = Ionization.ESI;
         private SeparationType separationType = SeparationType.Chromatography;
         private AcquisitionType acquisitionType = AcquisitionType.DDA;
@@ -137,6 +138,7 @@ namespace CompMs.App.Msdial.StartUp
         }
 
         private bool ValidateStartUpWindow(Window window) {
+            if (HasViewError) return false;
             if (string.IsNullOrEmpty(ProjectFilePath)) return false;
             else if (!Directory.Exists(Path.GetDirectoryName(ProjectFilePath))) return false;
             return true;
