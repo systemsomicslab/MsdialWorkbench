@@ -33,24 +33,27 @@ namespace CompMs.MspGenerator
 
                 ////予測に使用するdescriptorのリストを使用して、descriptorの抽出をおこなう
                 //// 抽出するdescriptorの記述されたファイル（RでimportanceのdataMatrixを出力した形式を想定）
-                //var descriptorFile = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\new_descriptor\masterCCS_20201030_out.tsv";
+                //var descriptorFileRT = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201111check\masterRT_20201030_out.tsv";
+                //var descriptorFileCCS = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201111check\masterCCS_20201030_out.tsv";
                 //// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileで出力したファイル
-                //var descriptorListFile = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\new_descriptor\CCS_xgboost_tree100_depth9_importance.txt";
+                //var descriptorListFileRT = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201111check\RT_xgboost_tree275_depth5_importance.txt";
+                //var descriptorListFileCCS = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201111check\CCS_xgboost_tree400_depth5_importance.txt";
 
-                //RtCcsPredictOnDotNet.ExtractDescriptorToPredict(descriptorFile, descriptorListFile);
+                //RtCcsPredictOnDotNet.ExtractDescriptorToPredict(descriptorFileRT, descriptorListFileRT);
+                //RtCcsPredictOnDotNet.ExtractDescriptorToPredict(descriptorFileCCS, descriptorListFileCCS);
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
 
-                //var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201104check\";
-                //var resultFile = workingFolder + @"\PredictResult_master_padel_5_1000_5_700.txt";
-                //var rtTrainFile = workingFolder + @"masterRT.tsv";
-                //var rtTestFile = workingFolder + @"masterRT.tsv";
-                //var ccsTrainFile = workingFolder + @"masterCCS.tsv";
-                //var ccsTestFile = workingFolder + @"masterCCS.tsv";
-                //var rtTreeDepth = 5;
-                //var ccsTreeDepth = 5;
-                //var rtTreeNum = 1000;
-                //var ccsTreeNum = 700;
+                var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201111check\";
+                var resultFile = workingFolder + @"\PredictResult_master_padel_5_275_5_400.txt";
+                var rtTrainFile = workingFolder + @"masterRT_20201030_out_Extracted.tsv";
+                var rtTestFile = workingFolder + @"masterRT_20201030_out_Extracted.tsv";
+                var ccsTrainFile = workingFolder + @"masterCCS_20201030_out_Extracted.tsv";
+                var ccsTestFile = workingFolder + @"masterCCS_20201030_out_Extracted.tsv";
+                var rtTreeDepth = 5;
+                var ccsTreeDepth = 5;
+                var rtTreeNum = 275;
+                var ccsTreeNum = 400;
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(resultFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile,rtTreeDepth,ccsTreeDepth,rtTreeNum,ccsTreeNum);
 
