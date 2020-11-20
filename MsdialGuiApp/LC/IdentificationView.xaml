@@ -30,7 +30,11 @@
                      Text="{Binding Path=Param.MspFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                      HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" Margin="90, 0, 70, 0" Grid.Row="1" />
-            <Button Name="Button_LibraryFilePathSelect" Content="Select" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="24" Width="60" Margin="0,0,5,0" >
+            <Button Name="Button_LibraryFilePathSelect" Content="Select"
+                    Command="{Binding MspCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Height="24" Width="60" Margin="0,0,5,0"
+                    Grid.Row="1" >
                 <ToolTipService.ToolTip>
                     <ToolTip Content="Now, MSP format is just acceptable." />
                 </ToolTipService.ToolTip>
@@ -159,6 +163,7 @@
                              HorizontalAlignment="Stretch" VerticalAlignment="Center"
                              Height="24" Margin="90, 0, 70, 0" />
                     <Button Name="Button_PostIdentificationLibraryFilePathSelect" Content="Select" Grid.Row="1" 
+                            Command="{Binding TextDBFileSelectCommand}"
                             HorizontalAlignment="Right" VerticalAlignment="Center" Height="24" Width="60" Margin="0,0,5,0" >
                         <ToolTipService.ToolTip>
                             <ToolTip Content="Text file should include a compound list consisting of metabolite name (first column), accurate mass (second column), and retention time (third). A row header is considered." />
@@ -241,7 +246,11 @@
                             <TextBox Name="TextBox_RelativeAbundanceCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
                                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="27" Margin="5,0,5,2.5">
                                 <TextBox.Text>
-                                    <Binding Path="MspSearchParam.RelativeAmpCutoff" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                    <Binding Path="MspSearchParam.RelativeAmpCutoff" UpdateSourceTrigger="LostFocus" 
+                                             ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                        <Binding.Converter>
+                                            <converter:ToPercentageConverter />
+                                        </Binding.Converter>
                                         <Binding.ValidationRules>
                                             <validator:PositiveDoubleNumericValidation />
                                         </Binding.ValidationRules>

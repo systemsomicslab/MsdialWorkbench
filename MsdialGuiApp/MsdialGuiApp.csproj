@@ -100,6 +100,10 @@
     <Compile Include="LC\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Lipidomics\LipidDbSetVM.cs" />
+    <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
+      <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindowVM.cs" />
     <Compile Include="Property\AnalysisFilePropertySetWindowVM.cs" />
     <Compile Include="Property\AnalysisFilePropertySetWindow.xaml.cs">
@@ -151,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\UserDefinedAdductSetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Lipidomics\LipidDbSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

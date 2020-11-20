@@ -70,7 +70,7 @@
                     
                     <TextBox Name="TextBox_TargetFormulaLibraryFilePath" Grid.Row="4" 
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                             Text="{Binding Path=TargetFormulaLibraryFilePath, 
+                             Text="{Binding Path=Param.IsotopeTextDBFilePath, 
                                             ValidatesOnDataErrors=True, 
                                             UpdateSourceTrigger=PropertyChanged}" 
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" Margin="5, 4, 5, 0" />
@@ -89,6 +89,7 @@
                     <Label Content="" Height="30" VerticalContentAlignment="Center"/>
 
                     <Button Name="Button_TargetFormulaLibrarySelect" Content="Select"
+                            Command="{Binding IsotopeTextDBFileSelectCommand}"
                             IsEnabled="{Binding Path=Param.UseTargetFormulaLibrary}" 
                             Grid.Row="4" VerticalAlignment="Center" Height="24" HorizontalAlignment="Stretch" Margin="5,4,5,0" >
                         <ToolTipService.ToolTip>
