@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -94,6 +95,7 @@ namespace CompMs.App.Msdial.LC
 
             if (parameter.SearchedAdductIons.IsEmptyOrNull())
                 parameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
+            parameter.SearchedAdductIons[0].IsIncluded = true;
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
             parameter.QcAtLeastFilter = false;
@@ -105,15 +107,33 @@ namespace CompMs.App.Msdial.LC
             get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisParamSetForLcWindow));
         }
         private DelegateCommand<Window> continueProcessCommand;
+        private bool canExecuteCommand = true;
 
-        private void ContinueProcess(Window window) {
-            if (ClosingMethod()) {
+        private async void ContinueProcess(Window window) {
+            canExecuteCommand = false;
+            ContinueProcessCommand.RaiseCanExecuteChanged();
+            Mouse.OverrideCursor = Cursors.Wait;
+
+            var message = new ShortMessageWindow {
+                Owner = window,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Text = "Loading libraries.."
+            };
+            message.Show();
+            var result = await ClosingMethod();
+            message.Close();
+
+            if (result) {
                 window.DialogResult = true;
                 window.Close();
             }
+
+            Mouse.OverrideCursor = null;
+            canExecuteCommand = true;
+            ContinueProcessCommand.RaiseCanExecuteChanged();
         }
 
-        private bool ClosingMethod() {
+        private async Task<bool> ClosingMethod() {
             // TODO: need to include M + H or M - H
             if (!param.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -146,7 +166,7 @@ namespace CompMs.App.Msdial.LC
                 if (files.Length == 1)
                 {
                     param.MspFilePath = files.First();
-                    MspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
+                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param));
                 }
             }
 
@@ -177,7 +197,7 @@ namespace CompMs.App.Msdial.LC
         }
 
         private bool ValidateAnalysisParamSetForLcWindow(Window window) {
-            return true;
+            return canExecuteCommand;
         }
 
         public DelegateCommand<Window> CancelProcessCommand {

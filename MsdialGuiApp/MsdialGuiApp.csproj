@@ -68,6 +68,9 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="Common\ShortMessageWindow.xaml.cs">
+      <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LC\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -114,6 +117,10 @@
     </Compile>
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
+    <Page Include="Common\ShortMessageWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

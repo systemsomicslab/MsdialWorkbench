@@ -62,6 +62,10 @@ namespace CompMs.App.Msdial
             success = ProcessSetAnalysisParameter(window);
             if (!success) return;
 
+            // Run Identification
+
+            // Run Alignment
+
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
         }
 
