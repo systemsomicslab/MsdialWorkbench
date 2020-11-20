@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CompMs.App.Msdial.LC;
+using CompMs.App.Msdial.Common;
 
 namespace CompMs.App.Msdial
 {
@@ -54,13 +55,12 @@ namespace CompMs.App.Msdial
             Storage.ParameterBase = parameter;
 
             // Set analysis file property
-            var analysisFiles = ProcessSetAnalysisFile(window);
-            if (analysisFiles.IsEmptyOrNull()) return;
-            Storage.AnalysisFiles = analysisFiles;
-            ParameterFactory.SetParameterFromAnalysisFiles(parameter, analysisFiles);
+            var success = ProcessSetAnalysisFile(window, Storage);
+            if (!success) return;
 
             // Set analysis param
-            ProcessSetAnalysisParameter(window);
+            success = ProcessSetAnalysisParameter(window);
+            if (!success) return;
 
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
         }
@@ -84,11 +84,11 @@ namespace CompMs.App.Msdial
             return parameter;
         }
 
-        private List<AnalysisFileBean> ProcessSetAnalysisFile(Window owner) {
+        private bool ProcessSetAnalysisFile(Window owner, MsdialDataStorage storage) {
             var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
             {
-                ProjectFolderPath = Storage.ParameterBase.ProjectFolderPath,
-                MachineCategory = Storage.ParameterBase.MachineCategory,
+                ProjectFolderPath = storage.ParameterBase.ProjectFolderPath,
+                MachineCategory = storage.ParameterBase.MachineCategory,
             };
             var afpsw = new AnalysisFilePropertySetWindow()
             {
@@ -98,12 +98,15 @@ namespace CompMs.App.Msdial
             };
 
             var afpsw_result = afpsw.ShowDialog();
-            if (afpsw_result != true) return new List<AnalysisFileBean>();
+            if (afpsw_result != true) return false;
 
-            return analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+            Storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+            ParameterFactory.SetParameterFromAnalysisFiles(storage.ParameterBase, Storage.AnalysisFiles);
+
+            return true;
         }
 
-        private void ProcessSetAnalysisParameter(Window owner) {
+        private bool ProcessSetAnalysisParameter(Window owner) {
             var analysisParamSetVM = new AnalysisParamSetForLcVM(Storage.ParameterBase as MsdialLcmsParameter, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForLcWindow
             {
@@ -113,9 +116,24 @@ namespace CompMs.App.Msdial
             };
 
             var apsw_result = apsw.ShowDialog();
-            if (apsw_result != true) return;
+            if (apsw_result != true) return false;
 
-            return;
+            if (Storage.AlignmentFiles == null)
+                Storage.AlignmentFiles = new List<AlignmentFileBean>();
+            var filename = analysisParamSetVM.AlignmentResultFileName;
+            Storage.AlignmentFiles.Add(
+                new AlignmentFileBean
+                {
+                    FileID = Storage.AlignmentFiles.Count,
+                    FileName = filename,
+                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + SaveFileFormat.arf),
+                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                }
+            );
+            Storage.MspDB = analysisParamSetVM.MspDB;
+            Storage.TextDB = analysisParamSetVM.TextDB;
+
+            return true;
         }
         #endregion
     }

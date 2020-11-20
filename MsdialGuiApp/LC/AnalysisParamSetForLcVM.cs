@@ -1,11 +1,16 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Lipidomics;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.Win32;
 using System;
@@ -22,8 +27,8 @@ namespace CompMs.App.Msdial.LC
     class AnalysisParamSetForLcVM : ViewModelBase {
         #region Property
         public MsdialLcmsParameterVM Param {
-            get => param;
-            set => SetProperty(ref param, value);
+            get => paramVM;
+            set => SetProperty(ref paramVM, value);
         }
 
         public MsRefSearchParameterBaseVM MspSearchParam {
@@ -56,11 +61,14 @@ namespace CompMs.App.Msdial.LC
             set => SetProperty(ref searchedAdductIons, value);
         }
 
+        public List<MoleculeMsReference> MspDB { get; set; }
+        public List<MoleculeMsReference> TextDB { get; set; }
+
         #endregion
 
         #region Field
-        MsdialLcmsParameter source;
-        MsdialLcmsParameterVM param;
+        MsdialLcmsParameter param;
+        MsdialLcmsParameterVM paramVM;
         MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
         ObservableCollection<AnalysisFileBean> analysisFiles;
@@ -69,7 +77,7 @@ namespace CompMs.App.Msdial.LC
         #endregion
 
         public AnalysisParamSetForLcVM(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files) {
-            source = parameter;
+            param = parameter;
             Param = new MsdialLcmsParameterVM(parameter);
             MspSearchParam = new MsRefSearchParameterBaseVM(parameter.MspSearchParam);
             TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
@@ -83,12 +91,18 @@ namespace CompMs.App.Msdial.LC
                 parameter.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
                          .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(parameter.SearchedAdductIons?.Select(ion => new AdductIonVM(ion)));
+
+            if (parameter.SearchedAdductIons.IsEmptyOrNull())
+                parameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+
+            parameter.QcAtLeastFilter = false;
+
         }
 
         #region Command
         public DelegateCommand<Window> ContinueProcessCommand {
-            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisFilePropertySetWindow));
+            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisParamSetForLcWindow));
         }
         private DelegateCommand<Window> continueProcessCommand;
 
@@ -100,13 +114,69 @@ namespace CompMs.App.Msdial.LC
         }
 
         private bool ClosingMethod() {
-            source.ExcludedMassList = ExcludedMassList.Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
-                                                      .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
-                                                      .ToList();
+            // TODO: need to include M + H or M - H
+            if (!param.SearchedAdductIons[0].IsIncluded) {
+                MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (param.MaxChargeNumber <= 0)
+                param.MaxChargeNumber = 2;
+
+            param.ExcludedMassList = ExcludedMassList
+                .Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
+                .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
+                .ToList();
+
+            if (!string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
+                var ext = Path.GetExtension(param.MspFilePath);
+                if (ext  == ".msp" || ext == ".msp2") {
+                    MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath);
+                }
+                else {
+                    MspDB = new List<MoleculeMsReference>();
+                }
+            }
+            else if (string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
+                MspDB = new List<MoleculeMsReference>();
+            }
+            else if (param.TargetOmics == TargetOmics.Lipidomics) {
+                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly);
+                if (files.Length == 1)
+                {
+                    param.MspFilePath = files.First();
+                    MspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(param.TextDBFilePath)) {
+                if (File.Exists(param.TextDBFilePath)) {
+                    MessageBox.Show($"{param.TextDBFilePath} does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+                TextDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error);
+                if (TextDB.IsEmptyOrNull()) {
+                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+
+            if (param.TogetherWithAlignment && AnalysisFiles.Count > 1) {
+                param.QcAtLeastFilter = false;
+
+                if (param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                    if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
+                        "Do you continue this analysis without the filter option?",
+                        "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
+                        return false;
+                }
+            }
+
             return true;
         }
 
-        private bool ValidateAnalysisFilePropertySetWindow(Window window) {
+        private bool ValidateAnalysisParamSetForLcWindow(Window window) {
             return true;
         }
 
@@ -135,16 +205,16 @@ namespace CompMs.App.Msdial.LC
             };
 
             if (window.ShowDialog() == true) {
-                if (source.SearchedAdductIons == null)
-                    source.SearchedAdductIons = new List<AdductIon>();
-                source.SearchedAdductIons.Add(vm.AdductIon);
+                if (param.SearchedAdductIons == null)
+                    param.SearchedAdductIons = new List<AdductIon>();
+                param.SearchedAdductIons.Add(vm.AdductIon);
                 SearchedAdductIons.Add(new AdductIonVM(vm.AdductIon));
             }
         }
 
         public ICommand MspCommand {
             get {
-                if (source.TargetOmics == CompMs.Common.Enum.TargetOmics.Lipidomics)
+                if (param.TargetOmics == CompMs.Common.Enum.TargetOmics.Lipidomics)
                     return LipidDBSetCommand;
                 return MspFileSelectCommand;
             }
@@ -163,7 +233,7 @@ namespace CompMs.App.Msdial.LC
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var vm = new LipidDbSetVM(source.LipidQueryContainer, source.IonMode);
+            var vm = new LipidDbSetVM(param.LipidQueryContainer, param.IonMode);
             var window = new LipidDbSetWindow
             {
                 Owner = owner,
