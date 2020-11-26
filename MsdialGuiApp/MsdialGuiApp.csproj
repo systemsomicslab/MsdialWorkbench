@@ -68,9 +68,6 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
-    <Compile Include="Common\ShortMessageWindow.xaml.cs">
-      <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="LC\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -117,10 +114,7 @@
     </Compile>
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
-    <Page Include="Common\ShortMessageWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -250,7 +244,13 @@
       <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
       <Name>MsdialLcMsApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
+      <Project>{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}</Project>
+      <Name>RawDataHandlerStandard</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="View\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Lipidomics;
+using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
@@ -9,6 +10,7 @@ using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
+using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -117,7 +119,9 @@ namespace CompMs.App.Msdial.LC
             var message = new ShortMessageWindow {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = "Loading libraries.."
+                Text = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
+                        ? "RT correction viewer will be opened\nafter libraries are loaded."
+                        : "Loading libraries.." 
             };
             message.Show();
             var result = await ClosingMethod();
@@ -322,33 +326,11 @@ namespace CompMs.App.Msdial.LC
         #endregion
     }
 
-    class MsdialLcmsParameterVM : DynamicViewModelBase<MsdialLcmsParameter>
+    class MsdialLcmsParameterVM : ParameterBaseVM
     {
-        public MsdialLcmsParameterVM(MsdialLcmsParameter innerModel) : base(innerModel) { }
-
-        public string MspFilePath {
-            get => InnerModel.MspFilePath;
-            set {
-                if (InnerModel.MspFilePath == value) return;
-                InnerModel.MspFilePath = value;
-                OnPropertyChanged(nameof(MspFilePath));
-            }
-        }
-        public string TextDBFilePath {
-            get => InnerModel.TextDBFilePath;
-            set {
-                if (InnerModel.TextDBFilePath == value) return;
-                InnerModel.TextDBFilePath = value;
-                OnPropertyChanged(nameof(TextDBFilePath));
-            }
-        }
-        public string IsotopeTextDBFilePath {
-            get => InnerModel.IsotopeTextDBFilePath;
-            set {
-                if (InnerModel.IsotopeTextDBFilePath == value) return;
-                InnerModel.IsotopeTextDBFilePath = value;
-                OnPropertyChanged(nameof(IsotopeTextDBFilePath));
-            }
+        private readonly MsdialLcmsParameter innerModel;
+        public MsdialLcmsParameterVM(MsdialLcmsParameter innerModel) : base(innerModel) {
+            this.innerModel = innerModel;
         }
     }
 

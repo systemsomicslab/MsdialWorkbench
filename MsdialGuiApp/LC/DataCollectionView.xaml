@@ -262,6 +262,8 @@
                                  Height="25" Margin="5,2.5,5,2.5">
                             <TextBox.Text>
                                 <Binding Path="Param.NumThreads" 
+                                         StringFormat="D"
+                                         Mode="TwoWay"
                                          ValidatesOnDataErrors="True" 
                                          UpdateSourceTrigger="LostFocus"
                                          NotifyOnValidationError="True">

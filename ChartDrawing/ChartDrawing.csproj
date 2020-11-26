@@ -96,6 +96,17 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
+    <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
+      <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ProgressBarVM.cs" />
+    <Compile Include="UI\ProgressBarWindow.xaml.cs">
+      <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ShortMessageWindow.xaml.cs">
+      <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Window\FileBrowseDialog.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +115,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\ProgressBarMultiContainerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ProgressBarWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ShortMessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

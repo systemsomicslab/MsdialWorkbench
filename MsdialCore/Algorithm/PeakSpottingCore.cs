@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Algorithm {
             while (focusedMass < endMass) {
                 if (focusedMass < param.MassRangeBegin) { focusedMass += massStep; continue; }
                 if (focusedMass > param.MassRangeEnd) break;
-                Console.WriteLine(focusedMass);
+                // Console.WriteLine(focusedMass);
                 var chromPeakFeatures = GetChromatogramPeakFeatures(rawObj, focusedMass, param, type, unit, chromBegin, chromEnd);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) { focusedMass += massStep; ReportProgress.Show(InitialProgress, ProgressMax, focusedMass, endMass, reportAction); continue; }
 

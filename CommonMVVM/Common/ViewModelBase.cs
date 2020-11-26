@@ -187,12 +187,12 @@ namespace CompMs.CommonMVVM
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnProertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        protected void OnPropertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
 
         protected bool SetProperty<T>(ref T prop, T value, [CallerMemberName]string propertyname = "") {
             if (Equals(prop, value)) return false;
             prop = value;
-            OnProertyChanged(propertyname);
+            OnPropertyChanged(propertyname);
             return true;
         }
     }

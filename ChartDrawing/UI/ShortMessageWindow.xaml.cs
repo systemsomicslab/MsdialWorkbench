@@ -12,12 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.Common
+namespace CompMs.Graphics.UI.Message
 {
     /// <summary>
     /// Interaction logic for ShortMessageWindow.xaml
     /// </summary>
-    public partial class ShortMessageWindow : Window
+    public partial class ShortMessageWindow : System.Windows.Window
     {
         public ShortMessageWindow() {
             InitializeComponent();

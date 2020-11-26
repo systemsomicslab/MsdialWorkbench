@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Property
                 {
                     AnalysisFileAnalyticalOrder = i + 1,
                     AnalysisFileClass = "1",
-                    AnalysisFileId = i,
+                    AnalysisFileId = 0,
                     AnalysisFileIncluded = true,
                     AnalysisFileName = Path.GetFileNameWithoutExtension(filename),
                     AnalysisFilePath = filename,
@@ -87,10 +87,10 @@ namespace CompMs.App.Msdial.Property
                     AnalysisBatch = 1,
                     InjectionVolume = 1d,
                 }
-            );
+            ).ToList();
             foreach (var analysisfile in analysisfiles) {
-                analysisfile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString($"_yyyyMMddHHmm.{SaveFileFormat.dcl}"));
-                analysisfile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString($"_yyyyMMddHHmm.{SaveFileFormat.pai}"));
+                analysisfile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm")+ $".{SaveFileFormat.dcl}");
+                analysisfile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm") + $".{SaveFileFormat.pai}");
             }
 
             return new ObservableCollection<AnalysisFileBean>(analysisfiles);

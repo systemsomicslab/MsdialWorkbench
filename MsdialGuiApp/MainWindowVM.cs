@@ -18,6 +18,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Common;
+using CompMs.MsdialCore.Utility;
+using CompMs.Common.Algorithm.PeakPick;
+using CompMs.MsdialLcMsApi.Algorithm;
+using System.Threading;
+using CompMs.Graphics.UI.ProgressBar;
+using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial
 {
@@ -63,8 +69,10 @@ namespace CompMs.App.Msdial
             if (!success) return;
 
             // Run Identification
+            ProcessAnnotaion(window, Storage);
 
             // Run Alignment
+            // ProcessAlignment();
 
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
         }
@@ -136,6 +144,48 @@ namespace CompMs.App.Msdial
             );
             Storage.MspDB = analysisParamSetVM.MspDB;
             Storage.TextDB = analysisParamSetVM.TextDB;
+
+            return true;
+        }
+
+        private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
+            var vm = new ProgressBarMultiContainerVM
+            {
+                MaxValue = storage.AnalysisFiles.Count,
+                CurrentValue = 0,
+                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(
+                        storage.AnalysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName })
+                    ),
+            };
+            var pbmcw = new ProgressBarMultiContainerWindow
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+
+            pbmcw.Loaded += async (s, e) => {
+                var numThreads = Math.Min(Math.Min(storage.ParameterBase.NumThreads, storage.AnalysisFiles.Count), Environment.ProcessorCount);
+                var semaphore = new SemaphoreSlim(0, numThreads);
+                var tasks = new Task[storage.AnalysisFiles.Count];
+                var counter = 0;
+                foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs).WithIndex()) {
+                    tasks[idx] = Task.Run(async () => {
+                        await semaphore.WaitAsync();
+                        MsdialLcMsApi.Process.FileProcess.Run(analysisfile, storage, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                        Interlocked.Increment(ref counter);
+                        vm.CurrentValue = counter;
+                        semaphore.Release();
+                    });
+                }
+                semaphore.Release(numThreads);
+
+                await Task.WhenAll(tasks);
+
+                pbmcw.Close();
+            };
+
+            pbmcw.ShowDialog();
 
             return true;
         }
