@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.SurveyScanView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
+             mc:Ignorable="d" 
+             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             d:DesignHeight="400" d:DesignWidth="200">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
+                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       ChartMargin="0.05"
+                                       IsFlipped="True"/>
+        <manager:ContinuousAxisManager x:Key="VerticalAxis"
+                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       ChartMargin="0.05" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="Survey scan (MS1) spectrum"
+               Foreground="Black" Background="LightSteelBlue"
+               HorizontalContentAlignment="Center" VerticalAlignment="Top"
+               Grid.Row="0"/>
+        <Grid VerticalAlignment="Stretch"
+              Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="40" />
+                <RowDefinition />
+                <RowDefinition Height="30" />
+                <RowDefinition MaxHeight="30" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Background="WhiteSmoke"
+                    Margin="5,5,0,0"
+                    Grid.Row="1" Grid.Column="1">
+                <line:LineChartControl ItemsSource="{Binding}"
+                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                       RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       HorizontalPropertyName="X"
+                                       VerticalPropertyName="Y">
+                    <line:LineChartControl.LayoutTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="-90"/>
+                            <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type line:LineChartControl}}}"/>
+                        </TransformGroup>
+                    </line:LineChartControl.LayoutTransform>
+                </line:LineChartControl>
+            </Border>
+            <Border BorderBrush="Black"
+                    BorderThickness="0,0,1,1"
+                    Margin="5,5,0,0"
+                    Grid.Row="1" Grid.Column="1"/>
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="2" Grid.Column="1" />
+            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                      RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                      Margin="0,5,5,0"
+                                      Grid.Row="1" Grid.Column="2">
+                <axis:VerticalAxisControl.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="180"/>
+                    </TransformGroup>
+                </axis:VerticalAxisControl.LayoutTransform>
+            </axis:VerticalAxisControl>
+            <TextBlock Text="Relative abundance"
+                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Grid.Row="3" Grid.Column="1"/>
+        </Grid>
+    </Grid>
+</UserControl>
