@@ -14,6 +14,7 @@ using ChartDrawingUiTest.Bar;
 using ChartDrawingUiTest.Chromatogram;
 using ChartDrawingUiTest.DataGrid;
 using ChartDrawingUiTest.Controls;
+using ChartDrawingUiTest.UI;
 
 namespace ChartDrawingUiTest
 {
@@ -37,6 +38,7 @@ namespace ChartDrawingUiTest
                 typeof(Chromatogram1),
                 typeof(FileOpenControl1),
                 typeof(DataGrid1),
+                typeof(RangeSlider),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
