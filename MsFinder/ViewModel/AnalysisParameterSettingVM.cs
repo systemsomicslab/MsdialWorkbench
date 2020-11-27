@@ -118,7 +118,8 @@ namespace Rfx.Riken.OsakaUniv
                     Urine = param.DatabaseQuery.Urine, 
                     Csf = param.DatabaseQuery.Csf,
                     Blexp = param.DatabaseQuery.Blexp,
-                    Npa = param.DatabaseQuery.Npa
+                    Npa = param.DatabaseQuery.Npa,
+                    Coconut = param.DatabaseQuery.Coconut
                 },
 
                 LipidQueryBean = param.LipidQueryBean,
@@ -667,6 +668,13 @@ namespace Rfx.Riken.OsakaUniv
             get { return this.copyParam.DatabaseQuery.Npa; }
             set { this.copyParam.DatabaseQuery.Npa = value; OnPropertyChanged("Npa"); }
         }
+
+        public bool Coconut
+        {
+            get { return this.copyParam.DatabaseQuery.Coconut; }
+            set { this.copyParam.DatabaseQuery.Coconut = value; OnPropertyChanged("Coconut"); }
+        }
+
 
         public bool IsUserDefinedDB
         {
