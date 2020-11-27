@@ -26,9 +26,9 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 case "ChemOntologyLib": filename = "ChemOntologyDB_vs2.cho"; break;
                 case "EiFragmentLib": filename = "EiFragmentDB_vs1.eif"; break;
                 case "EimsSpectralLib": filename = "EIMS-DBs-vs1.egm"; break;
-                case "ExistFormulaLib": filename = "MsfinderFormulaDB-VS12.efd"; break;
-                case "ExistStructureLib": filename = "MsfinderStructureDB-VS14.esd"; break;
-                case "InchikeyClassyfireLib": filename = "InchikeyClassyfireDB-VS4.icd"; break;
+                case "ExistFormulaLib": filename = "MsfinderFormulaDB-VS13.efd"; break;
+                case "ExistStructureLib": filename = "MsfinderStructureDB-VS15.esd"; break;
+                case "InchikeyClassyfireLib": filename = "InchikeyClassyfireDB-VS5.icd"; break;
                 case "InsilicoLipidSpectralLib": filename = "LipidMsmsBinaryDB-VS68-AritaM.lbm2"; break;
                 case "LipidQueryMaster": filename = "LipidQueryMaster.txt"; break;
                 case "MinesStructureLib": filename = "MINEs-StructureDB-vs1.msd"; break;

@@ -77,7 +77,8 @@ namespace CompMs.Common.Parameter {
                 Stoff = true,
                 Nanpdb = true,
                 Blexp = true,
-                Npa = true
+                Npa = true,
+                Coconut = true
             };
 
             IsUserDefinedDB = false;

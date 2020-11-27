@@ -59,6 +59,8 @@ namespace CompMs.Common.Parameter {
         public bool Blexp { get; set; }
         [Key(22)]
         public bool Npa { get; set; }
+        [Key(23)]
+        public bool Coconut { get; set; }
 
     }
 }

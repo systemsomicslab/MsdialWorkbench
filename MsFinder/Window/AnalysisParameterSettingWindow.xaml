@@ -753,13 +753,14 @@
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="20,200,0,0">
-                                <CheckBox Content="KNApSAcK (Natural product)" IsChecked="{Binding Path=Knapsack}" Margin="5,5,5,5" />
-                                <CheckBox Content="NANPDB (Natural product)" IsChecked="{Binding Path=Nanpdb}" Margin="84,5,5,5" />
+                                <CheckBox Content="NANPDB (Natural product)" IsChecked="{Binding Path=Nanpdb}" Margin="5,5,5,5" />
+                                <CheckBox Content="COCONUT (Natural product)" IsChecked="{Binding Path=Coconut}" Margin="5,5,5,5" />
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="20,235,0,0">
+                                <CheckBox Content="KNApSAcK (Natural product)" IsChecked="{Binding Path=Knapsack}" Margin="5,5,5,5" />
                                 <CheckBox Content="PubChem (Biomolecules)" IsChecked="{Binding Path=Pubchem}" Margin="5,5,5,5" />
-                                <CheckBox Content="UNPD (Natural product)" IsChecked="{Binding Path=Unpd}" Margin="104,5,5,5" />
+                                <CheckBox Content="UNPD (Natural product)" IsChecked="{Binding Path=Unpd}" Margin="5,5,5,5" />
                             </StackPanel>
 
                         </Grid>
