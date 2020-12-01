@@ -17,17 +17,6 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
-    <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
-                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
-                                           ValuePropertyName="ChromXValue"
-                                           ChartMargin="0.05" />
-        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
-                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
-                                           ValuePropertyName="Mass"
-                                           ChartMargin="0.05"
-                                           IsFlipped="True"/>
-    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="30" />
@@ -46,10 +35,10 @@
                 Grid.Row="1" Grid.Column="2">
             <scatter:ScatterControl x:Name="scatter"
                                     ItemsSource="{Binding Ms1Peaks}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                    VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                    RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                    RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                     HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
                                     SelectedItem="{Binding Target, Mode=TwoWay}">
                 <scatter:ScatterControl.ToolTip>
@@ -68,14 +57,14 @@
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                    RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                    LabelTicks="{Binding ChromAxis.LabelTicks, ElementName=PeakPairPlot}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                  LabelTicks="{Binding MassAxis.LabelTicks, ElementName=PeakPairPlot}"
+                                  RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <StackPanel Orientation="Horizontal"

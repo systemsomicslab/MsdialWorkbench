@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,13 @@ namespace CompMs.App.Msdial.View.EicAndBar
     /// </summary>
     public partial class EicView : UserControl
     {
+        public static readonly DependencyProperty ChromAxisProperty = DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(EicView));
+
+        public AxisManager ChromAxis {
+            get => (AxisManager)GetValue(ChromAxisProperty);
+            set => SetValue(ChromAxisProperty, value);
+        }
+
         public EicView() {
             InitializeComponent();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,20 @@ namespace CompMs.App.Msdial.View.PairwisePlot
     /// </summary>
     public partial class PeakView : UserControl
     {
+        public static readonly DependencyProperty ChromAxisProperty = DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(PeakView));
+
+        public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(PeakView));
+
+        public AxisManager ChromAxis {
+            get => (AxisManager)GetValue(ChromAxisProperty);
+            set => SetValue(ChromAxisProperty, value);
+        }
+
+        public AxisManager MassAxis {
+            get => (AxisManager)GetValue(MassAxisProperty);
+            set => SetValue(MassAxisProperty, value);
+        }
+
         public PeakView() {
             InitializeComponent();
         }

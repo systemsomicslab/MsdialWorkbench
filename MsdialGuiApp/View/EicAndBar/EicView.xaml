@@ -1,4 +1,4 @@
-<UserControl x:Class="CompMs.App.Msdial.View.EicAndBar.EicView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.EicAndBar.EicView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -19,10 +19,6 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
-                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
-                                           ValuePropertyName="ChromXValue"
-                                           ChartMargin="0.05" />
         <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
                                            ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
                                            ValuePropertyName="Intensity"
@@ -46,9 +42,9 @@
                 Grid.Row="1" Grid.Column="2">
             <line:LineChartControl x:Name="line"
                                    ItemsSource="{Binding Eic}"
-                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                   HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                   RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                    HorizontalPropertyName="ChromXValue"
                                    VerticalPropertyName="Intensity">
@@ -71,9 +67,9 @@
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
+                                    RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
+                                    LabelTicks="{Binding ChromAxis.LabelTicks, ElementName=EicPlot}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
