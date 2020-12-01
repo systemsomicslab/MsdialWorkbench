@@ -343,6 +343,9 @@ namespace Riken.Metabolomics.StructureFinder.Parser
                 case "NPA":
                     databaseQuery.Npa = true;
                     break;
+                case "COCONUT":
+                    databaseQuery.Coconut = true;
+                    break;
                 default:
                     break;
             }

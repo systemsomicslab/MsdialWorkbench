@@ -37,6 +37,7 @@ namespace Rfx.Riken.OsakaUniv
         private bool csf;
         private bool blexp;
         private bool npa;
+        private bool coconut;
 
 
         [Key(0)]
@@ -234,6 +235,20 @@ namespace Rfx.Riken.OsakaUniv
             set
             {
                 npa = value;
+            }
+        }
+
+        [Key(23)]
+        public bool Coconut
+        {
+            get
+            {
+                return coconut;
+            }
+
+            set
+            {
+                coconut = value;
             }
         }
 
