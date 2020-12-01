@@ -51,6 +51,7 @@ namespace CompMs.Graphics.AxisManager
             vProp = dataType.GetProperty(ValuePropertyName);
             double min = double.MaxValue, max = double.MinValue;
             foreach (var o in ItemsSource) {
+                if (o == null) continue;
                 var v = Convert.ToDouble((IConvertible)vProp.GetValue(o));
                 min = Math.Min(min, v);
                 max = Math.Max(max, v);

@@ -23,10 +23,15 @@
                HorizontalContentAlignment="Center" 
                Grid.Row="0" Background="LightSteelBlue" />
 
-        <ListBox Name="ListBox_FileName" Grid.Row="0" ItemsSource="{Binding Storage.AnalysisFiles}" BorderThickness="0" 
+        <ListBox Name="ListBox_FileName" Grid.Row="0" ItemsSource="{Binding AnalysisFiles}" BorderThickness="0" 
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
                  Margin="0,28,0,2" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding AnalysisFileName}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Double click a file to show the result in peak viewer" />
             </ToolTipService.ToolTip>
@@ -40,7 +45,7 @@
                VerticalAlignment="Top"
                HorizontalContentAlignment="Center" Grid.Row="1"/>
 
-        <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding Storage.AlignmentFiles}" 
+        <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding Storage.AlignmentFiles, Mode=OneTime}" 
                  BorderThickness="0"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" 

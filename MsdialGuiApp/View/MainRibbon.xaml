@@ -12,8 +12,12 @@
                 <RibbonButton SmallImageSource="{StaticResource New_project_is}"
                               Command="{Binding CreateNewProjectCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-                <RibbonButton SmallImageSource="{StaticResource Open_is}"/>
-                <RibbonButton SmallImageSource="{StaticResource Save_is}"/>
+                <RibbonButton SmallImageSource="{StaticResource Open_is}"
+                              Command="{Binding OpenProjectCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+                <RibbonButton SmallImageSource="{StaticResource Save_is}"
+                              Command="{Binding SaveProjectCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
             </RibbonQuickAccessToolBar>
         </Ribbon.QuickAccessToolBar>
         <Ribbon.HelpPaneContent>
@@ -27,10 +31,14 @@
                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="N"/>
                 <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
+                                           Command="{Binding OpenProjectCommand}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="O"/>
                 <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
                                            KeyTip="A"/>
                 <RibbonApplicationMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
+                                           Command="{Binding SaveProjectCommand}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="S"/>
             </RibbonApplicationMenu>
         </Ribbon.ApplicationMenu>

@@ -174,7 +174,7 @@
 
                     <local:PeakSpotNavigator Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
-                    <local:SurveyScanView Grid.Row="2" Grid.Column="0"/>
+                    <local:SurveyScanView DataContext="{Binding FileVM}" Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
@@ -185,7 +185,7 @@
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <pairplot:PeakView />
+                            <pairplot:PeakView DataContext="{Binding FileVM}"/>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
@@ -205,7 +205,7 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="LightSteelBlue">
-                            <eic:EicView />
+                            <eic:EicView DataContext="{Binding FileVM}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 

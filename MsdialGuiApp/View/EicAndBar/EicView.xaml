@@ -8,6 +8,10 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             Name="EicPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -15,15 +19,15 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                           ValuePropertyName="ChromXValue"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0.05"
+                                           IsFlipped="True"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -34,7 +38,7 @@
         <Grid.RowDefinitions>
             <RowDefinition MaxHeight="20" />
             <RowDefinition />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="25" />
             <RowDefinition MaxHeight="20" />
         </Grid.RowDefinitions>
 
@@ -42,20 +46,23 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <line:LineChartControl x:Name="line"
-                                   ItemsSource="{Binding}"
+                                   ItemsSource="{Binding Eic}"
                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                   HorizontalPropertyName="X"
-                                   VerticalPropertyName="Y" >
+                                   HorizontalPropertyName="ChromXValue"
+                                   VerticalPropertyName="Intensity">
+                <line:LineChartControl.LinePen>
+                    <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
+                </line:LineChartControl.LinePen>
                 <line:LineChartControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.X}"/>
                             <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Y}"/>
+                            <TextBlock Text="{Binding FocusedItem.Mass, Mode=OneTime}"/>
+                            <TextBlock Text="Retention time: "/>
+                            <TextBlock Text="{Binding FocusedItem.Intensity, Mode=OneTime}"/>
                         </StackPanel>
                     </ToolTip>
                 </line:LineChartControl.ToolTip>
@@ -75,6 +82,21 @@
                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
+        <ContentControl Content="{Binding Target}"
+                        Grid.Row="0" Grid.Column="2">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:ChromatogramPeakFeatureWrapper}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <TextBlock Text="EIC chromatogram of " FontSize="12" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N4, Mode=OneTime}" FontSize="12"/>
+                        <TextBlock Text="tolerance [Da]: " FontSize="12" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding DataContext.Ms1Tolerance, StringFormat=F, Mode=OneTime, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="12"/>
+                        <TextBlock Text="Max intensity: " FontSize="12" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding DataContext.EicMaxIntensity, StringFormat=F0, Mode=OneWay, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="12"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
         <TextBlock Text="Retention time [min]"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"

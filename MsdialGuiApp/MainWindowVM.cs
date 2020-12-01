@@ -24,6 +24,12 @@ using CompMs.MsdialLcMsApi.Algorithm;
 using System.Threading;
 using CompMs.Graphics.UI.ProgressBar;
 using System.Collections.ObjectModel;
+using CompMs.App.Msdial.ViewModel;
+using Microsoft.Win32;
+using System.Windows.Input;
+using CompMs.Graphics.UI.Message;
+using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcMsApi.Parser;
 
 namespace CompMs.App.Msdial
 {
@@ -34,10 +40,63 @@ namespace CompMs.App.Msdial
             get => storage;
             set => SetProperty(ref storage, value);
         }
+
+        public AnalysisFileVM FileVM {
+            get => fileVM;
+            set => SetProperty(ref fileVM, value);
+        }
+
+        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
+            get => analysisFiles;
+            set => SetProperty(ref analysisFiles, value);
+        }
+
+        public bool RefMatchedChecked {
+            get => refMatchedChecked;
+            set => SetProperty(ref refMatchedChecked, value);
+        }
+        public bool SuggestedChecked {
+            get => suggestedChecked;
+            set => SetProperty(ref suggestedChecked, value);
+        }
+        public bool UnknownChecked {
+            get => unknownChecked;
+            set => SetProperty(ref unknownChecked, value);
+        }
+        public bool CcsChecked {
+            get => ccsChecked;
+            set => SetProperty(ref ccsChecked, value);
+        }
+        public bool Ms2AcquiredChecked {
+            get => ms2AcquiredChecked;
+            set => SetProperty(ref ms2AcquiredChecked, value);
+        }
+        public bool MolecularIonChecked {
+            get => molecularIonChecked;
+            set => SetProperty(ref molecularIonChecked, value);
+        }
+        public bool BlankFilterChecked {
+            get => blankFilterChecked;
+            set => SetProperty(ref blankFilterChecked, value);
+        }
+        public bool UniqueIonsChecked {
+            get => uniqueIonsChecked;
+            set => SetProperty(ref uniqueIonsChecked, value);
+        }
+
+        private MsdialSerializer Serializer {
+            get => serializer ?? (serializer = new MsdialLcmsSerializer());
+        }
         #endregion
 
         #region field
         private MsdialDataStorage storage;
+        private bool refMatchedChecked, suggestedChecked, unknownChecked, ccsChecked,
+            ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
+        // private AlignmentVM alignmentVM;
+        private AnalysisFileVM fileVM;
+        private ObservableCollection<AnalysisFileBean> analysisFiles;
+        private MsdialSerializer serializer;
         #endregion
 
         public MainWindowVM() { }
@@ -70,6 +129,7 @@ namespace CompMs.App.Msdial
 
             // Run Identification
             ProcessAnnotaion(window, Storage);
+            LoadInitialFiles();
 
             // Run Alignment
             // ProcessAlignment();
@@ -188,6 +248,57 @@ namespace CompMs.App.Msdial
             pbmcw.ShowDialog();
 
             return true;
+        }
+
+        public DelegateCommand<Window> OpenProjectCommand {
+            get => openProjectCommand ?? (openProjectCommand = new DelegateCommand<Window>(OpenProject));
+        }
+        private DelegateCommand<Window> openProjectCommand;
+
+        private void OpenProject(Window owner) {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "MTD file(*.mtd, *mtd2)|*.mtd?|MTD2 file(*.mtd2)|*mtd2|All(*)|*";
+            ofd.Title = "Import a project file";
+            ofd.RestoreDirectory = true;
+
+            if (ofd.ShowDialog() == true) {
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                var message = new ShortMessageWindow() {
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Text = "Loading project...",
+                };
+                message.Show();
+
+                Storage = Serializer.LoadMsdialDataStorageBase(ofd.FileName);
+                if (Storage == null) {
+                    MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                LoadInitialFiles();
+
+                message.Close();
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        public DelegateCommand<Window> SaveProjectCommand {
+            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand<Window>(SaveProject));
+        }
+        private DelegateCommand<Window> saveProjectCommand;
+
+        private void SaveProject(Window owner) {
+            // TODO: implement process when project save failed.
+            Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
+        }
+
+        #endregion
+
+        #region
+        private void LoadInitialFiles() {
+            FileVM = new AnalysisFileVM(Storage.AnalysisFiles.FirstOrDefault(), Storage.ParameterBase);
+            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(Storage.AnalysisFiles);
         }
         #endregion
     }

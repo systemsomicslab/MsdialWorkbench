@@ -8,6 +8,9 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             Name="PeakPairPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -15,15 +18,15 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
+                                           ValuePropertyName="ChromXValue"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
+                                           ValuePropertyName="Mass"
+                                           ChartMargin="0.05"
+                                           IsFlipped="True"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -42,21 +45,20 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <scatter:ScatterControl x:Name="scatter"
-                                    ItemsSource="{Binding}"
+                                    ItemsSource="{Binding Ms1Peaks}"
                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                     RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                    HorizontalPropertyName="X"
-                                    VerticalPropertyName="Y"
-                                    PointBrush="Pink" >
+                                    HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                    SelectedItem="{Binding Target, Mode=TwoWay}">
                 <scatter:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.X}"/>
+                            <TextBlock Text="{Binding FocusedItem.ChromXValue, Mode=OneTime}"/>
                             <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Y}"/>
+                            <TextBlock Text="{Binding FocusedItem.Mass, Mode=OneTime}"/>
                         </StackPanel>
                     </ToolTip>
                 </scatter:ScatterControl.ToolTip>
@@ -76,9 +78,28 @@
                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
-        <TextBlock Text="File name" FontSize="14"
-                   VerticalAlignment="Bottom"
-                   Grid.Row="0" Grid.Column="2"/>
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Bottom"
+                    Grid.Row="0" Grid.Column="2">
+            <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="12"/>
+            <ContentControl Content="{Binding Target}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:ChromatogramPeakFeatureWrapper}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Spot ID: " FontSize="12" Margin="5,0,0,0"/>
+                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}" FontSize="12"/>
+                            <TextBlock Text="Scan: " FontSize="12" Margin="5,0,0,0"/>
+                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}" FontSize="12"/>
+                            <TextBlock Text="RT: " FontSize="12" Margin="5,0,0,0"/>
+                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N2, Mode=OneTime}" FontSize="12"/>
+                            <TextBlock Text="min" FontSize="12"/>
+                            <TextBlock Text="Mass: m/z " FontSize="12" Margin="5,0,0,0"/>
+                            <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}" FontSize="12"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </StackPanel>
         <TextBlock Text="Retention time [min]"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"

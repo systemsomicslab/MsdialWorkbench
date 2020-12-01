@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             Name="Ms1Plot"
              d:DesignHeight="400" d:DesignWidth="200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -15,15 +17,15 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spectrum, Source={x:Reference Name=Ms1Plot}}"
+                                           ValuePropertyName="Mass"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spectrum, Source={x:Reference Name=Ms1Plot}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0.05"
+                                           IsFlipped="True"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -51,13 +53,16 @@
             <Border Background="WhiteSmoke"
                     Margin="5,5,0,0"
                     Grid.Row="1" Grid.Column="1">
-                <line:LineChartControl ItemsSource="{Binding}"
+                <line:LineChartControl ItemsSource="{Binding Ms1Spectrum}"
                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                        RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                        RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                       HorizontalPropertyName="X"
-                                       VerticalPropertyName="Y">
+                                       HorizontalPropertyName="Mass"
+                                       VerticalPropertyName="Intensity">
+                    <line:LineChartControl.LinePen>
+                        <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
+                    </line:LineChartControl.LinePen>
                     <line:LineChartControl.LayoutTransform>
                         <TransformGroup>
                             <RotateTransform Angle="-90"/>
@@ -70,26 +75,40 @@
                     BorderThickness="0,0,1,1"
                     Margin="5,5,0,0"
                     Grid.Row="1" Grid.Column="1"/>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                         Margin="0,0,5,5"
                                         Grid.Row="2" Grid.Column="1" />
-            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                      RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                       Margin="0,5,5,0"
                                       Grid.Row="1" Grid.Column="2">
-                <axis:VerticalAxisControl.LayoutTransform>
+                <axis:HorizontalAxisControl.LayoutTransform>
                     <TransformGroup>
-                        <RotateTransform Angle="180"/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type axis:HorizontalAxisControl}}}"/>
                     </TransformGroup>
-                </axis:VerticalAxisControl.LayoutTransform>
-            </axis:VerticalAxisControl>
+                </axis:HorizontalAxisControl.LayoutTransform>
+            </axis:HorizontalAxisControl>
             <TextBlock Text="Relative abundance"
                        FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Grid.Row="3" Grid.Column="1"/>
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="MS1 spectra Max intensity: " FontSize="12"/>
+                    <TextBlock Text="{Binding Ms1SpectrumMaxIntensity}" FontSize="12"/>
+                </StackPanel>
+                <TextBlock Text="{Binding SplashKey}" FontSize="11"/>
+                <StackPanel.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type axis:HorizontalAxisControl}}}"/>
+                    </TransformGroup>
+                </StackPanel.LayoutTransform>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

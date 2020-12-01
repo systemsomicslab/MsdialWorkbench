@@ -34,7 +34,7 @@
         <Grid.RowDefinitions>
             <RowDefinition MaxHeight="20" />
             <RowDefinition />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="25" />
             <RowDefinition MaxHeight="20" />
         </Grid.RowDefinitions>
 
