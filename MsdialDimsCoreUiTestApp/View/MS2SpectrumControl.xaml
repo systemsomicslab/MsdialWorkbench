@@ -19,8 +19,7 @@
                                            ChartMargin="0.05" />
         <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
                                        MinValue="0" MaxValue="1"
-                                       ChartMargin="0,0.05"
-                                       IsFlipped="True"/>
+                                       ChartMargin="0,0.05" />
         <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <Grid>

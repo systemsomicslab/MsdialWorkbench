@@ -154,8 +154,8 @@ namespace CompMs.Graphics.Scatter
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx = HorizontalAxis.TranslateToRenderPoint(x) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y) * actualHeight;
+                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {

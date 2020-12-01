@@ -22,20 +22,20 @@ namespace CompMs.Graphics.Base
             return manager.TranslateToAxisValue(value);
         }
 
-        public double TranslateToRenderPoint(AxisValue value) {
-            return manager.TranslateToRenderPoint(value);
+        public double TranslateToRenderPoint(AxisValue value, bool isFlipped) {
+            return manager.TranslateToRenderPoint(value, isFlipped);
         }
 
-        public double TranslateToRenderPoint(object value) {
-            return manager.TranslateToRenderPoint(value);
+        public double TranslateToRenderPoint(object value, bool isFlipped) {
+            return manager.TranslateToRenderPoint(value, isFlipped);
         }
 
-        public AxisValue TranslateFromRenderPoint(double value) {
-            return manager.TranslateFromRenderPoint(value);
+        public AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
+            return manager.TranslateFromRenderPoint(value, isFlipped);
         }
 
-        public List<double> TranslateToRenderPoints(IEnumerable<object> values) {
-            return manager.TranslateToRenderPoints(values);
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
+            return manager.TranslateToRenderPoints(values, isFlipped);
         }
     }
 }

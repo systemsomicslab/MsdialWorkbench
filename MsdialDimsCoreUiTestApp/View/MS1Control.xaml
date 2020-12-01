@@ -18,8 +18,7 @@
                                                  ValuePropertyName="Intensity" TargetPropertyName="Mass"
                                                  TargetRange="{Binding HorizontalAxis.Range, Source={x:Reference Name=MS1Chart}}"
                                                  ChartMargin="0.05"
-                                                 Bounds="0,0"
-                                                 IsFlipped="True" />
+                                                 Bounds="0,0"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

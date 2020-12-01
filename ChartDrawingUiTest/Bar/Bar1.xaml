@@ -23,7 +23,7 @@
         <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
                                            ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
                                            ValuePropertyName="Y"
-                                           Bounds="0,0" IsFlipped="True"/>
+                                           Bounds="0,0"/>
     </Page.Resources>
 
     <Grid>

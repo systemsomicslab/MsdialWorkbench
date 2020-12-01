@@ -22,8 +22,7 @@
         <manager:ContinuousAxisManager x:Key="VerticalAxis"
                                        MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                        MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+                                       ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

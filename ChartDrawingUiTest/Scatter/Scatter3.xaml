@@ -19,8 +19,7 @@
         <manager:ContinuousAxisManager x:Key="VerticalAxis"
                                        MinValue="{Binding MinY, Source={StaticResource ScatterVM}}"
                                        MaxValue="{Binding MaxY, Source={StaticResource ScatterVM}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+                                       ChartMargin="0.05" />
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource ScatterVM}}" />
         <CollectionViewSource x:Key="FilteredSeriesView"

@@ -20,8 +20,7 @@
                                            ItemsSource="{Binding ItemsSource/Centroids, Source={x:Reference Name=MS2RevChart}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05"
-                                           IsFlipped="True"/>
+                                           ChartMargin="0,0.05" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
                                            ItemsSource="{Binding ItemsSource/MspMatch.Spectrum, Source={x:Reference Name=MS2RevChart}}"
                                            ValuePropertyName="Intensity"

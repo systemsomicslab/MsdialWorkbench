@@ -30,6 +30,16 @@ namespace CompMs.Graphics.Core.Base
             nameof(RangeY), typeof(Range), typeof(ChartBaseControl),
             new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
             );
+
+        public static readonly DependencyProperty FlippedXProperty = DependencyProperty.Register(
+            nameof(FlippedX), typeof(bool), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(false, ChartUpdate)
+            );
+
+        public static readonly DependencyProperty FlippedYProperty = DependencyProperty.Register(
+            nameof(FlippedY), typeof(bool), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(true, ChartUpdate)
+            );
         #endregion
 
         #region Property
@@ -53,6 +63,16 @@ namespace CompMs.Graphics.Core.Base
         public Range RangeY {
             get => (Range)GetValue(RangeYProperty);
             set => SetValue(RangeYProperty, value);
+        }
+
+        public bool FlippedX {
+            get => (bool)GetValue(FlippedXProperty);
+            set => SetValue(FlippedXProperty, value);
+        }
+
+        public bool FlippedY {
+            get => (bool)GetValue(FlippedYProperty);
+            set => SetValue(FlippedYProperty, value);
         }
 
         public Rect InitialArea
@@ -109,9 +129,9 @@ namespace CompMs.Graphics.Core.Base
         {
             double x = 0, y = 0;
             if (HorizontalAxis != null)
-                x = HorizontalAxis.TranslateFromRenderPoint(p.X / ActualWidth).Value;
+                x = HorizontalAxis.TranslateFromRenderPoint(p.X / ActualWidth, FlippedX).Value;
             if (VerticalAxis != null)
-                y = VerticalAxis.TranslateFromRenderPoint(p.Y / ActualHeight).Value;
+                y = VerticalAxis.TranslateFromRenderPoint(p.Y / ActualHeight, FlippedY).Value;
             return new Point(x, y);
         }
 

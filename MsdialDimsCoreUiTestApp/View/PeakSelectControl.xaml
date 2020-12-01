@@ -14,8 +14,7 @@
         <manager:AutoContinuousAxisManager x:Key="IntensityAxisManager"
                                            ItemsSource="{Binding ItemsSource, Source={x:Reference Name=PeakSelector}}"
                                            ValuePropertyName="Intensity"
-                                           ChartMargin="0.05"
-                                           IsFlipped="True"/>
+                                           ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.SurveyScanView"
+<UserControl x:Class="CompMs.App.Msdial.View.SurveyScanView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -24,8 +24,7 @@
         <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
                                            ItemsSource="{Binding DataContext.Ms1Spectrum, Source={x:Reference Name=Ms1Plot}}"
                                            ValuePropertyName="Intensity"
-                                           ChartMargin="0.05"
-                                           IsFlipped="True"/>
+                                           ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>

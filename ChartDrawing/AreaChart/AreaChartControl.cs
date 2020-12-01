@@ -94,14 +94,13 @@ namespace CompMs.Graphics.AreaChart
                     path.Segments.Add(new LineSegment()
                     {
                         Point = new Point(
-                            HorizontalAxis.TranslateToRenderPoint(hPropertyReflection.GetValue(o)) * ActualWidth,
-                            VerticalAxis.TranslateToRenderPoint(vPropertyReflection.GetValue(o)) * ActualHeight
+                            HorizontalAxis.TranslateToRenderPoint(hPropertyReflection.GetValue(o), FlippedX) * ActualWidth,
+                            VerticalAxis.TranslateToRenderPoint(vPropertyReflection.GetValue(o), FlippedY) * ActualHeight
                             ),
                     });
                 }
                 var p = (path.Segments.First() as LineSegment).Point;
-                // Console.WriteLine($"{p.X}, {p.Y}");
-                p.Y = VerticalAxis.TranslateToRenderPoint(0d) * ActualHeight;
+                p.Y = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * ActualHeight;
                 path.StartPoint = p;
                 var q = (path.Segments.Last() as LineSegment).Point;
                 q.Y = p.Y;

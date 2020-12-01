@@ -102,8 +102,8 @@ namespace CompMs.Graphics.LineChart
         List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
             var points = new List<Point>(ds.Count);
 
-            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x));
-            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y));
+            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX);
+            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY);
 
             return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
         }

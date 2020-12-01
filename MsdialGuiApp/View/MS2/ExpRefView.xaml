@@ -24,8 +24,7 @@
                                            ItemsSource="{Binding}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05"
-                                           IsFlipped="True"/>
+                                           ChartMargin="0,0.05" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
                                            ItemsSource="{Binding}"
                                            ValuePropertyName="Intensity"
