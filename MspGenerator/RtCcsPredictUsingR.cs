@@ -54,7 +54,7 @@ namespace CompMs.MspGenerator
                 //# Predict over LIPIDOMICS DATABASE
                 //# import your database
                 r.Evaluate("setwd(\"" + outputFolderPath + "\")");
-                r.Evaluate("files <- list.files(pattern=\"*RTpred.csv\", recursive=FALSE)");
+                r.Evaluate("files <- list.files(pattern=\"RTpred*\", recursive=FALSE)");
                 r.Evaluate(@"
                     rtPredict <- function(x) {
 

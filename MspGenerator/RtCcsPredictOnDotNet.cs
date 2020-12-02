@@ -73,12 +73,12 @@ namespace CompMs.MspGenerator
 
 
 
-        public static void mergeRtAndCcsResultFiles2(string resultFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile,int rtTreeDepth, int ccsTreeDepth, int rtTreeNum, int ccsTreeNum)
+        public static void mergeRtAndCcsResultFiles2(string resultFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile)
         {
 
             var allResultDic = new Dictionary<string, List<string>>();
-            var rtResultDic = RtPredictionOnXgboost(rtTrainFile, rtTestFile, rtTreeDepth, rtTreeNum);
-            var ccsResultDic = CcsPredictionOnXgboost(ccsTrainFile, ccsTestFile, ccsTreeDepth, ccsTreeNum);
+            var rtResultDic = RtPredictionOnXgboost(rtTrainFile, rtTestFile);
+            var ccsResultDic = CcsPredictionOnXgboost(ccsTrainFile, ccsTestFile);
 
             var ccsAdductHeaderList = new List<string>();
             foreach (var item in adductscoreDic)
@@ -138,7 +138,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static Dictionary<string, float> RtPredictionOnXgboost(string rtTrainFile, string testFile, int rtTreeDepth, int rtTreeNum)
+        public static Dictionary<string, float> RtPredictionOnXgboost(string rtTrainFile, string testFile)
         {
             // read trainFile and set to array
             var vectorsTrain = new List<XGVector<Array>>();
@@ -238,10 +238,28 @@ namespace CompMs.MspGenerator
                     vectorsTest.Add(newVector);
                 }
             }
-            int maxDepth = rtTreeDepth; //default=3; use tune result
-            float learningRate = 0.1F;
-            int nEstimators = rtTreeNum;
-            var xgbc = new XGBoost.XGBRegressor(maxDepth, learningRate, nEstimators);
+            int maxDepth = 5; //default=3; use tune result
+            float learningRate = 0.02F;
+            int nEstimators = 1000;
+            bool silent = true;
+            string objective = "reg:linear";
+            int nThread = -1;
+            float gamma = 1; // default=0 on R 
+            int minChildWeight = 10; // default=1 on R 
+            int maxDeltaStep = 0;
+            float subsample = 0.5F; // default=1 on R 
+            float colSampleByTree = 1; // default=1 on R 
+            float colSampleByLevel = 1; 
+            float regAlpha = 0; // default=0 on R 
+            float regLambda = 1; // default=1 on R 
+            float scalePosWeight = 1;
+            float baseScore = 0.5F;
+            int seed = 0;
+            float missing = float.NaN;
+
+            var xgbc = new XGBoost.XGBRegressor(maxDepth, learningRate, nEstimators, silent,
+                objective, nThread, gamma, minChildWeight, maxDeltaStep, subsample, colSampleByTree,
+                colSampleByLevel, regAlpha, regLambda, scalePosWeight, baseScore, seed, missing);
             XGBArray arrTrain = ConvertToXGBArray(vectorsTrain);
             xgbc.Fit(arrTrain.Vectors, arrTrain.Target);
 
@@ -262,7 +280,7 @@ namespace CompMs.MspGenerator
         }
 
 
-        public static Dictionary<string, Dictionary<string, float>> CcsPredictionOnXgboost(string rtTrainFile, string testFile, int ccsTreeDepth, int ccsTreeNum)
+        public static Dictionary<string, Dictionary<string, float>> CcsPredictionOnXgboost(string rtTrainFile, string testFile)
         {
             // read trainFile and set to array
             var trainArrayList = new List<XGBArray>();
@@ -374,20 +392,20 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            int maxDepth = ccsTreeDepth; //default=3; use tune result
+            int maxDepth = 5; //default=3; use tune result
             float learningRate = 0.025F;
-            int nEstimators = ccsTreeNum;
+            int nEstimators = 700;
             bool silent = true;
             string objective = "reg:linear";
             int nThread = -1;
-            float gamma = 0;
-            int minChildWeight = 1;
+            float gamma = 0.01F;
+            int minChildWeight = 0;
             int maxDeltaStep = 0;
-            float subsample = 1;
-            float colSampleByTree = 1;
+            float subsample = 0.5F;
+            float colSampleByTree = 0.75F;
             float colSampleByLevel = 1;
             float regAlpha = 0;
-            float regLambda = 1;
+            float regLambda = 1;// default=1 on R 
             float scalePosWeight = 1;
             float baseScore = 0.5F;
             int seed = 0;

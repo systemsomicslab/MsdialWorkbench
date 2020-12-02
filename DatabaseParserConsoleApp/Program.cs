@@ -144,8 +144,8 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201014_Hex3Cer\";
-            var testFilename = @"\Hex3Cer_agingLung_18-1-24-0.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201202_EtherPE_check\";
+            var testFilename = @"\EtherPE_16_1_22_4_neg(FromIMSdata).msp";
             var querypath = testFolder + testFilename;
             var reffile = testFolder + @"\Library.txt";
 
@@ -153,7 +153,7 @@ namespace DatabaseParserConsoleApp {
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
             var spectrum = LipidAnnotation.ConvertToRequiredSpectrumFormat(query.Ms2Spectrum.PeakList);
             var characterizedMolecule = LipidAnnotation.Characterize(query.PrecursorMz, query.RetentionTime, spectrum,
-                refMolecules, query.IonMode, 0.01, 0.05);
+                refMolecules, query.IonMode, 0.05, 0.05);
             Console.WriteLine("Done");
             Console.ReadLine();
         }
