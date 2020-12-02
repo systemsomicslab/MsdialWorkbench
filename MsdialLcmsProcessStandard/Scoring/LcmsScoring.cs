@@ -205,7 +205,7 @@ namespace Msdial.Lcms.Dataprocess.Scoring
             {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(query);
                 if (molecule == null || molecule.Adduct == null) return defaultPresenceScore;
-                if (molecule.LipidClass == LbmClass.EtherPE && refSpec.Count == 3) return defaultPresenceScore;
+                if (molecule.LipidClass == LbmClass.EtherPE && refSpec.Count == 3 && query.IonMode == IonMode.Positive) return defaultPresenceScore;
                 //if (query.Name == "PC 36:4; PC 16:0-20:4; [M+CH3COO]-") {
                 //    Console.WriteLine();
                 //}

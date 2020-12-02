@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CompMs.Common.Extension;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
@@ -20,9 +21,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                 new AlignmentSpotProperty { MassCenter = double.MaxValue } }; // add sentinel
             var ms1Tol = _param.Ms1AlignmentTolerance;
 
-            master = MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched), master, ms1Tol);
-            master = MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched), master, ms1Tol);
-            master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber == 0), master, ms1Tol);
+            master = MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
+            master = MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
+            master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber == 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 
             return master.Skip(1).Take(master.Count - 2).ToList(); // skip sentinel
         }
@@ -51,6 +52,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             foreach (var spot in spots) {
                 while (i < master.Count && master[i].MassCenter < spot.MassCenter)
                     merged.Add(master[i++]);
+
+                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+                #region // practical parameter changes
+                if (spot.MassCenter > 500) {
+                    ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(spot.MassCenter, ppm);
+                }
+                #endregion
+
                 if (merged[merged.Count - 1].MassCenter + ms1Tol <= spot.MassCenter && spot.MassCenter <= master[i].MassCenter - ms1Tol)
                     merged.Add(spot);
             }

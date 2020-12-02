@@ -1905,15 +1905,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             var cSpots = new List<AlignmentPropertyBean>();
             var donelist = new List<int>();
 
-            foreach (var spot in alignmentSpotList.Where(n => n.LibraryID >= 0 && !n.MetaboliteName.Contains("w/o"))) {
+            foreach (var spot in alignmentSpotList.Where(n => n.LibraryID >= 0 && !n.MetaboliteName.Contains("w/o")).OrderByDescending(n => n.TotalSimilairty)) {
                 tryMergeToMaster(spot, cSpots, donelist, param);
             }
 
-            foreach (var spot in alignmentSpotList.Where(n => n.PostIdentificationLibraryID >= 0 && !n.MetaboliteName.Contains("w/o"))) {
+            foreach (var spot in alignmentSpotList.Where(n => n.PostIdentificationLibraryID >= 0 && !n.MetaboliteName.Contains("w/o")).OrderByDescending(n => n.TotalSimilairty)) {
                 tryMergeToMaster(spot, cSpots, donelist, param);
             }
 
-            foreach (var spot in alignmentSpotList) {
+            foreach (var spot in alignmentSpotList.OrderByDescending(n => n.AverageValiable)) {
                 if (spot.LibraryID >= 0 && !spot.MetaboliteName.Contains("w/o")) continue;
                 if (spot.PostIdentificationLibraryID >= 0 && !spot.MetaboliteName.Contains("w/o")) continue;
                 if (spot.PostDefinedIsotopeWeightNumber > 0) continue;
@@ -2127,7 +2127,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             var flg = false;
             var rtTol = param.RetentionTimeAlignmentTolerance < 0.1 ? param.RetentionTimeAlignmentTolerance : 0.1;
-            foreach (var cSpot in cSpots.Where(n => Math.Abs(n.CentralAccurateMass - spotMz) < param.Ms1AlignmentTolerance)) {
+            var ms1Tol = param.Ms1AlignmentTolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            #region // practical parameter changes
+            if (spotMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(spotMz, ppm);
+            }
+            #endregion
+
+            foreach (var cSpot in cSpots.Where(n => Math.Abs(n.CentralAccurateMass - spotMz) < ms1Tol)) {
                 var cSpotRt = cSpot.CentralRetentionTime;
                 if (Math.Abs(cSpotRt - spotRt) < rtTol * 0.5) {
                     flg = true;
