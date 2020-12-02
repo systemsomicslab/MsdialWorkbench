@@ -294,6 +294,36 @@ namespace StructureFinderConsoleApp
             }
         }
 
+        public static void MergeInChIKeyToMergedFragmentInfoTable(string tablefile, string inchikeyfile, string output) {
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                using (var sr = new StreamReader(tablefile, Encoding.ASCII)) {
+                    sw.WriteLine(sr.ReadLine());
+                    using (var sr2 = new StreamReader(inchikeyfile, Encoding.ASCII)) {
+                        while (sr.Peek() > -1) {
+                            var line = sr.ReadLine();
+                            var lineArray = line.Split('\t');
+
+                            var inchikeycode = sr2.ReadLine();
+                            var originalinchikey = string.Empty;
+                            var shortinchikey = string.Empty;
+                            if (inchikeycode.ToLower().Contains("inchikey=")) {
+                                originalinchikey = inchikeycode.Replace("InChIKey=", "");
+                            }
+                            else {
+                                originalinchikey = inchikeycode;
+                            }
+                            shortinchikey = originalinchikey.Split('-')[0];
+
+                            lineArray[4] = originalinchikey;
+                            lineArray[5] = shortinchikey;
+
+                            sw.WriteLine(String.Join("\t", lineArray));
+                        }
+                    }
+                }
+            }
+        }
+
         public static void ExportFragmentStatistics(string input, string output)
         {
             var fragmentCounts = new List<FragmentCount>();
@@ -1052,13 +1082,13 @@ namespace StructureFinderConsoleApp
         //}
 
 
-        public static void StatisticsOfMatchedFragmentIons(string folderPath)
+        public static void StatisticsOfMatchedFragmentIons(string folderPath, string tag)
         {
             Console.WriteLine(folderPath);
             var param = new AnalysisParamOfMsfinder() { Mass2Tolerance = 0.025F, RelativeAbundanceCutOff = 1, MassTolType = MassToleranceType.Da, TreeDepth = 2 };
             var files = System.IO.Directory.GetFiles(folderPath, "*.msp", System.IO.SearchOption.TopDirectoryOnly);
-            var neutralLossFile = System.IO.Path.GetDirectoryName(files[0]) + "-NL.txt";
-            var productIonFile = System.IO.Path.GetDirectoryName(files[0]) + "-PI.txt";
+            var neutralLossFile = System.IO.Path.GetDirectoryName(files[0]) + tag + "-NL.txt";
+            var productIonFile = System.IO.Path.GetDirectoryName(files[0]) + tag + "-PI.txt";
 
             using (var swNL = new StreamWriter(neutralLossFile, false, Encoding.ASCII)) {
                 using (var swPI = new StreamWriter(productIonFile, false, Encoding.ASCII)) {
