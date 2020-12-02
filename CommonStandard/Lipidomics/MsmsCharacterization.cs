@@ -6024,7 +6024,7 @@ namespace CompMs.Common.Lipidomics
                         var molecule = getAlphaOxfaMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
                         candidates.Add(molecule);
                     }
-                    else if (foundCount == 0 && totalOxidized == 1) // -H2O was not found -> null (totalOxidized == 1 only ...Tentatively)
+                    else if (foundCount == 0) // -H2O was not found -> null 
                     {
                         // seek -H2O
                         var threshold2 = 0.01;

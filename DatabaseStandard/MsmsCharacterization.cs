@@ -2222,7 +2222,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 24 && sn1Double >= 5) return null;
+                            if (sn1Carbon >= 24 && sn1Double >= 5) continue;
 
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
                             var NL_sn2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -5963,7 +5963,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         var molecule = getAlphaOxfaMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
                         candidates.Add(molecule);
                     }
-                    else if (foundCount == 0 && totalOxidized == 1) // -H2O was not found -> null (totalOxidized == 1 only ...Tentatively)
+                    else if (foundCount == 0) // -H2O was not found -> null
                     {
                         // seek -H2O
                         var threshold2 = 0.01;

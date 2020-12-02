@@ -57,27 +57,27 @@ namespace CompMs.MspGenerator
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(resultFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile,rtTreeDepth,ccsTreeDepth,rtTreeNum,ccsTreeNum);
 
-                ////PaDELの結果を用いてXGBoostDotNetでPredictionする（暫定）
-                ////Padelの結果から必要なdescriptorを抽出
-                //var working = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\fromPadelResult\";
-                //var padelOutFileName = working+ "DMPE_InChIKey-smiles.csv";
-                //var rtDescriptorListFile = working+ "para_RT152.txt";
-                //var ccsDescriptorListFile = working+ "para_ccs327.txt";
-                //RtCcsPredictOnDotNet.ExtractDescriptorToPredictFromPadel( padelOutFileName,  rtDescriptorListFile,  ccsDescriptorListFile);
-                //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
-                //var resultFile = working+@"\PredictResult_20201104.txt";
+                //PaDELの結果を用いてXGBoostDotNetでPredictionする（暫定）
+                //Padelの結果から必要なdescriptorを抽出
+                var working = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201130check\";
+                //var padelOutFileName = working + "DMPE_InChIKey-smiles.csv";
+                //var rtDescriptorListFile = working + "para_RT152.txt";
+                //var ccsDescriptorListFile = working + "para_ccs327.txt";
+                //RtCcsPredictOnDotNet.ExtractDescriptorToPredictFromPadel(padelOutFileName, rtDescriptorListFile, ccsDescriptorListFile);
+                // RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
+                //var resultFile = working + @"\PredictResult_20201130(master)(regLambda0).txt";
                 //var rtTrainFile = working + @"masterRT.tsv";
-                //var rtTestFile = working + @"DMPE_InChIKey-smiles_ExtractedFromPadelResult_RT.tsv";
+                //var rtTestFile = working + @"\masterRT.tsv";
                 //var ccsTrainFile = working + @"masterCCS.tsv";
-                //var ccsTestFile = working + @"DMPE_InChIKey-smiles_ExtractedFromPadelResult_CCS.tsv";
+                //var ccsTestFile = working + @"masterCCS.tsv";
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFiles2(resultFile, rtTrainFile, rtTestFile, ccsTrainFile, ccsTestFile);
 
             }
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20201120_lipidLibraryChk\newMsp\predict\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\20201120164527_calc.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201130check\predictOnR\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt\master.txt"; // 計算させたいInChIKeyとSMILESのリスト
             var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
             var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
             var descriptorSelecerCSSFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
@@ -103,7 +103,7 @@ namespace CompMs.MspGenerator
             ////// RT predict
             //RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
             /////// CCS predict
-            ////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
+            //RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
             ////// RT and CCS predict
             //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
