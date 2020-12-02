@@ -91,8 +91,8 @@ namespace CompMs.App.Msdial
 
         #region field
         private MsdialDataStorage storage;
-        private bool refMatchedChecked, suggestedChecked, unknownChecked, ccsChecked,
-            ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
+        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true,
+            ccsChecked, ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
         // private AlignmentVM alignmentVM;
         private AnalysisFileVM fileVM;
         private ObservableCollection<AnalysisFileBean> analysisFiles;
@@ -297,7 +297,7 @@ namespace CompMs.App.Msdial
 
         #region
         private void LoadInitialFiles() {
-            FileVM = new AnalysisFileVM(Storage.AnalysisFiles.FirstOrDefault(), Storage.ParameterBase);
+            FileVM = new AnalysisFileVM(Storage.AnalysisFiles.FirstOrDefault(), Storage.ParameterBase, Storage.MspDB);
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(Storage.AnalysisFiles);
         }
         #endregion

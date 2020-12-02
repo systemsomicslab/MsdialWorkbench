@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Details"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type do:ChromatogramPeakFeatureVM}}"
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -24,7 +26,7 @@
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0" Margin="5,0,0,0">
             <Label Content="Annotation:" Height="25"/>
             <Label Name="Label_RetentionTime" Content="RT [min]:" Height="25"/>
-            <Label Name="Label_Ccs" Content="CCS:" Height="25" />
+            <Label Name="Label_Adduct" Content="Adduct type:" Height="25" />
             <Label Name="Label_UiMass" Content="m/z:" Height="25" />
             <Label Name="Label_PeakIntensity" Content="Peak height|area:" Height="25" />
             <Label Name="Label_FormulaOntology" Content="Formula|Ontology:" Height="25" />
@@ -34,16 +36,26 @@
 
         <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0">
             <StackPanel.Resources>
-                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}"/>
+                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                    <Setter Property="Height" Value="25" />
+                </Style>
             </StackPanel.Resources>
-            <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Text="{Binding DisplayedAnnotatedNameInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_RetentionTime" Text="{Binding DisplayedRetentionInfo}" Height="25"/>
-            <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Text="{Binding DisplayedOtherDiagnosticsInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding DisplayedMzInfo}" Height="25"/>
-            <TextBox Name="TextBox_PeakInformation_PeakIntensity" Text="{Binding DisplayedPeakQuantInfo}" Height="25"/>
-            <TextBox Name="TextBox_PeakInformation_FormulaOntology" Text="{Binding DisplayedFormulaOntologyInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_InChIKey2" Text="{Binding DisplayedInChIKeyInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_Comment" Text="{Binding DisplayedCommentInfo}" Height="25" />
+            <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Text="{Binding Name, Mode=OneWay}" Height="25" />
+            <TextBox Name="TextBox_PeakInformation_RetentionTime" Text="{Binding ChromXValue, Mode=OneWay, StringFormat=F3}" Height="25"/>
+            <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Text="{Binding AdductIonName, Mode=OneWay}" Height="25" />
+            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay}" Height="25"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Name="TextBox_PeakInformation_PeakIntensity" Text="{Binding Intensity, Mode=OneWay, StringFormat=F0}" Height="25"/>
+                <TextBox Text="|" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_PeakArea" Text="{Binding PeakArea, Mode=OneWay, StringFormat=F0}" Height="25"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Name="TextBox_PeakInformation_Formula" Text="{Binding Formula, Mode=OneWay}" Height="25" />
+                <TextBox Text="|" />
+                <TextBox Name="TextBox_PeakInformation_Ontology" Text="{Binding Ontology, Mode=OneWay}" Height="25" />
+            </StackPanel>
+            <TextBox Name="TextBox_PeakInformation_InChIKey2" Text="{Binding InChIKey, Mode=OneWay}" Height="25" />
+            <TextBox Name="TextBox_PeakInformation_Comment" Text="{Binding Comment, Mode=OneWay}" Height="25" />
         </StackPanel>
 
     </Grid>

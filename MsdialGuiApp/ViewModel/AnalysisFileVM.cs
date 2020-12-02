@@ -19,11 +19,13 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using NSSplash;
 using NSSplash.impl;
+using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.MSDec;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    class AnalysisFileVM : ViewModelBase
-    {
+    class AnalysisFileVM : ViewModelBase {
         #region Property
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -54,7 +56,37 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
 
-        public ChromatogramPeakFeatureWrapper Target {
+        public List<SpectrumPeakWrapper> Ms2Spectrum {
+            get => ms2Spectrum;
+            set {
+                if (SetProperty(ref ms2Spectrum, value)) {
+                    OnPropertyChanged(nameof(Ms2MassMax));
+                    OnPropertyChanged(nameof(Ms2MassMin));
+                }
+            }
+        }
+
+        public List<SpectrumPeakWrapper> Ms2ReferenceSpectrum {
+            get => ms2ReferenceSpectrum;
+            set {
+                if (SetProperty(ref ms2ReferenceSpectrum, value)) {
+                    OnPropertyChanged(nameof(Ms2MassMax));
+                    OnPropertyChanged(nameof(Ms2MassMin));
+                }
+            }
+        }
+
+        public List<SpectrumPeakWrapper> Ms2DeconvolutionSpectrum {
+            get => ms2DeconvolutionSpectrum;
+            set {
+                if (SetProperty(ref ms2DeconvolutionSpectrum, value)) {
+                    OnPropertyChanged(nameof(Ms2MassMax));
+                    OnPropertyChanged(nameof(Ms2MassMin));
+                }
+            }
+        }
+
+        public ChromatogramPeakFeatureVM Target {
             get => target;
             set => SetProperty(ref target, value);
         }
@@ -64,35 +96,70 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref fileName, value);
         }
 
-        public string SplashKey {
-            get => splashKey;
-            set => SetProperty(ref splashKey, value);
+        public string Ms1SplashKey {
+            get => ms1SplashKey;
+            set => SetProperty(ref ms1SplashKey, value);
+        }
+
+        public string RawSplashKey {
+            get => rawSplashKey;
+            set => SetProperty(ref rawSplashKey, value);
+        }
+
+        public string DeconvolutionSplashKey {
+            get => deconvolutionSplashKey;
+            set => SetProperty(ref deconvolutionSplashKey, value);
+        }
+
+        public bool RefMatchedChecked {
+            get => refMatchedChecked;
+            set => SetProperty(ref refMatchedChecked, value);
+        }
+
+        public bool SuggestedChecked {
+            get => suggestedChecked;
+            set => SetProperty(ref suggestedChecked, value);
+        }
+
+        public bool UnknownChecked {
+            get => unknownChecked;
+            set => SetProperty(ref unknownChecked, value);
         }
 
         public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Min(peak => peak.Mass);
+        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Max(peak => peak.Mass);
+        public double ChromMin => _ms1Peaks.Min(peak => peak.ChromXValue) ?? 0;
+        public double ChromMax => _ms1Peaks.Max(peak => peak.ChromXValue) ?? 0;
+        public double MassMin => _ms1Peaks.Min(peak => peak.Mass);
+        public double MassMax => _ms1Peaks.Max(peak => peak.Mass);
         public double Ms1Tolerance => param.CentroidMs1Tolerance;
         #endregion
 
         #region Field
-        private ICollectionView ms1Peaks;
         private List<RawSpectrum> spectrumList;
+        private List<MSDecResult> msdecResults;
+        private ICollectionView ms1Peaks;
         private List<ChromatogramPeakWrapper> eic;
-        private List<SpectrumPeakWrapper> ms1Spectrum;
-        private ChromatogramPeakFeatureWrapper target;
+        private List<SpectrumPeakWrapper> ms1Spectrum, ms2Spectrum, ms2ReferenceSpectrum, ms2DeconvolutionSpectrum;
+        private ChromatogramPeakFeatureVM target;
         private ParameterBase param;
-        private ObservableCollection<ChromatogramPeakFeatureWrapper> _ms1Peaks;
-        private string fileName, splashKey;
+        private IReadOnlyList<MoleculeMsReference> msps;
+        private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
+        private string fileName, ms1SplashKey, rawSplashKey, deconvolutionSplashKey;
+        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
         #endregion
 
-        public AnalysisFileVM(AnalysisFileBean analysisFileBean, ParameterBase param) {
+        public AnalysisFileVM(AnalysisFileBean analysisFileBean, ParameterBase param, IReadOnlyList<MoleculeMsReference> msps) {
             this.param = param;
+            this.msps = msps;
 
             FileName = analysisFileBean.AnalysisFileName;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath);
-            _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureWrapper>(
-                peaks.Select(peak => new ChromatogramPeakFeatureWrapper(peak))
+            _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
+                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak))
             );
             Ms1Peaks = CollectionViewSource.GetDefaultView(_ms1Peaks);
 
@@ -109,16 +176,29 @@ namespace CompMs.App.Msdial.ViewModel
                 spectrumList = rawObj.SpectrumList;
             }
 
+            msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFileBean.DeconvolutionFilePath, out _, out _);
+
             PropertyChanged += OnTargetChanged;
+            PropertyChanged += OnFilterChanged;
 
             Target = _ms1Peaks.FirstOrDefault();
         }
 
         bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureWrapper peak) {
-                return peak.IsRefMatched || peak.IsSuggested || peak.IsUnknown;
+            if (obj is ChromatogramPeakFeatureVM peak) {
+                return RefMatchedChecked && peak.IsRefMatched
+                    || SuggestedChecked && peak.IsSuggested
+                    || UnknownChecked && peak.IsUnknown;
             }
             return false;
+        }
+
+        void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
+            Console.WriteLine(e.PropertyName);
+            if (e.PropertyName == nameof(RefMatchedChecked)
+                || e.PropertyName == nameof(SuggestedChecked)
+                || e.PropertyName == nameof(UnknownChecked))
+                Ms1Peaks?.Refresh();
         }
 
         void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
@@ -138,15 +218,32 @@ namespace CompMs.App.Msdial.ViewModel
 
                 var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, Target.MS1RawSpectrumIdTop, 0, float.MinValue, float.MaxValue);
                 Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                Ms1SplashKey = CalculateSplashKey(spectra);
 
-                if (spectra.IsEmptyOrNull() || spectra.Count <= 2 && spectra.All(peak => peak.Intensity == 0)) {
-                    SplashKey = "N/A";
-                }
-                else {
-                    var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
-                    SplashKey = new Splash().splashIt(msspectrum);
+                spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, Target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
+                Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                RawSplashKey = CalculateSplashKey(spectra);
+
+                var msdecResult = msdecResults.FirstOrDefault(dec => dec.ScanID == Target.InnerModel.PeakID);
+                Ms2DeconvolutionSpectrum = msdecResult?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+                DeconvolutionSplashKey = CalculateSplashKey(msdecResult?.Spectrum);
+
+                Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
+                if (Target.TextDbBasedMatchResult == null && Target.MspBasedMatchResult is MsScanMatchResult matched) {
+                    var reference = msps[matched.LibraryIDWhenOrdered];
+                    if (matched.LibraryID != reference.ScanID) {
+                        reference = msps.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
+                    }
+                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
             }
+        }
+
+        static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
+            if (spectra.IsEmptyOrNull() || spectra.Count <= 2 && spectra.All(peak => peak.Intensity == 0))
+                return "N/A";
+            var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
+            return new Splash().splashIt(msspectrum);
         }
     }
 
@@ -169,23 +266,6 @@ namespace CompMs.App.Msdial.ViewModel
         private ChromatogramPeak innerModel;
         public ChromatogramPeakWrapper(ChromatogramPeak peak) {
             innerModel = peak;
-        }
-    }
-
-    class ChromatogramPeakFeatureWrapper
-    {
-        public double? ChromXValue => innerModel.ChromXs.Value;
-        public double Mass => innerModel.Mass;
-        public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
-
-        public bool IsRefMatched => innerModel.IsReferenceMatched;
-        public bool IsSuggested => innerModel.IsAnnotationSuggested;
-        public bool IsUnknown => innerModel.IsUnknown;
-        public ChromatogramPeakFeature InnerModel => innerModel;
-
-        private ChromatogramPeakFeature innerModel;
-        public ChromatogramPeakFeatureWrapper(ChromatogramPeakFeature feature) {
-            innerModel = feature;
         }
     }
 

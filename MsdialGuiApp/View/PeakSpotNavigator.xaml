@@ -62,7 +62,7 @@
 
         <CheckBox Name="CheckBox_PlotIdentifiedOnly" 
                   Content="Ref. matched"
-                  IsChecked="{Binding RefMatchedChecked}"
+                  IsChecked="{Binding FileVM.RefMatchedChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="5,138,0,10" >
           <!--Checked="checkBox_PlotIdentifiedOnly_Checked" 
@@ -74,7 +74,7 @@
 
         <CheckBox Name="CheckBox_PlotAnnotatedOnly" 
                   Content="Suggested"
-                  IsChecked="{Binding SuggestedChecked}"
+                  IsChecked="{Binding FileVM.SuggestedChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="105,138,0,10" >
               <!--Checked="checkBox_PlotAnnotatedOnly_Checked" 
@@ -98,7 +98,7 @@
 
         <CheckBox Name="CheckBox_PlotUnknownOnly" 
                   Content="Unknown"
-                  IsChecked="{Binding UnknownChecked}"
+                  IsChecked="{Binding FileVM.UnknownChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="105,163,0,10" >
                   <!--Checked="checkBox_PlotUnknownOnly_Checked" 

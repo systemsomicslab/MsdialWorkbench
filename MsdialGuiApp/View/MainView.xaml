@@ -136,14 +136,14 @@
                 </MenuItem>
             </ContextMenu>
             -->
-            <manager:AutoContinuousAxisManager x:Key="ChromAxis"
-                                               ItemsSource="{Binding DataContext.FileVM.Ms1Peaks, Source={x:Reference Name=MainControl}}"
-                                               ValuePropertyName="ChromXValue"
-                                               ChartMargin="0.05" />
-            <manager:AutoContinuousAxisManager x:Key="MassAxis"
-                                               ItemsSource="{Binding DataContext.FileVM.Ms1Peaks, Source={x:Reference Name=MainControl}}"
-                                               ValuePropertyName="Mass"
-                                               ChartMargin="0.05" />
+            <manager:ContinuousAxisManager x:Key="ChromAxis"
+                                           MinValue="{Binding DataContext.FileVM.ChromMin, Source={x:Reference Name=MainControl}}"
+                                           MaxValue="{Binding DataContext.FileVM.ChromMax, Source={x:Reference Name=MainControl}}"
+                                           ChartMargin="0.05" />
+            <manager:ContinuousAxisManager x:Key="MassAxis"
+                                           MinValue="{Binding DataContext.FileVM.MassMin, Source={x:Reference Name=MainControl}}"
+                                           MaxValue="{Binding DataContext.FileVM.MassMax, Source={x:Reference Name=MainControl}}"
+                                           ChartMargin="0.05" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -284,14 +284,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <detail:PeakPropertyView />
+                                <detail:PeakPropertyView DataContext="{Binding FileVM.Target}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <detail:CompoundDetailView />
+                                <detail:CompoundDetailView DataContext="{Binding FileVM.Target}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -308,7 +308,7 @@
                                  Name="TabItem_MeasurementVsReference" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <ms2:ExpRefView />
+                            <ms2:ExpRefView DataContext="{Binding FileVM}"/>
                         </TabItem>
 
                         <TabItem Header="MS2 Chrom." 
@@ -323,7 +323,7 @@
                                  Height="25"
                                  Background="LightSteelBlue">
 
-                            <ms2:RawPurifiedView />
+                            <ms2:RawPurifiedView DataContext="{Binding FileVM}"/>
                         </TabItem>
 
                         <TabItem Header="Rep. vs. Ref." 

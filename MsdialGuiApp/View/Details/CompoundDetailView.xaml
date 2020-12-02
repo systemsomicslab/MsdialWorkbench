@@ -20,29 +20,59 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="5,0,0,0">
-            <Label Content="Annotation:" Height="25"/>
-            <Label Name="Label_ReferenceRT" Content="RT similarity:" Height="25"/>
-            <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
-            <Label Name="Label_SpectrumSimilarity" Content="Spectrum similarity:" Height="25"/>
-            <Label Name="Label_CcsSimilarity" Content="CCS similarity:" Height="25"/>
-            <Label Content="Formula|Ontology:" Height="25"/>
-            <Label Content="SMILES:" Height="25"/>
-            <Label Content="InChIKey:" Height="25"/>
-        </StackPanel>
-
-        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0">
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
             <StackPanel.Resources>
-                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}"/>
+                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                    <Setter Property="Height" Value="25" />
+                </Style>
+                <Style TargetType="Label">
+                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="Width" Value="120"/>
+                </Style>
             </StackPanel.Resources>
-            <TextBox Name="TextBox_PeakInformation_AnnotationInCompDetail" Text="{Binding DisplayedAnnotatedNameInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_RtSimilarity" Text="{Binding DisplayedRtSimilarityInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Text="{Binding DisplayedMzSimilarityInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_MS2Similarity" Text="{Binding DisplayedSpectrumMatchInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_CcsSimilarity" Text="{Binding DisplayedCcsSimilarityInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_Ontology" Text="{Binding DisplayedFormulaOntologyInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_Smiles" Text="{Binding DisplayedSmilesInfo}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_InChIKey" Text="{Binding DisplayedInChIKeyInfo}" Height="25" />
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Annotation:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_AnnotationInCompDetail" Text="{Binding ScanMatchResult.Name, Mode=OneWay}" Height="25" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Name="Label_ReferenceRT" Content="RT similarity:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_RtSimilarity" Text="{Binding ScanMatchResult.RtSimilarity, Mode=OneWay, StringFormat=F3}" Height="25" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Text="{Binding ScanMatchResult.AcurateMassSimilarity, Mode=OneWay, StringFormat=F3}" Height="25" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Name="Label_SpectrumSimilarity" Content="Spectrum similarity:" Height="25"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="(Dot)" />
+                    <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity" Text="{Binding ScanMatchResult.SimpleDotProduct, Mode=OneWay, StringFormat=F3}" Height="25" />
+                    <TextBox Text="|" />
+                    <TextBox Text="(Rev)" />
+                    <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity" Text="{Binding ScanMatchResult.ReverseDotProduct, Mode=OneWay, StringFormat=F3}" Height="25" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" >
+                <Label Name="Label_CcsSimilarity" Content="CCS similarity:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_CcsSimilarity" Text="{Binding ScanMatchResult.CcsSimilarity, Mode=OneWay, StringFormat=F3}" Height="25" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Formula|Ontology:" Height="25"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="TextBox_PeakInformation_Forumula" Text="{Binding Formula, Mode=OneWay}" Height="25"/>
+                    <TextBox Text="|" />
+                    <TextBox Name="TextBox_PeakInformation_Ontology" Text="{Binding Ontology, Mode=OneWay}" Height="25" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="SMILES:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_Smiles" Text="{Binding SMILES, Mode=OneWay}" Height="25" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="InChIKey:" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_InChIKey" Text="{Binding InChIKey, Mode=OneWay}" Height="25" />
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </UserControl>

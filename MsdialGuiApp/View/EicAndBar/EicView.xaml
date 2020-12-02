@@ -10,6 +10,7 @@
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              Name="EicPlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,10 +20,13 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
-                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
-                                           ValuePropertyName="Intensity"
-                                           ChartMargin="0.05" />
+        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
+                                                 ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                                 TargetAxisMapper="{Binding ChromAxis.AxisMapper, Source={x:Reference Name=EicPlot}}"
+                                                 TargetPropertyName="ChromXValue"
+                                                 ValuePropertyName="Intensity"
+                                                 TargetRange="{Binding ChromAxis.Range, Source={x:Reference Name=EicPlot}}"
+                                                 ChartMargin="0,0.05" Bounds="0,0"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -80,7 +84,7 @@
         <ContentControl Content="{Binding Target}"
                         Grid.Row="0" Grid.Column="2">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:ChromatogramPeakFeatureWrapper}">
+                <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                         <TextBlock Text="EIC chromatogram of " FontSize="12" Margin="5,0,0,0"/>
                         <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N4, Mode=OneTime}" FontSize="12"/>

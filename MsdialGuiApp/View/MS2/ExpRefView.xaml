@@ -9,6 +9,7 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             Name="ExpRefPlot"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -16,17 +17,17 @@
         </Style>
     </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding}"
-                                           ValuePropertyName="Mass"
-                                           ChartMargin="0.05"/>
+        <manager:ContinuousAxisManager x:Key="MassAxisManager"
+                                       MinValue="{Binding DataContext.Ms2MassMin, Source={x:Reference Name=ExpRefPlot}}"
+                                       MaxValue="{Binding DataContext.Ms2MassMax, Source={x:Reference Name=ExpRefPlot}}"
+                                       ChartMargin="0.05"/>
         <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding}"
+                                           ItemsSource="{Binding DataContext.Ms2Spectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.05" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding}"
+                                           ItemsSource="{Binding DataContext.Ms2ReferenceSpectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.05"/>
@@ -139,22 +140,27 @@
             <Border Background="WhiteSmoke"
                     Grid.Row="1" Grid.Column="3" >
                 <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                              ItemsSource="{Binding}"
+                                              ItemsSource="{Binding Ms2Spectrum}"
                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                               RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
                                               RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
                                               HorizontalPropertyName="Mass"
-                                              VerticalPropertyName="Intensity" />
+                                              VerticalPropertyName="Intensity">
+                    <spectrum:LineSpectrumControl.LinePen>
+                        <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
+                    </spectrum:LineSpectrumControl.LinePen>
+                </spectrum:LineSpectrumControl>
             </Border>
             <Border Background="WhiteSmoke"
                     Grid.Row="3" Grid.Column="3" >
                 <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                       ItemsSource="{Binding}"
+                                       ItemsSource="{Binding Ms2ReferenceSpectrum}"
                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                        RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
                                        RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                       FlippedY="False"
                                        HorizontalPropertyName="Mass"
                                        VerticalPropertyName="Intensity">
                     <spectrum:LineSpectrumControl.LinePen>
@@ -179,6 +185,7 @@
                                       VerticalAxis="{Binding AxisMapper}"
                                       LabelTicks="{Binding LabelTicks}"
                                       RangeY="{Binding Range}"
+                                      FlippedY="False"
                                       Grid.Row="3" Grid.Column="1" />
             <TextBlock Text="m/z"
                        FontStyle="Italic"
