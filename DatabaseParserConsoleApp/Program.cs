@@ -144,10 +144,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201202_EtherPE_check\";
-            var testFilename = @"\EtherPE_16_1_22_4_neg(FromIMSdata).msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201202_Lipidmics_check\Ceramides\";
+            var testFilename = @"\PICer+O_46-2.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"\Library.txt";
+            var reffile = testFolder + @"\lib\PI-Cer_[M+H]+.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);

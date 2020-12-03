@@ -8366,7 +8366,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null; // 20201203 edit
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
                     totalDoubleBond = totalDoubleBond + 1;

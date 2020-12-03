@@ -8285,7 +8285,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null; // 20201203 edit
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
                     totalDoubleBond = totalDoubleBond + 1;
@@ -9096,12 +9097,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                         extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
                                         candidates.Add(molecule);
                                     }
-                                    else if (sphQueryFoundCount >= 1)
-                                    {
-                                        var molecule = getAcylhexceramideMoleculeObjAsLevel2_1("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
-                                        extCarbon + acylCarbon, extDouble + acylDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
-                                        candidates.Add(molecule);
-                                    }
+                                    //else if (sphQueryFoundCount >= 1)
+                                    //{
+                                    //    var molecule = getAcylhexceramideMoleculeObjAsLevel2_1("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
+                                    //    extCarbon + acylCarbon, extDouble + acylDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
+                                    //    candidates.Add(molecule);
+                                    //}
                                 }
                             }
                         }
