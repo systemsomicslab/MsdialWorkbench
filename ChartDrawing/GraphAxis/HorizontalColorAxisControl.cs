@@ -87,6 +87,7 @@ namespace CompMs.Graphics.GraphAxis
             var id = 0;
             Func<object, object> toKey = null;
             Func<object, Brush> toBrush = null;
+            var sign = FlippedX ? 1 : -1;
 
             visualChildren.Clear();
             foreach (var data in LabelTicks)
@@ -116,8 +117,8 @@ namespace CompMs.Graphics.GraphAxis
                         return LabelBrushes[memo[x] % LabelBrushes.Count];
                     };
 
-                var xorigin = HorizontalAxis.TranslateToRenderPoint(data.Center - data.Width / 2, FlippedX) * ActualWidth;
-                var xwidth = (HorizontalAxis.TranslateToRenderPoint(data.Width, FlippedX) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX)) * ActualWidth;
+                var xorigin = HorizontalAxis.TranslateToRenderPoint(data.Center + sign * data.Width / 2, FlippedX) * ActualWidth;
+                var xwidth = Math.Abs(HorizontalAxis.TranslateToRenderPoint(data.Width, FlippedX) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX)) * ActualWidth;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(xorigin + xwidth / 2, ActualHeight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

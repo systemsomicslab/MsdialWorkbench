@@ -89,6 +89,7 @@ namespace CompMs.Graphics.GraphAxis
             var id = 0;
             Func<object, object> toKey = null;
             Func<object, Brush> toBrush = null;
+            var sign = FlippedY ? 1 : -1;
 
             visualChildren.Clear();
             foreach (var data in LabelTicks)
@@ -118,8 +119,8 @@ namespace CompMs.Graphics.GraphAxis
                         return LabelBrushes[memo[x] % LabelBrushes.Count];
                     };
 
-                var yorigin = VerticalAxis.TranslateToRenderPoint(data.Center - data.Width / 2, FlippedY) * ActualHeight;
-                var yheight = (VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY)) * ActualHeight;
+                var yorigin = (VerticalAxis.TranslateToRenderPoint(data.Center + sign * data.Width / 2, FlippedY)) * ActualHeight;
+                var yheight = Math.Abs(VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY)) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, yorigin + yheight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

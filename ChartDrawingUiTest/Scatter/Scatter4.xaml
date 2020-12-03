@@ -3,11 +3,11 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
-      xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Scatter4">
@@ -54,6 +54,7 @@
                                     RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
+                                    FlippedY="False"
                                     Radius="10"
                                     PointGeometry= "F1 M 0.0 -8.0 L 4.702282018339786 6.472135954999579 L -7.608452130361229 -2.472135954999578
                                         L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z" >
@@ -94,12 +95,14 @@
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,2"
+                                  FlippedY="False"
                                   Grid.Row="0" Grid.Column="0" />
         <axis:VerticalColorAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                        LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                        RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                        LabelBrushes="{StaticResource AxisBrushes2}"
                                        Margin="0,5,0,2"
+                                       FlippedY="False"
                                        Grid.Row="0" Grid.Column="1" />
     </Grid>
 </Page>
