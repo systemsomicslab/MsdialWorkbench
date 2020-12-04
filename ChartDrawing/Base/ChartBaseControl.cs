@@ -113,7 +113,9 @@ namespace CompMs.Graphics.Core.Base
             MouseMove += ZoomOnMouseMove;
         }
 
-        protected virtual void Update() { }
+        protected virtual void Update() {
+            InvalidateVisual();
+        }
 
         #region Event handler
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
@@ -135,7 +137,7 @@ namespace CompMs.Graphics.Core.Base
             return new Point(x, y);
         }
 
-        #region Chart update Event
+        #region Chart update Event 
         private Point zoomInitial, moveCurrent;
         private RubberAdorner adorner;
         private bool moving;

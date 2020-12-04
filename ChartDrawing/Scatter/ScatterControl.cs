@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -32,7 +33,7 @@ namespace CompMs.Graphics.Scatter
 
         public static readonly DependencyProperty PointGeometryProperty = DependencyProperty.Register(
             nameof(PointGeometry), typeof(Geometry), typeof(ScatterControl),
-            new PropertyMetadata(null)
+            new PropertyMetadata(new EllipseGeometry(new Rect(0, 0, 1, 1)))
             );
 
         public static readonly DependencyProperty PointBrushProperty = DependencyProperty.Register(
@@ -49,13 +50,18 @@ namespace CompMs.Graphics.Scatter
             nameof(SelectedItem), typeof(object), typeof(ScatterControl),
             new PropertyMetadata(null, OnSelectedItemChanged));
 
+        public static readonly DependencyProperty SelectedPointProperty = DependencyProperty.Register(
+            nameof(SelectedPoint), typeof(Point?), typeof(ScatterControl),
+            new PropertyMetadata(default)
+            );
+
         public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
             nameof(FocusedItem), typeof(object), typeof(ScatterControl),
             new PropertyMetadata(null)
             );
 
         public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
-            nameof(FocusedPoint), typeof(Point), typeof(ScatterControl),
+            nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
             new PropertyMetadata(default)
             );
         #endregion
@@ -103,15 +109,21 @@ namespace CompMs.Graphics.Scatter
             set { SetValue(SelectedItemProperty, value); }
         }
 
+        public Point? SelectedPoint
+        {
+            get => (Point?)GetValue(SelectedPointProperty);
+            set => SetValue(SelectedPointProperty, value);
+        }
+
         public object FocusedItem
         {
             get => (object)GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
+        public Point? FocusedPoint
         {
-            get => (Point)GetValue(FocusedPointProperty);
+            get => (Point?)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
         #endregion
@@ -121,6 +133,7 @@ namespace CompMs.Graphics.Scatter
         private Type dataType;
         private PropertyInfo hPropertyReflection;
         private PropertyInfo vPropertyReflection;
+        private AnnotatedDrawingVisual focus, select;
         #endregion
 
         public ScatterControl()
@@ -132,6 +145,7 @@ namespace CompMs.Graphics.Scatter
 
         protected override void Update()
         {
+            base.Update();
             if (  hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
@@ -141,9 +155,7 @@ namespace CompMs.Graphics.Scatter
                )
                 return;
 
-            var brush = PointBrush;
-            if (PointGeometry != null)
-                brush = new DrawingBrush(new GeometryDrawing(brush, null, PointGeometry));
+            var brush = new DrawingBrush(new GeometryDrawing(PointBrush, null, PointGeometry));
             brush.Freeze();
             double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
 
@@ -159,12 +171,7 @@ namespace CompMs.Graphics.Scatter
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    if (PointGeometry == null) {
-                        dc.DrawEllipse(brush, null, new Point(xx, yy), radius, radius);
-                    }
-                    else {
-                        dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
-                    }
+                    dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
                 }
             }
         }
@@ -180,6 +187,32 @@ namespace CompMs.Graphics.Scatter
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             SetDrawingVisuals();
             Update();
+        }
+
+        #region Event
+        public static RoutedEvent FocusChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(FocusChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs FocusChangedEventArgs = new RoutedEventArgs(FocusChangedEvent);
+
+        public event RoutedEventHandler FocusChanged {
+            add => AddHandler(FocusChangedEvent, value);
+            remove => RemoveHandler(FocusChangedEvent, value);
+        }
+
+        public static RoutedEvent SelectChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(SelectChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs SelectChangedEventArgs = new RoutedEventArgs(SelectChangedEvent);
+
+        public event RoutedEventHandler SelectChanged {
+            add => AddHandler(SelectChangedEvent, value);
+            remove => RemoveHandler(SelectChangedEvent, value);
+        }
+        #endregion
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+            FocusedPoint = focus?.Center;
+            SelectedPoint = select?.Center;
         }
 
         #region Event handler
@@ -247,9 +280,9 @@ namespace CompMs.Graphics.Scatter
             if (chart.cv != null)
                 chart.cv.MoveCurrentTo(e.NewValue);
         }
-#endregion
+        #endregion
 
-#region Mouse event
+        #region Mouse event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
@@ -286,20 +319,34 @@ namespace CompMs.Graphics.Scatter
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
-            var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
-                FocusedItem = focussed;
-                FocusedPoint = dv.Center;
+            if (dv != focus) {
+                focus = dv;
+                RaiseEvent(FocusChangedEventArgs);
+            }
+            if (FocusedItem != focus.Annotation) {
+                FocusedItem = focus.Annotation;
+            }
+            if (FocusedPoint != focus.Center) {
+                FocusedPoint = focus.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
         HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
         {
-            SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            if (dv != select) {
+                select = dv;
+                RaiseEvent(SelectChangedEventArgs);
+            }
+            if (select.Annotation != SelectedItem) {
+                SelectedItem = select.Annotation;
+            }
+            if (select.Center != SelectedPoint) {
+                SelectedPoint = select.Center;
+            }
             return HitTestResultBehavior.Stop;
         }
-#endregion
+        #endregion
     }
 }

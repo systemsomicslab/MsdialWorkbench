@@ -59,6 +59,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorner\ContentAdorner.cs" />
+    <Compile Include="Adorner\ScatterFocusAdorner.cs" />
     <Compile Include="AreaChart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
@@ -73,8 +75,10 @@
     <Compile Include="Base\ChartMargin.cs" />
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
+    <Compile Include="Behavior\ScatterFocusBehavior.cs" />
     <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
+    <Compile Include="Converter\AxisValueToDoubleConverter.cs" />
     <Compile Include="Converter\EnumTypeToValuesConverter.cs" />
     <Compile Include="Adorner\RubberAdorner.cs" />
     <Compile Include="Default\DefaultFE.cs" />

@@ -8,6 +8,7 @@
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Scatter4">
@@ -57,7 +58,22 @@
                                     FlippedY="False"
                                     Radius="10"
                                     PointGeometry= "F1 M 0.0 -8.0 L 4.702282018339786 6.472135954999579 L -7.608452130361229 -2.472135954999578
-                                        L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z" >
+                                        L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z"
+                                    behavior:ScatterFocusBehavior.EnableOuter="True"
+                                    behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
+                                    behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
+                                    behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
+                                    behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}">
+                <behavior:ScatterFocusBehavior.LabelTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="X = "/>
+                            <TextBlock Text="{Binding X}"/>
+                            <TextBlock Text=" Y = "/>
+                            <TextBlock Text="{Binding Y}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </behavior:ScatterFocusBehavior.LabelTemplate>
                 <scatter:ScatterControl.PointBrush>
                     <LinearGradientBrush PresentationOptions:Freeze="true">
                         <GradientStopCollection>
