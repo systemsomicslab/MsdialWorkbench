@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              Name="PeakPairPlot"
@@ -34,25 +34,67 @@
         <Border Background="WhiteSmoke"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
-            <scatter:ScatterControl x:Name="scatter"
-                                    ItemsSource="{Binding Ms1Peaks}"
-                                    HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                    VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                    RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                    RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                    HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
-                                    SelectedItem="{Binding Target, Mode=TwoWay}">
-                <scatter:ScatterControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.ChromXValue, Mode=OneTime}"/>
-                            <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Mass, Mode=OneTime}"/>
-                        </StackPanel>
-                    </ToolTip>
-                </scatter:ScatterControl.ToolTip>
-            </scatter:ScatterControl>
+            <Grid>
+                <scatter:ScatterControl x:Name="scatter"
+                                        ItemsSource="{Binding Ms1Peaks}"
+                                        HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                        VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                        RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                        RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                        HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                        Radius="5.5"
+                                        SelectedItem="{Binding Target, Mode=TwoWay}"
+                                        behavior:ScatterFocusBehavior.EnableOuter="True"
+                                        behavior:ScatterFocusBehavior.OuterScale="1.5"
+                                        behavior:ScatterFocusBehavior.InnerScale="1.3"
+                                        behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
+                                        behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}">
+                    <behavior:ScatterFocusBehavior.LabelTemplate>
+                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="9"/>
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="Spot ID: "/>
+                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                                <TextBlock Text="Scan #: "/>
+                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                                <TextBlock Text="RT[min]: "/>
+                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N2, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                                <TextBlock Text="Mass[Da]: "/>
+                                <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </behavior:ScatterFocusBehavior.LabelTemplate>
+                </scatter:ScatterControl>
+                <Canvas>
+                    <Canvas.Resources>
+                        <Style TargetType="Rectangle">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPoint, ElementName=scatter}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Resources>
+                    <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                               Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
+                               Canvas.Left="{Binding SelectedPoint.X, ElementName=scatter}"/>
+                    <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
+                               Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                               Canvas.Top="{Binding SelectedPoint.Y, ElementName=scatter}"/>
+                </Canvas>
+            </Grid>
         </Border>
         <Border BorderBrush="Black"
                 BorderThickness="1,0,0,1"

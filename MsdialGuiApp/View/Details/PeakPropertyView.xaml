@@ -43,7 +43,7 @@
             <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Text="{Binding Name, Mode=OneWay}" Height="25" />
             <TextBox Name="TextBox_PeakInformation_RetentionTime" Text="{Binding ChromXValue, Mode=OneWay, StringFormat=F3}" Height="25"/>
             <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Text="{Binding AdductIonName, Mode=OneWay}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay}" Height="25"/>
+            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay, StringFormat=F5}" Height="25"/>
             <StackPanel Orientation="Horizontal">
                 <TextBox Name="TextBox_PeakInformation_PeakIntensity" Text="{Binding Intensity, Mode=OneWay, StringFormat=F0}" Height="25"/>
                 <TextBox Text="|" Height="25"/>

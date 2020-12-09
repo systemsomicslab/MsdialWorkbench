@@ -32,6 +32,10 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+            <x:Static x:Key="ThemeColor" Member="Brushes.Green"/>
+            <x:Static x:Key="LightThemeColor" Member="Brushes.PaleGreen"/>
+            <x:Static x:Key="DarkThemeColor" Member="Brushes.DarkGreen"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

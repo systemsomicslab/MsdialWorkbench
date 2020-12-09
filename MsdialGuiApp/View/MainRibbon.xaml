@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Ribbon>
+    <Ribbon Background="{StaticResource LightThemeColor}">
         <Ribbon.QuickAccessToolBar>
             <RibbonQuickAccessToolBar>
                 <RibbonButton SmallImageSource="{StaticResource New_project_is}"
@@ -25,7 +25,8 @@
         </Ribbon.HelpPaneContent>
         <Ribbon.ApplicationMenu>
             <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
-                                   KeyTip="F">
+                                   KeyTip="F"
+                                   Background="{StaticResource DarkThemeColor}">
                 <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
                                            Command="{Binding CreateNewProjectCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"

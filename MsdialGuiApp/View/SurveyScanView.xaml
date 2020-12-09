@@ -7,6 +7,7 @@
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              Name="Ms1Plot"
@@ -51,23 +52,23 @@
             <Border Background="WhiteSmoke"
                     Margin="5,5,0,0"
                     Grid.Row="1" Grid.Column="1">
-                <line:LineChartControl ItemsSource="{Binding Ms1Spectrum}"
+                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms1Spectrum}"
                                        HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=Ms1Plot}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                        RangeX="{Binding MassAxis.Range, ElementName=Ms1Plot, Mode=TwoWay}"
                                        RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                        HorizontalPropertyName="Mass"
                                        VerticalPropertyName="Intensity">
-                    <line:LineChartControl.LinePen>
+                    <spectrum:LineSpectrumControl.LinePen>
                         <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
-                    </line:LineChartControl.LinePen>
-                    <line:LineChartControl.LayoutTransform>
+                    </spectrum:LineSpectrumControl.LinePen>
+                    <spectrum:LineSpectrumControl.LayoutTransform>
                         <TransformGroup>
                             <RotateTransform Angle="-90"/>
                             <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type line:LineChartControl}}}"/>
                         </TransformGroup>
-                    </line:LineChartControl.LayoutTransform>
-                </line:LineChartControl>
+                    </spectrum:LineSpectrumControl.LayoutTransform>
+                </spectrum:LineSpectrumControl>
             </Border>
             <Border BorderBrush="Black"
                     BorderThickness="0,0,1,1"
@@ -100,7 +101,7 @@
                     <TextBlock Text="MS1 spectra Max intensity: " FontSize="12"/>
                     <TextBlock Text="{Binding Ms1SpectrumMaxIntensity}" FontSize="12"/>
                 </StackPanel>
-                <TextBlock Text="{Binding SplashKey}" FontSize="11"/>
+                <TextBlock Text="{Binding Ms1SplashKey}" FontSize="11"/>
                 <StackPanel.LayoutTransform>
                     <TransformGroup>
                         <RotateTransform Angle="-90"/>

@@ -7,6 +7,8 @@
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
@@ -44,28 +46,44 @@
         <Border Background="WhiteSmoke"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
-            <line:LineChartControl x:Name="line"
-                                   ItemsSource="{Binding Eic}"
-                                   HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
-                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
-                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                   HorizontalPropertyName="ChromXValue"
-                                   VerticalPropertyName="Intensity">
-                <line:LineChartControl.LinePen>
-                    <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
-                </line:LineChartControl.LinePen>
-                <line:LineChartControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Mass, Mode=OneTime}"/>
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.Intensity, Mode=OneTime}"/>
-                        </StackPanel>
-                    </ToolTip>
-                </line:LineChartControl.ToolTip>
-            </line:LineChartControl>
+            <Grid>
+                <spectrum:LineSpectrumControl x:Name="spectrum"
+                                              ItemsSource="{Binding FocusedEic}"
+                                              HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
+                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                              RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
+                                              RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                              HorizontalPropertyName="ChromXValue"
+                                              VerticalPropertyName="Intensity">
+                    <spectrum:LineSpectrumControl.LinePen>
+                        <Pen Brush="Red" LineJoin="Miter" PresentationOptions:Freeze="True"/>
+                    </spectrum:LineSpectrumControl.LinePen>
+                </spectrum:LineSpectrumControl>
+                <area:AreaChartControl x:Name="area"
+                                       ItemsSource="{Binding PeakEic}"
+                                       HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                       RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
+                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       HorizontalPropertyName="ChromXValue"
+                                       VerticalPropertyName="Intensity">
+                    <area:AreaChartControl.AreaBrush>
+                        <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
+                    </area:AreaChartControl.AreaBrush>
+                </area:AreaChartControl>
+                <line:LineChartControl x:Name="line"
+                                       ItemsSource="{Binding Eic}"
+                                       HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=EicPlot}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                       RangeX="{Binding ChromAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
+                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       HorizontalPropertyName="ChromXValue"
+                                       VerticalPropertyName="Intensity">
+                    <line:LineChartControl.LinePen>
+                        <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
+                    </line:LineChartControl.LinePen>
+                </line:LineChartControl>
+            </Grid>
         </Border>
         <Border BorderBrush="Black"
                 BorderThickness="1,0,0,1"

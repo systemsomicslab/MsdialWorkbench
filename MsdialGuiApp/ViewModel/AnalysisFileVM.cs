@@ -47,6 +47,16 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
 
+        public List<ChromatogramPeakWrapper> PeakEic {
+            get => peakEic;
+            set => SetProperty(ref peakEic, value);
+        }
+
+        public List<ChromatogramPeakWrapper> FocusedEic {
+            get => focusedEic;
+            set => SetProperty(ref focusedEic, value);
+        }
+
         public List<SpectrumPeakWrapper> Ms1Spectrum {
             get => ms1Spectrum;
             set {
@@ -141,7 +151,7 @@ namespace CompMs.App.Msdial.ViewModel
         private List<RawSpectrum> spectrumList;
         private List<MSDecResult> msdecResults;
         private ICollectionView ms1Peaks;
-        private List<ChromatogramPeakWrapper> eic;
+        private List<ChromatogramPeakWrapper> eic, peakEic, focusedEic;
         private List<SpectrumPeakWrapper> ms1Spectrum, ms2Spectrum, ms2ReferenceSpectrum, ms2DeconvolutionSpectrum;
         private ChromatogramPeakFeatureVM target;
         private ParameterBase param;
@@ -194,7 +204,6 @@ namespace CompMs.App.Msdial.ViewModel
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
-            Console.WriteLine(e.PropertyName);
             if (e.PropertyName == nameof(RefMatchedChecked)
                 || e.PropertyName == nameof(SuggestedChecked)
                 || e.PropertyName == nameof(UnknownChecked))
@@ -215,6 +224,15 @@ namespace CompMs.App.Msdial.ViewModel
                         ),
                     param.SmoothingMethod, param.SmoothingLevel
                 ).Select(peak => new ChromatogramPeakWrapper(peak)).DefaultIfEmpty().ToList();
+
+                PeakEic = Eic.Where(peak => Target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= Target.ChromXRightValue).ToList();
+                FocusedEic = Target.ChromXValue.HasValue
+                    ?  new List<ChromatogramPeakWrapper> {
+                        Eic.Where(peak => peak.ChromXValue.HasValue)
+                           .DefaultIfEmpty()
+                           .Argmin(peak => Math.Abs(Target.ChromXValue.Value - peak.ChromXValue.Value))
+                    }
+                    : new List<ChromatogramPeakWrapper>();
 
                 var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, Target.MS1RawSpectrumIdTop, 0, float.MinValue, float.MaxValue);
                 Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
