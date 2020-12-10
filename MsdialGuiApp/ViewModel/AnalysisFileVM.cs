@@ -96,6 +96,8 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
 
+        public List<ChromatogramPeakFeature> Peaks { get; }
+
         public ChromatogramPeakFeatureVM Target {
             get => target;
             set => SetProperty(ref target, value);
@@ -171,6 +173,7 @@ namespace CompMs.App.Msdial.ViewModel
             _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
                 peaks.Select(peak => new ChromatogramPeakFeatureVM(peak))
             );
+            Peaks = peaks;
             Ms1Peaks = CollectionViewSource.GetDefaultView(_ms1Peaks);
 
             using (var access = new RawDataAccess(analysisFileBean.AnalysisFilePath, 0, true, analysisFileBean.RetentionTimeCorrectionBean.PredictedRt)) {

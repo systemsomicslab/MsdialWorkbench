@@ -8,6 +8,7 @@
              xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:special="clr-namespace:CompMs.Graphics.Specialized;assembly=MsdialGuiApi"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              Name="PeakPairPlot"
@@ -35,7 +36,7 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <Grid>
-                <scatter:ScatterControl x:Name="scatter"
+                <special:LinkedPeakAnnotator x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
                                         HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
                                         VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
@@ -44,6 +45,8 @@
                                         HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
+                                        Target="{Binding SelectedItem.InnerModel, RelativeSource={RelativeSource Self}}"
+                                        GroupPeaks="{Binding Peaks}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
                                         behavior:ScatterFocusBehavior.OuterScale="1.5"
                                         behavior:ScatterFocusBehavior.InnerScale="1.3"
@@ -75,7 +78,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </behavior:ScatterFocusBehavior.LabelTemplate>
-                </scatter:ScatterControl>
+                </special:LinkedPeakAnnotator>
                 <Canvas>
                     <Canvas.Resources>
                         <Style TargetType="Rectangle">

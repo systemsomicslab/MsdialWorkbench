@@ -161,7 +161,7 @@ namespace CompMs.Graphics.Scatter
 
             foreach(var visual in visualChildren)
             {
-                var dv = visual as AnnotatedDrawingVisual;
+                if (!(visual is AnnotatedDrawingVisual dv)) continue;
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);

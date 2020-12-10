@@ -1035,7 +1035,7 @@ namespace CompMs.MsdialCore.Utility {
             feature.SMILES = reference.SMILES;
             feature.InChIKey = reference.InChIKey;
             feature.Name = result.Name;
-            feature.AdductType = reference.AdductType;
+            feature.AddAdductType(reference.AdductType);
             if (isTextDB) return;
             if (!result.IsSpectrumMatch) {
                 feature.Name = "w/o MS2: " + result.Name;
