@@ -26,9 +26,11 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public string Ontology => innerModel.Ontology;
         public string SMILES => innerModel.SMILES;
         public string Comment => innerModel.Comment;
+        public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
         public bool IsRefMatched => innerModel.IsReferenceMatched;
         public bool IsSuggested => innerModel.IsAnnotationSuggested;
         public bool IsUnknown => innerModel.IsUnknown;
+
 
 
         public ChromatogramPeakFeature InnerModel => innerModel;

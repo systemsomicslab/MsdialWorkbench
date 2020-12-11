@@ -138,6 +138,11 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref unknownChecked, value);
         }
 
+        public string DisplayLabel {
+            get => displayLabel;
+            set => SetProperty(ref displayLabel, value);
+        }
+
         public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Min(peak => peak.Mass);
@@ -161,6 +166,7 @@ namespace CompMs.App.Msdial.ViewModel
         private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
         private string fileName, ms1SplashKey, rawSplashKey, deconvolutionSplashKey;
         private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
+        private string displayLabel;
         #endregion
 
         public AnalysisFileVM(AnalysisFileBean analysisFileBean, ParameterBase param, IReadOnlyList<MoleculeMsReference> msps) {

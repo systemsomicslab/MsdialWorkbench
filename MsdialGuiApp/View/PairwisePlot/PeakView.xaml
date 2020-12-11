@@ -9,6 +9,7 @@
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:special="clr-namespace:CompMs.Graphics.Specialized;assembly=MsdialGuiApi"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              Name="PeakPairPlot"
@@ -65,13 +66,13 @@
                                 </StackPanel.Resources>
                                 <TextBlock Text="Spot ID: "/>
                                 <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}"/>
-                                <TextBlock Text=";"/>
+                                <TextBlock Text="; "/>
                                 <TextBlock Text="Scan #: "/>
                                 <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}"/>
-                                <TextBlock Text=";"/>
+                                <TextBlock Text="; "/>
                                 <TextBlock Text="RT[min]: "/>
                                 <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N2, Mode=OneTime}"/>
-                                <TextBlock Text=";"/>
+                                <TextBlock Text="; "/>
                                 <TextBlock Text="Mass[Da]: "/>
                                 <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}"/>
                                 <TextBlock Text=";"/>
@@ -79,6 +80,13 @@
                         </DataTemplate>
                     </behavior:ScatterFocusBehavior.LabelTemplate>
                 </special:LinkedPeakAnnotator>
+                <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
+                                 HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                 VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                 RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
+                                 RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
+                                 HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                 LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
                 <Canvas>
                     <Canvas.Resources>
                         <Style TargetType="Rectangle">

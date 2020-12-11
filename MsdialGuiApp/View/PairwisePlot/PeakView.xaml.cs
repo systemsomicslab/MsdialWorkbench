@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.View.PairwisePlot
         public static readonly DependencyProperty ChromAxisProperty = DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(PeakView));
 
         public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(PeakView));
-
+        
         public AxisManager ChromAxis {
             get => (AxisManager)GetValue(ChromAxisProperty);
             set => SetValue(ChromAxisProperty, value);

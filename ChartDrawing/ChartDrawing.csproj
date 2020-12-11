@@ -76,6 +76,7 @@
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />
+    <Compile Include="Chart\Annotator.cs" />
     <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
     <Compile Include="Converter\AxisValueToDoubleConverter.cs" />

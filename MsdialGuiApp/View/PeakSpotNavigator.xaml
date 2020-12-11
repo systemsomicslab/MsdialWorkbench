@@ -27,15 +27,17 @@
                   HorizontalAlignment="Left" 
                   VerticalAlignment="Top" 
                   SelectedIndex="0"
+                  SelectedValuePath="DataContext"
+                  SelectedValue="{Binding FileVM.DisplayLabel, Mode=TwoWay}"
                   Margin="50, 37, 15, 0">
             <ComboBox.ItemsSource>
                 <x:Array Type="TextBlock">
-                    <TextBlock Text="None"/>
-                    <TextBlock Text="Retention time"/>
-                    <TextBlock Text="Mass"/>
-                    <TextBlock Text="Metabolite"/>
-                    <TextBlock Text="Isotope"/>
-                    <TextBlock Text="Adduct"/>
+                    <TextBlock Text="None" DataContext="{x:Null}"/>
+                    <TextBlock Text="Retention time" DataContext="ChromXValue"/>
+                    <TextBlock Text="Mass" DataContext="Mass"/>
+                    <TextBlock Text="Metabolite" DataContext="Name"/>
+                    <TextBlock Text="Isotope" DataContext="Isotope"/>
+                    <TextBlock Text="Adduct" DataContext="AdductIonName"/>
                 </x:Array>
             </ComboBox.ItemsSource>
         </ComboBox>
