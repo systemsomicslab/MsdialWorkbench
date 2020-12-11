@@ -359,8 +359,8 @@ namespace CompMs.MspGenerator
                                 break;
                             case "EtherDG":
                                 GlycerolipidFragmentation.etherDgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
-                                name = "DAG O-" + chain1String + "_" + chain2String;
-                                shortName = "DAG O-" + totalChain + ":" + totalBond;
+                                name = "DG O-" + chain1String + "_" + chain2String;
+                                shortName = "DG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherDGDG":
                                 GlycerolipidFragmentation.etherDgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);

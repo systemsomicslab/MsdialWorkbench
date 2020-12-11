@@ -2112,12 +2112,12 @@ namespace CompMs.MspGenerator
             if (adduct == "[M-H]-")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 999;
+                var fra01int = 5;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra02mass = fra01mass - MassDictionary.C6H10O5;
-                var fra02int = 5;
+                var fra02int = 999;
                 var fra02comment = "NL of C6H10O5";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
 

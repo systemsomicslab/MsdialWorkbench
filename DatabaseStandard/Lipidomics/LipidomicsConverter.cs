@@ -3238,9 +3238,15 @@ namespace Riken.Metabolomics.Lipidomics {
             if (chainString.Contains(";")) { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
-                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                if (expectedOxCount == string.Empty || expectedOxCount == "") {
-                    expectedOxCount = "1";
+                //comment out and add MT 2020/12/11
+                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                //if (expectedOxCount == string.Empty || expectedOxCount == "") {
+                //    expectedOxCount = "1";
+                //}
+                var expectedOxCount = "1";
+                if(!oxidizedmoiety.Contains("(2OH)")&& !oxidizedmoiety.Contains("(3OH)"))
+                {
+                    expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty);
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
