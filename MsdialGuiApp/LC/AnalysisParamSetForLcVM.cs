@@ -155,7 +155,10 @@ namespace CompMs.App.Msdial.LC
             if (!string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
                 var ext = Path.GetExtension(param.MspFilePath);
                 if (ext  == ".msp" || ext == ".msp2") {
-                    MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath);
+                    MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath).OrderBy(msp => msp.PrecursorMz).ToList();
+                    var counter = 0;
+                    foreach (var msp in MspDB)
+                        msp.ScanID = counter++;
                 }
                 else {
                     MspDB = new List<MoleculeMsReference>();

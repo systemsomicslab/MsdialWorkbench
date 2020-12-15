@@ -24,42 +24,44 @@
     </Style>
 
     <!--RangeSlider-->
-    <ControlTemplate x:Key="simpleSlider" TargetType="Slider">
-        <Border SnapsToDevicePixels="True"
-                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Rectangle x:Name="PART_SelectionRange"/>
-
-                <Track x:Name="PART_Track" Grid.Row="1">
-                    <Track.Thumb>
-                        <Thumb x:Name="Thumb">
-                            <Thumb.Template>
-                                <ControlTemplate TargetType="Thumb">
-                                    <Rectangle Fill="{x:Static SystemColors.ControlBrush}"
-                                               Stroke="{x:Static SystemColors.ActiveBorderBrush}"
-                                               StrokeThickness="1"
-                                               Width="10" Height="18"
-                                               SnapsToDevicePixels="True"/>
-                                </ControlTemplate>
-                            </Thumb.Template>
-                        </Thumb>
-                    </Track.Thumb>
-                </Track>
-            </Grid>
-        </Border>
-    </ControlTemplate>
-    
     <Style TargetType="{x:Type rs:RangeSlider}" xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type rs:RangeSlider}">
                     <Grid>
+                        <Grid.Resources>
+                            <ControlTemplate x:Key="simpleSlider" TargetType="Slider">
+                                <Border SnapsToDevicePixels="True"
+                                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Rectangle x:Name="PART_SelectionRange"/>
+
+                                        <Track x:Name="PART_Track" Grid.Row="1">
+                                            <Track.Thumb>
+                                                <Thumb x:Name="Thumb">
+                                                    <Thumb.Template>
+                                                        <ControlTemplate TargetType="Thumb">
+                                                            <Rectangle Fill="{x:Static SystemColors.ControlBrush}"
+                                                                       Stroke="{x:Static SystemColors.ActiveBorderBrush}"
+                                                                       StrokeThickness="1"
+                                                                       Width="10" Height="18"
+                                                                       SnapsToDevicePixels="True"/>
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Grid.Resources>
+
                         <Border Background="{x:Static SystemColors.ControlBrush}"
                                 BorderBrush="{x:Static SystemColors.ActiveBorderBrush}" 
                                 BorderThickness="1"

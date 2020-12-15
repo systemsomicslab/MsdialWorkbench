@@ -25,12 +25,12 @@
                                            ItemsSource="{Binding DataContext.Ms2Spectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05" />
+                                           ChartMargin="0,1" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
                                            ItemsSource="{Binding DataContext.Ms2ReferenceSpectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05"/>
+                                           ChartMargin="0,0.1"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -150,6 +150,16 @@
                     <spectrum:LineSpectrumControl.LinePen>
                         <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
                     </spectrum:LineSpectrumControl.LinePen>
+                    <spectrum:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </spectrum:LineSpectrumControl.ToolTip>
                 </spectrum:LineSpectrumControl>
             </Border>
             <Border Background="WhiteSmoke"

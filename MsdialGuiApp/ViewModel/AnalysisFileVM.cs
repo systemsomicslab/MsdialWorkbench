@@ -123,6 +123,11 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref deconvolutionSplashKey, value);
         }
 
+        public string DisplayLabel {
+            get => displayLabel;
+            set => SetProperty(ref displayLabel, value);
+        }
+
         public bool RefMatchedChecked {
             get => refMatchedChecked;
             set => SetProperty(ref refMatchedChecked, value);
@@ -138,15 +143,35 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref unknownChecked, value);
         }
 
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
+        public bool CcsChecked {
+            get => ccsChecked;
+            set => SetProperty(ref ccsChecked, value);
+        }
+
+        public bool MsmsAcquiredChecked {
+            get => msmsAcquiredChecked;
+            set => SetProperty(ref msmsAcquiredChecked, value);
+        }
+
+        public bool MolecularIonChecked {
+            get => molecularIonChecked;
+            set => SetProperty(ref molecularIonChecked, value);
+        }
+
+        public double AmplitudeLowerValue {
+            get => amplitudeLowerValue;
+            set => SetProperty(ref amplitudeLowerValue, value);
+        }
+
+        public double AmplitudeUpperValue {
+            get => amplitudeUpperValue;
+            set => SetProperty(ref amplitudeUpperValue, value);
         }
 
         public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Min(peak => peak.Mass);
-        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Max(peak => peak.Mass);
+        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Min();
+        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Max();
         public double ChromMin => _ms1Peaks.Min(peak => peak.ChromXValue) ?? 0;
         public double ChromMax => _ms1Peaks.Max(peak => peak.ChromXValue) ?? 0;
         public double MassMin => _ms1Peaks.Min(peak => peak.Mass);
@@ -165,8 +190,9 @@ namespace CompMs.App.Msdial.ViewModel
         private IReadOnlyList<MoleculeMsReference> msps;
         private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
         private string fileName, ms1SplashKey, rawSplashKey, deconvolutionSplashKey;
-        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
         private string displayLabel;
+        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true, ccsChecked = false, msmsAcquiredChecked = false, molecularIonChecked = false;
+        private double amplitudeLowerValue = 0d, amplitudeUpperValue = 1d;
         #endregion
 
         public AnalysisFileVM(AnalysisFileBean analysisFileBean, ParameterBase param, IReadOnlyList<MoleculeMsReference> msps) {
@@ -205,17 +231,35 @@ namespace CompMs.App.Msdial.ViewModel
 
         bool PeakFilter(object obj) {
             if (obj is ChromatogramPeakFeatureVM peak) {
-                return RefMatchedChecked && peak.IsRefMatched
-                    || SuggestedChecked && peak.IsSuggested
-                    || UnknownChecked && peak.IsUnknown;
+                return AnnotationFilter(peak)
+                    && AmplitudeFilter(peak)
+                    && (!MsmsAcquiredChecked || peak.IsMsmsContained)
+                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0);
             }
             return false;
+        }
+
+        bool AnnotationFilter(ChromatogramPeakFeatureVM peak) {
+            if (!(RefMatchedChecked || SuggestedChecked || UnknownChecked || CcsChecked)) return true;
+            return RefMatchedChecked && peak.IsRefMatched
+                || SuggestedChecked && peak.IsSuggested
+                || UnknownChecked && peak.IsUnknown
+                || CcsChecked && peak.IsCcsMatch;
+        }
+
+        bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
+            return AmplitudeLowerValue <= peak.AmplitudeScore && peak.AmplitudeScore <= AmplitudeUpperValue;
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(RefMatchedChecked)
                 || e.PropertyName == nameof(SuggestedChecked)
-                || e.PropertyName == nameof(UnknownChecked))
+                || e.PropertyName == nameof(UnknownChecked)
+                || e.PropertyName == nameof(CcsChecked)
+                || e.PropertyName == nameof(MsmsAcquiredChecked)
+                || e.PropertyName == nameof(MolecularIonChecked)
+                || e.PropertyName == nameof(AmplitudeLowerValue)
+                || e.PropertyName == nameof(AmplitudeUpperValue))
                 Ms1Peaks?.Refresh();
         }
 

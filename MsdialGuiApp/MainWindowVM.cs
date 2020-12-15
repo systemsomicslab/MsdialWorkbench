@@ -135,6 +135,7 @@ namespace CompMs.App.Msdial
             // ProcessAlignment();
 
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
+            SaveProject();
         }
 
         private ParameterBase ProcessStartUp(Window owner) {
@@ -283,12 +284,12 @@ namespace CompMs.App.Msdial
             }
         }
 
-        public DelegateCommand<Window> SaveProjectCommand {
-            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand<Window>(SaveProject));
+        public DelegateCommand SaveProjectCommand {
+            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand(SaveProject));
         }
-        private DelegateCommand<Window> saveProjectCommand;
+        private DelegateCommand saveProjectCommand;
 
-        private void SaveProject(Window owner) {
+        private void SaveProject() {
             // TODO: implement process when project save failed.
             Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
         }

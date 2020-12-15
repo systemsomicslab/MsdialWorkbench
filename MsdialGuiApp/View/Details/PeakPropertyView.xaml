@@ -40,22 +40,121 @@
                     <Setter Property="Height" Value="25" />
                 </Style>
             </StackPanel.Resources>
-            <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Text="{Binding Name, Mode=OneWay}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_RetentionTime" Text="{Binding ChromXValue, Mode=OneWay, StringFormat=F3}" Height="25"/>
-            <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Text="{Binding AdductIonName, Mode=OneWay}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay, StringFormat=F5}" Height="25"/>
+            <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite" Height="25">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                        <Setter Property="Text" Value="{Binding Name, Mode=OneWay}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Name, TargetNullValue=''}" Value="" >
+                                <Setter Property="Text" Value="Unknown"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Name="TextBox_PeakInformation_RetentionTime" Height="25">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                        <Setter Property="Text" Value="{Binding ChromXValue, Mode=OneWay, StringFormat=F3}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ChromXValue, TargetNullValue=''}" Value="" >
+                                <Setter Property="Text" Value="NA"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Name="TextBox_PeakInformation_RiCcsEtc" Height="25">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                        <Setter Property="Text" Value="{Binding AdductIonName, Mode=OneWay, StringFormat=F3}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AdductIonName, TargetNullValue=''}" Value="" >
+                                <Setter Property="Text" Value="NA"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay, StringFormat=F5}" Height="25">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                        <Setter Property="Text" Value="{Binding Mass, Mode=OneWay, StringFormat=F5}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Mass, TargetNullValue=''}" Value="" >
+                                <Setter Property="Text" Value="NA"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
             <StackPanel Orientation="Horizontal">
-                <TextBox Name="TextBox_PeakInformation_PeakIntensity" Text="{Binding Intensity, Mode=OneWay, StringFormat=F0}" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_PeakIntensity" Height="25">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                            <Setter Property="Text" Value="{Binding Intensity, Mode=OneWay, StringFormat=F0}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Intensity, TargetNullValue=''}" Value="" >
+                                    <Setter Property="Text" Value="NA"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
                 <TextBox Text="|" Height="25"/>
-                <TextBox Name="TextBox_PeakInformation_PeakArea" Text="{Binding PeakArea, Mode=OneWay, StringFormat=F0}" Height="25"/>
+                <TextBox Name="TextBox_PeakInformation_PeakArea" Height="25">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                            <Setter Property="Text" Value="{Binding PeakArea, Mode=OneWay, StringFormat=F0}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PeakArea, TargetNullValue=''}" Value="" >
+                                    <Setter Property="Text" Value="NA"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBox Name="TextBox_PeakInformation_Formula" Text="{Binding Formula, Mode=OneWay}" Height="25" />
+                <TextBox Name="TextBox_PeakInformation_Formula" Height="25">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                            <Setter Property="Text" Value="{Binding Formula, Mode=OneWay, StringFormat=F0}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Formula, TargetNullValue=''}" Value="" >
+                                    <Setter Property="Text" Value="NA"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
                 <TextBox Text="|" />
-                <TextBox Name="TextBox_PeakInformation_Ontology" Text="{Binding Ontology, Mode=OneWay}" Height="25" />
+                <TextBox Name="TextBox_PeakInformation_Ontology" Height="25">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                            <Setter Property="Text" Value="{Binding Ontology, Mode=OneWay, StringFormat=F0}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Ontology, TargetNullValue=''}" Value="" >
+                                    <Setter Property="Text" Value="NA"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
             </StackPanel>
-            <TextBox Name="TextBox_PeakInformation_InChIKey2" Text="{Binding InChIKey, Mode=OneWay}" Height="25" />
-            <TextBox Name="TextBox_PeakInformation_Comment" Text="{Binding Comment, Mode=OneWay}" Height="25" />
+            <TextBox Name="TextBox_PeakInformation_InChIKey2" Height="25">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                        <Setter Property="Text" Value="{Binding InChIKey, Mode=OneWay}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding InChIKey, TargetNullValue=''}" Value="" >
+                                <Setter Property="Text" Value="NA"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <TextBox Name="TextBox_PeakInformation_Comment" Text="{Binding Comment, Mode=OneWay}" Height="25"/>
         </StackPanel>
 
     </Grid>

@@ -27,9 +27,13 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public string SMILES => innerModel.SMILES;
         public string Comment => innerModel.Comment;
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
+        public int IsotopeWeightNumber => innerModel.PeakCharacter.IsotopeWeightNumber;
         public bool IsRefMatched => innerModel.IsReferenceMatched;
         public bool IsSuggested => innerModel.IsAnnotationSuggested;
         public bool IsUnknown => innerModel.IsUnknown;
+        public bool IsCcsMatch => ScanMatchResult?.IsCcsMatch ?? false;
+        public bool IsMsmsContained => innerModel.IsMsmsContained;
+        public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
 
 
 

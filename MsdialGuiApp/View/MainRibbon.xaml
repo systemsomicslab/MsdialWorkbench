@@ -39,7 +39,6 @@
                                            KeyTip="A"/>
                 <RibbonApplicationMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
                                            Command="{Binding SaveProjectCommand}"
-                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="S"/>
             </RibbonApplicationMenu>
         </Ribbon.ApplicationMenu>

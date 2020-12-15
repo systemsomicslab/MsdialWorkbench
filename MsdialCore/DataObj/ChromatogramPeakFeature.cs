@@ -82,7 +82,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(47)]
         public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
         [Key(18)]
-        public int MS2RawSpectrumID { get; set; } // representative ID
+        public int MS2RawSpectrumID { get; set; } = -1; // representative ID
         [Key(19)]
         public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; } = new Dictionary<int, double>();
 
@@ -229,6 +229,9 @@ namespace CompMs.MsdialCore.DataObj {
                 return false;
             }
         }
+
+        [IgnoreMember]
+        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
 
       
         [Key(38)]

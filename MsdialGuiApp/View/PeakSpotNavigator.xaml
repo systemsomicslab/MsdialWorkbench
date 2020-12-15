@@ -45,14 +45,17 @@
 
         <Label Name="Label_AmplitudeFilter" 
                Content="{Binding ElementName=doubleSlider_AmplitudeFilter, Path=IntervalValue}" 
-               ContentStringFormat="{}Peak spots: {0:d}%"
+               ContentStringFormat='Peak spots: {0:P0}'
                Height="27" VerticalAlignment="Top" Margin="0,60,15,0" />
 
-        <Label Name="Label_DisplayPeakNum" Height="25" 
-               VerticalAlignment="Top" Margin="0,60,15,0" HorizontalAlignment="Right" />
+        <Label Name="Label_DisplayPeakNum"
+               Content="{Binding FileVM.Ms1Peaks.Count, TargetNullValue=0 }"
+               ContentStringFormat="{}Num. {0:D}"
+               VerticalAlignment="Top" HorizontalAlignment="Right"
+               Height="25" Margin="0,60,15,0" />
 
-        <rs:RangeSlider x:Name="doubleSlider_AmplitudeFilter" Minimum="0" Maximum="100" 
-                        LowerValue="0" UpperValue="100" 
+        <rs:RangeSlider x:Name="doubleSlider_AmplitudeFilter" Minimum="0" Maximum="1" 
+                        LowerValue="{Binding FileVM.AmplitudeLowerValue, Mode=TwoWay}" UpperValue="{Binding FileVM.AmplitudeUpperValue, Mode=TwoWay}" 
                         Height="25" HorizontalAlignment="Left" Width="185" VerticalAlignment="Top" 
                         Margin="10,82,0,0">
             <ToolTipService.ToolTip>
@@ -88,7 +91,7 @@
 
         <CheckBox Name="CheckBox_CcsMatchedOnly" 
                   Content="CCS matched"
-                  IsChecked="{Binding CcsChecked}"
+                  IsChecked="{Binding FileVM.CcsChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="5,163,0,10" >
                   <!--Checked="checkBox_MatchedOnly_Checked" 
@@ -112,7 +115,7 @@
 
         <CheckBox Name="CheckBox_PlotMolcularIonOnly" 
                   Content="Molecular ion"
-                  IsChecked="{Binding MolecularIonChecked}"
+                  IsChecked="{Binding FileVM.MolecularIonChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="105,187,0,10">
                   <!--Checked="checkBox_PlotMolcularIonOnly_Checked"
@@ -124,7 +127,7 @@
 
         <CheckBox Name="CheckBox_PlotMsMsOnly" 
                   Content="MS2 acquired"
-                  IsChecked="{Binding Ms2AcquiredChecked}"
+                  IsChecked="{Binding FileVM.MsmsAcquiredChecked}"
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   Margin="5,187,0,10" >
                   <!--Checked="checkBox_PlotMsMsOnly_Checked" 

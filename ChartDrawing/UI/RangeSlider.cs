@@ -7,6 +7,8 @@ using System.Windows.Controls.Primitives;
 
 namespace CompMs.Graphics.UI.RangeSlider
 {
+    [TemplatePart(Name = "PART_LowerRange", Type = typeof(RangeBase))]
+    [TemplatePart(Name = "PART_UpperRange", Type = typeof(RangeBase))]
     public class RangeSlider : Control
     {
         static RangeSlider() {
@@ -22,32 +24,37 @@ namespace CompMs.Graphics.UI.RangeSlider
             set => SetValue(MinimumProperty, value);
         }
         public static readonly DependencyProperty MinimumProperty =
-            DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(RangeSlider), new FrameworkPropertyMetadata(0d, MinimumChanged));
+            DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(RangeSlider), new PropertyMetadata(0d, MinimumChanged));
 
         public double Maximum {
             get => (double)GetValue(MaximumProperty);
             set => SetValue(MaximumProperty, value);
         }
         public static readonly DependencyProperty MaximumProperty =
-            DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RangeSlider), new FrameworkPropertyMetadata(100d, MaximumChanged));
+            DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RangeSlider), new PropertyMetadata(100d, MaximumChanged));
 
         public double LowerValue {
             get => (double)GetValue(LowerValueProperty);
             set => SetValue(LowerValueProperty, value);
         }
         public static readonly DependencyProperty LowerValueProperty =
-            DependencyProperty.Register(nameof(LowerValue), typeof(double), typeof(RangeSlider), new FrameworkPropertyMetadata(0d));
+            DependencyProperty.Register(nameof(LowerValue), typeof(double), typeof(RangeSlider), new PropertyMetadata(0d, ValueChanged));
 
         public double UpperValue {
             get => (double)GetValue(UpperValueProperty);
             set => SetValue(UpperValueProperty, value);
         }
         public static readonly DependencyProperty UpperValueProperty =
-            DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(RangeSlider), new FrameworkPropertyMetadata(100d));
+            DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(RangeSlider), new PropertyMetadata(100d, ValueChanged));
 
         public double IntervalValue {
-            get => UpperValue - LowerValue;
+            get => (double)GetValue(IntervalValueProperty);
+            private set => SetValue(IntervalValuePropertyKey, value);
         }
+        private static readonly DependencyPropertyKey IntervalValuePropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(IntervalValue), typeof(double), typeof(RangeSlider), new PropertyMetadata(0d));
+        public static readonly DependencyProperty IntervalValueProperty = IntervalValuePropertyKey.DependencyProperty;
+
 
         private RangeBase lowerRangeElement, upperRangeElement;
 
@@ -98,6 +105,12 @@ namespace CompMs.Graphics.UI.RangeSlider
                 if (slider.LowerValue == (double)e.OldValue) {
                     slider.LowerValue = (double)e.NewValue;
                 }
+            }
+        }
+
+        static void ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is RangeSlider slider) {
+                slider.IntervalValue = slider.UpperValue - slider.LowerValue;
             }
         }
     }

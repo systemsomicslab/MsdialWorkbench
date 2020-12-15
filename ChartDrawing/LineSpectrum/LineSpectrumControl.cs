@@ -212,7 +212,8 @@ namespace CompMs.Graphics.LineSpectrum
             VisualTreeHelper.HitTest(this,
                 new HitTestFilterCallback(VisualHitTestFilter),
                 new HitTestResultCallback(VisualFocusHitTest),
-                new GeometryHitTestParameters(new EllipseGeometry(pt, 50d, 50d))
+                // new GeometryHitTestParameters(new EllipseGeometry(pt, 50d, 50d))
+                new PointHitTestParameters(pt)
                 );
         }
 
