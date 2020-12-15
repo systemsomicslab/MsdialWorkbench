@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using CompMs.Common.Extension;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Scatter
@@ -151,7 +152,6 @@ namespace CompMs.Graphics.Scatter
                || HorizontalAxis == null
                || VerticalAxis == null
                || PointBrush == null
-               || cv == null
                )
                 return;
 
@@ -222,22 +222,25 @@ namespace CompMs.Graphics.Scatter
             if (chart == null) return;
 
             chart.dataType = null;
-            chart.cv = null;
 
-            if (chart.ItemsSource == null) return;
-
-            if (e.NewValue is INotifyCollectionChanged collectionNew) {
-                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            if (chart.cv != null) {
+                chart.cv.CurrentChanged -= chart.OnCurrentChanged;
             }
             if (e.OldValue is INotifyCollectionChanged collectionOld) {
                 collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
             }
 
-            var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
+            chart.cv = null;
+            if (chart.ItemsSource == null) return;
 
-            chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
+            chart.cv.CurrentChanged += chart.OnCurrentChanged;
+            if (e.NewValue is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            }
+
+            if (chart.cv.Count == 0) return;
+            chart.dataType = chart.cv.GetItemAt(0).GetType();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -248,6 +251,24 @@ namespace CompMs.Graphics.Scatter
 
             chart.SetDrawingVisuals();
             chart.Update();
+        }
+
+        void OnCurrentChanged(object obj, EventArgs e) {
+            if (cv == null) return;
+            var item = cv.CurrentItem;
+            SelectedItem = item;
+
+            if (item == null) {
+                SelectedPoint = null;
+                return;
+            }
+            var x = hPropertyReflection.GetValue(item);
+            var y = vPropertyReflection.GetValue(item);
+            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
+            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
+            var pos = new Point(xx, yy);
+            select = visualChildren.OfType<AnnotatedDrawingVisual>().Argmin(dv => (dv.Center - pos).Length);
+            SelectedPoint = select.Center;
         }
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

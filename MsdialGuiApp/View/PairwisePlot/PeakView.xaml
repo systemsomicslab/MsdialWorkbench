@@ -87,24 +87,32 @@
                                  RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
                                  HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
-                <Canvas>
-                    <Canvas.Resources>
-                        <Style TargetType="Rectangle">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedPoint, ElementName=scatter}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Canvas.Resources>
-                    <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
-                               Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
-                               Canvas.Left="{Binding SelectedPoint.X, ElementName=scatter}"/>
-                    <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
-                               Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
-                               Canvas.Top="{Binding SelectedPoint.Y, ElementName=scatter}"/>
-                </Canvas>
+                <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
+                                ContentTemplate="{DynamicResource FocusCross}"
+                                IsHitTestVisible="False">
+                    <ContentControl.Resources>
+                        <DataTemplate x:Key="FocusCross">
+                            <Canvas>
+                                <Canvas.Resources>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedPoint, ElementName=scatter}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Canvas.Resources>
+                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Left="{Binding X}"/>
+                                <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
+                                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Top="{Binding Y}"/>
+                            </Canvas>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
             </Grid>
         </Border>
         <Border BorderBrush="Black"

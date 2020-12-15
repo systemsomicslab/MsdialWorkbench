@@ -126,6 +126,12 @@ namespace CompMs.Graphics.Core.Base
         public virtual AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
             return TranslateFromRenderPointCore(value, Min.Value, Max.Value, isFlipped);
         }
+
+        public void Focus(object low, object high) {
+            var loval = TranslateToAxisValue(low);
+            var hival = TranslateToAxisValue(high);
+            Range = new Range(loval, hival);
+        }
         #endregion
 
         #region Event
@@ -154,14 +160,6 @@ namespace CompMs.Graphics.Core.Base
         static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is AxisManager axis) {
                 axis.Range = axis.Range;
-            }
-        }
-
-        static void OnIsFlippedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is AxisManager axis) {
-                axis.LabelTicks = axis.GetLabelTicks();
-                axis.AxisMapper = new AxisMapper(axis);
             }
         }
         #endregion

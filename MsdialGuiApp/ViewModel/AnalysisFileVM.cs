@@ -22,6 +22,8 @@ using NSSplash.impl;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.MSDec;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 
 namespace CompMs.App.Msdial.ViewModel
 {
@@ -168,6 +170,21 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref amplitudeUpperValue, value);
         }
 
+        public int FocusID {
+            get => focusID;
+            set => SetProperty(ref focusID, value);
+        }
+
+        public double FocusRt {
+            get => focusRt;
+            set => SetProperty(ref focusRt, value);
+        }
+
+        public double FocusMz {
+            get => focusMz;
+            set => SetProperty(ref focusMz, value);
+        }
+
         public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
         public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DeconvolutionSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Min();
@@ -193,6 +210,8 @@ namespace CompMs.App.Msdial.ViewModel
         private string displayLabel;
         private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true, ccsChecked = false, msmsAcquiredChecked = false, molecularIonChecked = false;
         private double amplitudeLowerValue = 0d, amplitudeUpperValue = 1d;
+        private int focusID;
+        private double focusRt, focusMz;
         #endregion
 
         public AnalysisFileVM(AnalysisFileBean analysisFileBean, ParameterBase param, IReadOnlyList<MoleculeMsReference> msps) {
@@ -267,6 +286,7 @@ namespace CompMs.App.Msdial.ViewModel
             if (e.PropertyName == nameof(Target)) {
                 if (Target == null) {
                     Eic = new List<ChromatogramPeakWrapper>();
+                    return;
                 }
 
                 Eic = DataAccess.GetSmoothedPeaklist(
@@ -307,6 +327,10 @@ namespace CompMs.App.Msdial.ViewModel
                     }
                     Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
+
+                FocusID = Target.InnerModel.MasterPeakID;
+                FocusRt = Target.ChromXValue ?? 0;
+                FocusMz = Target.Mass;
             }
         }
 
@@ -315,6 +339,34 @@ namespace CompMs.App.Msdial.ViewModel
                 return "N/A";
             var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
             return new Splash().splashIt(msspectrum);
+        }
+
+        public DelegateCommand<object[]> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object[]>(FocusByID));
+        private DelegateCommand<object[]> focusByIDCommand;
+
+        private void FocusByID(object[] axes) {
+            var focus = _ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
+            Ms1Peaks.MoveCurrentTo(focus);
+            if (axes?.Length == 2) {
+                (axes[0] as AxisManager)?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
+                (axes[1] as AxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
+            }
+        }
+
+        public DelegateCommand<AxisManager> FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand<AxisManager>(FocusByRt));
+        private DelegateCommand<AxisManager> focusByRtCommand;
+
+        private static readonly double RtTol = 0.5;
+        private void FocusByRt(AxisManager axis) {
+            axis.Focus(FocusRt - RtTol, FocusRt + RtTol);
+        }
+
+        public DelegateCommand<AxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<AxisManager>(FocusByMz));
+        private DelegateCommand<AxisManager> focusByMzCommand;
+
+        private static readonly double MzTol = 20;
+        private void FocusByMz(AxisManager axis) {
+            axis.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
     }
 
