@@ -30,6 +30,8 @@ using System.Windows.Input;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.Parser;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial
 {
@@ -48,7 +50,11 @@ namespace CompMs.App.Msdial
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles {
             get => analysisFiles;
-            set => SetProperty(ref analysisFiles, value);
+            set {
+                if (SetProperty(ref analysisFiles, value)) {
+                    _analysisFiles = CollectionViewSource.GetDefaultView(analysisFiles);
+                }
+            }
         }
 
         public bool RefMatchedChecked {
@@ -95,6 +101,7 @@ namespace CompMs.App.Msdial
             ccsChecked, ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
         // private AlignmentVM alignmentVM;
         private AnalysisFileVM fileVM;
+        private ICollectionView _analysisFiles;
         private ObservableCollection<AnalysisFileBean> analysisFiles;
         private MsdialSerializer serializer;
         #endregion
@@ -292,6 +299,15 @@ namespace CompMs.App.Msdial
         private void SaveProject() {
             // TODO: implement process when project save failed.
             Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
+        }
+
+        public DelegateCommand LoadAnalysisFileCommand {
+            get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadAnalysisFile));
+        }
+        private DelegateCommand loadAnalysisFileCommand;
+
+        private void LoadAnalysisFile() {
+            FileVM = new AnalysisFileVM(_analysisFiles.CurrentItem as AnalysisFileBean, Storage.ParameterBase, Storage.MspDB);
         }
 
         #endregion

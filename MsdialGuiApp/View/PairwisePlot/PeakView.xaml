@@ -92,7 +92,7 @@
                                 IsHitTestVisible="False">
                     <ContentControl.Resources>
                         <DataTemplate x:Key="FocusCross">
-                            <Canvas>
+                            <Canvas ClipToBounds="True">
                                 <Canvas.Resources>
                                     <Style TargetType="Rectangle">
                                         <Setter Property="Visibility" Value="Visible"/>
