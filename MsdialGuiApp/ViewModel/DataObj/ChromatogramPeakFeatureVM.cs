@@ -34,6 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public bool IsCcsMatch => ScanMatchResult?.IsCcsMatch ?? false;
         public bool IsMsmsContained => innerModel.IsMsmsContained;
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
+        public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 
 
 

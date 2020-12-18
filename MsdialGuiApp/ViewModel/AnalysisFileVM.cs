@@ -170,6 +170,9 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref amplitudeUpperValue, value);
         }
 
+        public double AmplitudeOrderMin { get; }
+        public double AmplitudeOrderMax { get; }
+
         public int FocusID {
             get => focusID;
             set => SetProperty(ref focusID, value);
@@ -225,6 +228,8 @@ namespace CompMs.App.Msdial.ViewModel
                 peaks.Select(peak => new ChromatogramPeakFeatureVM(peak))
             );
             Peaks = peaks;
+            AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
+            AmplitudeOrderMax = _ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
             Ms1Peaks = CollectionViewSource.GetDefaultView(_ms1Peaks);
 
             using (var access = new RawDataAccess(analysisFileBean.AnalysisFilePath, 0, true, analysisFileBean.RetentionTimeCorrectionBean.PredictedRt)) {
@@ -267,7 +272,8 @@ namespace CompMs.App.Msdial.ViewModel
         }
 
         bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
-            return AmplitudeLowerValue <= peak.AmplitudeScore && peak.AmplitudeScore <= AmplitudeUpperValue;
+            return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= (peak.AmplitudeOrderValue - AmplitudeOrderMin)
+                && (peak.AmplitudeScore - AmplitudeOrderMin) <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
