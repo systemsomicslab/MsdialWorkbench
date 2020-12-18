@@ -119,7 +119,9 @@
     </Compile>
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
+    <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
+    <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
     <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="View\Details\CompoundDetailView.xaml.cs">

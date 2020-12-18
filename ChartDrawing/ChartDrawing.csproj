@@ -70,10 +70,12 @@
     <Compile Include="Base\AxisValue.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="AxisManager\CategoryAxisManager.cs" />
+    <Compile Include="Base\BooleanBoxes.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />
     <Compile Include="AxisManager\ContinuousAxisManager.cs" />
     <Compile Include="Base\ChartMargin.cs" />
     <Compile Include="Base\Range.cs" />
+    <Compile Include="Behavior\ChildDoubleClickBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />
     <Compile Include="Chart\Annotator.cs" />

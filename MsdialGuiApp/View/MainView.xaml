@@ -205,7 +205,7 @@
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <pairplot:AlignmentView />
+                            <pairplot:AlignmentView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
                     </TabControl>

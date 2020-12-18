@@ -8,6 +8,11 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             Name="AlignmentSpotView"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -15,14 +20,14 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="TimeAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="TimesCenter"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="MzAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="MassCenter"
+                                           ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -37,45 +42,83 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
-        <Border Background="WhiteSmoke"
-                Margin="0,5,5,0" 
-                Grid.Row="1" Grid.Column="2">
-            <scatter:ScatterControl x:Name="scatter"
-                                    ItemsSource="{Binding}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                    HorizontalPropertyName="X"
-                                    VerticalPropertyName="Y"
-                                    PointBrush="Pink" >
-                <scatter:ScatterControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.X}"/>
-                            <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Y}"/>
-                        </StackPanel>
-                    </ToolTip>
-                </scatter:ScatterControl.ToolTip>
-            </scatter:ScatterControl>
+        <Border Background="WhiteSmoke" BorderBrush="Black" BorderThickness="1,0,0,1"
+                Margin="0,5,5,0" Grid.Row="1" Grid.Column="2">
+            <Grid Margin="-1,0,0,-1">
+                <scatter:ScatterControl x:Name="alignmentScatter"
+                                        ItemsSource="{Binding Ms1Spots}"
+                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
+                                        RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                        HorizontalPropertyName="TimeCenter"
+                                        VerticalPropertyName="MassCenter"
+                                        Radius="5.5"
+                                        behavior:ScatterFocusBehavior.EnableOuter="True"
+                                        behavior:ScatterFocusBehavior.OuterScale="1.3"
+                                        behavior:ScatterFocusBehavior.InnerScale="1.2"
+                                        behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
+                                        behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}" >
+                    <behavior:ScatterFocusBehavior.LabelTemplate>
+                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="9"/>
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="RT[min]: "/>
+                                <TextBlock Text="{Binding TimesCenter, StringFormat=N2, Mode=OneTime}"/>
+                                <TextBlock Text="; "/>
+                                <TextBlock Text="Mass[Da]: "/>
+                                <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </behavior:ScatterFocusBehavior.LabelTemplate>
+                </scatter:ScatterControl>
+                <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
+                                ContentTemplate="{DynamicResource FocusCross}"
+                                IsHitTestVisible="False">
+                    <ContentControl.Resources>
+                        <DataTemplate x:Key="FocusCross">
+                            <Canvas ClipToBounds="True">
+                                <Canvas.Resources>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedPoint, ElementName=alignmentScatter}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Canvas.Resources>
+                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Left="{Binding X}"/>
+                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Top="{Binding Y}"/>
+                            </Canvas>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
         </Border>
-        <Border BorderBrush="Black"
-                BorderThickness="1,0,0,1"
-                Margin="0,5,5,0" 
-                Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
-        <TextBlock Text="File name" FontSize="14"
+        <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
         <TextBlock Text="Retention time [min]"

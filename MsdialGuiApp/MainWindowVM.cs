@@ -32,11 +32,12 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.Parser;
 using System.ComponentModel;
 using System.Windows.Data;
+using CompMs.Common.MessagePack;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 
 namespace CompMs.App.Msdial
 {
-    class MainWindowVM : ViewModelBase
-    {
+    class MainWindowVM : ViewModelBase {
         #region property
         public MsdialDataStorage Storage {
             get => storage;
@@ -53,6 +54,20 @@ namespace CompMs.App.Msdial
             set {
                 if (SetProperty(ref analysisFiles, value)) {
                     _analysisFiles = CollectionViewSource.GetDefaultView(analysisFiles);
+                }
+            }
+        }
+
+        public AlignmentFileVM AlignmentVM {
+            get => alignmentVM;
+            set => SetProperty(ref alignmentVM, value);
+        }
+
+        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
+            get => alignmentFiles;
+            set {
+                if (SetProperty(ref alignmentFiles, value)) {
+                    _alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
                 }
             }
         }
@@ -99,13 +114,18 @@ namespace CompMs.App.Msdial
         private MsdialDataStorage storage;
         private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true,
             ccsChecked, ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
-        // private AlignmentVM alignmentVM;
         private AnalysisFileVM fileVM;
-        private ICollectionView _analysisFiles;
+        private AlignmentFileVM alignmentVM;
         private ObservableCollection<AnalysisFileBean> analysisFiles;
+        private ObservableCollection<AlignmentFileBean> alignmentFiles;
+        private ICollectionView _analysisFiles, _alignmentFiles;
         private MsdialSerializer serializer;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         #endregion
 
+        static MainWindowVM() {
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+        }
         public MainWindowVM() { }
 
         #region Command
@@ -136,13 +156,13 @@ namespace CompMs.App.Msdial
 
             // Run Identification
             ProcessAnnotaion(window, Storage);
-            LoadInitialFiles();
 
             // Run Alignment
-            // ProcessAlignment();
+            ProcessAlignment(window, Storage);
 
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
             SaveProject();
+            LoadInitialFiles();
         }
 
         private ParameterBase ProcessStartUp(Window owner) {
@@ -258,6 +278,15 @@ namespace CompMs.App.Msdial
             return true;
         }
 
+        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+            var factory = new LcmsAlignmentProcessFactory(storage.ParameterBase as MsdialLcmsParameter, storage.IupacDatabase);
+            var alignmentFile = storage.AlignmentFiles.Last();
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            return true;
+        }
+
         public DelegateCommand<Window> OpenProjectCommand {
             get => openProjectCommand ?? (openProjectCommand = new DelegateCommand<Window>(OpenProject));
         }
@@ -265,7 +294,7 @@ namespace CompMs.App.Msdial
 
         private void OpenProject(Window owner) {
             var ofd = new OpenFileDialog();
-            ofd.Filter = "MTD file(*.mtd, *mtd2)|*.mtd?|MTD2 file(*.mtd2)|*mtd2|All(*)|*";
+            ofd.Filter = "MTD2 file(*.mtd2)|*.mtd2|All(*)|*";
             ofd.Title = "Import a project file";
             ofd.RestoreDirectory = true;
 
@@ -301,13 +330,84 @@ namespace CompMs.App.Msdial
             Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
         }
 
+        public DelegateCommand<Window> SaveAsProjectCommand {
+            get => saveAsProjectCommand ?? (saveAsProjectCommand = new DelegateCommand<Window>(SaveAsProject));
+        }
+        private DelegateCommand<Window> saveAsProjectCommand;
+
+        private void SaveAsProject(Window owner) {
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "MTD file(*.mtd2)|*.mtd2";
+            sfd.Title = "Save project dialog";
+            sfd.InitialDirectory = Storage.ParameterBase.ProjectFolderPath;
+
+            if (sfd.ShowDialog() == true) {
+                if (System.IO.Path.GetDirectoryName(sfd.FileName) != Storage.ParameterBase.ProjectFolderPath) {
+                    MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                var message = new ShortMessageWindow() {
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Text = "Saving the project as...",
+                };
+                message.Show();
+
+                Storage.ParameterBase.ProjectFilePath = sfd.FileName;
+                Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
+
+                message.Close();
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        public DelegateCommand<Window> SaveParameterCommand => saveParameterCommand ?? (saveParameterCommand = new DelegateCommand<Window>(SaveParameter));
+        private DelegateCommand<Window> saveParameterCommand;
+
+        private void SaveParameter(Window owner) {
+            // TODO: implement process when parameter save failed.
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "MED file(*.med)|*.med";
+            sfd.Title = "Save file dialog";
+            sfd.InitialDirectory = Storage.ParameterBase.ProjectFolderPath;
+
+            if (sfd.ShowDialog() == true) {
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                var message = new ShortMessageWindow() {
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Text = "Saving the parameter...",
+                };
+                message.Show();
+
+                MessagePackHandler.SaveToFile(Storage.ParameterBase, sfd.FileName);
+
+                message.Close();
+                Mouse.OverrideCursor = null;
+            }
+        }
+
         public DelegateCommand LoadAnalysisFileCommand {
             get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadAnalysisFile));
         }
         private DelegateCommand loadAnalysisFileCommand;
 
         private void LoadAnalysisFile() {
-            FileVM = new AnalysisFileVM(_analysisFiles.CurrentItem as AnalysisFileBean, Storage.ParameterBase, Storage.MspDB);
+            if (_analysisFiles.CurrentItem is AnalysisFileBean analysis)
+                FileVM = new AnalysisFileVM(analysis, Storage.ParameterBase, Storage.MspDB);
+        }
+
+        public DelegateCommand LoadAlignmentFileCommand {
+            get => loadAlignmentFileCommand ?? (loadAlignmentFileCommand = new DelegateCommand(LoadAlignmentFile));
+        }
+        private DelegateCommand loadAlignmentFileCommand;
+        private void LoadAlignmentFile() {
+            if (_alignmentFiles.CurrentItem is AlignmentFileBean alignment)
+                AlignmentVM = new AlignmentFileVM(alignment);
         }
 
         #endregion
@@ -316,6 +416,7 @@ namespace CompMs.App.Msdial
         private void LoadInitialFiles() {
             FileVM = new AnalysisFileVM(Storage.AnalysisFiles.FirstOrDefault(), Storage.ParameterBase, Storage.MspDB);
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(Storage.AnalysisFiles);
+            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(Storage.AlignmentFiles);
         }
         #endregion
     }

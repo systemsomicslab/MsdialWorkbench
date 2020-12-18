@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial"
              d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
              d:DesignHeight="450" d:DesignWidth="150">
@@ -95,17 +96,12 @@
                Grid.Row="0" Background="LightSteelBlue" />
 
         <ListBox Name="ListBox_FileName" Grid.Row="0" ItemsSource="{Binding AnalysisFiles}" BorderThickness="0" 
+                 DisplayMemberPath="AnalysisFileName"
                  IsSynchronizedWithCurrentItem="True"
                  ItemContainerStyle="{StaticResource ClickableItem}"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
                  Margin="0,28,0,2" >
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding AnalysisFileName}">
-                    </TextBlock>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Double click a file to show the result in peak viewer" />
             </ToolTipService.ToolTip>
@@ -119,10 +115,13 @@
                VerticalAlignment="Top"
                HorizontalContentAlignment="Center" Grid.Row="1"/>
 
-        <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding Storage.AlignmentFiles, Mode=OneTime}" 
+        <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding AlignmentFiles}" 
+                 DisplayMemberPath="FileName"
                  BorderThickness="0"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                 behavior:ChildDoubleClickBehavior.IsEnable="True"
+                 behavior:ChildDoubleClickBehavior.Command="{Binding LoadAlignmentFileCommand}"
                  Margin="0,28,0,0">
             <ToolTipService.ToolTip>
                 <ToolTip Content="Double click a alignment file to show the result in alignment viewer" />

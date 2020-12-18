@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Property
                 {
                     AnalysisFileAnalyticalOrder = i + 1,
                     AnalysisFileClass = "1",
-                    AnalysisFileId = 0,
+                    AnalysisFileId = i,
                     AnalysisFileIncluded = true,
                     AnalysisFileName = Path.GetFileNameWithoutExtension(filename),
                     AnalysisFilePath = filename,

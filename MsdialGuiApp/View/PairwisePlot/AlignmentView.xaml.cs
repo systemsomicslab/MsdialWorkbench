@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
