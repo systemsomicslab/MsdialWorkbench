@@ -28,7 +28,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             return new LcmsGapFiller(LcmsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner(this);
         }
 

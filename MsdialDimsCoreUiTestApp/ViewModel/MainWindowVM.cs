@@ -252,7 +252,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
             var factory = new DimsAlignmentProcessFactory(param, iupac);
-            var aligner = factory.CreatePeakAliner();
+            var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
         }

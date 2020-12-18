@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Iupac = iupac;
         }
 
-        public abstract PeakAligner CreatePeakAliner();
+        public abstract PeakAligner CreatePeakAligner();
         public abstract DataAccessor CreateDataAccessor();
         public abstract PeakJoiner CreatePeakJoiner();
         public abstract GapFiller CreateGapFiller();

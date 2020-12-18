@@ -37,7 +37,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return new GcmsGapFiller(Files, MspDB, GcmsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner(this);
         }
 

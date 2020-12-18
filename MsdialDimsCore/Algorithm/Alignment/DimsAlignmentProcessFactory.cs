@@ -28,7 +28,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return new DimsGapFiller(DimsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner(this);
         }
 
