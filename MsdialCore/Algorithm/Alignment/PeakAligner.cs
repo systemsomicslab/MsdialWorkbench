@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CompMs.Common.DataObj.Database;
@@ -282,9 +283,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var pss = files.Select(file => peakSerializer.DeserializeAllFromFile(file)).ToList();
             var qss = pss.Sequence();
 
+            Debug.WriteLine("Serialize start.");
             using (var fs = File.OpenWrite(alignmentFile.EicFilePath)) {
                 spotSerializer.SerializeN(fs, spots.Zip(qss, (spot, qs) => new ChromatogramSpotInfo(qs, spot.TimesCenter)), spots.Count);
             }
+            Debug.WriteLine("Serialize finish.");
 
             pss.ForEach(ps => ((IDisposable)ps).Dispose());
         }

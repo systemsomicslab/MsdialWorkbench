@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj {
         //[Key(32)]
         //public int TextDbID { get; set; }// representative text id
         [Key(33)]
-        public List<int> TextDbIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (optional)
+        public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(34)]
         public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
         [Key(35)]
