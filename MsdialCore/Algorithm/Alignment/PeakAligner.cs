@@ -169,7 +169,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             List<AlignmentSpotProperty> spots, ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
 
             var files = new List<string>();
-            var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
+            var chromPeakInfoSerializer = spotSerializer == null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
 
             foreach (var analysisFile in analysisFiles) {
                 var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
@@ -182,7 +182,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach (var spot in spots)
                 result.Add(PackingSpot(spot));
 
-            SerializeSpotInfo(result, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
+            if (chromPeakInfoSerializer != null)
+                SerializeSpotInfo(result, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
             foreach (var f in files)
                 if (File.Exists(f))
                     File.Delete(f);

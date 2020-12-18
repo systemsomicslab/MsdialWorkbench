@@ -241,7 +241,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(39)]
         public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
         [Key(40)]
-        public ChromatogramPeakShape PeakShape { get; set; }
+        public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
 
         // others
         [Key(41)]

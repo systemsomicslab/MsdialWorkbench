@@ -156,9 +156,9 @@ namespace CompMs.MsdialCore.DataObj {
 
         // peak characters
         [Key(36)]
-        public IonFeatureCharacter PeakCharacter { get; set; }
+        public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
         [Key(37)]
-        public ChromatogramPeakShape PeakShape { get; set; }
+        public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
         [Key(44)]
         public double NormalizedPeakHeight { get; set; }
         [Key(45)]
