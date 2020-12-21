@@ -145,7 +145,11 @@ namespace CompMs.MspGenerator
             //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20200903.txt"; //generateFileName
 
             //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
+
+            mspFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20201211_lipidLibraryChk\mspGenerator\PI_Cer_d_H_Neg.msp";
+            dbFileName = @"D:\takahashi\desktop\Tsugawa-san_work\20201211_lipidLibraryChk\mspGenerator\RT_CCS_predictedFile\predictedRTCCSAll_20201120.txt";
+            outputResultFolderPath = @"D:\takahashi\desktop\Tsugawa-san_work\20201211_lipidLibraryChk\mspGenerator\";
+            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
 
 
 
@@ -181,7 +185,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201120_lipidLibraryChk\newMsp\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201211_lipidLibraryChk\msp\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -368,7 +372,7 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, faChain2, "EtherMGDG", outputFolder);   // faChain1 = Ether alkyl, faChain2 = FA
             //Common.switchingLipid(faChain1, faChain2, "EtherSMGDG", outputFolder);  // faChain1 = Ether alkyl, faChain2 = FA
 
-            ////GL exchangable 3 chain
+            //GL exchangable 3 chain
             //faChain1 = Common.GenerateAcylChains(8, 0, 38, 12);
             //Common.switchingLipid(faChain1, "TG", outputFolder);
 
