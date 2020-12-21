@@ -9100,7 +9100,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                                     {
                                         var molecule = getAcylhexceramideMoleculeObjAsLevel2_1("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
                                         extCarbon + acylCarbon, extDouble + acylDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
-                                        candidates.Add(molecule);
+                                        //candidates.Add(molecule);
                                     }
                                 }
                             }

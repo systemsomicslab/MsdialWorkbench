@@ -70,7 +70,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 if (i != internalStandardID) {
                     var metName = metaboliteName == null || metaboliteName == string.Empty ? "Unknown" : metaboliteName;
-
+                    if (metName.Contains("(d")) continue; // should be internal standards
                     var color = Colors.Gray;
                     var rgba = new byte[] { color.R, color.G, color.B, color.A }; 
                     if (MetaboliteColorCode.metabolite_colorcode.ContainsKey(ontology))
@@ -80,7 +80,7 @@ namespace Rfx.Riken.OsakaUniv
                         Array.Copy(rgb, 0, rgba, 0, 3);
                     }
 
-                    if (isIdentified && !metName.Contains("Unknown") && !metName.Contains("w/o")) {
+                    if (isIdentified && !metName.Contains("Unknown") && !metName.Contains("w/o") && !metName.Contains("RIKEN")) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
@@ -90,7 +90,7 @@ namespace Rfx.Riken.OsakaUniv
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
                     }
-                    if (isUnknown && metName.Contains("Unknown")) {
+                    if (isUnknown && (metName.Contains("Unknown") || metName.Contains("RIKEN"))) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
@@ -355,7 +355,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else {
                 var unit = spotProperty.IonAbundanceUnit.ToString();
-                return new BarChartBean(barElements, "Class=" + spotProperty.MetaboliteName, "Class", unit);
+                return new BarChartBean(barElements, spotProperty.MetaboliteName, "Class", unit);
             }
         }
 

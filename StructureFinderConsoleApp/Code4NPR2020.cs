@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
+using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
 using CompMs.StructureFinder.NcdkDescriptor;
 using Riken.Metabolomics.StructureFinder.Utility;
@@ -14,6 +15,117 @@ using System.Threading.Tasks;
 namespace StructureFinderConsoleApp {
     public sealed class Code4NPR2020 {
         private Code4NPR2020() { }
+
+        public static void Check144Existence(string input, string output) {
+            var spectrumList = new List<string>();
+            using (var sr = new StreamReader(input, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var lineArray = line.Split('\t');
+                    spectrumList.Add(lineArray[12]);
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("Existence");
+                for (int i = 0; i < spectrumList.Count; i++) {
+                    var spectrumObj = TextLibraryParser.TextToSpectrumList(spectrumList[i], ':', ' ');
+                    var flg = false;
+                    foreach (var spec in spectrumObj) {
+                        if (Math.Abs(spec.Mass- 144.0807) < 0.01) {
+                            flg = true;
+                            break;
+                        }
+                    }
+                    if (flg) sw.WriteLine("True");
+                    else sw.WriteLine("False");
+                }
+            }
+        }
+
+        public static void ExtractCCSValues(string input, string ccsinput, string output) {
+            var inchikeys = new List<string>();
+            using (var sr = new StreamReader(input, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var lineArray = line.Split('\t');
+                    inchikeys.Add(lineArray[9].Split('-')[0]);
+                }
+            }
+
+            var inchi2ccs = new Dictionary<string, string>();
+            using (var sr = new StreamReader(ccsinput, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var lineArray = line.Split('\t');
+                    var inchikey = lineArray[2].Split('-')[0];
+                    var adduct = lineArray[4];
+                    if (adduct != "[M+H]+") continue;
+                    var ccs = lineArray[6];
+                    inchi2ccs[inchikey] = ccs;
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("InChIKey\tCCS");
+                for (int i = 0; i < inchikeys.Count; i++) {
+                    if (inchi2ccs.ContainsKey(inchikeys[i])) {
+                        sw.WriteLine(inchikeys[i] + "\t" + inchi2ccs[inchikeys[i]]);
+                    }
+                    else {
+                        sw.WriteLine(inchikeys[i] + "\t" + "null");
+                    }
+                }
+            }
+
+        }
+
+        public static void GenerateEdgesByTanimotoIndex(string input, string output) {
+
+            var fingerprints = new List<double[]>();
+            var name2fingerprints = new Dictionary<string, List<double>>();
+            var titles = new List<string>();
+            var title2id = new Dictionary<string, int>();
+            var id2title = new Dictionary<int, string>();
+            var counter = 0;
+            using (var sr = new StreamReader(input, true)) { 
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var lineArray = line.Split('\t');
+                    titles.Add(lineArray[0]);
+                    name2fingerprints[lineArray[0]] = new List<double>();
+                    for (int i = 1; i < lineArray.Length; i++) {
+                        name2fingerprints[lineArray[0]].Add(double.Parse(lineArray[i]));
+                    }
+                    fingerprints.Add(name2fingerprints[lineArray[0]].ToArray());
+
+                    title2id[lineArray[0]] = counter;
+                    id2title[counter] = lineArray[0];
+                    counter++;
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("Source (title)\tTarget (title)\tSource (Comment)\tTarget (Comment)\tSource (ID)\tTarget (ID)\tScore\tColor\tEdge information");
+                for (int i = 0; i < fingerprints.Count; i++) {
+                    for (int j = i + 1; j < fingerprints.Count; j++) {
+                        var tIndex = BasicMathematics.TanimotoIndex(fingerprints[i], fingerprints[j]);
+                        if (tIndex > 0.85) {
+                            var info = new List<string>() { id2title[i], id2title[j], "null", "null", i.ToString(), j.ToString(), Math.Round(tIndex, 3).ToString(), "blue", "Structure similarity" };
+                            sw.WriteLine(String.Join("\t", info));
+                        }
+                    }
+                }
+            }
+        }
 
         public static void GenerateFragmentStatisticsForEachOntology() {
 
