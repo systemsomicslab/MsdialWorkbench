@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -147,9 +146,6 @@ namespace Rfx.Riken.OsakaUniv
                 mobilityPlot.AmplitudeDisplayUpperFilter = (float)ampSliderUpperValue;
                 mobilityPlot.BlankFilter = blankFilter;
                 mobilityContent.RefreshUI();
-
-                var spotCount = countDriftDisplayedSpots(mobilityPlot, this.mainWindow.PairwisePlotFocus, this.mainWindow.ProjectProperty.Ionization);
-                this.mainWindow.Label_DisplayPeakNum.Content = "Num. " + spotCount;
             }
             else if (this.mainWindow.PairwisePlotFocus == PairwisePlotFocus.alignmentView) {
                 if (this.mainWindow.AlignmentFiles == null) return;
@@ -172,9 +168,6 @@ namespace Rfx.Riken.OsakaUniv
                 mobilityPlot.AmplitudeDisplayUpperFilter = (float)ampSliderUpperValue;
                 mobilityPlot.BlankFilter = blankFilter;
                 mobilityContent.RefreshUI();
-
-                var spotCount = countDriftDisplayedSpots(mobilityPlot, this.mainWindow.PairwisePlotFocus, this.mainWindow.ProjectProperty.Ionization);
-                this.mainWindow.Label_DisplayPeakNum.Content = "Num. " + spotCount;
             }
         }
 
@@ -1573,14 +1566,6 @@ namespace Rfx.Riken.OsakaUniv
         {
             var count = -1;
             if (pairwisePlotFocus == PairwisePlotFocus.peakView) { // case in peak viewer focused
-                /*
-                if (this.mainWindow.AnalysisParamForLC.IsIonMobility == true) {
-                    var peakAreas = pairwisePlotBean.PeakAreaBeanCollection;
-                    var driftSpots = UiAccessLcUtility.GetDriftSpotBean(peakAreas);
-                    count = countInLcimmsDriftSpotsBeans(driftSpots);
-                }
-                else if (ionization == Ionization.ESI) {
-                */
                 if (ionization == Ionization.ESI) {
                     var peakAreas = pairwisePlotBean.PeakAreaBeanCollection;
                     count = countInPeakAreBeans(peakAreas);
@@ -1591,29 +1576,10 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
             else {
-                /*
-                if (this.mainWindow.AnalysisParamForLC.IsIonMobility) {
-                    var alignedSpots = pairwisePlotBean.AlignmentPropertyBeanCollection;
-                    var driftSpots = UiAccessLcUtility.GetDriftSpotBean(alignedSpots);
-                    count = countInLcimmsAlignedSpots(driftSpots);
-                }
-                else {
-                */
-                    var alignedSpots = pairwisePlotBean.AlignmentPropertyBeanCollection;
-                    count = countInAlignedSpots(alignedSpots);
-                //}
+                var alignedSpots = pairwisePlotBean.AlignmentPropertyBeanCollection;
+                count = countInAlignedSpots(alignedSpots);
             }
             return count;
-        }
-        private int countDriftDisplayedSpots(PairwisePlotBean mobilityPlot, PairwisePlotFocus pairwisePlotFocus, Ionization ionization) {
-            if (pairwisePlotFocus == PairwisePlotFocus.peakView) {
-                var driftSpots = mobilityPlot.DriftSpots;
-                return countInLcimmsDriftSpotsBeans(driftSpots);
-            }
-            else {
-                var driftSpots = mobilityPlot.AlignmentDriftSpotBean;
-                return countInLcimmsAlignedSpots(driftSpots);
-            }
         }
 
         private int countInAlignedSpots(ObservableCollection<AlignmentPropertyBean> alignedSpots)
@@ -1661,9 +1627,17 @@ namespace Rfx.Riken.OsakaUniv
                 }
 
                 //msms
-                if (msmsFilter && !spot.MsmsIncluded) {
-                    total--;
-                    continue;
+                if (mainWindow.AnalysisParamForLC.IsIonMobility) {
+                    if (msmsFilter && !spot.AlignedDriftSpots.Any(drift => drift.MsmsIncluded)) {
+                        total--;
+                        continue;
+                    }
+                }
+                else {
+                    if (msmsFilter && !spot.MsmsIncluded) {
+                        total--;
+                        continue;
+                    }
                 }
 
                 //unique fragment
@@ -1751,13 +1725,19 @@ namespace Rfx.Riken.OsakaUniv
                     continue;
                 }
 
-
                 //msms
-                if (msmsFilter && peak.Ms2LevelDatapointNumber < 0) {
-                    total--;
-                    continue;
+                if (mainWindow.AnalysisParamForLC.IsIonMobility) {
+                    if (msmsFilter && peak.DriftSpots.All(spot => spot.Ms2LevelDatapointNumber < 0)) {
+                        total--;
+                        continue;
+                    }
                 }
-
+                else {
+                    if (msmsFilter && peak.Ms2LevelDatapointNumber < 0) {
+                        total--;
+                        continue;
+                    }
+                }
 
                 //unique fragment
                 if (uniqueionFilter && !peak.IsFragmentQueryExist) {
@@ -1767,119 +1747,6 @@ namespace Rfx.Riken.OsakaUniv
             }
             return total;
         }
-
-        private int countInLcimmsAlignedSpots(IReadOnlyList<AlignedDriftSpotPropertyBean> alignedSpots) {
-            var total = alignedSpots.Count;
-            foreach (var spot in alignedSpots) {
-                if (spot.RelativeAmplitudeValue < ampSliderLowerValue * 0.01) {
-                    total--;
-                    continue;
-                }
-
-                if (spot.RelativeAmplitudeValue > ampSliderUpperValue * 0.01) {
-                    total--;
-                    continue;
-                }
-
-                //filter by identified, annotated, unknowns, ccs
-                var identified = false; var annotated = false; var ccsMatched = false;
-                if (spot.MetaboliteName != null && spot.MetaboliteName.IndexOf("w/o MS2:", 0) >= 0) annotated = true;
-                if (spot.MetaboliteName != null && (spot.LibraryID >= 0 || spot.PostIdentificationLibraryID >= 0) && spot.MetaboliteName.IndexOf("w/o MS2:", 0) < 0) identified = true;
-                if (spot.IsCcsMatch) ccsMatched = true;
-
-                var annotationChecker = true;
-                if (!identifiedFilter && !annotatedFilter && !UnknownFilter && !CcsFilter) {
-                    annotationChecker = false;
-                }
-                
-                if(identifiedFilter && identified) annotationChecker = false;
-                if (annotatedFilter && annotated) annotationChecker = false;
-                if (ccsFilter && ccsMatched) annotationChecker = false;
-                if (UnknownFilter && !identified && !annotated && !ccsMatched) annotationChecker = false;
-
-                if (annotationChecker) {
-                    total--;
-                    continue;
-                }
-
-                //msms
-                if (msmsFilter && !spot.MsmsIncluded) {
-                    total--;
-                    continue;
-                }
-
-                //unique fragment
-                if (uniqueionFilter && !spot.IsFragmentQueryExist) {
-                    total--;
-                    continue;
-                }
-
-                //blank
-                if(blankFilter && spot.IsBlankFiltered) {
-                    total--;
-                    continue;
-                }
-            }
-            return total;
-        }
-
-        private int countInLcimmsDriftSpotsBeans(IReadOnlyList<DriftSpotBean> driftSpots) {
-            var total = driftSpots.Count;
-            foreach (var spot in driftSpots) {
-                if (spot.AmplitudeScoreValue < ampSliderLowerValue * 0.01) {
-                    total--;
-                    continue;
-                }
-
-                if (spot.AmplitudeScoreValue > ampSliderUpperValue * 0.01) {
-                    total--;
-                    continue;
-                }
-
-                if (molecularIonFilter && spot.IsotopeWeightNumber > 0) {
-                    total--;
-                    continue;
-                }
-
-                //filter by identified, annotated, unknowns
-                var identified = false; var annotated = false; var ccsMatched = false;
-                if (spot.MetaboliteName.IndexOf("w/o MS2:", 0) >= 0) annotated = true;
-                if ((spot.LibraryID >= 0 || spot.PostIdentificationLibraryId >= 0) && spot.MetaboliteName.IndexOf("w/o MS2:", 0) < 0) identified = true;
-                if (spot.IsCcsMatch) ccsMatched = true;
-
-                var annotationChecker = true;
-                if (!identifiedFilter && !annotatedFilter && !UnknownFilter && !CcsFilter) {
-                    annotationChecker = false;
-                }
-
-                if (identifiedFilter && identified) annotationChecker = false;
-                if (annotatedFilter && annotated) annotationChecker = false;
-                if (ccsFilter && ccsMatched) annotationChecker = false;
-                if (UnknownFilter && !identified && !annotated && !ccsMatched) annotationChecker = false;
-
-                if (annotationChecker) {
-                    total--;
-                    continue;
-                }
-
-
-                //msms
-                if (msmsFilter && spot.Ms2LevelDatapointNumber < 0) {
-                    total--;
-                    continue;
-                }
-
-
-                //unique fragment
-                if (uniqueionFilter && !spot.IsFragmentQueryExist) {
-                    total--;
-                    continue;
-                }
-
-            }
-            return total;
-        }
-
 
         private void changeTableViewerSetting() {
             if(this.mainWindow.PeakSpotTableViewer != null) {
