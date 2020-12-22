@@ -34,7 +34,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 
         public override PeakJoiner CreatePeakJoiner() {
             return new LcmsPeakJoiner(
-                LcmsParameter.RetentionTimeAlignmentTolerance, LcmsParameter.RetentionTimeAlignmentTolerance,
+                LcmsParameter.RetentionTimeAlignmentTolerance, LcmsParameter.RetentionTimeAlignmentFactor,
                 LcmsParameter.Ms1AlignmentTolerance, LcmsParameter.Ms1AlignmentFactor
                 );
         }

@@ -39,7 +39,8 @@ namespace CompMs.MsdialCore.DataObj {
         public double PeakAreaAboveBaseline { get; set; }
 
         [Key(43)]
-        public double Mass { get; set; }
+        public double Mass { get => mass; set => mass = value; }
+        private double mass;
 
         public double PeakWidth(ChromXType type) {
             switch (type) {
@@ -90,7 +91,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(20)]
         public int ScanID { get; set; } // same as MS1RawSpectrumID
         [IgnoreMember]
-        public double PrecursorMz { get => Mass; set => Mass = value; } // in LC-MS/MS same as Mass
+        public double PrecursorMz { get => mass; set => mass = value; } // in LC-MS/MS same as Mass
         [Key(22)]
         public IonMode IonMode { get; set; }
         [IgnoreMember]

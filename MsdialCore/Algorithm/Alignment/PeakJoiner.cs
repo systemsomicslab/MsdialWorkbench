@@ -27,6 +27,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
                 for (var i = 0; i < n; i++) {
+                    if (!Equals(masters[i], target))
+                        continue;
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
