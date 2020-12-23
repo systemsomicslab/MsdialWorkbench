@@ -115,7 +115,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
         protected override double AxTol => 0.5;
 
-        protected override double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
             return peaks.Average(peak => peak.PeakWidth(ChromXType.RT));
         }
 

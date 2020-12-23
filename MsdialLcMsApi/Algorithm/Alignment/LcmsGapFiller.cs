@@ -36,7 +36,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             };
         }
 
-        protected override double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
             return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
         }
 

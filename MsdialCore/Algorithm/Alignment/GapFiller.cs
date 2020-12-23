@@ -31,16 +31,16 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
-            var peakWidth = GetAveragePeakWidth(filtered);
+            var peakWidth = GetPeakWidth(filtered);
             var peaklist = GetPeaks(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
             if (peaklist == null || peaklist.Count == 0) return;
 
-            var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
+            var target = peaks.First(peak => peak?.FileID == fileID);
             GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
         protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
-        protected abstract double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
+        protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
 
         protected void GapFillCore(
             List<ChromatogramPeak> peaklist, ChromXs center, double axTol,
