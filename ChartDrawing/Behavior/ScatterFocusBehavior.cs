@@ -43,19 +43,11 @@ namespace CompMs.Graphics.Behavior
         private static void OnOuterAttached(ScatterControl scatter) {
             scatter.MouseEnter += DrawFocusOnMouseEnter;
             scatter.MouseLeave += DeleteFocusOnMouseLeave;
-            scatter.Unloaded += OnOuterUnloaded;
         }
 
         private static void OnOuterDetaching(ScatterControl scatter) {
             scatter.MouseEnter -= DrawFocusOnMouseEnter;
             scatter.MouseLeave -= DeleteFocusOnMouseLeave;
-            scatter.Unloaded -= OnOuterUnloaded;
-        }
-
-        private static void OnOuterUnloaded(object sender, RoutedEventArgs e) {
-            if (sender is ScatterControl scatter) {
-                OnOuterDetaching(scatter);
-            }
         }
 
         static void DrawFocusOnMouseEnter(object sender, MouseEventArgs e) {
@@ -193,13 +185,11 @@ namespace CompMs.Graphics.Behavior
         private static void OnLabelAttached(FrameworkElement element) {
             element.MouseEnter += DrawLabelOnMouseEnter;
             element.MouseLeave += DeleteLabelOnMouseLeave;
-            element.Unloaded += OnLabelUnloaded;
         }
 
         private static void OnLabelDetaching(FrameworkElement element) {
             element.MouseEnter -= DrawLabelOnMouseEnter;
             element.MouseLeave -= DeleteLabelOnMouseLeave;
-            element.Unloaded -= OnLabelUnloaded;
         }
 
         private static void DrawLabelOnMouseEnter(object sender, MouseEventArgs e) {
@@ -215,12 +205,6 @@ namespace CompMs.Graphics.Behavior
             if (sender is FrameworkElement element) {
                 var adorner = (ContentAdorner)element.GetValue(ContentAdorner.AdornerProperty);
                 adorner?.Detach();
-            }
-        }
-
-        private static void OnLabelUnloaded(object sender, EventArgs e) {
-            if (sender is FrameworkElement element) {
-                OnLabelDetaching(element);
             }
         }
     }

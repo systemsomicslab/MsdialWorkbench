@@ -231,9 +231,9 @@ namespace CompMs.Graphics.Scatter
             }
 
             chart.cv = null;
-            if (chart.ItemsSource == null) return;
+            if (e.NewValue == null) return;
 
-            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
+            chart.cv = CollectionViewSource.GetDefaultView(e.NewValue) as CollectionView;
             chart.cv.CurrentChanged += chart.OnCurrentChanged;
             if (e.NewValue is INotifyCollectionChanged collectionNew) {
                 collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;

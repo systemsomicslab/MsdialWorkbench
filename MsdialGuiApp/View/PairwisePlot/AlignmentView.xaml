@@ -51,7 +51,7 @@
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
                                         RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
                                         RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
-                                        HorizontalPropertyName="TimeCenter"
+                                        HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
                                         Radius="5.5"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
@@ -70,6 +70,9 @@
                                         <Setter Property="Foreground" Value="Gray"/>
                                     </Style>
                                 </StackPanel.Resources>
+                                <TextBlock Text="ID #: "/>
+                                <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
+                                <TextBlock Text="; "/>
                                 <TextBlock Text="RT[min]: "/>
                                 <TextBlock Text="{Binding TimesCenter, StringFormat=N2, Mode=OneTime}"/>
                                 <TextBlock Text="; "/>
