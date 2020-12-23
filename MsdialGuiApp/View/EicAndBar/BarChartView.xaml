@@ -8,6 +8,9 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:bar="clr-namespace:CompMs.Graphics.Bar;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             Name="ClassPeakBarView"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -15,14 +18,14 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
-        <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
+        <manager:CategoryAxisManager x:Key="ClassAxis"
+                                     ItemsSource="{Binding DataContext.BarItems, Source={x:Reference Name=ClassPeakBarView}}"
+                                     IdentityPropertyName="Class" DisplayPropertyName="Class"/>
+        <manager:AutoContinuousAxisManager x:Key="PeakAxis"
+                                           ItemsSource="{Binding DataContext.BarItems, Source={x:Reference Name=ClassPeakBarView}}"
+                                           ValuePropertyName="Height"
+                                           Bounds="0,0"
+                                           ChartMargin="0,0.25" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -40,21 +43,21 @@
         <Border Background="WhiteSmoke"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
-            <bar:BarControl x:Name="bar"
-                            ItemsSource="{Binding}"
-                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                            VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                            RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                            RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                            HorizontalPropertyName="X"
-                            VerticalPropertyName="Y" >
+            <bar:BarControl x:Name="peak_bar"
+                            ItemsSource="{Binding BarItems}"
+                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource ClassAxis}}"
+                            VerticalAxis="{Binding AxisMapper, Source={StaticResource PeakAxis}}"
+                            RangeX="{Binding Range, Source={StaticResource ClassAxis}, Mode=TwoWay}"
+                            RangeY="{Binding Range, Source={StaticResource PeakAxis}, Mode=TwoWay}"
+                            HorizontalPropertyName="Class"
+                            VerticalPropertyName="Height" >
                 <bar:BarControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.X}"/>
-                            <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Y}"/>
+                            <TextBlock Text="Class: "/>
+                            <TextBlock Text="{Binding FocusedItem.Class}"/>
+                            <TextBlock Text=" Height: "/>
+                            <TextBlock Text="{Binding FocusedItem.Height}"/>
                         </StackPanel>
                     </ToolTip>
                 </bar:BarControl.ToolTip>
@@ -64,21 +67,21 @@
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource ClassAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource ClassAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource ClassAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource PeakAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource PeakAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource PeakAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
-        <TextBlock Text="Retention time [min]"
+        <TextBlock Text="Class"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="Relative abundance"
+        <TextBlock Text="Height"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">

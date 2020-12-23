@@ -125,7 +125,7 @@ namespace CompMs.Graphics.AxisManager
             if (axis == null) return;
 
             var enumerator = axis.ItemsSource.GetEnumerator();
-            enumerator.MoveNext();
+            if (!enumerator.MoveNext()) return;
             axis.dataType = enumerator.Current.GetType();
 
             if (axis.DisplayPropertyName != null)

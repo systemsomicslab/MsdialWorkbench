@@ -407,7 +407,7 @@ namespace CompMs.App.Msdial
         private DelegateCommand loadAlignmentFileCommand;
         private void LoadAlignmentFile() {
             if (_alignmentFiles.CurrentItem is AlignmentFileBean alignment)
-                AlignmentVM = new AlignmentFileVM(alignment);
+                AlignmentVM = new AlignmentFileVM(alignment, Storage.ParameterBase);
         }
 
         #endregion

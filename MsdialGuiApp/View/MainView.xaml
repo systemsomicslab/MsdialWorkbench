@@ -226,7 +226,7 @@
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="LightSteelBlue">
-                            <eic:BarChartView/>
+                            <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
                         <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="LightSteelBlue">
