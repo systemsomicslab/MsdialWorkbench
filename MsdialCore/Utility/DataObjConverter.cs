@@ -97,69 +97,56 @@ namespace CompMs.MsdialCore.Utility
             }
         }
 
-        public static AlignmentSpotProperty ConvertFeatureToSpot(List<AlignmentChromPeakFeature> alignment) {
+        public static void SetRepresentativeProperty(AlignmentSpotProperty spot) {
+            var alignment = spot.AlignedPeakProperties;
             var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
-            if (alignedPeaks.Length == 0) {
-                return new AlignmentSpotProperty();
-            }
+
             var repId = GetRepresentativeFileID(alignment);
             var representative = repId >= 0 ? alignment[repId] : alignedPeaks.First();
             var chromXType = representative.ChromXsTop.MainType;
-            var result = new AlignmentSpotProperty() {
-                RepresentativeFileID = repId,
+            spot.RepresentativeFileID = repId;
 
-                AlignedPeakProperties = alignment,
+            spot.IonMode = representative.IonMode;
+            spot.Name = representative.Name;
+            spot.Ontology = representative.Ontology;
+            spot.SMILES = representative.SMILES;
+            spot.InChIKey = representative.InChIKey;
 
-                // PeakCharacter = representative.PeakCharacter, // TODO: need to change to deep copy
-                PeakCharacter = new IonFeatureCharacter(),
-                AdductType = new Common.DataObj.Property.AdductIon(),
-                IonMode = representative.IonMode,
+            spot.CollisionCrossSection = representative.CollisionCrossSection;
+            spot.MSRawID2MspIDs = representative.MSRawID2MspIDs;
+            spot.TextDbIDs = new List<int>(representative.TextDbIDs);
+            spot.MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult;
+            spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
 
-                Name = representative.Name,
-                // Formula = representative.Formula, // TODO: need to change to deep copy ?
-                Formula = new Common.DataObj.Property.Formula(),
-                Ontology = representative.Ontology,
-                SMILES = representative.SMILES,
-                InChIKey = representative.InChIKey,
+            spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
+            spot.HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop);
+            spot.HeightMin = (float)alignedPeaks.Min(peak => peak.PeakHeightTop);
+            spot.PeakWidthAverage = (float)alignedPeaks.Average(peak => peak.PeakWidth(chromXType));
 
-                CollisionCrossSection = representative.CollisionCrossSection,
+            spot.SignalToNoiseAve = alignedPeaks.Average(peak => peak.PeakShape.SignalToNoise);
+            spot.SignalToNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.SignalToNoise);
+            spot.SignalToNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.SignalToNoise);
 
-                MSRawID2MspIDs = representative.MSRawID2MspIDs, // TODO: need to change to deep copy ?
-                TextDbIDs = new List<int>(representative.TextDbIDs),
-                MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult, // TODO: need to change to deep copy ?
-                TextDbBasedMatchResult = representative.TextDbBasedMatchResult, // TODO: need to change to deep copy ?
+            spot.EstimatedNoiseAve = alignedPeaks.Average(peak => peak.PeakShape.EstimatedNoise);
+            spot.EstimatedNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.EstimatedNoise);
+            spot.EstimatedNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.EstimatedNoise);
 
-                HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop),
-                HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop),
-                HeightMin = (float)alignedPeaks.Min(peak => peak.PeakHeightTop),
-                PeakWidthAverage = (float)alignedPeaks.Average(peak => peak.PeakWidth(chromXType)),
+            spot.TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop;
+            spot.TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop;
 
-                SignalToNoiseAve = alignedPeaks.Average(peak => peak.PeakShape.SignalToNoise),
-                SignalToNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.SignalToNoise),
-                SignalToNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.SignalToNoise),
+            spot.MassMin = (float)alignedPeaks.Min(peak => peak.Mass);
+            spot.MassMax = (float)alignedPeaks.Max(peak => peak.Mass);
 
-                EstimatedNoiseAve = alignedPeaks.Average(peak => peak.PeakShape.EstimatedNoise),
-                EstimatedNoiseMax = alignedPeaks.Max(peak => peak.PeakShape.EstimatedNoise),
-                EstimatedNoiseMin = alignedPeaks.Min(peak => peak.PeakShape.EstimatedNoise),
-
-                TimesMin = alignedPeaks.Argmin(peak => peak.ChromXsTop.Value).ChromXsTop, // TODO: need to change to deep copy ?
-                TimesMax = alignedPeaks.Argmax(peak => peak.ChromXsTop.Value).ChromXsTop, // TODO: need to change to deep copy ?
-
-                MassMin = (float)alignedPeaks.Min(peak => peak.Mass),
-                MassMax = (float)alignedPeaks.Max(peak => peak.Mass),
-
-                FillParcentage = (float)alignedPeaks.Length / alignment.Count,
-                MonoIsotopicPercentage = alignedPeaks.Count(peak => peak.PeakCharacter.IsotopeWeightNumber == 0) / (float)alignedPeaks.Length,
-            };
-            result.TimesCenter = new ChromXs() {
+            spot.FillParcentage = (float)alignedPeaks.Length / alignment.Count;
+            spot.MonoIsotopicPercentage = alignedPeaks.Count(peak => peak.PeakCharacter.IsotopeWeightNumber == 0) / (float)alignedPeaks.Length;
+            spot.TimesCenter = new ChromXs() {
                 MainType = chromXType,
                 RT = new RetentionTime(alignedPeaks.Average(peak => peak.ChromXsTop.RT.Value), representative.ChromXsTop.RT.Unit),
                 RI = new RetentionIndex(alignedPeaks.Average(peak => peak.ChromXsTop.RI.Value), representative.ChromXsTop.RI.Unit),
                 Mz = new MzValue(alignedPeaks.Average(peak => peak.ChromXsTop.Mz.Value), representative.ChromXsTop.Mz.Unit),
                 Drift = new DriftTime(alignedPeaks.Average(peak => peak.ChromXsTop.Drift.Value), representative.ChromXsTop.Drift.Unit),
             };
-            result.MassCenter = alignedPeaks.Max(peak => (peak.ChromXsTop.Value, peak.Mass)).Mass;
-            return result;
+            spot.MassCenter = alignedPeaks.Max(peak => (peak.ChromXsTop.Value, peak.Mass)).Mass;
         }
 
         public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {

@@ -51,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var spots = AlignAll(master, analysisFiles);
             spots = FilterAlignments(spots, analysisFiles);
 
-            spots = CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
+            CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
             IsotopeAnalysis(spots);
             spots = GetRefinedAlignmentSpotProperties(spots);
 
@@ -131,19 +131,18 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected virtual List<AlignmentSpotProperty> FilterAlignments(
             List<AlignmentSpotProperty> spots, IReadOnlyList<AnalysisFileBean> analysisFiles ) {
-            List<AlignmentSpotProperty> result = spots;
-            result = result.Where(spot => spot.AlignedPeakProperties.Any(peak => peak.MasterPeakID >= 0)).ToList();
+            var result = spots.Where(spot => spot.AlignedPeakProperties.Any(peak => peak.MasterPeakID >= 0));
 
             var peakCountThreshold = Param.PeakCountFilter / 100 * analysisFiles.Count;
-            result = result.Where(spot => spot.AlignedPeakProperties.Count(peak => peak.MasterPeakID >= 0) >= peakCountThreshold).ToList();
+            result = result.Where(spot => spot.AlignedPeakProperties.Count(peak => peak.MasterPeakID >= 0) >= peakCountThreshold);
 
             if (Param.QcAtLeastFilter) {
                 var qcidx = analysisFiles.WithIndex().Where(fi => fi.Item1.AnalysisFileType == AnalysisFileType.QC).Select(fi => fi.Item2).ToArray();
-                result = result.Where(spot => qcidx.All(idx => spot.AlignedPeakProperties[idx].MasterPeakID >= 0)).ToList();
+                result = result.Where(spot => qcidx.All(idx => spot.AlignedPeakProperties[idx].MasterPeakID >= 0));
             }
 
             Func<AlignmentSpotProperty, bool> IsNPercentDetectedInOneGroup = GetNPercentDetectedInOneGroupFilter(analysisFiles);
-            result = result.Where(IsNPercentDetectedInOneGroup).ToList();
+            result = result.Where(IsNPercentDetectedInOneGroup);
 
             return result.ToList();
         }
@@ -165,7 +164,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return isNPercentDetected;
         }
 
-        private List<AlignmentSpotProperty> CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
+        private void CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
             List<AlignmentSpotProperty> spots, ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
 
             var files = new List<string>();
@@ -178,17 +177,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 var file = CollectAlignmentPeaks(analysisFile, peaks, spots, chromPeakInfoSerializer);
                 files.Add(file);
             }
-            var result = new List<AlignmentSpotProperty>();
             foreach (var spot in spots)
-                result.Add(PackingSpot(spot));
+                PackingSpot(spot);
 
             if (chromPeakInfoSerializer != null)
-                SerializeSpotInfo(result, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
+                SerializeSpotInfo(spots, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
             foreach (var f in files)
                 if (File.Exists(f))
                     File.Delete(f);
-
-            return result;
         }
 
         protected virtual string CollectAlignmentPeaks(
@@ -266,14 +262,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             };
         }
 
-        private AlignmentSpotProperty PackingSpot(AlignmentSpotProperty spot) {
-            var childs = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.Count);
+        private void PackingSpot(AlignmentSpotProperty spot) {
             foreach (var child in spot.AlignmentDriftSpotFeatures)
-                childs.Add(PackingSpot(child));
+                DataObjConverter.SetRepresentativeProperty(child);
 
-            var result = DataObjConverter.ConvertFeatureToSpot(spot.AlignedPeakProperties);
-            result.AlignmentDriftSpotFeatures = childs;
-            return result;
+            DataObjConverter.SetRepresentativeProperty(spot);
         }
 
         private void SerializeSpotInfo(
