@@ -4,10 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.EicAndBar"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             Name="AlignedEicView"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentFileVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -16,13 +20,14 @@
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <manager:ContinuousAxisManager x:Key="HorizontalAxis"
-                                       MinValue="{Binding DataContext.MinX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxX, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
+                                       MinValue="{Binding DataContext.EicMin, Source={x:Reference Name=AlignedEicView}}"
+                                       MaxValue="{Binding DataContext.EicMax, Source={x:Reference Name=AlignedEicView}}"
+                                       ChartMargin="0" />
         <manager:ContinuousAxisManager x:Key="VerticalAxis"
-                                       MinValue="{Binding DataContext.MinY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       MaxValue="{Binding DataContext.MaxY, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                       ChartMargin="0.05" />
+                                       MinValue="{Binding DataContext.IntensityMin, Source={x:Reference Name=AlignedEicView}}"
+                                       MaxValue="{Binding DataContext.IntensityMax, Source={x:Reference Name=AlignedEicView}}"
+                                       Bounds="0,0"
+                                       ChartMargin="0,0.1" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -38,32 +43,52 @@
         </Grid.RowDefinitions>
 
         <Border Background="WhiteSmoke"
+                BorderBrush="Black" BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
-            <line:LineChartControl x:Name="line"
-                                   ItemsSource="{Binding}"
-                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                   HorizontalPropertyName="X"
-                                   VerticalPropertyName="Y" >
-                <line:LineChartControl.ToolTip>
-                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Retention time: "/>
-                            <TextBlock Text="{Binding FocusedItem.X}"/>
-                            <TextBlock Text=" m/z: "/>
-                            <TextBlock Text="{Binding FocusedItem.Y}"/>
-                        </StackPanel>
-                    </ToolTip>
-                </line:LineChartControl.ToolTip>
-            </line:LineChartControl>
+            <ItemsControl Margin="-1,0,0,-1"
+                          AlternationCount="4"
+                          ItemsSource="{Binding EicChromatograms}">
+                <ItemsControl.Resources>
+                    <AlternationConverter x:Key="LinePenConverter">
+                        <Pen Brush="Red" Thickness="1" PresentationOptions:Freeze="True"/>
+                        <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
+                        <Pen Brush="Green" Thickness="1" PresentationOptions:Freeze="True"/>
+                        <Pen Brush="Black" Thickness="1" PresentationOptions:Freeze="True"/>
+                    </AlternationConverter>
+                </ItemsControl.Resources>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <line:LineChartControl ItemsSource="{Binding Peaks}"
+                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                               RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                               RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                               LinePen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                 RelativeSource={RelativeSource Mode=TemplatedParent},
+                                                                 Converter={StaticResource LinePenConverter}}"
+                                               HorizontalPropertyName="Time"
+                                               VerticalPropertyName="Intensity" >
+                            <line:LineChartControl.ToolTip>
+                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Time: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Time}"/>
+                                        <TextBlock Text=" Intensity: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </line:LineChartControl.ToolTip>
+                        </line:LineChartControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Border>
-        <Border BorderBrush="Black"
-                BorderThickness="1,0,0,1"
-                Margin="0,5,5,0" 
-                Grid.Row="1" Grid.Column="2"/>
         <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"

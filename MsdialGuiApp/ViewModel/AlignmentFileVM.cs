@@ -1,8 +1,10 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,6 +42,12 @@ namespace CompMs.App.Msdial.ViewModel
         }
         private string fileName;
 
+        public string EicFile {
+            get => eicFile;
+            set => SetProperty(ref eicFile, value);
+        }
+        private string eicFile;
+
         public AlignmentResultContainer Container {
             get => container;
             set => SetProperty(ref container, value);
@@ -56,10 +64,27 @@ namespace CompMs.App.Msdial.ViewModel
         }
         private AlignmentSpotPropertyVM target;
 
+        public List<Chromatogram> EicChromatograms {
+            get => eicChromatograms;
+            set => SetProperty(ref eicChromatograms, value);
+        }
+        private List<Chromatogram> eicChromatograms;
+
+        public double EicMax => 5d;
+        public double EicMin => 0d;
+        public double IntensityMax => 1000000d;
+        public double IntensityMin => 0d;
+
         private ParameterBase param;
+        private static ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+
+        static AlignmentFileVM() {
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+        }
 
         public AlignmentFileVM(AlignmentFileBean alignmentFileBean, ParameterBase param) {
             FileName = alignmentFileBean.FileName;
+            EicFile = alignmentFileBean.EicFilePath;
             this.param = param;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFileBean.FilePath);
 
@@ -68,18 +93,44 @@ namespace CompMs.App.Msdial.ViewModel
 
         private void OnTargetChanged() {
             var target = Target;
+            if (target == null) {
+                BarItems = new List<BarItem>();
+                EicChromatograms = new List<Chromatogram>();
+                return;
+            }
 
             // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
             BarItems = target.AlignedPeakProperties
                 .GroupBy(peak => param.FileID_ClassName[peak.FileID])
                 .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
                 .ToList();
+
+            // maybe using file pointer is better
+            var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(EicFile, target.MasterAlignmentID);
+            EicChromatograms = spotinfo.PeakInfos.Select(peakinfo => new Chromatogram { Peaks = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList() }).ToList();
         }
 
     }
-    // tempolary
+
+    // tempolary classes
     class BarItem {
         public double Height { get; set; }
         public string Class { get; set; }
+    }
+
+    class Chromatogram
+    {
+        public List<PeakItem> Peaks { get; set; }
+    }
+
+    public class PeakItem
+    {
+        public PeakItem(IChromatogramPeak chrom) {
+            this.chrom = chrom;
+        }
+        private readonly IChromatogramPeak chrom;
+
+        public double Intensity => chrom.Intensity;
+        public double Time => chrom.ChromXs.Value;
     }
 }

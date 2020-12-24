@@ -70,11 +70,13 @@ namespace CompMs.Graphics.LineChart
         private Data[] datas;
         #endregion
 
-        public LineChartControl() : base() {
+        static LineChartControl() {
             var pen = new Pen(Brushes.Black, 1) { LineJoin = PenLineJoin.Bevel };
             pen.Freeze();
-            LinePen = pen;
+            LinePenProperty.OverrideMetadata(typeof(Pen), new PropertyMetadata(pen));
+        }
 
+        public LineChartControl() : base() {
             dv = new DrawingVisual { Clip = new RectangleGeometry(new Rect(RenderSize)) };
             visualChildren.Add(dv);
         }

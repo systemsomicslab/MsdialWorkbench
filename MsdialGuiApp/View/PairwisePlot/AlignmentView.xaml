@@ -54,7 +54,7 @@
                                         HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
                                         Radius="5.5"
-                                        SelectedItem="{Binding Target, Mode=TwoWay}"
+                                        SelectedItem="{Binding Target, Mode=OneWayToSource}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
                                         behavior:ScatterFocusBehavior.OuterScale="1.3"
                                         behavior:ScatterFocusBehavior.InnerScale="1.2"

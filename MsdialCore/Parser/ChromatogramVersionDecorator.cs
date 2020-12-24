@@ -37,6 +37,11 @@ namespace CompMs.MsdialCore.Parser
             return Serializer.DeserializeAll(stream);
         }
 
+        public override T DeserializeAt(Stream stream, int index) {
+            _ = ReadVersion(stream);
+            return Serializer.DeserializeAt(stream, index);
+        }
+
         public string GetVersion(Stream stream) {
             var pos = stream.Position;
             var result = ReadVersion(stream);
