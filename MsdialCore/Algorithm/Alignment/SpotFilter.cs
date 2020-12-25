@@ -55,10 +55,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
     public class DetectedNumberFilter : ISpotFilter
     {
         private readonly IReadOnlyDictionary<int, string> FileID_ClassName;
-        private readonly IReadOnlyDictionary<string, int> Group_Threshold;
+        private readonly IReadOnlyDictionary<string, double> Group_Threshold;
         public DetectedNumberFilter(IReadOnlyDictionary<int, string> FileID_ClassName, double threshold) {
             this.FileID_ClassName = FileID_ClassName;
-            Group_Threshold = FileID_ClassName.Values.GroupBy(v => v).ToDictionary(group => group.Key, group => (int)(group.Count() * threshold));
+            Group_Threshold = FileID_ClassName.Values.GroupBy(v => v).ToDictionary(group => group.Key, group => (group.Count() * threshold));
         }
 
         public IEnumerable<AlignmentSpotProperty> Filter(IEnumerable<AlignmentSpotProperty> spots) {
