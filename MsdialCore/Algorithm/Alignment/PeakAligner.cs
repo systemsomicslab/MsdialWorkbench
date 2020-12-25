@@ -7,7 +7,6 @@ using System.Linq;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -47,8 +46,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
             ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
 
-            var master = GetMasterList(analysisFiles);
-            var spots = AlignAll(master, analysisFiles);
+            var spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
             spots = FilterAlignments(spots, analysisFiles);
 
             CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
@@ -56,77 +54,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             spots = GetRefinedAlignmentSpotProperties(spots);
 
             return PackingSpots(spots);
-        }
-
-        protected virtual List<IMSScanProperty> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles) {
-
-            var referenceId = Param.AlignmentReferenceFileID;
-            var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
-            if (referenceFile == null) return new List<IMSScanProperty>();
-
-            var master = Accessor.GetMSScanProperties(referenceFile);
-            foreach (var analysisFile in analysisFiles) {
-                if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
-                    continue;
-                var target = Accessor.GetMSScanProperties(analysisFile);
-                master = Joiner.MergeChromatogramPeaks(master, target);
-            }
-
-            return master;
-        }
-
-        private List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<IMSScanProperty> masters, IEnumerable<AnalysisFileBean> analysisFiles) {
-            var masterId = 0;
-            return InitSpots(masters, analysisFiles, ref masterId);
-        }
-
-        private List<AlignmentSpotProperty> InitSpots(IEnumerable<IMSScanProperty> scanProps,
-            IEnumerable<AnalysisFileBean> analysisFiles, ref int masterId, int parentId = -1) {
-
-            if (scanProps == null) return new List<AlignmentSpotProperty>();
-
-            var spots = new List<AlignmentSpotProperty>();
-            foreach ((var scanProp, var localId) in scanProps.WithIndex()) {
-                var spot = new AlignmentSpotProperty
-                {
-                    MasterAlignmentID = masterId++,
-                    AlignmentID = localId,
-                    ParentAlignmentID = parentId,
-                    TimesCenter = scanProp.ChromXs,
-                    MassCenter = scanProp.PrecursorMz,
-                };
-                spot.InternalStandardAlignmentID = spot.MasterAlignmentID;
-
-                var peaks = new List<AlignmentChromPeakFeature>();
-                foreach (var file in analysisFiles) {
-                    peaks.Add(new AlignmentChromPeakFeature
-                    {
-                        MasterPeakID = -1,
-                        PeakID = -1,
-                        FileID = file.AnalysisFileId,
-                        FileName = file.AnalysisFileName,
-                    });
-                }
-                spot.AlignedPeakProperties = peaks;
-
-                if (scanProp is ChromatogramPeakFeature chrom)
-                    spot.AlignmentDriftSpotFeatures = InitSpots(chrom.DriftChromFeatures, analysisFiles, ref masterId, spot.AlignmentID);
-
-                spots.Add(spot);
-            }
-
-            return spots;
-        }
-
-        protected virtual List<AlignmentSpotProperty> AlignAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles) {
-            var result = GetSpots(master, analysisFiles);
-            
-            foreach (var analysisFile in analysisFiles) {
-                var chromatogram = Accessor.GetMSScanProperties(analysisFile);
-                Joiner.AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
-            }
-            
-            return result;
         }
 
         protected virtual List<AlignmentSpotProperty> FilterAlignments(
