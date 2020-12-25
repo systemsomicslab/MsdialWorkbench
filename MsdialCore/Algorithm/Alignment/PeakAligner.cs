@@ -47,7 +47,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
 
             var spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
-            spots = FilterAlignments(spots, analysisFiles);
+            spots = FilterAlignments(spots, Param);
 
             CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
             IsotopeAnalysis(spots);
@@ -56,39 +56,19 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return PackingSpots(spots);
         }
 
-        protected virtual List<AlignmentSpotProperty> FilterAlignments(
-            List<AlignmentSpotProperty> spots, IReadOnlyList<AnalysisFileBean> analysisFiles ) {
+        private static List<AlignmentSpotProperty> FilterAlignments(List<AlignmentSpotProperty> spots, ParameterBase param) {
             var result = spots.Where(spot => spot.AlignedPeakProperties.Any(peak => peak.MasterPeakID >= 0));
 
-            var peakCountThreshold = Param.PeakCountFilter / 100 * analysisFiles.Count;
-            result = result.Where(spot => spot.AlignedPeakProperties.Count(peak => peak.MasterPeakID >= 0) >= peakCountThreshold);
+            var filter = new CompositeFilter();
 
-            if (Param.QcAtLeastFilter) {
-                var qcidx = analysisFiles.WithIndex().Where(fi => fi.Item1.AnalysisFileType == AnalysisFileType.QC).Select(fi => fi.Item2).ToArray();
-                result = result.Where(spot => qcidx.All(idx => spot.AlignedPeakProperties[idx].MasterPeakID >= 0));
-            }
+            filter.Filters.Add(new PeakCountFilter(param.PeakCountFilter / 100 * param.FileID_AnalysisFileType.Count));
 
-            Func<AlignmentSpotProperty, bool> IsNPercentDetectedInOneGroup = GetNPercentDetectedInOneGroupFilter(analysisFiles);
-            result = result.Where(IsNPercentDetectedInOneGroup);
+            if (param.QcAtLeastFilter)
+                filter.Filters.Add(new QcFilter(param.FileID_AnalysisFileType));
 
-            return result.ToList();
-        }
+            filter.Filters.Add(new DetectedNumberFilter(param.FileID_ClassName, param.NPercentDetectedInOneGroup / 100));
 
-        private Func<AlignmentSpotProperty, bool> GetNPercentDetectedInOneGroupFilter(IReadOnlyList<AnalysisFileBean> files) {
-            var groupDic = new Dictionary<string, List<int>>();
-            foreach ((var file, var idx) in files.WithIndex()) {
-                if (!groupDic.ContainsKey(file.AnalysisFileClass))
-                    groupDic[file.AnalysisFileClass] = new List<int>();
-                groupDic[file.AnalysisFileClass].Add(idx);
-            }
-
-            double threshold = Param.NPercentDetectedInOneGroup / 100d;
-
-            bool isNPercentDetected(AlignmentSpotProperty spot) {
-                return groupDic.Any(kvp => kvp.Value.Count(idx => spot.AlignedPeakProperties[idx].MasterPeakID >= 0) >= threshold * kvp.Value.Count);
-            }
-
-            return isNPercentDetected;
+            return filter.Filter(result).ToList();
         }
 
         private void CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,

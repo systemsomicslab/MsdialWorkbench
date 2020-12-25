@@ -42,19 +42,26 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 }
             );
 
-            var aligner = CreateAligner(accessor);
+            var analysisFiles = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean { AnalysisFileId = 0, AnalysisFileClass = "0" },
+                new AnalysisFileBean { AnalysisFileId = 1, AnalysisFileClass = "1" },
+                new AnalysisFileBean { AnalysisFileId = 2, AnalysisFileClass = "2" },
+                new AnalysisFileBean { AnalysisFileId = 3, AnalysisFileClass = "3" },
+            };
+            var alignmentFile = new AlignmentFileBean { FileID = 0 };
 
-            var container = aligner.Alignment(
-                new List<AnalysisFileBean>
+            var parameter = new MockParameter
+            {
+                FileID_ClassName = new Dictionary<int, string>
                 {
-                    new AnalysisFileBean { AnalysisFileId = 0 },
-                    new AnalysisFileBean { AnalysisFileId = 1 },
-                    new AnalysisFileBean { AnalysisFileId = 2 },
-                    new AnalysisFileBean { AnalysisFileId = 3 },
+                    {0, "0"}, {1, "1"}, {2, "2"}, {3, "3"},
                 },
-                new AlignmentFileBean { FileID = 0 },
-                null
-            );
+            };
+
+            var aligner = CreateAligner(accessor, parameter);
+
+            var container = aligner.Alignment(analysisFiles, alignmentFile, null);
 
             Assert.AreEqual(7, container.TotalAlignmentSpotCount);
 
@@ -75,8 +82,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             Assert.AreEqual(200, container.AlignmentSpotProperties[6].MassCenter);
         }
 
-        PeakAligner CreateAligner(DataAccessor accessor) {
-            var parameter = new MockParameter();
+        PeakAligner CreateAligner(DataAccessor accessor, ParameterBase parameter) {
             var iupac = new Common.DataObj.Database.IupacDatabase();
             var joiner = new MockJoiner();
             var filler = new MockFiller(parameter);
