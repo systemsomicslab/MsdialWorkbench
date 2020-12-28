@@ -266,7 +266,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             int flag = 0;
 
             var dt = projectProp.ProjectDate;
-            var dirname = projectProp.ProjectFolderPath + "\\" + "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder";
+            var dirname = Path.Combine(projectProp.ProjectFolderPath, dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder");
             if (!System.IO.Directory.Exists(dirname))
                 System.IO.Directory.CreateDirectory(dirname);
             //---
@@ -337,7 +337,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                         }
                         alignedPeakSpotInfoList.Add(alignedPeakSpotInfo);
                     }
-                    var filename = dirname + "\\peaklist_" + i + ".pll";
+                    var filename = Path.Combine(dirname, "peaklist_" + i + ".pll");
                     AlignedEic.WritePeakList(alignedPeakSpotInfoList, projectProp, filename);
 
                    //Debug.WriteLine("Writing aligned EIC");
@@ -373,7 +373,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             int flag = 0;
 
             var dt = projectProp.ProjectDate;
-            var dirname = projectProp.ProjectFolderPath + "\\" + "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder";
+            var dirname = Path.Combine(projectProp.ProjectFolderPath, "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder");
             if (!System.IO.Directory.Exists(dirname))
                 System.IO.Directory.CreateDirectory(dirname);
             //---
@@ -451,7 +451,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                         alignedPeakSpotInfoList.Add(alignedPeakSpotInfo);
 
                     }
-                    var filename = dirname + "\\peaklist_" + i + ".pll";
+                    var filename = Path.Combine(dirname, "peaklist_" + i + ".pll");
                     AlignedEic.WritePeakList(alignedPeakSpotInfoList, projectProp, filename);
                 }
                 if (flag == 0) flag = 1;
