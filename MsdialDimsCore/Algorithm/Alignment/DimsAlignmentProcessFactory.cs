@@ -32,7 +32,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return new PeakAligner(this);
         }
 
-        public override PeakJoiner CreatePeakJoiner() {
+        public override IPeakJoiner CreatePeakJoiner() {
             return new DimsPeakJoiner(DimsParameter.Ms1AlignmentTolerance, DimsParameter.Ms1AlignmentFactor);
         }
     }

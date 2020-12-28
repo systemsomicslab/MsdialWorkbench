@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
-    public abstract class PeakJoiner
+    public abstract class PeakJoiner : IPeakJoiner
     {
         protected abstract bool Equals(IMSScanProperty x, IMSScanProperty y);
         protected abstract double GetSimilality(IMSScanProperty x, IMSScanProperty y);

@@ -18,7 +18,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public abstract PeakAligner CreatePeakAligner();
         public abstract DataAccessor CreateDataAccessor();
-        public abstract PeakJoiner CreatePeakJoiner();
+        public abstract IPeakJoiner CreatePeakJoiner();
         public abstract GapFiller CreateGapFiller();
         public abstract AlignmentRefiner CreateAlignmentRefiner();
     }

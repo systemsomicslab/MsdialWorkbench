@@ -41,7 +41,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return new PeakAligner(this);
         }
 
-        public override PeakJoiner CreatePeakJoiner() {
+        public override IPeakJoiner CreatePeakJoiner() {
             return new GcmsPeakJoiner(GcmsParameter.AlignmentIndexType, GcmsParameter.RiCompoundType, GcmsParameter.MspSearchParam);
         }
     }
