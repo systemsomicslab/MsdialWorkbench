@@ -11,6 +11,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
     public class IsotopeTemp {
         public int WeightNumber { get; set; }
         public double Mz { get; set; }
+        public double MzClBr { get; set; }
         public double Intensity { get; set; }
         public int PeakID { get; set; }
     }
@@ -191,6 +192,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
             AnalysisParametersBean param, 
             IupacReferenceBean iupac) {
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
+            var br81_br79 = MassDiffDictionary.Br81_Br79; //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
             var tolerance = param.CentroidMs1Tolerance;
             var monoIsoPeak = peakAreaBeanList[0];
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
@@ -198,6 +200,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
             var rtMargin = 0.06F;
 
             tolerance = (float)accuracy;
+            if (tolerance < param.CentroidMs1Tolerance) tolerance = param.CentroidMs1Tolerance;
             var isFinished = false;
 
             monoIsoPeak.IsotopeWeightNumber = 0;
@@ -205,9 +208,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
             var rtMonoisotope = monoIsoPeak.RtAtPeakTop;
             var rtFocused = monoIsoPeak.RtAtPeakTop;
-            if (Math.Abs(monoIsoPeak.AccurateMass - 308.84033) < 0.001 && Math.Abs(monoIsoPeak.RtAtPeakTop - 10.663) < 0.1) {
-                Console.WriteLine();
-            }
+            //if (Math.Abs(monoIsoPeak.AccurateMass - 308.84033) < 0.001 && Math.Abs(monoIsoPeak.RtAtPeakTop - 10.663) < 0.1) {
+            //    Console.WriteLine();
+            //}
 
             //charge number check at M + 1
             var predChargeNumber = 1;
@@ -254,15 +257,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
             var maxTraceNumber = 15;
             var isotopeTemps = new IsotopeTemp[maxTraceNumber + 1];
-            isotopeTemps[0] = new IsotopeTemp() { WeightNumber = 0, Mz = monoIsoPeak.AccurateMass,
+            isotopeTemps[0] = new IsotopeTemp() { WeightNumber = 0, Mz = monoIsoPeak.AccurateMass, MzClBr = monoIsoPeak.AccurateMass,
                 Intensity = monoIsoPeak.IntensityAtPeakTop, PeakID = monoIsoPeak.PeakID };
             for (int i = 1; i < isotopeTemps.Length; i++) {
                 isotopeTemps[i] = new IsotopeTemp() {
                     WeightNumber = i, Mz = monoIsoPeak.AccurateMass + (double)i * c13_c12Diff / (double)predChargeNumber,
+                    MzClBr = i % 2 == 0 ? monoIsoPeak.AccurateMass + (double)i * c13_c12Diff / (double)predChargeNumber : monoIsoPeak.AccurateMass + (double)i * br81_br79 * 0.5 / (double)predChargeNumber,
                     Intensity = 0, PeakID = -1
                 };
             }
-
 
             var mzFocused = (double)monoIsoPeak.AccurateMass;
             var reminderIndex = 1;
@@ -270,12 +273,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
                 //var predIsotopicMass = mzFocused + (double)i * c13_c12Diff / (double)predChargeNumber;
                 var predIsotopicMass = mzFocused + (double)c13_c12Diff / (double)predChargeNumber;
+                var predClBrIsotopicMass = mzFocused + (double)br81_br79 * 0.5 / (double)predChargeNumber;
+
                 for (int j = reminderIndex; j < peakAreaBeanList.Count; j++) {
 
                     var isotopePeak = peakAreaBeanList[j];
                     var isotopeRt = isotopePeak.RtAtPeakTop;
                     var isotopeMz = isotopePeak.AccurateMass;
                     var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
+                    var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
                     var diffRt = Math.Abs(rtFocused - isotopeRt);
 
                     if (diffMz < tolerance && diffRt < rtMargin) {
@@ -296,7 +302,27 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
                                 mzFocused = isotopeMz;
                             }
                         }
-                       
+                    }
+                    else if (param.IsBrClConsideredForIsotopes && i % 2 == 0 && diffMzClBr < tolerance && diffRt < rtMargin) {
+                        if (isotopeTemps[i].PeakID == -1) {
+                            isotopeTemps[i] = new IsotopeTemp() {
+                                WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
+                                Intensity = isotopePeak.IntensityAtPeakTop, PeakID = j
+                            };
+                            rtFocused = isotopeRt;
+                            mzFocused = isotopeMz;
+                        }
+                        else {
+                            if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                isotopeTemps[i].Mz = isotopeMz;
+                                isotopeTemps[i].MzClBr = isotopeMz;
+                                isotopeTemps[i].Intensity = isotopePeak.IntensityAtPeakTop;
+                                isotopeTemps[i].PeakID = j;
+
+                                rtFocused = isotopeRt;
+                                mzFocused = isotopeMz;
+                            }
+                        }
                     }
                     else if (isotopeMz >= predIsotopicMass + tolerance) {
                         if (j == peakAreaBeanList.Count - 1) break;
@@ -401,16 +427,22 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
         public static void isotopeCalculationImproved(List<AlignmentPropertyBean> alignSpots, AnalysisParametersBean param, IupacReferenceBean iupac) {
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
+            var br81_br79 = MassDiffDictionary.Br81_Br79;  //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
             var tolerance = param.CentroidMs1Tolerance;
             var monoIsoPeak = alignSpots[0];
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 400
             var accuracy = MolecularFormulaUtility.ConvertPpmToMassAccuracy(monoIsoPeak.CentralAccurateMass, ppm);
             tolerance = (float)accuracy;
+            if (tolerance < param.CentroidMs1Tolerance) tolerance = param.CentroidMs1Tolerance;
 
             var isFinished = false;
 
             monoIsoPeak.PostDefinedIsotopeWeightNumber = 0;
             monoIsoPeak.PostDefinedIsotopeParentID = monoIsoPeak.AlignmentID;
+
+            //if (Math.Abs(monoIsoPeak.CentralAccurateMass - 266.9979) < 0.005 && Math.Abs(monoIsoPeak.CentralRetentionTime - 12.985) < 0.05) {
+            //    Console.WriteLine();
+            //}
 
             var reminderIndex = 1;
             var maxTraceNumber = 15;
@@ -418,23 +450,26 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
             var predChargeNumber = monoIsoPeak.ChargeNumber;
             var isotopeTemps = new IsotopeTemp[maxTraceNumber + 1];
             isotopeTemps[0] = new IsotopeTemp() {
-                WeightNumber = 0, Mz = mzFocused,
+                WeightNumber = 0, Mz = mzFocused, MzClBr = mzFocused,
                 Intensity = monoIsoPeak.AverageValiable, PeakID = monoIsoPeak.AlignmentID
             };
             for (int i = 1; i < isotopeTemps.Length; i++) {
                 isotopeTemps[i] = new IsotopeTemp() {
                     WeightNumber = i, Mz = mzFocused + (double)i * c13_c12Diff / (double)predChargeNumber,
+                    MzClBr = i % 2 == 0 ? mzFocused + (double)i * c13_c12Diff / (double)predChargeNumber : mzFocused + (double)i * br81_br79 * 0.5 / (double)predChargeNumber,
                     Intensity = 0, PeakID = -1
                 };
             }
             
             for (int i = 1; i <= maxTraceNumber; i++) {
                 var predIsotopicMass = mzFocused + (double)c13_c12Diff / (double)predChargeNumber;
+                var predClBrIsotopicMass = mzFocused + (double)br81_br79 * 0.5 / (double)predChargeNumber;
                 for (int j = reminderIndex; j < alignSpots.Count; j++) {
 
                     var isotopePeak = alignSpots[j];
                     var isotopeMz = isotopePeak.CentralAccurateMass;
                     var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
+                    var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
 
                     if (diffMz < tolerance) {
 
@@ -455,6 +490,25 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
                             }
                         }
                         
+                    }
+                    else if (param.IsBrClConsideredForIsotopes && i % 2 == 0 && diffMzClBr < tolerance) {
+                        if (isotopeTemps[i].PeakID == -1) {
+                            isotopeTemps[i] = new IsotopeTemp() {
+                                WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
+                                Intensity = isotopePeak.AverageValiable, PeakID = j
+                            };
+                            mzFocused = isotopeMz;
+                        }
+                        else {
+                            if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                isotopeTemps[i].Mz = isotopeMz;
+                                isotopeTemps[i].MzClBr = isotopeMz;
+                                isotopeTemps[i].Intensity = isotopePeak.AverageValiable;
+                                isotopeTemps[i].PeakID = j;
+
+                                mzFocused = isotopeMz;
+                            }
+                        }
                     }
                     else if (isotopeMz >= predIsotopicMass + tolerance) {
                         if (j == alignSpots.Count - 1) break;

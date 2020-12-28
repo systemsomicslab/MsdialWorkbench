@@ -1550,7 +1550,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             alignmentSpot.AlignmentID = alignmnetID;
             alignmentSpot.CentralRetentionTime = (float)(sumRt / countFill);
             alignmentSpot.CentralRetentionIndex = (float)(sumRi / countFill);
-            alignmentSpot.AverageValiable = (int)(sumInt / countFill);
+            alignmentSpot.AverageValiable = (float)(sumInt / countFill);
             alignmentSpot.AveragePeakWidth = (float)(sumAveragePeakWidth / countFill);
             alignmentSpot.FillParcentage = (float)countFill / (float)peakProperties.Count;
             alignmentSpot.MaxRi = (float)maxRi;

@@ -1282,6 +1282,10 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                     spot.PostDefinedIsotopeParentID = spot.AlignmentID;
                     spot.PostDefinedIsotopeWeightNumber = 0;
                 }
+                else if ((spot.PostIdentificationLibraryID >= 0 || spot.PostDefinedAdductParentID >= 0) && (spot.AdductIonName != null && spot.AdductIonName != string.Empty)) { //identified metabolite must be defined as mono isotopic ions.
+                    spot.PostDefinedIsotopeParentID = spot.AlignmentID;
+                    spot.PostDefinedIsotopeWeightNumber = 0;
+                }
                 else {
                     spot.AdductIonName = string.Empty; //othewise, the adduct info is initialized.
                 }
@@ -1833,7 +1837,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             alignmentProperty.CentralRetentionTime = (float)(sumRt / countFill);
             //alignmentProperty.CentralAccurateMass = (float)(sumMass / countFill);
             alignmentProperty.CentralAccurateMass = (float)maxIntMz;
-            alignmentProperty.AverageValiable = (int)(sumInt / countFill);
+            alignmentProperty.AverageValiable = (float)(sumInt / countFill);
             alignmentProperty.AveragePeakWidth = (float)(sumPeakWidth / countFill);
             alignmentProperty.FillParcentage = (float)countFill / (float)alignedPeakCollection.Count;
             alignmentProperty.MonoIsotopicPercentage = (float)countMonoIsotopic / (float)countFill;
