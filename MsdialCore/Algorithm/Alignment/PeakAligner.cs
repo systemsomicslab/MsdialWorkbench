@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using CompMs.Common.DataObj.Database;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -22,15 +20,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected GapFiller Filler { get; set; }
         protected AlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
-        protected IupacDatabase Iupac { get; set; }
 
-        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) {
+        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param) {
             Accessor = accessor;
             Joiner = joiner;
             Filler = filler;
             Refiner = refiner;
             Param = param;
-            Iupac = iupac;
         }
 
         public PeakAligner(AlignmentProcessFactory factory) {
@@ -39,7 +35,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Filler = factory.CreateGapFiller();
             Refiner = factory.CreateAlignmentRefiner();
             Param = factory.Parameter;
-            Iupac = factory.Iupac;
         }
 
         public AlignmentResultContainer Alignment(
@@ -50,8 +45,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             spots = FilterAlignments(spots, Param);
 
             CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
-            IsotopeAnalysis(spots);
-            spots = GetRefinedAlignmentSpotProperties(spots);
+            spots = Refiner.Refine(spots);
 
             return PackingSpots(spots);
         }
@@ -127,25 +121,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return file;
         }
 
-        private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
-            foreach (var spot in alignmentSpots) {
-                if (Param.TrackingIsotopeLabels || spot.IsReferenceMatched) {
-                    spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
-                    spot.PeakCharacter.IsotopeWeightNumber = 0;
-                }
-                if (!spot.IsReferenceMatched) {
-                    spot.AdductType.AdductIonName = string.Empty;
-                }
-            }
-            if (Param.TrackingIsotopeLabels) return;
-
-            IsotopeEstimator.Process(alignmentSpots, Param, Iupac);
-        }
-
-        private List<AlignmentSpotProperty> GetRefinedAlignmentSpotProperties(List<AlignmentSpotProperty> alignmentSpots) {
-            if (alignmentSpots.Count <= 1) return alignmentSpots;
-            return Refiner.Refine(alignmentSpots);
-        }
         private AlignmentResultContainer PackingSpots(List<AlignmentSpotProperty> alignmentSpots) {
             if (alignmentSpots.IsEmptyOrNull()) return null;
 

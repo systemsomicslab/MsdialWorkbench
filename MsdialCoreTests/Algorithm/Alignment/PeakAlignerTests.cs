@@ -86,8 +86,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var iupac = new Common.DataObj.Database.IupacDatabase();
             var joiner = new MockJoiner();
             var filler = new MockFiller(parameter);
-            var refiner = new MockRefiner();
-            return new PeakAligner(accessor, joiner, filler, refiner, parameter, iupac);
+            var refiner = new MockRefiner(iupac);
+            return new PeakAligner(accessor, joiner, filler, refiner, parameter);
         }
     }
 
@@ -142,6 +142,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
     class MockRefiner : AlignmentRefiner
     {
+        public MockRefiner(Common.DataObj.Database.IupacDatabase iupac) : base(iupac) {
+        }
+
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             return alignments;
         }

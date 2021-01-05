@@ -15,7 +15,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
     public class PeakAligner3D : PeakAligner
     {
         protected GapFiller3D Filler3d { get; set; }
-        public PeakAligner3D(DataAccessor accessor, PeakJoiner joiner, GapFiller3D filler, AlignmentRefiner refiner, ParameterBase param, IupacDatabase iupac) : base(accessor, joiner, filler, refiner, param, iupac) {
+        public PeakAligner3D(DataAccessor accessor, PeakJoiner joiner, GapFiller3D filler, AlignmentRefiner refiner, ParameterBase param) : base(accessor, joiner, filler, refiner, param) {
             Filler3d = filler;
         }
 

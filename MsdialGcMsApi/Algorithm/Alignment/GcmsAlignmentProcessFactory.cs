@@ -26,7 +26,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new GcmsAlignmentRefiner(GcmsParameter);
+            return new GcmsAlignmentRefiner(GcmsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {

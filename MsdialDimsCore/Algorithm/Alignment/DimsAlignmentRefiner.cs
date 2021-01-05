@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -12,7 +12,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 {
     public class DimsAlignmentRefiner : AlignmentRefiner
     {
-        public DimsAlignmentRefiner(MsdialDimsParameter param) : base(param) { }
+        public DimsAlignmentRefiner(MsdialDimsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var spots = alignments.OrderBy(spot => spot.MassCenter).ToList();

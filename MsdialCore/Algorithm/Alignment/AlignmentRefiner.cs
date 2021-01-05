@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -13,15 +14,17 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
     public abstract class AlignmentRefiner
     {
         protected ParameterBase _param;
+        private readonly IupacDatabase _iupac;
 
         protected abstract List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments);
         protected abstract void SetLinks(List<AlignmentSpotProperty> alignments);
 
-        public AlignmentRefiner(ParameterBase param) {
+        public AlignmentRefiner(ParameterBase param, IupacDatabase iupac) {
             _param = param;
+            _iupac = iupac;
         }
 
-        public AlignmentRefiner() : this(new ParameterBase()) { }
+        public AlignmentRefiner(IupacDatabase iupac) : this(new ParameterBase(), iupac) { }
 
         public List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments) {
             var spots = alignments.ToList();
@@ -30,6 +33,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var cleaned = GetCleanedSpots(spots);
             var filtered = FilterByBlank(cleaned);
             SetAlignmentID(filtered);
+            IsotopeAnalysis(filtered);
             SetLinks(filtered);
             PostProcess(filtered);
 
@@ -65,6 +69,21 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected virtual void SetAlignmentID(List<AlignmentSpotProperty> alignments) { }
 
+        private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
+            foreach (var spot in alignmentSpots) {
+                if (_param.TrackingIsotopeLabels || spot.IsReferenceMatched) {
+                    spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
+                    spot.PeakCharacter.IsotopeWeightNumber = 0;
+                }
+                if (!spot.IsReferenceMatched) {
+                    spot.AdductType.AdductIonName = string.Empty;
+                }
+            }
+            if (_param.TrackingIsotopeLabels) return;
+
+            IsotopeEstimator.Process(alignmentSpots, _param, _iupac);
+        }
+
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
             foreach (var fcSpot in alignments.Where(spot => spot.AdductType.AdductIonName == string.Empty)) {
                 var chargeNum = fcSpot.PeakCharacter.Charge;
@@ -87,27 +106,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
         }
 
-        static void SetDefaultCompoundInformationInMspSearch(AlignmentSpotProperty alignmentSpot) {
-            var textdb = alignmentSpot.TextDbBasedMatchResult;
-            if (textdb == null || textdb.Name != alignmentSpot.Name) {
-                alignmentSpot.AdductType.AdductIonName = string.Empty;
-                alignmentSpot.PeakCharacter.Charge = 1;
-                alignmentSpot.Name = string.Empty;
-            }
-
-            alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-        }
-
-        static void SetDefaultCompoundInformationInTextSearch(AlignmentSpotProperty alignmentSpot) {
-            var mspdb = alignmentSpot.MspBasedMatchResult;
-            if (mspdb == null || mspdb.Name != alignmentSpot.Name) {
-                alignmentSpot.AdductType.AdductIonName = string.Empty;
-                alignmentSpot.PeakCharacter.Charge = 1;
-                alignmentSpot.Name = string.Empty;
-            }
-
-            alignmentSpot.TextDbBasedMatchResult = null;
-        }
         protected void AssignLinksByIdentifiedIonFeatures(List<AlignmentSpotProperty> cSpots) {
             foreach (var cSpot in cSpots) {
                 if (cSpot.IsReferenceMatched) {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Mathematics.Basic;
@@ -15,7 +16,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param) : base(param) { }
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();

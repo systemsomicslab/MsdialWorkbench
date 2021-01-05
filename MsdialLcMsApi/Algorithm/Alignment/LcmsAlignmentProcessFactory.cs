@@ -17,7 +17,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         }
 
         public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new LcmsAlignmentRefiner(LcmsParameter);
+            return new LcmsAlignmentRefiner(LcmsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {

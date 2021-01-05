@@ -17,7 +17,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new DimsAlignmentRefiner(DimsParameter);
+            return new DimsAlignmentRefiner(DimsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {
