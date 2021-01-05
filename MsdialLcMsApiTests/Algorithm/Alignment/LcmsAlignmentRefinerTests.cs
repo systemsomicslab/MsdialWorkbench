@@ -1101,10 +1101,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 5, Character = PeakLinkFeatureEnum.ChromSimilar },
             };
 
-            alignments.ForEach(alignment => Console.WriteLine($"{alignment.Name}"));
+            Console.WriteLine("Before alignment:");
+            alignments.ForEach(alignment => Console.WriteLine($"\t{alignment.Name}"));
             var actuals = refiner.Refine(alignments);
 
-            actuals.ForEach(actual => Console.WriteLine($"{actual.Name}"));
+            Console.WriteLine("After alignment:");
+            actuals.ForEach(actual => Console.WriteLine($"\t{actual.Name}"));
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
                 AreEqual(expect, actual);

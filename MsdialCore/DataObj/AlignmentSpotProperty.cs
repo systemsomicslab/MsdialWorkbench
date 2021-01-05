@@ -183,7 +183,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         // others
         [Key(45)]
-        public FeatureFilterStatus FeatureFilterStatus { get; set; }
+        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(46)]
         public bool IsManuallyModifiedForQuant { get; set; }
         [Key(47)]

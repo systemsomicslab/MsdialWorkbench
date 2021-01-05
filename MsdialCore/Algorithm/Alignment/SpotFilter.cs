@@ -74,8 +74,76 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
     public class BlankFilter : ISpotFilter
     {
+        private static readonly double MINIMUM_PEAK_HEIGHT = 0.0001;
+
+        private readonly Dictionary<int, AnalysisFileType> FileID2AnalysisFileType;
+        private readonly float FoldChangeForBlankFiltering;
+        private readonly BlankFiltering BlankFiltering;
+        private readonly bool IsKeepRefMatchedMetaboliteFeatures;
+        private readonly bool IsKeepSuggestedMetaboliteFeatures;
+        private readonly bool IsKeepRemovableFeaturesAndAssignedTagForChecking;
+
+        public BlankFilter(
+            Dictionary<int, AnalysisFileType> FileID2AnalysisFileType_,
+            float FoldChangeForBlankFiltering_,
+            BlankFiltering BlankFiltering_,
+            bool IsKeepRefMatchedMetaboliteFeatures_,
+            bool IsKeepSuggestedMetaboliteFeatures_,
+            bool IsKeepRemovableFeaturesAndAssignedTagForChecking_
+        ) {
+            FileID2AnalysisFileType = FileID2AnalysisFileType_;
+            FoldChangeForBlankFiltering = FoldChangeForBlankFiltering_;
+            BlankFiltering = BlankFiltering_;
+            IsKeepRefMatchedMetaboliteFeatures = IsKeepRefMatchedMetaboliteFeatures_;
+            IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures_;
+            IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking_;
+        }
+
         public IEnumerable<AlignmentSpotProperty> Filter(IEnumerable<AlignmentSpotProperty> spots) {
-            throw new NotImplementedException();
+            var blankExists = FileID2AnalysisFileType.Values.Any(v => v == AnalysisFileType.Blank);
+            if (!blankExists) return spots;
+            return FilterCore(spots);           
+        }
+
+        private IEnumerable<AlignmentSpotProperty> FilterCore(IEnumerable<AlignmentSpotProperty> spots) {
+            foreach (var spot in spots) {
+                var blankAve = spot.AlignedPeakProperties
+                    .Where(peak => FileID2AnalysisFileType[peak.FileID] == AnalysisFileType.Blank)
+                    .DefaultIfEmpty()
+                    .Average(peak => peak?.PeakHeightTop) ?? 0d;
+                if (blankAve == 0) {
+                    var nonMinValue = spot.AlignedPeakProperties
+                        .Where(peak => peak.PeakHeightTop < MINIMUM_PEAK_HEIGHT)
+                        .DefaultIfEmpty()
+                        .Min(peak => peak?.PeakHeightTop);
+                    blankAve = nonMinValue * 0.1 ?? 1.0;
+                }
+                var blankThresh = blankAve * FoldChangeForBlankFiltering;
+
+                var samplePeaks = spot.AlignedPeakProperties
+                    .Where(peak => FileID2AnalysisFileType[peak.FileID] == AnalysisFileType.Sample)
+                    .DefaultIfEmpty();
+                var sampleThresh = BlankFiltering == BlankFiltering.SampleMaxOverBlankAve
+                    ? samplePeaks.Max(peak => peak?.PeakHeightTop) ?? 0d
+                    : samplePeaks.Average(peak => peak?.PeakHeightTop) ?? 0d;
+            
+                if (sampleThresh < blankThresh) {
+
+                    if (IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched) {
+
+                    }
+                    else if (IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested) {
+
+                    }
+                    else if (IsKeepRemovableFeaturesAndAssignedTagForChecking) {
+                        spot.FeatureFilterStatus.IsBlankFiltered = true;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                yield return spot;
+            }
         }
     }
 }
