@@ -143,6 +143,38 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             return NcdkDescriptors;
         }
 
+        public static Dictionary<string, double> TargetSubstructureFingerPrinter(string smiles) {
+            var smilesParser = new SmilesParser();
+            var atomContainer = smilesParser.ParseSmiles(smiles);
+            if (atomContainer == null) {
+                var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                atomContainer = smilesParser2.ParseSmiles(smiles);
+                if (atomContainer == null) {
+                    return null;
+                }
+            }
+            TargetSubstructureFingerPrinter(atomContainer);
+            return NcdkDescriptors;
+        }
+
+        public static void TargetSubstructureFingerPrinter(IAtomContainer mol) {
+            var smartslist = new List<string>() {
+                "c1ccccc1",
+                "c1ccccc1[#8]",
+                "*-[OH]",
+                "[#8]-C1OC(CO)C(O)C(O)C1O",
+                "NCCCCC(N*)C(=O)O",
+                "OP(O)([#8])=O"
+            }; // smarts codes
+            var fingerprinter = new SubstructureFingerprinter(smartslist);
+            var result = fingerprinter.GetBitFingerprint(mol);
+            var counter = result.Length;
+            for (int i = 0; i < counter; i++) {
+                NcdkDescriptors["Top50FG_" + i] = Convert.ToInt32(result[i]);
+                //Console.WriteLine("item {0} value {1}", "Top50FG_" + i, Convert.ToInt32(result[i]));
+            }
+        }
+
         public static void Top50MostCommonFunctionalGroups2020Fingerprinter(IAtomContainer mol) {
             // https://pubs.acs.org/doi/10.1021/acs.jmedchem.0c00754
             var smartslist = new List<string>() {

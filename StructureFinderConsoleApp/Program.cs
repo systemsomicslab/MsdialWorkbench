@@ -22,7 +22,7 @@ namespace StructureFinderConsoleApp
             Derivatization.Test();
             /// code for Natural Product Reports 2020
             //Code4NPR2020.GenerateStructureTableFromMSPs();
-            Code4NPR2020.ExtractClassyFireOntologies();
+            //Code4NPR2020.ExtractClassyFireOntologies();
             //Code4NPR2020.CheckInChIKeyExistence();
             //Code4NPR2020.CheckCoverageOfMspMsfinder();
             //Code4NPR2020.CalculateTop50MostCommonFunctionalGroups2020();
@@ -35,6 +35,8 @@ namespace StructureFinderConsoleApp
             //Code4NPR2020.ExtractCCSValues(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt",
             //    @"D:\3_Project for ion mobility\20201214_zhiwei_ccs_library\MSDIAL_pred_ccs_201013.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-ccs.txt");
             //Code4NPR2020.Check144Existence(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-144.txt");
+
+            Code4NPR2020.ExtractSubstructureContainingStructureQueries();
 
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\", "-Pos");
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\msp\", "-Neg");
