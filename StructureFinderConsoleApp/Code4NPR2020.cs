@@ -408,6 +408,48 @@ namespace StructureFinderConsoleApp {
             }
         }
 
+        public static void ExtractSubstructureContainingStructureQueries() {
+            var smilesfile = @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\MSMS-RIKEN-Neg-VS15-Combined.smiles";
+            var output = @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\output.txt";
+            var smileslist = new List<string>();
+            using (var sr = new StreamReader(smilesfile, true)) { // key contains the list of short inchikey without header
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    smileslist.Add(line);
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                var headers = new List<string>();
+                var values4null = new List<int>();
+                var headertemp = NcdkDescriptor.TargetSubstructureFingerPrinter("CCCCC");
+                for (int i = 0; i < headertemp.Count; i++) {
+                    headers.Add("Top50FG_" + i);
+                    values4null.Add(-1);
+                }
+                sw.WriteLine(String.Join("\t", headers.ToArray()));
+
+                var counter = 0;
+                foreach (var smiles in smileslist) {
+                    var dict = NcdkDescriptor.TargetSubstructureFingerPrinter(smiles);
+                    if (dict.IsEmptyOrNull()) {
+                        sw.WriteLine(String.Join("\t", values4null.ToArray()));
+                    }
+                    else {
+                        var fingerprints = new List<int>();
+                        foreach (var head in headers) { fingerprints.Add((int)dict[head]); }
+                        sw.WriteLine(String.Join("\t", fingerprints.ToArray()));
+                    }
+
+                    counter++;
+
+                    if (counter % 1000 == 0) { Console.WriteLine("Finished {0}", counter); }
+                }
+            }
+        }
+
+
         public static void ExtractClassyFireOntologies() {
             var keyfile = @"D:\Paper of Natural Product Reports\Statistics\key.txt";
             var ontologyfile = @"D:\Paper of Natural Product Reports\Statistics\InchikeyClassyfireDB-VS4.icd";
