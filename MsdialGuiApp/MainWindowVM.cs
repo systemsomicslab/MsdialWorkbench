@@ -34,6 +34,8 @@ using System.ComponentModel;
 using System.Windows.Data;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Parameter;
+using CompMs.App.Msdial.Dims;
 
 namespace CompMs.App.Msdial
 {
@@ -207,33 +209,62 @@ namespace CompMs.App.Msdial
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetForLcVM(Storage.ParameterBase as MsdialLcmsParameter, Storage.AnalysisFiles);
-            var apsw = new AnalysisParamSetForLcWindow
-            {
-                DataContext = analysisParamSetVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            var apsw_result = apsw.ShowDialog();
-            if (apsw_result != true) return false;
-
-            if (Storage.AlignmentFiles == null)
-                Storage.AlignmentFiles = new List<AlignmentFileBean>();
-            var filename = analysisParamSetVM.AlignmentResultFileName;
-            Storage.AlignmentFiles.Add(
-                new AlignmentFileBean
+            if (Storage.ParameterBase is MsdialLcmsParameter lcms_param) {
+                var analysisParamSetVM = new AnalysisParamSetForLcVM(lcms_param, Storage.AnalysisFiles);
+                var apsw = new AnalysisParamSetForLcWindow
                 {
-                    FileID = Storage.AlignmentFiles.Count,
-                    FileName = filename,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + SaveFileFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                }
-            );
-            Storage.MspDB = analysisParamSetVM.MspDB;
-            Storage.TextDB = analysisParamSetVM.TextDB;
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                var apsw_result = apsw.ShowDialog();
+                if (apsw_result != true) return false;
 
-            return true;
+                if (Storage.AlignmentFiles == null)
+                    Storage.AlignmentFiles = new List<AlignmentFileBean>();
+                var filename = analysisParamSetVM.AlignmentResultFileName;
+                Storage.AlignmentFiles.Add(
+                    new AlignmentFileBean
+                    {
+                        FileID = Storage.AlignmentFiles.Count,
+                        FileName = filename,
+                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + SaveFileFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                    }
+                );
+                Storage.MspDB = analysisParamSetVM.MspDB;
+                Storage.TextDB = analysisParamSetVM.TextDB;
+                return true;
+            }
+            else if (Storage.ParameterBase is MsdialDimsParameter dims_param) {
+                var analysisParamSetVM = new AnalysisParamSetForDimsVM(dims_param, Storage.AnalysisFiles);
+                var apsw = new AnalysisParamSetForDimsWindow
+                {
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                var apsw_result = apsw.ShowDialog();
+                if (apsw_result != true) return false;
+
+                if (Storage.AlignmentFiles == null)
+                    Storage.AlignmentFiles = new List<AlignmentFileBean>();
+                var filename = analysisParamSetVM.AlignmentResultFileName;
+                Storage.AlignmentFiles.Add(
+                    new AlignmentFileBean
+                    {
+                        FileID = Storage.AlignmentFiles.Count,
+                        FileName = filename,
+                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + SaveFileFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                    }
+                );
+                Storage.MspDB = analysisParamSetVM.MspDB;
+                Storage.TextDB = analysisParamSetVM.TextDB;
+                return true;
+            }
+
+            return false;
         }
 
         private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {

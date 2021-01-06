@@ -103,6 +103,10 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
                 <RadioButton Name="RadioButton_Separation_GCorLC" Content="Chromatography (GC, LC, CE, or SFC)"
                              IsChecked="{Binding SeparationType, Converter={StaticResource BTEConverter}, ConverterParameter=Chromatography}"
@@ -114,10 +118,18 @@
 
                 <RadioButton Name="RadioButton_Separation_LCIM" Content="Ion mobility (now coupled with liquid chromatography)"
                              IsChecked="{Binding SeparationType, Converter={StaticResource BTEConverter}, ConverterParameter=IonMobility}"
-                             Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
+                             Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
                     <ToolTipService.ToolTip>
                         <ToolTip Content="Type 2: When you analyze LC-IM(ion mobility data), please select this option." />
                     </ToolTipService.ToolTip>
+                </RadioButton>
+
+                <RadioButton Name="RadioButton_Infusion" Content="Direct infusion"
+                             IsChecked="{Binding SeparationType, Converter={StaticResource BTEConverter}, ConverterParameter=Infusion}"
+                             Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <RadioButton.ToolTip>
+                        <Run>Type 3: When you analyze direct infusion data, please select this option</Run>
+                    </RadioButton.ToolTip>
                 </RadioButton>
 
             </Grid>

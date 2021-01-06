@@ -73,6 +73,35 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="Dims\AdductView.xaml.cs">
+      <DependentUpon>AdductView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\AnalysisParamSetForDimsVM.cs" />
+    <Compile Include="Dims\AnalysisParamSetForDimsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForDimsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\DeconvolutionView.xaml.cs">
+      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\PeakDetectionView.xaml.cs">
+      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\UserDefinedAdductSetVM.cs" />
+    <Compile Include="Dims\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LC\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -175,6 +204,42 @@
     <Compile Include="View\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dims\AdductView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\AnalysisParamSetForDimsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\DataCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\DeconvolutionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\IdentificationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\IsotopeTrackView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\PeakDetectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\UserDefinedAdductSetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
