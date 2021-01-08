@@ -148,60 +148,112 @@
     </Compile>
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
+    <Compile Include="Utility\SerializerResolver.cs" />
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
+    <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
+    <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
+    <Compile Include="ViewModel\BarItem.cs" />
+    <Compile Include="ViewModel\Chromatogram.cs" />
+    <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
     <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
     <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
+    <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
-    <Compile Include="View\Details\CompoundDetailView.xaml.cs">
+    <Compile Include="ViewModel\PeakItem.cs" />
+    <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="View\Dims\AlignmentEicView.xaml.cs" >
+        <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\AlignmentView.xaml.cs" >
+        <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\BarChartView.xaml.cs" >
+        <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\CompoundDetailView.xaml.cs" >
+        <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\EicView.xaml.cs" >
+        <DependentUpon>EicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\ExpRefView.xaml.cs" >
+        <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\Footer.xaml.cs" >
+        <DependentUpon>Footer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\MainRibbon.xaml.cs" >
+        <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\MainView.xaml.cs" >
+        <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\Navigator.xaml.cs" >
+        <DependentUpon>Navigator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\PeakPropertyView.xaml.cs" >
+        <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\PeakView.xaml.cs" >
+        <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\RepRefView.xaml.cs" >
+        <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Details\PeakPropertyView.xaml.cs">
+    <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EicAndBar\AlignmentEicView.xaml.cs">
+    <Compile Include="View\Lcms\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EicAndBar\BarChartView.xaml.cs">
+    <Compile Include="View\Lcms\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EicAndBar\EicView.xaml.cs">
+    <Compile Include="View\Lcms\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Footer.xaml.cs">
+    <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainView.xaml.cs">
+    <Compile Include="View\Lcms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainRibbon.xaml.cs">
+    <Compile Include="View\Lcms\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MS2\ChromatogramView.xaml.cs">
+    <Compile Include="View\Lcms\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MS2\ExpRefView.xaml.cs">
+    <Compile Include="View\Lcms\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MS2\RawPurifiedView.xaml.cs">
+    <Compile Include="View\Lcms\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MS2\RepRefView.xaml.cs">
+    <Compile Include="View\Lcms\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Navigator.xaml.cs">
+    <Compile Include="View\Lcms\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PairwisePlot\AlignmentView.xaml.cs">
+    <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PeakSpotNavigator.xaml.cs">
+    <Compile Include="View\Lcms\PeakSpotNavigator.xaml.cs">
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PairwisePlot\PeakView.xaml.cs">
+    <Compile Include="View\Lcms\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SurveyScanView.xaml.cs">
+    <Compile Include="View\Lcms\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
     <Page Include="Dims\AdductView.xaml">
@@ -308,35 +360,87 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Details\CompoundDetailView.xaml">
+    <Page Include="View\Dims\AlignmentEicView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\BarChartView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\CompoundDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\EicView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\ExpRefView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\Footer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\MainRibbon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\Navigator.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\PeakPropertyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\PeakView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\RepRefView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Details\PeakPropertyView.xaml">
+    <Page Include="View\Lcms\PeakPropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EicAndBar\AlignmentEicView.xaml">
+    <Page Include="View\Lcms\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EicAndBar\BarChartView.xaml">
+    <Page Include="View\Lcms\BarChartView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EicAndBar\EicView.xaml">
+    <Page Include="View\Lcms\EicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Footer.xaml">
+    <Page Include="View\Lcms\Footer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainView.xaml">
+    <Page Include="View\Lcms\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainRibbon.xaml">
+    <Page Include="View\Lcms\MainRibbon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -344,39 +448,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MS2\ChromatogramView.xaml">
+    <Page Include="View\Lcms\ChromatogramView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MS2\ExpRefView.xaml">
+    <Page Include="View\Lcms\ExpRefView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MS2\RawPurifiedView.xaml">
+    <Page Include="View\Lcms\RawPurifiedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MS2\RepRefView.xaml">
+    <Page Include="View\Lcms\RepRefView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Navigator.xaml">
+    <Page Include="View\Lcms\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PairwisePlot\AlignmentView.xaml">
+    <Page Include="View\Lcms\AlignmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PeakSpotNavigator.xaml">
+    <Page Include="View\Lcms\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PairwisePlot\PeakView.xaml">
+    <Page Include="View\Lcms\PeakView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SurveyScanView.xaml">
+    <Page Include="View\Lcms\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -465,5 +569,6 @@
     <Resource Include="Resources\Lipoquality.ico" />
     <Resource Include="Resources\MolecularNetworking.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

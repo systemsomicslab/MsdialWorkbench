@@ -97,23 +97,29 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 var spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 foreach ((var peak, var spot) in peaks.Zip(spots)) {
-                    if (spot.AlignedPeakProperties.FirstOrDefault(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
+                    if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                         Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
                     }
 
                     // UNDONE: retrieve spectrum data
-                    var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                    var peaklist = DataAccess.GetMs1Peaklist(
-                        spectra, (float)peak.Mass,
-                        (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-                        peak.IonMode);
-                    var peakInfo = new ChromatogramPeakInfo(
-                        peak.FileID, peaklist,
-                        (float)peak.ChromXsTop.Value,
-                        (float)peak.ChromXsLeft.Value,
-                        (float)peak.ChromXsRight.Value
-                        );
-                    peakInfos.Add(peakInfo);
+                    try {
+                        var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
+                        peakInfos.Add(peakinfo);
+                    }
+                    catch (NotImplementedException) {
+                        var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
+                        var peaklist = DataAccess.GetMs1Peaklist(
+                            spectra, (float)peak.Mass,
+                            (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
+                            peak.IonMode);
+                        var peakInfo = new ChromatogramPeakInfo(
+                            peak.FileID, peaklist,
+                            (float)peak.ChromXsTop.Value,
+                            (float)peak.ChromXsLeft.Value,
+                            (float)peak.ChromXsRight.Value
+                            );
+                        peakInfos.Add(peakInfo);
+                    }
                 }
             }
             var file = Path.GetTempFileName();

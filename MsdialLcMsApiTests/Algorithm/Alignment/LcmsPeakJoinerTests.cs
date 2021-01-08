@@ -9,6 +9,7 @@ using CompMs.Common.Interfaces;
 using System.Diagnostics;
 using System.Linq;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.Common.DataObj;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
@@ -96,6 +97,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
         public MockAccessor(List<List<IMSScanProperty>> scans) {
             this.scans = scans;
+        }
+
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
+            throw new NotImplementedException();
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {

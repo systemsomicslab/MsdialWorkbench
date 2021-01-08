@@ -33,7 +33,7 @@ namespace CompMs.App.MsdialConsole {
             };
             MainProcess.Run(args);
 
-            // RawDataDump.Dump(@"D:\test_data\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf");
+            // RawDataDump.Dump(@"D:\infusion_project\data\abf\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf");
             // var allspectra = DataAccess.GetAllSpectra(@"D:\test_data\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf");
             // Console.WriteLine("Scan number 2510");
             // foreach (var spec in allspectra[2510].Spectrum)

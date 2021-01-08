@@ -8,6 +8,7 @@
               xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
               xmlns:view="clr-namespace:CompMs.App.Msdial.View"
               mc:Ignorable="d"
+              d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowVM}}"
               Title="MSDIAL" Height="800" Width="1280">
     <i:Interaction.Behaviors>
         <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
@@ -17,12 +18,76 @@
         <local:MainWindowVM />
     </RibbonWindow.DataContext>
 
+    <RibbonWindow.Resources>
+        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+    </RibbonWindow.Resources>
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <view:MainRibbon Grid.Row="0" />
-        <view:MainView Grid.Row="1" />
+        <Ribbon Background="{StaticResource LightThemeColor}">
+            <Ribbon.Style>
+                <Style TargetType="Ribbon">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MethodVM}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Ribbon.Style>
+            <Ribbon.QuickAccessToolBar>
+                <RibbonQuickAccessToolBar>
+                    <RibbonButton SmallImageSource="{StaticResource New_project_is}"
+                                  Command="{Binding CreateNewProjectCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                    <RibbonButton SmallImageSource="{StaticResource Open_is}"
+                                  Command="{Binding OpenProjectCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+                    <RibbonButton SmallImageSource="{StaticResource Save_is}"
+                                  Command="{Binding SaveProjectCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+                </RibbonQuickAccessToolBar>
+            </Ribbon.QuickAccessToolBar>
+            <Ribbon.HelpPaneContent>
+                <RibbonButton SmallImageSource="{StaticResource Version_is}"/>
+            </Ribbon.HelpPaneContent>
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
+                                       KeyTip="F"
+                                       Background="{StaticResource DarkThemeColor}">
+                    <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
+                                               Command="{Binding CreateNewProjectCommand}"
+                                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                               KeyTip="N"/>
+                    <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
+                                               Command="{Binding OpenProjectCommand}"
+                                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                               KeyTip="O"/>
+                    <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
+                                                    Command="{Binding SaveProjectCommand}"
+                                                    KeyTip="S">
+                        <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
+                                                   Command="{Binding SaveAsProjectCommand}"
+                                                   KeyTip="A"/>
+                        <RibbonApplicationMenuItem Header="Save parameter as..."
+                                                   Command="{Binding SaveParameterCommand}" />
+                    </RibbonApplicationSplitMenuItem>
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+        </Ribbon>
+
+        <ContentControl Content="{Binding MethodVM}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type lc:LcmsMethodVM}"
+                              xmlns:lc="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms">
+                    <view:MainView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type divm:DimsMethodVM}"
+                              xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+                              xmlns:divw="clr-namespace:CompMs.App.Msdial.View.Dims">
+                    <divw:MainView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+            
     </Grid>
 </RibbonWindow>

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    class AlignmentSpotPropertyVM
+    public class AlignmentSpotPropertyVM
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;

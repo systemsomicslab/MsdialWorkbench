@@ -1,15 +1,15 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Footer"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Dims.Footer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
              Name="FooterView"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFileVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisDimsVM}}"
              d:DesignHeight="30" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

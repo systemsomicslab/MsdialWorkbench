@@ -4,7 +4,7 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    class ChromatogramPeakFeatureVM : ViewModelBase
+    public class ChromatogramPeakFeatureVM : ViewModelBase
     {
         #region Property
         public double? ChromXValue => innerModel.ChromXs.Value;

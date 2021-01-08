@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -89,8 +90,8 @@ namespace CompMs.App.Msdial.Property
                 }
             ).ToList();
             foreach (var analysisfile in analysisfiles) {
-                analysisfile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm")+ $".{SaveFileFormat.dcl}");
-                analysisfile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm") + $".{SaveFileFormat.pai}");
+                analysisfile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm")+ $".{MsdialDataStorageFormat.dcl}");
+                analysisfile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm") + $".{MsdialDataStorageFormat.pai}");
             }
 
             return new ObservableCollection<AnalysisFileBean>(analysisfiles);

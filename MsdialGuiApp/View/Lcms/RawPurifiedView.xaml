@@ -10,9 +10,9 @@
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              Name="RawPurePlot"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFileVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

@@ -19,7 +19,7 @@ namespace CompMs.MsdialGcMsApi.Parser {
             saveObj.MspDB = new List<MoleculeMsReference>();
 
             var mspPath = GetNewMspFileName(file);
-            MessagePackDefaultHandler.SaveToFile<MsdialGcmsSaveObj>(saveObj, file);
+            MessagePackHandler.SaveToFile<MsdialGcmsSaveObj>(saveObj, file);
             MoleculeMsRefMethods.SaveMspToFile(mspList, mspPath);
         }
 
