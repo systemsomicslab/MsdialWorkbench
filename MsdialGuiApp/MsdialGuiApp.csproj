@@ -176,6 +176,9 @@
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Dims\ChromatogramView.xaml.cs" >
+      <DependentUpon>ChromatogramView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -370,6 +373,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Dims\BarChartView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\ChromatogramView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

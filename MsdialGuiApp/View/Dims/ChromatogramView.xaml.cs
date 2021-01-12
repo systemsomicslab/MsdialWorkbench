@@ -1,5 +1,4 @@
-﻿using CompMs.Graphics.Core.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,18 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Dims
 {
     /// <summary>
-    /// Interaction logic for PeakView.xaml
+    /// Interaction logic for ChromatogramView.xaml
     /// </summary>
-    public partial class PeakView : UserControl
+    public partial class ChromatogramView : UserControl
     {
-        public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(PeakView));
-        
-        public AxisManager MassAxis {
-            get => (AxisManager)GetValue(MassAxisProperty);
-            set => SetValue(MassAxisProperty, value);
-        }
-
-        public PeakView() {
+        public ChromatogramView() {
             InitializeComponent();
         }
     }

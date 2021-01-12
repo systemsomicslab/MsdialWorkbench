@@ -136,7 +136,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Mz);
         }
 
-        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
+        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
+            : base(serializer) {
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());

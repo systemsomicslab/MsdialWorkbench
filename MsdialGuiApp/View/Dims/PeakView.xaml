@@ -10,6 +10,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:special="clr-namespace:CompMs.Graphics.Specialized;assembly=MsdialGuiApi"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
@@ -51,7 +52,7 @@
                                         HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
                                         RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
+                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                         HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
@@ -90,7 +91,7 @@
                                  HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
                                  RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
-                                 RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
+                                 RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=OneWay}"
                                  HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
@@ -131,8 +132,8 @@
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <StackPanel Orientation="Horizontal"
@@ -165,7 +166,7 @@
             <TextBlock.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
-                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                    <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
                 </TransformGroup>
             </TextBlock.LayoutTransform>
         </TextBlock>

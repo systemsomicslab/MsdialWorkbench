@@ -27,7 +27,7 @@
         <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
                                            ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
                                            ValuePropertyName="HeightAverage"
-                                           ChartMargin="0.05" />
+                                           ChartMargin="0,0.05" Bounds="0,0"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -133,7 +133,7 @@
             <TextBlock.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
-                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                    <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
                 </TransformGroup>
             </TextBlock.LayoutTransform>
         </TextBlock>

@@ -161,10 +161,13 @@
         <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <local:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
-        <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+        <GridSplitter Margin="0, 0, 0, 0" Width="2"
+                      ResizeDirection="Columns"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                      Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"/>
 
         <Grid Grid.Row="1" Grid.Column="1">
-            <Grid Name="Grid_DataViewer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Name="Grid_DataViewer">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="370"/>
@@ -244,7 +247,7 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="LightSteelBlue">
-                            <local:EicView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
+                            <local:EicView DataContext="{Binding AnalysisVM}" MzAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
@@ -325,6 +328,13 @@
                                  Height="25"
                                  Background="LightSteelBlue">
                             <local:ExpRefView DataContext="{Binding AnalysisVM}"/>
+                        </TabItem>
+
+                        <TabItem Header="MS2 Chrom." 
+                                 Name="TabItem_MS2Chromatogram" 
+                                 Height="25"
+                                 Background="LightSteelBlue">
+                            <local:ChromatogramView />
                         </TabItem>
 
                         <TabItem Header="Rep. vs. Ref." 
