@@ -12,6 +12,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              Name="PeakPairPlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisDimsVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,6 +21,14 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
+                                           ValuePropertyName="Intensity"
+                                           Bounds="0,0"
+                                           ChartMargin="0.05"/>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="30" />
@@ -39,11 +48,11 @@
             <Grid>
                 <special:LinkedPeakAnnotator x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
-                                        HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                        VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                        RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                        RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                        HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                        HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                        RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
+                                        HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
                                         Target="{Binding SelectedItem.InnerModel, RelativeSource={RelativeSource Self}}"
@@ -70,9 +79,6 @@
                                 <TextBlock Text="Scan #: "/>
                                 <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}"/>
                                 <TextBlock Text="; "/>
-                                <TextBlock Text="RT[min]: "/>
-                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N2, Mode=OneTime}"/>
-                                <TextBlock Text="; "/>
                                 <TextBlock Text="Mass[Da]: "/>
                                 <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}"/>
                                 <TextBlock Text=";"/>
@@ -81,11 +87,11 @@
                     </behavior:ScatterFocusBehavior.LabelTemplate>
                 </special:LinkedPeakAnnotator>
                 <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
-                                 HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                 VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                 RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
-                                 RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
-                                 HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                 HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                 RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
+                                 RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
+                                 HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
                                 ContentTemplate="{DynamicResource FocusCross}"
@@ -119,14 +125,14 @@
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                    RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                    LabelTicks="{Binding ChromAxis.LabelTicks, ElementName=PeakPairPlot}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
+                                    RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+                                    LabelTicks="{Binding MassAxis.LabelTicks, ElementName=PeakPairPlot}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                  LabelTicks="{Binding MassAxis.LabelTicks, ElementName=PeakPairPlot}"
-                                  RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <StackPanel Orientation="Horizontal"
@@ -141,9 +147,6 @@
                             <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}" FontSize="12"/>
                             <TextBlock Text="Scan: " FontSize="12" Margin="5,0,0,0"/>
                             <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}" FontSize="12"/>
-                            <TextBlock Text="RT: " FontSize="12" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N2, Mode=OneTime}" FontSize="12"/>
-                            <TextBlock Text="min" FontSize="12"/>
                             <TextBlock Text="Mass: m/z " FontSize="12" Margin="5,0,0,0"/>
                             <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}" FontSize="12"/>
                         </StackPanel>
@@ -151,11 +154,11 @@
                 </ContentControl.Resources>
             </ContentControl>
         </StackPanel>
-        <TextBlock Text="Retention time [min]"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="m/z"
+        <TextBlock Text="Intensity"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">

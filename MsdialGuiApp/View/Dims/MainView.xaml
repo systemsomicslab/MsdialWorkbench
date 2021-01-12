@@ -138,10 +138,6 @@
                 </MenuItem>
             </ContextMenu>
             -->
-            <manager:ContinuousAxisManager x:Key="ChromAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.ChromMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.ChromMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
             <manager:ContinuousAxisManager x:Key="MassAxis"
                                            MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
                                            MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
@@ -184,48 +180,43 @@
                     </Grid.RowDefinitions>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot" >
-                        <!--SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"-->
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
 
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <pairplot:PeakView DataContext="{Binding AnalysisVM}"
-                                               ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
+                            <local:PeakView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <pairplot:AlignmentView DataContext="{Binding AlignmentVM}"/>
+                            <local:AlignmentView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
                     </TabControl>
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
-                                xmlns:eic="clr-namespace:CompMs.App.Msdial.View.EicAndBar"
                                 Margin="0,-1,0,0"
                                 Grid.Row="0" Grid.RowSpan="2" >
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="LightSteelBlue">
-                            <eic:EicView DataContext="{Binding AnalysisVM}"
-                                         ChromAxis="{StaticResource ChromAxis}"/>
+                            <local:EicView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="LightSteelBlue">
-                            <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
+                            <local:BarChartView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
                         <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="LightSteelBlue">
-                            <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
+                            <local:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
                     </TabControl>
@@ -265,7 +256,6 @@
                     <Grid Grid.Row="0">
 
                         <TabControl Name="TabControl_PeakCharacter"
-                                    xmlns:detail="clr-namespace:CompMs.App.Msdial.View.Details"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                     Grid.Row="0">
 
@@ -273,14 +263,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <detail:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <detail:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -288,38 +278,21 @@
                     </Grid>
 
                     <TabControl Name="TabControl_MS2Viewer"
-                                xmlns:ms2="clr-namespace:CompMs.App.Msdial.View.MS2"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Grid.Row="1" >
-                        <!--SelectionChanged="TabControl_MS2Viewer_SelectionChanged" -->
 
                         <TabItem Header="Exp. vs. Ref." 
                                  Name="TabItem_MeasurementVsReference" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                            <ms2:ExpRefView DataContext="{Binding AnalysisVM}"/>
-                        </TabItem>
-
-                        <TabItem Header="MS2 Chrom." 
-                                 Name="TabItem_MS2Chromatogram" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-                            <ms2:ChromatogramView />
-                        </TabItem>
-
-                        <TabItem Header="Raw vs. Purified" 
-                                 Name="TabItem_RawVsDeconvolution" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-
-                            <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
+                            <local:ExpRefView DataContext="{Binding AnalysisVM}"/>
                         </TabItem>
 
                         <TabItem Header="Rep. vs. Ref." 
                                  Height="25"
                                  Background="LightSteelBlue" 
                                  Name="TabItem_RepresentativeVsReference">
-                            <ms2:RepRefView />
+                            <local:RepRefView />
                         </TabItem>
 
                     </TabControl>
@@ -340,7 +313,7 @@
             </Grid>
         </Grid>
         <local:Footer DataContext="{Binding AnalysisVM}"
-                      ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
+                      MassAxis="{StaticResource MassAxis}"
                       Grid.Row="2" Grid.Column="1"/>
 
         <GridSplitter Margin="0,0,0,0" 

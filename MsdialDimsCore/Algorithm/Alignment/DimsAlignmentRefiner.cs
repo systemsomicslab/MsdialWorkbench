@@ -23,7 +23,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
             master = MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
             master = MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
-            master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber == 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
+            master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber <= 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 
             return master.Skip(1).Take(master.Count - 2).ToList(); // skip sentinel
         }
