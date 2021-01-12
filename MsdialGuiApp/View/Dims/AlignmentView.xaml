@@ -20,13 +20,13 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="TimeAxis"
-                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
-                                           ValuePropertyName="TimesCenter"
-                                           ChartMargin="0.05" />
         <manager:AutoContinuousAxisManager x:Key="MzAxis"
                                            ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
                                            ValuePropertyName="MassCenter"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="HeightAverage"
                                            ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
@@ -47,12 +47,12 @@
             <Grid Margin="-1,0,0,-1">
                 <scatter:ScatterControl x:Name="alignmentScatter"
                                         ItemsSource="{Binding Ms1Spots}"
-                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
-                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
-                                        HorizontalPropertyName="TimesCenter"
-                                        VerticalPropertyName="MassCenter"
+                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
+                                        HorizontalPropertyName="MassCenter"
+                                        VerticalPropertyName="HeightAverage"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=OneWayToSource}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
@@ -73,9 +73,6 @@
                                 </StackPanel.Resources>
                                 <TextBlock Text="ID #: "/>
                                 <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
-                                <TextBlock Text="; "/>
-                                <TextBlock Text="RT[min]: "/>
-                                <TextBlock Text="{Binding TimesCenter, StringFormat=N2, Mode=OneTime}"/>
                                 <TextBlock Text="; "/>
                                 <TextBlock Text="Mass[Da]: "/>
                                 <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
@@ -112,33 +109,33 @@
                 </ContentControl>
             </Grid>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
-        <TextBlock Text="Retention time [min]"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="m/z"
+        <TextBlock Text="Intensity"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">
-            <TextBlock.RenderTransform>
+            <TextBlock.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
                     <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
                 </TransformGroup>
-            </TextBlock.RenderTransform>
+            </TextBlock.LayoutTransform>
         </TextBlock>
     </Grid>
 </UserControl>

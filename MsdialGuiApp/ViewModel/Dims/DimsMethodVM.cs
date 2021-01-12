@@ -23,10 +23,28 @@ using CompMs.MsdialDimsCore;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
+    [Flags]
+    enum DisplayFilter : uint
+    {
+        Unset = 0x0,
+        RefMatched = 0x1,
+        Suggested = 0x2,
+        Unknown = 0x4,
+        Ms2Acquired = 0x8,
+        MolecularIon = 0x10,
+        Blank = 0x20,
+        UniqueIons = 0x40,
+
+        Annotates = RefMatched | Suggested | Unknown,
+    }
+
     public class DimsMethodVM : MethodVM {
         public AnalysisDimsVM AnalysisVM {
             get => analysisVM;
-            set => SetProperty(ref analysisVM, value);
+            set {
+                if (SetProperty(ref analysisVM, value))
+                    ResultVMs[0] = analysisVM;
+            }
         }
         private AnalysisDimsVM analysisVM;
 
@@ -43,7 +61,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public AlignmentDimsVM AlignmentVM {
             get => alignmentVM;
-            set => SetProperty(ref alignmentVM, value);
+            set {
+                if (SetProperty(ref alignmentVM, value))
+                    ResultVMs[1] = alignmentVM;
+            }
         }
         private AlignmentDimsVM alignmentVM;
 
@@ -58,6 +79,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
         private ICollectionView _alignmentFiles;
 
+        public ObservableCollection<ResultVM> ResultVMs {
+            get => resultVMs;
+            set => SetProperty(ref resultVMs, value);
+        }
+        private ObservableCollection<ResultVM> resultVMs = new ObservableCollection<ResultVM> { null, null };
+
         public MsdialDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
@@ -65,36 +92,41 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private MsdialDataStorage storage;
 
         public bool RefMatchedChecked {
-            get => refMatchedChecked;
-            set => SetProperty(ref refMatchedChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.RefMatched);
+            set => WriteDisplayFilter(DisplayFilter.RefMatched, value);
         }
         public bool SuggestedChecked {
-            get => suggestedChecked;
-            set => SetProperty(ref suggestedChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.Suggested);
+            set => WriteDisplayFilter(DisplayFilter.Suggested, value);
         }
         public bool UnknownChecked {
-            get => unknownChecked;
-            set => SetProperty(ref unknownChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.Unknown);
+            set => WriteDisplayFilter(DisplayFilter.Unknown, value);
         }
-        private bool refMatchedChecked, suggestedChecked, unknownChecked;
-
         public bool Ms2AcquiredChecked {
-            get => ms2AcquiredChecked;
-            set => SetProperty(ref ms2AcquiredChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
+            set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
         }
         public bool MolecularIonChecked {
-            get => molecularIonChecked;
-            set => SetProperty(ref molecularIonChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.MolecularIon);
+            set => WriteDisplayFilter(DisplayFilter.MolecularIon, value);
         }
         public bool BlankFilterChecked {
-            get => blankFilterChecked;
-            set => SetProperty(ref blankFilterChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.Blank);
+            set => WriteDisplayFilter(DisplayFilter.Blank, value);
         }
         public bool UniqueIonsChecked {
-            get => uniqueIonsChecked;
-            set => SetProperty(ref uniqueIonsChecked, value);
+            get => ReadDisplayFilter(DisplayFilter.UniqueIons);
+            set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
         }
-        private bool ms2AcquiredChecked, molecularIonChecked, blankFilterChecked, uniqueIonsChecked;
+        private DisplayFilter displayFilters = 0;
+
+        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(displayFilters)) {
+                if (AnalysisVM != null)
+                    AnalysisVM.DisplayFilters = displayFilters;
+            }
+        }
 
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
@@ -107,8 +139,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
-            AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
+            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public override void InitializeNewProject(Window window) {
@@ -121,6 +153,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             // Run Alignment
             ProcessAlignment(window, Storage);
+
+            AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
@@ -134,18 +168,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var apsw_result = apsw.ShowDialog();
             if (apsw_result != true) return false;
 
-            if (Storage.AlignmentFiles == null)
-                Storage.AlignmentFiles = new List<AlignmentFileBean>();
+            if (AlignmentFiles == null)
+                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
             var filename = analysisParamSetVM.AlignmentResultFileName;
-            Storage.AlignmentFiles.Add(
+            AlignmentFiles.Add(
                 new AlignmentFileBean
                 {
-                    FileID = Storage.AlignmentFiles.Count,
+                    FileID = AlignmentFiles.Count,
                     FileName = filename,
                     FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                     EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
                 }
             );
+            Storage.AlignmentFiles = AlignmentFiles.ToList();
             Storage.MspDB = analysisParamSetVM.MspDB;
             Storage.TextDB = analysisParamSetVM.TextDB;
             return true;
@@ -222,11 +257,25 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private AnalysisDimsVM LoadAnalysisFile(AnalysisFileBean analysis) {
-            return new AnalysisDimsVM(analysis, Storage.ParameterBase, Storage.MspDB);
+            return new AnalysisDimsVM(analysis, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
         }
 
         private AlignmentDimsVM LoadAlignmentFile(AlignmentFileBean alignment) {
             return new AlignmentDimsVM(alignment, Storage.ParameterBase);
+        }
+
+        private bool ReadDisplayFilter(DisplayFilter flag) {
+            return (displayFilters & flag) != 0;
+        }
+
+        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
+            if (set) {
+                displayFilters |= flag;
+            }
+            else {
+                displayFilters &= (~flag);
+            }
+            OnPropertyChanged(nameof(displayFilters));
         }
     }
 }

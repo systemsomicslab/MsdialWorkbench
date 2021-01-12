@@ -49,8 +49,8 @@ namespace CompMs.MsdialDimsCore {
             CancellationToken token = default) {
 
             var param = (MsdialDimsParameter)container.ParameterBase;
-            var mspDB = container.MspDB;
-            var textDB = container.TextDB;
+            var mspDB = container.MspDB.OrderBy(reference => reference.PrecursorMz).ToList();
+            var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
             var isotopeTextDB = container.IsotopeTextDB;
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;
@@ -111,11 +111,11 @@ namespace CompMs.MsdialDimsCore {
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
                 var chromScanID = peakFeature.ChromScanIdTop;
-                peakFeature.ChromXs.RT = new RetentionTime(0);
-                peakFeature.ChromXsTop.RT = new RetentionTime(0);
                 peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peakFeature.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
+                peakFeature.ChromXs = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
+                peakFeature.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
@@ -143,7 +143,7 @@ namespace CompMs.MsdialDimsCore {
             var ID2CE = new Dictionary<int, double>();
             var startID = SearchCollection.LowerBound(
                 ms2SpecObjects,
-                new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz = mzTolerance } },
+                new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz - mzTolerance } },
                 (x, y) => x.Precursor.SelectedIonMz.CompareTo(y.Precursor.SelectedIonMz));
             
             for (int i = startID; i < ms2SpecObjects.Count; i++) {

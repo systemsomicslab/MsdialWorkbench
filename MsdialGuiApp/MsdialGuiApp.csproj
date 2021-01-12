@@ -165,45 +165,46 @@
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="ViewModel\PeakItem.cs" />
+    <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
-    <Compile Include="View\Dims\AlignmentEicView.xaml.cs" >
-        <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\AlignmentView.xaml.cs" >
-        <DependentUpon>AlignmentView.xaml</DependentUpon>
+    <Compile Include="View\Dims\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\BarChartView.xaml.cs" >
-        <DependentUpon>BarChartView.xaml</DependentUpon>
+    <Compile Include="View\Dims\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundDetailView.xaml.cs" >
-        <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
+      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\EicView.xaml.cs" >
-        <DependentUpon>EicView.xaml</DependentUpon>
+    <Compile Include="View\Dims\EicView.xaml.cs">
+      <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\ExpRefView.xaml.cs" >
-        <DependentUpon>ExpRefView.xaml</DependentUpon>
+    <Compile Include="View\Dims\ExpRefView.xaml.cs">
+      <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\Footer.xaml.cs" >
-        <DependentUpon>Footer.xaml</DependentUpon>
+    <Compile Include="View\Dims\Footer.xaml.cs">
+      <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\MainRibbon.xaml.cs" >
-        <DependentUpon>MainRibbon.xaml</DependentUpon>
+    <Compile Include="View\Dims\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\MainView.xaml.cs" >
-        <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\Dims\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\Navigator.xaml.cs" >
-        <DependentUpon>Navigator.xaml</DependentUpon>
+    <Compile Include="View\Dims\Navigator.xaml.cs">
+      <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakPropertyView.xaml.cs" >
-        <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
+      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakView.xaml.cs" >
-        <DependentUpon>PeakView.xaml</DependentUpon>
+    <Compile Include="View\Dims\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\RepRefView.xaml.cs" >
-        <DependentUpon>RepRefView.xaml</DependentUpon>
+    <Compile Include="View\Dims\RepRefView.xaml.cs">
+      <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>

@@ -50,24 +50,6 @@
                 </TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label Name="Label_ReferenceRT" Content="RT similarity:" Height="25"/>
-                <TextBox Name="TextBox_PeakInformation_RtSimilarity" Height="25" >
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding ScanMatchResult.RtSimilarity, Mode=OneWay, StringFormat=F0}"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ScanMatchResult.RtSimilarity, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
                 <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
                 <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Height="25" >
                     <TextBox.Style>
@@ -122,24 +104,6 @@
                         </TextBox.Style>
                     </TextBox>
                 </StackPanel>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" >
-                <Label Name="Label_CcsSimilarity" Content="CCS similarity:" Height="25"/>
-                <TextBox Name="TextBox_PeakInformation_CcsSimilarity" Height="25">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding ScanMatchResult.CcsSimilarity, Mode=OneWay, StringFormat=F3}"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ScanMatchResult.CcsSimilarity, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="Formula|Ontology:" Height="25"/>

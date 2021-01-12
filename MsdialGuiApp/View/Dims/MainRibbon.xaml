@@ -48,6 +48,9 @@
                 </RibbonApplicationSplitMenuItem>
             </RibbonApplicationMenu>
         </Ribbon.ApplicationMenu>
+        <Ribbon.ContextualTabGroups>
+            <RibbonContextualTabGroup Header="Design?" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
+        </Ribbon.ContextualTabGroups>
         <RibbonTab Header="Processing"
                    KeyTip="P">
             <RibbonGroup Header="Data">
@@ -62,10 +65,6 @@
                 <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
                               KeyTip="L">
                     <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
-                </RibbonButton>
-                <RibbonButton Label="Correlation-based deconvolution (LC-MS only)"
-                              KeyTip="C">
-                    <RibbonButton.ToolTip>Correlation-based deconvolution</RibbonButton.ToolTip>
                 </RibbonButton>
             </RibbonGroup>
             <RibbonGroup Header="Post processing">
@@ -124,8 +123,6 @@
                               KeyTip="B"/>
                 <RibbonButton Label="Display TIC, BPC, and most abundant ion's EIC" LargeImageSource="{StaticResource TIC_BPC_and_most_abundanct_EIC_is}"
                               KeyTip="C"/>
-                <RibbonButton Label="Display retention time correction window"
-                              KeyTip="R"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Option"
@@ -180,6 +177,18 @@
                               KeyTip="D"/>
                 <RibbonButton Label="Copy screenshot to clipboard (emf)"
                               KeyTip="C"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Spot filtering"
+                   ContextualTabGroupHeader="Design?">
+            <RibbonGroup Header="Display filter">
+                <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
+                <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
+                <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
+                <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
+                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}"/>
+                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
+                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"

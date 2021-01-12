@@ -179,21 +179,60 @@
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                    <!--
+                    <TabControl ItemsSource="{Binding ResultVMs}" Grid.Row="2">
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Height" Value="25"/>
+                                <Setter Property="Background" Value="LightSteelBlue"/>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vm:AnalysisDimsVM}">
+                                            <TextBlock Text="Peak spot viewer"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vm:AlignmentDimsVM}">
+                                            <TextBlock Text="Alignment spot viewer"/>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:AnalysisDimsVM}">
+                                <local:PeakView MassAxis="{StaticResource MassAxis}"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:AlignmentDimsVM}">
+                                <local:AlignmentView/>
+                            </DataTemplate>
+                        </TabControl.Resources>
+                    </TabControl>
+                    -->
 
-                        <TabItem Header="Peak spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotPeakView" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-                            <local:PeakView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
+                    <TabControl Name="TabControl_PairwisePlotViewer"
+                                SelectedValuePath="DataContext"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.Row="2" >
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Height" Value="25"/>
+                                <Setter Property="Background" Value="LightSteelBlue"/>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+
+                        <TabItem Name="TabItem_RtMzPairwisePlotPeakView"
+                                 Header="Peak spot viewer" 
+                                 DataContext="{Binding AnalysisVM}">
+                            <local:PeakView MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
-                        <TabItem Header="Alignment spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotAlignmentView" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-                            <local:AlignmentView DataContext="{Binding AlignmentVM}"/>
+                        <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
+                                 Header="Alignment spot viewer" 
+                                 DataContext="{Binding AlignmentVM}">
+                            <local:AlignmentView />
                         </TabItem>
 
                     </TabControl>

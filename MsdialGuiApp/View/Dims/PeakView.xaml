@@ -22,11 +22,11 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
-                                           ItemsSource="{Binding DataContext.Ms1Peaks, Source={x:Reference Name=PeakPairPlot}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0.05"/>
+        <manager:ContinuousAxisManager x:Key="IntensityAxis"
+                                       MinValue="{Binding DataContext.IntensityMin, Source={x:Reference Name=PeakPairPlot}}"
+                                       MaxValue="{Binding DataContext.IntensityMax, Source={x:Reference Name=PeakPairPlot}}"
+                                       Bounds="0,0"
+                                       ChartMargin="0.05"/>
     </UserControl.Resources>
     
     <Grid>
@@ -162,12 +162,12 @@
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">
-            <TextBlock.RenderTransform>
+            <TextBlock.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
                     <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
                 </TransformGroup>
-            </TextBlock.RenderTransform>
+            </TextBlock.LayoutTransform>
         </TextBlock>
     </Grid>
 </UserControl>

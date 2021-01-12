@@ -113,32 +113,20 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private string displayLabel;
 
-        public bool RefMatchedChecked {
-            get => refMatchedChecked;
-            set => SetProperty(ref refMatchedChecked, value);
-        }
+        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
+        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
+        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
+        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
+        // public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
+        // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
 
-        public bool SuggestedChecked {
-            get => suggestedChecked;
-            set => SetProperty(ref suggestedChecked, value);
+        internal DisplayFilter DisplayFilters {
+            get => displayFilters;
+            set => SetProperty(ref displayFilters, value);
         }
+        private DisplayFilter displayFilters = 0;
 
-        public bool UnknownChecked {
-            get => unknownChecked;
-            set => SetProperty(ref unknownChecked, value);
-        }
-        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
-
-        public bool MsmsAcquiredChecked {
-            get => msmsAcquiredChecked;
-            set => SetProperty(ref msmsAcquiredChecked, value);
-        }
-
-        public bool MolecularIonChecked {
-            get => molecularIonChecked;
-            set => SetProperty(ref molecularIonChecked, value);
-        }
-        private bool  msmsAcquiredChecked = false, molecularIonChecked = false;
 
         public double AmplitudeLowerValue {
             get => amplitudeLowerValue;
@@ -168,6 +156,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public double MassMin => _ms1Peaks.Min(peak => peak.Mass);
         public double MassMax => _ms1Peaks.Max(peak => peak.Mass);
+        public double IntensityMin => _ms1Peaks.Min(peak => peak.Intensity);
+        public double IntensityMax => _ms1Peaks.Max(peak => peak.Intensity);
         private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
 
         public double Ms1Tolerance => param.CentroidMs1Tolerance;
@@ -191,7 +181,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AmplitudeOrderMax = _ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
             Ms1Peaks = CollectionViewSource.GetDefaultView(_ms1Peaks);
 
-            using (var access = new RawDataAccess(analysisFileBean.AnalysisFilePath, 0, true, analysisFileBean.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var access = new RawDataAccess(analysisFileBean.AnalysisFilePath, 0, true)) {
                 RawMeasurement rawObj = null;
                 foreach (var i in Enumerable.Range(0, 5)) {
                     rawObj = DataAccess.GetRawDataMeasurement(access);
@@ -214,14 +204,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (obj is ChromatogramPeakFeatureVM peak) {
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
-                    && (!MsmsAcquiredChecked || peak.IsMsmsContained)
+                    && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0);
             }
             return false;
         }
 
         bool AnnotationFilter(ChromatogramPeakFeatureVM peak) {
-            if (!(RefMatchedChecked || SuggestedChecked || UnknownChecked)) return true;
+            if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
                 || UnknownChecked && peak.IsUnknown;
@@ -233,11 +223,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(RefMatchedChecked)
-                || e.PropertyName == nameof(SuggestedChecked)
-                || e.PropertyName == nameof(UnknownChecked)
-                || e.PropertyName == nameof(MsmsAcquiredChecked)
-                || e.PropertyName == nameof(MolecularIonChecked)
+            if (e.PropertyName == nameof(DisplayFilters)
                 || e.PropertyName == nameof(AmplitudeLowerValue)
                 || e.PropertyName == nameof(AmplitudeUpperValue))
                 Ms1Peaks?.Refresh();
@@ -295,8 +281,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return new Splash().splashIt(msspectrum);
         }
 
-        public DelegateCommand<object[]> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object[]>(FocusByID));
-        private DelegateCommand<object[]> focusByIDCommand;
+        public DelegateCommand<object> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object>(FocusByID));
+        private DelegateCommand<object> focusByIDCommand;
 
         private void FocusByID(object axis) {
             var focus = _ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
@@ -310,6 +296,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private static readonly double MzTol = 20;
         private void FocusByMz(AxisManager axis) {
             axis.Focus(FocusMz - MzTol, FocusMz + MzTol);
+        }
+
+        private bool ReadDisplayFilters(DisplayFilter flags) {
+            return (flags & DisplayFilters) != 0;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
         public double TimesCenter => innerModel.TimesCenter.Value;
         public double MassCenter => innerModel.MassCenter;
+        public double HeightAverage => innerModel.HeightAverage;
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
 
         private readonly AlignmentSpotProperty innerModel;

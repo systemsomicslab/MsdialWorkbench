@@ -64,8 +64,8 @@ namespace CompMs.App.Msdial.Dims
             set => SetProperty(ref searchedAdductIons, value);
         }
 
-        public List<MoleculeMsReference> MspDB { get; set; }
-        public List<MoleculeMsReference> TextDB { get; set; }
+        public List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
+        public List<MoleculeMsReference> TextDB { get; set; } = new List<MoleculeMsReference>();
 
         #endregion
 
@@ -169,7 +169,7 @@ namespace CompMs.App.Msdial.Dims
             }
             else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                 if (files.Length == 1)
                 {
                     param.MspFilePath = files.First();

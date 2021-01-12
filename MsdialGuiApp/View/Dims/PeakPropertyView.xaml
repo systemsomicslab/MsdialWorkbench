@@ -25,7 +25,6 @@
     
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="0" Margin="5,0,0,0">
             <Label Content="Annotation:" Height="25"/>
-            <Label Name="Label_RetentionTime" Content="RT [min]:" Height="25"/>
             <Label Name="Label_Adduct" Content="Adduct type:" Height="25" />
             <Label Name="Label_UiMass" Content="m/z:" Height="25" />
             <Label Name="Label_PeakIntensity" Content="Peak height|area:" Height="25" />
@@ -47,18 +46,6 @@
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Name, TargetNullValue=''}" Value="" >
                                 <Setter Property="Text" Value="Unknown"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-            <TextBox Name="TextBox_PeakInformation_RetentionTime" Height="25">
-                <TextBox.Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                        <Setter Property="Text" Value="{Binding ChromXValue, Mode=OneWay, StringFormat=F3}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ChromXValue, TargetNullValue=''}" Value="" >
-                                <Setter Property="Text" Value="NA"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

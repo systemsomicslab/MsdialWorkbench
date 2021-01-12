@@ -163,7 +163,7 @@ namespace CompMs.App.Msdial.StartUp
             if (Ionization == Ionization.ESI && TargetOmics == TargetOmics.Lipidomics)
             {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly).Length != 1)
+                if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly).Length != 1)
                 {
                     MessageBox.Show("There is no LBM file or several LBM files are existed in this application folder. Please see the tutorial.",
                                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);

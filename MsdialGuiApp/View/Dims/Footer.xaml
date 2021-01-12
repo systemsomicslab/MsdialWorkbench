@@ -33,14 +33,9 @@
                  VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
                  Margin="0,0,720,0" Width="70">
             <TextBox.InputBindings>
-                <KeyBinding Gesture="Enter" Command="{Binding FocusByIDCommand}">
-                    <KeyBinding.CommandParameter>
-                        <MultiBinding Converter="{StaticResource MIdentity}" Mode="OneWay">
-                            <Binding Path="ChromAxis" ElementName="FooterView"/>
-                            <Binding Path="MassAxis" ElementName="FooterView"/>
-                        </MultiBinding>
-                    </KeyBinding.CommandParameter>
-                </KeyBinding>
+                <KeyBinding Gesture="Enter"
+                            Command="{Binding FocusByIDCommand}"
+                            CommandParameter="{Binding MassAxis, ElementName=FooterView}"/>
             </TextBox.InputBindings>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Enter key is available for going to the target spot" />
@@ -50,46 +45,13 @@
         <Button Name="Button_FocusRegionByID"
                 Content=">"
                 Command="{Binding FocusByIDCommand}"
+                CommandParameter="{Binding MassAxis, ElementName=FooterView}"
                 VerticalAlignment="Center" HorizontalAlignment="Right"
                 Margin="0,0,700,0" Width="15">
-            <Button.CommandParameter>
-                <MultiBinding Converter="{StaticResource MIdentity}" Mode="OneWay">
-                    <Binding Path="ChromAxis" ElementName="FooterView"/>
-                    <Binding Path="MassAxis" ElementName="FooterView"/>
-                </MultiBinding>
-            </Button.CommandParameter>
             <ToolTipService.ToolTip>
                 <ToolTip Content="go to the region"/>
             </ToolTipService.ToolTip>
         </Button>
-
-        <Label Content="RT(min): " Name="Label_FocusSpotRt"
-                HorizontalAlignment="Right" VerticalAlignment="Top"
-                Margin="0,0,625,0" />
-
-        <TextBox Name="TextBox_FocusSpotRT"
-                 Text="{Binding FocusRt, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                 VerticalAlignment="Center" HorizontalAlignment="Right"
-                 VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
-                 Margin="0,0,555,0" Width="70">
-            <TextBox.InputBindings>
-                <KeyBinding Gesture="Enter" Command="{Binding FocusByRtCommand}" CommandParameter="{Binding ChromAxis, ElementName=FooterView}"/>
-            </TextBox.InputBindings>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="Enter key is available for going to the target spot" />
-            </ToolTipService.ToolTip>
-        </TextBox>
-
-        <Button Name="Button_FocusRegionByRt"
-                Content=">"
-                Command="{Binding FocusByRtCommand}" CommandParameter="{Binding ChromAxis, ElementName=FooterView}"
-                VerticalAlignment="Center" HorizontalAlignment="Right"
-                Margin="0,0,535,0" Width="15">
-            <ToolTipService.ToolTip>
-                <ToolTip Content="go to the region"/>
-            </ToolTipService.ToolTip>
-        </Button>
-
 
         <Label Content="m/z: " FontStyle="Italic"
                        HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -101,7 +63,9 @@
                  VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
                  Margin="0,0,410,0" Width="70" >
             <TextBox.InputBindings>
-                <KeyBinding Gesture="Enter" Command="{Binding FocusByMzCommand}" CommandParameter="{Binding MassAxis, ElementName=FooterView}"/>
+                <KeyBinding Gesture="Enter"
+                            Command="{Binding FocusByMzCommand}"
+                            CommandParameter="{Binding MassAxis, ElementName=FooterView}"/>
             </TextBox.InputBindings>
             <ToolTipService.ToolTip>
                 <ToolTip Content="Enter key is available for going to the target spot" />
@@ -110,7 +74,8 @@
 
         <Button Name="Button_FocusRegionByMz"
                 Content=">"
-                Command="{Binding FocusByMzCommand}" CommandParameter="{Binding MassAxis, ElementName=FooterView}"
+                Command="{Binding FocusByMzCommand}"
+                CommandParameter="{Binding MassAxis, ElementName=FooterView}"
                 VerticalAlignment="Center" HorizontalAlignment="Right"
                 Margin="0,0,390,0" Width="15">
             <ToolTipService.ToolTip>

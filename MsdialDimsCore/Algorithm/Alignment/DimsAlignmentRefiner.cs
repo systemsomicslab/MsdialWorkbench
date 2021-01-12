@@ -14,18 +14,15 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
     {
         public DimsAlignmentRefiner(MsdialDimsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
-        protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
-            var spots = alignments.OrderBy(spot => spot.MassCenter).ToList();
-            var master = new List<AlignmentSpotProperty> {
-                new AlignmentSpotProperty { MassCenter = double.MinValue },
-                new AlignmentSpotProperty { MassCenter = double.MaxValue } }; // add sentinel
+        protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> spots) {
+            var master = new Dictionary<int, List<AlignmentSpotProperty>>();
             var ms1Tol = _param.Ms1AlignmentTolerance;
 
-            master = MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
-            master = MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
-            master = MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber <= 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber <= 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 
-            return master.Skip(1).Take(master.Count - 2).ToList(); // skip sentinel
+            return master.Values.SelectMany(props => props).OrderBy(spot => spot.MassCenter).ToList();
         }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) {
@@ -46,26 +43,39 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         protected override void PostProcess(List<AlignmentSpotProperty> alignments) { }
 
-        private List<AlignmentSpotProperty> MergeToMaster(IEnumerable<AlignmentSpotProperty> spots, List<AlignmentSpotProperty> master, double ms1Tol) {
-            var merged = new List<AlignmentSpotProperty>(master.Count);
-            int i = 0;
+        private static void MergeToMaster(IEnumerable<AlignmentSpotProperty> spots, Dictionary<int, List<AlignmentSpotProperty>> master, double ms1Tol) {
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            var tol = ms1Tol;
             foreach (var spot in spots) {
-                while (i < master.Count && master[i].MassCenter < spot.MassCenter)
-                    merged.Add(master[i++]);
 
-                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
                 #region // practical parameter changes
                 if (spot.MassCenter > 500) {
-                    ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(spot.MassCenter, ppm);
+                    tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(spot.MassCenter, ppm);
                 }
                 #endregion
 
-                if (merged[merged.Count - 1].MassCenter + ms1Tol <= spot.MassCenter && spot.MassCenter <= master[i].MassCenter - ms1Tol)
-                    merged.Add(spot);
+                if (!ExistsSimilar(spot.MassCenter, master, tol)) {
+                    var massKey = (int)spot.MassCenter;
+                    if (!master.ContainsKey(massKey))
+                        master[massKey] = new List<AlignmentSpotProperty>();
+                    master[massKey].Add(spot);
+                }
             }
-            while (i < master.Count)
-                merged.Add(master[i++]);
-            return merged;
+        }
+
+        private static bool ExistsSimilar(double mass, Dictionary<int, List<AlignmentSpotProperty>> master, double tol) {
+            var massKey = (int)mass;
+            var t = (int)Math.Ceiling(tol);
+            foreach (var keyTol in Enumerable.Range(-t, t * 2 + 1)) { // -t to + t
+                if (!master.ContainsKey(massKey + keyTol))
+                    continue;
+                foreach (var prop in master[massKey + keyTol]) {
+                    if (prop.MassCenter - tol <= mass && mass <= prop.MassCenter + tol) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
