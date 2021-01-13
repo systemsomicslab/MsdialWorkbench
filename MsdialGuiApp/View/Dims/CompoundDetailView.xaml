@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
@@ -13,7 +14,12 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converter:MultiplyConverter x:Key="permille" By="1000"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,12 +42,9 @@
                 <TextBox Name="TextBox_PeakInformation_AnnotationInCompDetail" Height="25" >
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding ScanMatchResult.Name, Mode=OneWay}"/>
+                            <Setter Property="Text" Value="{Binding Name, Mode=OneWay}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ScanMatchResult.Name, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="Unknown"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
+                                <DataTrigger Binding="{Binding Name, TargetNullValue=''}" Value="" >
                                     <Setter Property="Text" Value="Unknown"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -54,7 +57,7 @@
                 <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Height="25" >
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding ScanMatchResult.AcurateMassSimilarity, Mode=OneWay, StringFormat=F0}"/>
+                            <Setter Property="Text" Value="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ScanMatchResult.AcurateMassSimilarity, TargetNullValue=''}" Value="" >
                                     <Setter Property="Text" Value="NA"/>
@@ -74,7 +77,7 @@
                     <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity" Height="25">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                <Setter Property="Text" Value="{Binding ScanMatchResult.SimpleDotProduct, Mode=OneWay, StringFormat=F0}"/>
+                                <Setter Property="Text" Value="{Binding ScanMatchResult.SimpleDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ScanMatchResult.SimpleDotProduct, TargetNullValue=''}" Value="" >
                                         <Setter Property="Text" Value="NA"/>
@@ -91,7 +94,7 @@
                     <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity" Height="25" >
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                <Setter Property="Text" Value="{Binding ScanMatchResult.ReverseDotProduct, Mode=OneWay, StringFormat=F0}"/>
+                                <Setter Property="Text" Value="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ScanMatchResult.ReverseDotProduct, TargetNullValue=''}" Value="" >
                                         <Setter Property="Text" Value="NA"/>

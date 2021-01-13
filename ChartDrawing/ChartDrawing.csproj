@@ -85,6 +85,7 @@
     <Compile Include="Converter\EnumTypeToValuesConverter.cs" />
     <Compile Include="Adorner\RubberAdorner.cs" />
     <Compile Include="Converter\MultiIdentityConverter.cs" />
+    <Compile Include="Converter\MultiplyConverter.cs" />
     <Compile Include="Default\DefaultFE.cs" />
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>

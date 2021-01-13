@@ -46,7 +46,7 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <Grid>
-                <special:LinkedPeakAnnotator x:Name="scatter"
+                <scatter:ScatterControl x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
                                         HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
@@ -55,8 +55,6 @@
                                         HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
-                                        Target="{Binding SelectedItem.InnerModel, RelativeSource={RelativeSource Self}}"
-                                        GroupPeaks="{Binding Peaks}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
                                         behavior:ScatterFocusBehavior.OuterScale="1.3"
                                         behavior:ScatterFocusBehavior.InnerScale="1.2"
@@ -85,7 +83,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </behavior:ScatterFocusBehavior.LabelTemplate>
-                </special:LinkedPeakAnnotator>
+                </scatter:ScatterControl>
                 <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
                                  HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"

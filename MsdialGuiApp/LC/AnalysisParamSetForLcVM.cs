@@ -169,11 +169,11 @@ namespace CompMs.App.Msdial.LC
             }
             else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                 if (files.Length == 1)
                 {
                     param.MspFilePath = files.First();
-                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param));
+                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param).OrderBy(msp => msp.PrecursorMz).ToList());
                 }
             }
 

@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.Process {
                 foreach (var i in Enumerable.Range(0, 5)) {
                     rawObj = DataAccess.GetRawDataMeasurement(access);
                     if (rawObj != null) break;
-                    Thread.Sleep(2000);
+                    Thread.Sleep(5000);
                 }
                 if (rawObj == null) {
                     throw new FileLoadException($"Loading {filepath} failed.");

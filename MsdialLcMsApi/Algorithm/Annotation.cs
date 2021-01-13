@@ -75,7 +75,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
                         result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
                     }
-                    if (result.IsSpectrumMatch || result.IsPrecursorMzMatch) {
+                    if (result != null && (result.IsSpectrumMatch || result.IsPrecursorMzMatch)) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
                     }

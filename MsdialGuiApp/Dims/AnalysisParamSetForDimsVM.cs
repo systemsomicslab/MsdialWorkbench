@@ -173,7 +173,7 @@ namespace CompMs.App.Msdial.Dims
                 if (files.Length == 1)
                 {
                     param.MspFilePath = files.First();
-                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param));
+                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param).OrderBy(msp => msp.PrecursorMz).ToList());
                 }
             }
 

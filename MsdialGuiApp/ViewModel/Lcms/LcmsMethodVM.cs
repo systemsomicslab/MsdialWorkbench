@@ -105,8 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
-            AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
         }
 
         public override void InitializeNewProject(Window window) {
@@ -119,6 +118,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             // Run Alignment
             ProcessAlignment(window, Storage);
+
+            AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
@@ -132,18 +133,19 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var apsw_result = apsw.ShowDialog();
             if (apsw_result != true) return false;
 
-            if (Storage.AlignmentFiles == null)
-                Storage.AlignmentFiles = new List<AlignmentFileBean>();
+            if (AlignmentFiles == null)
+                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
             var filename = analysisParamSetVM.AlignmentResultFileName;
-            Storage.AlignmentFiles.Add(
+            AlignmentFiles.Add(
                 new AlignmentFileBean
                 {
-                    FileID = Storage.AlignmentFiles.Count,
+                    FileID = AlignmentFiles.Count,
                     FileName = filename,
                     FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                     EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
                 }
             );
+            Storage.AlignmentFiles = AlignmentFiles.ToList();
             Storage.MspDB = analysisParamSetVM.MspDB;
             Storage.TextDB = analysisParamSetVM.TextDB;
             return true;

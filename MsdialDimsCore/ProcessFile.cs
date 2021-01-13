@@ -71,21 +71,31 @@ namespace CompMs.MsdialDimsCore {
                 var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                 var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
                 var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
-                var chromFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
+                var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
 
-                if (chromFeatures.Count == 0) return;
-                IsotopeEstimator.Process(chromFeatures, param, iupacDB);
-                SetSpectrumPeaks(chromFeatures, spectrumList);
+                if (peakFeatures.Count == 0) return;
+                IsotopeEstimator.Process(peakFeatures, param, iupacDB);
+                SetSpectrumPeaks(peakFeatures, spectrumList);
+
+                // chrom deconvolutions
+                Console.WriteLine("Deconvolution started");
+                var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
+                var msdecResults = new List<MSDecResult>();
+                var initial_msdec = 30.0;
+                var max_msdec = 30.0;
+                var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
+                msdecResults = new Algorithm.Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
+                       spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
                 Console.WriteLine("Annotation started");
-                foreach (var feature in chromFeatures) {
-                    AnnotationProcess.Run(feature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, null, out _, out _);
+                foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
+                    AnnotationProcess.Run(feature, msdecResult, mspDB, textDB, param.MspSearchParam, param.TargetOmics, null, out _, out _);
                 }
 
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromFeatures, null, param, reportAction);
+                new PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
 
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromFeatures);
+                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
 
                 reportAction?.Invoke(100);
             }

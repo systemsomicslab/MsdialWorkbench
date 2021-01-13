@@ -95,6 +95,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
                 out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            if (name == string.Empty)
+                return null;
 
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
