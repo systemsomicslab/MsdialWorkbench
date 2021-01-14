@@ -10407,7 +10407,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGly", LbmClass.NAGly, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -10453,7 +10454,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGly", LbmClass.NAGly, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -10518,7 +10520,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (isClassIonFound2 == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound2 == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGlySer", LbmClass.NAGlySer, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }

@@ -10302,7 +10302,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGly", LbmClass.NAGly, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -10348,7 +10349,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGly", LbmClass.NAGly, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -10412,7 +10414,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             }
                         }
                     }
-                    if (isClassIonFound2 == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound2 == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAGlySer", LbmClass.NAGlySer, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -10473,8 +10476,6 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             return null;
         }
-
-
 
         public static LipidMolecule JudgeIfSulfonolipid(ObservableCollection<double[]> spectrum, double ms2Tolerance,
              double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PE 46:6, totalCarbon = 46 and totalDoubleBond = 6
@@ -11004,6 +11005,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         }
                     }
                     //if ((isClassIon1Found == !true || isClassIon2Found == !true) && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null;
                     return returnAnnotationResult("NAOrn", LbmClass.NAOrn, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }

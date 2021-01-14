@@ -318,7 +318,8 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
                 Console.WriteLine("AutocorrelationDescriptorCharge returned an error");
             }
             foreach (var item in result) {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                //NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                NcdkDescriptors["ATSc" + item.Key] = Convert.ToDouble(item.Value);
                 // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
             }
         }
@@ -329,7 +330,8 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
                 Console.WriteLine("AutocorrelationDescriptorMass returned an error");
             }
             foreach (var item in result) {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                //NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                NcdkDescriptors["ATSm" + item.Key] = Convert.ToDouble(item.Value);
                 // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
             }
         }
@@ -340,7 +342,8 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
                 Console.WriteLine("AutocorrelationDescriptorPolarizability returned an error");
             }
             foreach (var item in result) {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                //NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                NcdkDescriptors["ATSp" + item.Key] = Convert.ToDouble(item.Value);
                 // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
             }
         }
@@ -583,7 +586,8 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
                 Console.WriteLine("KappaShapeIndicesDescriptor returned an error");
             }
             foreach (var item in result) {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                //NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
+                NcdkDescriptors["KappaShapeIndices" + item.Key] = Convert.ToDouble(item.Value);
                 // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
             }
         }
