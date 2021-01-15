@@ -66,14 +66,21 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public List<Chromatogram> EicChromatograms {
             get => eicChromatograms;
-            set => SetProperty(ref eicChromatograms, value);
+            set {
+                if (SetProperty(ref eicChromatograms, value)) {
+                    OnPropertyChanged(nameof(EicMax));
+                    OnPropertyChanged(nameof(EicMin));
+                    OnPropertyChanged(nameof(IntensityMax));
+                    OnPropertyChanged(nameof(IntensityMin));
+                }
+            }
         }
         private List<Chromatogram> eicChromatograms;
 
-        public double EicMax => 5d;
-        public double EicMin => 0d;
-        public double IntensityMax => 1000000d;
-        public double IntensityMin => 0d;
+        public double EicMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak.Time) ?? 0;
+        public double EicMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak.Time) ?? 0;
+        public double IntensityMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak.Intensity) ?? 0;
+        public double IntensityMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak.Intensity) ?? 0;
 
         private ParameterBase param;
         private static ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;

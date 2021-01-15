@@ -302,14 +302,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <local:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding SelectedValue.Target, ElementName=TabControl_PairwisePlotViewer}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <local:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding SelectedValue.Target, ElementName=TabControl_PairwisePlotViewer}"/>
                             </TabItem>
                          
                         </TabControl>

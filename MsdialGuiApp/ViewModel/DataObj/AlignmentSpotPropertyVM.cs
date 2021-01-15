@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.ObjectModel;
 
@@ -12,6 +13,15 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double MassCenter => innerModel.MassCenter;
         public double HeightAverage => innerModel.HeightAverage;
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
+
+        public string Name => innerModel.Name;
+        public string AdductIonName => innerModel.PeakCharacter.AdductType.AdductIonName;
+        public string Formula => innerModel.Formula.FormulaString;
+        public string Ontology => innerModel.Ontology;
+        public string InChIKey => innerModel.InChIKey;
+        public string SMILES => innerModel.SMILES;
+        public string Comment => innerModel.Comment;
+        public MsScanMatchResult ScanMatchResult => innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
 
         private readonly AlignmentSpotProperty innerModel;
 
