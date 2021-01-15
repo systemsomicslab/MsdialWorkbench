@@ -28,6 +28,16 @@
                                            ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
                                            ValuePropertyName="HeightAverage"
                                            ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="NKMAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="NominalKM"
+                                           ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="KMDAxis"
+                                       MinValue="-0.5" MaxValue="0.5"
+                                       ChartMargin="0.05"/>
+        <manager:ContinuousAxisManager x:Key="KMRAxis"
+                                       MinValue="0" MaxValue="{x:Static do:AlignmentSpotPropertyVM.KMNominalUnit}"
+                                       ChartMargin="0.05"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -47,12 +57,12 @@
             <Grid Margin="-1,0,0,-1">
                 <scatter:ScatterControl x:Name="alignmentScatter"
                                         ItemsSource="{Binding Ms1Spots}"
-                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
-                                        HorizontalPropertyName="MassCenter"
-                                        VerticalPropertyName="HeightAverage"
+                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource NKMAxis}}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource NKMAxis}, Mode=TwoWay}"
+                                        RangeY="{Binding Range, Source={StaticResource KMDAxis}, Mode=TwoWay}"
+                                        HorizontalPropertyName="NominalKM"
+                                        VerticalPropertyName="KMD"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=OneWayToSource}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
@@ -109,24 +119,24 @@
                 </ContentControl>
             </Grid>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource NKMAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource NKMAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource NKMAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource KMDAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource KMDAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
-        <TextBlock Text="m/z"
+        <TextBlock Text="Nominal Kendrick mass"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="Intensity"
+        <TextBlock Text="Kendrick mass defect"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">

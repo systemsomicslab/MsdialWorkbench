@@ -17,16 +17,13 @@
     </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
         <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding}"
                                            ValuePropertyName="Mass"
                                            ChartMargin="0.05"/>
         <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.05" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.05"/>

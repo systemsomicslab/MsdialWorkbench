@@ -187,6 +187,7 @@
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
@@ -213,6 +214,9 @@
     </Compile>
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\CompoundSearchWindow.xaml.cs">
+      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
@@ -411,6 +415,10 @@
     <Page Include="View\Dims\CompoundDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\CompoundSearchWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\EicView.xaml">
       <Generator>MSBuild:Compile</Generator>

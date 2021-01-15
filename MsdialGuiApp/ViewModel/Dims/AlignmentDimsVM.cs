@@ -109,6 +109,5 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(EicFile, target.MasterAlignmentID);
             EicChromatograms = spotinfo.PeakInfos.Select(peakinfo => new Chromatogram { Peaks = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList() }).ToList();
         }
-
     }
 }

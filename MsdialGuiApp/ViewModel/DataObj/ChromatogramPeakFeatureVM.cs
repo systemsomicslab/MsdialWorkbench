@@ -36,6 +36,13 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
         public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 
+        public static readonly double KMIupacUnit;
+        public static readonly double KMNominalUnit;
+        public double KM => Mass / KMIupacUnit * KMNominalUnit;
+        public double NominalKM => System.Math.Round(KM);
+        public double KMD => NominalKM - KM;
+        public double KMR => NominalKM % KMNominalUnit;
+
 
 
         public ChromatogramPeakFeature InnerModel => innerModel;
@@ -45,6 +52,11 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         private ChromatogramPeakFeature innerModel;
         #endregion
+
+        static ChromatogramPeakFeatureVM() {
+            KMIupacUnit = CompMs.Common.DataObj.Property.AtomMass.hMass * 2 + CompMs.Common.DataObj.Property.AtomMass.cMass; // CH2
+            KMNominalUnit = System.Math.Round(KMIupacUnit);
+        }
 
         public ChromatogramPeakFeatureVM(ChromatogramPeakFeature feature) {
             innerModel = feature;

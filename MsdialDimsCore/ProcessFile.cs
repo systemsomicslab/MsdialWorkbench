@@ -97,6 +97,9 @@ namespace CompMs.MsdialDimsCore {
                 var paifile = file.PeakAreaBeanInformationFilePath;
                 MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
 
+                var dclfile = file.DeconvolutionFilePath;
+                MsdecResultsWriter.Write(dclfile, msdecResults);
+
                 reportAction?.Invoke(100);
             }
         }
@@ -153,14 +156,13 @@ namespace CompMs.MsdialDimsCore {
             var ID2CE = new Dictionary<int, double>();
             var startID = SearchCollection.LowerBound(
                 ms2SpecObjects,
-                new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz - mzTolerance } },
-                (x, y) => x.Precursor.SelectedIonMz.CompareTo(y.Precursor.SelectedIonMz));
+                new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
+                (x, y) => (x.Precursor.IsolationTargetMz + x.Precursor.IsolationWindowUpperOffset).CompareTo(y.Precursor.IsolationTargetMz + y.Precursor.IsolationWindowUpperOffset));
             
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
                 var spec = ms2SpecObjects[i];
-                var specPrecursorMz = spec.Precursor.SelectedIonMz;
-                if (specPrecursorMz < precursorMz - mzTolerance) continue;
-                if (specPrecursorMz > precursorMz + mzTolerance) break;
+                if (spec.Precursor.IsolationTargetMz + spec.Precursor.IsolationWindowUpperOffset < precursorMz - mzTolerance) continue;
+                if (spec.Precursor.IsolationTargetMz - spec.Precursor.IsolationWindowLowerOffset > precursorMz + mzTolerance) break;
 
                 ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }

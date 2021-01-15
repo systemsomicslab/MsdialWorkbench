@@ -77,7 +77,7 @@
                             <line:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Time: "/>
+                                        <TextBlock Text="m/z: "/>
                                         <TextBlock Text="{Binding FocusedItem.Time}"/>
                                         <TextBlock Text=" Intensity: "/>
                                         <TextBlock Text="{Binding FocusedItem.Intensity}"/>
@@ -103,7 +103,7 @@
                    FontFamily="Calibri" FontSize="16"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
-        <TextBlock Text="Retention time [min]"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>

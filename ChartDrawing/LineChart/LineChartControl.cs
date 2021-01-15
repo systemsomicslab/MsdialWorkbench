@@ -111,9 +111,13 @@ namespace CompMs.Graphics.LineChart
         }
 
         void SetHorizontalDatas() {
-            if (dataType == null || HorizontalPropertyName == null) return;
+            if (dataType == null || HorizontalPropertyName == null)
+                return;
 
             hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
+            if (hPropertyReflection == null)
+                return;
+
             foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
                 datas[idx].x = hPropertyReflection.GetValue(obj);
         }
@@ -122,6 +126,9 @@ namespace CompMs.Graphics.LineChart
             if (dataType == null || VerticalPropertyName == null) return;
 
             vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+            if (vPropertyReflection == null)
+                return;
+
             foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
                 datas[idx].y = vPropertyReflection.GetValue(obj);
         }
