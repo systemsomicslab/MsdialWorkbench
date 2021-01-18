@@ -27,14 +27,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private List<SpectrumPeakWrapper> ms2DecSpectrum = new List<SpectrumPeakWrapper>();
 
-        public int FileID => analysisFile.AnalysisFileId;
-        public string FileName => analysisFile.AnalysisFileName;
-        public double AccurateMass => peakFeature.Mass;
-        public string AdductName => peakFeature.PeakCharacter.AdductType.AdductIonName;
-        public string MetaboliteName => peakFeature.Name;
+        public int FileID { get; }
+        public string FileName { get; }
+        public double AccurateMass { get; }
+        public string AdductName { get; }
+        public string MetaboliteName { get; }
 
-        private readonly AnalysisFileBean analysisFile;
-        private readonly ChromatogramPeakFeature peakFeature;
         private readonly MSDecResult msdecResult;
         private readonly List<MoleculeMsReference> mspDB;
         private readonly MsRefSearchParameterBase mspParam;
@@ -47,13 +45,41 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam, 
             TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes) {
 
-            this.analysisFile = analysisFile;
-            this.peakFeature = peakFeature;
             this.msdecResult = msdecResult;
             this.mspDB = mspDB;
             this.mspParam = mspParam;
             this.omics = omics;
             this.isotopes = isotopes;
+
+            FileID = analysisFile.AnalysisFileId;
+            FileName = analysisFile.AnalysisFileName;
+            AccurateMass = peakFeature.PrecursorMz;
+            AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
+            MetaboliteName = peakFeature.Name;
+
+            Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
+            Search();
+        }
+
+        public CompoundSearchVM(
+            AlignmentFileBean alignmentFile, 
+            AlignmentSpotProperty spot, MSDecResult msdecResult,
+            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam,
+            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes) {
+
+            var peakFeature = spot.AlignedPeakProperties[spot.RepresentativeFileID];
+
+            this.msdecResult = msdecResult;
+            this.mspDB = mspDB;
+            this.mspParam = mspParam;
+            this.omics = omics;
+            this.isotopes = isotopes;
+
+            FileID = alignmentFile.FileID;
+            FileName = alignmentFile.FileName;
+            AccurateMass = peakFeature.Mass;
+            AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
+            MetaboliteName = peakFeature.Name;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
@@ -62,8 +88,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search));
         private DelegateCommand searchCommand;
 
-        private void Search() {
-            AnnotationProcess.Run(peakFeature, msdecResult, mspDB, null, mspParam, omics, isotopes, out var mspResults, out _);
+        private async void Search() {
+            var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)
                           .Select(result => new CompoundResult(mspDB[result.LibraryIDWhenOrdered], result))

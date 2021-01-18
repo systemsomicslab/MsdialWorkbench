@@ -78,9 +78,7 @@
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="m/z: "/>
-                                        <TextBlock Text="{Binding FocusedItem.Time}"/>
                                         <TextBlock Text=" Intensity: "/>
-                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
                                     </StackPanel>
                                 </ToolTip>
                             </line:LineChartControl.ToolTip>

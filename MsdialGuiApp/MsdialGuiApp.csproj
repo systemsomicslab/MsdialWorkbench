@@ -203,6 +203,9 @@
     <Compile Include="ViewModel\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
+      <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
@@ -226,6 +229,9 @@
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\IonTableViewer.xaml.cs">
+      <DependentUpon>IonTableViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
@@ -400,6 +406,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dims\AlignmentClassBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dims\AlignmentEicView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -431,6 +441,10 @@
     <Page Include="View\Dims\Footer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\IonTableViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\MainRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>

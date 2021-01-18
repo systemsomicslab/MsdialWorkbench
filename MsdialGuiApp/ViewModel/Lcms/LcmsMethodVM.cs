@@ -202,6 +202,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return true;
         }
 
+        public override void LoadProject() {
+            LoadSelectedAnalysisFile();
+        }
+
         public DelegateCommand LoadAnalysisFileCommand {
             get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadSelectedAnalysisFile));
         }

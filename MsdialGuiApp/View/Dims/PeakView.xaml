@@ -55,7 +55,7 @@
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
                                         RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                         RangeY="{Binding Range, Source={StaticResource KMDAxis}}"
-                                        HorizontalPropertyName="NominalKM" VerticalPropertyName="KMD"
+                                        HorizontalPropertyName="Mass" VerticalPropertyName="KMD"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
@@ -92,7 +92,7 @@
                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
                                  RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
                                  RangeY="{Binding Range, Source={StaticResource KMDAxis}}"
-                                 HorizontalPropertyName="NominalKM" VerticalPropertyName="KMD"
+                                 HorizontalPropertyName="Mass" VerticalPropertyName="KMD"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
                                 ContentTemplate="{DynamicResource FocusCross}"
@@ -155,7 +155,7 @@
                 </ContentControl.Resources>
             </ContentControl>
         </StackPanel>
-        <TextBlock Text="Nominal Kendrick mass"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>

@@ -122,7 +122,7 @@ namespace CompMs.Graphics.AxisManager
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var axis = d as CategoryAxisManager;
-            if (axis == null) return;
+            if (axis == null || axis.ItemsSource == null) return;
 
             var enumerator = axis.ItemsSource.GetEnumerator();
             if (!enumerator.MoveNext()) return;

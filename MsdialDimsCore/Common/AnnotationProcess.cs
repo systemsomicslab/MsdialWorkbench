@@ -5,6 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
@@ -15,10 +16,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Common {
     public sealed class AnnotationProcess {
         private AnnotationProcess() { }
+
+        async public static Task<List<MsScanMatchResult>> RunMspAnnotationAsync(
+            double precursorMz, MSDecResult msdecResult,
+            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase param,
+            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes
+            ) {
+            if (mspDB == null)
+                return new List<MsScanMatchResult>();
+
+            var ms1Tol = param.Ms1Tolerance;
+
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            #region // practical parameter changes
+            if (precursorMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(precursorMz, ppm);
+            }
+            #endregion
+
+            Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = null;
+            if (omics == TargetOmics.Lipidomics)
+                getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+            else if (omics == TargetOmics.Metabolomics)
+                getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+
+            return await Task.Run(() => GetMatchResults(mspDB, precursorMz, ms1Tol, getMatchResult));
+        }
 
         public static void Run(
             ChromatogramPeakFeature feature, MSDecResult msdecResult,
@@ -48,7 +76,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 else if (omics == TargetOmics.Metabolomics)
                     getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
 
-                mspResults = GetMatchResults(mspDB, feature.Mass, ms1Tol, getMatchResult).Where(result => result.IsPrecursorMzMatch || result.IsSpectrumMatch).ToList();
+                mspResults = GetMatchResults(mspDB, feature.Mass, ms1Tol, getMatchResult).ToList();
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
                 if (mspResults.Count > 0)
                 {

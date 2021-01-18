@@ -55,58 +55,22 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
-                        <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Height="25" >
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ScanMatchResult.AcurateMassSimilarity, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <TextBox Name="TextBox_PeakInformation_Ms1Similarity"
+                                 Text="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                 Height="25"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_SpectrumSimilarity" Content="Spectrum similarity:" Height="25"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBox Text="(Dot)" />
-                            <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity" Height="25">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ScanMatchResult.WeightedDotProduct, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                            <TextBox Text="|" />
+                            <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity"
+                                     Text="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                     Height="25"/>
+                            <Label Content="|" />
                             <TextBox Text="(Rev)" />
-                            <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity" Height="25" >
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ScanMatchResult.ReverseDotProduct, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity"
+                                     Text="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                     Height="25" />
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
@@ -193,58 +157,22 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_ReferenceMass" Content="m/z similarity:" Height="25"/>
-                        <TextBox Name="TextBox_PeakInformation_Ms1Similarity" Height="25" >
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ScanMatchResult.AcurateMassSimilarity, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <TextBox Name="TextBox_PeakInformation_Ms1Similarity"
+                                 Text="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue='NA'}"
+                                 Height="25" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_SpectrumSimilarity" Content="Spectrum similarity:" Height="25"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBox Text="(Dot)" />
-                            <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity" Height="25">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ScanMatchResult.WeightedDotProduct, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity"
+                                     Text="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue='NA'}"
+                                     Height="25"/>
                             <TextBox Text="|" />
                             <TextBox Text="(Rev)" />
-                            <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity" Height="25" >
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ScanMatchResult.ReverseDotProduct, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ScanMatchResult, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity"
+                                     Text="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                     Height="25" />
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">

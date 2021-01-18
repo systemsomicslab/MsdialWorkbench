@@ -179,41 +179,8 @@
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <!--
-                    <TabControl ItemsSource="{Binding ResultVMs}" Grid.Row="2">
-                        <TabControl.ItemContainerStyle>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Height" Value="25"/>
-                                <Setter Property="Background" Value="LightSteelBlue"/>
-                            </Style>
-                        </TabControl.ItemContainerStyle>
-                        <TabControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{Binding}">
-                                    <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vm:AnalysisDimsVM}">
-                                            <TextBlock Text="Peak spot viewer"/>
-                                        </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vm:AlignmentDimsVM}">
-                                            <TextBlock Text="Alignment spot viewer"/>
-                                        </DataTemplate>
-                                    </ContentControl.Resources>
-                                </ContentControl>
-                            </DataTemplate>
-                        </TabControl.ItemTemplate>
-                        <TabControl.Resources>
-                            <DataTemplate DataType="{x:Type vm:AnalysisDimsVM}">
-                                <local:PeakView MassAxis="{StaticResource MassAxis}"/>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:AlignmentDimsVM}">
-                                <local:AlignmentView/>
-                            </DataTemplate>
-                        </TabControl.Resources>
-                    </TabControl>
-                    -->
-
                     <TabControl Name="TabControl_PairwisePlotViewer"
-                                SelectedValuePath="DataContext"
+                                SelectedIndex="0"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Grid.Row="2" >
                         <TabControl.ItemContainerStyle>
@@ -262,11 +229,14 @@
 
                     <Grid Grid.Row="2">
 
-                        <Button Name="Button_TableViewer" Height="25" 
-                                Width="110" Margin="0,2,0,0" 
+                        <Button Name="Button_TableViewer"
+                                Command="{Binding AlignmentVM.ShowIonTableCommand, Mode=OneWay}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                 HorizontalContentAlignment="Right"
                                 Background="AliceBlue"
-                                VerticalAlignment="Top" HorizontalAlignment="Right">
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Margin="0,2,0,0" 
+                                Height="25" Width="110">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Resources/Table.png"/>
@@ -296,20 +266,21 @@
 
                         <TabControl Name="TabControl_PeakCharacter"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                                     Grid.Row="0">
 
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <local:PeakPropertyView DataContext="{Binding SelectedValue.Target, ElementName=TabControl_PairwisePlotViewer}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="LightSteelBlue">
-                                <local:CompoundDetailView DataContext="{Binding SelectedValue.Target, ElementName=TabControl_PairwisePlotViewer}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -331,7 +302,7 @@
                                  Height="25"
                                  Background="LightSteelBlue" 
                                  Name="TabItem_RepresentativeVsReference">
-                            <local:RepRefView />
+                            <local:RepRefView DataContext="{Binding AlignmentVM}" />
                         </TabItem>
 
                     </TabControl>
@@ -343,6 +314,7 @@
                                   HorizontalAlignment="Stretch" />
 
                 </Grid>
+
                 <GridSplitter Margin="0, 0, 0, 0" Width="2" 
                               ResizeDirection="Columns" 
                               Grid.Column="1" Grid.RowSpan="2" 

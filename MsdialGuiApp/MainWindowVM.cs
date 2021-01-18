@@ -141,6 +141,7 @@ namespace CompMs.App.Msdial
                 }
 
                 MethodVM = CreateNewMethodVM(Storage.ParameterBase.MachineCategory, Storage);
+                MethodVM.LoadProject();
 
                 message.Close();
                 Mouse.OverrideCursor = null;

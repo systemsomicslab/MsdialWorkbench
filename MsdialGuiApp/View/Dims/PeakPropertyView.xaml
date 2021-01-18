@@ -68,44 +68,17 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
-                        <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding Mass, Mode=OneWay, StringFormat=F5}" Height="25">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding Mass, Mode=OneWay, StringFormat=F5}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Mass, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <TextBox Name="TextBox_PeakInformation_AccurateMass"
+                                 Text="{Binding Mass, Mode=OneWay, StringFormat=F5, TargetNullValue=NA}"
+                                 Height="25"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox Name="TextBox_PeakInformation_PeakIntensity" Height="25">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding Intensity, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Intensity, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                            <TextBox Text="|" Height="25"/>
-                            <TextBox Name="TextBox_PeakInformation_PeakArea" Height="25">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding PeakArea, Mode=OneWay, StringFormat=F0}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding PeakArea, TargetNullValue=''}" Value="" >
-                                                <Setter Property="Text" Value="NA"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                            <TextBox Name="TextBox_PeakInformation_PeakIntensity"
+                                     Text="{Binding Intensity, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                     Height="25"/>
+                            <Label Content="|" Height="25"/>
+                            <TextBox Name="TextBox_PeakInformation_PeakArea"
+                                     Text="{Binding PeakArea, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                     Height="25"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBox Name="TextBox_PeakInformation_Formula" Height="25">
@@ -195,34 +168,16 @@
 
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_UiMass" Content="m/z:"/>
-                        <TextBox Name="TextBox_PeakInformation_AccurateMass" Text="{Binding MassCenter, Mode=OneWay, StringFormat=F5}" Height="25">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding MassCenter, Mode=OneWay, StringFormat=F5}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding MassCenter, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <TextBox Name="TextBox_PeakInformation_AccurateMass"
+                                 Text="{Binding MassCenter, Mode=OneWay, StringFormat=F5, TargetNullValue=NA}"
+                                 Height="25"/>
                     </StackPanel>                       
 
                     <StackPanel Orientation="Horizontal">
                         <Label Name="Label_PeakIntensity" Content="Peak height average:"/>
-                        <TextBox Name="TextBox_PeakInformation_PeakIntensity" Height="25">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding HeightAverage, Mode=OneWay, StringFormat=F0}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HeightAverage, TargetNullValue=''}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                        <TextBox Name="TextBox_PeakInformation_PeakIntensity"
+                                 Text="{Binding HeightAverage, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
+                                 Height="25"/>
                     </StackPanel>                       
 
                     <StackPanel Orientation="Horizontal">
@@ -240,7 +195,7 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <TextBox Text="|" />
+                            <Label Content="|" Width="Auto"/>
                             <TextBox Name="TextBox_PeakInformation_Ontology" Height="25">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">

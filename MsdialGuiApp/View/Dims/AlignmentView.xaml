@@ -20,10 +20,10 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="MzAxis"
-                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
-                                           ValuePropertyName="MassCenter"
-                                           ChartMargin="0.05" />
+        <manager:ContinuousAxisManager x:Key="MzAxis"
+                                       MinValue="{Binding DataContext.MassMin, Source={x:Reference AlignmentSpotView}}"
+                                       MaxValue="{Binding DataContext.MassMax, Source={x:Reference AlignmentSpotView}}"
+                                       ChartMargin="0.05" />
         <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
                                            ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
                                            ValuePropertyName="HeightAverage"
@@ -57,11 +57,11 @@
             <Grid Margin="-1,0,0,-1">
                 <scatter:ScatterControl x:Name="alignmentScatter"
                                         ItemsSource="{Binding Ms1Spots}"
-                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource NKMAxis}}"
+                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource NKMAxis}, Mode=TwoWay}"
+                                        RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                         RangeY="{Binding Range, Source={StaticResource KMDAxis}, Mode=TwoWay}"
-                                        HorizontalPropertyName="NominalKM"
+                                        HorizontalPropertyName="MassCenter"
                                         VerticalPropertyName="KMD"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=OneWayToSource}"
@@ -119,9 +119,9 @@
                 </ContentControl>
             </Grid>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource NKMAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource NKMAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource NKMAxis}, Mode=TwoWay}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
@@ -132,7 +132,7 @@
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
-        <TextBlock Text="Nominal Kendrick mass"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
