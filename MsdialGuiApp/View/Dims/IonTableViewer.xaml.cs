@@ -22,5 +22,10 @@ namespace CompMs.App.Msdial.View.Dims
         public IonTableViewer() {
             InitializeComponent();
         }
+
+        private void DataGrid_Unloaded(object sender, RoutedEventArgs e) {
+            var grid = (DataGrid)sender;
+            grid.CommitEdit();
+        }
     }
 }

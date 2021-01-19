@@ -232,5 +232,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private AlignmentLcmsVM LoadAlignmentFile(AlignmentFileBean alignment) {
             return new AlignmentLcmsVM(alignment, Storage.ParameterBase);
         }
+
+        public override void SaveProject() {
+            throw new NotImplementedException();
+        }
     }
 }

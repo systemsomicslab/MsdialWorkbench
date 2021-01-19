@@ -295,6 +295,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return new AlignmentDimsVM(alignment, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
         }
 
+        public override void SaveProject() {
+            AlignmentVM.SaveProject();
+        }
+
         private bool ReadDisplayFilter(DisplayFilter flag) {
             return (displayFilters & flag) != 0;
         }

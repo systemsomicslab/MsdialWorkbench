@@ -144,11 +144,14 @@
                 <TextBox Text="" HorizontalAlignment="Stretch" IsEnabled="False"/>
             </StackPanel>
 
+            <rs:RangeSlider Margin="8,0" Grid.Column="3" IsEnabled="False"/>
+            <!--
             <rs:RangeSlider Minimum="{Binding MassMin, Mode=OneWay}"
                             Maximum="{Binding MassMax, Mode=OneWay}"
                             LowerValue="{Binding MassLower, Mode=TwoWay}"
                             UpperValue="{Binding MassUpper, Mode=TwoWay}"
                             Margin="8,0" Grid.Column="3"/>
+            -->
         </Grid>
 
         <DataGrid ItemsSource="{Binding Ms1Spots}"
@@ -159,6 +162,7 @@
                   HeadersVisibility="All"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  Unloaded="DataGrid_Unloaded"
                   Grid.Row="1">
 
             <DataGrid.ColumnHeaderStyle>

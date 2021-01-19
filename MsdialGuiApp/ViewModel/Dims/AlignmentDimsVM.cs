@@ -138,6 +138,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly AlignmentFileBean alignmentFile;
         private readonly List<long> seekPointers = new List<long>();
         private readonly ParameterBase param = null;
+        private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
         private readonly string spectraFile = string.Empty;
         private readonly List<MoleculeMsReference> msp = new List<MoleculeMsReference>();
@@ -154,13 +155,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, List<MoleculeMsReference> msp) {
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
+            resultFile = alignmentFileBean.FilePath;
             eicFile = alignmentFileBean.EicFilePath;
             spectraFile = alignmentFileBean.SpectraFilePath;
 
             this.param = param;
             this.msp = msp;
 
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFileBean.FilePath);
+            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
             _ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyVM(prop, param.FileID_ClassName)));
             Ms1Spots = CollectionViewSource.GetDefaultView(_ms1Spots);
@@ -290,6 +292,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             window.Show();
+        }
+
+        public void SaveProject() {
+            MessagePackHandler.SaveToFile<AlignmentResultContainer>(Container, resultFile);
         }
 
         private bool ReadDisplayFilters(DisplayFilter flags) {
