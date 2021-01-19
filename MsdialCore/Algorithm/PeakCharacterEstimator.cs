@@ -41,7 +41,6 @@ namespace CompMs.MsdialCore.Algorithm {
 
             // collecting the same RT region spots
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
-            ObjectsRefresh(chromPeakFeatures);
             Initialization(chromPeakFeatures);
 
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
@@ -122,7 +121,7 @@ namespace CompMs.MsdialCore.Algorithm {
         private void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
-                if (character.IsotopeWeightNumber != 0) {
+                if (character.IsotopeWeightNumber > 0) {
                     var parentID = character.IsotopeParentPeakID;
                     var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
                     if (peak.AdductType != null && peak.AdductType.FormatCheck) {
@@ -171,7 +170,6 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             var defaultAdduct = SearchedAdducts[0];
-            var defaultAdduct2 = AdductIonParser.ConvertDifferentChargedAdduct(defaultAdduct, 2);
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 if (peak.PeakCharacter.AdductParent < 0)
@@ -207,20 +205,13 @@ namespace CompMs.MsdialCore.Algorithm {
 
             //refine the dependency
             foreach (var peak in chromPeakFeatures) {
-                if (peak.PeakID == peak.PeakCharacter.AdductParent) continue;
-                var parentID = peak.PeakCharacter.AdductParent;
-                var parentPeakFeature = chromPeakFeatures[parentID];
-                var parentPeakCharacter = parentPeakFeature.PeakCharacter;
-                if (parentPeakCharacter.AdductParent != parentPeakFeature.PeakID) {
-                    var parentParentID = parentPeakCharacter.AdductParent;
-                    if (chromPeakFeatures[parentParentID].PeakCharacter.AdductParent == chromPeakFeatures[parentParentID].PeakID)
-                        peak.PeakCharacter.AdductParent = chromPeakFeatures[parentParentID].PeakID;
-                    else {
-                        var parentParentParentID = chromPeakFeatures[parentParentID].PeakCharacter.AdductParent;
-                        if (chromPeakFeatures[parentParentParentID].PeakCharacter.AdductParent == chromPeakFeatures[parentParentParentID].PeakID)
-                            peak.PeakCharacter.AdductParent = chromPeakFeatures[parentParentParentID].PeakID;
-                    }
+                var currentPeak = peak;
+                var ancestorId = currentPeak.PeakCharacter.AdductParent;
+                while (currentPeak.PeakID != ancestorId) {
+                    currentPeak = chromPeakFeatures[ancestorId];
+                    ancestorId = currentPeak.PeakCharacter.AdductParent;
                 }
+                peak.PeakCharacter.AdductParent = ancestorId;
             }
 
             //// currently, just copy the isotope and adduct of parent spot to drift spots

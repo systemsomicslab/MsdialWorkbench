@@ -21,7 +21,7 @@ namespace CompMs.MsdialCore.Parser {
             container.MspDB = new List<MoleculeMsReference>();
 
             var mspPath = GetNewMspFileName(file);
-            MessagePackDefaultHandler.SaveToFile(container, file);
+            MessagePackHandler.SaveToFile(container, file);
             MoleculeMsRefMethods.SaveMspToFile(mspList, mspPath);
 
             container.MspDB = mspList;

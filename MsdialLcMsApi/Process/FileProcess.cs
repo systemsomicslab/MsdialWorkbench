@@ -10,6 +10,7 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -26,11 +27,20 @@ namespace CompMs.MsdialLcMsApi.Process {
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;
             var fileID = file.AnalysisFileId;
-            using (var access = new RawDataAccess(filepath, fileID, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var access = new RawDataAccess(filepath, 0, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
-                var rawObj = DataAccess.GetRawDataMeasurement(access);
+                Common.DataObj.RawMeasurement rawObj = null;
+                foreach (var i in Enumerable.Range(0, 5)) {
+                    rawObj = DataAccess.GetRawDataMeasurement(access);
+                    if (rawObj != null) break;
+                    Thread.Sleep(5000);
+                }
+                if (rawObj == null) {
+                    throw new FileLoadException($"Loading {filepath} failed.");
+                }
+
                 var spectrumList = rawObj.SpectrumList;
 
                 // feature detections
@@ -79,7 +89,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // characterizatin
                 new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures, 
-                    targetCE2MSDecResults.IsEmptyOrNull() ? null : targetCE2MSDecResults[0], 
+                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
                     param, reportAction);
 
                 // file save
@@ -95,11 +105,12 @@ namespace CompMs.MsdialLcMsApi.Process {
                     }
                     else {
                         var suffix = Math.Round(ce2msdecs.Key * 100, 0); // CE 34.50 -> 3450
-                        var dclfile_suffix = Path.GetDirectoryName(dclfile) + "\\" + Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl";
+                        var dclfile_suffix = Path.Combine(Path.GetDirectoryName(dclfile), Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl");
                         dclfiles.Add(dclfile_suffix);
                         MsdecResultsWriter.Write(dclfile_suffix, ce2msdecs.Value);
                     }
                 }
+                reportAction?.Invoke(100);
             }
         }
     }

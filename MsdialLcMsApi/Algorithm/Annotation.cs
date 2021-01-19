@@ -69,13 +69,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
                     MsScanMatchResult result = null;
-                    if (param.TargetOmics == Common.Enum.TargetOmics.Metablomics) {
+                    if (param.TargetOmics == Common.Enum.TargetOmics.Metabolomics) {
                         result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
                     }
                     else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
                         result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
                     }
-                    if (result.IsSpectrumMatch || result.IsPrecursorMzMatch) {
+                    if (result != null && (result.IsSpectrumMatch || result.IsPrecursorMzMatch)) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
                     }

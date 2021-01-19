@@ -86,13 +86,13 @@ namespace CompMs.Common.Components
                 switch (MainType)
                 {
                     case ChromXType.RT:
-                        return RT.Value;
+                        return RT?.Value ?? -1;
                     case ChromXType.RI:
-                        return RI.Value;
+                        return RI?.Value ?? -1;
                     case ChromXType.Drift:
-                        return Drift.Value;
+                        return Drift?.Value ?? -1;
                     case ChromXType.Mz:
-                        return Mz.Value;
+                        return Mz?.Value ?? -1;
                     default:
                         return -1;
                 }
@@ -107,13 +107,13 @@ namespace CompMs.Common.Components
                 switch (MainType)
                 {
                     case ChromXType.RT:
-                        return RT.Unit;
+                        return RT?.Unit ?? ChromXUnit.None;
                     case ChromXType.RI:
-                        return RI.Unit;
+                        return RI?.Unit ?? ChromXUnit.None;
                     case ChromXType.Drift:
-                        return Drift.Unit;
+                        return Drift?.Unit ?? ChromXUnit.None;
                     case ChromXType.Mz:
-                        return Mz.Unit;
+                        return Mz?.Unit ?? ChromXUnit.None;
                     default:
                         return ChromXUnit.None;
                 }

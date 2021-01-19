@@ -39,7 +39,8 @@ namespace CompMs.MsdialCore.DataObj {
         public double PeakAreaAboveBaseline { get; set; }
 
         [Key(43)]
-        public double Mass { get; set; }
+        public double Mass { get => mass; set => mass = value; }
+        private double mass;
 
         public double PeakWidth(ChromXType type) {
             switch (type) {
@@ -82,7 +83,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(47)]
         public int MS1AccumulatedMs1RawSpectrumIdRight { get; set; } // used for LC-IM-MS/MS
         [Key(18)]
-        public int MS2RawSpectrumID { get; set; } // representative ID
+        public int MS2RawSpectrumID { get; set; } = -1; // representative ID
         [Key(19)]
         public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; } = new Dictionary<int, double>();
 
@@ -90,7 +91,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(20)]
         public int ScanID { get; set; } // same as MS1RawSpectrumID
         [IgnoreMember]
-        public double PrecursorMz { get => Mass; set => Mass = value; } // in LC-MS/MS same as Mass
+        public double PrecursorMz { get => mass; set => mass = value; } // in LC-MS/MS same as Mass
         [Key(22)]
         public IonMode IonMode { get; set; }
         [IgnoreMember]
@@ -230,6 +231,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
+        [IgnoreMember]
+        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
+
       
         [Key(38)]
         public string Comment { get; set; }
@@ -238,7 +242,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(39)]
         public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
         [Key(40)]
-        public ChromatogramPeakShape PeakShape { get; set; }
+        public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
 
         // others
         [Key(41)]

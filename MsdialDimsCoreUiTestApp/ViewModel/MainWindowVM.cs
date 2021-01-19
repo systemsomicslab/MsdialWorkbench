@@ -6,27 +6,29 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using CompMs.Common.DataObj;
-using CompMs.MsdialCore.Utility;
-using CompMs.MsdialDimsCore.Parameter;
+using System.Windows.Data;
+using System.Windows.Input;
 
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore.Common;
-using System.Windows.Input;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Database;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Common;
+using CompMs.MsdialDimsCore.Parameter;
+using MsdialDimsCoreUiTestApp.Model;
 
-namespace MsdialDimsCoreUiTestApp
+namespace MsdialDimsCoreUiTestApp.ViewModel
 {
-    internal class MainWindowVM : INotifyPropertyChanged
+    internal class MainWindowVM : ViewModelBase
     {
         public ObservableCollection<AnalysisFileBean> AnalysisFiles {
             get => analysisFiles;
@@ -53,14 +55,34 @@ namespace MsdialDimsCoreUiTestApp
             set => SetProperty(ref ms1Peaks, value);
         }
 
-        public ObservableCollection<Ms2Info> Ms2Features {
-            get => ms2Features;
-            set => SetProperty(ref ms2Features, value);
-        }
-
         public AlignmentResultContainer AlignmentContainer {
             get => alignmentContainer;
             set => SetProperty(ref alignmentContainer, value);
+        }
+
+        public bool RefMatchedChecked {
+            get => refMatchedChecked;
+            set => SetProperty(ref refMatchedChecked, value);
+        }
+
+        public bool SuggestedChecked {
+            get => suggestedChecked;
+            set => SetProperty(ref suggestedChecked, value);
+        }
+
+        public bool UnknownChecked {
+            get => unknownChecked;
+            set => SetProperty(ref unknownChecked, value);
+        }
+
+        public ICollectionView Ms2CollectionView {
+            get => ms2CollectionView;
+            set => SetProperty(ref ms2CollectionView, value);
+        }
+
+        public ViewModelBase ResultVM {
+            get => resultVM;
+            set => SetProperty(ref resultVM, value);
         }
 
         public ICommand FileChangedCmd { get; }
@@ -71,13 +93,14 @@ namespace MsdialDimsCoreUiTestApp
         private ObservableCollection<AnalysisFileBean> analysisFiles;
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
         private ObservableCollection<ChromatogramPeak> ms1Peaks;
-        private ObservableCollection<Ms2Info> ms2Features;
         private AlignmentResultContainer alignmentContainer;
         private Rect ms1Area, ms2Area;
         private List<MoleculeMsReference> mspDB, textDB;
         private MsdialDimsParameter param;
-        private IupacDatabase iupac;
         private Dictionary<int, Stream> rawChromatogramStreams;
+        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true;
+        private ICollectionView ms2CollectionView;
+        private ViewModelBase resultVM;
 
         public MainWindowVM()
         {
@@ -173,7 +196,7 @@ namespace MsdialDimsCoreUiTestApp
                 }
             };
 
-            iupac = IupacResourceParser.GetIUPACDatabase();
+            var iupac = IupacResourceParser.GetIUPACDatabase();
 
             mspDB = LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param);
             mspDB.Sort((a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
@@ -200,18 +223,8 @@ namespace MsdialDimsCoreUiTestApp
 
             ReadAndSetMs1RawSpectrum(analysisFiles[0].AnalysisFileId);
             ReadAndSetMs1Peaks(analysisFiles[0].PeakAreaBeanInformationFilePath);
-        }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void RaisePropertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
-
-        bool SetProperty<T>(ref T property, T value, [CallerMemberName]string propertyname = "")
-        {
-            if (value == null && property == null || value.Equals(property)) return false;
-            property = value;
-            RaisePropertyChanged(propertyname);
-            return true;
+            ResultVM = new FileResultVM(this, param);
         }
 
         private void RunAnnotation(AnalysisFileBean analysisFileBean, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, Stream stream = null) {
@@ -239,7 +252,7 @@ namespace MsdialDimsCoreUiTestApp
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
             var factory = new DimsAlignmentProcessFactory(param, iupac);
-            var aligner = factory.CreatePeakAliner();
+            var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
         }
@@ -336,7 +349,7 @@ namespace MsdialDimsCoreUiTestApp
         void ReadAndSetMs1Peaks(string serializedPeakPath) {
             var chromatogramPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(serializedPeakPath);
 
-            Ms2Features = new ObservableCollection<Ms2Info>(
+            var ms2Features = new ObservableCollection<Ms2Info>(
                 chromatogramPeakFeatures.Select(feature =>
                     new Ms2Info
                     {
@@ -348,9 +361,13 @@ namespace MsdialDimsCoreUiTestApp
                         MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
                         RefMatched = feature.IsReferenceMatched,
                         Suggested = feature.IsAnnotationSuggested,
+                        Unknown = feature.IsUnknown,
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }
                 ));
+
+            Ms2CollectionView = CollectionViewSource.GetDefaultView(ms2Features);
+
             Ms2Area = new Rect(param.Ms2MassRangeBegin, 0, param.Ms2MassRangeEnd, 1);
         }
 
@@ -415,17 +432,5 @@ namespace MsdialDimsCoreUiTestApp
                 mainWindowVM.ReadAndSetAlignmentResultContainer(alignmentFile.FileID);
             }
         }
-    }
-
-    internal class Ms2Info {
-        public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
-        public int PeakID { get; set; }
-        public double Mass { get; set; }
-        public double Intensity { get; set; }
-        public List<SpectrumPeak> Centroids { get; set; }
-        public MoleculeMsReference MspMatch {get;set;}
-        public bool RefMatched { get; set; }
-        public bool Suggested { get; set; }
-        public bool Ms2Acquired { get; set; }
     }
 }

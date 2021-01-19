@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
@@ -10,7 +11,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public class GcmsAlignmentRefiner : AlignmentRefiner
     {
-        public GcmsAlignmentRefiner(MsdialGcmsParameter param) : base(param) { }
+        public GcmsAlignmentRefiner(MsdialGcmsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignmentSpotList) {
             if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;

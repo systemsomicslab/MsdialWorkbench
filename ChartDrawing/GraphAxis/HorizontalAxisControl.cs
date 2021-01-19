@@ -119,7 +119,7 @@ namespace CompMs.Graphics.GraphAxis
             visualChildren.Clear();
 
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double basePoint = HorizontalAxis.TranslateToRenderPoint(0d);
+            double basePoint = HorizontalAxis.TranslateToRenderPoint(0d, FlippedX);
 
             var labelTicks = LabelTicks.Where(data => RangeX.Minimum <= data.Center && data.Center <= RangeX.Maximum).ToList();
             if (labelTicks.Count > 100)
@@ -143,17 +143,17 @@ namespace CompMs.Graphics.GraphAxis
                         toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
                 }
 
-                var center = HorizontalAxis.TranslateToRenderPoint(data.Center) * actualWidth;
+                var center = HorizontalAxis.TranslateToRenderPoint(data.Center, FlippedX) * actualWidth;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(center, actualHeight / 2) };
-                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+                // dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
                 switch (data.TickType)
                 {
                     case TickType.LongTick:
                         dc.DrawLine(TickPen, new Point(center, 0), new Point(center, LongTickSize));
-                        var maxWidth = HorizontalAxis.TranslateToRenderPoint(data.Width) - basePoint;
+                        var maxWidth = HorizontalAxis.TranslateToRenderPoint(data.Width, FlippedX) - basePoint;
                         var formattedText = new FormattedText(
                             toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),

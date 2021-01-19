@@ -59,22 +59,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorner\ContentAdorner.cs" />
+    <Compile Include="Adorner\ScatterFocusAdorner.cs" />
     <Compile Include="AreaChart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
+    <Compile Include="Bar\BarControl.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\AxisValue.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="AxisManager\CategoryAxisManager.cs" />
+    <Compile Include="Base\BooleanBoxes.cs" />
     <Compile Include="Base\ChartBaseControl.cs" />
     <Compile Include="AxisManager\ContinuousAxisManager.cs" />
     <Compile Include="Base\ChartMargin.cs" />
     <Compile Include="Base\Range.cs" />
+    <Compile Include="Behavior\ChildDoubleClickBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
+    <Compile Include="Behavior\ScatterFocusBehavior.cs" />
+    <Compile Include="Chart\Annotator.cs" />
+    <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
+    <Compile Include="Converter\AxisValueToDoubleConverter.cs" />
     <Compile Include="Converter\EnumTypeToValuesConverter.cs" />
     <Compile Include="Adorner\RubberAdorner.cs" />
+    <Compile Include="Converter\MultiIdentityConverter.cs" />
+    <Compile Include="Converter\MultiplyConverter.cs" />
     <Compile Include="Default\DefaultFE.cs" />
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
@@ -94,11 +105,40 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
+    <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
+      <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ProgressBarVM.cs" />
+    <Compile Include="UI\ProgressBarWindow.xaml.cs">
+      <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\RangeSlider.cs" />
+    <Compile Include="UI\ShortMessageWindow.xaml.cs">
+      <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Window\FileBrowseDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\ProgressBarMultiContainerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ProgressBarWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ShortMessageWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

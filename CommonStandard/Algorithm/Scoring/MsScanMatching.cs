@@ -95,6 +95,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
                 out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
+            if (name == string.Empty)
+                return null;
 
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
@@ -1519,7 +1521,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 (dotProductFactor * spectraSimilarity + revesrseDotProdFactor * reverseSearchSimilarity + presensePercentageFactor * presenceSimilarity) /
                 (dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             if (!isUseRT) {
                 if (isotopeSimilarity < 0) {
@@ -1571,7 +1573,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 (dotProductFactor * spectraSimilarity + revesrseDotProdFactor * reverseSearchSimilarity + presensePercentageFactor * presenceSimilarity) /
                 (dotProductFactor + revesrseDotProdFactor + presensePercentageFactor);
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             var useRtScore = true;
             var useCcsScore = true;
@@ -1754,7 +1756,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var msmsSimilarity = dotProductSimilarity;
 
-            if (spectrumPenalty == true && targetOmics == TargetOmics.Metablomics) msmsSimilarity = msmsSimilarity * 0.5;
+            if (spectrumPenalty == true && targetOmics == TargetOmics.Metabolomics) msmsSimilarity = msmsSimilarity * 0.5;
 
             if (!isUseRT) {
                 if (isotopeSimilarity < 0) {

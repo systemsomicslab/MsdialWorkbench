@@ -27,9 +27,19 @@ namespace CompMs.MsdialCore.Parser
             Serializer.SerializeAll(stream, chromatograms);
         }
 
+        public override void SerializeN(Stream stream, IEnumerable<T> chromatograms, int num) {
+            WriteVersion(stream);
+            Serializer.SerializeN(stream, chromatograms, num);
+        }
+
         public override IEnumerable<T> DeserializeAll(Stream stream) {
             _ = ReadVersion(stream);
             return Serializer.DeserializeAll(stream);
+        }
+
+        public override T DeserializeAt(Stream stream, int index) {
+            _ = ReadVersion(stream);
+            return Serializer.DeserializeAt(stream, index);
         }
 
         public string GetVersion(Stream stream) {

@@ -37,11 +37,6 @@ namespace CompMs.Graphics.Core.Base
             new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged)
             );
 
-        public static readonly DependencyProperty IsFlippedProperty = DependencyProperty.Register(
-            nameof(IsFlipped), typeof(bool), typeof(AxisManager),
-            new PropertyMetadata(false, OnIsFlippedChanged)
-            );
-
         public static readonly DependencyProperty AxisMapperProperty = DependencyProperty.Register(
             nameof(AxisMapper), typeof(AxisMapper), typeof(AxisManager),
             new PropertyMetadata(null)
@@ -79,11 +74,6 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(InitialRangeProperty, value);
         }
 
-        public bool IsFlipped {
-            get => (bool)GetValue(IsFlippedProperty);
-            set => SetValue(IsFlippedProperty, value);
-        }
-
         public AxisMapper AxisMapper {
             get => (AxisMapper)GetValue(AxisMapperProperty);
             set => SetValue(AxisMapperProperty, value);
@@ -109,26 +99,16 @@ namespace CompMs.Graphics.Core.Base
                 return new AxisValue(double.NaN);
         }
 
-        public virtual double TranslateToRenderPoint(AxisValue val) {
+        public virtual double TranslateToRenderPoint(AxisValue val, bool isFlipped) {
+            return TranslateToRenderPointCore(val, Min, Max, isFlipped);
+        }
+
+        public virtual double TranslateToRenderPoint(object value, bool isFlipped) {
+            return TranslateToRenderPoint(TranslateToAxisValue(value), isFlipped);
+        }
+
+        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
             double max = Max, min = Min;
-            bool isFlipped = IsFlipped;
-
-            return TranslateToRenderPointCore(val, min, max, isFlipped);
-        }
-
-        public virtual double TranslateToRenderPoint(object value) {
-            return TranslateToRenderPoint(TranslateToAxisValue(value));
-        }
-
-        public virtual AxisValue TranslateFromRenderPoint(double value) {
-            double max = Max.Value, min = Min.Value;
-
-            return new AxisValue(IsFlipped ? (max - value * (max - min)) : (value * (max - min) + min));
-        }
-
-        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values) {
-            double max = Max, min = Min;
-            bool isFlipped = IsFlipped;
             var result = new List<double>();
 
             foreach (var value in values) {
@@ -137,6 +117,20 @@ namespace CompMs.Graphics.Core.Base
             }
 
             return result;
+        }
+
+        protected virtual AxisValue TranslateFromRenderPointCore(double value, double min, double max, bool isFlipped) {
+            return new AxisValue(isFlipped ? (max - value * (max - min)) : (value * (max - min) + min));
+        }
+
+        public virtual AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
+            return TranslateFromRenderPointCore(value, Min.Value, Max.Value, isFlipped);
+        }
+
+        public void Focus(object low, object high) {
+            var loval = TranslateToAxisValue(low);
+            var hival = TranslateToAxisValue(high);
+            Range = new Range(loval, hival);
         }
         #endregion
 
@@ -166,14 +160,6 @@ namespace CompMs.Graphics.Core.Base
         static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is AxisManager axis) {
                 axis.Range = axis.Range;
-            }
-        }
-
-        static void OnIsFlippedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is AxisManager axis) {
-                axis.LabelTicks = axis.GetLabelTicks();
-                axis.AxisMapper = new AxisMapper(axis);
             }
         }
         #endregion

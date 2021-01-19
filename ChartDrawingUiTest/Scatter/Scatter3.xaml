@@ -7,6 +7,7 @@
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Scatter3">
@@ -19,8 +20,7 @@
         <manager:ContinuousAxisManager x:Key="VerticalAxis"
                                        MinValue="{Binding MinY, Source={StaticResource ScatterVM}}"
                                        MaxValue="{Binding MaxY, Source={StaticResource ScatterVM}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+                                       ChartMargin="0.05" />
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource ScatterVM}}" />
         <CollectionViewSource x:Key="FilteredSeriesView"
@@ -52,7 +52,9 @@
                                     RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
-                                    PointBrush="Pink" >
+                                    PointBrush="Pink"
+                                    behavior:ScatterFocusBehavior.EnableOuter="True"
+                                    behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}">
                 <scatter:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">

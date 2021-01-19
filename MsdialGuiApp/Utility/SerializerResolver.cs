@@ -1,0 +1,42 @@
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
+using System.Collections.Generic;
+
+namespace CompMs.App.Msdial.Utility
+{
+    static class SerializerResolver
+    {
+        static readonly Dictionary<MachineCategory, MsdialSerializer> serializers;
+
+        static SerializerResolver() {
+            serializers = new Dictionary<MachineCategory, MsdialSerializer>
+            {
+                { MachineCategory.GCMS, new MsdialGcMsApi.Parser.MsdialGcmsSerializer() },
+                { MachineCategory.LCMS, new MsdialLcMsApi.Parser.MsdialLcmsSerializer() },
+                { MachineCategory.IFMS, new MsdialDimsCore.Parser.MsdialDimsSerializer() },
+                { MachineCategory.LCIMMS, new MsdialLcImMsApi.Parser.MsdialLcImMsSerializer() },
+            };
+        }
+
+        public static MsdialSerializer ResolveMsdialSerializer(string path) {
+            if (serializers.TryGetValue(ResolveProjectType(path), out var serializer))
+                return serializer;
+            throw new System.Runtime.Serialization.SerializationException("Unknown method.");
+        }
+
+        // UNDONE: temporary method. (should not deserialize twice)
+        private static MachineCategory ResolveProjectType(string path) {
+            MsdialDataStorage storage;
+            foreach (var serializer in serializers.Values) {
+                try {
+                    storage = serializer.LoadMsdialDataStorageBase(path);
+                    return storage.ParameterBase.MachineCategory;
+                }
+                catch (System.Runtime.Serialization.SerializationException) {
+                }
+            }
+            throw new System.Runtime.Serialization.SerializationException("Invalid file format.");
+        }
+    }
+}

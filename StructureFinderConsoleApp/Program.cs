@@ -27,10 +27,16 @@ namespace StructureFinderConsoleApp
             //Code4NPR2020.CheckCoverageOfMspMsfinder();
             //Code4NPR2020.CalculateTop50MostCommonFunctionalGroups2020();
             //Code4NPR2020.CheckCoverageOfTop50FG();
-            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\");
-            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\msp\");
+            //Code4NPR2020.CalculateInformationRichnessOfMsmsInEachSuperClass();
+            //Code4NPR2020.GenerateFragmentStatisticsForEachOntology();
+            //Code4NPR2020.GetHydrogenCorrectedFormulaStrings(@"D:\Paper of Natural Product Reports\Statistics\temp\list.txt", @"D:\Paper of Natural Product Reports\Statistics\temp\formula.txt", "-");
+            //Code4NPR2020.GetStatisticsOfOntologyForEachPolarity();
 
-            //var files = System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\", "*.txt", SearchOption.TopDirectoryOnly);
+            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\", "-Pos");
+            //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\msp\", "-Neg");
+
+            //For Negative data for Code4NPR2020
+            //var files = System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\", "*.txt", SearchOption.TopDirectoryOnly);
             //foreach (var file in files) {
             //    var filename = System.IO.Path.GetFileNameWithoutExtension(file);
             //    var output = System.IO.Path.GetDirectoryName(file) + "\\" + filename + "-DR.txt";
@@ -39,15 +45,33 @@ namespace StructureFinderConsoleApp
             //    Console.WriteLine("Finishi: {0}", file);
             //}
 
-            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi"
+            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi"
             //    , "*.txt", SearchOption.TopDirectoryOnly)
-            //    , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos.txt");
+            //    , @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Merged fragment info-PI-Neg.txt");
 
-            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl"
+            //BondPathStatistics.MergeFragmentInfo(System.IO.Directory.GetFiles(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\nl"
             //   , "*.txt", SearchOption.TopDirectoryOnly)
-            //   , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl\Merged fragment info-NL-Pos.txt");
+            //   , @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\nl\Merged fragment info-NL-Neg.txt");
+
+            //BondPathStatistics.MergeInChIKeyToMergedFragmentInfoTable(
+            //    @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos.txt",
+            //    @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos-inchikey.txt",
+            //    @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos-inchikey-merged.txt");
+
+            //BondPathStatistics.MergeInChIKeyToMergedFragmentInfoTable(
+            //   @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Merged fragment info-PI-Neg.txt",
+            //   @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Merged fragment info-PI-Neg-inchikey.txt",
+            //   @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Merged fragment info-PI-Neg-inchikey-merged.txt");
 
 
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl\Merged fragment info-NL-Pos.txt"
+            //    , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\nl\Fragment statistics result-NL-Pos.txt");
+
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Merged fragment info-PI-Pos-inchikey-merged.txt"
+            //   , @"D:\9_Spectral library curations\Fragment curation\20200910\Pos\duplicate_removed\pi\Fragment statistics result-PI-Pos.txt");
+
+            //BondPathStatistics.ExportFragmentStatistics(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Merged fragment info-PI-Neg-inchikey-merged.txt"
+            //               , @"D:\9_Spectral library curations\Fragment curation\20200910\Neg\duplicate_removed\pi\Fragment statistics result-PI-Neg.txt");
 
             /// NCDK descriptor test
             //var smi = "O=C(O)CCCCC";

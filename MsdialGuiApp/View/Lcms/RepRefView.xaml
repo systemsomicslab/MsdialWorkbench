@@ -1,0 +1,200 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.MS2.RepRefView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.MS2"
+             mc:Ignorable="d" 
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             d:DesignHeight="600" d:DesignWidth="370">
+    <d:DesingerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesingerProperties.DesignStyle>
+    <UserControl.Resources>
+        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
+                                           ValuePropertyName="Mass"
+                                           ChartMargin="0.05"/>
+        <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
+                                           ValuePropertyName="Intensity"
+                                           Bounds="0,0"
+                                           ChartMargin="0,0.05" />
+        <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
+                                           ValuePropertyName="Intensity"
+                                           Bounds="0,0"
+                                           ChartMargin="0,0.05"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Name="Button_CompoundSearchAlignmentViewer"
+                Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+            <!-- Click="buttonClick_CompoundSearchAlignmentViewer" -->
+            <Button.Content>
+                <Image Source="/Resources/CompoundSearchIcon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Compound search" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_MsFinderSearchAlignmentViewer"
+                Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+               <!-- Click="buttonClick_MsFinderSearchAlignmentViewer" -->
+            <Button.Content>
+                <Image Source="/Resources/msfinder_icon.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="MS-FINDER search" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_MolecularNetworkAlignmentViewer"
+                Grid.Row="0" 
+                Height="30" Width="30" Margin="90,5,5,5" 
+                Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+            <!-- Click="buttonClick_MolecularNetworkAlignmentViewer" -->
+            <Button.Content>
+                <Image Source="/Resources/MolecularNetworking.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Molecular-spectrum networking for selected alignment spot" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_BinVestigateSearchAlignmentViewer"
+                Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+               <!-- Click="buttonClick_BinVestigateSearchAlignmentViewer"  -->
+            <Button.Content>
+                <Image Source="/Resources/BinVestigate.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="BinVestigate search" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Button Name="Button_LipoqualityDbSearchAlignmentViewer"
+                Grid.Row="0" Height="30" Width="30" Margin="170,5,5,5" 
+                Background="Transparent" BorderBrush="Black" BorderThickness="0" 
+                HorizontalAlignment="Left" IsEnabled="True">
+               <!-- Click="buttonClick_LipoqualityDbSearchAlignmentViewer"  -->
+            <Button.Content>
+                <Image Source="/Resources/Lipoquality.ico" />
+            </Button.Content>
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Go to lipoquality database (developing, and the result of mouse experiments can be shown now.)" />
+            </ToolTipService.ToolTip>
+        </Button>
+
+        <Grid Grid.Row="1" Margin="0,0,10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Border Background="WhiteSmoke"
+                    Grid.Row="1" Grid.Column="3" >
+                <spectrum:LineSpectrumControl x:Name="MS2Line"
+                                              ItemsSource="{Binding}"
+                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                              RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                              RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
+                                              HorizontalPropertyName="Mass"
+                                              VerticalPropertyName="Intensity" />
+            </Border>
+            <Border Background="WhiteSmoke"
+                    Grid.Row="3" Grid.Column="3" >
+                <spectrum:LineSpectrumControl x:Name="MS2Ref"
+                                       ItemsSource="{Binding}"
+                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                       RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                       RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                       HorizontalPropertyName="Mass"
+                                       VerticalPropertyName="Intensity">
+                    <spectrum:LineSpectrumControl.LinePen>
+                        <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
+                    </spectrum:LineSpectrumControl.LinePen>
+                </spectrum:LineSpectrumControl>
+            </Border>
+            <axis:HorizontalAxisControl x:Name="MzAxis"
+                                        DataContext="{Binding Source={StaticResource MassAxisManager}}"
+                                        HorizontalAxis="{Binding AxisMapper}"
+                                        LabelTicks="{Binding LabelTicks}"
+                                        RangeX="{Binding Range}"
+                                        Grid.Row="5" Grid.Column="3" />
+            <axis:VerticalAxisControl x:Name="MeasureIntensityAxis"
+                                      DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
+                                      VerticalAxis="{Binding AxisMapper}"
+                                      LabelTicks="{Binding LabelTicks}"
+                                      RangeY="{Binding Range}"
+                                      Grid.Row="1" Grid.Column="1" />
+            <axis:VerticalAxisControl x:Name="ReferenceIntensityAxis"
+                                      DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
+                                      VerticalAxis="{Binding AxisMapper}"
+                                      LabelTicks="{Binding LabelTicks}"
+                                      RangeY="{Binding Range}"
+                                      Grid.Row="3" Grid.Column="1" />
+            <TextBlock Text="m/z"
+                       FontStyle="Italic"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Grid.Row="6" Grid.Column="3" />
+            <TextBlock Text="Relative abundance"
+                       FontStyle="Italic"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
+                <TextBlock.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90" />
+                        <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}" />
+                    </TransformGroup>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+            <TextBlock Text="Measurement vs. Reference"
+                       VerticalAlignment="Bottom"
+                       Grid.Row="0" Grid.Column="3"/>
+            <TextBlock Text="Measurement" FontStyle="Italic" FontFamily="Calibri"
+                       VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                       Grid.Row="0" Grid.Column="3"/>
+            <TextBlock Text="Reference" FontStyle="Italic" FontFamily="Calibri"
+                       VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                       Margin="0,0,5,5"
+                       Grid.Row="6" Grid.Column="3"/>
+            <GridSplitter Background="Black"
+                          Height="2"
+                          Margin="0,-3"
+                          HorizontalAlignment="Stretch"
+                          Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" />
+            <GridSplitter Background="Black"
+                          Height="2"
+                          Margin="0,-3"
+                          HorizontalAlignment="Stretch"
+                          Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" />
+            <GridSplitter Background="Black"
+                          Width="2"
+                          Margin="-3,0"
+                          HorizontalAlignment="Stretch"
+                          Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" />
+        </Grid>
+    </Grid>
+</UserControl>

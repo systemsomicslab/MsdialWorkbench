@@ -48,8 +48,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected abstract ChromXs GetCenterFirst(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected abstract ChromXs GetCenterSecond(IEnumerable<AlignmentChromPeakFeature> peaks, AlignmentSpotProperty parent);
 
-        protected override double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            return GetAveragePeakWidth(peaks);
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+            return GetPeakWidth(peaks);
         }
         protected abstract double GetAveragePeakWidthFirst(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected abstract double GetAveragePeakWidthSecond(IEnumerable<AlignmentChromPeakFeature> peaks);

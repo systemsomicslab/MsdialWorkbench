@@ -124,9 +124,9 @@ namespace CompMs.Graphics.LineSpectrum
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var xx = HorizontalAxis.TranslateToRenderPoint(x) * ActualWidth;
-                var yy = VerticalAxis.TranslateToRenderPoint(y) * ActualHeight;
-                var y0 = VerticalAxis.TranslateToRenderPoint(0) * ActualHeight;
+                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
+                var yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
+                var y0 = VerticalAxis.TranslateToRenderPoint(0, FlippedY) * ActualHeight;
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
@@ -212,7 +212,8 @@ namespace CompMs.Graphics.LineSpectrum
             VisualTreeHelper.HitTest(this,
                 new HitTestFilterCallback(VisualHitTestFilter),
                 new HitTestResultCallback(VisualFocusHitTest),
-                new GeometryHitTestParameters(new EllipseGeometry(pt, 50d, 50d))
+                // new GeometryHitTestParameters(new EllipseGeometry(pt, 50d, 50d))
+                new PointHitTestParameters(pt)
                 );
         }
 

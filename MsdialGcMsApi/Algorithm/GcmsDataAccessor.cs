@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
@@ -32,6 +33,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             var msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out _, out _);
             msdecResults.Sort(Comparer);
             return msdecResults.Cast<IMSScanProperty>().ToList();
+        }
+
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
+            throw new NotImplementedException();
         }
     }
 }

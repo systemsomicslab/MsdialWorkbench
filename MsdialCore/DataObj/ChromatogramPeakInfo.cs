@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CompMs.Common.Components;
 using CompMs.Common.Interfaces;
 
@@ -40,7 +41,7 @@ namespace CompMs.MsdialCore.DataObj
         public ReadOnlyCollection<IChromatogramPeak> Chromatogram { get; }
 
         public ChromatogramPeakInfo(int id, IEnumerable<IChromatogramPeak> chromatogram, float chromTop, float chromLeft, float chromRight) {
-            var chroms = new List<IChromatogramPeak>(chromatogram);
+            var chroms = chromatogram?.ToList() ?? new List<IChromatogramPeak>();
             chroms.Sort((a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
             Chromatogram = new ReadOnlyCollection<IChromatogramPeak>(chroms);
 

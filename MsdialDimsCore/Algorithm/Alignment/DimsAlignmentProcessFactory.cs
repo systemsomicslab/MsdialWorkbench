@@ -17,7 +17,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new DimsAlignmentRefiner(DimsParameter);
+            return new DimsAlignmentRefiner(DimsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {
@@ -28,11 +28,11 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return new DimsGapFiller(DimsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner(this);
         }
 
-        public override PeakJoiner CreatePeakJoiner() {
+        public override IPeakJoiner CreatePeakJoiner() {
             return new DimsPeakJoiner(DimsParameter.Ms1AlignmentTolerance, DimsParameter.Ms1AlignmentFactor);
         }
     }

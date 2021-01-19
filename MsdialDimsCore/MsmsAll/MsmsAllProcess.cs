@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             Console.WriteLine("Importing libraries...");
             var iupacDB = IupacResourceParser.GetIUPACDatabase();
             List<MoleculeMsReference> mspDB = null;
-            if (param.TargetOmics == TargetOmics.Metablomics) {
+            if (param.TargetOmics == TargetOmics.Metabolomics) {
                 mspDB = MspFileParser.MspFileReader(param.MspFilePath);
             } else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 var lbmQueries = LbmQueryParcer.GetLbmQueries(true);
@@ -74,7 +74,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             Console.WriteLine("Annotation started...");
             foreach (var item in chromFeatures.Select((value, index) => new { value, index })) {
                 var feature = item.value;
-                AnnotationProcess.Run(feature, mspDB, null, param.MspSearchParam, param.TargetOmics, null, out _, out _);
+                AnnotationProcess.Run(feature, null, mspDB, null, param.MspSearchParam, param.TargetOmics, null, out _, out _);
                 Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
 

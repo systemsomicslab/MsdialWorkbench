@@ -15,8 +15,7 @@
                                            ItemsSource="{Binding DataContext.AlignmentContainer.AlignmentSpotProperties, Source={x:Reference Name=SpotSelector}}"
                                            ValuePropertyName="HeightMax"
                                            Min="0"
-                                           ChartMargin="0.02, 0.05"
-                                           IsFlipped="True" />
+                                           ChartMargin="0.02, 0.05" />
         <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
                                            ItemsSource="{Binding DataContext.AlignmentContainer.AlignmentSpotProperties, Source={x:Reference Name=SpotSelector}}"
                                            ValuePropertyName="MassCenter"

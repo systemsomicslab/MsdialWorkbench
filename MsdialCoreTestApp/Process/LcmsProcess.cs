@@ -6,7 +6,10 @@ using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Parser;
 using CompMs.MsdialLcMsApi.Process;
 using CompMs.RawDataHandler.Core;
@@ -17,6 +20,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process {
     public class LcmsProcess
@@ -40,9 +44,19 @@ namespace CompMs.App.MsdialConsole.Process {
 
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
-            foreach (var file in files) {
-                FileProcess.Run(file, container);
+            var tasks = new Task[files.Count];
+            foreach ((var file, var idx) in files.WithIndex()) {
+                tasks[idx] = Task.Run(() => FileProcess.Run(file, container));
             }
+            Task.WaitAll(tasks);
+
+            var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+            var alignmentFile = container.AlignmentFiles.First();
+            var factory = new LcmsAlignmentProcessFactory(container.ParameterBase as MsdialLcmsParameter, container.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, serializer);
+
+            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             new MsdialLcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }

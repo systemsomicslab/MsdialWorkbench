@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -14,21 +16,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param) : base(param) { }
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
             var donelist = new HashSet<int>();
 
-            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched)) {
+            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched)) {
+            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments) {
+            foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
                 if (spot.IsReferenceMatched) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, _param);
@@ -69,7 +71,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             var spotMz = spot.MassCenter;
 
             var rtTol = Math.Min(param.RetentionTimeAlignmentTolerance, 0.1);
-            foreach (var cSpot in cSpots.Where(n => Math.Abs(n.MassCenter - spotMz) < param.Ms1AlignmentTolerance)) {
+            var ms1Tol = param.Ms1AlignmentTolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+            #region // practical parameter changes
+            if (spotMz > 500) {
+                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(spotMz, ppm);
+            }
+            #endregion
+            foreach (var cSpot in cSpots.Where(n => Math.Abs(n.MassCenter - spotMz) < ms1Tol)) {
                 var cSpotRt = cSpot.TimesCenter.Value;
                 if (Math.Abs(cSpotRt - spotRt) < rtTol * 0.5) return;
             }

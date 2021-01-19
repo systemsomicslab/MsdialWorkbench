@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Dims.MainRibbon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodVM}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Ribbon Background="{StaticResource LightThemeColor}">
+        <Ribbon.QuickAccessToolBar>
+            <RibbonQuickAccessToolBar>
+                <RibbonButton SmallImageSource="{StaticResource New_project_is}"
+                              Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+                <RibbonButton SmallImageSource="{StaticResource Open_is}"
+                              Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+                <RibbonButton SmallImageSource="{StaticResource Save_is}"
+                              Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+            </RibbonQuickAccessToolBar>
+        </Ribbon.QuickAccessToolBar>
+        <Ribbon.HelpPaneContent>
+            <RibbonButton SmallImageSource="{StaticResource Version_is}"/>
+        </Ribbon.HelpPaneContent>
+        <Ribbon.ApplicationMenu>
+            <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
+                                   KeyTip="F"
+                                   Background="{StaticResource DarkThemeColor}">
+                <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
+                                           Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                           KeyTip="N"/>
+                <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
+                                           Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                           KeyTip="O"/>
+                <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
+                                                Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                KeyTip="S">
+                    <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
+                                               Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               KeyTip="A"/>
+                    <RibbonApplicationMenuItem Header="Save parameter as..."
+                                               Command="{Binding DataContext.SaveParameterCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                </RibbonApplicationSplitMenuItem>
+            </RibbonApplicationMenu>
+        </Ribbon.ApplicationMenu>
+        <Ribbon.ContextualTabGroups>
+            <RibbonContextualTabGroup Header="Design?" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
+        </Ribbon.ContextualTabGroups>
+        <RibbonTab Header="Processing"
+                   KeyTip="P">
+            <RibbonGroup Header="Data">
+                <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
+                              KeyTip="A">
+                    <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
+                              KeyTip="I">
+                    <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
+                              KeyTip="L">
+                    <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
+                </RibbonButton>
+            </RibbonGroup>
+            <RibbonGroup Header="Post processing">
+                <RibbonButton Label="Amalgamation of different polarity peak list" LargeImageSource="{StaticResource Merging_pos_neg_data_is}"
+                              KeyTip="M">
+                    <RibbonButton.ToolTip>The adduct type can be evaluated by using different ion mode peak list.</RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Quant mass manager" LargeImageSource="{StaticResource Quant_mass_manager_is}"
+                              KeyTip="Q">
+                    <RibbonButton.ToolTip>Users can define the quant masses for metabolic profiling in GC-MS project.</RibbonButton.ToolTip>
+                </RibbonButton>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Data visualization"
+                   KeyTip="D">
+            <RibbonGroup>
+                <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
+                              KeyTip="N"/>
+                <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
+                              KeyTip="P"/>
+                <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
+                              KeyTip="R"/>
+                <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS-DA_is}"
+                              KeyTip="D"/>
+                <RibbonButton Label="Hierarchical clustering analysis" LargeImageSource="{StaticResource HCA_is}"
+                              KeyTip="H"/>
+                <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
+                              KeyTip="M"/>
+                <RibbonButton Label="Pathway" LargeImageSource="{StaticResource Pathway_is}"
+                              KeyTip="W"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Search"
+                   KeyTip="S">
+            <RibbonGroup>
+                <RibbonButton Label="MS/MS fragment searcher" LargeImageSource="{StaticResource Fragment_search_is}"
+                              KeyTip="F">
+                    <RibbonButton.ToolTip>The unique product ion or neutral loss can be examined.</RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Spectral search" LargeImageSource="{StaticResource Spectral_library_search_is}"
+                              KeyTip="S"/>
+                <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
+                              KeyTip="M"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="View"
+                   KeyTip="V">
+            <RibbonGroup>
+                <RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
+                              KeyTip="I"/>
+                <RibbonButton Label="Display total ion chromatogram" LargeImageSource="{StaticResource Total_ion_chromatogram_is}"
+                              KeyTip="T"/>
+                <RibbonButton Label="Display extracted ion chromatogram" LargeImageSource="{StaticResource Extracted_ion_chromatogram_is}"
+                              KeyTip="E"/>
+                <RibbonButton Label="Display base peak chromatogram" LargeImageSource="{StaticResource Base_peak_chromatogram_is}"
+                              KeyTip="B"/>
+                <RibbonButton Label="Display TIC, BPC, and most abundant ion's EIC" LargeImageSource="{StaticResource TIC_BPC_and_most_abundanct_EIC_is}"
+                              KeyTip="C"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Option"
+                   KeyTip="O">
+            <RibbonGroup>
+                <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
+                              KeyTip="F">
+                    <RibbonButton.ToolTip>
+                        The file properties including type, analytical order, class, and included/not included can be modified here.
+                    </RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
+                              KeyTip="C">
+                    <RibbonButton.ToolTip>
+                        The class properties including the color and the order in chart can be modified here.
+                    </RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Alignment result property setting" LargeImageSource="{StaticResource Alignment_result_property_setting_is}"
+                              KeyTip="L">
+                    <RibbonButton.ToolTip>
+                        The internal standard information can be added to each peak. Please add the suitable alignment ID to each peak.
+                    </RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Project property setting" LargeImageSource="{StaticResource Project_property_setting_is}"
+                              KeyTip="P">
+                    <RibbonButton.ToolTip>
+                        Meta data can be added for MassBank, MoNA, and MSP export.
+                    </RibbonButton.ToolTip>
+                </RibbonButton>
+                <RibbonButton Label="Experiment config setting" LargeImageSource="{StaticResource Experiment_config_setting_is}"
+                              KeyTip="E">
+                    <RibbonButton.ToolTip>
+                        Change Experiment config, such as cycle name, collision energy, and deconvolution target
+                    </RibbonButton.ToolTip>
+                </RibbonButton>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Export"
+                   KeyTip="E">
+            <RibbonGroup>
+                <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
+                              KeyTip="P"/>
+                <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
+                              KeyTip="L"/>
+                <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
+                              KeyTip="N"/>
+                <RibbonButton Label="Molecular spectrum networking export" LargeImageSource="{StaticResource Molecular_network_result_export_is}"
+                              KeyTip="M"/>
+                <RibbonButton Label="Parameter export (Tab-delimited text)" LargeImageSource="{StaticResource Parameter_file_export_is}"
+                              KeyTip="T"/>
+                <RibbonButton Label="Export as lipoquality database format"
+                              KeyTip="D"/>
+                <RibbonButton Label="Copy screenshot to clipboard (emf)"
+                              KeyTip="C"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Spot filtering"
+                   ContextualTabGroupHeader="Design?">
+            <RibbonGroup Header="Display filter">
+                <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
+                <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
+                <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
+                <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
+                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}"/>
+                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
+                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Help"
+                   KeyTip="H">
+            <RibbonGroup>
+                <RibbonButton Label="About" LargeImageSource="{StaticResource Version_is}"
+                              KeyTip="A"/>
+                <RibbonButton Label="Licence" LargeImageSource="{StaticResource Licence_is}"
+                              KeyTip="L"/>
+                <RibbonButton Label="Tutorial" LargeImageSource="{StaticResource Tutorial_is}"
+                              KeyTip="T"/>
+            </RibbonGroup>
+        </RibbonTab>
+    </Ribbon>
+</UserControl>
