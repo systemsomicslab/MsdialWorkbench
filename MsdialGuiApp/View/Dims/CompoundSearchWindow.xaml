@@ -58,8 +58,7 @@
                 <Label Content="MS1 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox Name="TextBox_Ms1Tolerance"
-                         Text=""
-                         IsEnabled="False"
+                         Text="{Binding Ms1Tolerance, Mode=TwoWay}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
                 <Label Content="MS2 tol. [Da]:"

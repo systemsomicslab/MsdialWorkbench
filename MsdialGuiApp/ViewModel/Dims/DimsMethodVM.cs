@@ -296,7 +296,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public override void SaveProject() {
-            AlignmentVM.SaveProject();
+            AlignmentVM?.SaveProject();
         }
 
         private bool ReadDisplayFilter(DisplayFilter flag) {

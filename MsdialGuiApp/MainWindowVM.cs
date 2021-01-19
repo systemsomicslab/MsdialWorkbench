@@ -156,7 +156,7 @@ namespace CompMs.App.Msdial
         private void SaveProject() {
             // TODO: implement process when project save failed.
             MethodVM.Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
-            MethodVM.SaveProject();
+            MethodVM?.SaveProject();
         }
 
         public DelegateCommand<Window> SaveAsProjectCommand {

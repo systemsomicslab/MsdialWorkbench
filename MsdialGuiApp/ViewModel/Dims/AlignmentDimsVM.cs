@@ -210,7 +210,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             // maybe using file pointer is better
             EicChromatograms = await Task.Run(() => {
                 var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                return spotinfo.PeakInfos.Select(peakinfo => new Chromatogram { Peaks = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList() }).ToList();
+                var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
+                foreach (var peakinfo in spotinfo.PeakInfos) {
+                    var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
+                    var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
+                    chroms.Add(new Chromatogram
+                    {
+                        Class = param.FileID_ClassName[peakinfo.FileID],
+                        Peaks = items,
+                        PeakArea = peakitems,
+                    });
+                }
+                return chroms;
             }).ConfigureAwait(false);
         }
 

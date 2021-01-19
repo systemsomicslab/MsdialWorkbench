@@ -25,12 +25,11 @@ namespace CompMs.MsdialDimsCore.Common {
         async public static Task<List<MsScanMatchResult>> RunMspAnnotationAsync(
             double precursorMz, MSDecResult msdecResult,
             List<MoleculeMsReference> mspDB, MsRefSearchParameterBase param,
-            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes
+            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes,
+            double ms1Tol
             ) {
             if (mspDB == null)
                 return new List<MsScanMatchResult>();
-
-            var ms1Tol = param.Ms1Tolerance;
 
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
             #region // practical parameter changes
@@ -118,6 +117,7 @@ namespace CompMs.MsdialDimsCore.Common {
 
                 MsScanMatchResult result = func(refSpec);
                 if (result != null && (result.IsPrecursorMzMatch || result.IsSpectrumMatch)) {
+                    result.LibraryID = i;
                     result.LibraryIDWhenOrdered = i;
                     candidates.Add(result);
                 }

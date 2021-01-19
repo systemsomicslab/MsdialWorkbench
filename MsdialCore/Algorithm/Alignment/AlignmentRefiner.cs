@@ -114,7 +114,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     var repProp = cSpot.AlignedPeakProperties[repFileID];
                     var repLinks = repProp.PeakCharacter.PeakLinks;
 
-                    foreach (var rLink in repLinks) {
+                    for (var i = 0; i < repLinks.Count; i++) {
+                        var rLink = repLinks[i];
                         var rLinkID = rLink.LinkedPeakID;
                         var rLinkProp = rLink.Character;
                         if (rLinkProp == PeakLinkFeatureEnum.Isotope) continue; // for isotope tracking

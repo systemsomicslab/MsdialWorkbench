@@ -156,9 +156,6 @@ namespace CompMs.App.Msdial.Dims
                 var ext = Path.GetExtension(param.MspFilePath);
                 if (ext  == ".msp" || ext == ".msp2") {
                     MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath).OrderBy(msp => msp.PrecursorMz).ToList();
-                    var counter = 0;
-                    foreach (var msp in MspDB)
-                        msp.ScanID = counter++;
                 }
                 else {
                     MspDB = new List<MoleculeMsReference>();
@@ -176,6 +173,9 @@ namespace CompMs.App.Msdial.Dims
                     MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param).OrderBy(msp => msp.PrecursorMz).ToList());
                 }
             }
+            var counter = 0;
+            foreach (var msp in MspDB)
+                msp.ScanID = counter++;
 
             if (!string.IsNullOrEmpty(param.TextDBFilePath)) {
                 if (File.Exists(param.TextDBFilePath)) {

@@ -1031,7 +1031,7 @@ namespace CompMs.MsdialCore.Utility {
         // annotation
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
             feature.Formula = reference.Formula;
-            feature.Ontology = reference.Ontology;
+            feature.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
             feature.SMILES = reference.SMILES;
             feature.InChIKey = reference.InChIKey;
             feature.Name = result.Name;

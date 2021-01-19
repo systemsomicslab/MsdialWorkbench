@@ -27,6 +27,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private List<SpectrumPeakWrapper> ms2DecSpectrum = new List<SpectrumPeakWrapper>();
 
+        public double Ms1Tolerance {
+            get => ms1Tolerance;
+            set => SetProperty(ref ms1Tolerance, value);
+        }
+        private double ms1Tolerance;
+
         public int FileID { get; }
         public string FileName { get; }
         public double AccurateMass { get; }
@@ -56,6 +62,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AccurateMass = peakFeature.PrecursorMz;
             AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
             MetaboliteName = peakFeature.Name;
+            Ms1Tolerance = mspParam.Ms1Tolerance;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
@@ -89,7 +96,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand searchCommand;
 
         private async void Search() {
-            var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes);
+            var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)
                           .Select(result => new CompoundResult(mspDB[result.LibraryIDWhenOrdered], result))
