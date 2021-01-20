@@ -17,7 +17,6 @@
         <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
                                            ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
                                            ValuePropertyName="Mass"
-                                           Bounds="0,0"
                                            ChartMargin="0.05"/>
         <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
                                            ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
