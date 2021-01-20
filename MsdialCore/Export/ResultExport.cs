@@ -291,7 +291,7 @@ namespace CompMs.MsdialCore.Export {
                 legendString = "\t" + String.Join("\t", StatsList.Select(n => n.Legend)) + "\t" + String.Join("\t", StatsList.Select(n => n.Legend));
             }
 
-            var marginString = MarginSpace(header);
+            var marginString = MarginSpace(header.Count - 1);
             sw.WriteLine(marginString + "\tClass\t" + String.Join("\t", files.Select(n => n.AnalysisFileClass)) + naString);
             sw.WriteLine(marginString + "\tFile type\t" + String.Join("\t", files.Select(n => n.AnalysisFileType)) + naString);
             sw.WriteLine(marginString + "\tInjection order\t" + String.Join("\t", files.Select(n => n.AnalysisFileAnalyticalOrder)) + naString);
@@ -299,9 +299,8 @@ namespace CompMs.MsdialCore.Export {
             sw.WriteLine(String.Join("\t", header) + "\t" + String.Join("\t", files.Select(n => n.AnalysisFileName)) + "\t" + legendString);
         }
 
-        private static string MarginSpace(List<string> header) {
-            var margin = "";
-            for (int i = 0; i < header.Count - 1; i++) margin += "\t" + "";
+        private static string MarginSpace(int numColumn) {
+            var margin = new string('\t', numColumn - 1);
             return margin;
         }
 

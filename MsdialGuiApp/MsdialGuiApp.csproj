@@ -189,6 +189,7 @@
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
     <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
@@ -250,6 +251,9 @@
     </Compile>
     <Compile Include="View\Dims\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
+      <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -469,6 +473,10 @@
     <Page Include="View\Dims\RepRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Export\AlignmentResultExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
