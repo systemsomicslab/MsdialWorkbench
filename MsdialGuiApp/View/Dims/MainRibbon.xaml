@@ -12,13 +12,13 @@
         <Ribbon.QuickAccessToolBar>
             <RibbonQuickAccessToolBar>
                 <RibbonButton SmallImageSource="{StaticResource New_project_is}"
-                              Command="{Binding CreateNewProjectCommand}"
+                              Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
                 <RibbonButton SmallImageSource="{StaticResource Open_is}"
-                              Command="{Binding OpenProjectCommand}"
+                              Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
                 <RibbonButton SmallImageSource="{StaticResource Save_is}"
-                              Command="{Binding SaveProjectCommand}"
+                              Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
             </RibbonQuickAccessToolBar>
         </Ribbon.QuickAccessToolBar>
@@ -30,21 +30,21 @@
                                    KeyTip="F"
                                    Background="{StaticResource DarkThemeColor}">
                 <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
-                                           Command="{Binding CreateNewProjectCommand}"
+                                           Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="N"/>
                 <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                           Command="{Binding OpenProjectCommand}"
+                                           Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="O"/>
                 <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                                Command="{Binding SaveProjectCommand}"
+                                                Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                 KeyTip="S">
                     <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                               Command="{Binding SaveAsProjectCommand}"
+                                               Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                KeyTip="A"/>
                     <RibbonApplicationMenuItem Header="Save parameter as..."
-                                               Command="{Binding SaveParameterCommand}" />
+                                               Command="{Binding DataContext.SaveParameterCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                 </RibbonApplicationSplitMenuItem>
             </RibbonApplicationMenu>
         </Ribbon.ApplicationMenu>
@@ -166,6 +166,8 @@
                 <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
                               KeyTip="P"/>
                 <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
+                              Command="{Binding ExportAlignmentResultCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="L"/>
                 <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
                               KeyTip="N"/>

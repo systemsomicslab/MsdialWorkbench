@@ -28,6 +28,9 @@
                                        MaxValue="{Binding DataContext.IntensityMax, Source={x:Reference Name=PeakPairPlot}}"
                                        Bounds="0,0"
                                        ChartMargin="0.05"/>
+        <manager:ContinuousAxisManager x:Key="KMDAxis"
+                                       MinValue="-0.5" MaxValue="0.5"
+                                       ChartMargin="0.05"/>
     </UserControl.Resources>
     
     <Grid>
@@ -47,17 +50,15 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <Grid>
-                <special:LinkedPeakAnnotator x:Name="scatter"
+                <scatter:ScatterControl x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
                                         HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
                                         RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
-                                        HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
+                                        RangeY="{Binding Range, Source={StaticResource KMDAxis}}"
+                                        HorizontalPropertyName="Mass" VerticalPropertyName="KMD"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
-                                        Target="{Binding SelectedItem.InnerModel, RelativeSource={RelativeSource Self}}"
-                                        GroupPeaks="{Binding Peaks}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
                                         behavior:ScatterFocusBehavior.OuterScale="1.3"
                                         behavior:ScatterFocusBehavior.InnerScale="1.2"
@@ -86,13 +87,13 @@
                             </StackPanel>
                         </DataTemplate>
                     </behavior:ScatterFocusBehavior.LabelTemplate>
-                </special:LinkedPeakAnnotator>
+                </scatter:ScatterControl>
                 <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
                                  HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
                                  RangeX="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
-                                 RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=OneWay}"
-                                 HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
+                                 RangeY="{Binding Range, Source={StaticResource KMDAxis}}"
+                                 HorizontalPropertyName="Mass" VerticalPropertyName="KMD"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
                                 ContentTemplate="{DynamicResource FocusCross}"
@@ -131,9 +132,9 @@
                                     LabelTicks="{Binding MassAxis.LabelTicks, ElementName=PeakPairPlot}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource KMDAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource KMDAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <StackPanel Orientation="Horizontal"
@@ -159,7 +160,7 @@
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="Intensity"
+        <TextBlock Text="Kendrick mass defect"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    Grid.Row="1" Grid.Column="0">

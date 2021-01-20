@@ -37,25 +37,27 @@
 
         </Grid>
         <Label Content="  Each process" Grid.Row="2"/>
-        <ItemsControl ItemsSource="{Binding ProgressBarVMs}" Grid.Row="3">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type local:ProgressBarVM}">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="{Binding Label}"
-                                   TextAlignment="Left"
-                                   VerticalAlignment="Center" HorizontalAlignment="Left"
-                                   Width="250" Height="15" Margin="10,0,0,0"/>
-                        <ProgressBar Value="{Binding CurrentValue}"
-                                     HorizontalAlignment="Left" VerticalAlignment="Center"
-                                     Height="15" Width="370" Margin="5,0,0,0"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="3">
+            <ItemsControl ItemsSource="{Binding ProgressBarVMs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ProgressBarVM}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="{Binding Label}"
+                                       TextAlignment="Left"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                                       Width="250" Height="15" Margin="10,0,0,0"/>
+                            <ProgressBar Value="{Binding CurrentValue}"
+                                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                                         Height="15" Width="370" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>

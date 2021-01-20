@@ -111,6 +111,9 @@ namespace CompMs.MsdialCore.Utility
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;
+            // spot.PeakCharacter = representative.PeakCharacter;
+            // spot.AdductType = representative.PeakCharacter.AdductType;
+            spot.Formula = representative.Formula;
 
             spot.CollisionCrossSection = representative.CollisionCrossSection;
             spot.MSRawID2MspIDs = representative.MSRawID2MspIDs;

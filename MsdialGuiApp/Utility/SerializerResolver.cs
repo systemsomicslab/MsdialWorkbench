@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Utility
                     storage = serializer.LoadMsdialDataStorageBase(path);
                     return storage.ParameterBase.MachineCategory;
                 }
-                catch (System.Runtime.Serialization.SerializationException) {
+                catch (System.InvalidOperationException) {
                 }
             }
             throw new System.Runtime.Serialization.SerializationException("Invalid file format.");

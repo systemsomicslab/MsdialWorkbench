@@ -106,7 +106,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         }
 
         public List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor) {
-            master = master.OrderBy(prop => (prop.ChromXs.RT.Value, prop.PrecursorMz)).ToList();
+            master = master.OrderBy(prop => (prop.PrecursorMz, prop.ChromXs.RT.Value)).ToList();
             var result = GetSpots(master, analysisFiles);
             
             foreach (var analysisFile in analysisFiles) {

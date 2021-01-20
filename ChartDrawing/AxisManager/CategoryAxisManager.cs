@@ -52,7 +52,7 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         #region field
-        private Dictionary<object, AxisValue> converter;
+        private Dictionary<object, AxisValue> converter = new Dictionary<object, AxisValue>();
         private Type dataType;
         private PropertyInfo dPropertyReflection;
         private PropertyInfo iPropertyReflection;
@@ -94,7 +94,7 @@ namespace CompMs.Graphics.AxisManager
         public override AxisValue TranslateToAxisValue(object value) {
             if (converter.ContainsKey(value))
                 return converter[value];
-            return base.TranslateToAxisValue(value);
+            return AxisValue.NaN;
         }
 
         private void UpdateConverter()
@@ -122,7 +122,7 @@ namespace CompMs.Graphics.AxisManager
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var axis = d as CategoryAxisManager;
-            if (axis == null) return;
+            if (axis == null || axis.ItemsSource == null) return;
 
             var enumerator = axis.ItemsSource.GetEnumerator();
             if (!enumerator.MoveNext()) return;

@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm
 {
@@ -14,7 +16,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm
         static readonly IComparer<IMSScanProperty> Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
         public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
-            throw new NotImplementedException();
+            var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
+            var peaklist = DataAccess.GetMs1Peaklist(
+                spectrum, (float)peak.Mass,
+                (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
+                peak.IonMode);
+            return new ChromatogramPeakInfo(
+                peak.FileID, peaklist,
+                (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.Value, (float)peak.ChromXsRight.Value);
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {

@@ -12,6 +12,8 @@ namespace CompMs.Graphics.Core.Base
     public struct AxisValue : IComparable<AxisValue>
     {
         public double Value { get; }
+        public static AxisValue NaN = new AxisValue(double.NaN);
+
         public AxisValue(double val) {
             Value = val;
         }

@@ -71,21 +71,34 @@ namespace CompMs.MsdialDimsCore {
                 var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                 var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
                 var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
-                var chromFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
+                var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
 
-                if (chromFeatures.Count == 0) return;
-                IsotopeEstimator.Process(chromFeatures, param, iupacDB);
-                SetSpectrumPeaks(chromFeatures, spectrumList);
+                if (peakFeatures.Count == 0) return;
+                IsotopeEstimator.Process(peakFeatures, param, iupacDB);
+                SetSpectrumPeaks(peakFeatures, spectrumList);
+
+                // chrom deconvolutions
+                Console.WriteLine("Deconvolution started");
+                var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
+                var msdecResults = new List<MSDecResult>();
+                var initial_msdec = 30.0;
+                var max_msdec = 30.0;
+                var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
+                msdecResults = new Algorithm.Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
+                       spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
                 Console.WriteLine("Annotation started");
-                foreach (var feature in chromFeatures) {
-                    AnnotationProcess.Run(feature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, null, out _, out _);
+                foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
+                    AnnotationProcess.Run(feature, msdecResult, mspDB, textDB, param.MspSearchParam, param.TargetOmics, null, out _, out _);
                 }
 
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromFeatures, null, param, reportAction);
+                new PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
 
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromFeatures);
+                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
+
+                var dclfile = file.DeconvolutionFilePath;
+                MsdecResultsWriter.Write(dclfile, msdecResults);
 
                 reportAction?.Invoke(100);
             }
@@ -143,14 +156,13 @@ namespace CompMs.MsdialDimsCore {
             var ID2CE = new Dictionary<int, double>();
             var startID = SearchCollection.LowerBound(
                 ms2SpecObjects,
-                new RawSpectrum { Precursor = new RawPrecursorIon { SelectedIonMz = precursorMz - mzTolerance } },
-                (x, y) => x.Precursor.SelectedIonMz.CompareTo(y.Precursor.SelectedIonMz));
+                new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
+                (x, y) => (x.Precursor.IsolationTargetMz + x.Precursor.IsolationWindowUpperOffset).CompareTo(y.Precursor.IsolationTargetMz + y.Precursor.IsolationWindowUpperOffset));
             
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
                 var spec = ms2SpecObjects[i];
-                var specPrecursorMz = spec.Precursor.SelectedIonMz;
-                if (specPrecursorMz < precursorMz - mzTolerance) continue;
-                if (specPrecursorMz > precursorMz + mzTolerance) break;
+                if (spec.Precursor.IsolationTargetMz + spec.Precursor.IsolationWindowUpperOffset < precursorMz - mzTolerance) continue;
+                if (spec.Precursor.IsolationTargetMz - spec.Precursor.IsolationWindowLowerOffset > precursorMz + mzTolerance) break;
 
                 ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }

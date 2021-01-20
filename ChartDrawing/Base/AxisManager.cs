@@ -91,12 +91,18 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public virtual AxisValue TranslateToAxisValue(object value) {
-            if (value is double d)
+            if (value is string s) {
+                if (double.TryParse(s, out var d))
+                    return new AxisValue(d);
+            }
+            else if (value is double d) {
                 return new AxisValue(d);
-            else if (value is IConvertible convertible)
+            }
+            else if (value is IConvertible convertible) {
                 return new AxisValue(Convert.ToDouble(convertible));
-            else
-                return new AxisValue(double.NaN);
+            }
+
+            return new AxisValue(double.NaN);
         }
 
         public virtual double TranslateToRenderPoint(AxisValue val, bool isFlipped) {

@@ -14,6 +14,21 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +48,26 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
@@ -152,7 +187,9 @@
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
@@ -167,6 +204,9 @@
     <Compile Include="ViewModel\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
+      <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
@@ -182,6 +222,9 @@
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Dims\CompoundSearchWindow.xaml.cs">
+      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dims\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
@@ -190,6 +233,9 @@
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\IonTableViewer.xaml.cs">
+      <DependentUpon>IonTableViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
@@ -208,6 +254,9 @@
     </Compile>
     <Compile Include="View\Dims\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
+      <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -364,6 +413,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dims\AlignmentClassBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dims\AlignmentEicView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -384,6 +437,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\Dims\CompoundSearchWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dims\EicView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -395,6 +452,10 @@
     <Page Include="View\Dims\Footer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\IonTableViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\MainRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -419,6 +480,10 @@
     <Page Include="View\Dims\RepRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Export\AlignmentResultExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
@@ -577,6 +642,17 @@
     <Resource Include="Resources\Lipoquality.ico" />
     <Resource Include="Resources\MolecularNetworking.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

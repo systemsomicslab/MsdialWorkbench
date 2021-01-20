@@ -177,9 +177,9 @@ namespace CompMs.Graphics.Scatter
         }
 
         private void SetDrawingVisuals() {
+            visualChildren.Clear();
             if (cv == null) return;
 
-            visualChildren.Clear();
             foreach (var o in cv)
                 visualChildren.Add(new AnnotatedDrawingVisual(o));
         }
@@ -239,7 +239,11 @@ namespace CompMs.Graphics.Scatter
                 collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
             }
 
-            if (chart.cv.Count == 0) return;
+            if (chart.cv.Count == 0) {
+                chart.SetDrawingVisuals();
+                chart.Update();
+                return;
+            }
             chart.dataType = chart.cv.GetItemAt(0).GetType();
 
             if (chart.HorizontalPropertyName != null)

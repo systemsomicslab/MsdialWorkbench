@@ -102,24 +102,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     }
 
                     // UNDONE: retrieve spectrum data
-                    try {
-                        var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
-                        peakInfos.Add(peakinfo);
-                    }
-                    catch (NotImplementedException) {
-                        var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                        var peaklist = DataAccess.GetMs1Peaklist(
-                            spectra, (float)peak.Mass,
-                            (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-                            peak.IonMode);
-                        var peakInfo = new ChromatogramPeakInfo(
-                            peak.FileID, peaklist,
-                            (float)peak.ChromXsTop.Value,
-                            (float)peak.ChromXsLeft.Value,
-                            (float)peak.ChromXsRight.Value
-                            );
-                        peakInfos.Add(peakInfo);
-                    }
+                    var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
+                    peakInfos.Add(peakinfo);
                 }
             }
             var file = Path.GetTempFileName();

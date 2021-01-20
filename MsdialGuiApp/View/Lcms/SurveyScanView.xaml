@@ -65,7 +65,7 @@
                     <spectrum:LineSpectrumControl.LayoutTransform>
                         <TransformGroup>
                             <RotateTransform Angle="-90"/>
-                            <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type line:LineChartControl}}}"/>
+                            <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type spectrum:LineSpectrumControl}}}"/>
                         </TransformGroup>
                     </spectrum:LineSpectrumControl.LayoutTransform>
                 </spectrum:LineSpectrumControl>
@@ -105,7 +105,7 @@
                 <StackPanel.LayoutTransform>
                     <TransformGroup>
                         <RotateTransform Angle="-90"/>
-                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type axis:HorizontalAxisControl}}}"/>
+                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType=StackPanel}}"/>
                     </TransformGroup>
                 </StackPanel.LayoutTransform>
             </StackPanel>

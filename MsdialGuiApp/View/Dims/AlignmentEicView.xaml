@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="AlignedEicView"
@@ -47,14 +48,17 @@
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
             <ItemsControl Margin="-1,0,0,-1"
-                          AlternationCount="4"
+                          AlternationCount="1"
                           ItemsSource="{Binding EicChromatograms}">
                 <ItemsControl.Resources>
                     <AlternationConverter x:Key="LinePenConverter">
-                        <Pen Brush="Red" Thickness="1" PresentationOptions:Freeze="True"/>
                         <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
+                        <!--<Pen Brush="Red" Thickness="1" PresentationOptions:Freeze="True"/>
                         <Pen Brush="Green" Thickness="1" PresentationOptions:Freeze="True"/>
-                        <Pen Brush="Black" Thickness="1" PresentationOptions:Freeze="True"/>
+                        <Pen Brush="Black" Thickness="1" PresentationOptions:Freeze="True"/>-->
+                    </AlternationConverter>
+                    <AlternationConverter x:Key="AreaBrushConverter">
+                        <SolidColorBrush Color="Blue" Opacity="0.25" PresentationOptions:Freeze="True"/>
                     </AlternationConverter>
                 </ItemsControl.Resources>
                 <ItemsControl.ItemsPanel>
@@ -64,27 +68,36 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <line:LineChartControl ItemsSource="{Binding Peaks}"
-                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                               RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                               RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                               LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                 RelativeSource={RelativeSource Mode=TemplatedParent},
-                                                                 Converter={StaticResource LinePenConverter}}"
-                                               HorizontalPropertyName="Time"
-                                               VerticalPropertyName="Intensity" >
-                            <line:LineChartControl.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Time: "/>
-                                        <TextBlock Text="{Binding FocusedItem.Time}"/>
-                                        <TextBlock Text=" Intensity: "/>
-                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                                    </StackPanel>
-                                </ToolTip>
-                            </line:LineChartControl.ToolTip>
-                        </line:LineChartControl>
+                        <Grid>
+                            <line:LineChartControl ItemsSource="{Binding Peaks}"
+                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                                   LinePen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                     RelativeSource={RelativeSource Mode=TemplatedParent},
+                                                                     Converter={StaticResource LinePenConverter}}"
+                                                   HorizontalPropertyName="Time" VerticalPropertyName="Intensity"/>
+                            <area:AreaChartControl x:Name="area"
+                                                   ItemsSource="{Binding PeakArea}"
+                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
+                                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                                   AreaBrush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                       RelativeSource={RelativeSource Mode=TemplatedParent},
+                                                                       Converter={StaticResource AreaBrushConverter}}"
+                                                   HorizontalPropertyName="Time" VerticalPropertyName="Intensity">
+                                <area:AreaChartControl.ToolTip>
+                                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Class: "/>
+                                            <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </area:AreaChartControl.ToolTip>
+                            </area:AreaChartControl>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -103,7 +116,7 @@
                    FontFamily="Calibri" FontSize="16"
                    VerticalAlignment="Bottom"
                    Grid.Row="0" Grid.Column="2"/>
-        <TextBlock Text="Retention time [min]"
+        <TextBlock Text="m/z"
                    FontFamily="Calibri" FontStyle="Italic" FontSize="13"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Grid.Row="3" Grid.Column="2"/>

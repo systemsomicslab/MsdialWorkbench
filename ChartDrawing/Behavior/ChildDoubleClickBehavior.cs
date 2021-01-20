@@ -51,24 +51,16 @@ namespace CompMs.Graphics.Behavior
 
         static void OnAttached(Control control) {
             control.PreviewMouseDoubleClick += OnPreviewMouseDoubleClick;
-            control.Unloaded += OnUnloaded;
         }
 
         static void OnDetaching(Control control) {
             control.PreviewMouseDoubleClick -= OnPreviewMouseDoubleClick;
-            control.Unloaded -= OnUnloaded;
         }
 
         static void OnPreviewMouseDoubleClick(object sender, RoutedEventArgs e) {
             if (sender is Control control) {
                 var command = GetCommand(control);
                 command.Execute(control);
-            }
-        }
-
-        static void OnUnloaded(object sender, RoutedEventArgs e) {
-            if (sender is Control control) {
-                OnDetaching(control);
             }
         }
     }

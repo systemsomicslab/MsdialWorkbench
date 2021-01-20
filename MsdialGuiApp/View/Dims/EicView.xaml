@@ -22,13 +22,14 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
-                                                 ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
-                                                 TargetAxisMapper="{Binding ChromAxis.AxisMapper, Source={x:Reference Name=EicPlot}}"
-                                                 TargetPropertyName="ChromXValue"
-                                                 ValuePropertyName="Intensity"
-                                                 TargetRange="{Binding ChromAxis.Range, Source={x:Reference Name=EicPlot}}"
-                                                 ChartMargin="0,0.05" Bounds="0,0"/>
+        <manager:AutoContinuousAxisManager x:Key="IntensityAxis"
+                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0,0.05" Bounds="0,0"/>
+        <manager:AutoContinuousAxisManager x:Key="MzAxis"
+                                           ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                           ValuePropertyName="ChromXValue"
+                                           ChartMargin="0"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -49,10 +50,10 @@
             <Grid>
                 <spectrum:LineSpectrumControl x:Name="spectrum"
                                               ItemsSource="{Binding FocusedEic}"
-                                              HorizontalAxis="{Binding MzAxis.AxisMapper, ElementName=EicPlot}"
-                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                              RangeX="{Binding MzAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
-                                              RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                              RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                              RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                               HorizontalPropertyName="ChromXValue"
                                               VerticalPropertyName="Intensity">
                     <spectrum:LineSpectrumControl.LinePen>
@@ -61,10 +62,10 @@
                 </spectrum:LineSpectrumControl>
                 <area:AreaChartControl x:Name="area"
                                        ItemsSource="{Binding PeakEic}"
-                                       HorizontalAxis="{Binding MzAxis.AxisMapper, ElementName=EicPlot}"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                       RangeX="{Binding MzAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
-                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                       RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                       RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                        HorizontalPropertyName="ChromXValue"
                                        VerticalPropertyName="Intensity">
                     <area:AreaChartControl.AreaBrush>
@@ -73,10 +74,10 @@
                 </area:AreaChartControl>
                 <line:LineChartControl x:Name="line"
                                        ItemsSource="{Binding Eic}"
-                                       HorizontalAxis="{Binding MzAxis.AxisMapper, ElementName=EicPlot}"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                       RangeX="{Binding MzAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
-                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                       RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                       RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                        HorizontalPropertyName="ChromXValue"
                                        VerticalPropertyName="Intensity">
                     <line:LineChartControl.LinePen>
@@ -89,14 +90,14 @@
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding MzAxis.AxisMapper, ElementName=EicPlot}"
-                                    RangeX="{Binding MzAxis.Range, ElementName=EicPlot, Mode=TwoWay}"
-                                    LabelTicks="{Binding MzAxis.LabelTicks, ElementName=EicPlot}"
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource IntensityAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource IntensityAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <ContentControl Content="{Binding Target}"
@@ -104,8 +105,8 @@
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <TextBlock Text="EIC chromatogram of " FontSize="12" Margin="5,0,0,0"/>
                         <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N4, Mode=OneTime}" FontSize="12"/>
+                        <TextBlock Text="[Da]" FontSize="12" Margin="5,0,0,0"/>
                         <TextBlock Text="Max intensity: " FontSize="12" Margin="5,0,0,0"/>
                         <TextBlock Text="{Binding DataContext.EicMaxIntensity, StringFormat=F0, Mode=OneWay, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="12"/>
                     </StackPanel>

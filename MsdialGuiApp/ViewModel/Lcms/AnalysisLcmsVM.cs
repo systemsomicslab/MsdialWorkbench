@@ -103,7 +103,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ChromatogramPeakFeatureVM Target {
             get => target;
-            set => SetProperty(ref target, value);
+            set {
+                if (SetProperty(ref target, value)) {
+                    OnTargetChanged(target);
+                }
+            }
         }
 
         public string FileName {
@@ -161,6 +165,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             set => SetProperty(ref molecularIonChecked, value);
         }
 
+        public bool BlankFilterChecked {
+            get => blankFilterChecked;
+            set => SetProperty(ref blankFilterChecked, value);
+        }
+        public bool UniqueIonsChecked {
+            get => uniqueIonsChecked;
+            set => SetProperty(ref uniqueIonsChecked, value);
+        }
+
         public double AmplitudeLowerValue {
             get => amplitudeLowerValue;
             set => SetProperty(ref amplitudeLowerValue, value);
@@ -212,7 +225,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
         private string fileName, ms1SplashKey, rawSplashKey, deconvolutionSplashKey;
         private string displayLabel;
-        private bool refMatchedChecked = true, suggestedChecked = true, unknownChecked = true, ccsChecked = false, msmsAcquiredChecked = false, molecularIonChecked = false;
+        private bool refMatchedChecked = false, suggestedChecked = false, unknownChecked = false, ccsChecked = false, msmsAcquiredChecked = false, molecularIonChecked = false;
+        private bool blankFilterChecked = false, uniqueIonsChecked = false;
         private double amplitudeLowerValue = 0d, amplitudeUpperValue = 1d;
         private int focusID;
         private double focusRt, focusMz;
@@ -248,7 +262,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFileBean.DeconvolutionFilePath, out _, out _);
 
-            PropertyChanged += OnTargetChanged;
             PropertyChanged += OnFilterChanged;
 
             Target = _ms1Peaks.FirstOrDefault();
@@ -289,56 +302,54 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Ms1Peaks?.Refresh();
         }
 
-        void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Target)) {
-                if (Target == null) {
-                    Eic = new List<ChromatogramPeakWrapper>();
-                    return;
-                }
-
-                Eic = DataAccess.GetSmoothedPeaklist(
-                    DataAccess.GetMs1Peaklist(
-                        spectrumList, Target.Mass, param.CentroidMs1Tolerance, param.IonMode,
-                        ChromXType.RT, ChromXUnit.Min,  // TODO: hard coded for LC
-                        param.RetentionTimeBegin, param.RetentionTimeEnd
-                        ),
-                    param.SmoothingMethod, param.SmoothingLevel
-                ).Select(peak => new ChromatogramPeakWrapper(peak)).DefaultIfEmpty().ToList();
-
-                PeakEic = Eic.Where(peak => Target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= Target.ChromXRightValue).ToList();
-                FocusedEic = Target.ChromXValue.HasValue
-                    ? new List<ChromatogramPeakWrapper> {
-                        Eic.Where(peak => peak.ChromXValue.HasValue)
-                           .DefaultIfEmpty()
-                           .Argmin(peak => Math.Abs(Target.ChromXValue.Value - peak.ChromXValue.Value))
-                    }
-                    : new List<ChromatogramPeakWrapper>();
-
-                var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, Target.MS1RawSpectrumIdTop, 0, float.MinValue, float.MaxValue);
-                Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                Ms1SplashKey = CalculateSplashKey(spectra);
-
-                spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, Target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
-                Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                RawSplashKey = CalculateSplashKey(spectra);
-
-                var msdecResult = msdecResults.FirstOrDefault(dec => dec.ScanID == Target.InnerModel.PeakID);
-                Ms2DeconvolutionSpectrum = msdecResult?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
-                DeconvolutionSplashKey = CalculateSplashKey(msdecResult?.Spectrum);
-
-                Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
-                if (Target.TextDbBasedMatchResult == null && Target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = msps[matched.LibraryIDWhenOrdered];
-                    if (matched.LibraryID != reference.ScanID) {
-                        reference = msps.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
-                    }
-                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
-                }
-
-                FocusID = Target.InnerModel.MasterPeakID;
-                FocusRt = Target.ChromXValue ?? 0;
-                FocusMz = Target.Mass;
+        void OnTargetChanged(ChromatogramPeakFeatureVM Target) {
+            if (Target == null) {
+                Eic = new List<ChromatogramPeakWrapper>();
+                return;
             }
+
+            Eic = DataAccess.GetSmoothedPeaklist(
+                DataAccess.GetMs1Peaklist(
+                    spectrumList, Target.Mass, param.CentroidMs1Tolerance, param.IonMode,
+                    ChromXType.RT, ChromXUnit.Min,  // TODO: hard coded for LC
+                    param.RetentionTimeBegin, param.RetentionTimeEnd
+                    ),
+                param.SmoothingMethod, param.SmoothingLevel
+            ).Select(peak => new ChromatogramPeakWrapper(peak)).DefaultIfEmpty().ToList();
+
+            PeakEic = Eic.Where(peak => Target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= Target.ChromXRightValue).ToList();
+            FocusedEic = Target.ChromXValue.HasValue
+                ? new List<ChromatogramPeakWrapper> {
+                    Eic.Where(peak => peak.ChromXValue.HasValue)
+                       .DefaultIfEmpty()
+                       .Argmin(peak => Math.Abs(Target.ChromXValue.Value - peak.ChromXValue.Value))
+                }
+                : new List<ChromatogramPeakWrapper>();
+
+            var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MSDataType, Target.MS1RawSpectrumIdTop, 0, float.MinValue, float.MaxValue);
+            Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+            Ms1SplashKey = CalculateSplashKey(spectra);
+
+            spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, Target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
+            Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+            RawSplashKey = CalculateSplashKey(spectra);
+
+            var msdecResult = msdecResults.FirstOrDefault(dec => dec.ScanID == Target.InnerModel.PeakID);
+            Ms2DeconvolutionSpectrum = msdecResult?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+            DeconvolutionSplashKey = CalculateSplashKey(msdecResult?.Spectrum);
+
+            Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
+            if (Target.TextDbBasedMatchResult == null && Target.MspBasedMatchResult is MsScanMatchResult matched) {
+                var reference = msps[matched.LibraryIDWhenOrdered];
+                if (matched.LibraryID != reference.ScanID) {
+                    reference = msps.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
+                }
+                Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+            }
+
+            FocusID = Target.InnerModel.MasterPeakID;
+            FocusRt = Target.ChromXValue ?? 0;
+            FocusMz = Target.Mass;
         }
 
         static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {

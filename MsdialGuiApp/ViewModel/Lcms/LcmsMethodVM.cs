@@ -118,6 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             // Run Alignment
             ProcessAlignment(window, Storage);
+
             AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
@@ -144,7 +145,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
                 }
             );
-            Storage.AlignmentFiles = new List<AlignmentFileBean>(AlignmentFiles);
+            Storage.AlignmentFiles = AlignmentFiles.ToList();
             Storage.MspDB = analysisParamSetVM.MspDB;
             Storage.TextDB = analysisParamSetVM.TextDB;
             return true;
@@ -201,6 +202,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return true;
         }
 
+        public override void LoadProject() {
+            LoadSelectedAnalysisFile();
+        }
+
         public DelegateCommand LoadAnalysisFileCommand {
             get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadSelectedAnalysisFile));
         }
@@ -226,6 +231,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private AlignmentLcmsVM LoadAlignmentFile(AlignmentFileBean alignment) {
             return new AlignmentLcmsVM(alignment, Storage.ParameterBase);
+        }
+
+        public override void SaveProject() {
+            throw new NotImplementedException();
         }
     }
 }

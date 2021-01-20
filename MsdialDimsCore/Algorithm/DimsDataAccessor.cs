@@ -17,8 +17,8 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature target, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
             var detected = spot.AlignedPeakProperties.Where(peak => peak.MasterPeakID >= 0).ToList();
-            var lo = detected.Min(peak => peak.Mass);
-            var hi = detected.Max(peak => peak.Mass);
+            var lo = detected.Min(peak => peak.ChromXsLeft.Value);
+            var hi = detected.Max(peak => peak.ChromXsRight.Value);
             var tolerance = (hi - lo) * 1.5;
             var ms1Spectrum = spectrum
                 .Where(spec => spec.MsLevel == 1 && !spec.Spectrum.IsEmptyOrNull())

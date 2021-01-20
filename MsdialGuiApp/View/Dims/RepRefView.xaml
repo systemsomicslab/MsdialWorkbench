@@ -9,6 +9,9 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+             Name="RepRefPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentDimsVM}}"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -16,20 +19,20 @@
         </Style>
     </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding}"
-                                           ValuePropertyName="Mass"
-                                           ChartMargin="0.05"/>
+        <manager:ContinuousAxisManager x:Key="MassAxisManager"
+                                       MinValue="{Binding DataContext.Ms2MassMin, Source={x:Reference Name=RepRefPlot}}"
+                                       MaxValue="{Binding DataContext.Ms2MassMax, Source={x:Reference Name=RepRefPlot}}"
+                                       ChartMargin="0.05"/>
         <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding}"
+                                           ItemsSource="{Binding DataContext.Ms2Spectrum, Source={x:Reference Name=RepRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05" />
+                                           ChartMargin="0,0.5" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding}"
+                                           ItemsSource="{Binding DataContext.Ms2ReferenceSpectrum, Source={x:Reference Name=RepRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.05"/>
+                                           ChartMargin="0,0.5"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -37,64 +40,57 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button Name="Button_CompoundSearchAlignmentViewer"
-                Grid.Row="0" Height="30" Width="30" Margin="10,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+        <StackPanel Margin="10,5,0,5" Orientation="Horizontal"
+                    Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Height" Value="30"/>
+                    <Setter Property="Width" Value="30"/>
+                    <Setter Property="Margin" Value="5,0,0,0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Image Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </StackPanel.Resources>
+
+            <Button Name="Button_CompoundSearchAlignmentViewer"
+                    Content="/Resources/CompoundSearchIcon.ico"
+                    Command="{Binding SearchCompoundCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                    ToolTip="Compound search"
+                    HorizontalAlignment="Left"/>
             <!-- Click="buttonClick_CompoundSearchAlignmentViewer" -->
-            <Button.Content>
-                <Image Source="/Resources/CompoundSearchIcon.ico" />
-            </Button.Content>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="Compound search" />
-            </ToolTipService.ToolTip>
-        </Button>
 
-        <Button Name="Button_MsFinderSearchAlignmentViewer"
-                Grid.Row="0" Height="30" Width="30" Margin="50,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
-               <!-- Click="buttonClick_MsFinderSearchAlignmentViewer" -->
-            <Button.Content>
-                <Image Source="/Resources/msfinder_icon.ico" />
-            </Button.Content>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="MS-FINDER search" />
-            </ToolTipService.ToolTip>
-        </Button>
+            <Button Name="Button_MsFinderSearchAlignmentViewer"
+                    Content="/Resources/msfinder_icon.ico"
+                    ToolTip="MS-FINDER search"
+                    HorizontalAlignment="Left"/>
+            <!-- Click="buttonClick_MsFinderSearchAlignmentViewer" -->
 
-        <Button Name="Button_MolecularNetworkAlignmentViewer"
-                Grid.Row="0" 
-                Height="30" Width="30" Margin="90,5,5,5" 
-                Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
+            <Button Name="Button_MolecularNetworkAlignmentViewer"
+                    Content="/Resources/MolecularNetworking.ico"
+                    ToolTip="Molecular-spectrum networking for selected alignment spot"
+                    HorizontalAlignment="Left"/>
             <!-- Click="buttonClick_MolecularNetworkAlignmentViewer" -->
-            <Button.Content>
-                <Image Source="/Resources/MolecularNetworking.ico" />
-            </Button.Content>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="Molecular-spectrum networking for selected alignment spot" />
-            </ToolTipService.ToolTip>
-        </Button>
 
-        <Button Name="Button_BinVestigateSearchAlignmentViewer"
-                Grid.Row="0" Height="30" Width="30" Margin="130,5,5,5" Background="Transparent" BorderBrush="Black" BorderThickness="0" HorizontalAlignment="Left">
-               <!-- Click="buttonClick_BinVestigateSearchAlignmentViewer"  -->
-            <Button.Content>
-                <Image Source="/Resources/BinVestigate.ico" />
-            </Button.Content>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="BinVestigate search" />
-            </ToolTipService.ToolTip>
-        </Button>
+            <Button Name="Button_BinVestigateSearchAlignmentViewer"
+                    Content="/Resources/BinVestigate.ico"
+                    ToolTip="BinVestigate search"
+                    HorizontalAlignment="Left"/>
+            <!-- Click="buttonClick_BinVestigateSearchAlignmentViewer"  -->
 
-        <Button Name="Button_LipoqualityDbSearchAlignmentViewer"
-                Grid.Row="0" Height="30" Width="30" Margin="170,5,5,5" 
-                Background="Transparent" BorderBrush="Black" BorderThickness="0" 
-                HorizontalAlignment="Left" IsEnabled="True">
-               <!-- Click="buttonClick_LipoqualityDbSearchAlignmentViewer"  -->
-            <Button.Content>
-                <Image Source="/Resources/Lipoquality.ico" />
-            </Button.Content>
-            <ToolTipService.ToolTip>
-                <ToolTip Content="Go to lipoquality database (developing, and the result of mouse experiments can be shown now.)" />
-            </ToolTipService.ToolTip>
-        </Button>
+            <Button Name="Button_LipoqualityDbSearchAlignmentViewer"
+                    Content="/Resources/Lipoquality.ico"
+                    ToolTip="Go to lipoquality database (developing, and the result of mouse experiments can be shown now.)"
+                    HorizontalAlignment="Left"/>
+            <!-- Click="buttonClick_LipoqualityDbSearchAlignmentViewer"  -->
+        </StackPanel>
 
         <Grid Grid.Row="1" Margin="0,0,10,0">
             <Grid.ColumnDefinitions>
@@ -115,7 +111,7 @@
             <Border Background="WhiteSmoke"
                     Grid.Row="1" Grid.Column="3" >
                 <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                              ItemsSource="{Binding}"
+                                              ItemsSource="{Binding Ms2Spectrum}"
                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                               RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
@@ -126,11 +122,12 @@
             <Border Background="WhiteSmoke"
                     Grid.Row="3" Grid.Column="3" >
                 <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                       ItemsSource="{Binding}"
+                                       ItemsSource="{Binding Ms2ReferenceSpectrum}"
                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                        RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
                                        RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                       FlippedY="False"
                                        HorizontalPropertyName="Mass"
                                        VerticalPropertyName="Intensity">
                     <spectrum:LineSpectrumControl.LinePen>
@@ -155,6 +152,7 @@
                                       VerticalAxis="{Binding AxisMapper}"
                                       LabelTicks="{Binding LabelTicks}"
                                       RangeY="{Binding Range}"
+                                      FlippedY="False"
                                       Grid.Row="3" Grid.Column="1" />
             <TextBlock Text="m/z"
                        FontStyle="Italic"

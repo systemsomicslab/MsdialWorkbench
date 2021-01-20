@@ -47,6 +47,9 @@ namespace CompMs.Graphics.AxisManager
                 return;
 
             vProp = dataType.GetProperty(ValuePropertyName);
+            if (vProp == null)
+                return;
+
             double min = double.MaxValue, max = double.MinValue;
             foreach (var o in ItemsSource) {
                 if (o == null) continue;

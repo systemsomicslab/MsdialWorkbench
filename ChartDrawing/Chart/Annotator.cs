@@ -131,6 +131,8 @@ namespace CompMs.Graphics.Chart
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (cv != null)
+                datas = Enumerable.Range(0, cv.Count).Select(_ => new LabelData()).ToArray();
             SetHorizontalDatas();
             SetVerticalDatas();
             SetLabelDatas();

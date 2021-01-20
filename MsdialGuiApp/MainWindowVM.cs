@@ -27,9 +27,15 @@ namespace CompMs.App.Msdial
 
         public MsdialDataStorage Storage {
             get => storage;
-            set => SetProperty(ref storage, value);
+            set {
+                if (SetProperty(ref storage, value)) {
+                    OnPropertyChanged(nameof(ProjectFile));
+                }
+            }
         }
         private MsdialDataStorage storage;
+
+        public string ProjectFile => Storage?.ParameterBase?.ProjectFilePath ?? string.Empty;
 
 
         public DelegateCommand<Window> CreateNewProjectCommand {
@@ -141,6 +147,7 @@ namespace CompMs.App.Msdial
                 }
 
                 MethodVM = CreateNewMethodVM(Storage.ParameterBase.MachineCategory, Storage);
+                MethodVM.LoadProject();
 
                 message.Close();
                 Mouse.OverrideCursor = null;
@@ -155,6 +162,7 @@ namespace CompMs.App.Msdial
         private void SaveProject() {
             // TODO: implement process when project save failed.
             MethodVM.Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
+            MethodVM?.SaveProject();
         }
 
         public DelegateCommand<Window> SaveAsProjectCommand {
