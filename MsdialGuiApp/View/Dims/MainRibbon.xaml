@@ -166,6 +166,8 @@
                 <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
                               KeyTip="P"/>
                 <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
+                              Command="{Binding ExportAlignmentResultCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="L"/>
                 <RibbonButton Label="Export normalization result" LargeImageSource="{StaticResource RawNormalized_comparison_result_is}"
                               KeyTip="N"/>

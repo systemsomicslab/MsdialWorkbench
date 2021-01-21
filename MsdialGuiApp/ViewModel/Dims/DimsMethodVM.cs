@@ -22,6 +22,8 @@ using CompMs.App.Msdial.Dims;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialCore.MSDec;
 using System.Windows.Input;
+using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.View.Export;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -297,6 +299,21 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public override void SaveProject() {
             AlignmentVM?.SaveProject();
+        }
+
+        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
+        private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        private void ExportAlignment(Window owner) {
+            var vm = new AlignmentResultExportVM(Storage.AlignmentFiles, Storage);
+            var dialog = new AlignmentResultExportWin
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+
+            dialog.ShowDialog();
         }
 
         private bool ReadDisplayFilter(DisplayFilter flag) {
