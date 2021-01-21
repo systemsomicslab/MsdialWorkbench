@@ -111,8 +111,30 @@ namespace CompMs.MsdialCore.Utility
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;
-            // spot.PeakCharacter = representative.PeakCharacter;
-            // spot.AdductType = representative.PeakCharacter.AdductType;
+            spot.AdductType = new Common.DataObj.Property.AdductIon {
+                AdductIonAccurateMass = representative.PeakCharacter.AdductType.AdductIonAccurateMass,
+                AdductIonXmer = representative.PeakCharacter.AdductType.AdductIonXmer,
+                AdductIonName = representative.PeakCharacter.AdductType.AdductIonName,
+                ChargeNumber = representative.PeakCharacter.AdductType.ChargeNumber,
+                IonMode = representative.PeakCharacter.AdductType.IonMode,
+                FormatCheck = representative.PeakCharacter.AdductType.FormatCheck,
+                M1Intensity = representative.PeakCharacter.AdductType.M1Intensity,
+                M2Intensity = representative.PeakCharacter.AdductType.M2Intensity,
+                IsRadical = representative.PeakCharacter.AdductType.IsRadical,
+                IsIncluded = representative.PeakCharacter.AdductType.IsIncluded,
+            };
+            spot.PeakCharacter = new IonFeatureCharacter
+            {
+                AdductType = spot.AdductType,
+                AdductTypeByAmalgamationProgram = representative.PeakCharacter.AdductTypeByAmalgamationProgram, 
+                Charge = representative.PeakCharacter.Charge,
+                PeakLinks = representative.PeakCharacter.PeakLinks.ToList(),
+                IsotopeWeightNumber = representative.PeakCharacter.IsotopeWeightNumber,
+                IsotopeParentPeakID = representative.PeakCharacter.IsotopeParentPeakID,
+                PeakGroupID = representative.PeakCharacter.PeakGroupID,
+                IsLinked = representative.PeakCharacter.IsLinked,
+                AdductParent = representative.PeakCharacter.AdductParent,
+            };
             spot.Formula = representative.Formula;
 
             spot.CollisionCrossSection = representative.CollisionCrossSection;
