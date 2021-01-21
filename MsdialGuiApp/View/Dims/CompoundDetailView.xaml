@@ -66,7 +66,7 @@
                             <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity"
                                      Text="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
                                      Height="25"/>
-                            <Label Content="|" />
+                            <TextBlock Text="|" VerticalAlignment="Center"/>
                             <TextBox Text="(Rev)" />
                             <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity"
                                      Text="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
