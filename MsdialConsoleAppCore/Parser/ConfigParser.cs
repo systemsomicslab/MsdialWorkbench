@@ -322,7 +322,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             var dt = DateTime.Now;
             var projectFile = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
             var projectProp = new ProjectPropertyBean() {
-                ProjectDate = dt, ProjectFolderPath = inputFolder, ProjectFilePath = inputFolder + "//" + projectFile + ".mtd"
+                ProjectDate = dt, ProjectFolderPath = inputFolder, ProjectFilePath = Path.Combine(inputFolder, projectFile + ".mtd")
             };
 
             using (var sr = new StreamReader(filepath, Encoding.ASCII))

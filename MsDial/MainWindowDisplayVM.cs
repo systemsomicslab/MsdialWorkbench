@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -169,9 +168,6 @@ namespace Rfx.Riken.OsakaUniv
                 mobilityPlot.AmplitudeDisplayUpperFilter = (float)ampSliderUpperValue;
                 mobilityPlot.BlankFilter = blankFilter;
                 mobilityContent.RefreshUI();
-
-                //var spotCount = countDisplayedSpots(mobilityPlot, this.mainWindow.PairwisePlotFocus, this.mainWindow.ProjectProperty.Ionization);
-                //this.mainWindow.Label_DisplayPeakNum.Content = "Num. " + spotCount;
             }
         }
 
@@ -1631,9 +1627,17 @@ namespace Rfx.Riken.OsakaUniv
                 }
 
                 //msms
-                if (msmsFilter && !spot.MsmsIncluded) {
-                    total--;
-                    continue;
+                if (mainWindow.AnalysisParamForLC.IsIonMobility) {
+                    if (msmsFilter && !spot.AlignedDriftSpots.Any(drift => drift.MsmsIncluded)) {
+                        total--;
+                        continue;
+                    }
+                }
+                else {
+                    if (msmsFilter && !spot.MsmsIncluded) {
+                        total--;
+                        continue;
+                    }
                 }
 
                 //unique fragment
@@ -1721,13 +1725,19 @@ namespace Rfx.Riken.OsakaUniv
                     continue;
                 }
 
-
                 //msms
-                if (msmsFilter && peak.Ms2LevelDatapointNumber < 0) {
-                    total--;
-                    continue;
+                if (mainWindow.AnalysisParamForLC.IsIonMobility) {
+                    if (msmsFilter && peak.DriftSpots.All(spot => spot.Ms2LevelDatapointNumber < 0)) {
+                        total--;
+                        continue;
+                    }
                 }
-
+                else {
+                    if (msmsFilter && peak.Ms2LevelDatapointNumber < 0) {
+                        total--;
+                        continue;
+                    }
+                }
 
                 //unique fragment
                 if (uniqueionFilter && !peak.IsFragmentQueryExist) {

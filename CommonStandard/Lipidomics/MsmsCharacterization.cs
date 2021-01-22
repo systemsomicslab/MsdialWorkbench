@@ -6007,32 +6007,38 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 1.0;
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
                     if (isClassIonFound == false) return null;
+                    var threshold2 = 0.01;
+                    var diagnosticMz = theoreticalMz - H2O;
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
+                    if (isClassIonFound2 == false) return null;
+
                     var candidates = new List<LipidMolecule>();
 
                     var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    var nl_H2O = theoreticalMz - H2O; // -H2O
                     var query = new List<SpectrumPeak>
                                         {
                                         new SpectrumPeak() { Mass = alphaOHflag01, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = nl_H2O, Intensity = 1.0 }
                                         };
 
                     var foundCount = 0;
                     var averageIntensity = 0.0;
                     countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                    if (foundCount == 1 && totalOxidized == 1) //totalOxidized == 1 only 
+                    if (foundCount == 2 && totalOxidized == 1) //totalOxidized == 1 only 
                     {
-                        var molecule = getAlphaOxfaMoleculeObjAsLevel1("OxFA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
+                        var molecule = getAlphaOxfaMoleculeObjAsLevel1("FA", LbmClass.OxFA, totalCarbon, totalDoubleBond, totalOxidized, averageIntensity);
                         candidates.Add(molecule);
                     }
-                    else if (foundCount == 0 && totalOxidized == 1) // -H2O was not found -> null (totalOxidized == 1 only ...Tentatively)
-                    {
-                        // seek -H2O
-                        var threshold2 = 0.01;
-                        var diagnosticMz = theoreticalMz - H2O;
-                        var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
-                        if (isClassIonFound2 == false) return null;
-                    }
-
+                    //else if (foundCount == 0) // -H2O was not found -> null 
+                    //{
+                    //    // seek -H2O
+                    //    var threshold2 = 0.01;
+                    //    var diagnosticMz = theoreticalMz - H2O;
+                    //    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
+                    //    if (isClassIonFound2 == false) return null;
+                    //}
 
 
                     return returnAnnotationResult("FA", LbmClass.OxFA, "", theoreticalMz, adduct,
@@ -8366,7 +8372,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                    if (isClassIonFound == false && candidates.Count == 0) return null;
+                    //if (isClassIonFound == false && candidates.Count == 0) return null;
+                    if (candidates.Count == 0) return null; // 20201203 edit
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
                     totalDoubleBond = totalDoubleBond + 1;
@@ -12016,14 +12023,14 @@ namespace CompMs.Common.Lipidomics
 
                             if (foundCount > 1)
                             {
-                                var molecule = getCeramideMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "d", sphCarbon, sphDouble,
-                                     acylCarbon, acylDouble, averageIntensity);
+                                var molecule = getCeramideoxMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "t", sphCarbon, sphDouble,
+                                    acylCarbon, acylDouble, 1, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
                     }
-                    return returnAnnotationResult("MIPC", LbmClass.MIPC, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 2);
+                    return returnAnnotationResult("MIPC", LbmClass.MIPC, "t", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 1, candidates, 2);
                 }
             }
             else
@@ -12058,8 +12065,8 @@ namespace CompMs.Common.Lipidomics
 
                             if (foundCount == 1)
                             {
-                                var molecule = getCeramideMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "d", sphCarbon, sphDouble,
-                                    acylCarbon, acylDouble, averageIntensity);
+                                var molecule = getCeramideoxMoleculeObjAsLevel2("MIPC", LbmClass.MIPC, "t", sphCarbon, sphDouble,
+                                    acylCarbon, acylDouble, 1, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
@@ -12067,8 +12074,8 @@ namespace CompMs.Common.Lipidomics
 
                     if (isClassIonFound == false && candidates.Count == 0) return null;
 
-                    return returnAnnotationResult("MIPC", LbmClass.MIPC, "", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                    return returnAnnotationResult("MIPC", LbmClass.MIPC, "t", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 1, candidates, 2);
                 }
             }
             return null;

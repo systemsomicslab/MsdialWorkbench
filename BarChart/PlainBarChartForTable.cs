@@ -57,7 +57,7 @@ namespace Common.BarChart
                 this.drawingVisual = GetBarChartDrawingVisual((double)width, (double)height);
             else {
                 var barchartUI = new Common.BarChart.BarChartUI(barChartBean);
-                barchartUI.TopMargin = 15;
+                barchartUI.TopMargin = 15; // default 15, for temp, use 25
                 barchartUI.TopMarginForLabel = 10;
                 this.drawingVisual = new Common.BarChart.BarChartFE(barChartBean, barchartUI).GetBarChartDrawingVisual((double)width, (double)height);
             }

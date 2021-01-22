@@ -93,8 +93,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                         AnalysisFileAnalyticalOrder = counter + 1,
                         AnalysisFileClass = counter.ToString(),
                         AnalysisFileType = AnalysisFileType.Sample,
-                        DeconvolutionFilePath = fileDir + "\\" + filename + "_" + dtString + ".dcl",
-                        PeakAreaBeanInformationFilePath = fileDir + "\\" + filename + "_" + dtString + ".pai"
+                        DeconvolutionFilePath = Path.Combine(fileDir, filename + "_" + dtString + ".dcl"),
+                        PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_" + dtString + ".pai")
                     }
                 });
                 counter++;

@@ -607,7 +607,7 @@ namespace Rfx.Riken.OsakaUniv
                 var converted = string.Concat(
                   filename.Select(c => invalidChars.Contains(c) ? '_' : c));
 
-                var filepath = folderpath + "\\" + counter.ToString("00000") + "_" + converted + ".msp";
+                var filepath = Path.Combine(folderpath, counter.ToString("00000") + "_" + converted + ".msp");
                 if (CompMs.Common.Utility.ErrorHandler.IsExceedFilePathMax(filepath, folderpath, counter.ToString("00000") + "_" + converted, ".msp", out string recFilePath)) {
                     filepath = recFilePath;
                 }

@@ -1152,9 +1152,9 @@ namespace CompMs.MspGenerator
                 var fra08comment = "C6H10O8P";
                 fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
 
-                var fra09mass = 12 * 3 + MassDictionary.HydrogenMass * 6 + MassDictionary.OxygenMass * 5 + MassDictionary.PhosphorusMass - MassDictionary.Proton;
+                var fra09mass = 12 * 3 + MassDictionary.HydrogenMass * 7 + MassDictionary.OxygenMass * 5 + MassDictionary.PhosphorusMass - MassDictionary.Proton;
                 var fra09int = 500;
-                var fra09comment = "C3H5O5P-";
+                var fra09comment = "C3H6O5P-";
                 fragmentList.Add(fra09mass + "\t" + fra09int + "\t" + fra09comment);
 
                 var fra07mass = MassDictionary.OxygenMass * 3 + MassDictionary.PhosphorusMass + MassDictionary.Electron;
@@ -1440,22 +1440,22 @@ namespace CompMs.MspGenerator
             else if (adduct == "[M+Na]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 50;
+                var fra01int = 999;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra03mass = fra01mass - chain1Mass - MassDictionary.H2OMass;
-                var fra03int = 999;
+                var fra03int = 50;
                 var fra03comment = "NL of SN1";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
 
                 var fra04mass = fra01mass - chain2Mass - MassDictionary.H2OMass;
-                var fra04int = 999;
+                var fra04int = 50;
                 var fra04comment = "NL of SN2";
                 fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 
                 var fra05mass = fra01mass - chain3Mass - MassDictionary.H2OMass;
-                var fra05int = 999;
+                var fra05int = 50;
                 var fra05comment = "NL of SN3";
                 fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
 
@@ -3326,17 +3326,17 @@ namespace CompMs.MspGenerator
             else if (adduct == "[M+Na]+") // chain3 = ether = SN1
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 50;
+                var fra01int = 999;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra03mass = fra01mass - chain1Mass - MassDictionary.H2OMass;
-                var fra03int = 999;
+                var fra03int = 50;
                 var fra03comment = "NL of SN2";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
 
                 var fra04mass = fra01mass - chain2Mass - MassDictionary.H2OMass;
-                var fra04int = 999;
+                var fra04int = 50;
                 var fra04comment = "NL of SN3";
                 fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 

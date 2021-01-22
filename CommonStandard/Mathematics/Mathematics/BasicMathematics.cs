@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,20 @@ namespace CompMs.Common.Mathematics.Basic {
     public sealed class BasicMathematics
     {
         private BasicMathematics() { }
+
+        public static double TanimotoIndex(double[] n, double[] k) {
+            if (n.IsEmptyOrNull() || k.IsEmptyOrNull() || n.Length != k.Length) return 0;
+            var x = 0;
+            var y = 0;
+            var x_y = 0;
+            for (int i = 0; i < n.Length; i++) {
+                if (n[i] > 0) x++;
+                if (k[i] > 0) y++;
+                if (n[i] > 0 && k[i] > 0) x_y++;
+            }
+            if (x + y - x_y <= 0) return 0;
+            return (double)x_y / (double)(x + y - x_y);
+        }
 
         public static ulong FactorialCalculation(int n)
         {

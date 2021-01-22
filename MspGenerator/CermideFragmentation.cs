@@ -2139,12 +2139,12 @@ namespace CompMs.MspGenerator
             else if (adduct == "[M+H]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 999;
+                var fra01int = 5;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra02mass = fra01mass - MassDictionary.C6H10O5 - (MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass + MassDictionary.HydrogenMass * 3);
-                var fra02int = 5;
+                var fra02int = 999;
                 var fra02comment = "NL of C6H13O9P";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             }
@@ -2185,12 +2185,12 @@ namespace CompMs.MspGenerator
             else if (adduct == "[M+H]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
-                var fra01int = 999;
+                var fra01int = 5;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra02mass = fra01mass - MassDictionary.C6H10O5 - (MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass + MassDictionary.HydrogenMass * 3);
-                var fra02int = 5;
+                var fra02int = 999;
                 var fra02comment = "NL of C6H13O9P";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             }

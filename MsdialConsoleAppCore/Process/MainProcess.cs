@@ -94,29 +94,31 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
 		/// </summary>
 		/// <returns>error code -1</returns>
         private static int argsError() {
-            var error = @"Msdial Console App requires the following args:
-						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-						Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
-							   <input folder>	is the folder containing the files to be processed	(required)
-							   <output folder>	is the folder to save results	(required)
-							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode";
+            var error = @"
+Msdial Console App requires the following args:
+MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+           <input folder>	is the folder containing the files to be processed	(required)
+           <output folder>	is the folder to save results	(required)
+           <method file>	is a file holding processing properties	(required)
+           <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
+           <option -mCE>    is an option to select multi collision energies mode";
 
             Console.Error.WriteLine(error);
 
             return -1;
         }
         private static int argsError2() {
-            var error = @"Msdial Console App requires the following args:
-						MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
-						Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
-							   <input folder>	is the folder containing the files to be processed	(required)
-							   <output folder>	is the folder to save results	(required)
-							   <method file>	is a file holding processing properties	(required)
-                               <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
-                               <option -mCE>    is an option to select multi collision energies mode
-                               <option -target> is an option to run as target mode. please set m/z";
+            var error = @"
+Msdial Console App requires the following args:
+MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+           <input folder>	is the folder containing the files to be processed	(required)
+           <output folder>	is the folder to save results	(required)
+           <method file>	is a file holding processing properties	(required)
+           <option -p>           is an option to generate MTB file to be loaded in MSDIAL GUI application.
+           <option -mCE>    is an option to select multi collision energies mode
+           <option -target> is an option to run as target mode. please set m/z";
 
             Console.Error.WriteLine(error);
 

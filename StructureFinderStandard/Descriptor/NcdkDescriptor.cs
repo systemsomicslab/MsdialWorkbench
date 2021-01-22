@@ -105,7 +105,7 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             var counter = result.Length;
             for (int i = 0; i < counter; i++) {
                 NcdkDescriptors["PubChem_" + i] = Convert.ToInt32(result[i]);
-                Console.WriteLine("item {0} value {1}", "PubChem_" + i, Convert.ToInt32(result[i]));
+                //Console.WriteLine("item {0} value {1}", "PubChem_" + i, Convert.ToInt32(result[i]));
             }
         }
 
@@ -115,7 +115,7 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             var counter = result.Length;
             for (int i = 0; i < counter; i++) {
                 NcdkDescriptors["KRoth_" + i] = Convert.ToInt32(result[i]);
-                Console.WriteLine("item {0} value {1}", "KRoth_" + i, Convert.ToInt32(result[i]));
+                //Console.WriteLine("item {0} value {1}", "KRoth_" + i, Convert.ToInt32(result[i]));
             }
         }
 
@@ -125,7 +125,7 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             var counter = result.Length;
             for (int i = 0; i < counter; i++) {
                 NcdkDescriptors["MACCS_" + i] = Convert.ToInt32(result[i]);
-                Console.WriteLine("item {0} value {1}", "MACCS_" + i, Convert.ToInt32(result[i]));
+                //Console.WriteLine("item {0} value {1}", "MACCS_" + i, Convert.ToInt32(result[i]));
             }
         }
 
@@ -141,6 +141,38 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
             }
             Top50MostCommonFunctionalGroups2020Fingerprinter(atomContainer);
             return NcdkDescriptors;
+        }
+
+        public static Dictionary<string, double> TargetSubstructureFingerPrinter(string smiles) {
+            var smilesParser = new SmilesParser();
+            var atomContainer = smilesParser.ParseSmiles(smiles);
+            if (atomContainer == null) {
+                var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                atomContainer = smilesParser2.ParseSmiles(smiles);
+                if (atomContainer == null) {
+                    return null;
+                }
+            }
+            TargetSubstructureFingerPrinter(atomContainer);
+            return NcdkDescriptors;
+        }
+
+        public static void TargetSubstructureFingerPrinter(IAtomContainer mol) {
+            var smartslist = new List<string>() {
+                "c1ccccc1",
+                "c1ccccc1[#8]",
+                "*-[OH]",
+                "[#8]-C1OC(CO)C(O)C(O)C1O",
+                "NCCCCC(N*)C(=O)O",
+                "OP(O)([#8])=O"
+            }; // smarts codes
+            var fingerprinter = new SubstructureFingerprinter(smartslist);
+            var result = fingerprinter.GetBitFingerprint(mol);
+            var counter = result.Length;
+            for (int i = 0; i < counter; i++) {
+                NcdkDescriptors["Top50FG_" + i] = Convert.ToInt32(result[i]);
+                //Console.WriteLine("item {0} value {1}", "Top50FG_" + i, Convert.ToInt32(result[i]));
+            }
         }
 
         public static void Top50MostCommonFunctionalGroups2020Fingerprinter(IAtomContainer mol) {
@@ -857,5 +889,170 @@ namespace CompMs.StructureFinder.NcdkDescriptor {
                 // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
             }
         }
+
+        public static Dictionary<string, double> GenerateNCDKDescriptors(string smiles)
+        //without finger print
+        {
+
+            var smilesParser = new SmilesParser();
+            var atomContainer = smilesParser.ParseSmiles(smiles);
+            if (atomContainer == null)
+            {
+                var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                atomContainer = smilesParser2.ParseSmiles(smiles);
+                if (atomContainer == null)
+                {
+                    return null;
+                }
+            }
+            //NCDK.Geometries.AtomTools.Add3DCoordinates1(atomContainer);
+
+            AtomicNumbersCountDescriptors(atomContainer);
+            AcidicGroupCountDescriptors(atomContainer);
+            ALogPDescriptors(atomContainer);
+            // AminoAcidCountDescriptors(atomContainer); // bit slow
+            APolDescriptors(atomContainer);
+            AromaticAtomsCountDescriptors(atomContainer);
+            AromaticBondsCountDescriptors(atomContainer);
+            AtomCountDescriptors(atomContainer);
+            AutocorrelationChargeDescriptors(atomContainer);
+            AutocorrelationMassDescriptors(atomContainer);
+            AutocorrelationPolarizabilityDescriptors(atomContainer);
+            BasicGroupCountDescriptors(atomContainer);
+            BcutDescriptors(atomContainer);
+            BondCountDescriptors(atomContainer);
+            BPolDescriptors(atomContainer);
+            CarbonTypesDescriptors(atomContainer);
+            ChiChainDescriptors(atomContainer);
+            ChiClusterDescriptors(atomContainer);
+            ChiPathClusterDescriptors(atomContainer);
+            ChiPathDescriptors(atomContainer);
+            // CpsaDescriptors(atomContainer); //3D
+            EccentricConnectivityIndexDescriptors(atomContainer);
+            FmfDescriptors(atomContainer);
+            FractionalCSP3Descriptors(atomContainer);
+            FractionalPSADescriptors(atomContainer);
+            FragmentComplexityDescriptors(atomContainer);
+            // GravitationalIndexDescriptors(atomContainer); //3D
+            HBondAcceptorCountDescriptors(atomContainer);
+            HBondDonorCountDescriptors(atomContainer);
+            HybridizationRatioDescriptors(atomContainer);
+            JPlogPDescriptors(atomContainer);
+            KappaShapeIndicesDescriptors(atomContainer);
+            KierHallSmartsDescriptors(atomContainer);
+            LargestChainDescriptors(atomContainer);
+            LargestPiSystemDescriptors(atomContainer);
+            // LengthOverBreadthDescriptors(atomContainer); // 3D
+            // LongestAliphaticChainDescriptors(atomContainer);  // some structure cause stack over flow
+            MannholdLogPDescriptors(atomContainer);
+            MdeDescriptors(atomContainer);
+            // MomentOfInertiaDescriptors(atomContainer); // 3D
+            PetitjeanNumberDescriptors(atomContainer);
+            PetitjeanShapeIndexDescriptors(atomContainer);
+            RotatableBondsCountDescriptors(atomContainer);
+            RuleOfFiveDescriptors(atomContainer);
+            SmallRingDescriptors(atomContainer);
+            SpiroAtomCountDescriptors(atomContainer);
+            TpsaDescriptors(atomContainer);
+            // VabcDescriptors(atomContainer);  // NaN return
+            VadjMaDescriptors(atomContainer);
+            WeightDescriptors(atomContainer);
+            WeightedPathDescriptors(atomContainer);
+            // WhimDescriptors(atomContainer); // 3D
+            WienerNumbersDescriptors(atomContainer);
+            XLogPDescriptors(atomContainer);
+            ZagrebIndexDescriptors(atomContainer);
+
+            //// fingerprinters
+            //ExecutePubchemFingerprinter(atomContainer);
+            //ExecuteKlekotaRothFingerprinter(atomContainer);
+            //ExecuteMACCSFingerprinter(atomContainer);
+            //Top50MostCommonFunctionalGroups2020Fingerprinter(atomContainer);
+
+            return NcdkDescriptors;
+        }
+
+        public static Dictionary<string, double> GenerateNCDKDescriptors(string[] query)
+        //without finger print
+        {
+
+            var smilesParser = new SmilesParser();
+            var atomContainer = smilesParser.ParseSmiles(query[2]);
+            if (atomContainer == null)
+            {
+                var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                atomContainer = smilesParser2.ParseSmiles(query[2]);
+                if (atomContainer == null)
+                {
+                    return null;
+                }
+            }
+            //NCDK.Geometries.AtomTools.Add3DCoordinates1(atomContainer);
+
+            AtomicNumbersCountDescriptors(atomContainer);
+            AcidicGroupCountDescriptors(atomContainer);
+            ALogPDescriptors(atomContainer);
+            // AminoAcidCountDescriptors(atomContainer); // bit slow
+            APolDescriptors(atomContainer);
+            AromaticAtomsCountDescriptors(atomContainer);
+            AromaticBondsCountDescriptors(atomContainer);
+            AtomCountDescriptors(atomContainer);
+            AutocorrelationChargeDescriptors(atomContainer);
+            AutocorrelationMassDescriptors(atomContainer);
+            AutocorrelationPolarizabilityDescriptors(atomContainer);
+            BasicGroupCountDescriptors(atomContainer);
+            BcutDescriptors(atomContainer);
+            BondCountDescriptors(atomContainer);
+            BPolDescriptors(atomContainer);
+            CarbonTypesDescriptors(atomContainer);
+            ChiChainDescriptors(atomContainer);
+            ChiClusterDescriptors(atomContainer);
+            ChiPathClusterDescriptors(atomContainer);
+            ChiPathDescriptors(atomContainer);
+            // CpsaDescriptors(atomContainer); //3D
+            EccentricConnectivityIndexDescriptors(atomContainer);
+            FmfDescriptors(atomContainer);
+            FractionalCSP3Descriptors(atomContainer);
+            FractionalPSADescriptors(atomContainer);
+            FragmentComplexityDescriptors(atomContainer);
+            // GravitationalIndexDescriptors(atomContainer); //3D
+            HBondAcceptorCountDescriptors(atomContainer);
+            HBondDonorCountDescriptors(atomContainer);
+            HybridizationRatioDescriptors(atomContainer);
+            JPlogPDescriptors(atomContainer);
+            KappaShapeIndicesDescriptors(atomContainer);
+            KierHallSmartsDescriptors(atomContainer);
+            LargestChainDescriptors(atomContainer);
+            LargestPiSystemDescriptors(atomContainer);
+            // LengthOverBreadthDescriptors(atomContainer); // 3D
+            // LongestAliphaticChainDescriptors(atomContainer);  // some structure cause stack over flow
+            MannholdLogPDescriptors(atomContainer);
+            MdeDescriptors(atomContainer);
+            // MomentOfInertiaDescriptors(atomContainer); // 3D
+            PetitjeanNumberDescriptors(atomContainer);
+            PetitjeanShapeIndexDescriptors(atomContainer);
+            RotatableBondsCountDescriptors(atomContainer);
+            RuleOfFiveDescriptors(atomContainer);
+            SmallRingDescriptors(atomContainer);
+            SpiroAtomCountDescriptors(atomContainer);
+            TpsaDescriptors(atomContainer);
+            // VabcDescriptors(atomContainer);  // NaN return
+            VadjMaDescriptors(atomContainer);
+            WeightDescriptors(atomContainer);
+            WeightedPathDescriptors(atomContainer);
+            // WhimDescriptors(atomContainer); // 3D
+            WienerNumbersDescriptors(atomContainer);
+            XLogPDescriptors(atomContainer);
+            ZagrebIndexDescriptors(atomContainer);
+
+            //// fingerprinters
+            //ExecutePubchemFingerprinter(atomContainer);
+            //ExecuteKlekotaRothFingerprinter(atomContainer);
+            //ExecuteMACCSFingerprinter(atomContainer);
+            //Top50MostCommonFunctionalGroups2020Fingerprinter(atomContainer);
+
+            return NcdkDescriptors;
+        }
+
     }
 }

@@ -559,7 +559,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
+                    StandardName = "TG 15:0_18:1(d7)_15:0",
                     Concentration = 30.7743,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -585,14 +585,6 @@ namespace Rfx.Riken.OsakaUniv {
                     TargetClass = "Cer-NS"
                 });
 
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "Any others"
-                });
 
                 if (this.ProjectProp.IsLabPrivateVersion) {
                     compounds.Add(new StandardCompound() {
@@ -634,15 +626,6 @@ namespace Rfx.Riken.OsakaUniv {
                 }
 
 
-                // level 3
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "CAR"
-                });
 
                 compounds.Add(new StandardCompound() {
                     StandardName = "LPC 18:1(d7)",
@@ -650,909 +633,929 @@ namespace Rfx.Riken.OsakaUniv {
                     DilutionRate = 0.015625,
                     MolecularWeight = 528.718,
                     PeakID = -1,
-                    TargetClass = "ADGGA"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "BASulfate"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "BileAcid"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "CerP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "Cholesterol"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "CoQ"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "DGCC"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "DGDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "DGGA"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "DGTS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "EtherMGDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "EtherDGDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "GM3"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "LDGCC"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "LDGTS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "LPA"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "MGDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "NAGly"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "NAGlySer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "NAOrn"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "NAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "PA"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "PEtOH"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "PMeOH"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "SHex"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "SQDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "SSulfate"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "VAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "Vitamin_D"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "LPC 18:1(d7)",
-                    Concentration = 47.284175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 528.718,
-                    PeakID = -1,
-                    TargetClass = "Vitamin_E"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
-                    Concentration = 33.19585,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 753.106,
-                    PeakID = -1,
-                    TargetClass = "OxPC"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
-                    Concentration = 35.1605,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 711.025,
-                    PeakID = -1,
-                    TargetClass = "OxPE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
-                    Concentration = 35.1605,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 711.025,
-                    PeakID = -1,
-                    TargetClass = "LNAPE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
-                    Concentration = 35.1605,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 711.025,
-                    PeakID = -1,
-                    TargetClass = "EtherOxPE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "BMP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "CL"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "EtherLPG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "EtherPG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "HBMP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "MLCL"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "LPG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
-                    Concentration = 31.779725,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 764.02,
-                    PeakID = -1,
-                    TargetClass = "OxPG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
-                    Concentration = 28.91795,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 847.13,
-                    PeakID = -1,
-                    TargetClass = "EtherPI"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
-                    Concentration = 28.91795,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 847.13,
-                    PeakID = -1,
-                    TargetClass = "LPI"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
-                    Concentration = 28.91795,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 847.13,
-                    PeakID = -1,
-                    TargetClass = "OxPI"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
-                    Concentration = 31.263575,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 777.02,
-                    PeakID = -1,
-                    TargetClass = "EtherPS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
-                    Concentration = 31.263575,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 777.02,
-                    PeakID = -1,
-                    TargetClass = "LNAPS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
-                    Concentration = 31.263575,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 777.02,
-                    PeakID = -1,
-                    TargetClass = "LPS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
-                    Concentration = 31.263575,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 777.02,
-                    PeakID = -1,
-                    TargetClass = "OxPS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "SM 18:1;2O/18:1(d9)",
-                    Concentration = 33.8691,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 738.136,
-                    PeakID = -1,
-                    TargetClass = "ASM"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
-                    Concentration = 30.7743,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 812.366,
-                    PeakID = -1,
-                    TargetClass = "EtherTG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "AHexCAS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "AHexCS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "AHexSIS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "AHexSTS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "AHexBRS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "BRSE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "CASE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "DCAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "SISE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "STSE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "LCAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "KLCAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "KDCAE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "EGSE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "CE 18:1(d7)",
-                    Concentration = 37.98468,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 658.16,
-                    PeakID = -1,
-                    TargetClass = "DEGSE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
-                    Concentration = 35.1605,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 711.025,
-                    PeakID = -1,
-                    TargetClass = "MMPE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
-                    Concentration = 35.1605,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 711.025,
-                    PeakID = -1,
-                    TargetClass = "DMPE"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
-                    Concentration = 28.91795,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 847.13,
-                    PeakID = -1,
-                    TargetClass = "MIPC"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
-                    Concentration = 30.7743,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 812.366,
-                    PeakID = -1,
-                    TargetClass = "OxTG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
-                    Concentration = 30.7743,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 812.366,
-                    PeakID = -1,
-                    TargetClass = "TG_EST"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "AHexCer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-ADS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-AP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-AS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-BDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-BS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-EBDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-EOS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-EODS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-HDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-HS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-NDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Cer-NP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "EtherSMGDG"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-AP"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-EOS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-HDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-HS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-NDS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "HexCer-NS"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Hex2Cer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Hex3Cer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "PE-Cer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "PhytoSph"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "PI-Cer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "SHexCer"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "SL"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "DHSph"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
-                    Concentration = 47.087175,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 530.93,
-                    PeakID = -1,
-                    TargetClass = "Sph"
-                });
-
-                compounds.Add(new StandardCompound() {
-                    StandardName = "DG 15:0_18:1(d7)",
-                    Concentration = 42.5186,
-                    DilutionRate = 0.015625,
-                    MolecularWeight = 587.978,
-                    PeakID = -1,
-                    TargetClass = "EtherDG"
-                });
-
+                    TargetClass = "Any others"
+                });
+
+                if (this.ProjectProp.IsLabPrivateVersion) {
+                    // level 3
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "CAR"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "ADGGA"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "BASulfate"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "BileAcid"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "CerP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "Cholesterol"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "CoQ"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGCC"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGGA"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGTS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "EtherMGDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "EtherDGDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "GM3"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "LDGCC"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "LDGTS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "LPA"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "MGDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NAGly"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NAGlySer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NAOrn"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "PA"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "PEtOH"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "PMeOH"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "SHex"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "SQDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "SSulfate"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "VAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "Vitamin_D"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "Vitamin_E"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PC 15:0_18:1(d7)",
+                        Concentration = 33.19585,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 753.106,
+                        PeakID = -1,
+                        TargetClass = "OxPC"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PE 15:0_18:1(d7)",
+                        Concentration = 35.1605,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 711.025,
+                        PeakID = -1,
+                        TargetClass = "OxPE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PE 15:0_18:1(d7)",
+                        Concentration = 35.1605,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 711.025,
+                        PeakID = -1,
+                        TargetClass = "LNAPE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PE 15:0_18:1(d7)",
+                        Concentration = 35.1605,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 711.025,
+                        PeakID = -1,
+                        TargetClass = "EtherOxPE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "BMP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "CL"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "EtherLPG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "EtherPG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "HBMP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "MLCL"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "LPG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PG 15:0_18:1(d7)",
+                        Concentration = 31.779725,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 764.02,
+                        PeakID = -1,
+                        TargetClass = "OxPG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PI 15:0_18:1(d7)",
+                        Concentration = 28.91795,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 847.13,
+                        PeakID = -1,
+                        TargetClass = "EtherPI"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PI 15:0_18:1(d7)",
+                        Concentration = 28.91795,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 847.13,
+                        PeakID = -1,
+                        TargetClass = "LPI"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PI 15:0_18:1(d7)",
+                        Concentration = 28.91795,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 847.13,
+                        PeakID = -1,
+                        TargetClass = "OxPI"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PS 15:0_18:1(d7)",
+                        Concentration = 31.263575,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 777.02,
+                        PeakID = -1,
+                        TargetClass = "EtherPS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PS 15:0_18:1(d7)",
+                        Concentration = 31.263575,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 777.02,
+                        PeakID = -1,
+                        TargetClass = "LNAPS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PS 15:0_18:1(d7)",
+                        Concentration = 31.263575,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 777.02,
+                        PeakID = -1,
+                        TargetClass = "LPS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PS 15:0_18:1(d7)",
+                        Concentration = 31.263575,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 777.02,
+                        PeakID = -1,
+                        TargetClass = "OxPS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "SM 18:1;2O/18:1(d9)",
+                        Concentration = 33.8691,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 738.136,
+                        PeakID = -1,
+                        TargetClass = "ASM"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        Concentration = 30.7743,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 812.366,
+                        PeakID = -1,
+                        TargetClass = "EtherTG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "AHexCAS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "AHexCS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "AHexSIS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "AHexSTS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "AHexBRS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "BRSE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "CASE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "DCAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "SISE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "STSE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "LCAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "KLCAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "KDCAE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "EGSE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "CE 18:1(d7)",
+                        Concentration = 37.98468,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 658.16,
+                        PeakID = -1,
+                        TargetClass = "DEGSE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PE 15:0_18:1(d7)",
+                        Concentration = 35.1605,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 711.025,
+                        PeakID = -1,
+                        TargetClass = "MMPE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PE 15:0_18:1(d7)",
+                        Concentration = 35.1605,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 711.025,
+                        PeakID = -1,
+                        TargetClass = "DMPE"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "PI 15:0_18:1(d7)",
+                        Concentration = 28.91795,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 847.13,
+                        PeakID = -1,
+                        TargetClass = "MIPC"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        Concentration = 30.7743,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 812.366,
+                        PeakID = -1,
+                        TargetClass = "OxTG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        Concentration = 30.7743,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 812.366,
+                        PeakID = -1,
+                        TargetClass = "TG_EST"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "AHexCer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-ADS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-AP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-AS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-BDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-BS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-EBDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-EOS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-EODS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-HDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-HS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-NDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Cer-NP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "EtherSMGDG"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-AP"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-EOS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-HDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-HS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-NDS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "HexCer-NS"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Hex2Cer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Hex3Cer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "PE-Cer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "PhytoSph"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "PI-Cer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "SHexCer"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "SL"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "DHSph"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        Concentration = 47.087175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 530.93,
+                        PeakID = -1,
+                        TargetClass = "Sph"
+                    });
+
+                    compounds.Add(new StandardCompound() {
+                        StandardName = "DG 15:0_18:1(d7)",
+                        Concentration = 42.5186,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 587.978,
+                        PeakID = -1,
+                        TargetClass = "EtherDG"
+                    });
+                }
             }
             else if (id == 1) {
 
@@ -1692,7 +1695,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
+                    StandardName = "TG 15:0_18:1(d7)_15:0",
                     Concentration = 33.856,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -1819,7 +1822,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1_15:0(d7)",
+                    StandardName = "TG 15:0_18:1(d7)_15:0",
                     Concentration = 33.856,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
