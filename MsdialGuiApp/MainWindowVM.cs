@@ -59,12 +59,22 @@ namespace CompMs.App.Msdial
             var success = ProcessSetAnalysisFile(window, Storage);
             if (!success) return;
 
-            MethodVM = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-            MethodVM.InitializeNewProject(window);
+            RunProcessAll(window);
+        }
+
+        public DelegateCommand<Window> RunProcessAllCommand => runProcessAllCommand ?? (runProcessAllCommand = new DelegateCommand<Window>(RunProcessAll));
+
+        private DelegateCommand<Window> runProcessAllCommand;
+
+        private void RunProcessAll(Window window) {
+            var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+            method.InitializeNewProject(window);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
 #endif
+
+            MethodVM = method;
             SaveProject();
         }
 
