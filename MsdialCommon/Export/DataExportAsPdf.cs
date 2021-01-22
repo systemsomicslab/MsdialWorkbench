@@ -107,7 +107,9 @@ namespace Msdial.Common.Export
             var exporter = ExporterUtility.InitialSetting(path, ExporterUtility.PdfSize.A4, ExporterUtility.Orientation.Landscape);
             var fileIdOrderDict = new Dictionary<int, int>();
             var counter = 0;
-            foreach (var file in analysisFiles.OrderBy(x => x.AnalysisFilePropertyBean.AnalysisBatch).ThenBy(x => x.AnalysisFilePropertyBean.AnalysisFileAnalyticalOrder))
+            foreach (var file in analysisFiles.OrderBy(x => x.AnalysisFilePropertyBean.AnalysisBatch)
+                .ThenBy(x => x.AnalysisFilePropertyBean.AnalysisFileAnalyticalOrder)
+                .Where(n => n.AnalysisFilePropertyBean.AnalysisFileIncluded))
             {
                 counter++;
                 fileIdOrderDict[file.AnalysisFilePropertyBean.AnalysisFileId] = counter;

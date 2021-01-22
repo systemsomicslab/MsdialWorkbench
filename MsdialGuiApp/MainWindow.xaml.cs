@@ -24,5 +24,11 @@ namespace CompMs.App.Msdial
         public MainWindow() {
             InitializeComponent();
         }
+
+        public void CloseOwnedWindows() {
+            foreach (var child in OwnedWindows.Cast<Window>()) {
+                child.Close();
+            }
+        }
     }
 }

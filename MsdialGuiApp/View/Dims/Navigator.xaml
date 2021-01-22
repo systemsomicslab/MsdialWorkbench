@@ -116,6 +116,7 @@
                HorizontalContentAlignment="Center" Grid.Row="1"/>
 
         <ListBox Name="ListBox_AlignedFiles" Grid.Row="1" ItemsSource="{Binding AlignmentFiles}" 
+                 IsSynchronizedWithCurrentItem="True"
                  DisplayMemberPath="FileName"
                  BorderThickness="0"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"

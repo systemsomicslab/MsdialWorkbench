@@ -46,11 +46,10 @@ namespace Msdial.Common.Utility
         #endregion
 
         #region Normalization results
-        public static void GetDrawVisualNormalizationPlot(AlignmentPropertyBean spot, IReadOnlyList<AnalysisFileBean> analysisFiles, Dictionary<int, int> fileIdOrderDict, 
-            string titleLabel,  string yaxis, out DrawVisual dv1, out DrawVisual dv2,
+        public static void GetDrawVisualNormalizationPlot(AlignmentPropertyBean spot, IReadOnlyList<AnalysisFileBean> analysisFiles, Dictionary<int, int> fileIdOrderDict,
+            string titleLabel, string yaxis, out DrawVisual dv1, out DrawVisual dv2,
             out float qcOri, out float qcNorm, out float sampleOri, out float sampleNorm,
-            out float logQcOri, out float logQcNorm, out float logSampleOri, out float logSampleNorm)
-        {
+            out float logQcOri, out float logQcNorm, out float logSampleOri, out float logSampleNorm) {
             var area = CompMs.Graphics.Core.Base.Utility.GetDefaultAreaV1("Injection order", yaxis);
             area.LabelSpace.Top = 15;
             var title = CompMs.Graphics.Core.Base.Utility.GetDefaultTitleV1(13, titleLabel);
@@ -63,23 +62,19 @@ namespace Msdial.Common.Utility
             var blankList = new List<AlignedPeakPropertyBean>();
             var sampleList = new List<AlignedPeakPropertyBean>();
             var sampleListDict = new Dictionary<int, List<AlignedPeakPropertyBean>>();
-            foreach (var j in spot.AlignedPeakPropertyBeanCollection)
-            {
+            foreach (var j in spot.AlignedPeakPropertyBeanCollection) {
                 var fileProp = analysisFiles[j.FileID].AnalysisFilePropertyBean;
-                if (fileProp.AnalysisFileType == AnalysisFileType.QC)
-                {
+                if (fileProp.AnalysisFileType == AnalysisFileType.QC) {
                     qcList.Add(j);
-                }else if (fileProp.AnalysisFileType == AnalysisFileType.Blank)
-                {
+                }
+                else if (fileProp.AnalysisFileType == AnalysisFileType.Blank) {
                     blankList.Add(j);
                 }
-                else if (sampleListDict.ContainsKey(fileProp.AnalysisBatch))
-                {
+                else if (sampleListDict.ContainsKey(fileProp.AnalysisBatch)) {
                     sampleListDict[fileProp.AnalysisBatch].Add(j);
                     sampleList.Add(j);
                 }
-                else
-                {
+                else {
                     sampleListDict[fileProp.AnalysisBatch] = new List<AlignedPeakPropertyBean>();
                     sampleList.Add(j);
                 }
@@ -92,7 +87,7 @@ namespace Msdial.Common.Utility
             var qcNormStd = BasicMathematics.Stdev(qcNormArr);
 
 
-            qcOri = (float)(Math.Round(qcOriStd / qcOriAve * 100,2));
+            qcOri = (float)(Math.Round(qcOriStd / qcOriAve * 100, 2));
             qcNorm = (float)(Math.Round(qcNormStd / qcNormAve * 100, 2));
 
             var sampleArr = sampleList.Select(x => (double)x.Variable).ToArray();
@@ -116,8 +111,7 @@ namespace Msdial.Common.Utility
             logSampleNorm = (float)Math.Round(Math.Sqrt(Math.Pow(10, Math.Log(10) * Math.Pow(BasicMathematics.Stdev(logSampleNormArr), 2)) - 1) * 100, 2);
 
             var brush = Utility.MsdialDataHandleUtility.MsdialDefaultSolidColorBrushList[0];
-            Series s = new Series()
-            {
+            Series s = new Series() {
                 ChartType = ChartType.Point,
                 MarkerType = MarkerType.Cross,
                 MarkerSize = markerSize,
@@ -125,8 +119,7 @@ namespace Msdial.Common.Utility
                 Pen = new Pen(brush, 1.0),
             };
 
-            Series s2 = new Series()
-            {
+            Series s2 = new Series() {
                 ChartType = ChartType.Point,
                 MarkerType = MarkerType.Cross,
                 MarkerSize = markerSize,
@@ -134,8 +127,8 @@ namespace Msdial.Common.Utility
                 Pen = new Pen(brush, 1.0),
             };
 
-            foreach (var peak in qcList)
-            {
+            foreach (var peak in qcList) {
+                if (!fileIdOrderDict.ContainsKey(peak.FileID)) continue;
                 s.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.NormalizedVariable));
                 s2.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.Variable));
             }
@@ -147,8 +140,7 @@ namespace Msdial.Common.Utility
 
 
             brush = Utility.MsdialDataHandleUtility.MsdialDefaultSolidColorBrushList[1];
-            s = new Series()
-            {
+            s = new Series() {
                 ChartType = ChartType.Point,
                 MarkerType = MarkerType.Square,
                 MarkerSize = markerSize,
@@ -157,8 +149,7 @@ namespace Msdial.Common.Utility
                 //Legend = new Legend() { IsVisible = true, MaxWidth = 500, Position = Position.Right, Text = f.MetaboliteName, InGraphicArea = false }
             };
 
-            s2 = new Series()
-            {
+            s2 = new Series() {
                 ChartType = ChartType.Point,
                 MarkerType = MarkerType.Square,
                 MarkerSize = markerSize,
@@ -167,8 +158,8 @@ namespace Msdial.Common.Utility
                 //Legend = new Legend() { IsVisible = true, MaxWidth = 500, Position = Position.Right, Text = f.MetaboliteName, InGraphicArea = false }
             };
 
-            foreach (var peak in blankList)
-            {
+            foreach (var peak in blankList) {
+                if (!fileIdOrderDict.ContainsKey(peak.FileID)) continue;
                 s.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.NormalizedVariable));
                 s2.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.Variable));
             }
@@ -178,12 +169,10 @@ namespace Msdial.Common.Utility
                 slistOriginal.Series.Add(s2);
 
 
-            foreach (var j in sampleListDict.Keys)
-            {
+            foreach (var j in sampleListDict.Keys) {
                 var sampleList2 = sampleListDict[j];
                 var brush2 = Utility.MsdialDataHandleUtility.MsdialDefaultSolidColorBrushList[j + 2];
-                s = new Series()
-                {
+                s = new Series() {
                     ChartType = ChartType.Line,
                     MarkerType = MarkerType.Circle,
                     MarkerSize = markerSize,
@@ -191,16 +180,15 @@ namespace Msdial.Common.Utility
                     Pen = new Pen(brush2, 0.5)
                 };
 
-                s2 = new Series()
-                {
+                s2 = new Series() {
                     ChartType = ChartType.Line,
                     MarkerType = MarkerType.Circle,
                     MarkerSize = markerSize,
                     Brush = brush2,
                     Pen = new Pen(brush2, 0.5)
                 };
-                foreach (var peak in sampleList2)
-                {
+                foreach (var peak in sampleList2) {
+                    if (!fileIdOrderDict.ContainsKey(peak.FileID)) continue;
                     s.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.NormalizedVariable));
                     s2.AddPoint((float)fileIdOrderDict[peak.FileID], convert2log10(peak.Variable));
                 }

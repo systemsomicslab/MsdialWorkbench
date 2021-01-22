@@ -15,6 +15,7 @@ namespace CompMs.MsdialDimsCore.Parameter {
             MspSearchParam.SimpleDotProductCutOff = 0.1f;
             MspSearchParam.ReverseDotProductCutOff = 0.3f;
             MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
+            MspSearchParam.MinimumSpectrumMatch = 1;
         }
     }
 }

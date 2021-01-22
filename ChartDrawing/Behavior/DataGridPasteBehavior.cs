@@ -62,6 +62,7 @@ namespace CompMs.Graphics.Behavior
                         datagrid.Columns[j + startCol].OnPastingCellClipboardContent(item, data);
                     }
                 }
+                datagrid.CommitEdit();
             }
         }
 

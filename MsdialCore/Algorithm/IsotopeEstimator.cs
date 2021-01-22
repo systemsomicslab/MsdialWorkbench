@@ -19,6 +19,7 @@ namespace CompMs.MsdialCore.Algorithm {
     public class IsotopeTemp {
         public int WeightNumber { get; set; }
         public double Mz { get; set; }
+        public double MzClBr { get; set; }
         public double Intensity { get; set; }
         public int PeakID { get; set; }
     }
@@ -76,6 +77,7 @@ namespace CompMs.MsdialCore.Algorithm {
             ParameterBase param,
             IupacDatabase iupac) {
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
+            var br81_br79 = MassDiffDictionary.Br81_Br79; //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
             var tolerance = param.CentroidMs1Tolerance;
             var monoIsoPeak = peakFeatures[0];
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
@@ -83,6 +85,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var rtMargin = 0.06F;
 
             tolerance = (float)accuracy;
+            if (tolerance < param.CentroidMs1Tolerance) tolerance = param.CentroidMs1Tolerance;
             var isFinished = false;
 
             monoIsoPeak.PeakCharacter.IsotopeWeightNumber = 0;
@@ -141,11 +144,13 @@ namespace CompMs.MsdialCore.Algorithm {
             var isotopeTemps = new IsotopeTemp[maxTraceNumber + 1];
             isotopeTemps[0] = new IsotopeTemp() {
                 WeightNumber = 0, Mz = monoIsoPeak.PrecursorMz,
+                MzClBr = monoIsoPeak.PrecursorMz,
                 Intensity = monoIsoPeak.PeakHeightTop, PeakID = monoIsoPeak.PeakID
             };
             for (int i = 1; i < isotopeTemps.Length; i++) {
                 isotopeTemps[i] = new IsotopeTemp() {
                     WeightNumber = i, Mz = monoIsoPeak.PrecursorMz + (double)i * c13_c12Diff / (double)predChargeNumber,
+                    MzClBr = i % 2 == 0 ? monoIsoPeak.PrecursorMz + (double)i * c13_c12Diff / (double)predChargeNumber : monoIsoPeak.PrecursorMz + (double)i * br81_br79 * 0.5 / (double)predChargeNumber,
                     Intensity = 0, PeakID = -1
                 };
             }
@@ -156,12 +161,14 @@ namespace CompMs.MsdialCore.Algorithm {
 
                 //var predIsotopicMass = (double)monoIsoPeak.PrecursorMz + (double)i * c13_c12Diff / (double)predChargeNumber;
                 var predIsotopicMass = mzFocused + (double)c13_c12Diff / (double)predChargeNumber;
+                var predClBrIsotopicMass = mzFocused + (double)br81_br79 * 0.5 / (double)predChargeNumber;
                 for (int j = reminderIndex; j < peakFeatures.Count; j++) {
 
                     var isotopePeak = peakFeatures[j];
                     var isotopeRt = isotopePeak.ChromXsTop.RT.Value;
                     var isotopeMz = isotopePeak.PrecursorMz;
                     var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
+                    var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
                     var diffRt = Math.Abs(rtFocused - isotopeRt);
 
                     if (diffMz < tolerance && diffRt < rtMargin) {
@@ -177,6 +184,27 @@ namespace CompMs.MsdialCore.Algorithm {
                         else {
                             if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
                                 isotopeTemps[i].Mz = isotopeMz;
+                                isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
+                                isotopeTemps[i].PeakID = j;
+
+                                rtFocused = isotopeRt;
+                                mzFocused = isotopeMz;
+                            }
+                        }
+                    }
+                    else if (param.IsBrClConsideredForIsotopes && i % 2 == 0 && diffMzClBr < tolerance && diffRt < rtMargin) {
+                        if (isotopeTemps[i].PeakID == -1) {
+                            isotopeTemps[i] = new IsotopeTemp() {
+                                WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
+                                Intensity = isotopePeak.PeakHeightTop, PeakID = j
+                            };
+                            rtFocused = isotopeRt;
+                            mzFocused = isotopeMz;
+                        }
+                        else {
+                            if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                isotopeTemps[i].Mz = isotopeMz;
+                                isotopeTemps[i].MzClBr = isotopeMz;
                                 isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
                                 isotopeTemps[i].PeakID = j;
 
@@ -432,32 +460,34 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var maxTraceNumber = 15;
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
-
+            var br81_br79 = MassDiffDictionary.Br81_Br79;  //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
             var monoIsoPeak = spots[0];
             monoIsoPeak.PeakCharacter.IsotopeWeightNumber = 0;
             monoIsoPeak.PeakCharacter.IsotopeParentPeakID = monoIsoPeak.AlignmentID;
 
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + ms1Tolerance); //based on m/z 400
             var tolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(monoIsoPeak.MassCenter, ppm);
+            if (tolerance < ms1Tolerance) tolerance = ms1Tolerance;
             var predChargeNumber = monoIsoPeak.PeakCharacter.Charge;
 
-            var isotopeTemps = GetIsotopeCandidates(spots, monoIsoPeak, c13_c12Diff / predChargeNumber, tolerance, maxTraceNumber);
+            var isotopeTemps = GetIsotopeCandidates(spots, monoIsoPeak, c13_c12Diff / predChargeNumber, br81_br79 / predChargeNumber, tolerance, maxTraceNumber, isBrClConsidreredForIsotopes);
             SetParentToIsotopes(spots, monoIsoPeak, isotopeTemps, maxTraceNumber, iupac, isBrClConsidreredForIsotopes);
         }
 
         private static IsotopeTemp[] GetIsotopeCandidates(IReadOnlyList<AlignmentSpotProperty> spots,
-            AlignmentSpotProperty monoIsoPeak, double isotopeUnit, double tolerance, int maxTraceNumber) {
+            AlignmentSpotProperty monoIsoPeak, double isotopeUnit, double isotopeUnitBr, double tolerance, int maxTraceNumber, bool isBrClConsidreredForIsotopes) {
 
             var isotopeTemps = new IsotopeTemp[maxTraceNumber + 1];
 
             var mzFocused = monoIsoPeak.MassCenter;
             isotopeTemps[0] = new IsotopeTemp() {
-                WeightNumber = 0, Mz = mzFocused,
+                WeightNumber = 0, Mz = mzFocused, MzClBr = mzFocused,
                 Intensity = monoIsoPeak.HeightAverage, PeakID = monoIsoPeak.AlignmentID
             };
             for (int i = 1; i < isotopeTemps.Length; i++) {
                 isotopeTemps[i] = new IsotopeTemp() {
                     WeightNumber = i, Mz = mzFocused + i * isotopeUnit,
+                    MzClBr = i % 2 == 0 ? mzFocused + i * isotopeUnit : mzFocused + i * isotopeUnitBr * 0.5,
                     Intensity = 0, PeakID = -1
                 };
             }
@@ -465,6 +495,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var j = 1;
             for (int i = 1; i <= maxTraceNumber; i++) {
                 var predIsotopicMass = mzFocused + isotopeUnit;
+                var predClBrIsotopicMass = mzFocused + isotopeUnitBr * 0.5;
                 for (; j < spots.Count; j++) {
 
                     var isotopePeak = spots[j];
@@ -478,6 +509,25 @@ namespace CompMs.MsdialCore.Algorithm {
                             isotopeTemps[i].PeakID = j;
 
                             mzFocused = isotopeMz;
+                        }
+                    }
+                    else if (isBrClConsidreredForIsotopes && i % 2 == 0 && Math.Abs(predClBrIsotopicMass - isotopeMz) < tolerance) {
+                        if (isotopeTemps[i].PeakID == -1) {
+                            isotopeTemps[i] = new IsotopeTemp() {
+                                WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
+                                Intensity = isotopePeak.HeightAverage, PeakID = j
+                            };
+                            mzFocused = isotopeMz;
+                        }
+                        else {
+                            if (Math.Abs(isotopeTemps[i].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                isotopeTemps[i].Mz = isotopeMz;
+                                isotopeTemps[i].MzClBr = isotopeMz;
+                                isotopeTemps[i].Intensity = isotopePeak.HeightAverage;
+                                isotopeTemps[i].PeakID = j;
+
+                                mzFocused = isotopeMz;
+                            }
                         }
                     }
                     else if (isotopeMz >= predIsotopicMass + tolerance) {

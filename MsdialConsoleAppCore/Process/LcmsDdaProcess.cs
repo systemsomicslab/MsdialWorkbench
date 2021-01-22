@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -170,7 +171,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine("Finalization finished");
 
                 //export
-                var outputFile = outputfolder + "\\" + alignmentFile.FileName + ".msdial";
+                var outputFile = System.IO.Path.Combine(outputfolder, alignmentFile.FileName + ".msdial");
                 ResultExportForLC.ExportAlignmentResult(outputFile, alignmentFile, alignmentResult, mspDB, txtDB, analysisFiles, lcmsParam);
             }
 

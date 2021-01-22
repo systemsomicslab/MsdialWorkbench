@@ -59,12 +59,22 @@ namespace CompMs.App.Msdial
             var success = ProcessSetAnalysisFile(window, Storage);
             if (!success) return;
 
-            MethodVM = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-            MethodVM.InitializeNewProject(window);
+            RunProcessAll(window);
+        }
+
+        public DelegateCommand<Window> RunProcessAllCommand => runProcessAllCommand ?? (runProcessAllCommand = new DelegateCommand<Window>(RunProcessAll));
+
+        private DelegateCommand<Window> runProcessAllCommand;
+
+        private void RunProcessAll(Window window) {
+            var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+            method.InitializeNewProject(window);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
 #endif
+
+            MethodVM = method;
             SaveProject();
         }
 
@@ -140,8 +150,7 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                var serializer = SerializerResolver.ResolveMsdialSerializer(ofd.FileName);
-                Storage = serializer.LoadMsdialDataStorageBase(ofd.FileName);
+                Storage = loadProjectFromPath(ofd.FileName);
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -152,6 +161,53 @@ namespace CompMs.App.Msdial
                 message.Close();
                 Mouse.OverrideCursor = null;
             }
+        }
+
+        // TODO: Move this method. MainWindowVM shouldn't know each analysis and alignment files.
+        private static MsdialDataStorage loadProjectFromPath(string projectfile) {
+            var projectFolder = System.IO.Path.GetDirectoryName(projectfile);
+
+            var serializer = SerializerResolver.ResolveMsdialSerializer(projectfile);
+            var storage = serializer.LoadMsdialDataStorageBase(projectfile);
+
+            var previousFolder = storage.ParameterBase.ProjectFolderPath;
+
+            if (projectFolder == previousFolder)
+                return storage;
+
+            storage.ParameterBase.ProjectFolderPath = projectFolder;
+
+            storage.ParameterBase.ProjectFilePath = replaceFolderPath(storage.ParameterBase.ProjectFilePath, previousFolder, projectFolder);
+            // storage.ParameterBase.MspFilePath = replaceFolderPath(storage.ParameterBase.MspFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.TextDBFilePath = replaceFolderPath(storage.ParameterBase.TextDBFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.IsotopeTextDBFilePath = replaceFolderPath(storage.ParameterBase.IsotopeTextDBFilePath, previousFolder, projectFolder);
+
+            foreach (var file in storage.AnalysisFiles) {
+                file.AnalysisFilePath = replaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
+                file.DeconvolutionFilePath = replaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
+                file.PeakAreaBeanInformationFilePath = replaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
+                file.RiDictionaryFilePath = replaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
+
+                file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => replaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
+            }
+
+            foreach (var file in storage.AlignmentFiles) {
+                file.FilePath = replaceFolderPath(file.FilePath, previousFolder, projectFolder);
+                file.EicFilePath = replaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
+                file.SpectraFilePath = replaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
+            }
+
+            return storage;
+        }
+
+        private static string replaceFolderPath(string path, string previous, string current) {
+            if (string.IsNullOrEmpty(path))
+                return path;
+            if (path.StartsWith(previous))
+                return System.IO.Path.Combine(current, path.Substring(previous.Length).TrimStart('\\', '/'));
+            if (!System.IO.Path.IsPathRooted(path))
+                return System.IO.Path.Combine(current, path);
+            throw new ArgumentException("Invalid path or directory.");
         }
 
         public DelegateCommand SaveProjectCommand {

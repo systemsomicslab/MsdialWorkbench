@@ -13,6 +13,12 @@
     <i:Interaction.Behaviors>
         <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
     </i:Interaction.Behaviors>
+    <i:Interaction.Triggers>
+        <i:PropertyChangedTrigger Binding="{Binding MethodVM, Mode=OneWay}">
+            <i:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                MethodName="CloseOwnedWindows"/>
+        </i:PropertyChangedTrigger>
+    </i:Interaction.Triggers>
 
     <RibbonWindow.DataContext>
         <local:MainWindowVM />

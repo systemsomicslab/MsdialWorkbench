@@ -101,10 +101,10 @@ namespace CompMs.MsdialCore.Utility
             var alignment = spot.AlignedPeakProperties;
             var alignedPeaks = alignment.Where(align => align.PeakID >= 0).ToArray();
 
-            var repId = GetRepresentativeFileID(alignment);
+            var repId = GetRepresentativeFileID(alignedPeaks);
             var representative = repId >= 0 ? alignment[repId] : alignedPeaks.First();
             var chromXType = representative.ChromXsTop.MainType;
-            spot.RepresentativeFileID = repId;
+            spot.RepresentativeFileID = representative.FileID;
 
             spot.IonMode = representative.IonMode;
             spot.Name = representative.Name;
@@ -179,7 +179,7 @@ namespace CompMs.MsdialCore.Utility
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray();
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Argmax(align =>
-                    (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop)
+                    (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore) ?? 0, align.PeakHeightTop)
                     ).FileID;
             }
             return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID;

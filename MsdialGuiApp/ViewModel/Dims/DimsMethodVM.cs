@@ -122,6 +122,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
+        private AlignmentFileBean alignmentFile;
+        private AnalysisFileBean analysisFile;
+
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
@@ -153,7 +156,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             // Run Alignment
             ProcessAlignment(window, Storage);
 
-            AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
@@ -275,7 +278,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void LoadSelectedAnalysisFile() {
             if (_analysisFiles.CurrentItem is AnalysisFileBean analysis) {
-                AnalysisVM = LoadAnalysisFile(analysis);
+                LoadAnalysisFile(analysis);
             }
         }
 
@@ -285,16 +288,22 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand loadAlignmentFileCommand;
         private void LoadSelectedAlignmentFile() {
             if (_alignmentFiles.CurrentItem is AlignmentFileBean alignment) {
-                AlignmentVM = LoadAlignmentFile(alignment);
+                LoadAlignmentFile(alignment);
             }
         }
 
-        private AnalysisDimsVM LoadAnalysisFile(AnalysisFileBean analysis) {
-            return new AnalysisDimsVM(analysis, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
+        private void LoadAnalysisFile(AnalysisFileBean analysis) {
+            if (analysisFile == analysis) return;
+
+            analysisFile = analysis;
+            AnalysisVM =  new AnalysisDimsVM(analysis, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
         }
 
-        private AlignmentDimsVM LoadAlignmentFile(AlignmentFileBean alignment) {
-            return new AlignmentDimsVM(alignment, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
+        private void LoadAlignmentFile(AlignmentFileBean alignment) {
+            if (alignmentFile == alignment) return;
+
+            alignmentFile = alignment;
+            AlignmentVM = new AlignmentDimsVM(alignment, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {

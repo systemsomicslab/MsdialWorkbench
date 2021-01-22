@@ -150,7 +150,7 @@ namespace CompMs.Common.Parser {
                 var converted = string.Concat(
                   filename.Select(c => invalidChars.Contains(c) ? '_' : c));
 
-                var filepath = folderpath + "\\" + converted + ".msp";
+                var filepath = Path.Combine(folderpath, converted + ".msp");
                 using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                     writeMspFields(record, sw);
                 }
