@@ -57,14 +57,14 @@
                 <Label Content="MS1 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox Name="TextBox_Ms1Tolerance"
-                         Text="{Binding Ms1Tolerance, Mode=TwoWay}"
+                         Text="{Binding Ms1Tolerance, Mode=TwoWay, StringFormat=F4}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
                 <Label Content="MS2 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"
                        Margin="10,0,0,0"/>
                 <TextBox Name="TextBox_Ms2Tolerance"
-                         Text=""
+                         Text="{Binding Ms2Tolerance, Mode=TwoWay, StringFormat=F4}"
                          IsEnabled="False"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
