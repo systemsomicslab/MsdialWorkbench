@@ -2,12 +2,12 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Extension;
-using System;
-
-using System.Collections.Generic;
-using System.Text;
+using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Parser;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process {
     public class DimsProcess {
@@ -30,8 +30,16 @@ namespace CompMs.App.MsdialConsole.Process {
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-
+                ProcessFile.Run(file, container);
             }
+            new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            return 0;
+        }
+
+        private async Task<int> ExecuteAsync(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+            var files = container.AnalysisFiles;
+            var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, container)));
+            await Task.WhenAll(tasks);
             new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }
