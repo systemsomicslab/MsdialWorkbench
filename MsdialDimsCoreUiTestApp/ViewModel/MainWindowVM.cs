@@ -341,7 +341,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialDimsParameter param, List<IsotopicPeak> isotopes)
         {
-            AnnotationProcess.Run(chromatogramPeakFeature, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
+            AnnotationProcess.Run(chromatogramPeakFeature, null, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
             return (mspResult, textResult);
         }
