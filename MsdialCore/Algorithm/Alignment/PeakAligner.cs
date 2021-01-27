@@ -18,10 +18,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected DataAccessor Accessor { get; set; }
         protected IPeakJoiner Joiner { get; set; }
         protected GapFiller Filler { get; set; }
-        protected AlignmentRefiner Refiner { get; set; }
+        protected IAlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
 
-        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param) {
+        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param) {
             Accessor = accessor;
             Joiner = joiner;
             Filler = filler;
