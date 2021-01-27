@@ -111,18 +111,7 @@ namespace CompMs.MsdialCore.Utility
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;
-            spot.AdductType = new Common.DataObj.Property.AdductIon {
-                AdductIonAccurateMass = representative.PeakCharacter.AdductType.AdductIonAccurateMass,
-                AdductIonXmer = representative.PeakCharacter.AdductType.AdductIonXmer,
-                AdductIonName = representative.PeakCharacter.AdductType.AdductIonName,
-                ChargeNumber = representative.PeakCharacter.AdductType.ChargeNumber,
-                IonMode = representative.PeakCharacter.AdductType.IonMode,
-                FormatCheck = representative.PeakCharacter.AdductType.FormatCheck,
-                M1Intensity = representative.PeakCharacter.AdductType.M1Intensity,
-                M2Intensity = representative.PeakCharacter.AdductType.M2Intensity,
-                IsRadical = representative.PeakCharacter.AdductType.IsRadical,
-                IsIncluded = representative.PeakCharacter.AdductType.IsIncluded,
-            };
+            spot.AdductType = Common.Parser.AdductIonParser.GetAdductIonBean(representative.PeakCharacter.AdductType.AdductIonName);
             spot.PeakCharacter = new IonFeatureCharacter
             {
                 AdductType = spot.AdductType,
@@ -140,7 +129,7 @@ namespace CompMs.MsdialCore.Utility
             spot.CollisionCrossSection = representative.CollisionCrossSection;
             spot.MSRawID2MspIDs = representative.MSRawID2MspIDs;
             spot.TextDbIDs = new List<int>(representative.TextDbIDs);
-            spot.MSRawID2MspBasedMatchResult = representative.MSRawID2MspBasedMatchResult;
+            spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>(representative.MSRawID2MspBasedMatchResult);
             spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
 
             spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
@@ -176,13 +165,13 @@ namespace CompMs.MsdialCore.Utility
 
         public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
             if (alignment.Count == 0) return -1;
-            var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray();
+            var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray(); // ms2 contained
             if (alignmentWithMSMS.Length != 0) {
                 return alignmentWithMSMS.Argmax(align =>
-                    (align.MSRawID2MspBasedMatchResult?.Values?.DefaultIfEmpty().Max(val => val?.TotalScore) ?? 0, align.PeakHeightTop)
+                    (align.MSRawID2MspBasedMatchResult?.Values.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop)  // highest total score then highest intensity
                     ).FileID;
             }
-            return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID;
+            return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID; // highest total score then highest intensity
         }
     }
 }

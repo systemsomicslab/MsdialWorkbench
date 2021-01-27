@@ -37,11 +37,11 @@ namespace CompMs.App.MsdialConsole {
             {
                 "dims"
                 , "-i"
-                , @"D:\infusion_project\data\abf\MSMSALL_Positive"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
                 , "-o"
-                , @"D:\infusion_project\data\abf\MSMSALL_Positive"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
                 , "-m"
-                , @"D:\infusion_project\data\abf\MSMSALL_Positive\dims_param.txt"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive\dims_param.txt"
                 , "-p"
             };
             MainProcess.Run(args);
