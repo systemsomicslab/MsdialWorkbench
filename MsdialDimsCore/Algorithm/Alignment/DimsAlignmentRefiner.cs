@@ -29,8 +29,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             var cleaned = GetCleanedSpots(alignments);
             var filtered = FilterByBlank(cleaned);
             SetAlignmentID(filtered);
-            IsotopeAnalysis(filtered);
+            SetIsotopes(filtered);
             SetLinks(filtered);
+            SetAdducts(filtered.Where(spot => string.IsNullOrEmpty(spot.AdductType.AdductIonName)));
 
             return filtered;
         }
@@ -53,7 +54,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
             MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
             MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
-            MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched && spot.PeakCharacter.IsotopeWeightNumber <= 0).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 
             return master.Values.SelectMany(props => props).OrderBy(spot => spot.MassCenter).ToList();
         }
@@ -114,19 +115,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                 spot.MasterAlignmentID = spot.AlignmentID = id++;
         }
 
-        private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
-            foreach (var spot in alignmentSpots) {
-                if (_param.TrackingIsotopeLabels || spot.IsReferenceMatched) {
-                    spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
-                    spot.PeakCharacter.IsotopeWeightNumber = 0;
-                }
-                if (!spot.IsReferenceMatched) {
-                    spot.AdductType.AdductIonName = string.Empty;
-                }
+        private static void SetIsotopes(IEnumerable<AlignmentSpotProperty> spots) {
+            foreach (var spot in spots) {
+                spot.PeakCharacter.IsotopeWeightNumber = 0; 
             }
-            if (_param.TrackingIsotopeLabels) return;
-
-            IsotopeEstimator.Process(alignmentSpots, _param, _iupac);
         }
 
         private void SetLinks(List<AlignmentSpotProperty> alignments) {
@@ -263,6 +255,19 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                     }
                 }
 
+            }
+        }
+
+        private static void SetAdducts(IEnumerable<AlignmentSpotProperty> spots) {
+            foreach (var spot in spots) {
+                var charge = spot.AdductType.ChargeNumber;
+                var chargestr = charge == 1 ? "" : charge.ToString();
+                if (spot.AdductType.IonMode == IonMode.Positive) {
+                    spot.AdductType.AdductIonName = $"[M+{chargestr}H]{chargestr}+";
+                }
+                else if (spot.AdductType.IonMode == IonMode.Negative){
+                    spot.AdductType.AdductIonName = $"[M-{chargestr}H]{chargestr}-";
+                }
             }
         }
     }
