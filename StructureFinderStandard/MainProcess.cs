@@ -104,6 +104,7 @@ namespace Riken.Metabolomics.StructureFinder
             List<FragmentLibrary> fragmentDB, List<FragmentOntology> fragmentOntologies)
         {
             var results = new List<FragmenterResult>();
+            var cutoff = param.StructureScoreCutOff;
 
             var syncObj = new object();
             var counter = 0;
@@ -113,8 +114,7 @@ namespace Riken.Metabolomics.StructureFinder
             Parallel.ForEach(structures, (structure, state) => {
                 var result = GetFragmenterResult(structure, rawdata, curatedPeaks, originalPeaks, adduct,
                     formulaResult, param, fragmentDB, fragmentOntologies);
-
-                if (result != null) {
+                if (result != null && result.TotalScore > cutoff) {
                     lock (syncObj) {
                         var lap = sw.ElapsedMilliseconds * 0.001 / 60.0; // min
                         if (param.StructurePredictionTimeOut > 0 && param.StructurePredictionTimeOut < lap) {
@@ -179,6 +179,7 @@ namespace Riken.Metabolomics.StructureFinder
                 var isEimsSearch = param.IsTmsMeoxDerivative == true ? true : false;
                 fragmenterResult.TotalScore = FragmenterScoring.CalculateTotalScore(fragmenterResult, isEimsSearch);
             }
+            fragmenterResult.TotalScore += formulaResult.TotalScore;
 
             return fragmenterResult;
         }

@@ -100,7 +100,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             if (numMs2Scans == 0) numMs2Scans = 1;
                 for (var i =0; i < numMs2Scans; i++)
             {
-                var filePath = projectProperty.ProjectFolderPath + "\\" + alignmentFile.FileName + "_CorrelationBasedDecRes_Raw_" + i + ".cbd";
+                var filePath = Path.Combine(projectProperty.ProjectFolderPath, alignmentFile.FileName + "_CorrelationBasedDecRes_Raw_" + i + ".cbd");
                 var fs = File.Open(filePath, FileMode.Open);
                 fslist.Add(fs);
                 seekpointlist.Add(CorrDecHandler.ReadSeekPointsOfCorrelDec(fs));
@@ -134,7 +134,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 
                 if(pab.SimpleDotProductSimilarity > 0)
                 {
-                    Console.WriteLine(alignmentId + "\t" + pab.MetaboliteName + "\t" + pab.SimpleDotProductSimilarity + "\t" + spot.TotalSimilairty + "\t" + pab.TotalScore);
+                    //Console.WriteLine(alignmentId + "\t" + pab.MetaboliteName + "\t" + pab.SimpleDotProductSimilarity + "\t" + spot.TotalSimilairty + "\t" + pab.TotalScore);
                 }
 
                 if (spot.TotalSimilairty < pab.TotalScore &&                   

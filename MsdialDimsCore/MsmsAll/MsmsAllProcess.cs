@@ -75,7 +75,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             foreach (var item in chromFeatures.Select((value, index) => new { value, index })) {
                 var feature = item.value;
                 AnnotationProcess.Run(feature, mspDB, null, param.MspSearchParam, param.TargetOmics, null, out _, out _);
-                Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
+                //Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
 
             new PeakCharacterEstimator(90, 10).Process(spectra, chromFeatures, null, param, null);
@@ -96,7 +96,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                     feature.Spectrum = centroidSpec;
                 }
 
-                Console.WriteLine("Peak ID={0}, Scan ID={1}, Spectrum count={2}", feature.PeakID, feature.ScanID, feature.Spectrum.Count);
+                //Console.WriteLine("Peak ID={0}, Scan ID={1}, Spectrum count={2}", feature.PeakID, feature.ScanID, feature.Spectrum.Count);
             }
         }
 
@@ -121,8 +121,8 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 peakFeatures.Add(peakFeature);
 
                 // result check
-                Console.WriteLine("Peak ID={0}, Scan ID={1}, MZ={2}, MS2SpecID={3}, Height={4}, Area={5}", 
-                    peakFeature.PeakID, peakFeature.ChromScanIdTop, peakFeature.ChromXsTop.Mz.Value, peakFeature.MS2RawSpectrumID, peakFeature.PeakHeightTop, peakFeature.PeakAreaAboveZero);
+                //Console.WriteLine("Peak ID={0}, Scan ID={1}, MZ={2}, MS2SpecID={3}, Height={4}, Area={5}", 
+                //    peakFeature.PeakID, peakFeature.ChromScanIdTop, peakFeature.ChromXsTop.Mz.Value, peakFeature.MS2RawSpectrumID, peakFeature.PeakHeightTop, peakFeature.PeakAreaAboveZero);
             }
 
             return peakFeatures;

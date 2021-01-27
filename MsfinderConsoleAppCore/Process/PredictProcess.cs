@@ -61,8 +61,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
 
             var dt = DateTime.Now;
             var dateString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
-            this.outputFormulaPath = outputfolder + "\\" + "Formula result-" + dateString + ".txt";
-            this.outputStructurePath = outputfolder + "\\" + "Structure result-" + dateString + ".txt";
+            this.outputFormulaPath = Path.Combine(outputfolder, "Formula result-" + dateString + ".txt");
+            this.outputStructurePath = Path.Combine(outputfolder, "Structure result-" + dateString + ".txt");
 
             //working space prep...
             workSpacePreparation();

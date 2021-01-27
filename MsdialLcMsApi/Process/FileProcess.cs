@@ -95,7 +95,7 @@ namespace CompMs.MsdialLcMsApi.Process {
                     }
                     else {
                         var suffix = Math.Round(ce2msdecs.Key * 100, 0); // CE 34.50 -> 3450
-                        var dclfile_suffix = Path.GetDirectoryName(dclfile) + "\\" + Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl";
+                        var dclfile_suffix = Path.Combine(Path.GetDirectoryName(dclfile), Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl");
                         dclfiles.Add(dclfile_suffix);
                         MsdecResultsWriter.Write(dclfile_suffix, ce2msdecs.Value);
                     }

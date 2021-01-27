@@ -3480,7 +3480,7 @@ namespace CompMs.Common.Lipidomics {
                 {
                     regexes = Regex.Match(chainString, pattern12).Groups;
                     chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value };
-                    Console.WriteLine();
+                    //Console.WriteLine();
                 }
                 else
                 {

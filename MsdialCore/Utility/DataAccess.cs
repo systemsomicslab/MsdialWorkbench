@@ -903,7 +903,7 @@ namespace CompMs.MsdialCore.Utility {
                 rtRight = rt + rtRange;
             }
             if (rt - rtLeft > rtRange) {
-                Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                //Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
                 rtLeft = rt - rtRange;
             }
 

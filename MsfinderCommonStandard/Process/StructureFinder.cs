@@ -105,7 +105,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
             if (analysisParam.IsPubChemOnlyUseForNecessary && ((eQueries != null && eQueries.Count != 0)
                 || (uQueries != null && uQueries.Count != 0) || (mQueries != null && mQueries.Count != 0))) return;
 
-            var formulaDirect = tempSdfDirect + "\\" + formulaResult.Formula.FormulaString;
+            var formulaDirect = Path.Combine(tempSdfDirect, formulaResult.Formula.FormulaString);
             var ePubCIDs = DatabaseAccessUtility.GetExistingPubChemCIDs(eQueries);
 
             if (!formulaFolderExistsCheck(formulaDirect)) {
@@ -364,7 +364,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
 
             var results = MainProcess.Fragmenter(queries, rawData, curetedPeaklist, refinedPeaklist, adductIon, formulaResult, analysisParam, fragmentDB, fragmentOntologies);
 
-            addFormulaScore(results, formulaResult);
+            //addFormulaScore(results, formulaResult);
 
             FragmenterResultParcer.FragmenterResultWriter(filePath, results, true);
         }
@@ -386,7 +386,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
                 var results = MainProcess.Fragmenter(file, rawData, curetedPeaklist, refinedPeaklist, adductIon, formulaResult, 
                     analysisParam, existStructureDB, fragmentDB, fragmentOntologies);
 
-                addFormulaScore(results, formulaResult);
+                //addFormulaScore(results, formulaResult);
 
                 lock (syncObj)
                 {
@@ -405,13 +405,13 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
             return peaks;
         }
 
-        private void addFormulaScore(List<FragmenterResult> results, FormulaResult formulaResult)
-        {
-            foreach (var result in results)
-            {
-                result.TotalScore += formulaResult.TotalScore;
-            }
-        }
+        //private void addFormulaScore(List<FragmenterResult> results, FormulaResult formulaResult)
+        //{
+        //    foreach (var result in results)
+        //    {
+        //        result.TotalScore += formulaResult.TotalScore;
+        //    }
+        //}
 
         private void tempFolderInitialize()
         {

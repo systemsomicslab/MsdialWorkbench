@@ -1177,7 +1177,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             var alignedSpots = alignmentResultBean.AlignmentPropertyBeanCollection;
 
-            Console.WriteLine("Calculating basic properties");
+            //Console.WriteLine("Calculating basic properties");
             for (int i = 0; i < alignedSpots.Count; i++)
             {
                 setBasicAlignmentProperties(alignedSpots[i], i, param, out minInt, out maxInt, out fileIdOfMaxIntensity, out fileIdOfMaxIntensityWithMSMS, out fileIdOfMaxTotalScore, out fileIdOfMaxTotalScoreWithMSMS);
