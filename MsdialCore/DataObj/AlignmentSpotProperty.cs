@@ -42,11 +42,11 @@ namespace CompMs.MsdialCore.DataObj {
 
         // Ion property
         [Key(10)]
-        public IonFeatureCharacter PeakCharacter { get; set; }
+        public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
         [Key(11)]
         public IonMode IonMode { get; set; }
         [Key(54)]
-        public AdductIon AdductType { get; set; }
+        public AdductIon AdductType { get; set; } = new AdductIon();
 
         // Annotation
         // set for IMoleculeProperty (for representative)
@@ -183,7 +183,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         // others
         [Key(45)]
-        public FeatureFilterStatus FeatureFilterStatus { get; set; }
+        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(46)]
         public bool IsManuallyModifiedForQuant { get; set; }
         [Key(47)]

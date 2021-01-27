@@ -1,0 +1,189 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.MS2.RawPurifiedView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.MS2"
+             mc:Ignorable="d" 
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             Name="RawPurePlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
+             d:DesignHeight="600" d:DesignWidth="370">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <manager:ContinuousAxisManager x:Key="MassAxis"
+                                       MinValue="{Binding DataContext.Ms2MassMin, Source={x:Reference Name=RawPurePlot}}"
+                                       MaxValue="{Binding DataContext.Ms2MassMax, Source={x:Reference Name=RawPurePlot}}"
+                                       ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="RawIntensityAxis"
+                                           ItemsSource="{Binding DataContext.Ms2Spectrum, Source={x:Reference Name=RawPurePlot}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0,0.05" Bounds="0,0"/>
+        <manager:AutoContinuousAxisManager x:Key="PureIntensityAxis"
+                                           ItemsSource="{Binding DataContext.Ms2DeconvolutionSpectrum, Source={x:Reference Name=RawPurePlot}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0,0.05" Bounds="0,0"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="20" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="30" />
+                <RowDefinition />
+                <RowDefinition Height="25" />
+                <RowDefinition MaxHeight="15" />
+            </Grid.RowDefinitions>
+
+            <Border Background="WhiteSmoke"
+                    Margin="0,5,5,0" 
+                    Grid.Row="1" Grid.Column="2">
+                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms2Spectrum}"
+                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource RawIntensityAxis}}"
+                                              RangeX="{Binding Range, Source={StaticResource MassAxis}, Mode=TwoWay}"
+                                              RangeY="{Binding Range, Source={StaticResource RawIntensityAxis}, Mode=TwoWay}"
+                                              HorizontalPropertyName="Mass"
+                                              VerticalPropertyName="Intensity" >
+                    <spectrum:LineSpectrumControl.LinePen>
+                        <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
+                    </spectrum:LineSpectrumControl.LinePen>
+                    <spectrum:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Retention time: "/>
+                                <TextBlock Text="{Binding FocusedItem.X}"/>
+                                <TextBlock Text=" m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Y}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </spectrum:LineSpectrumControl.ToolTip>
+                </spectrum:LineSpectrumControl>
+            </Border>
+            <Border BorderBrush="Black"
+                    BorderThickness="1,0,0,1"
+                    Margin="0,5,5,0" 
+                    Grid.Row="1" Grid.Column="2"/>
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource MassAxis}, Mode=TwoWay}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="2" Grid.Column="2" />
+            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource RawIntensityAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource RawIntensityAxis}}"
+                                      RangeY="{Binding Range, Source={StaticResource RawIntensityAxis}, Mode=TwoWay}"
+                                      Margin="5,5,0,0"
+                                      Grid.Row="1" Grid.Column="1" />
+            <StackPanel Grid.Row="0" Grid.Column="2">
+                <TextBlock Text="Raw MS/MS spectrum"
+                           FontFamily="Calibri" FontSize="12" />
+                <TextBlock Text="{Binding RawSplashKey}"
+                           FontFamily="Calibri" FontSize="12" />
+            </StackPanel>
+            <TextBlock Text="m/z"
+                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"
+                       Grid.Row="3" Grid.Column="2"/>
+            <TextBlock Text="Ion abundance"
+                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Grid.Row="1" Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                    </TransformGroup>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="20" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="30" />
+                <RowDefinition />
+                <RowDefinition Height="25" />
+                <RowDefinition MaxHeight="15" />
+            </Grid.RowDefinitions>
+
+            <Border Background="WhiteSmoke"
+                    Margin="0,5,5,0" 
+                    Grid.Row="1" Grid.Column="2">
+                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms2DeconvolutionSpectrum}"
+                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource PureIntensityAxis}}"
+                                              RangeX="{Binding Range, Source={StaticResource MassAxis}, Mode=TwoWay}"
+                                              RangeY="{Binding Range, Source={StaticResource PureIntensityAxis}, Mode=TwoWay}"
+                                              HorizontalPropertyName="Mass"
+                                              VerticalPropertyName="Intensity" >
+                    <spectrum:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Retention time: "/>
+                                <TextBlock Text="{Binding FocusedItem.X}"/>
+                                <TextBlock Text=" m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Y}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </spectrum:LineSpectrumControl.ToolTip>
+                </spectrum:LineSpectrumControl>
+            </Border>
+            <Border BorderBrush="Black"
+                    BorderThickness="1,0,0,1"
+                    Margin="0,5,5,0" 
+                    Grid.Row="1" Grid.Column="2"/>
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource MassAxis}, Mode=TwoWay}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="2" Grid.Column="2" />
+            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource PureIntensityAxis}}"
+                                      RangeY="{Binding Range, Source={StaticResource PureIntensityAxis}, Mode=TwoWay}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource PureIntensityAxis}}"
+                                      Margin="5,5,0,0"
+                                      Grid.Row="1" Grid.Column="1" />
+            <StackPanel Grid.Row="0" Grid.Column="2">
+                <TextBlock Text="Deconvoluted MS/MS spectrum"
+                           FontFamily="Calibri" FontSize="12" />
+                <TextBlock Text="{Binding DeconvolutionSplashKey}"
+                           FontFamily="Calibri" FontSize="12" />
+            </StackPanel>
+            <TextBlock Text="m/z"
+                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"
+                       Grid.Row="3" Grid.Column="2"/>
+            <TextBlock Text="Ion abundance"
+                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Grid.Row="1" Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                    </TransformGroup>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>

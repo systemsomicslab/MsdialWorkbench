@@ -67,6 +67,13 @@
       <DependentUpon>AreaChart1.xaml</DependentUpon>
     </Compile>
     <Compile Include="AreaChart\AreaChartVM1.cs" />
+    <Compile Include="Bar\Bar1.xaml.cs">
+      <DependentUpon>Bar1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\BarVM1.cs" />
+    <Compile Include="Controls\FileOpenControl1.xaml.cs">
+      <DependentUpon>FileOpenControl1.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataGrid\DataGrid1.xaml.cs">
       <DependentUpon>DataGrid1.xaml</DependentUpon>
     </Compile>
@@ -95,11 +102,22 @@
     </Compile>
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
+    <Compile Include="UI\RangeSlider.xaml.cs">
+      <DependentUpon>RangeSlider.xaml</DependentUpon>
+    </Compile>
     <Page Include="AreaChart\AreaChart1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Bar\Bar1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Chromatogram\Chromatogram1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FileOpenControl1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -143,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Scatter\Scatter4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\RangeSlider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

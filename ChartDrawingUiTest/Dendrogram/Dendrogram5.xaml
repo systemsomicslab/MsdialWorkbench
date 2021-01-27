@@ -22,7 +22,6 @@
         <manager:ContinuousAxisManager x:Key="VerticalAxis"
                                        MaxValue="{Binding MaxY, Source={StaticResource DendrogramVM}}"
                                        MinValue="{Binding MinY, Source={StaticResource DendrogramVM}}"
-                                       IsFlipped="True"
                                        ChartMargin="0,0.05" />
         <manager:CategoryAxisManager x:Key="HorizontalAxis"
                                      ItemsSource="{Binding Source={StaticResource Nodes}}"

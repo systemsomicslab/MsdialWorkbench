@@ -17,7 +17,7 @@ namespace CompMs.MsdialDimsCore.Parser {
             saveObj.MspDB = new List<MoleculeMsReference>();
 
             var mspPath = GetNewMspFileName(file);
-            MessagePackDefaultHandler.SaveToFile(saveObj, file);
+            MessagePackHandler.SaveToFile(saveObj, file);
             MoleculeMsRefMethods.SaveMspToFile(mspList, mspPath);
         }
 

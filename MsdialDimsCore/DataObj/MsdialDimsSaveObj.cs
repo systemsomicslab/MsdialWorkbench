@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialDimsCore.DataObj {
-    class MsdialDimsSaveObj {
+    [MessagePackObject]
+    public class MsdialDimsSaveObj {
         [Key(0)]
         public List<AnalysisFileBean> AnalysisFiles { get; set; }
         [Key(1)]

@@ -25,8 +25,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             MspDB = mspDB;
         }
 
-        public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new GcmsAlignmentRefiner(GcmsParameter);
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
+            return new GcmsAlignmentRefiner(GcmsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {
@@ -37,11 +37,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return new GcmsGapFiller(Files, MspDB, GcmsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner(this);
         }
 
-        public override PeakJoiner CreatePeakJoiner() {
+        public override IPeakJoiner CreatePeakJoiner() {
             return new GcmsPeakJoiner(GcmsParameter.AlignmentIndexType, GcmsParameter.RiCompoundType, GcmsParameter.MspSearchParam);
         }
     }

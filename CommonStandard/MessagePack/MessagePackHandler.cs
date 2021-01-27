@@ -10,15 +10,21 @@ namespace CompMs.Common.MessagePack {
         public static T LoadFromFile<T>(string path) {
             T res;
             using (var fs = new FileStream(path, FileMode.Open)) {
-                res = LZ4MessagePackSerializer.Deserialize<T>(fs);
+                res = LoadFromStream<T>(fs);
             }
             return res;
+        }
+        public static T LoadFromStream<T>(Stream s) {
+            return LZ4MessagePackSerializer.Deserialize<T>(s);
         }
 
         public static void SaveToFile<T>(T obj, string path) {
             using (var fs = new FileStream(path, FileMode.Create)) {
-                LZ4MessagePackSerializer.Serialize<T>(fs, obj);
+                SaveToStream(obj, fs);
             }
+        }
+        public static void SaveToStream<T>(T obj, Stream s) {
+            LZ4MessagePackSerializer.Serialize(s, obj);
         }
 
         // large list
@@ -29,15 +35,21 @@ namespace CompMs.Common.MessagePack {
                 LargeListMessagePack.Serialize<T>(fs, obj);
             }
         }
+        public static void SaveLargeListToStream<T>(List<T> obj, Stream s) {
+            LargeListMessagePack.Serialize(s, obj);
+        }
 
         public static List<T> LoadLargerListFromFile<T>(string path)
         {
             List<T> res;
             using (var fs = new FileStream(path, FileMode.Open))
             {
-                res = LargeListMessagePack.Deserialize<T>(fs);
+                res = LoadLargerListFromStream<T>(fs);
             }
             return res;
+        }
+        public static List<T> LoadLargerListFromStream<T>(Stream s) {
+            return LargeListMessagePack.Deserialize<T>(s);
         }
 
 

@@ -19,8 +19,7 @@
         <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
                                        MinValue="{Binding DataContext.Ms2Area.Top, Source={x:Reference Name=MS2Chart}}"
                                        MaxValue="{Binding DataContext.Ms2Area.Bottom, Source={x:Reference Name=MS2Chart}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+                                       ChartMargin="0.05" />
         <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <Grid>

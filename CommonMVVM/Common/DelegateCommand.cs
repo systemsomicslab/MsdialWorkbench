@@ -55,3 +55,82 @@ namespace Rfx.Riken.OsakaUniv
 		#endregion
 	}
 }
+
+namespace CompMs.CommonMVVM
+{
+    public class DelegateCommand : ICommand
+    {
+        private Action executeAction;
+        private Func<bool> canExecuteAction;
+		public event EventHandler CanExecuteChanged;
+
+		public DelegateCommand(Action executeAction, Func<bool> canExecuteAction)
+        {
+            this.executeAction = executeAction;
+            this.canExecuteAction = canExecuteAction;
+        }
+
+        public DelegateCommand(Action executeAction) : this(executeAction, () => true) { }
+
+        #region ICommand
+
+        public bool CanExecute(object parameter)
+        {
+            return canExecuteAction();
+        }
+
+        public void Execute(object parameter)
+        {
+            executeAction();
+        }
+
+		public void RaiseCanExecuteChanged()
+		{
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+		}
+		#endregion
+	}
+
+    public class DelegateCommand<T> : ICommand
+    {
+        private Action<T> executeAction;
+        private Func<T, bool> canExecuteAction;
+		public event EventHandler CanExecuteChanged;
+
+		public DelegateCommand(Action<T> executeAction, Func<T, bool> canExecuteAction)
+        {
+            this.executeAction = executeAction;
+            this.canExecuteAction = canExecuteAction;
+        }
+
+        public DelegateCommand(Action<T> executeAction) : this(executeAction, o => true) { }
+
+        #region ICommand
+
+        public bool CanExecute(object parameter)
+        {
+			if(parameter == null)
+			{
+				return true;
+			}
+            return canExecuteAction(Cast(parameter));
+        }
+
+        public void Execute(object parameter)
+        {
+            executeAction(Cast(parameter));
+        }
+
+		public void RaiseCanExecuteChanged()
+		{
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+		}
+		#endregion
+
+        T Cast(object parameter) {
+            if (parameter == null) return default;
+            return (T)parameter;
+        }
+	}
+}
+

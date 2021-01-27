@@ -30,6 +30,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             foreach (var spot in chromPeakFeatures) {
                 var result = GetMS2DecResult(spectrumList, spot, param, summary, targetCE);
                 result.ScanID = spot.PeakID;
+                msdecResults.Add(result);
                 ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
             }
             return msdecResults;

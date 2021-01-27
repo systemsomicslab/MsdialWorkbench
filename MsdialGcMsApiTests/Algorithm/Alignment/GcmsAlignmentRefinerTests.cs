@@ -38,7 +38,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RT,
                 // RiCompoundType = RiCompoundType.Alkanes,
             };
-            var refiner = new GcmsAlignmentRefiner(param);
+            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var refiner = new GcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
@@ -72,7 +73,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RT,
                 // RiCompoundType = RiCompoundType.Alkanes,
             };
-            var refiner = new GcmsAlignmentRefiner(param);
+            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var refiner = new GcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
@@ -120,7 +122,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RI,
                 RiCompoundType = RiCompoundType.Alkanes,
             };
-            var refiner = new GcmsAlignmentRefiner(param);
+            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var refiner = new GcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;
@@ -169,7 +172,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RI,
                 RiCompoundType = RiCompoundType.Fames,
             };
-            var refiner = new GcmsAlignmentRefiner(param);
+            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var refiner = new GcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;

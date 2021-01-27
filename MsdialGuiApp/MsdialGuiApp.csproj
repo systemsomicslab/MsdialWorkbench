@@ -14,6 +14,21 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,10 +49,45 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
+      <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
+    <Reference Include="Splash, Version=1.0.6022.17289, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\Splash.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Controls.Ribbon" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -56,7 +106,287 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\ChartBrushes.cs" />
+    <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="Dims\AdductView.xaml.cs">
+      <DependentUpon>AdductView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\AnalysisParamSetForDimsVM.cs" />
+    <Compile Include="Dims\AnalysisParamSetForDimsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForDimsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\DeconvolutionView.xaml.cs">
+      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\PeakDetectionView.xaml.cs">
+      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dims\UserDefinedAdductSetVM.cs" />
+    <Compile Include="Dims\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\AdductView.xaml.cs">
+      <DependentUpon>AdductView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\AnalysisParamSetForLcVM.cs" />
+    <Compile Include="LC\AnalysisParamSetForLcWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForLcWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\DeconvolutionView.xaml.cs">
+      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\MobilityView.xaml.cs">
+      <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\PeakDetectionView.xaml.cs">
+      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LC\UserDefinedAdductSetVM.cs" />
+    <Compile Include="LC\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Lipidomics\LipidDbSetVM.cs" />
+    <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
+      <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindowVM.cs" />
+    <Compile Include="Property\AnalysisFilePropertySetWindowVM.cs" />
+    <Compile Include="Property\AnalysisFilePropertySetWindow.xaml.cs">
+      <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StartUp\StartUpWindow.xaml.cs">
+      <DependentUpon>StartUpWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StartUp\StartUpWindowVM.cs" />
+    <Compile Include="Utility\ParameterFactory.cs" />
+    <Compile Include="Utility\SerializerResolver.cs" />
+    <Compile Include="ViewModel\AlignmentFileVM.cs" />
+    <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
+    <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
+    <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
+    <Compile Include="ViewModel\AnalysisFileVM.cs" />
+    <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
+    <Compile Include="ViewModel\BarItem.cs" />
+    <Compile Include="ViewModel\Chromatogram.cs" />
+    <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
+    <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
+    <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
+    <Compile Include="ViewModel\MethodVM.cs" />
+    <Compile Include="ViewModel\ParameterBaseVM.cs" />
+    <Compile Include="ViewModel\PeakItem.cs" />
+    <Compile Include="ViewModel\ResultVM.cs" />
+    <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
+      <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
+      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\CompoundSearchWindow.xaml.cs">
+      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\EicView.xaml.cs">
+      <DependentUpon>EicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\ExpRefView.xaml.cs">
+      <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\Footer.xaml.cs">
+      <DependentUpon>Footer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\IonTableViewer.xaml.cs">
+      <DependentUpon>IonTableViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\Navigator.xaml.cs">
+      <DependentUpon>Navigator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
+      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\RepRefView.xaml.cs">
+      <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
+      <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
+      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
+      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\EicView.xaml.cs">
+      <DependentUpon>EicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\Footer.xaml.cs">
+      <DependentUpon>Footer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\ChromatogramView.xaml.cs">
+      <DependentUpon>ChromatogramView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\ExpRefView.xaml.cs">
+      <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\RawPurifiedView.xaml.cs">
+      <DependentUpon>RawPurifiedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\RepRefView.xaml.cs">
+      <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\Navigator.xaml.cs">
+      <DependentUpon>Navigator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\PeakSpotNavigator.xaml.cs">
+      <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\SurveyScanView.xaml.cs">
+      <DependentUpon>SurveyScanView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Dims\AdductView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\AnalysisParamSetForDimsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\DataCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\DeconvolutionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\IdentificationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\IsotopeTrackView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\PeakDetectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dims\UserDefinedAdductSetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AdductView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AlignmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\AnalysisParamSetForLcWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\DataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\DeconvolutionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\IdentificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\IsotopeTrackView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\PeakDetectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LC\UserDefinedAdductSetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Lipidomics\LipidDbSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -72,6 +402,154 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Property\AnalysisFilePropertySetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StartUp\StartUpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\AlignmentClassBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\AlignmentEicView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\BarChartView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\CompoundDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\CompoundSearchWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\EicView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\ExpRefView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\Footer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\IonTableViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\MainRibbon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\Navigator.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\PeakPropertyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\PeakView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Dims\RepRefView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Export\AlignmentResultExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\CompoundDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\PeakPropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\AlignmentEicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\EicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\Footer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\MainRibbon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainWindowStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\ChromatogramView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\ExpRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\RawPurifiedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\RepRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\Navigator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\AlignmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\PeakSpotNavigator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\PeakView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\SurveyScanView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -91,6 +569,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -98,6 +577,75 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ChartDrawing\ChartDrawing.csproj">
+      <Project>{6131640b-30e6-4606-a394-be953590f3e9}</Project>
+      <Name>ChartDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonMVVM\CommonMVVM.csproj">
+      <Project>{D7BC52DE-CDF0-4F78-B23E-EF2434D14029}</Project>
+      <Name>CommonMVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{EB161441-A663-485F-8CD6-D1D5794F7AD9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj">
+      <Project>{B39EB5F8-713A-49CC-B0E9-B4040687CB81}</Project>
+      <Name>MsdialCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj">
+      <Project>{1D3CE027-CDD7-446E-A190-AE99A129CEB3}</Project>
+      <Name>MsdialDimsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj">
+      <Project>{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}</Project>
+      <Name>MsdialGcMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialGuiApi\MsdialGuiApi.csproj">
+      <Project>{1276d3c2-39a4-471f-aaac-3777f2040f0f}</Project>
+      <Name>MsdialGuiApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
+      <Project>{0750647B-1DFC-49DC-ADFB-16235E22AA88}</Project>
+      <Name>MsdialLcImMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj">
+      <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
+      <Name>MsdialLcMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
+      <Project>{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}</Project>
+      <Name>RawDataHandlerStandard</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\BinVestigate.ico" />
+    <Resource Include="Resources\CompoundSearchIcon.ico" />
+    <Resource Include="Resources\Deconvoluted.ico" />
+    <Resource Include="Resources\msfinder_icon.ico" />
+    <Resource Include="Resources\RawAndDeconvo.ico" />
+    <Resource Include="Resources\RawChromatogram.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Lipoquality.ico" />
+    <Resource Include="Resources\MolecularNetworking.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

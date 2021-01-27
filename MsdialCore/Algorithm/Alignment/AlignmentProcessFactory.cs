@@ -16,10 +16,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Iupac = iupac;
         }
 
-        public abstract PeakAligner CreatePeakAliner();
+        public abstract PeakAligner CreatePeakAligner();
         public abstract DataAccessor CreateDataAccessor();
-        public abstract PeakJoiner CreatePeakJoiner();
+        public abstract IPeakJoiner CreatePeakJoiner();
         public abstract GapFiller CreateGapFiller();
-        public abstract AlignmentRefiner CreateAlignmentRefiner();
+        public abstract IAlignmentRefiner CreateAlignmentRefiner();
     }
 }

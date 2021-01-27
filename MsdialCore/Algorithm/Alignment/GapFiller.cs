@@ -31,16 +31,20 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
-            var peakWidth = GetAveragePeakWidth(filtered);
+            var peakWidth = GetPeakWidth(filtered);
             var peaklist = GetPeaks(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
-            if (peaklist == null || peaklist.Count == 0) return;
 
-            var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
+            var target = peaks.First(peak => peak?.FileID == fileID);
+
+            if (peaklist == null || peaklist.Count == 0) {
+                SetDefaultValueToAlignmentChromPeakFeature(target);
+                return;
+            }
             GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
         protected abstract ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
-        protected abstract double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
+        protected abstract double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks);
 
         protected void GapFillCore(
             List<ChromatogramPeak> peaklist, ChromXs center, double axTol,
@@ -54,7 +58,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             var isForceInsert = this.isForceInsert;
             (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, centralAx, isForceInsert);
-            if (id == -1 || leftId == -1 || rightId == -1) return;
+            if (id == -1 || leftId == -1 || rightId == -1) {
+                SetDefaultValueToAlignmentChromPeakFeature(result);
+                return;
+            }
 
             SetAlignmentChromPeakFeature(result, peaklist, id, leftId, rightId);
         }
@@ -145,10 +152,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return (id, leftId, rightId);
         }
 
-        protected virtual void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
+        private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
             double peakAreaAboveZero = 0d;
             for (int i = leftId; i < rightId; i++)
                 peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].Mass - sPeaklist[i].Mass);
+
+            System.Diagnostics.Debug.Assert(sPeaklist[id].ChromXs != null);
+            System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);
+            System.Diagnostics.Debug.Assert(sPeaklist[rightId].ChromXs != null);
 
             result.Mass = sPeaklist[id].Mass;
             result.ChromScanIdTop = id;
@@ -161,6 +172,20 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakHeightLeft = sPeaklist[leftId].Intensity;
             result.PeakHeightRight = sPeaklist[rightId].Intensity;
             result.PeakAreaAboveZero = peakAreaAboveZero;
+        }
+
+        private static void SetDefaultValueToAlignmentChromPeakFeature(AlignmentChromPeakFeature result) {
+            result.Mass = -1;
+            result.ChromScanIdTop = -1;
+            result.ChromScanIdLeft = -1;
+            result.ChromScanIdRight = -1;
+            result.ChromXsTop = new ChromXs(0, ChromXType.Mz, ChromXUnit.Mz);
+            result.ChromXsLeft = new ChromXs(0, ChromXType.Mz, ChromXUnit.Mz);
+            result.ChromXsRight = new ChromXs(0, ChromXType.Mz, ChromXUnit.Mz);
+            result.PeakHeightTop = 0;
+            result.PeakHeightLeft = 0;
+            result.PeakHeightRight = 0;
+            result.PeakAreaAboveZero = 0;
         }
     }
 }

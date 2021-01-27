@@ -70,11 +70,13 @@ namespace CompMs.Graphics.LineChart
         private Data[] datas;
         #endregion
 
-        public LineChartControl() : base() {
+        static LineChartControl() {
             var pen = new Pen(Brushes.Black, 1) { LineJoin = PenLineJoin.Bevel };
             pen.Freeze();
-            LinePen = pen;
+            LinePenProperty.OverrideMetadata(typeof(Pen), new PropertyMetadata(pen));
+        }
 
+        public LineChartControl() : base() {
             dv = new DrawingVisual { Clip = new RectangleGeometry(new Rect(RenderSize)) };
             visualChildren.Add(dv);
         }
@@ -102,16 +104,20 @@ namespace CompMs.Graphics.LineChart
         List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
             var points = new List<Point>(ds.Count);
 
-            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x));
-            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y));
+            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX);
+            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY);
 
             return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
         }
 
         void SetHorizontalDatas() {
-            if (dataType == null || HorizontalPropertyName == null) return;
+            if (dataType == null || HorizontalPropertyName == null)
+                return;
 
             hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
+            if (hPropertyReflection == null)
+                return;
+
             foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
                 datas[idx].x = hPropertyReflection.GetValue(obj);
         }
@@ -120,6 +126,9 @@ namespace CompMs.Graphics.LineChart
             if (dataType == null || VerticalPropertyName == null) return;
 
             vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+            if (vPropertyReflection == null)
+                return;
+
             foreach ((var obj, var idx) in cv.Cast<object>().WithIndex())
                 datas[idx].y = vPropertyReflection.GetValue(obj);
         }

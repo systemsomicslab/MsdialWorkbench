@@ -11,11 +11,10 @@
              x:Name="PeakSelector"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="IntensityAxisManager"
-                                       MinValue="{Binding DataContext.Ms1Area.Top, Source={x:Reference Name=PeakSelector}}"
-                                       MaxValue="{Binding DataContext.Ms1Area.Bottom, Source={x:Reference Name=PeakSelector}}"
-                                       ChartMargin="0.05"
-                                       IsFlipped="True"/>
+        <manager:AutoContinuousAxisManager x:Key="IntensityAxisManager"
+                                           ItemsSource="{Binding ItemsSource, Source={x:Reference Name=PeakSelector}}"
+                                           ValuePropertyName="Intensity"
+                                           ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

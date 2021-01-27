@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,8 +12,7 @@ using CompMs.Graphics.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class AutoContinuousAxisManager : ContinuousAxisManager
-    {
+    public class AutoContinuousAxisManager : ContinuousAxisManager {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
             nameof(ItemsSource), typeof(IEnumerable), typeof(AutoContinuousAxisManager),
@@ -26,14 +26,12 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         #region Property
-        public IEnumerable ItemsSource
-        {
+        public IEnumerable ItemsSource {
             get => (IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string ValuePropertyName
-        {
+        public string ValuePropertyName {
             get => (string)GetValue(ValuePropertyNameProperty);
             set => SetValue(ValuePropertyNameProperty, value);
         }
@@ -49,8 +47,12 @@ namespace CompMs.Graphics.AxisManager
                 return;
 
             vProp = dataType.GetProperty(ValuePropertyName);
+            if (vProp == null)
+                return;
+
             double min = double.MaxValue, max = double.MinValue;
             foreach (var o in ItemsSource) {
+                if (o == null) continue;
                 var v = Convert.ToDouble((IConvertible)vProp.GetValue(o));
                 min = Math.Min(min, v);
                 max = Math.Max(max, v);
@@ -72,6 +74,13 @@ namespace CompMs.Graphics.AxisManager
             var axis = d as AutoContinuousAxisManager;
             if (axis == null) return;
 
+            if (e.NewValue is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += axis.OnItemsSourceCollectionChanged;
+            }
+            if (e.OldValue is INotifyCollectionChanged collectionOld) {
+                collectionOld.CollectionChanged -= axis.OnItemsSourceCollectionChanged;
+            }
+
             axis.SetAxisStates();
             axis.SetMinAndMaxValues();
         }
@@ -82,6 +91,11 @@ namespace CompMs.Graphics.AxisManager
 
             axis.SetAxisStates();
             axis.SetMinAndMaxValues();
+        }
+
+        private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            SetAxisStates();
+            SetMinAndMaxValues();
         }
         #endregion
     }

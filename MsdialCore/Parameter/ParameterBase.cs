@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(13)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
         [Key(14)]
-        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metablomics;
+        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metabolomics;
         [Key(15)]
         public Ionization Ionization { get; set; } = Ionization.ESI;
         [Key(16)]
@@ -206,7 +206,7 @@ namespace CompMs.MsdialCore.Parameter {
         public bool OnlyReportTopHitInMspSearch { get; set; } = false;
         [Key(76)]
         public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
-            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 85
+            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 0.85F
         };
         [Key(77)]
         public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;

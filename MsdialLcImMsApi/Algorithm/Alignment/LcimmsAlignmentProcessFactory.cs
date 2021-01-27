@@ -16,8 +16,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             LcimmsParameter = param;
         }
 
-        public override AlignmentRefiner CreateAlignmentRefiner() {
-            return new LcimmsAlignmentRefiner(LcimmsParameter);
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
+            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac);
         }
 
         public override DataAccessor CreateDataAccessor() {
@@ -28,11 +28,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return new LcimmsGapFiller(LcimmsParameter);
         }
 
-        public override PeakAligner CreatePeakAliner() {
+        public override PeakAligner CreatePeakAligner() {
             return new PeakAligner3D(this);
         }
 
-        public override PeakJoiner CreatePeakJoiner() {
+        public override IPeakJoiner CreatePeakJoiner() {
             return new LcimmsPeakJoiner(
                 LcimmsParameter.RetentionTimeAlignmentTolerance, LcimmsParameter.RetentionTimeAlignmentTolerance,
                 LcimmsParameter.Ms1AlignmentTolerance, LcimmsParameter.Ms1AlignmentFactor,

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -7,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using CompMs.Common.Extension;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Scatter
@@ -31,7 +34,7 @@ namespace CompMs.Graphics.Scatter
 
         public static readonly DependencyProperty PointGeometryProperty = DependencyProperty.Register(
             nameof(PointGeometry), typeof(Geometry), typeof(ScatterControl),
-            new PropertyMetadata(null)
+            new PropertyMetadata(new EllipseGeometry(new Rect(0, 0, 1, 1)))
             );
 
         public static readonly DependencyProperty PointBrushProperty = DependencyProperty.Register(
@@ -48,13 +51,18 @@ namespace CompMs.Graphics.Scatter
             nameof(SelectedItem), typeof(object), typeof(ScatterControl),
             new PropertyMetadata(null, OnSelectedItemChanged));
 
+        public static readonly DependencyProperty SelectedPointProperty = DependencyProperty.Register(
+            nameof(SelectedPoint), typeof(Point?), typeof(ScatterControl),
+            new PropertyMetadata(default)
+            );
+
         public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
             nameof(FocusedItem), typeof(object), typeof(ScatterControl),
             new PropertyMetadata(null)
             );
 
         public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
-            nameof(FocusedPoint), typeof(Point), typeof(ScatterControl),
+            nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
             new PropertyMetadata(default)
             );
         #endregion
@@ -102,15 +110,21 @@ namespace CompMs.Graphics.Scatter
             set { SetValue(SelectedItemProperty, value); }
         }
 
+        public Point? SelectedPoint
+        {
+            get => (Point?)GetValue(SelectedPointProperty);
+            set => SetValue(SelectedPointProperty, value);
+        }
+
         public object FocusedItem
         {
             get => (object)GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
+        public Point? FocusedPoint
         {
-            get => (Point)GetValue(FocusedPointProperty);
+            get => (Point?)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
         #endregion
@@ -120,6 +134,7 @@ namespace CompMs.Graphics.Scatter
         private Type dataType;
         private PropertyInfo hPropertyReflection;
         private PropertyInfo vPropertyReflection;
+        private AnnotatedDrawingVisual focus, select;
         #endregion
 
         public ScatterControl()
@@ -131,49 +146,73 @@ namespace CompMs.Graphics.Scatter
 
         protected override void Update()
         {
+            base.Update();
             if (  hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
                || PointBrush == null
-               || cv == null
                )
                 return;
 
-            var brush = PointBrush;
-            if (PointGeometry != null)
-                brush = new DrawingBrush(new GeometryDrawing(brush, null, PointGeometry));
+            var brush = new DrawingBrush(new GeometryDrawing(PointBrush, null, PointGeometry));
             brush.Freeze();
             double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
 
             foreach(var visual in visualChildren)
             {
-                var dv = visual as AnnotatedDrawingVisual;
+                if (!(visual is AnnotatedDrawingVisual dv)) continue;
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx = HorizontalAxis.TranslateToRenderPoint(x) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y) * actualHeight;
+                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    if (PointGeometry == null) {
-                        dc.DrawEllipse(brush, null, new Point(xx, yy), radius, radius);
-                    }
-                    else {
-                        dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
-                    }
+                    dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
                 }
             }
         }
 
         private void SetDrawingVisuals() {
+            visualChildren.Clear();
             if (cv == null) return;
 
-            visualChildren.Clear();
             foreach (var o in cv)
                 visualChildren.Add(new AnnotatedDrawingVisual(o));
+        }
+
+        private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            SetDrawingVisuals();
+            Update();
+        }
+
+        #region Event
+        public static RoutedEvent FocusChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(FocusChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs FocusChangedEventArgs = new RoutedEventArgs(FocusChangedEvent);
+
+        public event RoutedEventHandler FocusChanged {
+            add => AddHandler(FocusChangedEvent, value);
+            remove => RemoveHandler(FocusChangedEvent, value);
+        }
+
+        public static RoutedEvent SelectChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(SelectChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs SelectChangedEventArgs = new RoutedEventArgs(SelectChangedEvent);
+
+        public event RoutedEventHandler SelectChanged {
+            add => AddHandler(SelectChangedEvent, value);
+            remove => RemoveHandler(SelectChangedEvent, value);
+        }
+        #endregion
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+            FocusedPoint = focus?.Center;
+            SelectedPoint = select?.Center;
         }
 
         #region Event handler
@@ -183,17 +222,29 @@ namespace CompMs.Graphics.Scatter
             if (chart == null) return;
 
             chart.dataType = null;
+
+            if (chart.cv != null) {
+                chart.cv.CurrentChanged -= chart.OnCurrentChanged;
+            }
+            if (e.OldValue is INotifyCollectionChanged collectionOld) {
+                collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
+            }
+
             chart.cv = null;
+            if (e.NewValue == null) return;
 
-            if (chart.ItemsSource == null) return;
+            chart.cv = CollectionViewSource.GetDefaultView(e.NewValue) as CollectionView;
+            chart.cv.CurrentChanged += chart.OnCurrentChanged;
+            if (e.NewValue is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            }
 
-            var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
-
-            chart.dataType = enumerator.Current.GetType();
-            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
-
-            chart.SetDrawingVisuals();
+            if (chart.cv.Count == 0) {
+                chart.SetDrawingVisuals();
+                chart.Update();
+                return;
+            }
+            chart.dataType = chart.cv.GetItemAt(0).GetType();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -202,7 +253,26 @@ namespace CompMs.Graphics.Scatter
             if (chart.SelectedItem != null)
                 chart.cv.MoveCurrentTo(chart.SelectedItem);
 
+            chart.SetDrawingVisuals();
             chart.Update();
+        }
+
+        void OnCurrentChanged(object obj, EventArgs e) {
+            if (cv == null) return;
+            var item = cv.CurrentItem;
+            SelectedItem = item;
+
+            if (item == null) {
+                SelectedPoint = null;
+                return;
+            }
+            var x = hPropertyReflection.GetValue(item);
+            var y = vPropertyReflection.GetValue(item);
+            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
+            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
+            var pos = new Point(xx, yy);
+            select = visualChildren.OfType<AnnotatedDrawingVisual>().Argmin(dv => (dv.Center - pos).Length);
+            SelectedPoint = select.Center;
         }
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -274,18 +344,32 @@ namespace CompMs.Graphics.Scatter
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
         {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
-            var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
-                FocusedItem = focussed;
-                FocusedPoint = dv.Center;
+            if (dv != focus) {
+                focus = dv;
+                RaiseEvent(FocusChangedEventArgs);
+            }
+            if (FocusedItem != focus.Annotation) {
+                FocusedItem = focus.Annotation;
+            }
+            if (FocusedPoint != focus.Center) {
+                FocusedPoint = focus.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
         HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
         {
-            SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            if (dv != select) {
+                select = dv;
+                RaiseEvent(SelectChangedEventArgs);
+            }
+            if (select.Annotation != SelectedItem) {
+                SelectedItem = select.Annotation;
+            }
+            if (select.Center != SelectedPoint) {
+                SelectedPoint = select.Center;
+            }
             return HitTestResultBehavior.Stop;
         }
         #endregion

@@ -31,7 +31,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return new ChromXs(peaks.Average(peak => peak.ChromXsTop.Mz.Value), ChromXType.Mz, ChromXUnit.Mz);
         }
 
-        protected override double GetAveragePeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
             return peaks.Max(peak => peak.PeakWidth(ChromXType.Mz));
         }
 
