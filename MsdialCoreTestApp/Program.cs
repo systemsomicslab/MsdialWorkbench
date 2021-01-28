@@ -20,15 +20,28 @@ namespace CompMs.App.MsdialConsole {
             //     , "-p" };
 
             // lcms
+            // args = new string[]
+            // {
+            //     "lcms"
+            //     , "-i"
+            //     , @"D:\test_data\wine\"
+            //     , "-o"
+            //     , @"D:\test_data\wine\"
+            //     , "-m"
+            //     , @"D:\test_data\wine\lcms_param.txt"
+            //     , "-p"
+            // };
+
+            // dims
             args = new string[]
             {
-                "lcms"
+                "dims"
                 , "-i"
-                , @"D:\test_data\wine\"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
                 , "-o"
-                , @"D:\test_data\wine\"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
                 , "-m"
-                , @"D:\test_data\wine\lcms_param.txt"
+                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive\dims_param.txt"
                 , "-p"
             };
             MainProcess.Run(args);

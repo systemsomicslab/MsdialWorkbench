@@ -90,7 +90,7 @@ namespace CompMs.Common.Parser {
             if (ionmode == "Positive") query.IonMode = IonMode.Positive;
             else query.IonMode = IonMode.Negative;
 
-            if (isSelected == "TRUE") query.IsSelected = true;
+            if (isSelected.ToUpper() == "TRUE") query.IsSelected = true;
             else query.IsSelected = false;
 
             return query;

@@ -145,18 +145,22 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
-        public override void InitializeNewProject(Window window) {
+        public override int InitializeNewProject(Window window) {
             // Set analysis param
-            var success = ProcessSetAnalysisParameter(window);
-            if (!success) return;
+            if (!ProcessSetAnalysisParameter(window))
+                return -1;
 
             // Run Identification
-            ProcessAnnotaion(window, Storage);
+            if (!ProcessAnnotaion(window, Storage))
+                return -1;
 
             // Run Alignment
-            ProcessAlignment(window, Storage);
+            if (!ProcessAlignment(window, Storage))
+                return -1;
 
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+
+            return 0;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {

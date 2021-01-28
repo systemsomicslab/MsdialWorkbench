@@ -74,7 +74,8 @@ namespace CompMs.MsdialDimsCore {
                 var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
 
                 if (peakFeatures.Count == 0) return;
-                IsotopeEstimator.Process(peakFeatures, param, iupacDB);
+                // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
+                SetIsotopes(peakFeatures);
                 SetSpectrumPeaks(peakFeatures, spectrumList);
 
                 // chrom deconvolutions
@@ -172,6 +173,12 @@ namespace CompMs.MsdialDimsCore {
         private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {
             if (ms2RawSpectrumID2CE.Count == 0) return -1;
             return ms2RawSpectrumID2CE.Argmax(kvp => allSpectra[kvp.Key].TotalIonCurrent).Key;
+        }
+
+        private static void SetIsotopes(List<ChromatogramPeakFeature> chromFeatures) {
+            foreach (var feature in chromFeatures) {
+                feature.PeakCharacter.IsotopeWeightNumber = 0;
+            }
         }
 
         private static void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, List<RawSpectrum> spectra) {

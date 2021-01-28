@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, param);
                 ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
             }
-            
+
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             FinalizationForAdduct(chromPeakFeatures, param);
             AssignPutativePeakgroupIDs(chromPeakFeatures);
@@ -124,8 +124,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (character.IsotopeWeightNumber > 0) {
                     var parentID = character.IsotopeParentPeakID;
                     var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (peak.AdductType != null && peak.AdductType.FormatCheck) {
-                        parentCharacter.AdductType = peak.AdductType;
+                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
+                        peak.AddAdductType(parentCharacter.AdductType);
                     }
                     if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
                         n.Character == PeakLinkFeatureEnum.Isotope) == 0) {

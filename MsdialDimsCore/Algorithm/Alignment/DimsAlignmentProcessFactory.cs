@@ -16,7 +16,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             DimsParameter = param;
         }
 
-        public override AlignmentRefiner CreateAlignmentRefiner() {
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
             return new DimsAlignmentRefiner(DimsParameter, Iupac);
         }
 

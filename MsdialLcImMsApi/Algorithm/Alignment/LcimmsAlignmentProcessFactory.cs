@@ -16,7 +16,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             LcimmsParameter = param;
         }
 
-        public override AlignmentRefiner CreateAlignmentRefiner() {
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
             return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac);
         }
 

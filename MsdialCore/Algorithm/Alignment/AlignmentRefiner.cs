@@ -11,7 +11,12 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
-    public abstract class AlignmentRefiner
+    public interface IAlignmentRefiner
+    {
+        List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments);
+    }
+
+    public abstract class AlignmentRefiner : IAlignmentRefiner
     {
         protected ParameterBase _param;
         private readonly IupacDatabase _iupac;
