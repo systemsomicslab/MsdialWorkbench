@@ -65,7 +65,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public AlignmentSpotPropertyVM Target {
             get => target;
-            set => SetProperty(ref target, value);
+            set {
+                if (SetProperty(ref target, value))
+                    SearchCompoundCommand.RaiseCanExecuteChanged();
+            }
         }
         private AlignmentSpotPropertyVM target;
 
@@ -276,10 +279,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 && spot.MassCenter <= MassUpper;
         }
 
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
+        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound, CanSearchCompound));
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
+            if (Target?.innerModel == null)
+                return;
+
             var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, msp, param.MspSearchParam, param.TargetOmics, null);
             var window = new View.Dims.CompoundSearchWindow
             {
@@ -289,6 +295,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             window.ShowDialog();
+        }
+
+        private bool CanSearchCompound(Window owner) {
+            if (Target?.innerModel == null) {
+                return false;
+            }
+            return true;
         }
 
         public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
