@@ -244,7 +244,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
 
             foreach (var feature in chromatogramPeakFeatures) {
                 var isotopes = DataAccess.GetIsotopicPeaks(spectras, feature.MS1RawSpectrumIdTop, (float)feature.Mass, param.CentroidMs1Tolerance);
-                _ = CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param, isotopes);
+                CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param, isotopes);
             }
 
             MsdialSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
@@ -336,14 +336,14 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
             return spectrumPeaks.Select(peak => new SpectrumPeak(peak.Mass, (peak.Intensity - min) / width)).ToList();
         }
 
-        private (List<MsScanMatchResult> Msp, List<MsScanMatchResult> Text) CalculateAndSetAnnotatedReferences(
+        private void CalculateAndSetAnnotatedReferences(
             ChromatogramPeakFeature chromatogramPeakFeature, 
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialDimsParameter param, List<IsotopicPeak> isotopes)
         {
-            AnnotationProcess.Run(chromatogramPeakFeature, null, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes, out List<MsScanMatchResult> mspResult, out List<MsScanMatchResult> textResult);
+            AnnotationProcess.Run(chromatogramPeakFeature, null, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
-            return (mspResult, textResult);
+            return;
         }
 
         void ReadAndSetMs1Peaks(string serializedPeakPath) {

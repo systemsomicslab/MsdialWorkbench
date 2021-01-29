@@ -5,11 +5,13 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.RawDataHandler.Core;
 using NSSplash;
 using NSSplash.impl;
@@ -187,12 +189,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly List<long> seekPointers;
         private readonly ParameterBase param;
         private readonly List<RawSpectrum> spectrumList;
-        private readonly List<MoleculeMsReference> mspDB;
+        private readonly IAnnotator mspAnnotator;
 
-        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, List<MoleculeMsReference> msps) {
+        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, List<MoleculeMsReference> msps)
+            : this(analysisFile, param, new DimsMspAnnotator(msps, param.MspSearchParam, param.TargetOmics)) { }
+
+        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, IAnnotator mspAnnotator) {
             this.analysisFile = analysisFile;
             this.param = param;
-            this.mspDB = msps;
+            this.mspAnnotator = mspAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
 
@@ -340,10 +345,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             await Task.Run(() => {
                 if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = mspDB[matched.LibraryIDWhenOrdered];
-                    if (matched.LibraryID != reference.ScanID) {
-                        reference = mspDB.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
-                    }
+                    var reference = mspAnnotator.Refer(matched);
                     Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
             }).ConfigureAwait(false);
@@ -377,7 +379,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM(analysisFile, Target.InnerModel, msdecResult, mspDB, param.MspSearchParam, param.TargetOmics, null);
+            var vm = new CompoundSearchVM(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,

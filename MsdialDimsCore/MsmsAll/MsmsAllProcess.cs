@@ -74,7 +74,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
             Console.WriteLine("Annotation started...");
             foreach (var item in chromFeatures.Select((value, index) => new { value, index })) {
                 var feature = item.value;
-                AnnotationProcess.Run(feature, null, mspDB, null, param.MspSearchParam, param.TargetOmics, null, out _, out _);
+                AnnotationProcess.Run(feature, null, mspDB, null, param.MspSearchParam, param.TargetOmics, null);
                 Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
 

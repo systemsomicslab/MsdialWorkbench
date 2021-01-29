@@ -3,10 +3,12 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -144,7 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
         private readonly string spectraFile = string.Empty;
-        private readonly List<MoleculeMsReference> msp = new List<MoleculeMsReference>();
+        private readonly IAnnotator mspAnnotator;
 
         private MSDecResult msdecResult = null;
 
@@ -155,7 +157,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Mz);
         }
 
-        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, List<MoleculeMsReference> msp) {
+        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, List<MoleculeMsReference> msp)
+            : this(alignmentFileBean, param, new DimsMspAnnotator(msp, param.MspSearchParam, param.TargetOmics)) {
+        }
+
+        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, IAnnotator mspAnnotator) {
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
             resultFile = alignmentFileBean.FilePath;
@@ -163,7 +169,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             spectraFile = alignmentFileBean.SpectraFilePath;
 
             this.param = param;
-            this.msp = msp;
+            this.mspAnnotator = mspAnnotator;
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
@@ -247,10 +253,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             await Task.Run(() => {
                 if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = msp[matched.LibraryIDWhenOrdered];
-                    if (matched.LibraryID != reference.ScanID) {
-                        reference = msp.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
-                    }
+                    var reference = mspAnnotator.Refer(matched);
                     Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
             }).ConfigureAwait(false);
@@ -286,7 +289,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Target?.innerModel == null)
                 return;
 
-            var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, msp, param.MspSearchParam, param.TargetOmics, null);
+            var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,

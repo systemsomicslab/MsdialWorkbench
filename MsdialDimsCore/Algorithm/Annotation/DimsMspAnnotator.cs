@@ -3,7 +3,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -54,7 +53,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 ValidateCore(result, scan, candidate, parameter, omics);
                 results.Add(result);
             }
-            return results.OrderBy(result => result.TotalScore).ToList();
+            return results.Where(result => result.TotalScore >= parameter.TotalScoreCutoff).OrderBy(result => result.TotalScore).ToList();
         }
 
         public MsScanMatchResult CalculateScore(IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes, MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes, MsRefSearchParameterBase parameter = null) {
@@ -69,11 +68,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
 
-            var ms1Tol = parameter.Ms1Tolerance;
-            if (scan.PrecursorMz > 500) {
-                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scan.PrecursorMz, ppm);
-            }
+            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, scan.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(scan.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
             var result = new MsScanMatchResult
@@ -115,11 +110,19 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         }
 
         private static (int lo, int hi) SearchBoundIndex(IMSScanProperty scan, IReadOnlyList<MoleculeMsReference> mspDB, double tolerance) {
+            tolerance = CalculateMassTolerance(tolerance, scan.PrecursorMz);
             var dummy = new MSScanProperty { PrecursorMz = scan.PrecursorMz - tolerance };
             var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
             dummy.PrecursorMz = scan.PrecursorMz + tolerance;
             var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
             return (lo, hi);
+        }
+
+        private static double CalculateMassTolerance(double tolerance, double mass) {
+            if (mass <= 500)
+                return tolerance;
+            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + tolerance));
+            return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
         public void Validate(MsScanMatchResult result, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes, MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes, MsRefSearchParameterBase parameter = null) {
@@ -140,14 +143,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
                 && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
-                && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch
-                && result.TotalScore >= parameter.TotalScoreCutoff;
+                && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 
-            var ms1Tol = parameter.Ms1Tolerance;
-            if (scan.PrecursorMz > 500) {
-                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scan.PrecursorMz, ppm);
-            }
+            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, scan.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(scan.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
         }
 

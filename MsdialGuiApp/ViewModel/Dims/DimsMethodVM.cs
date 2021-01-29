@@ -24,6 +24,8 @@ using CompMs.MsdialCore.MSDec;
 using System.Windows.Input;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.View.Export;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -124,6 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private AlignmentFileBean alignmentFile;
         private AnalysisFileBean analysisFile;
+        private IAnnotator mspAnnotator;
 
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
@@ -135,6 +138,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
             Storage = storage;
+            mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             _analysisFiles.MoveCurrentToFirst();
@@ -189,6 +193,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
             Storage.MspDB = analysisParamSetVM.MspDB;
+            mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             Storage.TextDB = analysisParamSetVM.TextDB;
             return true;
         }
@@ -300,14 +305,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (analysisFile == analysis) return;
 
             analysisFile = analysis;
-            AnalysisVM =  new AnalysisDimsVM(analysis, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
+            AnalysisVM =  new AnalysisDimsVM(analysis, Storage.ParameterBase, mspAnnotator) { DisplayFilters = displayFilters };
         }
 
         private void LoadAlignmentFile(AlignmentFileBean alignment) {
             if (alignmentFile == alignment) return;
 
             alignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(alignment, Storage.ParameterBase, Storage.MspDB) { DisplayFilters = displayFilters };
+            AlignmentVM = new AlignmentDimsVM(alignment, Storage.ParameterBase, mspAnnotator) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {
