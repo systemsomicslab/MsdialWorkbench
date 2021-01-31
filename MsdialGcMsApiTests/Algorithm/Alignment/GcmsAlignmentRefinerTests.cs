@@ -10,6 +10,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.Common.Parser;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
 {
@@ -302,14 +303,14 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 },
                 MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
                 {
-                    {0, BuildMsScanMatchResult(0, 0.1f) },
-                    {1, BuildMsScanMatchResult(1, 0.3f) },
-                    {2, BuildMsScanMatchResult(2, 0.9f) },
-                    {3, BuildMsScanMatchResult(3, 0.5f) },
+                    { 0, BuildMsScanMatchResult(0, 0.1f) },
+                    { 1, BuildMsScanMatchResult(1, 0.3f) },
+                    { 2, BuildMsScanMatchResult(2, 0.9f) },
+                    { 3, BuildMsScanMatchResult(3, 0.5f) },
                 },
-                TextDbBasedMatchResult = BuildMsScanMatchResult(id:5),
+                TextDbBasedMatchResult = BuildMsScanMatchResult(id: 5),
                 PeakCharacter = BuildIonFeatureCharacter(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
@@ -341,7 +342,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             {
                 IsotopeWeightNumber = weight, Charge = charge,
                 PeakLinks = new List<LinkedPeakFeature>(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
             };
         }
         #endregion

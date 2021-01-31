@@ -269,7 +269,7 @@ namespace CompMs.MsdialCore.Algorithm
 
             alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, Common.DataObj.Result.MsScanMatchResult>();
             alignmentSpot.TextDbBasedMatchResult = null;
-            alignmentSpot.AdductType.AdductIonName = string.Empty;
+            alignmentSpot.AdductType.Unset();
             alignmentSpot.Name = string.Empty;
         }
 

@@ -185,7 +185,7 @@ namespace CompMs.Common.Parser {
         private static void writeMspFields(MgfRecord mgfRecord, StreamWriter sw) {
 
             var adducttype = string.Empty;
-            if (mgfRecord.Adduct == null || mgfRecord.Adduct.AdductIonName == null || mgfRecord.Adduct.AdductIonName == string.Empty) {
+            if (mgfRecord.Adduct == null || !mgfRecord.Adduct.HasAdduct) {
                 if (mgfRecord.IonMode== IonMode.Positive) {
                     adducttype = "[M+H]+";
                 }

@@ -4,9 +4,10 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialDimsCore.Common;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -27,11 +28,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private List<SpectrumPeakWrapper> ms2DecSpectrum = new List<SpectrumPeakWrapper>();
 
-        public double Ms1Tolerance {
-            get => ms1Tolerance;
-            set => SetProperty(ref ms1Tolerance, value);
+        public MsRefSearchParameterVM ParameterVM {
+            get => parameterVM;
+            set => SetProperty(ref parameterVM, value);
         }
-        private double ms1Tolerance;
+        private MsRefSearchParameterVM parameterVM;
 
         public int FileID { get; }
         public string FileName { get; }
@@ -40,47 +41,58 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public string MetaboliteName { get; }
 
         private readonly MSDecResult msdecResult;
-        private readonly List<MoleculeMsReference> mspDB;
-        private readonly MsRefSearchParameterBase mspParam;
-        private readonly TargetOmics omics;
+        private readonly IAnnotator Annotator;
         private readonly IReadOnlyList<IsotopicPeak> isotopes;
-        
+
         public CompoundSearchVM(
             AnalysisFileBean analysisFile,
             ChromatogramPeakFeature peakFeature, MSDecResult msdecResult,
-            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam, 
-            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes) {
+            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam,
+            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes)
+            : this(analysisFile, peakFeature, msdecResult, isotopes, new DimsMspAnnotator(mspDB, mspParam, omics)) {
+        }
+
+        public CompoundSearchVM(
+            AnalysisFileBean analysisFile,
+            ChromatogramPeakFeature peakFeature, MSDecResult msdecResult,
+            IReadOnlyList<IsotopicPeak> isotopes,
+            IAnnotator annotator) {
 
             this.msdecResult = msdecResult;
-            this.mspDB = mspDB;
-            this.mspParam = mspParam;
-            this.omics = omics;
             this.isotopes = isotopes;
+            this.Annotator = annotator;
+            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase { });
 
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
             AccurateMass = peakFeature.PrecursorMz;
             AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
             MetaboliteName = peakFeature.Name;
-            Ms1Tolerance = mspParam.Ms1Tolerance;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
         }
 
         public CompoundSearchVM(
-            AlignmentFileBean alignmentFile, 
+            AlignmentFileBean alignmentFile,
             AlignmentSpotProperty spot, MSDecResult msdecResult,
             List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam,
-            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes) {
+            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes)
+            : this(alignmentFile, spot, msdecResult, isotopes, new DimsMspAnnotator(mspDB, mspParam, omics)) {
+        }
+
+        public CompoundSearchVM(
+            AlignmentFileBean alignmentFile, 
+            AlignmentSpotProperty spot, MSDecResult msdecResult,
+            IReadOnlyList<IsotopicPeak> isotopes,
+            IAnnotator annotator) {
 
             var peakFeature = spot.AlignedPeakProperties[spot.RepresentativeFileID];
 
             this.msdecResult = msdecResult;
-            this.mspDB = mspDB;
-            this.mspParam = mspParam;
-            this.omics = omics;
             this.isotopes = isotopes;
+            this.Annotator = annotator;
+            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase { });
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;
@@ -95,11 +107,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search));
         private DelegateCommand searchCommand;
 
-        private async void Search() {
-            var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
+        private void Search() {
+            var mspResults = Annotator.FindCandidates(msdecResult, null, ParameterVM.innerModel);
+            // var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)
-                          .Select(result => new CompoundResult(mspDB[result.LibraryIDWhenOrdered], result))
+                    .Select(result => new CompoundResult(Annotator.Refer(result), result))
             );
         }
     }
@@ -113,6 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public string Instrument => msReference.InstrumentModel;
         public string Comment => msReference.Comment;
         public double WeightedDotProduct => matchResult.WeightedDotProduct;
+        public double SimpleDotProduct => matchResult.SimpleDotProduct;
         public double ReverseDotProduct => matchResult.ReverseDotProduct;
         public double MassSimilarity => matchResult.AcurateMassSimilarity;
         public double Presence => matchResult.MatchedPeaksPercentage;
@@ -125,6 +139,35 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public CompoundResult(MoleculeMsReference msReference, MsScanMatchResult matchResult) {
             this.msReference = msReference;
             this.matchResult = matchResult;
+        }
+    }
+
+    public class MsRefSearchParameterVM : ViewModelBase
+    {
+        public float Ms1Tolerance {
+            get => innerModel.Ms1Tolerance;
+            set {
+                if (innerModel.Ms1Tolerance != value) {
+                    innerModel.Ms1Tolerance = value;
+                    OnPropertyChanged(nameof(Ms1Tolerance));
+                }
+            }
+        }
+
+        public float Ms2Tolerance {
+            get => innerModel.Ms2Tolerance;
+            set {
+                if (innerModel.Ms2Tolerance != value) {
+                    innerModel.Ms2Tolerance = value;
+                    OnPropertyChanged(nameof(Ms2Tolerance));
+                }
+            }
+        }
+
+        internal readonly MsRefSearchParameterBase innerModel;
+
+        public MsRefSearchParameterVM(MsRefSearchParameterBase innerModel) {
+            this.innerModel = innerModel;
         }
     }
 }

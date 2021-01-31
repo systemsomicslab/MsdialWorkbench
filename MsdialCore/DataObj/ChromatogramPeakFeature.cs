@@ -130,12 +130,8 @@ namespace CompMs.MsdialCore.DataObj {
             PeakCharacter.Charge = adductIon.ChargeNumber;
         }
         [IgnoreMember]
-        public bool IsAdductTypeFormatted {
-            get {
-                if (AdductType == null || !AdductType.FormatCheck || AdductType.AdductIonName == null || AdductType.AdductIonName == string.Empty) return false;
-                return true;
-            }
-        }
+        public bool IsAdductTypeFormatted
+            => AdductType != null && AdductType.FormatCheck && AdductType.HasAdduct;
 
         [Key(31)]
         public double CollisionCrossSection { get; set; }

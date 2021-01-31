@@ -10,6 +10,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Parser;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
@@ -861,14 +862,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Adduct },
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.FoundInUpperMsMs },
             };
-            alignments[1].AdductType.AdductIonName = "[M+Na]+";
+            alignments[1].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[2].RepresentativeFileID = 2;
             alignments[2].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Isotope },
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Adduct },
             };
-            alignments[2].AdductType.AdductIonName = "[M+Na]+";
+            alignments[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[3].RepresentativeFileID = 3;
             alignments[3].AlignedPeakProperties[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
@@ -876,7 +877,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Adduct },
             };
             alignments[3].PeakCharacter.Charge = 1;
-            alignments[3].AlignedPeakProperties[1].PeakCharacter.AdductType.AdductIonName = "[M+2H]2+";
+            alignments[3].AlignedPeakProperties[1].PeakCharacter.AdductType = AdductIonParser.GetAdductIonBean("[M+2H]2+");
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[3].TextDbBasedMatchResult = null;
             alignments[4].RepresentativeFileID = 2;
@@ -926,7 +927,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.FoundInUpperMsMs },
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.SameFeature },
             };
-            expects[1].AdductType.AdductIonName = "[M+Na]+";
+            expects[1].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[1].PeakCharacter.PeakGroupID = 0;
             expects[2].RepresentativeFileID = 2;
             expects[2].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
@@ -938,7 +939,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.Adduct },
             };
-            expects[2].AdductType.AdductIonName = "[M+Na]+";
+            expects[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[2].PeakCharacter.PeakGroupID = 0;
             expects[3].RepresentativeFileID = 3;
             expects[3].AlignedPeakProperties[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
@@ -952,7 +953,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.SameFeature },
             };
             expects[3].PeakCharacter.Charge = 1;
-            expects[3].AlignedPeakProperties[1].PeakCharacter.AdductType.AdductIonName = "[M+2H]2+";
+            expects[3].AlignedPeakProperties[1].PeakCharacter.AdductType = AdductIonParser.GetAdductIonBean("[M+2H]2+");
             expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[3].TextDbBasedMatchResult = null;
             expects[3].PeakCharacter.PeakGroupID = 0;
@@ -1166,13 +1167,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Adduct },
             };
-            alignments[2].AdductType.AdductIonName = "[M+Na]+";
+            alignments[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[3].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.SameFeature },
             };
             alignments[4].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
-            alignments[4].AdductType.AdductIonName = "[M+Na]+";
+            alignments[4].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[5].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope },
@@ -1229,7 +1230,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.CorrelSimilar },
             };
             expects[2].PeakCharacter.PeakGroupID = 1;
-            expects[2].AdductType.AdductIonName = "[M+Na]+";
+            expects[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[3].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.SameFeature },
@@ -1247,7 +1248,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.Adduct },
             };
             expects[4].PeakCharacter.PeakGroupID = 2;
-            expects[4].AdductType.AdductIonName = "[M+Na]+";
+            expects[4].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[5].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope },
@@ -1389,7 +1390,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 },
                 TextDbBasedMatchResult = BuildMsScanMatchResult(id:5),
                 PeakCharacter = BuildIonFeatureCharacter(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
@@ -1421,7 +1422,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 IsotopeWeightNumber = weight, Charge = charge,
                 PeakLinks = new List<LinkedPeakFeature>(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
             };
         }
         #endregion

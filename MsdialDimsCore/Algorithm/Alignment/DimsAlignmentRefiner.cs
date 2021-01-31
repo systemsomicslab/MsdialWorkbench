@@ -31,7 +31,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             SetAlignmentID(filtered);
             SetIsotopes(filtered);
             SetLinks(filtered);
-            SetAdducts(filtered.Where(spot => string.IsNullOrEmpty(spot.AdductType.AdductIonName)));
+            SetAdducts(filtered.Where(spot => !spot.AdductType.HasAdduct));
 
             return filtered;
         }
@@ -155,7 +155,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                                         var rAdductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                         if (rAdductCharge != rSpot.PeakCharacter.Charge)
                                             break;
-                                        rSpot.AdductType.AdductIonName = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
+                                        rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                     }
                                 }
                                 RegisterLinks(cSpot, rSpot, rLinkProp);
@@ -184,16 +184,16 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                     foreach (var rSpot in alignments) {
                         if (rSpot.AlignedPeakProperties[repFileID].PeakID == rLinkID) {
                             if (rLinkProp == PeakLinkFeatureEnum.Adduct) {
-                                if (rSpot.PeakCharacter.AdductType.AdductIonName != string.Empty) continue;
+                                if (rSpot.PeakCharacter.AdductType.HasAdduct) continue;
                                 var adductCharge = AdductIonParser.GetChargeNumber(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                 if (rSpot.PeakCharacter.Charge != adductCharge) continue;
                                 adductCharge = AdductIonParser.GetChargeNumber(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName);
                                 if (fcSpot.PeakCharacter.Charge != adductCharge) continue;
 
                                 RegisterLinks(fcSpot, rSpot, rLinkProp);
-                                rSpot.AdductType.AdductIonName = rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
-                                if (fcSpot.AdductType.AdductIonName == string.Empty) {
-                                    fcSpot.AdductType.AdductIonName = fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType.AdductIonName;
+                                rSpot.AdductType.Set(rSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
+                                if (!fcSpot.AdductType.HasAdduct) {
+                                    fcSpot.AdductType.Set(fcSpot.AlignedPeakProperties[repFileID].PeakCharacter.AdductType);
                                 }
                             }
                             else {
@@ -260,14 +260,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private static void SetAdducts(IEnumerable<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
-                var charge = spot.AdductType.ChargeNumber;
-                var chargestr = charge == 1 ? "" : charge.ToString();
-                if (spot.AdductType.IonMode == IonMode.Positive) {
-                    spot.AdductType.AdductIonName = $"[M+{chargestr}H]{chargestr}+";
-                }
-                else if (spot.AdductType.IonMode == IonMode.Negative){
-                    spot.AdductType.AdductIonName = $"[M-{chargestr}H]{chargestr}-";
-                }
+                spot.AdductType.SetStandard(spot.AdductType.ChargeNumber, spot.AdductType.IonMode);
             }
         }
     }

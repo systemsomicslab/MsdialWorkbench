@@ -57,15 +57,14 @@
                 <Label Content="MS1 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox Name="TextBox_Ms1Tolerance"
-                         Text="{Binding Ms1Tolerance, Mode=TwoWay, StringFormat=F4}"
+                         Text="{Binding ParameterVM.Ms1Tolerance, Mode=TwoWay, StringFormat=F4}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
                 <Label Content="MS2 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"
                        Margin="10,0,0,0"/>
                 <TextBox Name="TextBox_Ms2Tolerance"
-                         Text="{Binding Ms2Tolerance, Mode=TwoWay, StringFormat=F4}"
-                         IsEnabled="False"
+                         Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
 
@@ -128,7 +127,25 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Identified:"/>
-                        <TextBox Text="{Binding MetaboliteName, Mode=OneWay}"/>
+                        <TextBox>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Text" Value="{Binding MetaboliteName, Mode=OneWay}"/>
+                                    <Setter Property="Height" Value="25"/>
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    <Setter Property="IsReadOnly" Value="True" />
+                                    <Setter Property="Margin" Value="0,2,0,0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding MetaboliteName, TargetNullValue='', Mode=OneWay}" Value="">
+                                            <Setter Property="Text" Value="Unknown"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -197,8 +214,12 @@
                     <TextBox Name="Label_PeakInformation_Ms1Similarity" Text="{Binding Compounds/MassSimilarity, Mode=OneWay}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
+                    <Label Content="Weighted dot product similarity score: " />
+                    <TextBox Name="Label_PeakInformation_WeightedDotProduct" Text="{Binding Compounds/WeightedDotProduct, Mode=OneWay}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
                     <Label Content="Dot product similarity score: " />
-                    <TextBox Name="Label_PeakInformation_DotProduct" Text="{Binding Compounds/WeightedDotProduct, Mode=OneWay}" />
+                    <TextBox Name="Label_PeakInformation_DotProduct" Text="{Binding Compounds/SimpleDotProduct, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Reverse dot product similarity score: " />

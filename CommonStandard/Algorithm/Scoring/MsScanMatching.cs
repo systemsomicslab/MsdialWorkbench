@@ -392,7 +392,6 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var resultArray = GetMatchedPeaksScores(msScanProp, molMsRef, bin, massBegin, massEnd); // [0] matched ratio [1] matched count
             var compClass = molMsRef.CompoundClass;
-            var adductname = molMsRef.AdductType.AdductIonName;
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
@@ -442,7 +441,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             // the bonus 0.5 is added to the normal presence score
 
             var compClass = molMsRef.CompoundClass;
-            var adductname = molMsRef.AdductType.AdductIonName;
             var comment = molMsRef.Comment;
            
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
