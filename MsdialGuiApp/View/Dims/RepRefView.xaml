@@ -9,6 +9,7 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="RepRefPlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentDimsVM}}"
@@ -115,30 +116,49 @@
             </Grid.RowDefinitions>
             <Border Background="WhiteSmoke"
                     Grid.Row="1" Grid.Column="3" >
-                <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                              ItemsSource="{Binding Ms2Spectrum}"
-                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                              RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                              RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                              HorizontalPropertyName="Mass"
-                                              VerticalPropertyName="Intensity" />
+                <Grid>
+                    <spectrum:LineSpectrumControl x:Name="MS2Line"
+                                                  ItemsSource="{Binding Ms2Spectrum}"
+                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
+                                                  HorizontalPropertyName="Mass"
+                                                  VerticalPropertyName="Intensity" />
+                    <chart:Annotator ItemsSource="{Binding Ms2Spectrum}"
+                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                     RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
+                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity" TopN="3" Format="N2"/>
+                </Grid>
             </Border>
             <Border Background="WhiteSmoke"
                     Grid.Row="3" Grid.Column="3" >
-                <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                       ItemsSource="{Binding Ms2ReferenceSpectrum}"
-                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                       RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                       RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                       FlippedY="False"
-                                       HorizontalPropertyName="Mass"
-                                       VerticalPropertyName="Intensity">
-                    <spectrum:LineSpectrumControl.LinePen>
-                        <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-                    </spectrum:LineSpectrumControl.LinePen>
-                </spectrum:LineSpectrumControl>
+                <Grid>
+                    <spectrum:LineSpectrumControl x:Name="MS2Ref"
+                                                  ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                                  RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                                  FlippedY="False"
+                                                  HorizontalPropertyName="Mass"
+                                                  VerticalPropertyName="Intensity">
+                        <spectrum:LineSpectrumControl.LinePen>
+                            <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
+                        </spectrum:LineSpectrumControl.LinePen>
+                    </spectrum:LineSpectrumControl>
+                    <chart:Annotator ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                     RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                     FlippedY="False"
+                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity" TopN="3" Format="N2" ContentAlignment="BottomCenter"/>
+                </Grid>
             </Border>
             <axis:HorizontalAxisControl x:Name="MzAxis"
                                         DataContext="{Binding Source={StaticResource MassAxisManager}}"

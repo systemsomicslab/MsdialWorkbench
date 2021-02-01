@@ -8,6 +8,7 @@
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              Name="ExpRefPlot"
              d:DesignHeight="600" d:DesignWidth="370">
@@ -139,44 +140,63 @@
             </Grid.RowDefinitions>
             <Border Background="WhiteSmoke"
                     Grid.Row="1" Grid.Column="3" >
-                <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                              ItemsSource="{Binding Ms2Spectrum}"
-                                              HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                              VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                              RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                              RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                              HorizontalPropertyName="Mass"
-                                              VerticalPropertyName="Intensity">
-                    <spectrum:LineSpectrumControl.LinePen>
-                        <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
-                    </spectrum:LineSpectrumControl.LinePen>
-                    <spectrum:LineSpectrumControl.ToolTip>
-                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="m/z: "/>
-                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                <TextBlock Text=" Intensity: "/>
-                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                            </StackPanel>
-                        </ToolTip>
-                    </spectrum:LineSpectrumControl.ToolTip>
-                </spectrum:LineSpectrumControl>
+                <Grid>
+                    <spectrum:LineSpectrumControl x:Name="MS2Line"
+                                                  ItemsSource="{Binding Ms2Spectrum}"
+                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
+                                                  HorizontalPropertyName="Mass"
+                                                  VerticalPropertyName="Intensity">
+                        <spectrum:LineSpectrumControl.LinePen>
+                            <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
+                        </spectrum:LineSpectrumControl.LinePen>
+                        <spectrum:LineSpectrumControl.ToolTip>
+                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="m/z: "/>
+                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                    <TextBlock Text=" Intensity: "/>
+                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </spectrum:LineSpectrumControl.ToolTip>
+                    </spectrum:LineSpectrumControl>
+                    <chart:Annotator ItemsSource="{Binding Ms2Spectrum}"
+                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                     RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
+                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity" TopN="3" Format="N2"/>
+                </Grid>
             </Border>
             <Border Background="WhiteSmoke"
                     Grid.Row="3" Grid.Column="3" >
-                <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                       ItemsSource="{Binding Ms2ReferenceSpectrum}"
-                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                       RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                       RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                       FlippedY="False"
-                                       HorizontalPropertyName="Mass"
-                                       VerticalPropertyName="Intensity">
-                    <spectrum:LineSpectrumControl.LinePen>
-                        <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-                    </spectrum:LineSpectrumControl.LinePen>
-                </spectrum:LineSpectrumControl>
+                <Grid>
+                    <spectrum:LineSpectrumControl x:Name="MS2Ref"
+                                           ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                                           HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                           VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                           RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                           RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                           FlippedY="False"
+                                           HorizontalPropertyName="Mass"
+                                           VerticalPropertyName="Intensity">
+                        <spectrum:LineSpectrumControl.LinePen>
+                            <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
+                        </spectrum:LineSpectrumControl.LinePen>
+                    </spectrum:LineSpectrumControl>
+                    <chart:Annotator ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
+                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
+                                     RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                     FlippedY="False"
+                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                     OrderingPropertyName="Intensity" TopN="3" Format="N2" ContentAlignment="BottomCenter"/>
+                </Grid>
             </Border>
             <axis:HorizontalAxisControl x:Name="MzAxis"
                                         DataContext="{Binding Source={StaticResource MassAxisManager}}"
