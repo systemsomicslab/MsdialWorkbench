@@ -1,5 +1,5 @@
 Class	Adduct	Ion mode	IsSelected
-CAR	[M]+	Positive	TRUE
+CAR	[M+H]+	Positive	TRUE
 LPC	[M+H]+	Positive	TRUE
 LPC	[M+Na]+	Positive	TRUE
 LPE	[M+H]+	Positive	TRUE
