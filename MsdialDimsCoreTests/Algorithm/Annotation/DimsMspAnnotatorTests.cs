@@ -27,6 +27,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
+                TotalScoreCutoff = 0,
             };
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
@@ -50,6 +51,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
+                TotalScoreCutoff = 0,
             };
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
@@ -124,6 +126,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
+                TotalScoreCutoff = 0,
             };
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
