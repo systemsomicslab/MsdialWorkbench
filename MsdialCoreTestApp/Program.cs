@@ -33,15 +33,28 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // dims
+            // args = new string[]
+            // {
+            //     "dims"
+            //     , "-i"
+            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+            //     , "-o"
+            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+            //     , "-m"
+            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive\dims_param.txt"
+            //     , "-p"
+            // };
+
+            // imms
             args = new string[]
             {
-                "dims"
+                "imms"
                 , "-i"
-                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.ibf"
                 , "-o"
-                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef"
                 , "-m"
-                , @"D:\msdial_test\Msdial\out\MSMSALL_Positive\dims_param.txt"
+                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\Msdial-imms-Param.txt"
                 , "-p"
             };
             MainProcess.Run(args);
