@@ -5,31 +5,65 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class ContinuousAxisManager : Core.Base.AxisManager
-    {
-        #region DependencyProperty
-        public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register(
-            nameof(MinValue), typeof(IConvertible), typeof(ContinuousAxisManager),
-            new PropertyMetadata(default, OnMinValueChanged)
-            );
+    public class ContinuousAxisManager : Core.Base.AxisManager {
+        static ContinuousAxisManager() {
+            InitialRangeProperty.OverrideMetadata(typeof(ContinuousAxisManager), new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged, CoerceInitialRange));
+        }
 
-        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register(
-            nameof(MaxValue), typeof(IConvertible), typeof(ContinuousAxisManager),
-            new PropertyMetadata(default, OnMaxValueChanged)
-            );
+        private static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var axis = (ContinuousAxisManager)d;
+            axis.SetValue(RangeProperty, e.NewValue);
+        }
 
-        public static readonly DependencyProperty ChartMarginProperty = DependencyProperty.Register(
-            nameof(ChartMargin), typeof(ChartMargin), typeof(ContinuousAxisManager),
-            new PropertyMetadata(new ChartMargin { Left = 0d, Right = 0d }, OnChartMarginChanged)
-            );
-        #endregion
+        private static object CoerceInitialRange(DependencyObject d, object value) {
+            var axis = (ContinuousAxisManager)d;
 
-        #region Property
+            var min = Convert.ToDouble(axis.MinValue);
+            var max = Convert.ToDouble(axis.MaxValue);
+
+            var bounds = axis.Bounds;
+            if (bounds != null) {
+                if (min > bounds.Minimum) min = bounds.Minimum;
+                if (max < bounds.Maximum) max = bounds.Maximum;
+            }
+
+            if (min == max) {
+                min -= 0.5;
+                max += 0.5;
+            }
+
+            var r = axis.ChartMargin;
+            return new Range(
+                minimum: min - ((max - min) * r?.Left ?? 0d),
+                maximum: max + ((max - min) * r?.Right ?? 0d)
+            );
+        }
+
+        public static readonly DependencyProperty MinValueProperty =
+            DependencyProperty.Register(
+                nameof(MinValue), typeof(IConvertible), typeof(ContinuousAxisManager),
+                new PropertyMetadata(
+                    default,
+                    OnMinValueChanged));
+
         public IConvertible MinValue
         {
             get => (IConvertible)GetValue(MinValueProperty);
             set => SetValue(MinValueProperty, value);
         }
+
+        static void OnMinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var axis = (ContinuousAxisManager)d;
+            axis.CoerceValue(InitialRangeProperty);
+        }
+
+        public static readonly DependencyProperty MaxValueProperty =
+            DependencyProperty.Register(
+                nameof(MaxValue), typeof(IConvertible), typeof(ContinuousAxisManager),
+                new PropertyMetadata(
+                    default,
+                    OnMaxValueChanged));
 
         public IConvertible MaxValue
         {
@@ -37,12 +71,30 @@ namespace CompMs.Graphics.AxisManager
             set => SetValue(MaxValueProperty, value);
         }
 
+        static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var axis = (ContinuousAxisManager)d;
+            axis.CoerceValue(InitialRangeProperty);
+        }
+
+        public static readonly DependencyProperty ChartMarginProperty =
+            DependencyProperty.Register(
+                nameof(ChartMargin), typeof(ChartMargin), typeof(ContinuousAxisManager),
+                new PropertyMetadata(
+                    new ChartMargin { Left = 0d, Right = 0d },
+                    OnChartMarginChanged));
+
         public ChartMargin ChartMargin
         {
             get => (ChartMargin)GetValue(ChartMarginProperty);
             set => SetValue(ChartMarginProperty, value);
         }
-        #endregion
+
+        static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var axis = (ContinuousAxisManager)d;
+            axis.CoerceValue(InitialRangeProperty);
+        }
 
         public override List<LabelTickData> GetLabelTicks()
         {
@@ -88,46 +140,5 @@ namespace CompMs.Graphics.AxisManager
 
             return result;
         }
-
-        #region Event handler
-        static void OnMinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ContinuousAxisManager axis) {
-                var min = Convert.ToDouble((IConvertible)e.NewValue);
-                var max = Convert.ToDouble(axis.MaxValue);
-                var r = axis.ChartMargin;
-                axis.InitialRange = new Range(
-                    minimum: min - (max - min) * r?.Left ?? 0d,
-                    maximum: max + (max - min) * r?.Right ?? 0d
-                );
-            }
-        }
-
-        static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ContinuousAxisManager axis) {
-                var min = Convert.ToDouble(axis.MinValue);
-                var max = Convert.ToDouble((IConvertible)e.NewValue);
-                var r = axis.ChartMargin;
-                axis.InitialRange = new Range(
-                    minimum: min - (max - min) * r?.Left ?? 0d,
-                    maximum: max + (max - min) * r?.Right ?? 0d
-                );
-            }
-        }
-
-        static void OnChartMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ContinuousAxisManager axis) {
-                var min = Convert.ToDouble(axis.MinValue);
-                var max = Convert.ToDouble(axis.MaxValue);
-                var r = (ChartMargin)e.NewValue;
-                axis.InitialRange = new Range(
-                    minimum: min - (max - min) * r?.Left ?? 0d,
-                    maximum: max + (max - min) * r?.Right ?? 0d
-                );
-            }
-        }
-        #endregion
     }
 }
