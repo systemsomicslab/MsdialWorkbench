@@ -35,7 +35,13 @@ namespace CompMs.MsdialImmsCore.Process
             var rawObj = LoadMeasurement(file, isGuiProcess);
 
             Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = PeakSpotting(rawObj, parameter, iupacDB, reportAction);
+            var provider = new ImmsRepresentativeDataProvider(rawObj);
+            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, reportAction);
+            Console.WriteLine($"Peak number: {chromPeakFeatures.Count}");
+            Console.WriteLine($"Scan start time: {provider.LoadMs1Spectrums().First().ScanStartTime}");    
+            foreach (var peak in chromPeakFeatures) {
+                Console.WriteLine($"Drift time: {peak.ChromXs.Value}, Mass: {peak.Mass}");
+            }
 
             var spectrumList = rawObj.SpectrumList;
             var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, parameter);
@@ -70,12 +76,12 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         private static List<ChromatogramPeakFeature> PeakSpotting(
-            RawMeasurement rawObj,
+            IDataProvider provider,
             MsdialImmsParameter parameter,
             IupacDatabase iupacDB,
             Action<int> reportAction) {
 
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(rawObj, parameter, reportAction);
+            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
             return chromPeakFeatures;
         }

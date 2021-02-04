@@ -20,11 +20,11 @@ using System.Text;
 namespace CompMs.App.MsdialConsole.Process {
     public static class CommonProcess {
 
-        public static bool SetProjectProperty(ParameterBase param, string inputfolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
+        public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
 
             Console.WriteLine("Loading library files..");
-            analysisFiles = AnalysisFilesParser.ReadInput(inputfolder);
-            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputfolder);
+            analysisFiles = AnalysisFilesParser.ReadInput(input);
+            alignmentFile = AlignmentResultParser.GetAlignmentFileBean(input);
             if (analysisFiles.IsEmptyOrNull()) {
                 Console.WriteLine(CommonProcess.NoFileError());
                 return false;
@@ -32,8 +32,9 @@ namespace CompMs.App.MsdialConsole.Process {
 
             var dt = DateTime.Now;
             var projectFileName = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + ".mtd2";
+            var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
             param.ProjectFolderPath = inputfolder;
-            param.ProjectFilePath = inputfolder + "\\" + projectFileName;
+            param.ProjectFilePath = Path.Combine(inputfolder, projectFileName);
 
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
                 param.Ionization = Common.Enum.Ionization.EI;
