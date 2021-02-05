@@ -7,7 +7,7 @@ using System.Windows.Interop;
 
 namespace CompMs.Graphics.Window
 {
-    public class FileBrowseDialog {
+    public class SelectFolderDialog {
         // reference https://shikaku-sh.hatenablog.com/entry/wpf-folder-selection-dialog
 
         private class NativeMethods
@@ -84,7 +84,7 @@ namespace CompMs.Graphics.Window
         #endregion
 
         #region Initializes
-        public FileBrowseDialog() { }
+        public SelectFolderDialog() { }
         #endregion
 
         #region Events

@@ -117,7 +117,7 @@
     <Compile Include="UI\ShortMessageWindow.xaml.cs">
       <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Window\FileBrowseDialog.cs" />
+    <Compile Include="Window\SelectFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">
