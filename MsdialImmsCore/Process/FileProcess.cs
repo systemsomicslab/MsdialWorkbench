@@ -48,7 +48,14 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction, token);
+            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction);
+            foreach (var ce2result in targetCE2MSDecResults) {
+                Console.WriteLine($"CollitionEnergy: {ce2result.Key}, Number of results: {ce2result.Value.Count}");
+                foreach ((var result, var peak) in ce2result.Value.Zip(chromPeakFeatures)) {
+                    Console.WriteLine($"\tPrecursorMz: {peak.PrecursorMz}, {result.PrecursorMz}");
+                    Console.WriteLine($"\tDrift time: {peak.ChromXs.Value}, {result.ChromXs.Value}");
+                }
+            }
 
             // annotations
             Console.WriteLine("Annotation started");
@@ -92,8 +99,7 @@ namespace CompMs.MsdialImmsCore.Process
             List<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummary summary,
             MsdialImmsParameter parameter,
-            Action<int> reportAction,
-            CancellationToken token) {
+            Action<int> reportAction) {
 
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
@@ -109,13 +115,13 @@ namespace CompMs.MsdialImmsCore.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, token);
+                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, parameter.NumThreads);
                 }
             }
             else {
                 var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, token);
+                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, parameter.NumThreads);
             }
             return targetCE2MSDecResults;
         }

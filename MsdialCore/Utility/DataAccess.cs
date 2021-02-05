@@ -341,7 +341,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
 
-        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(List<RawSpectrum> spectrumList, double precursorMz,
+        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(IReadOnlyList<RawSpectrum> spectrumList, double precursorMz,
             int startScanID, int endScanID, List<double> productMzList, ParameterBase param, double targetCE = -1,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             var chromPeakslist = new List<List<ChromatogramPeak>>();
@@ -353,7 +353,7 @@ namespace CompMs.MsdialCore.Utility {
             return chromPeakslist;
         }
 
-        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList,
+        public static List<ChromatogramPeak> GetMs2Peaklist(IReadOnlyList<RawSpectrum> spectrumList,
             double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
@@ -810,12 +810,18 @@ namespace CompMs.MsdialCore.Utility {
                 return spectra;
         }
 
-        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, MSDataType dataType,
+        public static List<SpectrumPeak> GetCentroidMassSpectra(IReadOnlyList<RawSpectrum> spectrumList, MSDataType dataType,
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
+            return GetCentroidMassSpectra(spectrumList[msScanPoint], dataType, amplitudeThresh, mzBegin, mzEnd);
+        }
+
+        public static List<SpectrumPeak> GetCentroidMassSpectra(RawSpectrum spectrum, MSDataType dataType,
+            float amplitudeThresh, float mzBegin, float mzEnd) {
+            if (spectrum == null) return new List<SpectrumPeak>();
+
             var spectra = new List<SpectrumPeak>();
-            var spectrum = spectrumList[msScanPoint];
             var massSpectra = spectrum.Spectrum;
 
             for (int i = 0; i < massSpectra.Length; i++) {
