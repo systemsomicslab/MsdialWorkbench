@@ -55,6 +55,7 @@
                                     RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
+                                    EachPlotBrushName="Brush"
                                     FlippedY="False"
                                     Radius="10"
                                     PointGeometry= "F1 M 0.0 -8.0 L 4.702282018339786 6.472135954999579 L -7.608452130361229 -2.472135954999578

@@ -44,8 +44,8 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center">
                 <StackPanel VerticalAlignment="Center">
-                    <Image Source="{StaticResource Version_is}" Width="200"/>
-                    <TextBlock Text="MS-DIAL" FontSize="100" FontStyle="Italic" VerticalAlignment="Center"/>
+                    <Image Source="/Resources/msdial_icon.png" Width="200"/>
+                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center"
@@ -85,7 +85,9 @@
                                        Margin="20,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <Button Margin="0,50,0,0"
+                    <Button Command="{Binding GoToTutorialCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                            Margin="0,50,0,0"
                             Background="Transparent"
                             ToolTip="Learn MS-DIAL.">
                         <StackPanel Orientation="Horizontal">

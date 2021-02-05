@@ -44,6 +44,7 @@
                                         RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                         RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                         HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                        EachPlotBrushName="SpotColor"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
                                         Target="{Binding SelectedItem.InnerModel, RelativeSource={RelativeSource Self}}"

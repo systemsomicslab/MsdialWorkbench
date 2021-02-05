@@ -124,8 +124,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 if (character.IsotopeWeightNumber > 0) {
                     var parentID = character.IsotopeParentPeakID;
                     var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
-                    if (peak.AdductType != null && peak.AdductType.FormatCheck) {
-                        parentCharacter.AdductType = peak.AdductType;
+                    if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
+                        peak.AdductType = parentCharacter.AdductType;
                     }
                     if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
                         n.Character == PeakLinkFeatureEnum.Isotope) == 0) {

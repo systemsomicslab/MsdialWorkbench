@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
 using CompMs.StructureFinder.NcdkDescriptor;
@@ -15,6 +16,81 @@ using System.Threading.Tasks;
 namespace StructureFinderConsoleApp {
     public sealed class Code4NPR2020 {
         private Code4NPR2020() { }
+
+        public static void CalculatePrecursorMz(string input, string output) {
+            var smilescodes = new List<string>();
+            using (var sr = new StreamReader(input, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    smilescodes.Add(line);
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                sw.WriteLine("PrecursorMz");
+                var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
+                var adductNa = AdductIonParser.GetAdductIonBean("[M+Na]+");
+                var adductK = AdductIonParser.GetAdductIonBean("[M+K]+");
+                var adductProtonLoss = AdductIonParser.GetAdductIonBean("[M-H]-");
+                for (int i = 0; i < smilescodes.Count; i++) {
+                    var structure = MoleculeConverter.SmilesToStructure(smilescodes[i], out string error);
+                    var precursorMzProton = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductproton, structure.ExactMass);
+                    var precursorMzNa = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductNa, structure.ExactMass);
+                    var precursorMzK = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductK, structure.ExactMass);
+                    var precursorMzProtonLoss = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductProtonLoss, structure.ExactMass);
+                    sw.WriteLine(precursorMzProton + "\t" + precursorMzNa + "\t" + precursorMzK + "\t" + precursorMzProtonLoss);
+                }
+            }
+        }
+
+        public static void CheckPrecursorMzExistence() {
+
+            var tablefile = @"C:\Users\hiroshi.tsugawa\Desktop\temp_matrix.txt";
+            var mzfile = @"C:\Users\hiroshi.tsugawa\Desktop\temp_premz.txt";
+            var output = @"C:\Users\hiroshi.tsugawa\Desktop\temp.txt";
+
+            var name2mz = new Dictionary<string, double>();
+            using (var sr = new StreamReader(tablefile, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var lineArray = line.Split('\t');
+                    var metname = lineArray[3];
+                    var mz = double.Parse(lineArray[18]);
+                    if (!name2mz.ContainsKey(metname)) name2mz[metname] = mz;
+                }
+            }
+
+            var mzValues = new List<double>();
+            using (var sr = new StreamReader(mzfile, true)) {
+                sr.ReadLine();
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.IsEmptyOrNull()) continue;
+                    var mz = double.Parse(line);
+                    mzValues.Add(mz);
+                }
+            }
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                
+                for (int i = 0; i < mzValues.Count; i++) {
+                    var mz = mzValues[i];
+                    var flg = false;
+                    foreach (var item in name2mz) {
+                        if (Math.Abs(mz - item.Value) < 0.01) {
+                            sw.WriteLine(item.Key);
+                            flg = true;
+                            break;
+                        }
+                    }
+                    if (flg == false)
+                        sw.WriteLine("null");
+                }
+            }
+        }
 
         public static void Check144Existence(string input, string output) {
             var spectrumList = new List<string>();

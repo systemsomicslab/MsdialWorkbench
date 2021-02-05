@@ -41,6 +41,13 @@ namespace CompMs.Graphics.Chart
             nameof(Format), typeof(string), typeof(Annotator),
             new PropertyMetadata("N5", ChartUpdate)
             );
+
+        //// test
+        //public static readonly DependencyProperty EachPlotBrushNameProperty = DependencyProperty.Register(
+        //   nameof(EachPlotBrushName), typeof(string), typeof(Annotator),
+        //   new PropertyMetadata(default(string), OnEachPlotBrushNameChanged)
+        //   );
+
         #endregion
 
         #region Property
@@ -62,6 +69,11 @@ namespace CompMs.Graphics.Chart
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
+        //public string EachPlotBrushName {
+        //    get => (string)GetValue(EachPlotBrushNameProperty);
+        //    set => SetValue(EachPlotBrushNameProperty, value);
+        //}
+
         public string LabelPropertyName
         {
             get => (string)GetValue(LabelPropertyNameProperty);
@@ -73,12 +85,13 @@ namespace CompMs.Graphics.Chart
             set => SetValue(FormatProperty, value);
         }
         private DrawingVisual DV => dv ?? (dv = new DrawingVisual());
+
         #endregion
 
         #region field
         private CollectionView cv;
         private Type dataType;
-        private PropertyInfo hPropertyInfo, vPropertyInfo, lPropertyInfo;
+        private PropertyInfo hPropertyInfo, vPropertyInfo, lPropertyInfo, pPropertyInfo;
         private DrawingVisual dv;
         private LabelData[] datas;
         private static readonly System.Globalization.CultureInfo culture;
@@ -136,6 +149,7 @@ namespace CompMs.Graphics.Chart
             SetHorizontalDatas();
             SetVerticalDatas();
             SetLabelDatas();
+            //SetBrushDatas();
             Update();
         }
 
@@ -165,6 +179,7 @@ namespace CompMs.Graphics.Chart
             chart.SetHorizontalDatas();
             chart.SetVerticalDatas();
             chart.SetLabelDatas();
+            //chart.SetBrushDatas();
             chart.Update();
         }
 
@@ -204,6 +219,24 @@ namespace CompMs.Graphics.Chart
                 datas[idx].y = vAxis.TranslateToAxisValue(obj);
         }
 
+        //static void OnEachPlotBrushNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        //    var chart = d as Annotator;
+        //    if (chart == null) return;
+
+        //    chart.SetBrushDatas();
+        //    chart.Update();
+        //}
+
+        //void SetBrushDatas() {
+        //    if (dataType == null || EachPlotBrushName == null || datas == null) return;
+
+        //    pPropertyInfo = dataType.GetProperty(EachPlotBrushName);
+        //    var vAxis = VerticalAxis;
+        //    foreach ((var obj, var idx) in cv.Cast<object>().Select(o => pPropertyInfo.GetValue(o)).WithIndex())
+        //        datas[idx].brush = (Brush)obj;
+        //}
+
+
         static void OnLabelPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as Annotator;
@@ -234,6 +267,7 @@ namespace CompMs.Graphics.Chart
         class LabelData {
             internal AxisValue x, y;
             internal string label;
+            internal Brush brush;
         }
     }
 }
