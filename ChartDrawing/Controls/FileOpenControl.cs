@@ -121,7 +121,7 @@ namespace CompMs.Graphics.Controls
                 Path = ofd.FileName;
             }
             */
-            var fbd = new FileBrowseDialog()
+            var fbd = new SelectFolderDialog()
             {
                 Title = Title,
                 SelectedPath = Path,

@@ -112,14 +112,13 @@ namespace CompMs.App.Msdial.StartUp
         private DelegateCommand projectFolderSelectCommand;
 
         private void ProjectFolderSelect() {
-            var fbd = new System.Windows.Forms.FolderBrowserDialog
+            var fbd = new Graphics.Window.SelectFolderDialog
             {
-                RootFolder = Environment.SpecialFolder.Desktop,
-                Description = "Choose a project folder.",
+                Title = "Choose a project folder.",
                 SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             };
 
-            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+            if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 var dt = DateTime.Now;
                 ProjectFilePath = Path.Combine(fbd.SelectedPath, dt.ToString("yyyy_MM_dd_HH_mm_ss") + "." + SaveFileFormat.mtd);
             }
@@ -138,9 +137,14 @@ namespace CompMs.App.Msdial.StartUp
         }
 
         private bool ValidateStartUpWindow(Window window) {
-            if (HasViewError) return false;
-            if (string.IsNullOrEmpty(ProjectFilePath)) return false;
-            else if (!Directory.Exists(Path.GetDirectoryName(ProjectFilePath))) return false;
+            if (HasViewError)
+                return false;
+            if (ProjectFilePath != null && Path.GetInvalidPathChars().Any(invalidChar => ProjectFilePath.Contains(invalidChar)))
+                return false;
+            if (string.IsNullOrEmpty(ProjectFilePath))
+                return false;
+            else if (!Directory.Exists(Path.GetDirectoryName(ProjectFilePath)))
+                return false;
             return true;
         }
         #endregion

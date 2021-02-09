@@ -43,8 +43,10 @@ namespace CompMs.App.MsdialConsole.Process {
                         return new LcimmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     case "dims":
                         return new DimsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
+                    case "imms":
+                        return new ImmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                     default:
-                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia'");
+                        Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'dims', 'imms'");
                         return -1;
                 }
             } 

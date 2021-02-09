@@ -86,14 +86,13 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private DelegateCommand browseDirectoryCommand;
 
         private void BrowseDirectory() {
-            var fbd = new System.Windows.Forms.FolderBrowserDialog
+            var fbd = new Graphics.Window.SelectFolderDialog
             {
-                RootFolder = Environment.SpecialFolder.Desktop,
-                Description = "Chose a export folder.",
+                Title = "Chose a export folder.",
                 SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             };
 
-            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+            if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 ExportDirectory = fbd.SelectedPath;
             }
         }

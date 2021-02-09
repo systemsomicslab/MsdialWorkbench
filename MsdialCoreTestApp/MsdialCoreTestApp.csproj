@@ -11,6 +11,7 @@
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
     <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj" />
     <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj" />
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj" />
     <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
   </ItemGroup>

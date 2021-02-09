@@ -22,30 +22,117 @@ namespace CompMs.Graphics.Core.Base
 
     public abstract class AxisManager : DependencyObject {
         #region DependencyProperty
-        public static readonly DependencyProperty RangeProperty = DependencyProperty.Register(
-            nameof(Range), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnRangeChanged, CoerceRangeValue)
-            );
+        public static readonly DependencyProperty RangeProperty =
+            DependencyProperty.Register(
+                nameof(Range), typeof(Range), typeof(AxisManager),
+                new PropertyMetadata(
+                    new Range(minimum: 0, maximum: 1),
+                    OnRangeChanged,
+                    CoerceRange));
 
-        public static readonly DependencyProperty BoundsProperty = DependencyProperty.Register(
-            nameof(Bounds), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(null, OnBoundsChanged)
-            );
+        public Range Range {
+            get => (Range)GetValue(RangeProperty);
+            set => SetValue(RangeProperty, value);
+        }
 
-        public static readonly DependencyProperty InitialRangeProperty = DependencyProperty.Register(
-            nameof(InitialRange), typeof(Range), typeof(AxisManager),
-            new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged)
-            );
+        static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var axis = (AxisManager)d;
+            axis.LabelTicks = axis.GetLabelTicks();
+            axis.AxisMapper = new AxisMapper(axis);
+        }
 
-        public static readonly DependencyProperty AxisMapperProperty = DependencyProperty.Register(
-            nameof(AxisMapper), typeof(AxisMapper), typeof(AxisManager),
-            new PropertyMetadata(null)
-            );
+        static object CoerceRange(DependencyObject d, object value) {
+            var axis = (AxisManager)d;
+            var range = (Range)value;
 
-        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
-            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(AxisManager),
-            new PropertyMetadata(new List<LabelTickData>())
-            );
+            var initial = axis.InitialRange;
+            if (initial != null) {
+                if (initial.Maximum < range.Maximum) range.Maximum = initial.Maximum;
+                if (initial.Minimum > range.Minimum) range.Minimum = initial.Minimum;
+            }
+
+            var bounds = axis.Bounds;
+            if (bounds != null) {
+                if (bounds.Minimum < range.Minimum) range.Minimum = bounds.Minimum;
+                if (bounds.Maximum > range.Maximum) range.Maximum = bounds.Maximum;
+            }
+
+            return range;
+        }
+
+        public static readonly DependencyProperty BoundsProperty =
+            DependencyProperty.Register(
+                nameof(Bounds), typeof(Range), typeof(AxisManager),
+                new PropertyMetadata(
+                    null,
+                    OnBoundsChanged));
+        public Range Bounds {
+            get => (Range)GetValue(BoundsProperty);
+            set => SetValue(BoundsProperty, value);
+        }
+
+        static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var axis = (AxisManager)d;
+            axis.CoerceValue(InitialRangeProperty);
+            axis.CoerceValue(RangeProperty);
+        }
+
+        public static readonly DependencyProperty InitialRangeProperty =
+            DependencyProperty.Register(
+                nameof(InitialRange), typeof(Range), typeof(AxisManager),
+                new PropertyMetadata(
+                    new Range(minimum: 0, maximum: 1),
+                    OnInitialRangeChanged,
+                    CoerceInitialRange));
+
+        public Range InitialRange {
+            get => (Range)GetValue(InitialRangeProperty);
+            set => SetValue(InitialRangeProperty, value);
+        }
+
+        static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var axis = (AxisManager)d;
+            axis.Range = (Range)e.NewValue;
+        }
+
+        static object CoerceInitialRange(DependencyObject d, object value) {
+            var axis = (AxisManager)d;
+            var initial = (Range)value;
+
+            var bounds = axis.Bounds;
+            if (bounds != null) {
+                if (bounds.Minimum < initial.Minimum) initial.Minimum = bounds.Minimum;
+                if (bounds.Maximum > initial.Maximum) initial.Maximum = bounds.Maximum;
+            }
+
+            if (initial.Minimum == initial.Maximum) {
+                initial.Minimum -= 0.5;
+                initial.Maximum += 0.5;
+            }
+
+            return initial;
+        }
+
+        public static readonly DependencyProperty AxisMapperProperty =
+            DependencyProperty.Register(
+                nameof(AxisMapper), typeof(AxisMapper), typeof(AxisManager),
+                new PropertyMetadata(null));
+
+        public AxisMapper AxisMapper {
+            get => (AxisMapper)GetValue(AxisMapperProperty);
+            set => SetValue(AxisMapperProperty, value);
+        }
+
+        public static readonly DependencyProperty LabelTicksProperty =
+            DependencyProperty.Register(
+                nameof(LabelTicks), typeof(List<LabelTickData>), typeof(AxisManager),
+                new PropertyMetadata(new List<LabelTickData>()));
+
+        public List<LabelTickData> LabelTicks {
+            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
+            set => SetValue(LabelTicksProperty, value);
+        }
+
         #endregion
 
         #region Property
@@ -59,30 +146,6 @@ namespace CompMs.Graphics.Core.Base
             set => Range = new Range(minimum: Range.Minimum, maximum: value);
         }
 
-        public Range Range {
-            get => (Range)GetValue(RangeProperty);
-            set => SetValue(RangeProperty, value);
-        }
-
-        public Range Bounds {
-            get => (Range)GetValue(BoundsProperty);
-            set => SetValue(BoundsProperty, value);
-        }
-
-        public Range InitialRange {
-            get => (Range)GetValue(InitialRangeProperty);
-            set => SetValue(InitialRangeProperty, value);
-        }
-
-        public AxisMapper AxisMapper {
-            get => (AxisMapper)GetValue(AxisMapperProperty);
-            set => SetValue(AxisMapperProperty, value);
-        }
-
-        public List<LabelTickData> LabelTicks {
-            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
-            set => SetValue(LabelTicksProperty, value);
-        }
         #endregion
 
         #region Method
@@ -137,36 +200,6 @@ namespace CompMs.Graphics.Core.Base
             var loval = TranslateToAxisValue(low);
             var hival = TranslateToAxisValue(high);
             Range = new Range(loval, hival);
-        }
-        #endregion
-
-        #region Event
-        static object CoerceRangeValue(DependencyObject d, object value) {
-            var axis = d as AxisManager;
-
-            var bounds = axis.Bounds;
-            if (bounds == null || !(value is Range range)) return value;
-            if (bounds.Minimum < range.Minimum) range.Minimum = bounds.Minimum;
-            if (bounds.Maximum > range.Maximum) range.Maximum = bounds.Maximum;
-            return range;
-        }
-
-        static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is AxisManager axis)
-                axis.Range = (Range)e.NewValue;
-        }
-
-        static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is AxisManager axis) {
-                axis.LabelTicks = axis.GetLabelTicks();
-                axis.AxisMapper = new AxisMapper(axis);
-            }
-        }
-
-        static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is AxisManager axis) {
-                axis.Range = axis.Range;
-            }
         }
         #endregion
 

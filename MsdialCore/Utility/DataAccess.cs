@@ -281,7 +281,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatograms
-        public static List<ChromatogramPeak> GetMs1Peaklist(List<RawSpectrum> spectrumList, double targetMass, double ms1Tolerance, IonMode ionmode,
+        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, double targetMass, double ms1Tolerance, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
@@ -1013,7 +1013,7 @@ namespace CompMs.MsdialCore.Utility {
         /// <param name="spectrumList"></param>
         /// <param name="ionmode"></param>
         /// <returns>[0] min Mz [1] max Mz</returns>
-        public static float[] GetMs1Range(List<RawSpectrum> spectrumList, IonMode ionmode) {
+        public static float[] GetMs1Range(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode) {
             float minMz = float.MaxValue, maxMz = float.MinValue;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
