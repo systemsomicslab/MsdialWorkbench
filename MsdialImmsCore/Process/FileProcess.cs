@@ -2,12 +2,15 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
+using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Algorithm;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
@@ -29,19 +32,15 @@ namespace CompMs.MsdialImmsCore.Process
 
             var parameter = container.ParameterBase as MsdialImmsParameter;
             var iupacDB = container.IupacDatabase;
-            var mspDB = container.MspDB;
-            var textDB = container.TextDB;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
+            var provider = new ImmsRepresentativeDataProvider(rawObj);
+            var mspAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(container.MspDB, parameter.MspSearchParam, parameter.TargetOmics);
+            var textDBAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(container.TextDB, parameter.TextDbSearchParam);
 
             Console.WriteLine("Peak picking started");
-            var provider = new ImmsRepresentativeDataProvider(rawObj);
-            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, reportAction);
-            Console.WriteLine($"Peak number: {chromPeakFeatures.Count}");
-            Console.WriteLine($"Scan start time: {provider.LoadMs1Spectrums().First().ScanStartTime}");    
-            foreach (var peak in chromPeakFeatures) {
-                Console.WriteLine($"Drift time: {peak.ChromXs.Value}, Mass: {peak.Mass}");
-            }
+            parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
+            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, coeff, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
             var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, parameter);
@@ -49,17 +48,10 @@ namespace CompMs.MsdialImmsCore.Process
 
             Console.WriteLine("Deconvolution started");
             var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction, token);
-            foreach (var ce2result in targetCE2MSDecResults) {
-                Console.WriteLine($"CollitionEnergy: {ce2result.Key}, Number of results: {ce2result.Value.Count}");
-                foreach ((var result, var peak) in ce2result.Value.Zip(chromPeakFeatures)) {
-                    Console.WriteLine($"\tPrecursorMz: {peak.PrecursorMz}, {result.PrecursorMz}");
-                    Console.WriteLine($"\tDrift time: {peak.ChromXs.Value}, {result.ChromXs.Value}");
-                }
-            }
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(targetCE2MSDecResults, spectrumList, chromPeakFeatures, mspDB, textDB, parameter, reportAction, token);
+            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, parameter, reportAction);
@@ -86,10 +78,12 @@ namespace CompMs.MsdialImmsCore.Process
             IDataProvider provider,
             MsdialImmsParameter parameter,
             IupacDatabase iupacDB,
+            CoefficientsForCcsCalculation coeff,
             Action<int> reportAction) {
 
             var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
+            CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
         }
 
@@ -129,10 +123,10 @@ namespace CompMs.MsdialImmsCore.Process
 
         private static void PeakAnnotation(
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            List<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MoleculeMsReference> mspDB,
-            List<MoleculeMsReference> textDB,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction,
             CancellationToken token) {
@@ -144,9 +138,9 @@ namespace CompMs.MsdialImmsCore.Process
                 var msdecResults = ce2msdecs.Value;
                 var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new AnnotationProcess(initial_annotation_local, max_annotation_local).MainProcess(
-                    spectrumList, chromPeakFeatures, msdecResults,
-                    mspDB, textDB, parameter,
+                new AnnotationProcess(initial_annotation_local, max_annotation_local).Run(
+                    provider, chromPeakFeatures, msdecResults,
+                    mspAnnotator, textDBAnnotator, parameter,
                     reportAction, parameter.NumThreads, token
                 );
             }

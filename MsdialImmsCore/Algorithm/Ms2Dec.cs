@@ -52,9 +52,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             return chromPeakFeatures
                 .AsParallel()
+                .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThread)
-                .AsOrdered()
                 .Select(spot => {
                     var result = GetMS2DecResult(spectrumList, spot, parameter, summary, targetCE);
                     ReportProgress.Show(InitialProgress, ProgressMax, spot.MasterPeakID, chromPeakFeatures.Count, reportAction);

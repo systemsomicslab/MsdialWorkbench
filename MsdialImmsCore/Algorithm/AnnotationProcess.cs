@@ -30,29 +30,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
             this.ProgressMax = ProgressMax;
         }
 
-        public void MainProcess(
-            List<RawSpectrum> spectrumList, 
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults,
-            List<MoleculeMsReference> mspDB,
-            List<MoleculeMsReference> textDB,
-            MsdialImmsParameter paramter,
-            Action<int> reportAction) {
-
-        }
-
-        public void MainProcess(
-            List<RawSpectrum> spectrumList, 
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults,
-            List<MoleculeMsReference> mspDB,
-            List<MoleculeMsReference> textDB,
-            MsdialImmsParameter paramter,
-            Action<int> reportAction,
-            int numThread, System.Threading.CancellationToken token) {
-
-        }
-
         public void Run(
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
