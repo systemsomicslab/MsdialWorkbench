@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -41,6 +42,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public string MetaboliteName { get; }
 
         private readonly MSDecResult msdecResult;
+        private readonly IMoleculeMsProperty property;
         private readonly IAnnotator Annotator;
         private readonly IReadOnlyList<IsotopicPeak> isotopes;
 
@@ -68,6 +70,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AccurateMass = peakFeature.PrecursorMz;
             AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
             MetaboliteName = peakFeature.Name;
+            property = peakFeature;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
@@ -108,7 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand searchCommand;
 
         private void Search() {
-            var mspResults = Annotator.FindCandidates(msdecResult, null, ParameterVM.innerModel);
+            var mspResults = Annotator.FindCandidates(msdecResult, property, isotopes, ParameterVM.innerModel);
             // var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)

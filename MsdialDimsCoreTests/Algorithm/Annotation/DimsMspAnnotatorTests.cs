@@ -7,6 +7,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.Components;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
 {
@@ -32,7 +33,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, null);
+            var result = annotator.Annotate(null, target, null);
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -56,7 +57,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, null);
+            var result = annotator.Annotate(null, target, null);
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -93,7 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, null, reference, null);
+            var result = annotator.CalculateScore(target, target, null, reference, null);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
@@ -131,7 +132,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, null);
+            var result = annotator.Annotate(null, target, null);
 
             var reference = annotator.Refer(result);
 
@@ -195,8 +196,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, null, reference, null);
-            annotator.Validate(result, target, null, reference, null);
+            var result = annotator.CalculateScore(target, target, null, reference, null);
+            annotator.Validate(result, target, target, null, reference, null);
             
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");

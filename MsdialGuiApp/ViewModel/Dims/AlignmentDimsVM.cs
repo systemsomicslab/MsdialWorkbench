@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;

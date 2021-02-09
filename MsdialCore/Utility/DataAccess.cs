@@ -1048,6 +1048,10 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
+        public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
+            SetMoleculeMsProperty(feature, reference, result, true);
+        }
+
         public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
             var category = param.MachineCategory;
             var code = 999; // unknown

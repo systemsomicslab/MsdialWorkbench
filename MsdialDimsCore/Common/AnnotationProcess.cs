@@ -68,7 +68,7 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (mspAnnotator != null)
             {
-                var results = mspAnnotator.FindCandidates(msdecResult, isotopes, param)
+                var results = mspAnnotator.FindCandidates(msdecResult, feature, isotopes, param)
                     .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                     .Where(candidate => !string.IsNullOrEmpty(candidate.Name)) // in lipidomics
                     .ToList();

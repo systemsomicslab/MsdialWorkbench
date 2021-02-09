@@ -31,13 +31,30 @@ namespace CompMs.MsdialImmsCore.Algorithm
             MsdialImmsParameter parameter,
             ChromatogramPeaksDataSummary summary,
             double targetCE,
+            Action<int> reportAction) {
+
+            return chromPeakFeatures
+                .Select(spot => {
+                    var result = GetMS2DecResult(spectrumList, spot, parameter, summary, targetCE);
+                    ReportProgress.Show(InitialProgress, ProgressMax, spot.MasterPeakID, chromPeakFeatures.Count, reportAction);
+                    return result;
+                }).ToList();
+        }
+
+        public List<MSDecResult> GetMS2DecResults(
+            IReadOnlyList<RawSpectrum> spectrumList,
+            List<ChromatogramPeakFeature> chromPeakFeatures,
+            MsdialImmsParameter parameter,
+            ChromatogramPeaksDataSummary summary,
+            double targetCE,
             Action<int> reportAction,
-            int numThread) {
+            int numThread, System.Threading.CancellationToken token) {
 
             return chromPeakFeatures
                 .AsParallel()
-                .AsOrdered()
+                .WithCancellation(token)
                 .WithDegreeOfParallelism(numThread)
+                .AsOrdered()
                 .Select(spot => {
                     var result = GetMS2DecResult(spectrumList, spot, parameter, summary, targetCE);
                     ReportProgress.Show(InitialProgress, ProgressMax, spot.MasterPeakID, chromPeakFeatures.Count, reportAction);

@@ -26,6 +26,7 @@ using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.View.Export;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -126,7 +127,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private AlignmentFileBean alignmentFile;
         private AnalysisFileBean analysisFile;
-        private IAnnotator mspAnnotator;
+        private IAnnotator<IMSScanProperty> mspAnnotator;
 
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;

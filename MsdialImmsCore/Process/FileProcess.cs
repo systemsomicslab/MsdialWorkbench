@@ -48,7 +48,7 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction);
+            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction, token);
             foreach (var ce2result in targetCE2MSDecResults) {
                 Console.WriteLine($"CollitionEnergy: {ce2result.Key}, Number of results: {ce2result.Value.Count}");
                 foreach ((var result, var peak) in ce2result.Value.Zip(chromPeakFeatures)) {
@@ -59,7 +59,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(targetCE2MSDecResults, spectrumList, chromPeakFeatures, mspDB, textDB, parameter, reportAction);
+            PeakAnnotation(targetCE2MSDecResults, spectrumList, chromPeakFeatures, mspDB, textDB, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, parameter, reportAction);
@@ -99,7 +99,8 @@ namespace CompMs.MsdialImmsCore.Process
             List<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummary summary,
             MsdialImmsParameter parameter,
-            Action<int> reportAction) {
+            Action<int> reportAction,
+            CancellationToken token) {
 
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
@@ -115,13 +116,13 @@ namespace CompMs.MsdialImmsCore.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, parameter.NumThreads);
+                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, parameter.NumThreads, token);
                 }
             }
             else {
                 var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, parameter.NumThreads);
+                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, parameter.NumThreads, token);
             }
             return targetCE2MSDecResults;
         }
@@ -133,8 +134,8 @@ namespace CompMs.MsdialImmsCore.Process
             List<MoleculeMsReference> mspDB,
             List<MoleculeMsReference> textDB,
             MsdialImmsParameter parameter,
-            Action<int> reportAction
-            ) {
+            Action<int> reportAction,
+            CancellationToken token) {
 
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
@@ -143,7 +144,11 @@ namespace CompMs.MsdialImmsCore.Process
                 var msdecResults = ce2msdecs.Value;
                 var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, mspDB, textDB, parameter, reportAction);
+                new AnnotationProcess(initial_annotation_local, max_annotation_local).MainProcess(
+                    spectrumList, chromPeakFeatures, msdecResults,
+                    mspDB, textDB, parameter,
+                    reportAction, parameter.NumThreads, token
+                );
             }
         }
 
