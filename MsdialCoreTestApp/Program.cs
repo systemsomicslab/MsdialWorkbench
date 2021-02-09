@@ -50,7 +50,7 @@ namespace CompMs.App.MsdialConsole {
             {
                 "imms"
                 , "-i"
-                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf\kidney1_3times_timsON_pasef_neg000001.ibf"
+                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
                 , "-o"
                 , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
                 , "-m"

@@ -143,7 +143,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         private static (int lo, int hi) SearchBoundIndex(T property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
 
-            Console.WriteLine($"DB size: {mspDB.Count}\tTolerance: {ms1Tolerance}\tTarget m/z: {property.PrecursorMz}");
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
             var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
             var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);

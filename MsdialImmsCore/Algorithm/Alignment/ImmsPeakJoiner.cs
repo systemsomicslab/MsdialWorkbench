@@ -37,7 +37,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         }
 
         public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
-            throw new NotImplementedException();
             var master = GetMasterList(analysisFiles, referenceId, accessor);
             var spots = JoinAll(master, analysisFiles, accessor);
             return spots;

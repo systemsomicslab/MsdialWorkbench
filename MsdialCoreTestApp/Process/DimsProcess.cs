@@ -19,7 +19,6 @@ namespace CompMs.App.MsdialConsole.Process {
             if (!isCorrectlyImported) return -1;
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
                 out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode);
-            param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
 
             var container = new MsdialDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
