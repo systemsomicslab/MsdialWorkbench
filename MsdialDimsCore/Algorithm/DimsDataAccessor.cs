@@ -15,7 +15,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
     {
         readonly IComparer<IMSScanProperty> Comparer = ChromXsComparer.MzComparer;
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature target, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature target, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
             var detected = spot.AlignedPeakProperties.Where(peak => peak.MasterPeakID >= 0).ToList();
             var lo = detected.Min(peak => peak.ChromXsLeft.Value);
             var hi = detected.Max(peak => peak.ChromXsRight.Value);
@@ -27,9 +27,9 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             return new ChromatogramPeakInfo(
                 target.FileID, peaklist,
-                (float)target.ChromXsTop.Value,
-                (float)target.ChromXsLeft.Value,
-                (float)target.ChromXsRight.Value);
+                target.ChromXsTop.Mz,
+                target.ChromXsLeft.Mz,
+                target.ChromXsRight.Mz);
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
