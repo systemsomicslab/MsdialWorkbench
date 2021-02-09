@@ -190,12 +190,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly List<long> seekPointers;
         private readonly ParameterBase param;
         private readonly List<RawSpectrum> spectrumList;
-        private readonly IAnnotator mspAnnotator;
+        private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator;
 
         public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, List<MoleculeMsReference> msps)
             : this(analysisFile, param, new DimsMspAnnotator(msps, param.MspSearchParam, param.TargetOmics)) { }
 
-        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, IAnnotator mspAnnotator) {
+        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator) {
             this.analysisFile = analysisFile;
             this.param = param;
             this.mspAnnotator = mspAnnotator;
@@ -380,7 +380,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,

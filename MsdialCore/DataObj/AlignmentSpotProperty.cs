@@ -12,7 +12,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentSpotProperty {
+    public class AlignmentSpotProperty : IMSProperty, IIonProperty, IMoleculeProperty {
 
         // IDs to link properties
         [Key(0)]
@@ -201,6 +201,18 @@ namespace CompMs.MsdialCore.DataObj {
 
         [Key(52)]
         public List<AlignmentSpotVariableCorrelation> AlignmentSpotVariableCorrelations { get; set; } = new List<AlignmentSpotVariableCorrelation>();
+        ChromXs IMSProperty.ChromXs {
+            get => TimesCenter;
+            set => TimesCenter = value;
+        }
+        IonMode IMSProperty.IonMode {
+            get => IonMode;
+            set => IonMode = value;
+        }
+        double IMSProperty.PrecursorMz {
+            get => MassCenter;
+            set => MassCenter = value;
+        }
     }
 
     [MessagePackObject]

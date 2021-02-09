@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private AlignmentFileBean alignmentFile;
         private AnalysisFileBean analysisFile;
-        private IAnnotator<IMSScanProperty> mspAnnotator;
+        private IAnnotator<IMSProperty, MSDecResult> mspAnnotator;
 
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;

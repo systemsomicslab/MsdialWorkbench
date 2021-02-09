@@ -7,13 +7,15 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotator
+    public interface IAnnotator<in T, in U>
+        where T : IMSProperty
+        where U : IMSScanProperty
     {
-        MsScanMatchResult Annotate(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
-        List<MsScanMatchResult> FindCandidates(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
-        MsScanMatchResult CalculateScore(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
+        MsScanMatchResult Annotate(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
+        List<MsScanMatchResult> FindCandidates(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
+        MsScanMatchResult CalculateScore(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
         MoleculeMsReference Refer(MsScanMatchResult result);
-        List<MoleculeMsReference> Search(IMoleculeMsProperty property, MsRefSearchParameterBase parameter = null);
-        void Validate(MsScanMatchResult result, IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
+        List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null);
+        void Validate(MsScanMatchResult result, T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
     }
 }

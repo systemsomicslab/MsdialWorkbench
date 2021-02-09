@@ -57,8 +57,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
-            IAnnotator mspAnnotator,
-            IAnnotator textDBAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction) {
 
@@ -85,8 +85,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
-            IAnnotator mspAnnotator,
-            IAnnotator textDBAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction,
             int numThreads, System.Threading.CancellationToken token) {
@@ -117,8 +117,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private static void ImmsMatchMethod(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult,
             IReadOnlyList<RawPeakElement> spectrum,
-            IAnnotator mspAnnotator,
-            IAnnotator textDBAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter) {
 
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance);
@@ -129,12 +129,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetMspAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
 
             if (mspAnnotator == null)
                 return;
 
-            var results = mspAnnotator.FindCandidates(msdecResult, chromPeakFeature, isotopes, mspSearchParameter)
+            var results = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                 .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
@@ -148,12 +148,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetTextDBAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
 
             if (textDBAnnotator == null)
                 return;
 
-            var results = textDBAnnotator.FindCandidates(msdecResult, chromPeakFeature, isotopes, textDBSearchParameter)
+            var results = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch)
                 .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();

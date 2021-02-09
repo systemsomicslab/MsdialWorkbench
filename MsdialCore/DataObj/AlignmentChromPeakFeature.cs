@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty {
 
         // ID metadata
         [Key(0)]
@@ -166,5 +166,28 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(46)]
         public double NormalizedPeakAreaAboveBaseline { get; set; }
 
+        // IMSProperty members
+        ChromXs IMSProperty.ChromXs {
+            get => ChromXsTop;
+            set => ChromXsTop = value;
+        }
+        IonMode IMSProperty.IonMode {
+            get => IonMode;
+            set => IonMode = value;
+        }
+        double IMSProperty.PrecursorMz {
+            get => Mass;
+            set => Mass = value;
+        }
+
+        // IIonProperty members
+        AdductIon IIonProperty.AdductType {
+            get => PeakCharacter.AdductType;
+            set => PeakCharacter.AdductType = value;
+        }
+        double IIonProperty.CollisionCrossSection {
+            get => CollisionCrossSection;
+            set => CollisionCrossSection = value;
+        }
     }
 }

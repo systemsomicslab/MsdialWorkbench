@@ -9,13 +9,15 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.MSDec;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsMspAnnotator : IAnnotator
+    public class ImmsMspAnnotator<T> : IAnnotator<T, MSDecResult>
+        where T : IMSProperty, IIonProperty
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
@@ -31,43 +33,43 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.omics = omics;
         }
 
-        public MsScanMatchResult Annotate(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
+        public MsScanMatchResult Annotate(T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(scan, property.CollisionCrossSection, isotopes, parameter, mspDB, omics).FirstOrDefault();
+            return FindCandidatesCore(property, scan, isotopes, parameter, mspDB, omics).FirstOrDefault();
         }
 
-        public List<MsScanMatchResult> FindCandidates(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
+        public List<MsScanMatchResult> FindCandidates(T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(scan, property.CollisionCrossSection, isotopes, parameter, mspDB, omics);
+            return FindCandidatesCore(property, scan, isotopes, parameter, mspDB, omics);
         }
 
-        private static List<MsScanMatchResult> FindCandidatesCore(IMSScanProperty scan, double ccs, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
-            (var lo, var hi) = SearchBoundIndex(scan, mspDB, parameter.Ms1Tolerance);
+        private static List<MsScanMatchResult> FindCandidatesCore(T property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
+            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
                 if (candidate.ChromXs.Drift.Value < scan.ChromXs.Drift.Value - parameter.CcsTolerance
                     || scan.ChromXs.Drift.Value + parameter.CcsTolerance < candidate.ChromXs.Drift.Value)
                     continue;
-                var result = CalculateScoreCore(scan, ccs, isotopes, candidate, candidate.IsotopicPeaks, parameter);
+                var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter);
                 result.LibraryIDWhenOrdered = i;
-                ValidateCore(result, scan, ccs, candidate, parameter, omics);
+                ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
             }
             return results.Where(result => result.TotalScore >= parameter.TotalScoreCutoff).OrderBy(result => result.TotalScore).ToList();
         }
 
-        public MsScanMatchResult CalculateScore(IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
+        public MsScanMatchResult CalculateScore(T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(scan, property.CollisionCrossSection, isotopes, reference, reference.IsotopicPeaks, parameter);
+            return CalculateScoreCore(property, scan, isotopes, reference, reference.IsotopicPeaks, parameter);
         }
 
         private static MsScanMatchResult CalculateScoreCore(
-            IMSScanProperty scan, double ccs, IReadOnlyList<IsotopicPeak> scanIsotopes,
+            T property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter) {
 
@@ -76,12 +78,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
 
-            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, scan.PrecursorMz);
-            var ms1Similarity = MsScanMatching.GetGaussianSimilarity(scan.PrecursorMz, reference.PrecursorMz, ms1Tol);
+            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
+            var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
-            var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(ccs, reference.CollisionCrossSection, parameter.CcsTolerance);
+            var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
 
-            var isotopeSimilarity = MsScanMatching.GetIsotopeRatioSimilarity(scanIsotopes, referenceIsotopes, scan.PrecursorMz, ms1Tol);
+            var isotopeSimilarity = MsScanMatching.GetIsotopeRatioSimilarity(scanIsotopes, referenceIsotopes, property.PrecursorMz, ms1Tol);
 
             var result = new MsScanMatchResult
             {
@@ -116,8 +118,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return mspDB.FirstOrDefault(msp => msp.InChIKey == result.InChIKey);
         }
 
-
-        public List<MoleculeMsReference> Search(IMoleculeMsProperty property, MsRefSearchParameterBase parameter = null) {
+        public List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
@@ -125,11 +126,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return mspDB.GetRange(lo, hi - lo);
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSScanProperty scan, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
-            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, scan.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = scan.PrecursorMz - ms1Tolerance };
+        private static (int lo, int hi) SearchBoundIndex(T property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
+            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
+            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
             var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
-            dummy.PrecursorMz = scan.PrecursorMz + ms1Tolerance;
+            dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
             var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
             return (lo, hi);
         }
@@ -141,34 +142,34 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public void Validate(MsScanMatchResult result, IMSScanProperty scan, IMoleculeMsProperty property, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
+        public void Validate(MsScanMatchResult result, T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            ValidateCore(result, scan, property.CollisionCrossSection, reference, parameter, omics);
+            ValidateCore(result, property, scan, reference, parameter, omics);
         }
 
-        private static void ValidateCore(MsScanMatchResult result, IMSScanProperty scan, double ccs, MoleculeMsReference reference, MsRefSearchParameterBase parameter, TargetOmics omics) {
+        private static void ValidateCore(MsScanMatchResult result, T property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, TargetOmics omics) {
             if (omics == TargetOmics.Lipidomics)
-                ValidateOnLipidomics(result, scan, ccs, reference, parameter);
+                ValidateOnLipidomics(result, property, scan, reference, parameter);
             else
-                ValidateBase(result, scan, ccs, reference, parameter);
+                ValidateBase(result, property, reference, parameter);
         }
 
-        private static void ValidateBase(MsScanMatchResult result, IMSScanProperty scan, double ccs, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
+        private static void ValidateBase(MsScanMatchResult result, T property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
                 && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 
-            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, scan.PrecursorMz);
-            result.IsPrecursorMzMatch = Math.Abs(scan.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
+            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
+            result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsCcsMatch = Math.Abs(ccs - reference.CollisionCrossSection) <= parameter.CcsTolerance;
+            result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
         }
 
-        private static void ValidateOnLipidomics(MsScanMatchResult result, IMSScanProperty scan, double ccs, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            ValidateBase(result, scan, ccs, reference, parameter);
+        private static void ValidateOnLipidomics(MsScanMatchResult result, T property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
+            ValidateBase(result, property, reference, parameter);
 
             result.Name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
             result.IsLipidChainsMatch = isLipidChainsMatch;

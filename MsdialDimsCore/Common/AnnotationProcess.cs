@@ -5,7 +5,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -17,7 +16,6 @@ using CompMs.MsdialDimsCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Common {
@@ -61,14 +59,14 @@ namespace CompMs.MsdialDimsCore.Common {
 
         public static void Run(
             ChromatogramPeakFeature feature, MSDecResult msdecResult,
-            IAnnotator mspAnnotator, List<MoleculeMsReference> textDB,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, List<MoleculeMsReference> textDB,
             MsRefSearchParameterBase param,
             IReadOnlyList<IsotopicPeak> isotopes
             ) {
 
             if (mspAnnotator != null)
             {
-                var results = mspAnnotator.FindCandidates(msdecResult, feature, isotopes, param)
+                var results = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, param)
                     .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                     .Where(candidate => !string.IsNullOrEmpty(candidate.Name)) // in lipidomics
                     .ToList();

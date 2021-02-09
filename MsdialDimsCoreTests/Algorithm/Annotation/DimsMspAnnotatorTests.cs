@@ -30,10 +30,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(null, target, null);
+            var result = annotator.Annotate(target, target, null);
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -54,10 +54,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(null, target, null);
+            var result = annotator.Annotate(target, target, null);
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -81,7 +81,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            IAnnotator annotator = new DimsMspAnnotator(new MoleculeMsReference[] { }, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(new MoleculeMsReference[] { }, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604,
@@ -129,10 +129,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(null, target, null);
+            var result = annotator.Annotate(target, target, null);
 
             var reference = annotator.Refer(result);
 
@@ -154,7 +154,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            IAnnotator annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(db, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
             var results = annotator.Search(target);
@@ -183,7 +183,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0.7f,
             };
-            IAnnotator annotator = new DimsMspAnnotator(new MoleculeMsReference[] { }, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new DimsMspAnnotator(new MoleculeMsReference[] { }, parameter, CompMs.Common.Enum.TargetOmics.Lipidomics);
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604,
