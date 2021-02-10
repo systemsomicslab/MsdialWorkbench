@@ -89,7 +89,7 @@ namespace CompMs.App.Msdial
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IMMS:
-                    return null;
+                    return new ViewModel.Imms.ImmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
             }
             throw new NotImplementedException("This method is not implemented");
         }

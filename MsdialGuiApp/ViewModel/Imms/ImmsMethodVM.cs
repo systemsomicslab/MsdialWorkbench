@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
@@ -117,8 +118,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public override int InitializeNewProject(Window window) {
             // Set analysis param
-            // if (!ProcessSetAnalysisParameter(window))
-            //     return -1;
+            if (!ProcessSetAnalysisParameter(window))
+                return -1;
 
             // Run Identification
             if (!ProcessAnnotaion(window, Storage))
@@ -133,7 +134,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return 0;
         }
 
-        /*
         private bool ProcessSetAnalysisParameter(Window owner) {
             var analysisParamSetVM = new AnalysisParamSetForImmsVM((MsdialImmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForImmsWindow
@@ -167,7 +167,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam);
             return true;
         }
-        */
 
         private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM

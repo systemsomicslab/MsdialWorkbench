@@ -139,7 +139,7 @@ namespace CompMs.App.Msdial.StartUp
             var fbd = new Graphics.Window.SelectFolderDialog
             {
                 Title = "Choose a project folder.",
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                // SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {

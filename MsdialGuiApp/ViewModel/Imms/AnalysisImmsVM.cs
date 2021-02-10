@@ -82,7 +82,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly string deconvolutionFile;
         private readonly ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
         private readonly List<long> seekPointers;
-        private readonly ParameterBase param;
         private readonly List<RawSpectrum> spectrumList;
         
         public ICollectionView Ms1Peaks {
@@ -303,17 +302,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             await Task.Run(() => {
                 Eic = DataAccess.GetSmoothedPeaklist(
                         DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, leftMz, rightMz),
-                        param.SmoothingMethod, param.SmoothingLevel).Select(peak => new ChromatogramPeakWrapper(peak)).ToList();
+                        parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Where(peak => peak != null)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
+
+                if (Eic.Count == 0)
+                    return;
 
                 PeakEic = Eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
 
-                FocusedEic = target.ChromXValue.HasValue
-                    ? new List<ChromatogramPeakWrapper> {
+                FocusedEic = new List<ChromatogramPeakWrapper> {
                     Eic.Where(peak => peak.ChromXValue.HasValue)
-                       .DefaultIfEmpty()
                        .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))
-                    }
-                    : new List<ChromatogramPeakWrapper>();
+                };
             }).ConfigureAwait(false);
         }
 
@@ -325,7 +327,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return;
 
             await Task.Run(() => {
-                var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
+                var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, parameter.MS2DataType, target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
                 Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 RawSplashKey = CalculateSplashKey(spectra);
             }).ConfigureAwait(false);

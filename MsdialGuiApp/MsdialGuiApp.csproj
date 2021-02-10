@@ -260,6 +260,38 @@
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imms\AdductView.xaml.cs">
+      <DependentUpon>AdductView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\Imms\AnalysisParamSetForImmsVM.cs" />
+    <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForImmsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\DeconvolutionView.xaml.cs">
+      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\MobilityView.xaml.cs">
+      <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\PeakDetectionView.xaml.cs">
+      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\Imms\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\Imms\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -485,6 +517,46 @@
     <Page Include="View\Export\AlignmentResultExportWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Imms\AdductView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\AnalysisParamSetForImmsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\DataCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\DeconvolutionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\IdentificationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\IsotopeTrackView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\MobilityView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\PeakDetectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\UserDefinedAdductSetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
