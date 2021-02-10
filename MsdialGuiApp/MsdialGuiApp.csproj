@@ -189,7 +189,11 @@
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
     <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\DisplayFilter.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
+    <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
+    <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsMethodVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
@@ -662,5 +666,6 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

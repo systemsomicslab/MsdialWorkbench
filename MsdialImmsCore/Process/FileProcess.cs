@@ -30,13 +30,26 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
+            var mspAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics);
+            var textDBAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(container.TextDB, container.ParameterBase.TextDbSearchParam);
+
+            Run(file, container, mspAnnotator, textDBAnnotator, isGuiProcess, reportAction, token);
+        }
+
+        public static void Run(
+            AnalysisFileBean file,
+            MsdialDataStorage container,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            bool isGuiProcess = false,
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
+
             var parameter = container.ParameterBase as MsdialImmsParameter;
             var iupacDB = container.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var provider = new ImmsRepresentativeDataProvider(rawObj);
-            var mspAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(container.MspDB, parameter.MspSearchParam, parameter.TargetOmics);
-            var textDBAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(container.TextDB, parameter.TextDbSearchParam);
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
