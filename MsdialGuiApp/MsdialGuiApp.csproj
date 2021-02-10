@@ -117,9 +117,6 @@
     <Compile Include="Dims\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\DeconvolutionView.xaml.cs">
-      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dims\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
@@ -138,7 +135,7 @@
     <Compile Include="LC\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LC\DeconvolutionView.xaml.cs">
+    <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="LC\IdentificationView.xaml.cs">
@@ -258,9 +255,6 @@
     <Compile Include="View\Imms\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\DeconvolutionView.xaml.cs">
-      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Imms\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
@@ -340,10 +334,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dims\DeconvolutionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Dims\IdentificationView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -372,7 +362,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LC\DeconvolutionView.xaml">
+    <Page Include="View\DeconvolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -493,10 +483,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\DataCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\DeconvolutionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -29,7 +29,7 @@
             </TabItem>
 
             <TabItem Name="TabItem_Deconvolution" Header="MS2Dec">
-                <local:DeconvolutionView />
+                <commonview:DeconvolutionView />
             </TabItem>
 
             <TabItem Name="TabItem_Identification" Header="Identification">
