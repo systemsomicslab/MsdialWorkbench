@@ -509,9 +509,9 @@ namespace Rfx.Riken.OsakaUniv
                 errorMessage += "You should write the following information as the target standard library.\r\n";
 
                 errorMessage += "[0]Name\t[1]m/z\t[2]m/z tolerance\r\n";
-                errorMessage += "Name A\t100.000\t0.01\\r\n";
-                errorMessage += "Name B\t200.000\t0.01\\r\n";
-                errorMessage += "Name C\t300.000\t0.01\\r\n";
+                errorMessage += "Name A\t100.000\t0.01\r\n";
+                errorMessage += "Name B\t200.000\t0.01\r\n";
+                errorMessage += "Name C\t300.000\t0.01\r\n";
 
                 error = errorMessage;
                 //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);

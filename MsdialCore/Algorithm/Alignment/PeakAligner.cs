@@ -91,6 +91,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach (var spot in spots)
                 PackingSpot(spot);
 
+            //foreach (var spot in spots.Where(n => n.IsReferenceMatched)) {
+            //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
+            //}
+
             if (chromPeakInfoSerializer != null)
                 SerializeSpotInfo(spots, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
             foreach (var f in files)
@@ -149,6 +153,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 DataObjConverter.SetRepresentativeProperty(child);
 
             DataObjConverter.SetRepresentativeProperty(spot);
+            //Console.WriteLine(spot.Name + "\t" + spot.AdductType.AdductIonName);
         }
 
         private void SerializeSpotInfo(

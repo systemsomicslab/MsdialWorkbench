@@ -37,11 +37,11 @@ namespace CompMs.App.MsdialConsole {
             // {
             //     "dims"
             //     , "-i"
-            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+            //     , @"\\mtbdt\Mtb_info\data\msdial_test\MSMSALL_Positive"
             //     , "-o"
-            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive"
+            //     , @"\\mtbdt\Mtb_info\data\msdial_test\MSMSALL_Positive"
             //     , "-m"
-            //     , @"D:\msdial_test\Msdial\out\MSMSALL_Positive\dims_param.txt"
+            //     , @"\\mtbdt\Mtb_info\data\msdial_test\MSMSALL_Positive\dims_param.txt"
             //     , "-p"
             // };
 

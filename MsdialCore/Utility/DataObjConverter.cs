@@ -84,6 +84,10 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.TextDbBasedMatchResult = peak.TextDbBasedMatchResult;
             alignmentPeak.PeakCharacter = peak.PeakCharacter;
             alignmentPeak.PeakShape = peak.PeakShape;
+            //if (peak.IsReferenceMatched) {
+            //    Console.WriteLine(peak.Name + "\t" + peak.PeakCharacter.AdductType.AdductIonName + "\t" + peak.AdductType.AdductIonName);
+            //}
+           // Console.WriteLine(alignmentPeak.Name + "\t" + alignmentPeak.PeakCharacter.AdductType.AdductIonName);
         }
 
         public static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature alignmentPeak, IMSScanProperty peakobj, MachineCategory category) {

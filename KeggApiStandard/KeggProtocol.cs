@@ -136,7 +136,7 @@ namespace Riken.Metabolomics.Kegg
                                         var keggOrthologyName = line.Substring(20, line.Length - 20);
                                         keggEnzyme.KeggOrthologies.Add(new KeggOrthology() { OrthologyID = keggOrthologyID, OrthologyName = keggOrthologyName });
 
-                                        Console.WriteLine("Orthology ID {0} and Name {1}", keggOrthologyID, keggOrthologyName);
+                                        //Console.WriteLine("Orthology ID {0} and Name {1}", keggOrthologyID, keggOrthologyName);
                                     }
                                 }
                             }
@@ -162,8 +162,8 @@ namespace Riken.Metabolomics.Kegg
                 }
             }
 
-            var outputfile = System.IO.Path.GetDirectoryName(inputfile) + "\\" +
-                System.IO.Path.GetFileNameWithoutExtension(inputfile) + "-formula.txt";
+            var outputfile = Path.Combine(System.IO.Path.GetDirectoryName(inputfile), 
+                System.IO.Path.GetFileNameWithoutExtension(inputfile) + "-formula.txt");
 
             var counter = 0;
             var total = compoundIDs.Count;

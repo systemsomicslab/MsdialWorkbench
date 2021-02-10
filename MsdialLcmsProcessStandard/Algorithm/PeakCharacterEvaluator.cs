@@ -371,9 +371,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
 
                         if (Math.Abs(peakMz - mz) < param.CentroidMs2Tolerance) {
 
-                            if (cPeak.PeakID == peak.PeakID) {
-                                Console.WriteLine();
-                            }
+                            //if (cPeak.PeakID == peak.PeakID) {
+                            //    //Console.WriteLine();
+                            //}
 
                             cPeak.IsLinked = true;
                             peak.IsLinked = true;

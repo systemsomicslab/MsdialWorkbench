@@ -40,7 +40,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             //output file preparation
             var dt = DateTime.Now;
             var dateString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
-            this.outputfile = outputfolder + "\\" + "MsSearch result-" + dateString + ".txt";
+            this.outputfile = Path.Combine(outputfolder, "MsSearch result-" + dateString + ".txt");
 
             //working space prep...
             workSpacePreparation();

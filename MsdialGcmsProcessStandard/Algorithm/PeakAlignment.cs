@@ -555,7 +555,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                         ri = FiehnRiCalculator.CalculateFiehnRi(fiehnRiCoeff, (float)rt);
                     }
                     if (ri == double.NaN) {
-                        Console.WriteLine();
+                        //Console.WriteLine();
                     }
                     peakArray.Add(new double[] { peak.ScanNumber, ri, peak.Mz, peak.Intensity });
                 }

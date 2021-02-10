@@ -198,6 +198,7 @@
     <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
     <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
     <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
+    <Compile Include="ViewModel\Lcms\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
@@ -257,6 +258,9 @@
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\CompoundSearchWindow.xaml.cs">
+      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
@@ -482,6 +486,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Lcms\CompoundSearchWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Lcms\PeakPropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -650,6 +658,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

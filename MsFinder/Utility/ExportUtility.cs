@@ -182,8 +182,8 @@ namespace Rfx.Riken.OsakaUniv
         {
             var dt = DateTime.Now;
             var dateString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute;
-            var formulaFile = exportFolderPath + "\\" + "Formula result-" + dateString + ".txt";
-            var structureFile = exportFolderPath + "\\" + "Structure result-" + dateString + ".txt";
+            var formulaFile = Path.Combine(exportFolderPath , "Formula result-" + dateString + ".txt");
+            var structureFile = Path.Combine(exportFolderPath, "Structure result-" + dateString + ".txt");
 
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
@@ -250,8 +250,8 @@ namespace Rfx.Riken.OsakaUniv
             var error = string.Empty;
 
             foreach (var rawfile in files) {
-                var formulaFile = exportFolderPath + "\\" + "Formula result-" + rawfile.RawDataFileName + "-" + dateString + ".txt";
-                var structureFile = exportFolderPath + "\\" + "Structure result-" + rawfile.RawDataFileName + "-" + dateString + ".txt";
+                var formulaFile = Path.Combine(exportFolderPath, "Formula result-" + rawfile.RawDataFileName + "-" + dateString + ".txt");
+                var structureFile = Path.Combine(exportFolderPath, "Structure result-" + rawfile.RawDataFileName + "-" + dateString + ".txt");
                 var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
 
                 var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);

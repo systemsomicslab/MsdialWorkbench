@@ -127,7 +127,7 @@ namespace Rfx.Riken.OsakaUniv
 
         private static string getStructureDataFilePath(MsfinderQueryFile file, string formula)
         {
-            return file.StructureFolderPath + "\\" + formula + "." + SaveFileFormat.sfd;
+            return Path.Combine(file.StructureFolderPath, formula + "." + SaveFileFormat.sfd);
         }
 
 

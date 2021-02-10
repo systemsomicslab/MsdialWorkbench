@@ -76,7 +76,7 @@ namespace Rfx.Riken.OsakaUniv {
 
             var appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var appDirectory = System.IO.Path.GetDirectoryName(appPath);
-            var reactionFiles = System.IO.Directory.GetFiles(appDirectory + "\\Resources", "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
+            var reactionFiles = System.IO.Directory.GetFiles(Path.Combine(appDirectory, "Resources"), "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
 
             var msmsEdges = new List<EdgeInformation>();
             var ontologyEdges = new List<EdgeInformation>();
@@ -284,7 +284,7 @@ namespace Rfx.Riken.OsakaUniv {
 
             var appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var appDirectory = System.IO.Path.GetDirectoryName(appPath);
-            var reactionFiles = System.IO.Directory.GetFiles(appDirectory + "\\Resources", "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
+            var reactionFiles = System.IO.Directory.GetFiles(Path.Combine(appDirectory, "Resources"), "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
 
             var reactionEdges = new List<EdgeInformation>();
             if (param.IsMmnFormulaBioreaction && reactionFiles.Length > 0)
@@ -293,8 +293,8 @@ namespace Rfx.Riken.OsakaUniv {
             var dt = DateTime.Now;
             var dtString = dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".txt";
             var outputFolder = param.MmnOutputFolderPath;
-            var nodepath = outputFolder + "\\" + "node-" + dtString;
-            var edgepath = outputFolder + "\\" + "edge-" + dtString;
+            var nodepath = Path.Combine(outputFolder, "node-" + dtString);
+            var edgepath = Path.Combine(outputFolder, "edge-" + dtString);
 
             using (StreamWriter sw = new StreamWriter(nodepath, false, Encoding.ASCII)) {
 

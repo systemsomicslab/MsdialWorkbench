@@ -25,6 +25,11 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         public List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments) {
+
+            //foreach (var spot in alignments.Where(n => n.IsReferenceMatched)) {
+            //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
+            //}
+
             Deduplicate(alignments);
             var cleaned = GetCleanedSpots(alignments);
             var filtered = FilterByBlank(cleaned);
@@ -135,6 +140,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             foreach (var cSpot in cSpots) {
                 if (cSpot.IsReferenceMatched) {
 
+                    //Console.WriteLine(cSpot.MspBasedMatchResult.Name + "\t" + cSpot.AdductType.AdductIonName);
+
                     var repFileID = cSpot.RepresentativeFileID;
                     var repProp = cSpot.AlignedPeakProperties[repFileID];
                     var repLinks = repProp.PeakCharacter.PeakLinks;
@@ -165,6 +172,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                     }
                 }
             }
+            //Console.WriteLine();
         }
 
         private void AssignLinksByRepresentativeIonFeatures(List<AlignmentSpotProperty> alignments) {

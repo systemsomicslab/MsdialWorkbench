@@ -147,7 +147,7 @@ namespace CompMs.Graphics.Core.Base
             var p = e.GetPosition(this);
             var delta = e.Delta;
             var scale = 1 - 0.1 * Math.Sign(delta);
-
+            //Console.WriteLine(delta + "\t" + scale);
             var area = Rect.Intersect(
                 new Rect(
                     RenderPositionToValue(new Point(p.X * (1 - scale), p.Y * (1 - scale))),

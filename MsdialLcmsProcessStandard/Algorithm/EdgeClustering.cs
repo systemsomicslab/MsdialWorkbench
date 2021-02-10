@@ -119,7 +119,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm.Clustering
 
 
 
-            var filepath = System.IO.Path.GetDirectoryName(output) + "\\" + System.IO.Path.GetFileNameWithoutExtension(output) + "_indole.txt";
+            var filepath = Path.Combine(System.IO.Path.GetDirectoryName(output), System.IO.Path.GetFileNameWithoutExtension(output) + "_indole.txt");
             using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 sw.WriteLine("seg1\tpos1\tname1\tseg2\tpos2\tname2");
                 var donelist = new List<string>();
@@ -141,7 +141,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm.Clustering
 
         private static void exportLinkfiles(int segment, string output, List<NodeData> nodes) {
 
-            var filepath = System.IO.Path.GetDirectoryName(output) + "\\" + System.IO.Path.GetFileNameWithoutExtension(output) + "_" + segment + ".txt";
+            var filepath = Path.Combine(System.IO.Path.GetDirectoryName(output), System.IO.Path.GetFileNameWithoutExtension(output) + "_" + segment + ".txt");
 
             using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                 sw.WriteLine("seg1\tpos1\tname1\tseg2\tpos2\tname2");

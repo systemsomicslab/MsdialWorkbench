@@ -3406,7 +3406,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
                 + Math.Round(tempSpots[tempSpots.Count - 1].CentralAccurateMass, 5) + "_"
                 + tempSpots[tempSpots.Count - 1].IsotopeTrackingWeightNumber;
 
-            var filepath = outputfolder + "\\" + filename + ".mat";
+            var filepath = Path.Combine(outputfolder, filename + ".mat");
             var basicProperty = tempSpots[0];
             var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekPoints, basicProperty.AlignmentID);
             var isotopeLabel = param.IsotopeTrackingDictionary;

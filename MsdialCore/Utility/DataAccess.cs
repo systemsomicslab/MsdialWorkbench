@@ -909,7 +909,7 @@ namespace CompMs.MsdialCore.Utility {
                 rtRight = rt + rtRange;
             }
             if (rt - rtLeft > rtRange) {
-                Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                //Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
                 rtLeft = rt - rtRange;
             }
 
@@ -1046,6 +1046,10 @@ namespace CompMs.MsdialCore.Utility {
             if (!result.IsSpectrumMatch) {
                 feature.Name = "w/o MS2: " + result.Name;
             }
+
+            //if (result.IsSpectrumMatch) {
+            //    Console.WriteLine(feature.Name + "\t" + feature.AdductType.AdductIonName);
+            //}
         }
 
         public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {

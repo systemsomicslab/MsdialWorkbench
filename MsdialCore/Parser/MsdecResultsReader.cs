@@ -20,12 +20,13 @@ namespace CompMs.MsdialCore.Parser {
 				DCL_VERSION = BitConverter.ToInt32(buffer, 2);
                 var isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
 
-				Console.WriteLine("name: " + name);
+#if DEBUG
+                Console.WriteLine("name: " + name);
                 Console.WriteLine("version: " + DCL_VERSION);
                 Console.WriteLine("annotation info: " + isAnnotationInfoIncluded);
-
+#endif
                 if (name.Equals("DC") && DCL_VERSION == 1) {
-					Console.WriteLine("Reading deconvolution file " + file + " (V." + DCL_VERSION + ")", "INFO");
+					//Console.WriteLine("Reading deconvolution file " + file + " (V." + DCL_VERSION + ")", "INFO");
 					return MSDecReaderVer1(fs, isAnnotationInfoIncluded, out seekPoints);
 				}
 				else {
@@ -45,11 +46,11 @@ namespace CompMs.MsdialCore.Parser {
 				string name = Encoding.ASCII.GetString(buffer, 0, 2);
 				DCL_VERSION = BitConverter.ToInt32(buffer, 2);
                 isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
-
+#if DEBUG
                 Console.WriteLine("name: " + name);
 				Console.WriteLine("version: " + DCL_VERSION);
                 Console.WriteLine("annotation info: " + isAnnotationInfoIncluded);
-
+#endif
                 seekPoints = new List<long>();
 				buffer = new byte[4];
 				fs.Read(buffer, 0, 4);
@@ -71,10 +72,11 @@ namespace CompMs.MsdialCore.Parser {
             DCL_VERSION = BitConverter.ToInt32(buffer, 2);
             isAnnotationInfoIncluded = BitConverter.ToBoolean(buffer, 6);
 
+#if DEBUG
             Console.WriteLine("name: " + name);
             Console.WriteLine("version: " + DCL_VERSION);
             Console.WriteLine("annotation info: " + isAnnotationInfoIncluded);
-
+#endif
             seekPoints = new List<long>();
             buffer = new byte[4];
             fs.Read(buffer, 0, 4);

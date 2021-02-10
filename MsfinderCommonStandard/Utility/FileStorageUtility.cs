@@ -12,12 +12,14 @@ using System.Text;
 namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class FileStorageUtility {
         public static string GetResourcesPath(string file) {
-            var sb = new StringBuilder();
+            //var sb = new StringBuilder();
             //var currentDir = Directory.GetCurrentDirectory();
             var currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
             //sb.Append(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath));
-            sb.Append(currentDir);
-            sb.Append("Resources").Append("\\");
+            //sb.Append(currentDir);
+            //sb.Append("Resources").Append("\\");
+
+            var pather = Path.Combine(currentDir, "Resources");
 
             var filename = string.Empty;
             switch (file) {
@@ -29,7 +31,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 case "ExistFormulaLib": filename = "MsfinderFormulaDB-VS13.efd"; break;
                 case "ExistStructureLib": filename = "MsfinderStructureDB-VS15.esd"; break;
                 case "InchikeyClassyfireLib": filename = "InchikeyClassyfireDB-VS5.icd"; break;
-                case "InsilicoLipidSpectralLib": filename = "LipidMsmsBinaryDB-VS68-AritaM.lbm2"; break;
+                case "InsilicoLipidSpectralLib": filename = "Msp20201228141756_converted.lbm2"; break;
                 case "LipidQueryMaster": filename = "LipidQueryMaster.txt"; break;
                 case "MinesStructureLib": filename = "MINEs-StructureDB-vs1.msd"; break;
                 case "MsmsSpectralLib": filename = "MSMS-DBs-vs1.etm"; break;
@@ -38,9 +40,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 case "UniqueFragmentLib": filename = "UniqueFragmentLib_vs1.ufd"; break;
                 default: filename = string.Empty; break;
             }
-            sb.Append(filename);
+            pather = Path.Combine(pather, filename);
+            return pather;
+            //sb.Append(filename);
             //sb.Append(Properties.Resources.ResourceManager.GetString(file));
-            return sb.ToString();
+            //return sb.ToString();
         }
 
         public static ObservableCollection<MsfinderQueryFile> GetAnalysisFileBeanCollection(string importFolderPath) {
@@ -67,11 +71,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
 
             // set formula files and structure folder paths
             foreach (var file in analysisFileBeanCollection) {
-                var formulaFilePath = importFolderPath + "\\" + file.RawDataFileName + "." + SaveFileFormat.fgt;
+                var formulaFilePath = Path.Combine(importFolderPath, file.RawDataFileName + "." + SaveFileFormat.fgt);
                 file.FormulaFilePath = formulaFilePath;
                 file.FormulaFileName = file.RawDataFileName;
 
-                file.StructureFolderPath = importFolderPath + "\\" + file.RawDataFileName;
+                file.StructureFolderPath = Path.Combine(importFolderPath, file.RawDataFileName);
                 file.StructureFolderName = file.RawDataFileName;
 
                 if (!System.IO.Directory.Exists(file.StructureFolderPath)) {
@@ -452,7 +456,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         }
 
         public static string GetStructureDataFilePath(string folderPath, string formula) {
-            return folderPath + "\\" + formula + "." + SaveFileFormat.sfd;
+            return Path.Combine(folderPath, formula + "." + SaveFileFormat.sfd);
         }
 
         public static void DeleteSfdFiles(string[] structureFiles) {

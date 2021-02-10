@@ -125,7 +125,7 @@ namespace Riken.Metabolomics.Pathwaymap
             foreach (var edge in edges) {
                 var sourceID = edge.SourceNodeID;
                 var targetID = edge.TargetNodeID;
-                Console.WriteLine(edge.ID + "\t" + edge.SourceNodeID + "\t" + edge.TargetNodeID);
+                //Console.WriteLine(edge.ID + "\t" + edge.SourceNodeID + "\t" + edge.TargetNodeID);
                 if (Node2Edges.ContainsKey(sourceID) && !Node2Edges[sourceID].Contains(targetID))
                     Node2Edges[sourceID].Add(targetID);
                 if (Node2Edges.ContainsKey(targetID) && !Node2Edges[targetID].Contains(sourceID))

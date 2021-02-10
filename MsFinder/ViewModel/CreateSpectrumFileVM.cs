@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -61,7 +62,7 @@ namespace Rfx.Riken.OsakaUniv
                 this.rawData.Ms2Spectrum.PeakList = peaklist;
             }
 
-            var filePath = this.folderPath + "\\" + this.fileName + "." + SaveFileFormat.mat;
+            var filePath = Path.Combine(this.folderPath, this.fileName + "." + SaveFileFormat.mat);
             RawDataParcer.RawDataFileWriter(filePath, this.rawData);
 
             this.mainWindowVM.Refresh_ImportFolder(this.folderPath);

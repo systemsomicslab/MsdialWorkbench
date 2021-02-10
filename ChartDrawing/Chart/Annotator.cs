@@ -377,6 +377,7 @@ namespace CompMs.Graphics.Chart
             internal AxisValue x, y;
             internal string label;
             internal double order;
+            internal Brush brush;
         }
     }
 }
