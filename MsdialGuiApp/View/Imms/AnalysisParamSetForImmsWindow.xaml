@@ -5,6 +5,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
+        xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
         mc:Ignorable="d"
         xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
@@ -36,7 +37,7 @@
             </TabItem>
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">
-                <local:AdductView />
+                <commonview:AdductView />
             </TabItem>
             
             <TabItem Name="TabItem_Alignment" Header="Alignment">
