@@ -224,7 +224,7 @@ namespace CompMs.App.Msdial.LC
 
         private void AddAdductIon(Window owner) {
             var vm = new UserDefinedAdductSetVM();
-            var window = new UserDefinedAdductSetWindow
+            var window = new View.UserDefinedAdductSetWindow
             {
                 DataContext = vm,
                 Owner = owner,

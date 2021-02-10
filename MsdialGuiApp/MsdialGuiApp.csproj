@@ -133,10 +133,6 @@
     <Compile Include="Dims\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\UserDefinedAdductSetVM.cs" />
-    <Compile Include="Dims\UserDefinedAdductSetWindow.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="LC\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -164,10 +160,6 @@
     </Compile>
     <Compile Include="LC\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\UserDefinedAdductSetVM.cs" />
-    <Compile Include="LC\UserDefinedAdductSetWindow.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Lipidomics\LipidDbSetVM.cs" />
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
@@ -288,8 +280,8 @@
     <Compile Include="View\Imms\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\Imms\UserDefinedAdductSetVM.cs" />
-    <Compile Include="View\Imms\UserDefinedAdductSetWindow.xaml.cs">
+    <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
@@ -378,10 +370,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dims\UserDefinedAdductSetWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -419,10 +407,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\PeakDetectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\UserDefinedAdductSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -554,7 +538,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\UserDefinedAdductSetWindow.xaml">
+    <Page Include="View\UserDefinedAdductSetWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

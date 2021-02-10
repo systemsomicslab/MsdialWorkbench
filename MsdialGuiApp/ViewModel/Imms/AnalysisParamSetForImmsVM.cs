@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Lipidomics;
-using CompMs.App.Msdial.View.Imms;
+using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;

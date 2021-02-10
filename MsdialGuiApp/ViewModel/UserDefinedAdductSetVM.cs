@@ -1,16 +1,10 @@
 ﻿using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace CompMs.App.Msdial.LC
+namespace CompMs.App.Msdial.ViewModel
 {
     class UserDefinedAdductSetVM : ViewModelBase
     {
@@ -46,6 +40,7 @@ namespace CompMs.App.Msdial.LC
         private bool CanAddIon(Window window) => AdductIon?.FormatCheck ?? false;
 
         private void AddIon(Window window) {
+            AdductIon.IsIncluded = true;
             window.DialogResult = true;
             window.Close();
         }
