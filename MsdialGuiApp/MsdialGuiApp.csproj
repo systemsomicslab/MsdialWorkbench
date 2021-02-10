@@ -230,9 +230,6 @@
     <Compile Include="View\Dims\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\Navigator.xaml.cs">
-      <DependentUpon>Navigator.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
@@ -307,7 +304,7 @@
     <Compile Include="View\Lcms\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\Navigator.xaml.cs">
+    <Compile Include="View\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
@@ -454,10 +451,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\Navigator.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Dims\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -558,7 +551,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\Navigator.xaml">
+    <Page Include="View\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
