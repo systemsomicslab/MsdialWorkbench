@@ -607,6 +607,10 @@
       <Project>{1276d3c2-39a4-471f-aaac-3777f2040f0f}</Project>
       <Name>MsdialGuiApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj">
+      <Project>{d024bb64-3ccd-49c2-b6ee-a11900817daf}</Project>
+      <Name>MsdialImmsCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
       <Project>{0750647B-1DFC-49DC-ADFB-16235E22AA88}</Project>
       <Name>MsdialLcImMsApi</Name>
