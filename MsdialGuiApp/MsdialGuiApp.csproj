@@ -114,7 +114,6 @@
     <Compile Include="Dims\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\AnalysisParamSetForDimsVM.cs" />
     <Compile Include="Dims\AnalysisParamSetForDimsWindow.xaml.cs">
       <DependentUpon>AnalysisParamSetForDimsWindow.xaml</DependentUpon>
     </Compile>
@@ -139,7 +138,6 @@
     <Compile Include="LC\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LC\AnalysisParamSetForLcVM.cs" />
     <Compile Include="LC\AnalysisParamSetForLcWindow.xaml.cs">
       <DependentUpon>AnalysisParamSetForLcWindow.xaml</DependentUpon>
     </Compile>
@@ -183,9 +181,13 @@
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\DisplayFilter.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
+    <Compile Include="ViewModel\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodVM.cs" />
+    <Compile Include="ViewModel\MsdialProjectParameterVM.cs" />
+    <Compile Include="ViewModel\MzSearchQueryVM.cs" />
+    <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
@@ -258,7 +260,7 @@
     <Compile Include="View\Imms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\Imms\AnalysisParamSetForImmsVM.cs" />
+    <Compile Include="ViewModel\AnalysisParamSetVM.cs" />
     <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
       <DependentUpon>AnalysisParamSetForImmsWindow.xaml</DependentUpon>
     </Compile>

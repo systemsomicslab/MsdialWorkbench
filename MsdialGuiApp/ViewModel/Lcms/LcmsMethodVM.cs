@@ -141,7 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetForLcVM((MsdialLcmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcmsParameter>((MsdialLcmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForLcWindow
             {
                 DataContext = analysisParamSetVM,

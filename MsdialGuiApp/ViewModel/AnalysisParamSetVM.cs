@@ -6,15 +6,13 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Common;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialImmsCore.Parameter;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -26,11 +24,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel.Imms
+namespace CompMs.App.Msdial.ViewModel
 {
-    class AnalysisParamSetForImmsVM : ViewModelBase {
+    class AnalysisParamSetVM<T> : ViewModelBase where T : ParameterBase
+    {
         #region Property
-        public MsdialImmsParameterVM Param {
+        public MsdialProjectParameterVM<T> Param {
             get => paramVM;
             set => SetProperty(ref paramVM, value);
         }
@@ -71,8 +70,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         #endregion
 
         #region Field
-        MsdialImmsParameter param;
-        MsdialImmsParameterVM paramVM;
+        T param;
+        MsdialProjectParameterVM<T> paramVM;
         MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
         ObservableCollection<AnalysisFileBean> analysisFiles;
@@ -80,9 +79,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         ObservableCollection<AdductIonVM> searchedAdductIons;
         #endregion
 
-        public AnalysisParamSetForImmsVM(MsdialImmsParameter parameter, IEnumerable<AnalysisFileBean> files) {
+        public AnalysisParamSetVM(T parameter, IEnumerable<AnalysisFileBean> files) {
             param = parameter;
-            Param = new MsdialImmsParameterVM(parameter);
+            Param = new MsdialProjectParameterVM<T>(parameter);
             MspSearchParam = new MsRefSearchParameterBaseVM(parameter.MspSearchParam);
             TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
 
@@ -107,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         #region Command
         public DelegateCommand<Window> ContinueProcessCommand {
-            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisParamSetForImmsWindow));
+            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisParamSetWindow));
         }
         private DelegateCommand<Window> continueProcessCommand;
         private bool canExecuteCommand = true;
@@ -117,12 +116,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ContinueProcessCommand.RaiseCanExecuteChanged();
             Mouse.OverrideCursor = Cursors.Wait;
 
-            var message = new ShortMessageWindow {
+            var message = new ShortMessageWindow
+            {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Text = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
                         ? "RT correction viewer will be opened\nafter libraries are loaded."
-                        : "Loading libraries.." 
+                        : "Loading libraries.."
             };
             message.Show();
             var result = await ClosingMethod();
@@ -155,7 +155,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             if (!string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
                 var ext = Path.GetExtension(param.MspFilePath);
-                if (ext  == ".msp" || ext == ".msp2") {
+                if (ext == ".msp" || ext == ".msp2") {
                     MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath).OrderBy(msp => msp.PrecursorMz).ToList();
                 }
                 else {
@@ -168,8 +168,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             else if (param.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                if (files.Length == 1)
-                {
+                if (files.Length == 1) {
                     param.MspFilePath = files.First();
                     MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param).OrderBy(msp => msp.PrecursorMz).ToList());
                 }
@@ -204,7 +203,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return true;
         }
 
-        private bool ValidateAnalysisParamSetForImmsWindow(Window window) {
+        private bool ValidateAnalysisParamSetWindow(Window window) {
             return canExecuteCommand;
         }
 
@@ -242,7 +241,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ICommand MspCommand {
             get {
-                if (param.TargetOmics == CompMs.Common.Enum.TargetOmics.Lipidomics)
+                if (param.TargetOmics == TargetOmics.Lipidomics)
                     return LipidDBSetCommand;
                 return MspFileSelectCommand;
             }
@@ -255,8 +254,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private void LipidDBSet(Window owner) {
             var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly).Length != 1)
-            {
+            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly).Length != 1) {
                 MessageBox.Show("There is no LBM file or several LBM files are existed in this application folder. Please see the tutorial.",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -328,37 +326,5 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         #endregion
-    }
-
-    class MsdialImmsParameterVM : ParameterBaseVM
-    {
-        private readonly MsdialImmsParameter innerModel;
-        public MsdialImmsParameterVM(MsdialImmsParameter innerModel) : base(innerModel) {
-            this.innerModel = innerModel;
-        }
-    }
-
-    class MsRefSearchParameterBaseVM : DynamicViewModelBase<MsRefSearchParameterBase>
-    {
-        public MsRefSearchParameterBaseVM(MsRefSearchParameterBase innerModel) : base(innerModel) { }
-    }
-
-    public class MzSearchQueryVM : ViewModelBase
-    {
-        public double? Mass {
-            get => mass;
-            set => SetProperty(ref mass, value);
-        }
-        public double? Tolerance {
-            get => tolerance;
-            set => SetProperty(ref tolerance, value);
-        }
-
-        private double? mass, tolerance;
-    }
-
-    class AdductIonVM : DynamicViewModelBase<AdductIon>
-    {
-        public AdductIonVM(AdductIon innerModel) : base(innerModel) { }
     }
 }

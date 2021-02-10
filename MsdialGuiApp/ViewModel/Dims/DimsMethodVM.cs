@@ -1,14 +1,21 @@
-﻿using CompMs.App.Msdial.LC;
+﻿using CompMs.App.Msdial.Dims;
+using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,15 +25,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using CompMs.App.Msdial.Dims;
-using CompMs.MsdialDimsCore;
-using CompMs.MsdialCore.MSDec;
-using System.Windows.Input;
-using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.View.Export;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
-using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -169,7 +167,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetForDimsVM((MsdialDimsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForDimsWindow
             {
                 DataContext = analysisParamSetVM,
