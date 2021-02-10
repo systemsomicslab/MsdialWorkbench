@@ -25,7 +25,7 @@
             </TabItem>
 
             <TabItem Name="TabItem_PeakDetection" Header="Peak detection" Height="22" VerticalAlignment="Top">
-                <local:PeakDetectionView />
+                <commonview:PeakDetectionView />
             </TabItem>
 
             <TabItem Name="TabItem_Deconvolution" Header="MS2Dec">

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.LC
+namespace CompMs.App.Msdial.View
 {
     /// <summary>
     /// Interaction logic for PeakDetectionView.xaml
