@@ -130,7 +130,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201214_Matsuzawa-san_work_LCMS_check\msp\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -326,7 +326,7 @@ namespace CompMs.MspGenerator
             //faChain2 = Common.GenerateAcylChains(8, 0, 22, 6);
             //Common.switchingLipid(faChain1, faChain2, "TG_EST", outputFolder); // faChain1 = TG FA, faChain2 = Extra FA
 
-            //// GL exchangable 4 chain 
+            // GL exchangable 4 chain 
             //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
             //Common.switchingLipid(minimumChains, "CL", outputFolder);
 
@@ -445,7 +445,7 @@ namespace CompMs.MspGenerator
 
             //    // no chain lipid
             //    {
-            //        Common.switchingLipid("CoQ", outputFolder);
+                    Common.switchingLipid("CoQ", outputFolder);
             //        Common.switchingLipid("Vitamin_D", outputFolder);
             //        Common.switchingLipid("VitaminE", outputFolder);
             //    }
@@ -584,7 +584,7 @@ namespace CompMs.MspGenerator
                 var ccsTrainModel = workingFolder + @"\test\masterCCS_NCDK_20210106162216.model";
                 var ccsTestFile = workingFolder + @"\masterCCS_NCDK_20210104135202.txt";
 
-                RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
 
 
                 {

@@ -1264,7 +1264,7 @@ namespace CompMs.MspGenerator
 
         public static void coenzymeQFragment(List<string> fragmentList, string adduct, double exactMass)
         {
-            // {   "CoenzymeQ" ,    new List<string>(){ "[M+H]+"  }    },
+            // {   "CoQ" ,    new List<string>(){ "[M+H]+","[M+Na]+", "[M+NH4]+" }    },
             if (adduct == "[M+H]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
@@ -1277,6 +1277,36 @@ namespace CompMs.MspGenerator
                 var fra02comment = "[(C9H9O4)+CH3+H]+";
                 fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             }
+            else if (adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = 12 * 10 + MassDictionary.HydrogenMass * 12 + MassDictionary.OxygenMass * 4 + MassDictionary.Proton;
+                var fra02int = 5;
+                var fra02comment = "[(C9H9O4)+CH3+H]+";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+            else if (adduct == "[M+NH4]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 1;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = exactMass + MassDictionary.Proton;
+                var fra03int = 10;
+                var fra03comment = "[M+H]+";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra02mass = 12 * 10 + MassDictionary.HydrogenMass * 12 + MassDictionary.OxygenMass * 4 + MassDictionary.Proton;
+                var fra02int = 999;
+                var fra02comment = "[(C9H9O4)+CH3+H]+";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+
         }
 
         public static void lipidAFragmantation (List<string> fragmentList, string adduct, double exactMass,

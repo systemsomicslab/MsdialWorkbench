@@ -10849,7 +10849,7 @@ namespace CompMs.Common.Lipidomics
             if (spectrum == null || spectrum.Count == 0) return null;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
                     var diagnosticMz1 = 197.0808164;  // seek [(C9H9O4)+CH3+H]+
                     var threshold1 = 10.0;
@@ -10863,6 +10863,22 @@ namespace CompMs.Common.Lipidomics
                     return returnAnnotationNoChainResult("CoQ" + coqSurfix, LbmClass.CoQ, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
+                else if (adduct.AdductIonName == "[M+Na]+")
+                {
+                    var diagnosticMz1 = 197.0808164;  // seek [(C9H9O4)+CH3+H]+
+                    var threshold1 = 1.0;
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found != true) return null;
+
+                    //
+                    var candidates = new List<LipidMolecule>();
+                    var coqSurfix = Math.Round((theoreticalMz - 182.057908802) / (12 * 5 + MassDiffDictionary.HydrogenMass * 8));
+
+                    return returnAnnotationNoChainResult("CoQ" + coqSurfix, LbmClass.CoQ, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+
+
             }
             return null;
         }
