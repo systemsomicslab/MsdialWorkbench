@@ -86,7 +86,7 @@ namespace CompMs.MspGenerator
             Console.WriteLine("Loading the msp file.");
 
             var mspDB = MspFileParser.MspFileReader(mspFilePath);
-            var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
+            //var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB)
             {
@@ -220,6 +220,7 @@ namespace CompMs.MspGenerator
             }
             else
             {
+                var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
                 foreach (var query in mspDB2)
                 {
                     if (query.InchiKey == "" || query.InchiKey == null)

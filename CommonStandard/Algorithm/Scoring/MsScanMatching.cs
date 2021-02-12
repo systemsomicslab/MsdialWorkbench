@@ -396,7 +396,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
                 if (molecule == null || molecule.Adduct == null) return resultArray;
-                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3) return resultArray;
+                //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3) return resultArray;
+                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
                 if (result != null) {
