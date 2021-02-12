@@ -9,6 +9,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
@@ -982,11 +983,14 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static MSScanProperty GetNormalizedMSScanProperty(MSDecResult result, ParameterBase param) {
-            var specMatchParam = param.MspSearchParam;
+        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, ParameterBase param) {
+            return GetNormalizedMSScanProperty(scanProp, param.MspSearchParam);
+        }
+
+        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, MsRefSearchParameterBase specMatchParam) {
             var prop = new MSScanProperty() {
-                ChromXs = result.ChromXs, IonMode = result.IonMode, PrecursorMz = result.PrecursorMz,
-                Spectrum = GetNormalizedMs2Spectra(result.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = result.ScanID
+                ChromXs = scanProp.ChromXs, IonMode = scanProp.IonMode, PrecursorMz = scanProp.PrecursorMz,
+                Spectrum = GetNormalizedMs2Spectra(scanProp.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = scanProp.ScanID
             };
             return prop;
         }
@@ -1005,7 +1009,7 @@ namespace CompMs.MsdialCore.Utility {
             var massSpec = new List<SpectrumPeak>();
             var maxIntensity = spectrum.Max(n => n.Intensity);
             foreach (var peak in spectrum) {
-                if (peak.Intensity > maxIntensity * relcutoff * 0.01 && peak.Intensity > abscutoff) {
+                if (peak.Intensity > maxIntensity * relcutoff && peak.Intensity > abscutoff) {
                     massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
                 }
             }
