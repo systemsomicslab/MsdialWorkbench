@@ -1,6 +1,10 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
+using System;
+using System.Windows.Media;
+using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
@@ -43,7 +47,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
 
-
+        public Brush SpotColor { get; set; }
+        //public Brush SpotColorByOntology { get; set; }
 
         public ChromatogramPeakFeature InnerModel => innerModel;
         #endregion
@@ -58,9 +63,21 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             KMNominalUnit = System.Math.Round(KMIupacUnit);
         }
 
-        public ChromatogramPeakFeatureVM(ChromatogramPeakFeature feature) {
+        public ChromatogramPeakFeatureVM(ChromatogramPeakFeature feature, bool coloredByOntology = false) {
             innerModel = feature;
+            if (coloredByOntology) {
+                SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?
+                  new SolidColorBrush(ChemOntologyColor.Ontology2RgbaBrush[innerModel.Ontology]) :
+                  new SolidColorBrush(Color.FromArgb(180, 181, 181, 181));
+            }
+            else {
+                SpotColor = new SolidColorBrush(Color.FromArgb(180
+                            , (byte)(255 * innerModel.PeakShape.AmplitudeScoreValue)
+                            , (byte)(255 * (1 - Math.Abs(innerModel.PeakShape.AmplitudeScoreValue - 0.5)))
+                            , (byte)(255 - 255 * innerModel.PeakShape.AmplitudeScoreValue)));
+            }
+
+            SpotColor.Freeze();
         }
     }
-
 }

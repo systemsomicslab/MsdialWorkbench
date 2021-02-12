@@ -105,6 +105,7 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="UI\LabeledContent.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
       <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>

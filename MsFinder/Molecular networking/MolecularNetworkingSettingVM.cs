@@ -2,6 +2,7 @@
 using Riken.Metabolomics.MsfinderCommon.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -198,7 +199,7 @@ namespace Rfx.Riken.OsakaUniv {
                     // checking formula reaction db exist
                     var appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
                     var appDirectory = System.IO.Path.GetDirectoryName(appPath);
-                    var reactionFiles = System.IO.Directory.GetFiles(appDirectory + "\\Resources", "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
+                    var reactionFiles = System.IO.Directory.GetFiles(Path.Combine(appDirectory, "Resources"), "*.fbt", System.IO.SearchOption.TopDirectoryOnly);
 
                     if (this.IsOntologyNetwork == true && (reactionFiles == null || reactionFiles.Length == 0)) {
                         MessageBox.Show("No formula reaction file. Please put *.fbt file on Resources folder.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

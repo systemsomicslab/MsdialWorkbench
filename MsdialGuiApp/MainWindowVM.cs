@@ -88,6 +88,8 @@ namespace CompMs.App.Msdial
                     return new ViewModel.Lcms.LcmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                case MachineCategory.IMMS:
+                    return new ViewModel.Imms.ImmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
             }
             throw new NotImplementedException("This method is not implemented");
         }
@@ -285,6 +287,16 @@ namespace CompMs.App.Msdial
                 Mouse.OverrideCursor = null;
             }
         }
+
+        public DelegateCommand<Window> GoToTutorialCommand {
+            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand<Window>(GoToTutorial));
+        }
+
+        private void GoToTutorial(Window obj) {
+            System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+        }
+
+        private DelegateCommand<Window> goToTutorialCommand;
 
     }
 }

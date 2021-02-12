@@ -36,7 +36,9 @@ namespace StructureFinderConsoleApp
             //    @"D:\3_Project for ion mobility\20201214_zhiwei_ccs_library\MSDIAL_pred_ccs_201013.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-ccs.txt");
             //Code4NPR2020.Check144Existence(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-144.txt");
 
-            Code4NPR2020.ExtractSubstructureContainingStructureQueries();
+            //Code4NPR2020.ExtractSubstructureContainingStructureQueries();
+            //Code4NPR2020.CalculatePrecursorMz(@"C:\Users\hiroshi.tsugawa\Desktop\temp_smiles.txt", @"C:\Users\hiroshi.tsugawa\Desktop\temp_premz.txt");
+            Code4NPR2020.CheckPrecursorMzExistence();
 
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\", "-Pos");
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Neg\msp\", "-Neg");

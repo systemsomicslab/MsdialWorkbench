@@ -11,6 +11,12 @@ namespace CompMs.MsdialImmsCore.Parameter
     public class MsdialImmsParameter : ParameterBase {
         public MsdialImmsParameter() {
             MachineCategory = MachineCategory.IMMS;
+
+            MspSearchParam.WeightedDotProductCutOff = 0.1f;
+            MspSearchParam.SimpleDotProductCutOff = 0.1f;
+            MspSearchParam.ReverseDotProductCutOff = 0.3f;
+            MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
+            MspSearchParam.MinimumSpectrumMatch = 1;
         }
 
         [Key(150)]
@@ -23,7 +29,12 @@ namespace CompMs.MsdialImmsCore.Parameter
         public float DriftTimeAlignmentTolerance { get; set; } = 0.02F;
         [Key(154)]
         public float DriftTimeAlignmentFactor { get; set; } = 0.5F;
-        // public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
+
+        [Key(155)]
+        public bool IsAllCalibrantDataImported = false;
+
+        [Key(156)]
+        public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
@@ -34,18 +45,18 @@ namespace CompMs.MsdialImmsCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Drift time alignment tolerance", DriftTimeAlignmentTolerance.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Drift time alignment factor", DriftTimeAlignmentFactor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Ion mobility type", IonMobilityType.ToString() }));
-            // pStrings.Add(String.Join(": ", new string[] { "All calibrant data imported", IsAllCalibrantDataImported.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "All calibrant data imported", IsAllCalibrantDataImported.ToString() }));
 
-            // pStrings.Add("\r\n");
-            // pStrings.Add("# File ID CCS coefficients");
-            // foreach (var item in FileID2CcsCoefficients) {
+            pStrings.Add("\r\n");
+            pStrings.Add("# File ID CCS coefficients");
+            foreach (var item in FileID2CcsCoefficients) {
 
-            //     pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, String.Join(",", new string[] {
-            //         "Agilent IM=" + item.Value.IsAgilentIM, "Bruker IM=" + item.Value.IsBrukerIM, "Waters IM=" + item.Value.IsWatersIM,
-            //         "Agilent Beta=" + item.Value.AgilentBeta, "Agilent TFix=" + item.Value.AgilentTFix,
-            //         "Waters coefficient=" + item.Value.WatersCoefficient, "Waters T0=" + item.Value.WatersT0, "Waters exponent=" + item.Value.WatersExponent 
-            //     }) }));
-            // }
+                pStrings.Add(String.Join(": ", new string[] { "File ID=" + item.Key, String.Join(",", new string[] {
+                    "Agilent IM=" + item.Value.IsAgilentIM, "Bruker IM=" + item.Value.IsBrukerIM, "Waters IM=" + item.Value.IsWatersIM,
+                    "Agilent Beta=" + item.Value.AgilentBeta, "Agilent TFix=" + item.Value.AgilentTFix,
+                    "Waters coefficient=" + item.Value.WatersCoefficient, "Waters T0=" + item.Value.WatersT0, "Waters exponent=" + item.Value.WatersExponent 
+                }) }));
+            }
             return pStrings;
         }
     }

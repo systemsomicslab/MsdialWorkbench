@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DATE" xml:space="preserve">
-    <value>Oct. 10th, 2020</value>
+    <value>Jan. 5th, 2021</value>
   </data>
   <data name="String1" xml:space="preserve">
     <value />
@@ -127,6 +127,6 @@
     <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-DIAL ver. 4.48</value>
+    <value>MS-DIAL ver. 4.48-dev</value>
   </data>
 </root>

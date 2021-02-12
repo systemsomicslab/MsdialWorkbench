@@ -108,21 +108,14 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
-    <Compile Include="Dims\AdductView.xaml.cs">
-      <DependentUpon>AdductView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dims\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\AnalysisParamSetForDimsVM.cs" />
     <Compile Include="Dims\AnalysisParamSetForDimsWindow.xaml.cs">
       <DependentUpon>AnalysisParamSetForDimsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dims\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dims\DeconvolutionView.xaml.cs">
-      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dims\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
@@ -130,27 +123,19 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\PeakDetectionView.xaml.cs">
-      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dims\UserDefinedAdductSetVM.cs" />
-    <Compile Include="Dims\UserDefinedAdductSetWindow.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\AdductView.xaml.cs">
+    <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
     <Compile Include="LC\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LC\AnalysisParamSetForLcVM.cs" />
     <Compile Include="LC\AnalysisParamSetForLcWindow.xaml.cs">
       <DependentUpon>AnalysisParamSetForLcWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LC\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LC\DeconvolutionView.xaml.cs">
+    <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="LC\IdentificationView.xaml.cs">
@@ -162,12 +147,8 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LC\PeakDetectionView.xaml.cs">
+    <Compile Include="View\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\UserDefinedAdductSetVM.cs" />
-    <Compile Include="LC\UserDefinedAdductSetWindow.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Lipidomics\LipidDbSetVM.cs" />
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
@@ -189,7 +170,15 @@
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
     <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
+    <Compile Include="ViewModel\DisplayFilter.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
+    <Compile Include="ViewModel\AdductIonVM.cs" />
+    <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
+    <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsMethodVM.cs" />
+    <Compile Include="ViewModel\MsdialProjectParameterVM.cs" />
+    <Compile Include="ViewModel\MzSearchQueryVM.cs" />
+    <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
@@ -198,6 +187,7 @@
     <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
     <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
     <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
+    <Compile Include="ViewModel\Lcms\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
@@ -240,9 +230,6 @@
     <Compile Include="View\Dims\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\Navigator.xaml.cs">
-      <DependentUpon>Navigator.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
@@ -255,8 +242,34 @@
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imms\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\AnalysisParamSetVM.cs" />
+    <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForImmsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\IsotopeTrackView.xaml.cs">
+      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\MobilityView.xaml.cs">
+      <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
+      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\CompoundSearchWindow.xaml.cs">
+      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
@@ -291,7 +304,7 @@
     <Compile Include="View\Lcms\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\Navigator.xaml.cs">
+    <Compile Include="View\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
@@ -306,10 +319,6 @@
     <Compile Include="View\Lcms\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dims\AdductView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Dims\AlignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -322,10 +331,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dims\DeconvolutionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Dims\IdentificationView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -334,19 +339,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dims\PeakDetectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dims\UserDefinedAdductSetWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LC\AdductView.xaml">
+    <Page Include="View\AdductView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -362,7 +359,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LC\DeconvolutionView.xaml">
+    <Page Include="View\DeconvolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -378,11 +375,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LC\PeakDetectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\UserDefinedAdductSetWindow.xaml">
+    <Page Include="View\PeakDetectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -458,10 +451,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\Navigator.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Dims\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -478,9 +467,41 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Imms\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\AnalysisParamSetForImmsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\DataCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\IdentificationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\IsotopeTrackView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\MobilityView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UserDefinedAdductSetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\CompoundSearchWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Lcms\PeakPropertyView.xaml">
       <SubType>Designer</SubType>
@@ -530,7 +551,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\Navigator.xaml">
+    <Page Include="View\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -607,6 +628,10 @@
       <Project>{1276d3c2-39a4-471f-aaac-3777f2040f0f}</Project>
       <Name>MsdialGuiApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj">
+      <Project>{d024bb64-3ccd-49c2-b6ee-a11900817daf}</Project>
+      <Name>MsdialImmsCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
       <Project>{0750647B-1DFC-49DC-ADFB-16235E22AA88}</Project>
       <Name>MsdialLcImMsApi</Name>
@@ -647,5 +672,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\msdial_icon.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

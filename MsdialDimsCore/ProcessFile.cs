@@ -56,7 +56,7 @@ namespace CompMs.MsdialDimsCore {
         public static void Run(
             AnalysisFileBean file,
             MsdialDataStorage container,
-            IAnnotator mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {

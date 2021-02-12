@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.Graphics.UI.Message"
         mc:Ignorable="d"
-        Title="Message" Height="100" Width="250">
+        Title="Message" Height="120" Width="300">
     <Grid>
         <TextBox Name="Label_MessageTitle" Text="{Binding Text, RelativeSource={RelativeSource AncestorType=Window}}" 
                VerticalAlignment="Center" HorizontalAlignment="Center" 

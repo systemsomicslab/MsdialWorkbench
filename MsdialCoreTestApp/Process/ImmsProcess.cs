@@ -1,10 +1,13 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialImmsCore.Algorithm.Alignment;
+using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Parser;
 using CompMs.MsdialImmsCore.Process;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -31,6 +34,20 @@ namespace CompMs.App.MsdialConsole.Process
             foreach (var file in files) {
                 FileProcess.Run(file, container, false);
             }
+
+            var alignmentFile = container.AlignmentFiles.First();
+            var factory = new ImmsAlignmentProcessFactory(container.ParameterBase as MsdialImmsParameter, container.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, null);
+
+            foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {
+                Console.WriteLine(group.Key);
+                foreach (var spot in group.OrderBy(s => s.MassCenter)) {
+                    Console.WriteLine($"\t{spot.Name}\t{spot.AdductType.AdductIonName}\t{spot.MassCenter}\t{spot.TimesCenter.Drift.Value}");
+                }
+            }
+
+            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             new MsdialImmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }

@@ -36,6 +36,8 @@ namespace CompMs.App.MsdialConsole.Process {
             param.ProjectFolderPath = inputfolder;
             param.ProjectFilePath = Path.Combine(inputfolder, projectFileName);
 
+            param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
+
             if (param.GetType() == typeof(MsdialGcmsParameter)) {
                 param.Ionization = Common.Enum.Ionization.EI;
             }

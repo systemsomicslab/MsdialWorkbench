@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -14,7 +15,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class CompoundSearchVM : ViewModelBase
+    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
     {
         public ObservableCollection<CompoundResult> Compounds {
             get => compounds;
@@ -41,22 +42,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public string MetaboliteName { get; }
 
         private readonly MSDecResult msdecResult;
-        private readonly IAnnotator Annotator;
+        private readonly T property;
+        private readonly IAnnotator<T, MSDecResult> Annotator;
         private readonly IReadOnlyList<IsotopicPeak> isotopes;
 
         public CompoundSearchVM(
             AnalysisFileBean analysisFile,
-            ChromatogramPeakFeature peakFeature, MSDecResult msdecResult,
-            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam,
-            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes)
-            : this(analysisFile, peakFeature, msdecResult, isotopes, new DimsMspAnnotator(mspDB, mspParam, omics)) {
-        }
-
-        public CompoundSearchVM(
-            AnalysisFileBean analysisFile,
-            ChromatogramPeakFeature peakFeature, MSDecResult msdecResult,
+            T peakFeature, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator annotator) {
+            IAnnotator<T, MSDecResult> annotator) {
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
@@ -66,28 +60,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
             AccurateMass = peakFeature.PrecursorMz;
-            AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
+            AdductName = peakFeature.AdductType.AdductIonName;
             MetaboliteName = peakFeature.Name;
+            property = peakFeature;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
         }
 
         public CompoundSearchVM(
-            AlignmentFileBean alignmentFile,
-            AlignmentSpotProperty spot, MSDecResult msdecResult,
-            List<MoleculeMsReference> mspDB, MsRefSearchParameterBase mspParam,
-            TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes)
-            : this(alignmentFile, spot, msdecResult, isotopes, new DimsMspAnnotator(mspDB, mspParam, omics)) {
-        }
-
-        public CompoundSearchVM(
             AlignmentFileBean alignmentFile, 
-            AlignmentSpotProperty spot, MSDecResult msdecResult,
+            T spot, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator annotator) {
-
-            var peakFeature = spot.AlignedPeakProperties[spot.RepresentativeFileID];
+            IAnnotator<T, MSDecResult> annotator) {
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
@@ -96,9 +81,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;
-            AccurateMass = peakFeature.Mass;
-            AdductName = peakFeature.PeakCharacter.AdductType.AdductIonName;
-            MetaboliteName = peakFeature.Name;
+            AccurateMass = spot.PrecursorMz;
+            AdductName = spot.AdductType.AdductIonName;
+            MetaboliteName = spot.Name;
+            property = spot;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();
@@ -108,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand searchCommand;
 
         private void Search() {
-            var mspResults = Annotator.FindCandidates(msdecResult, null, ParameterVM.innerModel);
+            var mspResults = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
             // var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)

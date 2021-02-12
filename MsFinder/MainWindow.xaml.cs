@@ -456,7 +456,7 @@ namespace Rfx.Riken.OsakaUniv
 
             foreach (var pair in filepathDictionary) {
                 var filepath = pair.Key;
-                var output = exportFolder + "\\" + pair.Value;
+                var output = Path.Combine(exportFolder, pair.Value);
                 this.mainWindowVM.Refresh_ImportFolder(filepath);
 
                 var filename = System.IO.Path.GetFileNameWithoutExtension(filepath);

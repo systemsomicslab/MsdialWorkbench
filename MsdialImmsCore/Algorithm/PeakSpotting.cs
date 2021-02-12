@@ -208,8 +208,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 }
             }
 
-            feature.MS2RawSpectrumID2CE = specs.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
-            feature.MS2RawSpectrumID = specs.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
+            var representatives = specs
+                .GroupBy(spec => Math.Round(spec.CollisionEnergy, 2))  // grouping by ce
+                .Select(group => group.Argmin(spec => Math.Abs(spec.Precursor.SelectedIonMz - mass))) // choose closest mz, for each ce
+                .ToList();
+
+            feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
+            feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
         }
 
         private static double FixMassTolerance(double tolerance, double mass) {

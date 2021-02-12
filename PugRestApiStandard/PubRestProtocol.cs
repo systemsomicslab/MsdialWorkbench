@@ -263,7 +263,7 @@ namespace Rfx.Riken.OsakaUniv
                 if (counter == 20)
                 {
                     url = url.Substring(0, url.Length - 1) + "/SDF";
-                    rest_file_Dcit[url] = folderPath + "\\" + fileID.ToString() + ".sdf";
+                    rest_file_Dcit[url] = Path.Combine(folderPath, fileID.ToString() + ".sdf");
 
                     url = prolog + @"/compound/cid/";
                     fileID++;
@@ -274,7 +274,7 @@ namespace Rfx.Riken.OsakaUniv
             if (url != prolog + @"/compound/cid/")
             {
                 url = url.Substring(0, url.Length - 1) + "/SDF";
-                rest_file_Dcit[url] = folderPath + "\\" + fileID.ToString() + ".sdf";
+                rest_file_Dcit[url] = Path.Combine(folderPath, fileID.ToString() + ".sdf");
             }
 
             return rest_file_Dcit;

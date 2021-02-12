@@ -1,11 +1,13 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
@@ -65,18 +67,32 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
+        public Brush SpotColor { get; set; }
 
         static AlignmentSpotPropertyVM() {
             KMIupacUnit = CompMs.Common.DataObj.Property.AtomMass.hMass * 2 + CompMs.Common.DataObj.Property.AtomMass.cMass; // CH2
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public AlignmentSpotPropertyVM(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class = null) {
+        public AlignmentSpotPropertyVM(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class = null, bool coloredByOntology = false) {
             this.innerModel = innerModel;
 
             if (id2class != null) {
                  _ = SetBarItems(innerModel, id2class);  // TODO: error handling
             }
+            if (coloredByOntology) {
+                SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?
+                  new SolidColorBrush(ChemOntologyColor.Ontology2RgbaBrush[innerModel.Ontology]) :
+                  new SolidColorBrush(Color.FromArgb(180, 181, 181, 181));
+            }
+            else {
+                SpotColor = new SolidColorBrush(Color.FromArgb(180
+                            , (byte)(255 * innerModel.RelativeAmplitudeValue)
+                            , (byte)(255 * (1 - Math.Abs(innerModel.RelativeAmplitudeValue - 0.5)))
+                            , (byte)(255 - 255 * innerModel.RelativeAmplitudeValue)));
+            }
+
+            SpotColor.Freeze();
         }
 
         private async Task SetBarItems(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class)  {

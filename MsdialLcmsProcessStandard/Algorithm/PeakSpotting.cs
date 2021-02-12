@@ -249,14 +249,14 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         if (spec.ScanStartTime > peakrightRt) break;
                         if (spec.DriftTime == drifttopRt)
                         {
-                            if(Math.Abs(spec.ScanStartTime - peaktopRt) > 0.1)
-                            {
-                                Console.WriteLine("## RT shift ##");
-                            }
-                            if(spec.ScanStartTime == peaktopRt)
-                            {
-                                Console.WriteLine("## Correct ##");
-                            }
+                            //if(Math.Abs(spec.ScanStartTime - peaktopRt) > 0.1)
+                            //{
+                            //    Console.WriteLine("## RT shift ##");
+                            //}
+                            //if(spec.ScanStartTime == peaktopRt)
+                            //{
+                            //    Console.WriteLine("## Correct ##");
+                            //}
                             ms2datapointNumber = j;
                             break;
                         }

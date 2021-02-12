@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
@@ -159,7 +160,7 @@
         </Grid.ColumnDefinitions>
 
         <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-        <local:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+        <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
 

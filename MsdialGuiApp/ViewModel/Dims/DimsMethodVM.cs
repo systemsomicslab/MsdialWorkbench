@@ -1,14 +1,21 @@
-﻿using CompMs.App.Msdial.LC;
+﻿using CompMs.App.Msdial.Dims;
+using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore.Parameter;
+using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,14 +25,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using CompMs.App.Msdial.Dims;
-using CompMs.MsdialDimsCore;
-using CompMs.MsdialCore.MSDec;
-using System.Windows.Input;
-using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.View.Export;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -126,7 +125,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private AlignmentFileBean alignmentFile;
         private AnalysisFileBean analysisFile;
-        private IAnnotator mspAnnotator;
+        private IAnnotator<IMSProperty, MSDecResult> mspAnnotator;
 
         private static readonly MsdialSerializer serializer;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
@@ -168,7 +167,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetForDimsVM((MsdialDimsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForDimsWindow
             {
                 DataContext = analysisParamSetVM,
@@ -222,7 +221,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs).WithIndex()) {
                     tasks[idx] = Task.Run(async () => {
                         await semaphore.WaitAsync();
-                        ProcessFile.Run(analysisfile, storage, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                        ProcessFile.Run(analysisfile, storage, mspAnnotator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
                         Interlocked.Increment(ref counter);
                         vm.CurrentValue = counter;
                         semaphore.Release();

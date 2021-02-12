@@ -1,0 +1,78 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Imms.AnalysisParamSetForImmsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
+        xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+        mc:Ignorable="d"
+        xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
+        Title="Analysis parameter setting" 
+        d:DataContext="{d:DesignData AnalysisParamSetForImmsVM}"
+        Name="AnalysisParamSetView"
+        Height="630" Width="650">
+    <Window.Resources>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Name="TabItem_DataCollection" Header="Data collection">
+                <local:DataCollectionView />
+            </TabItem>
+
+            <TabItem Name="TabItem_PeakDetection" Header="Peak detection" Height="22" VerticalAlignment="Top">
+                <commonview:PeakDetectionView />
+            </TabItem>
+
+            <TabItem Name="TabItem_Deconvolution" Header="MS2Dec">
+                <commonview:DeconvolutionView />
+            </TabItem>
+
+            <TabItem Name="TabItem_Identification" Header="Identification">
+                <local:IdentificationView />
+            </TabItem>
+
+            <TabItem Name="TabItem_Adduct" Header="Adduct">
+                <commonview:AdductView />
+            </TabItem>
+            
+            <TabItem Name="TabItem_Alignment" Header="Alignment">
+                <local:AlignmentView />
+            </TabItem>
+
+            <TabItem Name="TabItem_IonMobility" Header="Ion mobility">
+                <local:MobilityView />
+            </TabItem>
+
+            <TabItem Name="TabItem_IsotopeTrack" Header="Isotope tracking">
+                <local:IsotopeTrackView />
+            </TabItem>
+        
+        </TabControl>
+        <Button x:Name="Cancel" Content="Cancel"
+                Command="{Binding CancelProcessCommand}"
+                CommandParameter="{Binding ElementName=AnalysisParamSetView}"
+                Grid.Row="1" Height="25" Width="70"
+                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Finish" Content="Finish"
+                Command="{Binding ContinueProcessCommand}"
+                CommandParameter="{Binding ElementName=AnalysisParamSetView}"
+                Grid.Row="1" Height="25" Width="70"
+                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+        <Button x:Name="Load" Content="Load"
+                Grid.Row="1" Height="25" Width="70"
+                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,5,5,5">
+            <ToolTipService.ToolTip>
+                <ToolTip Content="Load your parameters" />
+            </ToolTipService.ToolTip>
+        </Button>
+        <CheckBox Name="CheckBox_WithAlignment" Content="Together with Alignment"
+                  IsChecked="{Binding Path=Param.TogetherWithAlignment}"
+                  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"
+                  Margin="90,0,0,0" />
+    </Grid>
+</Window>

@@ -668,11 +668,11 @@ namespace CompMs.Common.Lipidomics {
 
                 if (result != null && result.AnnotationLevel == 2)
                 {
-                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
+                    //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
                 }
                 else
                 {
-                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
+                    //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
                 }
             }
 

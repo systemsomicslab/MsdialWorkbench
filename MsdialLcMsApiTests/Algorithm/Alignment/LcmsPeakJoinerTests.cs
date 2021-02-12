@@ -99,7 +99,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             this.scans = scans;
         }
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
             throw new NotImplementedException();
         }
 

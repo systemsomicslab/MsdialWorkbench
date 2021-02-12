@@ -499,7 +499,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
             //});
             foreach (var query in queries) {
                 var error = string.Empty;
-                Console.WriteLine(query.Smiles);
+                //Console.WriteLine(query.Smiles);
                 var structure = ExistStructureQueryToStructure(query, databaseQueries, out error, tmsCount, meoxCount);
                 if (error != string.Empty) Debug.WriteLine(error);
                 if (structure != null) {

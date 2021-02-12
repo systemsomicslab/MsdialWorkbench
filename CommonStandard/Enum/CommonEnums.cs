@@ -8,7 +8,12 @@ namespace CompMs.Common.Enum {
     public enum MassToleranceType { Da, Ppm }
     public enum CollisionType { CID, HCD }
     public enum SolventType { CH3COONH4, HCOONH4 }
-    public enum SeparationType { Chromatography, IonMobility, Infusion }
+    [Flags]
+    public enum SeparationType {
+        Infusion = 0x0,
+        Chromatography = 0x1,
+        IonMobility = 0x2,
+    }
     public enum MSDataType { Centroid, Profile }
     public enum AcquisitionType { DDA, SWATH, AIF }
     public enum AnalysisFileType { Sample, Standard, QC, Blank }

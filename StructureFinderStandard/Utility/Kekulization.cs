@@ -81,7 +81,7 @@ namespace Riken.Metabolomics.StructureFinder.Utility
 
                 //go to next bond
                 var connectedAtoms = curBond.GetConnectedAtoms(curAtom);
-                Console.WriteLine("Connected atoms in kekule form: {0}", connectedAtoms.Count());
+                //Console.WriteLine("Connected atoms in kekule form: {0}", connectedAtoms.Count());
 
                 if (connectedAtoms.Count() != 1) continue;
                 curAtom = connectedAtoms.ElementAt(0);

@@ -96,7 +96,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         private List<List<IMSScanProperty>> scans;
         public MockAccessor(List<List<IMSScanProperty>> scans) { this.scans = scans; }
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
             return new ChromatogramPeakInfo(-1, null, -1, -1, -1);
         }
 

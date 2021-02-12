@@ -6,12 +6,9 @@ using CompMs.Common.Enum;
 
 namespace CompMs.Common.Interfaces
 {
-    public interface IMSScanProperty
+    public interface IMSScanProperty : IMSProperty
     {
         int ScanID { get; set; }
-        double PrecursorMz { get; set; }
-        IonMode IonMode { get; set; }
-        ChromXs ChromXs { get; set; }
         List<SpectrumPeak> Spectrum { get; set; }
         void AddPeak(double mass, double intensity, string comment = null);
     }

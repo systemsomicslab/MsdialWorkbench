@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -146,7 +147,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
         private readonly string spectraFile = string.Empty;
-        private readonly IAnnotator mspAnnotator;
+        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator;
 
         private MSDecResult msdecResult = null;
 
@@ -161,7 +162,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             : this(alignmentFileBean, param, new DimsMspAnnotator(msp, param.MspSearchParam, param.TargetOmics)) {
         }
 
-        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, IAnnotator mspAnnotator) {
+        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator) {
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
             resultFile = alignmentFileBean.FilePath;
@@ -289,7 +290,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Target?.innerModel == null)
                 return;
 
-            var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,

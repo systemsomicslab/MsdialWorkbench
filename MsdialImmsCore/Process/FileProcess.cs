@@ -2,12 +2,15 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
+using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Algorithm;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
@@ -27,21 +30,30 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
+            var mspAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics);
+            var textDBAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(container.TextDB, container.ParameterBase.TextDbSearchParam);
+
+            Run(file, container, mspAnnotator, textDBAnnotator, isGuiProcess, reportAction, token);
+        }
+
+        public static void Run(
+            AnalysisFileBean file,
+            MsdialDataStorage container,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            bool isGuiProcess = false,
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
+
             var parameter = container.ParameterBase as MsdialImmsParameter;
             var iupacDB = container.IupacDatabase;
-            var mspDB = container.MspDB;
-            var textDB = container.TextDB;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
+            var provider = new ImmsRepresentativeDataProvider(rawObj);
 
             Console.WriteLine("Peak picking started");
-            var provider = new ImmsRepresentativeDataProvider(rawObj);
-            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, reportAction);
-            Console.WriteLine($"Peak number: {chromPeakFeatures.Count}");
-            Console.WriteLine($"Scan start time: {provider.LoadMs1Spectrums().First().ScanStartTime}");    
-            foreach (var peak in chromPeakFeatures) {
-                Console.WriteLine($"Drift time: {peak.ChromXs.Value}, Mass: {peak.Mass}");
-            }
+            parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
+            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, coeff, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
             var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, parameter);
@@ -52,7 +64,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(targetCE2MSDecResults, spectrumList, chromPeakFeatures, mspDB, textDB, parameter, reportAction);
+            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, parameter, reportAction);
@@ -79,10 +91,12 @@ namespace CompMs.MsdialImmsCore.Process
             IDataProvider provider,
             MsdialImmsParameter parameter,
             IupacDatabase iupacDB,
+            CoefficientsForCcsCalculation coeff,
             Action<int> reportAction) {
 
             var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
+            CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
         }
 
@@ -109,26 +123,26 @@ namespace CompMs.MsdialImmsCore.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, token);
+                        spectrumList, chromPeakFeatures, parameter, summary, targetCE, reportAction, parameter.NumThreads, token);
                 }
             }
             else {
                 var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, token);
+                       spectrumList, chromPeakFeatures, parameter, summary, -1, reportAction, parameter.NumThreads, token);
             }
             return targetCE2MSDecResults;
         }
 
         private static void PeakAnnotation(
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            List<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MoleculeMsReference> mspDB,
-            List<MoleculeMsReference> textDB,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter,
-            Action<int> reportAction
-            ) {
+            Action<int> reportAction,
+            CancellationToken token) {
 
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
@@ -137,7 +151,11 @@ namespace CompMs.MsdialImmsCore.Process
                 var msdecResults = ce2msdecs.Value;
                 var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, mspDB, textDB, parameter, reportAction);
+                new AnnotationProcess(initial_annotation_local, max_annotation_local).Run(
+                    provider, chromPeakFeatures, msdecResults,
+                    mspAnnotator, textDBAnnotator, parameter,
+                    reportAction, parameter.NumThreads, token
+                );
             }
         }
 

@@ -65,6 +65,12 @@ namespace CompMs.Graphics.Scatter
             nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
             new PropertyMetadata(default)
             );
+
+        // test
+        public static readonly DependencyProperty EachPlotBrushNameProperty = DependencyProperty.Register(
+           nameof(EachPlotBrushName), typeof(string), typeof(ScatterControl),
+           new PropertyMetadata(default(string), OnEachPlotBrushNameChanged)
+           );
         #endregion
 
         #region Property
@@ -127,6 +133,12 @@ namespace CompMs.Graphics.Scatter
             get => (Point?)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
+
+        //test
+        public string EachPlotBrushName {
+            get => (string)GetValue(EachPlotBrushNameProperty);
+            set => SetValue(EachPlotBrushNameProperty, value);
+        }
         #endregion
 
         #region field
@@ -134,6 +146,7 @@ namespace CompMs.Graphics.Scatter
         private Type dataType;
         private PropertyInfo hPropertyReflection;
         private PropertyInfo vPropertyReflection;
+        private PropertyInfo pPropertyReflection;
         private AnnotatedDrawingVisual focus, select;
         #endregion
 
@@ -155,7 +168,7 @@ namespace CompMs.Graphics.Scatter
                )
                 return;
 
-            var brush = new DrawingBrush(new GeometryDrawing(PointBrush, null, PointGeometry));
+            Brush brush = new DrawingBrush(new GeometryDrawing(PointBrush, null, PointGeometry));
             brush.Freeze();
             double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
 
@@ -165,12 +178,19 @@ namespace CompMs.Graphics.Scatter
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
-
+                
                 double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
                 double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {
+                    if (pPropertyReflection != null) {
+                        var plotBrushObj = pPropertyReflection.GetValue(o);
+                        if (plotBrushObj != null) {
+                            var pbrush = (Brush)plotBrushObj;
+                            brush = new DrawingBrush(new GeometryDrawing(pbrush, null, PointGeometry)); ;
+                        }
+                    }
                     dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
                 }
             }
@@ -250,6 +270,8 @@ namespace CompMs.Graphics.Scatter
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
             if (chart.VerticalPropertyName != null)
                 chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
+            if (chart.EachPlotBrushName != null)
+                chart.pPropertyReflection = chart.dataType.GetProperty(chart.EachPlotBrushName);
             if (chart.SelectedItem != null)
                 chart.cv.MoveCurrentTo(chart.SelectedItem);
 
@@ -293,6 +315,16 @@ namespace CompMs.Graphics.Scatter
 
             if (chart.dataType != null)
                 chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+
+            chart.Update();
+        }
+
+        static void OnEachPlotBrushNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = d as ScatterControl;
+            if (chart == null) return;
+
+            if (chart.dataType != null)
+                chart.pPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
 
             chart.Update();
         }
