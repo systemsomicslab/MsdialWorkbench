@@ -84,6 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AccurateMass = spot.PrecursorMz;
             AdductName = spot.AdductType.AdductIonName;
             MetaboliteName = spot.Name;
+            property = spot;
 
             Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
             Search();

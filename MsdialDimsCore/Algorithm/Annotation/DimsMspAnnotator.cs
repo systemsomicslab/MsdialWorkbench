@@ -40,7 +40,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(property, scan, parameter, mspDB, omics);
+            return FindCandidatesCore(property, ScaleSpectrum(scan), parameter, mspDB, omics);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
@@ -59,7 +59,17 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public MsScanMatchResult CalculateScore(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, scan, reference, parameter);
+            return CalculateScoreCore(property, ScaleSpectrum(scan), reference, parameter);
+        }
+
+        private static IMSScanProperty ScaleSpectrum(IMSScanProperty scan) {
+            if (scan.Spectrum.Count == 0)
+                return scan;
+            var maxIntensity = scan.Spectrum.Max(spec => spec.Intensity);
+            return new MSScanProperty(scan.ScanID, scan.PrecursorMz, scan.ChromXs.Mz, scan.IonMode)
+            {
+                Spectrum = scan.Spectrum.Select(spec => new SpectrumPeak(spec.Mass, spec.Intensity / maxIntensity)).ToList()
+            };
         }
 
         private static MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
