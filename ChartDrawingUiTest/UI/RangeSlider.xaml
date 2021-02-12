@@ -8,6 +8,11 @@
       xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="RangeSlider">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="Page">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
