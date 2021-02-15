@@ -35,6 +35,11 @@
                                            Bounds="0,0"
                                            ChartMargin="0,0.5"/>
     </UserControl.Resources>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />

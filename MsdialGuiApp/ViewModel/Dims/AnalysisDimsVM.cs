@@ -2,18 +2,21 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.RawDataHandler.Core;
+using Microsoft.Win32;
 using NSSplash;
 using NSSplash.impl;
 using System;
@@ -390,6 +393,41 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             window.ShowDialog();
         }
+
+        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        private void SaveSpectra(Window owner)
+        {
+            var sfd = new SaveFileDialog
+            {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true)
+            {
+                var filename = sfd.FileName;
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    filename,
+                    Target.InnerModel,
+                    msdecResult,
+                    param);
+            }
+        }
+
+        private bool CanSaveSpectra(Window owner)
+        {
+            if (Target.InnerModel == null)
+                return false;
+            if (msdecResult == null)
+                return false;
+            return true;
+        }
+
 
         private bool ReadDisplayFilters(DisplayFilter flags) {
             return (flags & DisplayFilters) != 0;
