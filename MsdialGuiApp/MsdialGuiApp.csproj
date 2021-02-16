@@ -147,6 +147,9 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imms\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
     </Compile>
@@ -310,7 +313,7 @@
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\PeakSpotNavigator.xaml.cs">
+    <Compile Include="View\PeakSpotNavigator.xaml.cs">
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\PeakView.xaml.cs">
@@ -374,6 +377,10 @@
     <Page Include="LC\MobilityView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Imms\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PeakDetectionView.xaml">
       <SubType>Designer</SubType>
@@ -559,7 +566,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\PeakSpotNavigator.xaml">
+    <Page Include="View\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

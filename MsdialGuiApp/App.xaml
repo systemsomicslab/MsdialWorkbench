@@ -1,6 +1,7 @@
 ﻿<Application x:Class="CompMs.App.Msdial.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -33,9 +34,9 @@
                 </Style.Triggers>
             </Style>
 
-            <x:Static x:Key="ThemeColor" Member="Brushes.Green"/>
-            <x:Static x:Key="LightThemeColor" Member="Brushes.PaleGreen"/>
-            <x:Static x:Key="DarkThemeColor" Member="Brushes.DarkGreen"/>
+            <SolidColorBrush x:Key="ThemeColor" Color="Green" PresentationOptions:Freeze="True"/>
+            <SolidColorBrush x:Key="LightThemeColor" Color="PaleGreen" PresentationOptions:Freeze="True"/>
+            <SolidColorBrush x:Key="DarkThemeColor" Color="DarkGreen" PresentationOptions:Freeze="True"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
