@@ -130,7 +130,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
         public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
         public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool CcsChecked => ReadDisplayFilters(DisplayFilter.CcsMatched);
 
         internal DisplayFilter DisplayFilters {
             get => displayFilters;

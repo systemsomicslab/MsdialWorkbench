@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for AlignmentView.xaml
+    /// Interaction logic for MainWindowRibbon.xaml
     /// </summary>
-    public partial class AlignmentView : UserControl
+    public partial class MainRibbon : UserControl
     {
-        public AlignmentView() {
+        public MainRibbon() {
             InitializeComponent();
         }
     }

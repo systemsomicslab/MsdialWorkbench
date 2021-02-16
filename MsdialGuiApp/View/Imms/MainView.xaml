@@ -161,9 +161,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!--
         <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-        -->
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
@@ -189,10 +187,11 @@
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisImmsVM}"
+                    <!--
+                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisVM}"
+                                                  IsEnabled="False"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
-                    <!--
                     <local:SurveyScanView DataContext="{Binding AnalysisVM}"
                                           MassAxis="{StaticResource MassAxis}"
                                           Grid.Row="2" Grid.Column="0"/>
@@ -206,10 +205,8 @@
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                 <!--
-                            <pairplot:PeakView DataContext="{Binding AnalysisVM}"
-                                               ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
-                                 -->
+                            <local:PeakView DataContext="{Binding AnalysisVM}"
+                                            ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
@@ -302,18 +299,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                 <!--
-                                <detail:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
-                                -->
+                                <local:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                 <!--
-                                <detail:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
-                                -->
+                                <local:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
                             </TabItem>
                          
                         </TabControl>

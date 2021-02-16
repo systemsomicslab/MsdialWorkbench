@@ -147,8 +147,20 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
+      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Imms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
+      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
@@ -245,8 +257,8 @@
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
+      <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AnalysisParamSetVM.cs" />
     <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
@@ -378,7 +390,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Imms\CompoundDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\MainRibbon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Imms\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\PeakPropertyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\PeakView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -474,7 +502,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imms\AlignmentView.xaml">
+    <Page Include="View\Imms\AlignmentParameterView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

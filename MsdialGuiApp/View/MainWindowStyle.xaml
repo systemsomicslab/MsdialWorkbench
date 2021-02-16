@@ -90,5 +90,27 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>   
+    </Style>
+
+    <Style x:Key="DetailContent" TargetType="ui:LabeledContent">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:LabeledContent">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="{TemplateBinding PrependLabel}"
+                               VerticalAlignment="Center" VerticalContentAlignment="Center"
+                               Margin="0,0,10,0"
+                               Grid.Column="0"/>
+                        <ContentPresenter VerticalAlignment="Center"
+                                          Grid.Column="1"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

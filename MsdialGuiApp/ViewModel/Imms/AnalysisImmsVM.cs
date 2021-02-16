@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak))
+                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
             );
             Peaks = peaks;
             AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
@@ -234,6 +234,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private double focusMz;
 
+        public double ChromMin => _ms1Peaks.Min(peak => peak.ChromXValue) ?? 0;
+        public double ChromMax => _ms1Peaks.Max(peak => peak.ChromXValue) ?? 0;
         public double MassMin => _ms1Peaks.Min(peak => peak.Mass);
         public double MassMax => _ms1Peaks.Max(peak => peak.Mass);
         public double IntensityMin => _ms1Peaks.Min(peak => peak.Intensity);

@@ -98,6 +98,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             get => ReadDisplayFilter(DisplayFilter.Unknown);
             set => WriteDisplayFilter(DisplayFilter.Unknown, value);
         }
+        public bool CcsChecked {
+            get => ReadDisplayFilter(DisplayFilter.CcsMatched);
+            set => WriteDisplayFilter(DisplayFilter.CcsMatched, value);
+        }
         public bool Ms2AcquiredChecked {
             get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
             set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
