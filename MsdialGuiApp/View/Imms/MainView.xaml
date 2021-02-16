@@ -198,24 +198,22 @@
                     -->
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot" >
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
+                                 DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}">
-                            <local:PeakView DataContext="{Binding AnalysisVM}"
-                                            ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
+                            <local:PeakView ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
+                                 DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}">
-                                 <!--
-                            <pairplot:AlignmentView DataContext="{Binding AlignmentVM}"/>
-                            -->
+                            <local:AlignmentView/>
                         </TabItem>
 
                     </TabControl>
@@ -293,20 +291,21 @@
 
                         <TabControl Name="TabControl_PeakCharacter"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                                     Grid.Row="0">
 
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding AnalysisVM.Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target}"/>
                             </TabItem>
                          
                         </TabControl>

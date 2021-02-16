@@ -62,19 +62,9 @@
                         </TextBox>
                     </ui:LabeledContent>
 
-                    <ui:LabeledContent PrependLabel="DT [1/k0]">
-                        <TextBox Name="TextBox_PeakInformation_DriftTime">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding ChromXValue, Mode=OneWay, StringFormat=F4}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ChromXValue, TargetNullValue='', Mode=OneWay}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                    <ui:LabeledContent PrependLabel="Drift time [1/k0]">
+                        <TextBox Name="TextBox_PeakInformation_DriftTime"
+                                 Text="{Binding ChromXValue, Mode=OneWay, StringFormat=F4, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="m/z:">
@@ -176,19 +166,9 @@
                         </TextBox>
                     </ui:LabeledContent>
 
-                    <ui:LabeledContent PrependLabel="DT [1/k0]">
-                        <TextBox Name="TextBox_PeakInformation_DriftTime">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                    <Setter Property="Text" Value="{Binding TimesCenter, Mode=OneWay, StringFormat=F4}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ChromXValue, TargetNullValue='', Mode=OneWay}" Value="" >
-                                            <Setter Property="Text" Value="NA"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                    <ui:LabeledContent PrependLabel="Drift time [1/k0]">
+                        <TextBox Name="TextBox_PeakInformation_DriftTime"
+                                 Text="{Binding TimesCenter, Mode=OneWay, StringFormat=F4, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="m/z:">
