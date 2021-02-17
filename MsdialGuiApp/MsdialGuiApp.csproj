@@ -233,7 +233,7 @@
     <Compile Include="View\Dims\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\ExpRefView.xaml.cs">
+    <Compile Include="View\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
@@ -473,7 +473,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\ExpRefView.xaml">
+    <Page Include="View\ExpRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

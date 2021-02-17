@@ -17,13 +17,13 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View
 {
     /// <summary>
-    /// Interaction logic for RepRefView.xaml
+    /// Interaction logic for ExpRefView.xaml
     /// </summary>
-    public partial class RepRefView : UserControl
+    public partial class ExpRefView : UserControl
     {
         public static readonly DependencyProperty SpectrumProperty =
             DependencyProperty.Register(
-                nameof(Spectrum), typeof(IEnumerable), typeof(RepRefView),
+                nameof(Spectrum), typeof(IEnumerable), typeof(ExpRefView),
                 new FrameworkPropertyMetadata(null));
 
         public IEnumerable Spectrum
@@ -32,9 +32,20 @@ namespace CompMs.App.Msdial.View
             set => SetValue(SpectrumProperty, value);
         }
 
+        public static readonly DependencyProperty DeconvolutionSpectrumProperty =
+            DependencyProperty.Register(
+                nameof(DeconvolutionSpectrum), typeof(IEnumerable), typeof(ExpRefView),
+                new FrameworkPropertyMetadata(null));
+
+        public IEnumerable DeconvolutionSpectrum
+        {
+            get => (IEnumerable)GetValue(DeconvolutionSpectrumProperty);
+            set => SetValue(DeconvolutionSpectrumProperty, value);
+        }
+
         public static readonly DependencyProperty ReferenceSpectrumProperty =
             DependencyProperty.Register(
-                nameof(ReferenceSpectrum), typeof(IEnumerable), typeof(RepRefView),
+                nameof(ReferenceSpectrum), typeof(IEnumerable), typeof(ExpRefView),
                 new FrameworkPropertyMetadata(null));
 
         public IEnumerable ReferenceSpectrum
@@ -45,7 +56,7 @@ namespace CompMs.App.Msdial.View
 
         public static readonly DependencyProperty MassMinProperty =
             DependencyProperty.Register(
-                nameof(MassMin), typeof(double), typeof(RepRefView),
+                nameof(MassMin), typeof(double), typeof(ExpRefView),
                 new FrameworkPropertyMetadata(0d));
 
         public double MassMin
@@ -56,7 +67,7 @@ namespace CompMs.App.Msdial.View
 
         public static readonly DependencyProperty MassMaxProperty =
             DependencyProperty.Register(
-                nameof(MassMax), typeof(double), typeof(RepRefView),
+                nameof(MassMax), typeof(double), typeof(ExpRefView),
                 new FrameworkPropertyMetadata(0d));
 
         public double MassMax
@@ -65,7 +76,7 @@ namespace CompMs.App.Msdial.View
             set => SetValue(MassMaxProperty, value);
         }
 
-        public RepRefView() {
+        public ExpRefView() {
             InitializeComponent();
         }
     }
