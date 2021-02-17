@@ -42,7 +42,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override IPeakJoiner CreatePeakJoiner() {
-            return new GcmsPeakJoiner(GcmsParameter.AlignmentIndexType, GcmsParameter.RiCompoundType, GcmsParameter.MspSearchParam);
+            switch (GcmsParameter.AlignmentIndexType) {
+                case Common.Enum.AlignmentIndexType.RT:
+                    return GcmsPeakJoiner.CreateRTJoiner(
+                        GcmsParameter.RiCompoundType,
+                        GcmsParameter.MspSearchParam,
+                        GcmsParameter.Ms1AlignmentTolerance,
+                        GcmsParameter.RetentionTimeAlignmentTolerance);
+                case Common.Enum.AlignmentIndexType.RI:
+                default:
+                    return GcmsPeakJoiner.CreateRIJoiner(
+                        GcmsParameter.RiCompoundType,
+                        GcmsParameter.MspSearchParam,
+                        GcmsParameter.Ms1AlignmentTolerance,
+                        GcmsParameter.RetentionIndexAlignmentTolerance);
+            }
         }
     }
 }

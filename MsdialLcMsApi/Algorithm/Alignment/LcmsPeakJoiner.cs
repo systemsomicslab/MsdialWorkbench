@@ -33,11 +33,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             _rttol = rttol;
             _rtfactor = rtfactor;
             _rtbucket = rtbucket;
-            _rtwidth = (int)Math.Ceiling(_rtbucket / _rttol);
+            _rtwidth = (int)Math.Ceiling(_rttol / _rtbucket);
             _mztol = mztol;
             _mzfactor = mzfactor;
             _mzbucket = mzbucket;
-            _mzwidth = (int)Math.Ceiling(_mzbucket / _mztol);
+            _mzwidth = (int)Math.Ceiling(_mztol / _mzbucket);
         }
 
         public LcmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor) : this(rttol, rtfactor, rttol * 2, mztol, mzfactor, mztol * 2) { }
