@@ -191,11 +191,14 @@
                     <commonview:PeakSpotNavigator DataContext="{Binding AnalysisVM}"
                                                   IsEnabled="False"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
-
-                    <local:SurveyScanView DataContext="{Binding AnalysisVM}"
-                                          MassAxis="{StaticResource MassAxis}"
-                                          Grid.Row="2" Grid.Column="0"/>
                     -->
+
+                    <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
+                                               Spectrum="{Binding Ms1Spectrum}"
+                                               SplashKey="{Binding Ms1SplashKey}"
+                                               MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
+                                               MassAxis="{StaticResource MassAxis}"
+                                               Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

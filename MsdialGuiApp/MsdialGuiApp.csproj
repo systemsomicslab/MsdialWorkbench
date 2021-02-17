@@ -334,7 +334,7 @@
     <Compile Include="View\Lcms\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\SurveyScanView.xaml.cs">
+    <Compile Include="View\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
     <Page Include="Dims\AlignmentView.xaml">
@@ -609,7 +609,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\SurveyScanView.xaml">
+    <Page Include="View\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

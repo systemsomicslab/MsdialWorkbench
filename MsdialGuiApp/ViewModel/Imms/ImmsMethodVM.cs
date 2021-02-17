@@ -11,6 +11,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
@@ -280,7 +281,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (cacheAnalysisFile == analysis) return;
 
             cacheAnalysisFile = analysis;
-            AnalysisVM = new AnalysisImmsVM(analysis, Storage.ParameterBase, mspChromatogramAnnotator, textDBChromatogramAnnotator) { DisplayFilters = displayFilters };
+            AnalysisVM = new AnalysisImmsVM(
+                analysis,
+                new ImmsRepresentativeDataProvider(analysis),
+                Storage.ParameterBase,
+                mspChromatogramAnnotator,
+                textDBChromatogramAnnotator)
+            {
+                DisplayFilters = displayFilters
+            };
         }
 
         private AnalysisFileBean cacheAnalysisFile;

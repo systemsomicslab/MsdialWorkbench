@@ -195,9 +195,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly List<RawSpectrum> spectrumList;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator;
 
-        public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, List<MoleculeMsReference> msps)
-            : this(analysisFile, param, new DimsMspAnnotator(msps, param.MspSearchParam, param.TargetOmics)) { }
-
         public AnalysisDimsVM(AnalysisFileBean analysisFile, ParameterBase param, IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator) {
             this.analysisFile = analysisFile;
             this.param = param;
@@ -322,6 +319,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             await Task.Run(() => {
                 var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
+                if (param.RemoveAfterPrecursor)
+                    spectra = spectra.Where(peak => peak.Mass <= target.Mass + param.KeptIsotopeRange).ToList();
                 Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 RawSplashKey = CalculateSplashKey(spectra);
             }).ConfigureAwait(false);
