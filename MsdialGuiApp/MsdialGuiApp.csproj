@@ -254,7 +254,7 @@
     <Compile Include="View\Dims\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\RepRefView.xaml.cs">
+    <Compile Include="View\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
@@ -501,7 +501,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\RepRefView.xaml">
+    <Page Include="View\RepRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

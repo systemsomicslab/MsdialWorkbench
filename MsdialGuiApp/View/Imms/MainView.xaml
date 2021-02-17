@@ -345,13 +345,20 @@
                             -->
                         </TabItem>
 
-                        <TabItem Header="Rep. vs. Ref." 
-                                 Height="25"
+                        <TabItem Name="TabItem_RepresentativeVsReference"
+                                 Header="Rep. vs. Ref." 
+                                 DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}" 
-                                 Name="TabItem_RepresentativeVsReference">
-                                 <!--
-                            <ms2:RepRefView />
-                            -->
+                                 Height="25">
+                            <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
+                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
+                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
+                                <commonview:RepRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </commonview:RepRefView.ContextMenu>
+                            </commonview:RepRefView>
                         </TabItem>
 
                     </TabControl>
