@@ -25,8 +25,11 @@ PhytoSph	[M+H]+	Positive	TRUE
 SM	[M+H]+	Positive	TRUE
 SM	[M+Na]+	Positive	TRUE
 NAE	[M+H]+	Positive	TRUE
+GPNAE	[M+H]+	Positive	TRUE
 MGDG	[M+NH4]+	Positive	FALSE
 DGDG	[M+NH4]+	Positive	FALSE
+MGMG	[M+NH4]+	Positive	FALSE
+DGMG	[M+NH4]+	Positive	FALSE
 EtherMGDG	[M+NH4]+	Positive	FALSE
 EtherDGDG	[M+NH4]+	Positive	FALSE
 LDGTS	[M+H]+	Positive	FALSE
@@ -111,6 +114,7 @@ BASulfate	[M-H]-	Negative	TRUE
 Cholesterol	[M+NH4]+	Positive	TRUE
 Cholesterol	[M+Na]+	Positive	TRUE
 Cholesterol	[M-H2O+H]+	Positive	TRUE
+##CholesterolSulfate	[M-H]-	Negative	TRUE
 CoQ	[M+H]+	Positive	FALSE
 Vitamin_D	[M+H]+	Positive	TRUE
 Vitamin_D	[M+Na]+	Positive	TRUE
@@ -189,6 +193,10 @@ MGDG	[M+CH3COO]-	Negative	FALSE
 MGDG	[M+HCOO]-	Negative	FALSE
 DGDG	[M+CH3COO]-	Negative	FALSE
 DGDG	[M+HCOO]-	Negative	FALSE
+MGMG	[M+CH3COO]-	Negative	FALSE
+MGMG	[M+HCOO]-	Negative	FALSE
+DGMG	[M+CH3COO]-	Negative	FALSE
+DGMG	[M+HCOO]-	Negative	FALSE
 EtherMGDG	[M+CH3COO]-	Negative	FALSE
 EtherMGDG	[M+HCOO]-	Negative	FALSE
 EtherDGDG	[M+CH3COO]-	Negative	FALSE
@@ -325,3 +333,6 @@ KLCAE	[M-H]-	Negative	TRUE
 KLCAE	[M+NH4]+	Positive	TRUE
 KDCAE	[M-H]-	Negative	TRUE
 KDCAE	[M+NH4]+	Positive	TRUE
+NAE	[M+HCOO]-	Negative	TRUE
+NAE	[M+CH3COO]-	Negative	TRUE
+GPNAE	[M-H]-	Negative	TRUE

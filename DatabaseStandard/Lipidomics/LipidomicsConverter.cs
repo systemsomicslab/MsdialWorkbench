@@ -3658,6 +3658,11 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.Cer_EBDS: return "Cer-EBDS";
                 case LbmClass.AHexCer: return "AHexCer";
                 case LbmClass.ASM: return "ASM";
+                case LbmClass.EtherSMGDG: return "EtherSMGDG";
+                case LbmClass.SMGDG: return "SMGDG";
+                case LbmClass.GPNAE: return "GPNAE";
+                case LbmClass.MGMG: return "MGMG";
+                case LbmClass.DGMG: return "DGMG";
 
                 default: return "Undefined";
             }
@@ -3806,6 +3811,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.ASM: return "ASM";
                 case LbmClass.EtherSMGDG: return "EtherSMGDG";
                 case LbmClass.SMGDG: return "SMGDG";
+                case LbmClass.GPNAE: return "GPNAE";
+                case LbmClass.MGMG: return "MGMG";
+                case LbmClass.DGMG: return "DGMG";
 
                 default: return "Undefined";
             }
@@ -4006,6 +4014,10 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "Cer-EBDS": return LbmClass.Cer_EBDS;
                 case "AHexCer": return LbmClass.AHexCer;
                 case "ASM": return LbmClass.ASM;
+
+                case "GPNAE": return LbmClass.GPNAE;
+                case "MGMG": return LbmClass.MGMG;
+                case "DGMG": return LbmClass.DGMG;
 
                 default: return LbmClass.Undefined;
             }
@@ -4230,6 +4242,10 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "AHexCer": return LbmClass.AHexCer;
                 case "ASM": return LbmClass.ASM;
 
+                case "GPNAE": return LbmClass.GPNAE;
+                case "MGMG": return LbmClass.MGMG;
+                case "DGMG": return LbmClass.DGMG;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -4408,6 +4424,11 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "SL": return "Sulfonolipid";
                 case "GM3": return "Ganglioside";
                 case "GM3[NeuAc]": return "Ganglioside";
+
+                case "GPNAE": return "Phospholipid";
+                case "MGMG": return "Glycerolipid";
+                case "DGMG": return "Glycerolipid";
+
 
                 default: return "Unassigned lipid";
             }
@@ -4645,6 +4666,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GM3": return "Sphingolipids";
                 case "GM3[NeuAc]": return "Sphingolipids";
 
+                case "GPNAE": return "Glycerophospholipids";
+                case "MGMG": return "Glycerolipids";
+                case "DGMG": return "Glycerolipids";
 
 
                 default: return "Unassigned lipid";

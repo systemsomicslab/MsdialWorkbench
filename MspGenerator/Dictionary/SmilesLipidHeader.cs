@@ -85,6 +85,11 @@ namespace CompMs.MspGenerator
             {"MMPE", "C(O%10)C(O%11)COP(O)(=O)OCCNC."},
             {"DMPE", "C(O%10)C(O%11)COP(O)(=O)OCCN(C)C."},
 
+            {"GPNAE", "OCC(O)COP(O)(=O)OCCN%10."},
+            {"DGMG", "C(O%10)C(O)COC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(O)C1O."},
+            {"MGMG", "C(O%10)C(O)COC1OC(CO)C(O)C(O)C1O."},
+
+
 
             //{"NAPE", "OP(=O)(OCC%20)OCC(O%10)C(O%11)."},
 

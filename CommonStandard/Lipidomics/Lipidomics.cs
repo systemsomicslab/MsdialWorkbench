@@ -657,6 +657,18 @@ namespace CompMs.Common.Lipidomics {
                     case LbmClass.DSMSE:
                         return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                    //add20210216
+                    case LbmClass.GPNAE:
+                        return LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    case LbmClass.MGMG:
+                        return LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    case LbmClass.DGMG:
+                        return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    default:
+                        return null;
 
 
                 }

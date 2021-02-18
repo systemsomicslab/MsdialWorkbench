@@ -173,7 +173,7 @@ namespace CompMs.MspGenerator
 
             REngine.SetEnvironmentVariables(rPath);
 
-            using (REngine r = GetInitiazedREngine())
+            using (REngine r = REngine.GetInstance())
             {
                 r.Initialize();
 
@@ -390,11 +390,11 @@ namespace CompMs.MspGenerator
             }
         }
         public static REngine r = null;
-        public static REngine GetInitiazedREngine()
+        public static REngine GetInitiazedREngine(string rPath)
         {
             if (r == null)
             {
-                REngine.SetEnvironmentVariables();
+                REngine.SetEnvironmentVariables(rPath);
                 r = REngine.GetInstance();
                 r.Initialize();
             }
