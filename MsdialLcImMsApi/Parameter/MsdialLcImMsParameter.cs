@@ -5,20 +5,31 @@ using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MessagePack;
 
 namespace CompMs.MsdialLcImMsApi.Parameter {
+    [MessagePack.MessagePackObject]
     public class MsdialLcImMsParameter : MsdialLcmsParameter {
+        [Key(150)]
         public float DriftTimeBegin { get; set; } = 0;
+        [Key(151)]
         public float DriftTimeEnd { get; set; } = 2000;
+        [Key(152)]
         public float AccumulatedRtRagne { get; set; } = 0.2F;
+        [Key(153)]
         public bool IsAccumulateMS2Spectra { get; set; } = false;
+        [Key(154)]
         public IonMobilityType IonMobilityType { get; set; } = IonMobilityType.Tims;
+        [Key(155)]
         public bool IsAllCalibrantDataImported { get; set; } = false;
 
+        [Key(156)]
         public float DriftTimeAlignmentTolerance { get; set; } = 0.02F; // msec
+        [Key(157)]
         public float DriftTimeAlignmentFactor { get; set; } = 0.5F;
-        
 
+
+        [Key(158)]
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
         public MsdialLcImMsParameter() { this.MachineCategory = Common.Enum.MachineCategory.LCIMMS; }
 

@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             foreach (var exportType in ExportTypes.Where(type => type.IsSelected)) {
-                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt.ToString("yyyy_MM_dd_hh_mm_ss")}.txt");
+                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt.ToString("yyyy_MM_dd_HH_mm_ss")}.txt");
                 ExportAlignmentResult(
                     outfile, exportType.TypeName,
                     resultContainer, msdecResults,

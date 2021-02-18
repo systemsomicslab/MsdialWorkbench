@@ -12,12 +12,13 @@ namespace CompMs.App.MsdialConsole {
             // args = new string[] {
             //     "gcms"
             //     , "-i"
-            //     , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //     , @"D:\msdial_test\Msdial\out\GCMS"
             //     , "-o"
-            //     , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri"
+            //     , @"D:\msdial_test\Msdial\out\GCMS"
             //     , "-m"
-            //     , @"D:\0_Code\MsdialWorkbenchDemo\gcms\kovatsri\gcmsparam_kovats.txt"
-            //     , "-p" };
+            //     , @"D:\msdial_test\Msdial\out\GCMS\Msdial-GCMS-Param.txt"
+            //     , "-p"
+            // };
 
             // lcms
             // args = new string[]
@@ -46,15 +47,27 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // imms
-            args = new string[]
-            {
-                "imms"
+            // args = new string[]
+            // {
+            //     "imms"
+            //     , "-i"
+            //     , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
+            //     , "-o"
+            //     , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
+            //     , "-m"
+            //     , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf\Msdial-imms-Param.txt"
+            //     , "-p"
+            // };
+
+            // lcimms
+            args = new string[] {
+                "lcimms"
                 , "-i"
-                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
+                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
                 , "-o"
-                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf"
+                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
                 , "-m"
-                , @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef_ibf\Msdial-imms-Param.txt"
+                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF\lcimms_param.txt"
                 , "-p"
             };
 
