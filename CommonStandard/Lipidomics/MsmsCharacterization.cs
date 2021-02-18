@@ -10461,21 +10461,23 @@ AdductIon adduct)
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
-                    // seek C3H4NO2-
-                    var threshold1 = 1;
-                    var diagnosticMz1 = 12 * 3 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron;
+                    // seek [M-H]- 2H
+                    var threshold1 = 10;
+                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.HydrogenMass * 2;
+
+                    //// seek C3H4NO2-
+                    //var threshold2 = 1;
+                    //var diagnosticMz2 = 12 * 3 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron;
 
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    if (isClassIonFound == true)
-                    {
-                        var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                        if (isClassIon1Found != true) return null;
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
 
-                        //
-                        var candidates = new List<LipidMolecule>();
-                        return returnAnnotationResult("NAE", LbmClass.NAE, string.Empty, theoreticalMz, adduct,
-                            totalCarbon, totalDoubleBond, 0, candidates, 1);
-                    }
+                    if (isClassIonFound == false && isClassIon1Found == false) return null;
+
+                    //
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("NAE", LbmClass.NAE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
             return null;
