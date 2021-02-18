@@ -37,7 +37,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 
         protected double GetQuantmass(List<AlignmentChromPeakFeature> peaks) {
             var repFileID = DataObjConverter.GetRepresentativeFileID(peaks);
-            var mspId = peaks[repFileID].MspID();
+            var repPeak = peaks.FirstOrDefault(peak => peak.FileID == repFileID);
+            var mspId = repPeak.MspID();
             
             if (IsReplaceMode && repFileID >= 0 && mspId >= 0) {
                 var refQuantMass = mspDB[mspId].QuantMass;
@@ -47,7 +48,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             }
 
             var dclFile = files[repFileID].DeconvolutionFilePath;
-            var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, peaks[repFileID].SeekPointToDCLFile);
+            var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, repPeak.SeekPointToDCLFile);
             var spectrum = msdecResult.Spectrum;
             var basepeak = GetBasePeak(spectrum);
             if (isRepresentativeQuantMassBasedOnBasePeakMz) {
@@ -64,7 +65,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                 return quantMassCandidate;
             }
 
-            var repQuantMass = peaks[repFileID].Mass;
+            var repQuantMass = repPeak.Mass;
             var isSuitableQuantMassExist = SuitableQuantMassExists(repQuantMass, basepeak.Intensity, spectrum, bin, 10.0 * 0.01);
             if (isSuitableQuantMassExist)
                 return repQuantMass;
