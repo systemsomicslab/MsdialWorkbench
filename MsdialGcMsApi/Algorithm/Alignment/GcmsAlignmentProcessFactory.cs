@@ -34,7 +34,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override GapFiller CreateGapFiller() {
-            return new GcmsGapFiller(Files, MspDB, GcmsParameter);
+            switch (GcmsParameter.AlignmentIndexType) {
+                case Common.Enum.AlignmentIndexType.RT:
+                    return new GcmsRTGapFiller(Files, MspDB, GcmsParameter);
+                case Common.Enum.AlignmentIndexType.RI:
+                default:
+                    return new GcmsRIGapFiller(Files, MspDB, GcmsParameter);
+            }
         }
 
         public override PeakAligner CreatePeakAligner() {
