@@ -68,6 +68,7 @@ namespace CompMs.MsdialDimsCore.Common {
             {
                 var results = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, param)
                     .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
+                    .Where(candidate => candidate.TotalScore >= param.TotalScoreCutoff)
                     .Where(candidate => !string.IsNullOrEmpty(candidate.Name)) // in lipidomics
                     .ToList();
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();

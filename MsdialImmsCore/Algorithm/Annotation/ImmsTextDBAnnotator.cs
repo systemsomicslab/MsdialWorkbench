@@ -65,7 +65,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateCore(result, property, candidate, parameter);
                 results.Add(result);
             }
-            return results.Where(result => result.TotalScore >= parameter.TotalScoreCutoff).OrderBy(result => result.TotalScore).ToList();
+            return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
         public MsScanMatchResult CalculateScore(

@@ -1,14 +1,12 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -50,12 +48,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AnalysisFileBean analysisFile,
             T peakFeature, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator) {
+            IAnnotator<T, MSDecResult> annotator,
+            MsRefSearchParameterBase parameter = null) {
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(parameter ?? new MsRefSearchParameterBase { });
 
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
@@ -72,12 +71,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AlignmentFileBean alignmentFile, 
             T spot, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator) {
+            IAnnotator<T, MSDecResult> annotator,
+            MsRefSearchParameterBase parameter = null) {
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(parameter ?? new MsRefSearchParameterBase { });
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;
@@ -95,11 +95,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void Search() {
             var mspResults = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
-            // var mspResults = await AnnotationProcess.RunMspAnnotationAsync(AccurateMass, msdecResult, mspDB, mspParam, omics, isotopes, Ms1Tolerance);
             Compounds = new ObservableCollection<CompoundResult>(
                 mspResults.OrderByDescending(result => result.TotalScore)
-                    .Select(result => new CompoundResult(Annotator.Refer(result), result))
-            );
+                    .Select(result => new CompoundResult(Annotator.Refer(result), result)));
         }
     }
 
