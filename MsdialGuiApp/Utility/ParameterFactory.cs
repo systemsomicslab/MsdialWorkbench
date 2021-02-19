@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Utility
             parameter.Instrument = vm.Instrument;
             parameter.Authors = vm.Authors;
             parameter.License = vm.License;
-            // parameter.ColliionEnergy = vm.CollisionEnergy;
+            parameter.CollisionEnergy = vm.CollisionEnergy;
             parameter.Comment = vm.Comment;
         }
 

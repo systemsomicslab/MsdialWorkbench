@@ -51,5 +51,28 @@ namespace CompMs.Common.Parameter {
         [Key(18)]
         public bool IsUseCcsForAnnotationScoring { get; set; } = false;
 
+
+        public MsRefSearchParameterBase() { }
+        public MsRefSearchParameterBase(MsRefSearchParameterBase parameter) {
+            MassRangeBegin = parameter.MassRangeBegin;
+            MassRangeEnd = parameter.MassRangeEnd;
+            RtTolerance = parameter.RtTolerance;
+            RiTolerance = parameter.RiTolerance;
+            CcsTolerance = parameter.CcsTolerance;
+            Ms1Tolerance = parameter.Ms1Tolerance;
+            Ms2Tolerance = parameter.Ms2Tolerance;
+            RelativeAmpCutoff = parameter.RelativeAmpCutoff;
+            AbsoluteAmpCutoff = parameter.AbsoluteAmpCutoff;
+            WeightedDotProductCutOff = parameter.WeightedDotProductCutOff;
+            SimpleDotProductCutOff = parameter.SimpleDotProductCutOff;
+            ReverseDotProductCutOff = parameter.ReverseDotProductCutOff;
+            MatchedPeaksPercentageCutOff = parameter.MatchedPeaksPercentageCutOff;
+            TotalScoreCutoff = parameter.TotalScoreCutoff;
+            MinimumSpectrumMatch = parameter.MinimumSpectrumMatch;
+            IsUseTimeForAnnotationFiltering = parameter.IsUseTimeForAnnotationFiltering;
+            IsUseTimeForAnnotationScoring = parameter.IsUseTimeForAnnotationScoring;
+            IsUseCcsForAnnotationFiltering = parameter.IsUseCcsForAnnotationFiltering;
+            IsUseCcsForAnnotationScoring = parameter.IsUseCcsForAnnotationScoring;
+        }
     }
 }

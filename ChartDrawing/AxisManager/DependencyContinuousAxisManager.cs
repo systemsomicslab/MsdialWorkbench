@@ -119,5 +119,10 @@ namespace CompMs.Graphics.AxisManager
             }
         }
         #endregion
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new DependencyContinuousAxisManager();
+        }
     }
 }

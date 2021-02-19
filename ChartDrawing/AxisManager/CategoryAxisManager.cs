@@ -155,6 +155,11 @@ namespace CompMs.Graphics.AxisManager
 
             axis.UpdateConverter();
         }
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new CategoryAxisManager();
+        }
         #endregion
     }
 }

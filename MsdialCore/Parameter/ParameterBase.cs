@@ -59,10 +59,10 @@ namespace CompMs.MsdialCore.Parameter {
         public Ionization Ionization { get; set; } = Ionization.ESI;
         [Key(16)]
         public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
-        //[Key(17)]
-        //public bool IsAIF { get; set; } = false;
 
         // Project metadata
+        [Key(17)]
+        public string CollisionEnergy { get; set; } = string.Empty;
         [Key(18)]
         public string InstrumentType { get; set; } = string.Empty;
         [Key(19)]

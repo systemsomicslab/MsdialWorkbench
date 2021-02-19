@@ -1,5 +1,4 @@
-﻿using CompMs.Graphics.Core.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for AlignmentView.xaml
+    /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class AlignmentView : UserControl
+    public partial class MainView : UserControl
     {
-        public AlignmentView() {
+        public MainView() {
             InitializeComponent();
         }
     }

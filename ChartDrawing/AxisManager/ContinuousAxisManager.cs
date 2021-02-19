@@ -140,5 +140,10 @@ namespace CompMs.Graphics.AxisManager
 
             return result;
         }
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new ContinuousAxisManager();
+        }
     }
 }

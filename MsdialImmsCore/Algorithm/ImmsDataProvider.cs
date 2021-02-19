@@ -18,9 +18,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private readonly RawMeasurement rawObj;
         private readonly List<RawSpectrum> representativeSpectrum;
 
-        public ImmsRepresentativeDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) {
-            rawObj = LoadMeasurement(file, isGuiProcess, retry);
-        }
+        public ImmsRepresentativeDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
+            :this(LoadMeasurement(file, isGuiProcess, retry)) { }
 
         public ImmsRepresentativeDataProvider(RawMeasurement rawObj) {
             this.rawObj = rawObj;

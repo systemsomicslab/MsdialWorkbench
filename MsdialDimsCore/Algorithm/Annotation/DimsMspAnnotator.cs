@@ -34,7 +34,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public MsScanMatchResult Annotate(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, scan, parameter, mspDB, omics).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, mspDB, omics).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
@@ -54,7 +54,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
             }
-            return results.Where(result => result.TotalScore >= parameter.TotalScoreCutoff).OrderBy(result => result.TotalScore).ToList();
+            return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
         public MsScanMatchResult CalculateScore(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
@@ -129,7 +129,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public void Validate(MsScanMatchResult result, IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            ValidateCore(result, property, scan, reference, parameter, omics);
+            ValidateCore(result, property, DataAccess.GetNormalizedMSScanProperty(scan, Parameter), reference, parameter, omics);
         }
 
         private static void ValidateCore(MsScanMatchResult result, IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, TargetOmics omics) {

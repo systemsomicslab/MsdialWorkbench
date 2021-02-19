@@ -115,6 +115,11 @@
                               xmlns:divw="clr-namespace:CompMs.App.Msdial.View.Dims">
                     <divw:MainView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type imvm:ImmsMethodVM}"
+                              xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+                              xmlns:imvw="clr-namespace:CompMs.App.Msdial.View.Imms">
+                    <imvw:MainView />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
             

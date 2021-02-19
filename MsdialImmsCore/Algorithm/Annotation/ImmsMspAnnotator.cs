@@ -10,6 +10,7 @@ using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, scan, isotopes, parameter, mspDB, omics).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, mspDB, omics).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(
@@ -48,7 +49,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, scan, isotopes, parameter, mspDB, omics);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, mspDB, omics);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
@@ -67,7 +68,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
             }
-            return results.Where(result => result.TotalScore >= parameter.TotalScoreCutoff).OrderBy(result => result.TotalScore).ToList();
+            return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
         public MsScanMatchResult CalculateScore(
@@ -77,7 +78,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, scan, isotopes, reference, reference.IsotopicPeaks, parameter, omics);
+            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, reference, reference.IsotopicPeaks, parameter, omics);
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -165,7 +166,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            ValidateCore(result, property, scan, reference, parameter, omics);
+            ValidateCore(result, property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), reference, parameter, omics);
         }
 
         private static void ValidateCore(

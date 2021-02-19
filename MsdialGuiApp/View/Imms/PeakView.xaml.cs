@@ -14,21 +14,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View
+namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for SurveyScanView.xaml
+    /// Interaction logic for PeakView.xaml
     /// </summary>
-    public partial class SurveyScanView : UserControl
+    public partial class PeakView : UserControl
     {
-        public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(SurveyScanView));
+        public static readonly DependencyProperty ChromAxisProperty = DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(PeakView));
+
+        public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(PeakView));
+        
+        public AxisManager ChromAxis {
+            get => (AxisManager)GetValue(ChromAxisProperty);
+            set => SetValue(ChromAxisProperty, value);
+        }
 
         public AxisManager MassAxis {
             get => (AxisManager)GetValue(MassAxisProperty);
             set => SetValue(MassAxisProperty, value);
         }
 
-        public SurveyScanView() {
+        public PeakView() {
             InitializeComponent();
         }
     }

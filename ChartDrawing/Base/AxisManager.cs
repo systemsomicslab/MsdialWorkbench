@@ -20,7 +20,7 @@ namespace CompMs.Graphics.Core.Base
         public object Source { get; set; }
     }
 
-    public abstract class AxisManager : DependencyObject {
+    public abstract class AxisManager : Freezable {
         #region DependencyProperty
         public static readonly DependencyProperty RangeProperty =
             DependencyProperty.Register(

@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Dims.RepRefView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.RepRefView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
@@ -21,16 +21,16 @@
     </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
         <manager:ContinuousAxisManager x:Key="MassAxisManager"
-                                       MinValue="{Binding DataContext.Ms2MassMin, Source={x:Reference Name=RepRefPlot}}"
-                                       MaxValue="{Binding DataContext.Ms2MassMax, Source={x:Reference Name=RepRefPlot}}"
+                                       MinValue="{Binding MassMin, Source={x:Reference Name=RepRefPlot}}"
+                                       MaxValue="{Binding MassMax, Source={x:Reference Name=RepRefPlot}}"
                                        ChartMargin="0.05"/>
         <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2Spectrum, Source={x:Reference Name=RepRefPlot}}"
+                                           ItemsSource="{Binding Spectrum, Source={x:Reference Name=RepRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.5" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2ReferenceSpectrum, Source={x:Reference Name=RepRefPlot}}"
+                                           ItemsSource="{Binding ReferenceSpectrum, Source={x:Reference Name=RepRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
                                            ChartMargin="0,0.5"/>
@@ -118,14 +118,14 @@
                     Grid.Row="1" Grid.Column="3" >
                 <Grid>
                     <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                                  ItemsSource="{Binding Ms2Spectrum}"
+                                                  ItemsSource="{Binding Spectrum, ElementName=RepRefPlot}"
                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                                   RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
                                                   RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
                                                   HorizontalPropertyName="Mass"
                                                   VerticalPropertyName="Intensity" />
-                    <chart:Annotator ItemsSource="{Binding Ms2Spectrum}"
+                    <chart:Annotator ItemsSource="{Binding Spectrum,ElementName=RepRefPlot}"
                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                      RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
@@ -138,7 +138,7 @@
                     Grid.Row="3" Grid.Column="3" >
                 <Grid>
                     <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                                  ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                                                  ItemsSource="{Binding ReferenceSpectrum, ElementName=RepRefPlot}"
                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                                   RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
@@ -150,7 +150,7 @@
                             <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
                         </spectrum:LineSpectrumControl.LinePen>
                     </spectrum:LineSpectrumControl>
-                    <chart:Annotator ItemsSource="{Binding Ms2ReferenceSpectrum}"
+                    <chart:Annotator ItemsSource="{Binding ReferenceSpectrum, ElementName=RepRefPlot}"
                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                      RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"

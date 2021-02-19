@@ -41,7 +41,7 @@
             </TabItem>
             
             <TabItem Name="TabItem_Alignment" Header="Alignment">
-                <local:AlignmentView />
+                <local:AlignmentParameterView />
             </TabItem>
 
             <TabItem Name="TabItem_IonMobility" Header="Ion mobility">

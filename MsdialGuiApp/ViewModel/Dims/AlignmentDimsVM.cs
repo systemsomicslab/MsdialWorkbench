@@ -1,18 +1,23 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -290,7 +295,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Target?.innerModel == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,
@@ -305,6 +310,40 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Target?.innerModel == null) {
                 return false;
             }
+            return true;
+        }
+
+        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        private void SaveSpectra(Window owner)
+        {
+            var sfd = new SaveFileDialog
+            {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true)
+            {
+                var filename = sfd.FileName;
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    filename,
+                    Target.innerModel,
+                    msdecResult,
+                    param);
+            }
+        }
+
+        private bool CanSaveSpectra(Window owner)
+        {
+            if (Target.innerModel == null)
+                return false;
+            if (msdecResult == null)
+                return false;
             return true;
         }
 

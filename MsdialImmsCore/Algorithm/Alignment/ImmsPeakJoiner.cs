@@ -31,9 +31,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             this.driftFactor = driftFactor;
 
             this.mzBucket = mzTol * 2;
-            this.mzWidth = (int)Math.Ceiling(this.mzBucket / this.mzTol);
+            this.mzWidth = (int)Math.Ceiling(this.mzTol / this.mzBucket);
             this.driftBucket = driftTol * 2;
-            this.driftWidth = (int)Math.Ceiling(this.driftBucket / this.driftTol);
+            this.driftWidth = (int)Math.Ceiling(this.driftTol / this.driftBucket);
         }
 
         public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
