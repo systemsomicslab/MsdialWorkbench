@@ -584,6 +584,18 @@ namespace CompMs.MspGenerator
                                 GlycerolipidFragmentation.ldgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
 
+                            case "GPNAE": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.GpnaeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
+                            case "MGMG": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.mgmgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
+                            case "DGMG": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.dgmgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
 
                             default:
                                 Console.WriteLine("Error in lipidClass switch. Please check settings...");

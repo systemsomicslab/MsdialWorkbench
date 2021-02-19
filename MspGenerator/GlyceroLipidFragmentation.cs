@@ -7,7 +7,7 @@ namespace CompMs.MspGenerator
     public class GlycerolipidFragmentation
     {
 
-        public static void pcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void pcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PC" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+"}},
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -127,7 +127,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void peFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void peFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PE" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+Na]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -406,7 +406,7 @@ namespace CompMs.MspGenerator
                 var fra04comment = "NL of C4H12NO4P";
                 fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 
-                var fra07mass =12 * 4 + MassDictionary.HydrogenMass * 12 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass + MassDictionary.Proton;
+                var fra07mass = 12 * 4 + MassDictionary.HydrogenMass * 12 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 4 + MassDictionary.PhosphorusMass + MassDictionary.Proton;
                 var fra07int = 200;
                 var fra07comment = "C4H12NO4P + H";
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
@@ -414,7 +414,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void pgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void pgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PG" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -482,7 +482,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void piFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void piFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PI" ,    new List<string>(){ "[M-H]-", "[M+Na]+", "[M+NH4]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -573,7 +573,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void psFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void psFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PS" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+Na]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -685,7 +685,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void paFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void paFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PA" ,    new List<string>(){ "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -738,7 +738,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void pmeohFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void pmeohFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PMeOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -840,7 +840,7 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra11mass + "\t" + fra11int + "\t" + fra11comment);
             }
         }
-        public static void petohFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void petohFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "PMeOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) + MassDictionary.OxygenMass;
@@ -943,7 +943,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void lpcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, string lipidClass)
+        public static void lpcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, string lipidClass)
         {
             //{ "LPC" ,    new List<string>() { "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-", "[M+Na]+", }    },
             //{ "LPCSN1" ,    new List<string>() { "[M+H]+" }    },
@@ -1030,10 +1030,10 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void lpeFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void lpeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LPE" ,    new List<string>() { "[M-H]-", "[M+H]+" }    },
-            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0) ;
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
 
             if (adduct == "[M-H]-")
             {
@@ -1085,7 +1085,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void lpgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void lpgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LPG" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1120,7 +1120,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void lpiFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void lpiFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LPI" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1165,7 +1165,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void lpsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void lpsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LPS" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1200,7 +1200,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void lpaFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void lpaFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LPA" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1224,7 +1224,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherLpcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void etherLpcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "EtherLPC" ,    new List<string>(){ "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-"}    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -1287,7 +1287,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherLpeFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void etherLpeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "EtherLPE" ,    new List<string>() { "[M-H]-" , "[M+H]+"}    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -1335,7 +1335,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherLpePFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void etherLpePFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "EtherLPE_P" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -1369,7 +1369,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherLpgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void etherLpgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "EtherLPG" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -1403,7 +1403,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void tgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
+        public static void tgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
         {
             //{ "TG" ,    new List<string>() { "[M+Na]+", "[M+NH4]+", }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1463,7 +1463,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void dgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{   "DG" ,    new List<string>(){ "[M+Na]+", "[M+NH4]+"  , }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1511,7 +1511,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void mgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void mgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{    "MG" ,    new List<string>(){ "[M+NH4]+"  },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1534,7 +1534,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void bmpFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void bmpFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{    "BMP" ,    new List<string>(){ "[M+NH4]+"  },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1568,7 +1568,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void dgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{ "DGDG" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1669,7 +1669,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void mgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void mgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "MGDG" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1743,9 +1743,9 @@ namespace CompMs.MspGenerator
                 var fra06comment = "NL of C12H20O10+NH3+SN2";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
             }
-
         }
-        public static void sqdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+
+        public static void sqdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "SQDG" ,    new List<string>() { "[M-H]-", "[M+NH4]+", }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1838,7 +1838,145 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void dgtsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dgmgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            //{   "DGMG" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+            {
+                var fra01mass = 0.0;
+                var fra01int = 0;
+                var fra01comment = "";
+                if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+                {
+                    fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                    fra01int = 150;
+                    fra01comment = adduct;
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
+                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+                var fra02int = 150;
+                var fra02comment = "[M-H]-";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                //var fra03mass = MassDictionary.C6H10O5 + MassDictionary.H2OMass - MassDictionary.Proton;
+                //var fra03int = 400;
+                //var fra03comment = "sugar-";
+                //fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra07mass = chain1Mass + MassDictionary.H2OMass - MassDictionary.Proton;
+                var fra07int = 999;
+                var fra07comment = "sn1";
+                fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
+                var fra10mass = 12 * 15 + MassDictionary.HydrogenMass * 24 + MassDictionary.OxygenMass * 11 - MassDictionary.Proton + MassDictionary.H2OMass;
+                var fra10int = 800;
+                var fra10comment = "C15H25O12";
+                fragmentList.Add(fra10mass + "\t" + fra10int + "\t" + fra10comment);
+
+                var fra11mass = fra10mass + MassDictionary.H2OMass;
+                var fra11int = 200;
+                var fra11comment = "C15H27O13";
+                fragmentList.Add(fra11mass + "\t" + fra11int + "\t" + fra11comment);
+            }
+            else if (adduct == "[M+NH4]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 100;
+                var fra01comment = "M+NH4";
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                //var fra02int = 0;
+                //var fra02comment = "[M+H]+";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra02mass - (12 * 12 + MassDictionary.HydrogenMass * 20 + MassDictionary.OxygenMass * 10);
+                var fra03int = 500;
+                var fra03comment = "[M+H-2sugars]+";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra03mass - MassDictionary.H2OMass;
+                var fra04int = 999;
+                var fra04comment = "[M+H-2sugars]+ -H2O";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = chain1Mass + MassDictionary.Proton;
+                var fra05int = 700;
+                var fra05comment = "SN1(acyl)+";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra06mass = fra05mass - MassDictionary.H2OMass;
+                var fra06int = 500;
+                var fra06comment = "SN1(acyl)+ -H2O";
+                if (chain1Double != 0)
+                {
+                    fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+                }
+
+            }
+        }
+
+        public static void mgmgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            //    { "MGMG" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+            if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+            {
+                var fra01mass = 0.0;
+                var fra01int = 0;
+                var fra01comment = "";
+                if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+                {
+                    fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                    fra01int = 200;
+                    fra01comment = adduct;
+                    fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+                }
+                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+                var fra02int = 10;
+                var fra02comment = "[M-H]-";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra07mass = chain1Mass + MassDictionary.H2OMass - MassDictionary.Proton;
+                var fra07int = 999;
+                var fra07comment = "sn1";
+                fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
+            }
+            else if (adduct == "[M+NH4]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 100;
+                var fra01comment = "M+NH4";
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                //var fra02int = 0;
+                //var fra02comment = "[M-H]-";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra02mass - MassDictionary.C6H10O5 - MassDictionary.H2OMass;
+                var fra03int = 999;
+                var fra03comment = "NL of C6H10O5 and H2O";
+
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+                var fra05mass = chain1Mass + MassDictionary.Proton;
+                var fra05int = 500;
+                var fra05comment = "SN1(acyl)+";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra06mass = fra05mass - MassDictionary.H2OMass;
+                var fra06int = 500;
+                var fra06comment = "SN1(acyl)+ -H2O";
+                if (chain1Double != 0)
+                {
+                    fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+                }
+            }
+        }
+
+        public static void dgtsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "DGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-","[M+H]+"  }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1932,7 +2070,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void dggaFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dggaFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //   {   "DGGA" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -1988,7 +2126,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void dlclFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dlclFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //  {   "DLCL" ,    new List<string>(){ "[M-H]-"  }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2027,7 +2165,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void smgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void smgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //  {  "SMGDG" ,    new List<string>(){ "[M-H]-"  }   },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2071,7 +2209,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void dgccFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void dgccFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //  {  "DGCC" ,    new List<string>(){ "[M+H]+"  }   },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2115,7 +2253,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherPcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{ "EtherPC" ,    new List<string>() { "[M+HCOO]-", "[M+H]+", "[M+CH3COO]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2177,7 +2315,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherPePFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPePFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherPE" ,    new List<string>() { "[M-H]-", "[M+H]+" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2229,7 +2367,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherPeOFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPeOFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherPEe" ,    new List<string>() { "[M+H]+" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2254,7 +2392,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherPgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherPG" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2283,7 +2421,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherPiFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPiFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherPI" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2322,7 +2460,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherPsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherPsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherPS" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2357,7 +2495,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherDgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherDgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherDAG" ,    new List<string>() { "[M+NH4]+" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2382,7 +2520,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherDgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherDgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherDGDG" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-", "[M+Na]+", "[M+NH4]+", }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2462,7 +2600,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherMgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherMgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
             var chain2Mass = acylChainMass(chain2Carbon, chain2Double, 0);
@@ -2521,12 +2659,12 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void etherSmgdgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void etherSmgdgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "EtherSMGDG" ,    new List<string>() {  "[M-H]-", "[M+NH4]+"  }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
             var chain2Mass = acylChainMass(chain2Carbon, chain2Double, 0);
-             if (adduct == "[M-H]-")
+            if (adduct == "[M-H]-")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass; ;
                 var fra01int = 999;
@@ -2583,7 +2721,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void oxPcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void oxPcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{   "OxPC" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-"}    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2639,7 +2777,7 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
             }
         }
-        public static void oxPeFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void oxPeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{   "OxPE" ,    new List<string>(){ "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2681,7 +2819,7 @@ namespace CompMs.MspGenerator
 
             }
         }
-        public static void oxPgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void oxPgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{   "OxPG" ,    new List<string>(){ "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2717,7 +2855,7 @@ namespace CompMs.MspGenerator
                 }
             }
         }
-        public static void oxPiFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void oxPiFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{   "OxPI" ,    new List<string>(){ "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2764,7 +2902,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void oxPsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void oxPsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{   "OxPS" ,    new List<string>(){ "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -2875,7 +3013,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void etherOxPcFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void etherOxPcFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //{ "EtherOxPC" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2932,7 +3070,7 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
             }
         }
-        public static void etherOxPeFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
+        public static void etherOxPeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain2Ox)
         {
             //    { "EtherOxPE" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = etherChainMass(chain1Carbon, chain1Double, 0);
@@ -2969,7 +3107,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void lnapeFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void lnapeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{ "LNAPE" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3003,7 +3141,7 @@ namespace CompMs.MspGenerator
             }
 
         }
-        public static void lnapsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void lnapsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "LNAPS" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3028,7 +3166,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void ldgccFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void ldgccFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //{ "LDGCC" ,    new List<string>() { "[M+H]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3051,7 +3189,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void ldgtsFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double)
+        public static void ldgtsFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
             //    { "LDGTS" ,    new List<string>() { "[M+HCOO]-", "[M+CH3COO]-","[M+H]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3108,7 +3246,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void mlclFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
+        public static void mlclFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
         {
             //{ "MLCL" ,    new List<string>() { "[M-H]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3154,7 +3292,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void hbmpFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
+        public static void hbmpFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
         {
             //    { "HBMP" ,    new List<string>() { "[M-H]-", "[M+NH4]+", }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3221,7 +3359,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void oxTgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain3Ox)
+        public static void oxTgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain3Ox)
         {
             //{ "OxTG" ,    new List<string>(){ "[M+NH4]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3254,7 +3392,7 @@ namespace CompMs.MspGenerator
                 var fra05comment = "NL of SN3";// chain3 = OxFA = SN3
                 fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
 
-                var fra06mass = fra02mass - chain1Mass - 2* MassDictionary.H2OMass;
+                var fra06mass = fra02mass - chain1Mass - 2 * MassDictionary.H2OMass;
                 var fra06int = 500;
                 var fra06comment = "NL of SN1 and H2O";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
@@ -3288,7 +3426,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void etherTgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
+        public static void etherTgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
         {
             //{ "EtherTAG" ,    new List<string>() { "[M+Na]+", "[M+NH4]+", }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3344,13 +3482,13 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void cardiolipinFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
+        public static void cardiolipinFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
         {
             //{ "CL" ,    new List<string>() { "[M-H]-", "[M+NH4]+", }    },
-                var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
-                var chain2Mass = acylChainMass(chain2Carbon, chain2Double, 0);
-                var chain3Mass = acylChainMass(chain3Carbon, chain3Double, 0);
-                var chain4Mass = acylChainMass(chain4Carbon, chain4Double, 0);
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+            var chain2Mass = acylChainMass(chain2Carbon, chain2Double, 0);
+            var chain3Mass = acylChainMass(chain3Carbon, chain3Double, 0);
+            var chain4Mass = acylChainMass(chain4Carbon, chain4Double, 0);
             if (adduct == "[M+NH4]+")
             {
                 var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
@@ -3490,7 +3628,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void fahfaTgFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
+        public static void fahfaTgFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
         {
             //{ "TG_EST" ,    new List<string>() { "[M+NH4]+" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3542,7 +3680,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void Ac2PIM1Fragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void Ac2PIM1Fragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //{ "Ac2PIM1", new List<string>() { "[M-H]-" } },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3597,7 +3735,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void Ac2PIM2Fragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)
+        public static void Ac2PIM2Fragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double)
         {
             //    { "Ac2PIM2", new List<string>() { "[M-H]-" } },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3641,7 +3779,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void Ac3PIM2Fragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
+        public static void Ac3PIM2Fragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double)
         {
             //    { "Ac3PIM2", new List<string>() { "[M-H]-" } },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3716,7 +3854,7 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void Ac4PIM2Fragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
+        public static void Ac4PIM2Fragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double, int chain2Carbon, int chain2Double, int chain3Carbon, int chain3Double, int chain4Carbon, int chain4Double)
         {
             //    { "Ac4PIM2", new List<string>() { "[M-H]-" } },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
@@ -3781,6 +3919,55 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra12mass + "\t" + fra12int + "\t" + fra12comment);
             }
         }
+        public static void GpnaeFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
+        {
+            //{ {   "GPNAE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    }, },
+            var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
+
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = fra01mass - 12 * 3 - MassDictionary.HydrogenMass * 6 - MassDictionary.OxygenMass * 2;
+                var fra02int = 10;
+                var fra02comment = "[M-H-C3H6O2]-";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = 12 * 3 + MassDictionary.HydrogenMass * 8 + MassDictionary.OxygenMass * 6 + MassDictionary.PhosphorusMass + MassDictionary.Electron; ;
+                var fra03int = 600;
+                var fra03comment = "C3H8PO6-";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 6 + MassDictionary.OxygenMass * 5 + MassDictionary.PhosphorusMass + MassDictionary.Electron; ;
+                var fra04int = 500;
+                var fra04comment = "C3H6PO5-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = MassDictionary.OxygenMass * 3 + MassDictionary.PhosphorusMass + MassDictionary.Electron; ;
+                var fra05int = 999;
+                var fra05comment = "PO3-";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+            }
+            else if (adduct == "[M+H]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 1;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = chain1Mass + 12 * 2 + MassDictionary.HydrogenMass * 5 + MassDictionary.NitrogenMass + MassDictionary.Proton;
+                var fra02int = 999;
+                var fra02comment = "SN1+C2H6N+";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+            }
+
+        }
+
 
         private static double acylChainMass(int chainCarbon, int chainDouble, int chainOx)
         {
@@ -3791,6 +3978,7 @@ namespace CompMs.MspGenerator
         {
             return chainCarbon * 12 + (2 * chainCarbon - 2 * chainDouble) * MassDictionary.HydrogenMass + (MassDictionary.OxygenMass * chainOx);
         }
+
 
         ////template
         //public static void XXFragment(List<string> fragmentList, string adduct, double exactMass,int chain1Carbon , int chain1Double, int chain2Carbon, int chain2Double)

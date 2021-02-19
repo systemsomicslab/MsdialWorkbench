@@ -38,6 +38,8 @@ namespace Rfx.Riken.OsakaUniv
         LCAE, KLCAE, KDCAE,
         MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
         OxTG, TG_EST,
+        GPNAE, DGMG, MGMG
+
 
         // new version
         //CerP, SM,

@@ -3646,6 +3646,122 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 
+        public static LipidMolecule JudgeIfMgmg(IMSScanProperty msScanProp, double ms2Tolerance,
+double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    // seek [M+H-C6H12O6]+
+                    var threshold = 10;
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
+                        - (12 * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    // seek SN1+
+                    var threshold1 = 1;
+                    var diagnosticMz1 = acylCainMass(totalCarbon, totalDoubleBond) - Electron;
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found == false) return null;
+
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+
+                    return returnAnnotationResult("MGMG", LbmClass.MGMG, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
+                {
+                    // seek [M-H]-
+                    var threshold = 1.0;
+                    var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //if (isClassIonFound == false) return null;
+
+                    // seek SN1-
+                    var threshold1 = 10;
+                    var diagnosticMz1 = fattyacidProductIon(totalCarbon, totalDoubleBond);
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+
+                    return returnAnnotationResult("MGMG", LbmClass.MGMG, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfDgmg(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+NH4]+")
+                {
+                    var candidates = new List<LipidMolecule>();
+                    // exclude unknown element
+                    // seek [M+H]+ -2sugars -H2O
+                    var threshold = 10;
+                    var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
+                        - (12 * 12 + MassDiffDictionary.HydrogenMass * 20 + MassDiffDictionary.OxygenMass * 10) - H2O;
+                    // seek SN1(acyl)+
+                    var diagnosticMz2 = acylCainMass(totalCarbon, totalDoubleBond) - Electron;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
+                    if (isClassIon1Found == false || isClassIon2Found == false) return null;
+                    return returnAnnotationResult("DGMG", LbmClass.DGMG, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
+                {
+                    // seek [M-H]-
+                    var threshold = 5.0;
+                    var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                    var diagnosticMz2 = 397.13515; // C15H25O12
+                    var diagnosticMz3 = diagnosticMz2 + H2O; // C15H27O13
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
+                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
+                    if (isClassIon2Found == !true || isClassIon3Found == !true) return null;
+
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    // seek SN1-
+                    var threshold1 = 10;
+                    var diagnosticMz1 = fattyacidProductIon(totalCarbon, totalDoubleBond);
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    if (isClassIon1Found == false) return null;
+
+                    return returnAnnotationResult("DGMG", LbmClass.DGMG, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
+
         public static LipidMolecule JudgeIfEtherDAG(IMSScanProperty msScanProp, double ms2Tolerance,
             double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
             int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
@@ -10333,10 +10449,93 @@ namespace CompMs.Common.Lipidomics
                     return returnAnnotationResult("NAE", LbmClass.NAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
+                return null;
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
+                {
+                    // calc [M-H]-
+                    var threshold = 10;
+                    var diagnosticMz =
+                        adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - MassDiffDictionary.HydrogenMass - 59.013864 : theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
+                    // seek [M-H]- 2H
+                    var threshold1 = 10;
+                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.HydrogenMass * 2;
 
+                    //// seek C3H4NO2-
+                    //var threshold2 = 1;
+                    //var diagnosticMz2 = 12 * 3 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+
+                    if (isClassIonFound == false && isClassIon1Found == false) return null;
+
+                    //
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("NAE", LbmClass.NAE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
             }
             return null;
         }
+        public static LipidMolecule JudgeIfGpnae(IMSScanProperty msScanProp, double ms2Tolerance, float theoreticalMz,
+            int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 10;
+                    var diagnosticMz = acylCainMass(totalCarbon, totalDoubleBond) + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + Proton;
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound != true)
+                    {
+                        return null;
+                    }
+                    //// reject
+                    //var rejectFragment = diagnosticMz + 2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass;
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, rejectFragment, threshold);
+                    //if (isClassIon2Found == true)
+                    //{
+                    //    return null;
+                    //}
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("GPNAE", LbmClass.GPNAE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+                return null;
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    // seek C3H8PO6-
+                    var threshold1 = 10;
+                    var diagnosticMz1 = 12 * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass + Electron;
+                    // seek PO3-
+                    var threshold2 = 10;
+                    var diagnosticMz2 = MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.PhosphorusMass + Electron;
+
+                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    if (isClassIon1Found != true || isClassIon2Found != true)
+                    {
+                        return null;
+                    }
+                    var candidates = new List<LipidMolecule>();
+                    return returnAnnotationResult("GPNAE", LbmClass.GPNAE, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+            }
+            return null;
+        }
+
 
         public static LipidMolecule JudgeIfFahfamidegly(IMSScanProperty msScanProp, double ms2Tolerance,
              double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PE 46:6, totalCarbon = 46 and totalDoubleBond = 6

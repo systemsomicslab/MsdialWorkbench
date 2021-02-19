@@ -85,6 +85,11 @@ namespace CompMs.MspGenerator
             {"MMPE", "C(O%10)C(O%11)COP(O)(=O)OCCNC."},
             {"DMPE", "C(O%10)C(O%11)COP(O)(=O)OCCN(C)C."},
 
+            {"GPNAE", "OCC(O)COP(O)(=O)OCCN%10."},
+            {"DGMG", "C(O%10)C(O)COC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(O)C1O."},
+            {"MGMG", "C(O%10)C(O)COC1OC(CO)C(O)C(O)C1O."},
+
+
 
             //{"NAPE", "OP(=O)(OCC%20)OCC(O%10)C(O%11)."},
 
@@ -126,8 +131,8 @@ namespace CompMs.MspGenerator
             {"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%20N%30."},
             {"SL", "C%20N%30CS(O)(=O)=O."},
             {"SL+O", "C%20N%30CS(O)(=O)=O."},
-            {"PI_Cer_d", "C%20N%30COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
-            {"PI_Cer_d+O", "C%20N%30COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
+            {"PI_Cer_d", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
+            {"PI_Cer_d+O", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
             {"PE_Cer_d", "NCCOP(O)(=O)OCC%20N%30."},
             {"PE_Cer_d+O", "NCCOP(O)(=O)OCC%20N%30."},
 

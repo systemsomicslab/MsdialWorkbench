@@ -328,6 +328,9 @@ namespace CompMs.MspGenerator
                 case "MG": // 
                 case "LDGTS": // 
                 case "LDGCC": // 
+                case "GPNAE": // 
+                case "DGMG": // 
+                case "MGMG": // 
                     GlyceroLipidsMspGenerator.singleChainGlyceroLipidGenerator(chain1, lipidClass, output);
                     break;
 

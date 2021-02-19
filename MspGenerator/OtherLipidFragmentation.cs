@@ -397,7 +397,7 @@ namespace CompMs.MspGenerator
 
         public static void anandamideFragment(List<string> fragmentList, string adduct, double exactMass, int chain1Carbon, int chain1Double)
         {
-            //{   "NAE" ,    new List<string>(){ "[M+H]+"  }    },
+            //{   "NAE" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
             var chain1Mass = acylChainMass(chain1Carbon, chain1Double, 0);
             if (adduct == "[M+H]+")
             {
@@ -405,6 +405,29 @@ namespace CompMs.MspGenerator
                 var fra01int = 999;
                 var fra01comment = adduct;
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+            }
+            else if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 5;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = exactMass + adductDic.adductIonDic["[M-H]-"].AdductIonMass;
+                var fra02int = 900;
+                var fra02comment = "[M-H]-";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra02mass - (MassDictionary.HydrogenMass * 2);
+                var fra03int = 999;
+                var fra03comment = "[M-H]- - 2H";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 2 + MassDictionary.Electron ;
+                var fra04int = 50;
+                var fra04comment = "C3H4NO2-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 
             }
 

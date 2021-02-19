@@ -3803,6 +3803,9 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.ASM: return "ASM";
                 case LbmClass.EtherSMGDG: return "EtherSMGDG";
                 case LbmClass.SMGDG: return "SMGDG";
+                case LbmClass.GPNAE: return "GPNAE";
+                case LbmClass.MGMG: return "MGMG";
+                case LbmClass.DGMG: return "DGMG";
 
                 default: return "Undefined";
             }
@@ -4223,6 +4226,10 @@ namespace CompMs.Common.Lipidomics {
                 case "AHexCer": return LbmClass.AHexCer;
                 case "ASM": return LbmClass.ASM;
 
+                case"GPNAE": return LbmClass.GPNAE;
+                case "MGMG": return LbmClass.MGMG;
+                case "DGMG": return LbmClass.DGMG;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -4637,6 +4644,11 @@ namespace CompMs.Common.Lipidomics {
                 case "SL+O": return "Sphingolipids";
                 case "GM3": return "Sphingolipids";
                 case "GM3[NeuAc]": return "Sphingolipids";
+
+                case "GPNAE": return "Glycerophospholipids";
+                case "MGMG": return "Glycerolipids";
+                case "DGMG": return "Glycerolipids";
+
 
                 default: return "Unassigned lipid";
             }
