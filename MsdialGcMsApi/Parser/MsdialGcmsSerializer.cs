@@ -14,12 +14,13 @@ namespace CompMs.MsdialGcMsApi.Parser {
     public class MsdialGcmsSerializer : MsdialSerializer {
         public override void SaveMsdialDataStorage(string file, MsdialDataStorage container) {
 
-            var saveObj = new MsdialGcmsSaveObj(container);
             var mspList = container.MspDB;
+
+            var saveObj = new MsdialGcmsSaveObj(container);
             saveObj.MspDB = new List<MoleculeMsReference>();
+            MessagePackHandler.SaveToFile<MsdialGcmsSaveObj>(saveObj, file);
 
             var mspPath = GetNewMspFileName(file);
-            MessagePackHandler.SaveToFile<MsdialGcmsSaveObj>(saveObj, file);
             MoleculeMsRefMethods.SaveMspToFile(mspList, mspPath);
         }
 

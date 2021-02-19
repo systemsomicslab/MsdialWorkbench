@@ -13,12 +13,13 @@ namespace CompMs.MsdialLcMsApi.Parser {
     public class MsdialLcmsSerializer : MsdialSerializer {
         public override void SaveMsdialDataStorage(string file, MsdialDataStorage container) {
 
-            var saveObj = new MsdialLcmsSaveObj(container);
             var mspList = container.MspDB;
             container.MspDB = new List<MoleculeMsReference>();
 
-            var mspPath = GetNewMspFileName(file);
+            var saveObj = new MsdialLcmsSaveObj(container);
             MessagePackHandler.SaveToFile(saveObj, file);
+
+            var mspPath = GetNewMspFileName(file);
             MoleculeMsRefMethods.SaveMspToFile(mspList, mspPath);
 
             container.MspDB = mspList;
