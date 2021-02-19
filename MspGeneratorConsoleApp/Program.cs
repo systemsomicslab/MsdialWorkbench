@@ -9,7 +9,7 @@ namespace CompMs.MspGenerator
         static void Main(string[] args)
         {
             {
-                /////指定のフォルダの中にある.mspファイルを結合します。
+                ///////指定のフォルダの中にある.mspファイルを結合します。
                 //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
                 //var exportFileName = "~jointedMsp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
                 //Common.jointMspFiles(mspFolder, exportFileName);
@@ -25,8 +25,8 @@ namespace CompMs.MspGenerator
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\newMsp\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\20210216_2.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\PI_Cer\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt\PI_Cer_d+O_InChIKey-smiles.txt"; // 計算させたいInChIKeyとSMILESのリスト
             var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
             var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
             var descriptorSelecerCSSFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
@@ -55,16 +55,16 @@ namespace CompMs.MspGenerator
             //RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
             // RT and CCS predict
-            //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+            RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
             //// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
 
 
-            //var outputResultFolderPath = workingDirectry;// + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
-            //var mspFilePath = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM" + @"\Msp20210216112524.jointedmsp"; //mergeするmspファイル
-            //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20210216.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
+            var mspFilePath = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM" + @"\Msp20210219131643.jointedmsp"; //mergeするmspファイル
+            var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+            var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20210219.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
@@ -74,7 +74,7 @@ namespace CompMs.MspGenerator
 
             //////フォルダ連続処理
             /////
-            //workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20201029_lipidLibraryChk\predict\";
+            //workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\PI_Cer\";
             //var toGenarateSdfDirectry = workingDirectry + "\\txt\\"; // sdfを作成するInChIKey-SMILESのリスト（テキスト）の入っているフォルダ
             //var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\"; // 作成したsdfを保存するフォルダ
 
@@ -83,8 +83,8 @@ namespace CompMs.MspGenerator
 
             ////padel結果ファイルを1つのディレクトリに入れて開始(予測結果をpredictResultディレクトリに保存するところまで)
             //var padelResultDirectry = workingDirectry + "\\PadelResult\\";
-            //(作業ディレクトリ, (基本的にはtoGenarateSdfDirectry), padel結果ファイルの入ったディレクトリ,
-            //   RT予測に使用するdescriptorのリスト, CCS予測に使用するdescriptorのリスト, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile)
+            //(作業ディレクトリ, (基本的には)toGenarateSdfDirectry, padel結果ファイルの入ったディレクトリ,
+            //RT予測に使用するdescriptorのリスト, CCS予測に使用するdescriptorのリスト, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile)
             //RtCcsPredictManager.runFolderToFitting(workingDirectry, workingDirectry + "\\txt\\", padelResultDirectry,
             //   descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 

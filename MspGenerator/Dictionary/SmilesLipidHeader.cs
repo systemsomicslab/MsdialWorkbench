@@ -131,8 +131,8 @@ namespace CompMs.MspGenerator
             {"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%20N%30."},
             {"SL", "C%20N%30CS(O)(=O)=O."},
             {"SL+O", "C%20N%30CS(O)(=O)=O."},
-            {"PI_Cer_d", "C%20N%30COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
-            {"PI_Cer_d+O", "C%20N%30COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
+            {"PI_Cer_d", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
+            {"PI_Cer_d+O", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
             {"PE_Cer_d", "NCCOP(O)(=O)OCC%20N%30."},
             {"PE_Cer_d+O", "NCCOP(O)(=O)OCC%20N%30."},
 
