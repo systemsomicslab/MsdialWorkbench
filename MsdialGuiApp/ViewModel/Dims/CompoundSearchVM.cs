@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(parameter ?? new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase(parameter) ?? new MsRefSearchParameterBase { });
 
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(parameter ?? new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase(parameter) ?? new MsRefSearchParameterBase { });
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;

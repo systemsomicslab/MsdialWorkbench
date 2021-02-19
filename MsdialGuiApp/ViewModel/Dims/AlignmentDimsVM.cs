@@ -295,7 +295,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Target?.innerModel == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
             var window = new View.Dims.CompoundSearchWindow
             {
                 DataContext = vm,
