@@ -322,7 +322,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(Storage.AlignmentFiles, Storage);
+            var vm = new AlignmentResultExportVM(alignmentFile, Storage.AlignmentFiles, Storage);
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,

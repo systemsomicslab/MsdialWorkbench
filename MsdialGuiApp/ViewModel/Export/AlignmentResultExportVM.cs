@@ -77,10 +77,14 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         private readonly MsdialDataStorage container;
 
-        public AlignmentResultExportVM(ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) {
+        public AlignmentResultExportVM(AlignmentFileBean alignmentFile, ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) {
             this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
+            if (alignmentFile != null)
+                this.alignmentFiles.MoveCurrentTo(alignmentFile);
             this.container = container;
         }
+
+        public AlignmentResultExportVM(ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) : this(null, alignmentFiles, container) { }
 
         public DelegateCommand BrowseDirectoryCommand => browseDirectoryCommand ?? (browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand browseDirectoryCommand;
@@ -113,7 +117,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             foreach (var exportType in ExportTypes.Where(type => type.IsSelected)) {
-                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt.ToString("yyyy_MM_dd_HH_mm_ss")}.txt");
+                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 ExportAlignmentResult(
                     outfile, exportType.TypeName,
                     resultContainer, msdecResults,
