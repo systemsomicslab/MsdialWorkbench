@@ -84,8 +84,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
             this.container = container;
         }
 
-        public AlignmentResultExportVM(ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) : this(null, alignmentFiles, container) { }
-
         public DelegateCommand BrowseDirectoryCommand => browseDirectoryCommand ?? (browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand browseDirectoryCommand;
 
@@ -93,7 +91,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var fbd = new Graphics.Window.SelectFolderDialog
             {
                 Title = "Chose a export folder.",
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             };
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
