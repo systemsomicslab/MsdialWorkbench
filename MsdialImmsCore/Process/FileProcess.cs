@@ -49,7 +49,7 @@ namespace CompMs.MsdialImmsCore.Process
             var iupacDB = container.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
-            var provider = new ImmsRepresentativeDataProvider(rawObj);
+            var provider = new ImmsAverageDataProvider(rawObj);
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);

@@ -283,7 +283,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             cacheAnalysisFile = analysis;
             AnalysisVM = new AnalysisImmsVM(
                 analysis,
-                new ImmsRepresentativeDataProvider(analysis),
+                new ImmsAverageDataProvider(analysis),
                 Storage.ParameterBase,
                 mspChromatogramAnnotator,
                 textDBChromatogramAnnotator)
