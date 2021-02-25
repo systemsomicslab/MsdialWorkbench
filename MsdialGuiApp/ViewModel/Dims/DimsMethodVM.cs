@@ -25,6 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -243,9 +244,24 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AlignmentProcessFactory factory = new DimsAlignmentProcessFactory(storage.ParameterBase as MsdialDimsParameter, storage.IupacDatabase);
             var alignmentFile = storage.AlignmentFiles.Last();
             var aligner = factory.CreatePeakAligner();
-            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+            var vm = new ProgressBarVM
+            {
+                IsIndeterminate = true,
+                Label = "Alignment process..",
+            };
+            var pbw = new ProgressBarWindow
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            pbw.Loaded += (s, e) => {
+                var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+                MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+                pbw.Close();
+            };
+            pbw.ShowDialog();
             return true;
         }
 
@@ -322,7 +338,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(Storage.AlignmentFiles, Storage);
+            var vm = new AlignmentResultExportVM(alignmentFile, Storage.AlignmentFiles, Storage);
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,
