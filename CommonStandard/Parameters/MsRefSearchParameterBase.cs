@@ -21,9 +21,9 @@ namespace CompMs.Common.Parameter {
         [Key(6)]
         public float Ms2Tolerance { get; set; } = 0.05F;
         [Key(7)]
-        public float RelativeAmpCutoff { get; set; } = 0.1F;
+        public float RelativeAmpCutoff { get; set; } = 0F;
         [Key(8)]
-        public float AbsoluteAmpCutoff { get; set; } = 5;
+        public float AbsoluteAmpCutoff { get; set; } = 0;
 
         // by [0-1]
         [Key(9)]
