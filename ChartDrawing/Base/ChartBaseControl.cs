@@ -12,12 +12,12 @@ namespace CompMs.Graphics.Core.Base
     {
         #region DependencyProperty
         public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
-            nameof(HorizontalAxis), typeof(AxisMapper), typeof(ChartBaseControl),
-            new PropertyMetadata(default(AxisMapper), ChartUpdate));
+            nameof(HorizontalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
+            new PropertyMetadata(default(IAxisManager), ChartUpdate));
 
         public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(AxisMapper), typeof(ChartBaseControl),
-            new PropertyMetadata(default(AxisMapper), ChartUpdate)
+            nameof(VerticalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
+            new PropertyMetadata(default(IAxisManager), ChartUpdate)
             );
 
         public static readonly DependencyProperty RangeXProperty = DependencyProperty.Register(
@@ -42,15 +42,15 @@ namespace CompMs.Graphics.Core.Base
         #endregion
 
         #region Property
-        public AxisMapper HorizontalAxis
+        public IAxisManager HorizontalAxis
         {
-            get => (AxisMapper)GetValue(HorizontalAxisProperty);
+            get => (IAxisManager)GetValue(HorizontalAxisProperty);
             set => SetValue(HorizontalAxisProperty, value);
         }
 
-        public AxisMapper VerticalAxis
+        public IAxisManager VerticalAxis
         {
-            get => (AxisMapper)GetValue(VerticalAxisProperty);
+            get => (IAxisManager)GetValue(VerticalAxisProperty);
             set => SetValue(VerticalAxisProperty, value);
         }
 
@@ -81,13 +81,13 @@ namespace CompMs.Graphics.Core.Base
                 double minx = 0, miny = 0, maxx = 0, maxy = 0;
                 if (HorizontalAxis != null)
                 {
-                    minx = HorizontalAxis.InitialMin;
-                    maxx = HorizontalAxis.InitialMax;
+                    minx = HorizontalAxis.InitialRange.Minimum;
+                    maxx = HorizontalAxis.InitialRange.Maximum;
                 }
                 if (VerticalAxis != null)
                 {
-                    miny = VerticalAxis.InitialMin;
-                    maxy = VerticalAxis.InitialMax;
+                    miny = VerticalAxis.InitialRange.Minimum;
+                    maxy = VerticalAxis.InitialRange.Maximum;
                 }
                 return new Rect(new Point(minx, miny), new Point(maxx, maxy));
             }
@@ -240,11 +240,11 @@ namespace CompMs.Graphics.Core.Base
             {
                 if (HorizontalAxis != null)
                 {
-                    RangeX = new Range(minimum: HorizontalAxis.InitialMin, maximum: HorizontalAxis.InitialMax);
+                    RangeX = HorizontalAxis.InitialRange;
                 }
                 if (VerticalAxis != null)
                 {
-                    RangeY = new Range(minimum: VerticalAxis.InitialMin, maximum: VerticalAxis.InitialMax);
+                    RangeY = VerticalAxis.InitialRange;
                 }
             }
         }

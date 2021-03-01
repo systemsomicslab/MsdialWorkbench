@@ -65,14 +65,18 @@ namespace CompMs.Graphics.Core.Base
 
             var initial = axis.InitialRange;
             if (initial != null) {
-                if (initial.Maximum < range.Maximum) range.Maximum = initial.Maximum;
-                if (initial.Minimum > range.Minimum) range.Minimum = initial.Minimum;
+                if (initial.Maximum < range.Maximum)
+                    range = new Range(range.Minimum, initial.Maximum);
+                if (initial.Minimum > range.Minimum)
+                    range = new Range(initial.Minimum, range.Maximum);
             }
 
             var bounds = axis.Bounds;
             if (bounds != null) {
-                if (bounds.Minimum < range.Minimum) range.Minimum = bounds.Minimum;
-                if (bounds.Maximum > range.Maximum) range.Maximum = bounds.Maximum;
+                if (bounds.Minimum < range.Minimum)
+                    range = new Range(bounds.Minimum, range.Maximum);
+                if (bounds.Maximum > range.Maximum)
+                    range = new Range(range.Minimum, bounds.Maximum);
             }
 
             return range;
@@ -119,13 +123,14 @@ namespace CompMs.Graphics.Core.Base
 
             var bounds = axis.Bounds;
             if (bounds != null) {
-                if (bounds.Minimum < initial.Minimum) initial.Minimum = bounds.Minimum;
-                if (bounds.Maximum > initial.Maximum) initial.Maximum = bounds.Maximum;
+                if (bounds.Minimum < initial.Minimum)
+                    initial = new Range(bounds.Minimum, initial.Maximum);
+                if (bounds.Maximum > initial.Maximum)
+                    initial = new Range(initial.Minimum, bounds.Maximum);
             }
 
             if (initial.Minimum == initial.Maximum) {
-                initial.Minimum -= 0.5;
-                initial.Maximum += 0.5;
+                initial = new Range(initial.Minimum - 0.5, initial.Maximum + 0.5);
             }
 
             return initial;
@@ -133,11 +138,11 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty AxisMapperProperty =
             DependencyProperty.Register(
-                nameof(AxisMapper), typeof(AxisMapper), typeof(AxisManager),
+                nameof(AxisMapper), typeof(IAxisManager), typeof(AxisManager),
                 new PropertyMetadata(null));
 
-        public AxisMapper AxisMapper {
-            get => (AxisMapper)GetValue(AxisMapperProperty);
+        public IAxisManager AxisMapper {
+            get => (IAxisManager)GetValue(AxisMapperProperty);
             set => SetValue(AxisMapperProperty, value);
         }
 
