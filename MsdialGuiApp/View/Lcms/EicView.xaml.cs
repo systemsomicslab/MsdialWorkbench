@@ -21,10 +21,11 @@ namespace CompMs.App.Msdial.View.EicAndBar
     /// </summary>
     public partial class EicView : UserControl
     {
-        public static readonly DependencyProperty ChromAxisProperty = DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(EicView));
+        public static readonly DependencyProperty ChromAxisProperty =
+            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(EicView));
 
-        public AxisManager ChromAxis {
-            get => (AxisManager)GetValue(ChromAxisProperty);
+        public IAxisManager ChromAxis {
+            get => (IAxisManager)GetValue(ChromAxisProperty);
             set => SetValue(ChromAxisProperty, value);
         }
 

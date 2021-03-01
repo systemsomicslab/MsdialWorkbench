@@ -46,11 +46,11 @@ namespace CompMs.App.Msdial.View
 
         public static readonly DependencyProperty MassAxisProperty =
             DependencyProperty.Register(
-                nameof(MassAxis), typeof(AxisManager), typeof(SurveyScanView),
+                nameof(MassAxis), typeof(IAxisManager), typeof(SurveyScanView),
                 new FrameworkPropertyMetadata(null));
 
-        public AxisManager MassAxis {
-            get => (AxisManager)GetValue(MassAxisProperty);
+        public IAxisManager MassAxis {
+            get => (IAxisManager)GetValue(MassAxisProperty);
             set => SetValue(MassAxisProperty, value);
         }
 

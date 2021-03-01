@@ -28,25 +28,25 @@ namespace ChartDrawingUiTest.Chart
 
         private void Button_Click03(object sender, RoutedEventArgs e)
         {
-            var axis = this.Resources["HorizontalAxis"] as AxisManager;
+            var axis = this.Resources["HorizontalAxis"] as IAxisManager;
             axis.Range = new Range(0, 3);
         }
 
         private void Button_Click12(object sender, RoutedEventArgs e)
         {
-            var axis = this.Resources["HorizontalAxis"] as AxisManager;
+            var axis = this.Resources["HorizontalAxis"] as IAxisManager;
             axis.Range = new Range(1, 2);
         }
 
         private void Button_Click13(object sender, RoutedEventArgs e)
         {
-            var axis = this.Resources["HorizontalAxis"] as AxisManager;
+            var axis = this.Resources["HorizontalAxis"] as IAxisManager;
             axis.Range = new Range(1, 3);
         }
 
         private void Button_Click02(object sender, RoutedEventArgs e)
         {
-            var axis = this.Resources["HorizontalAxis"] as AxisManager;
+            var axis = this.Resources["HorizontalAxis"] as IAxisManager;
             axis.Range = new Range(0, 2);
         }
     }
