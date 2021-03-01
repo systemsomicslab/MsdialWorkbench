@@ -20,8 +20,11 @@ namespace CompMs.Graphics.Base
 
         private readonly IAxisManager manager;
 
+        public event EventHandler RangeChanged;
+
         public AxisMapper(IAxisManager manager_) {
             manager = manager_;
+            manager.RangeChanged += (s, e) => RangeChanged?.Invoke(this, e);
         }
 
         public AxisValue TranslateToAxisValue(object value) {

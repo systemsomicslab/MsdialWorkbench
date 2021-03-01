@@ -27,6 +27,8 @@ namespace CompMs.Graphics.Core.Base
         Range InitialRange { get; }
         Range Bounds { get; }
 
+        event EventHandler RangeChanged;
+
         AxisValue TranslateToAxisValue(object value);
         double TranslateToRenderPoint(AxisValue val, bool isFlipped);
         double TranslateToRenderPoint(object value, bool isFlipped);
@@ -57,6 +59,7 @@ namespace CompMs.Graphics.Core.Base
             var axis = (AxisManager)d;
             axis.LabelTicks = axis.GetLabelTicks();
             axis.AxisMapper = new AxisMapper(axis);
+            axis.RangeChanged?.Invoke(axis, args);
         }
 
         static object CoerceRange(DependencyObject d, object value) {
@@ -81,6 +84,9 @@ namespace CompMs.Graphics.Core.Base
 
             return range;
         }
+
+        public event EventHandler RangeChanged;
+        private static readonly EventArgs args = new EventArgs();
 
         public static readonly DependencyProperty BoundsProperty =
             DependencyProperty.Register(
