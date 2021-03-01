@@ -20,7 +20,25 @@ namespace CompMs.Graphics.Core.Base
         public object Source { get; set; }
     }
 
-    public abstract class AxisManager : Freezable {
+    public interface IAxisManager {
+        AxisValue Min { get; }
+        AxisValue Max { get; }
+        Range Range { get; }
+        Range InitialRange { get; }
+        Range Bounds { get; }
+
+        AxisValue TranslateToAxisValue(object value);
+        double TranslateToRenderPoint(AxisValue val, bool isFlipped);
+        double TranslateToRenderPoint(object value, bool isFlipped);
+        List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped);
+        AxisValue TranslateFromRenderPoint(double value, bool isFlipped);
+        bool Contains(AxisValue value);
+        bool Contains(object obj);
+        void Focus(object low, object high);
+        List<LabelTickData> GetLabelTicks();
+    }
+
+    public abstract class AxisManager : Freezable, IAxisManager {
         #region DependencyProperty
         public static readonly DependencyProperty RangeProperty =
             DependencyProperty.Register(
@@ -200,6 +218,14 @@ namespace CompMs.Graphics.Core.Base
             var loval = TranslateToAxisValue(low);
             var hival = TranslateToAxisValue(high);
             Range = new Range(loval, hival);
+        }
+
+        public bool Contains(AxisValue val) {
+            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
+        }
+
+        public bool Contains(object obj) {
+            return Contains(TranslateToAxisValue(obj));
         }
         #endregion
 

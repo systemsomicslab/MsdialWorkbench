@@ -366,25 +366,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var focus = _ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
             Ms1Peaks.MoveCurrentTo(focus);
             if (axes?.Length == 2) {
-                (axes[0] as AxisManager)?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
-                (axes[1] as AxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
+                (axes[0] as IAxisManager)?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
+                (axes[1] as IAxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
             }
         }
 
-        public DelegateCommand<AxisManager> FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand<AxisManager>(FocusByRt));
-        private DelegateCommand<AxisManager> focusByRtCommand;
+        public DelegateCommand<IAxisManager> FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand<IAxisManager>(FocusByRt));
+        private DelegateCommand<IAxisManager> focusByRtCommand;
 
         private static readonly double RtTol = 0.5;
-        private void FocusByRt(AxisManager axis) {
-            axis.Focus(FocusRt - RtTol, FocusRt + RtTol);
+        private void FocusByRt(IAxisManager axis) {
+            axis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
         }
 
-        public DelegateCommand<AxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<AxisManager>(FocusByMz));
-        private DelegateCommand<AxisManager> focusByMzCommand;
+        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
+        private DelegateCommand<IAxisManager> focusByMzCommand;
 
         private static readonly double MzTol = 20;
-        private void FocusByMz(AxisManager axis) {
-            axis.Focus(FocusMz - MzTol, FocusMz + MzTol);
+        private void FocusByMz(IAxisManager axis) {
+            axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
     }
 

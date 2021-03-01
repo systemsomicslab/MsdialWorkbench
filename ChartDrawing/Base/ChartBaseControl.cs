@@ -13,8 +13,7 @@ namespace CompMs.Graphics.Core.Base
         #region DependencyProperty
         public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
             nameof(HorizontalAxis), typeof(AxisMapper), typeof(ChartBaseControl),
-            new PropertyMetadata(default(AxisMapper), ChartUpdate)
-            );
+            new PropertyMetadata(default(AxisMapper), ChartUpdate));
 
         public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
             nameof(VerticalAxis), typeof(AxisMapper), typeof(ChartBaseControl),

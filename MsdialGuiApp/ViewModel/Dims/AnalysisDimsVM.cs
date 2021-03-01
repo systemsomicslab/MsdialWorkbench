@@ -361,21 +361,21 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return new Splash().splashIt(msspectrum);
         }
 
-        public DelegateCommand<object> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object>(FocusByID));
-        private DelegateCommand<object> focusByIDCommand;
+        public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
+        private DelegateCommand<IAxisManager> focusByIDCommand;
 
-        private void FocusByID(object axis) {
+        private void FocusByID(IAxisManager axis) {
             var focus = _ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
             Ms1Peaks.MoveCurrentTo(focus);
-            (axis as AxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
+            axis?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
         }
 
-        public DelegateCommand<AxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<AxisManager>(FocusByMz));
-        private DelegateCommand<AxisManager> focusByMzCommand;
+        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
+        private DelegateCommand<IAxisManager> focusByMzCommand;
 
         private static readonly double MzTol = 20;
-        private void FocusByMz(AxisManager axis) {
-            axis.Focus(FocusMz - MzTol, FocusMz + MzTol);
+        private void FocusByMz(IAxisManager axis) {
+            axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
         public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));

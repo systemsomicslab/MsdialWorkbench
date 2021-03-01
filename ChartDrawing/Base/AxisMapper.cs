@@ -7,15 +7,20 @@ using System.Threading.Tasks;
 
 namespace CompMs.Graphics.Base
 {
-    public class AxisMapper
+    public class AxisMapper : IAxisManager
     {
         public Range InitialRange => manager.InitialRange;
         public AxisValue InitialMin => manager.InitialRange.Minimum;
         public AxisValue InitialMax => manager.InitialRange.Maximum;
 
-        private CompMs.Graphics.Core.Base.AxisManager manager;
+        public AxisValue Min => manager.Min;
+        public AxisValue Max => manager.Max;
+        public Range Range => manager.Range;
+        public Range Bounds => manager.Bounds;
 
-        public AxisMapper(CompMs.Graphics.Core.Base.AxisManager manager_) {
+        private readonly IAxisManager manager;
+
+        public AxisMapper(IAxisManager manager_) {
             manager = manager_;
         }
 
@@ -40,11 +45,19 @@ namespace CompMs.Graphics.Base
         }
 
         public bool Contains(AxisValue val) {
-            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
+            return manager.Contains(val);
         }
 
         public bool Contains(object obj) {
-            return Contains(TranslateToAxisValue(obj));
+            return manager.Contains(obj);
+        }
+
+        public void Focus(object low, object high) {
+            manager.Focus(low, high);
+        }
+
+        public List<LabelTickData> GetLabelTicks() {
+            return manager.GetLabelTicks();
         }
     }
 }
