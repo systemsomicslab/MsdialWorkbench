@@ -10,43 +10,44 @@ namespace CompMs.Graphics.Core.Base
 {
     public abstract class ChartBaseControl : FrameworkElement
     {
-        #region DependencyProperty
         public static readonly DependencyProperty HorizontalAxisProperty = DependencyProperty.Register(
             nameof(HorizontalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
-            new PropertyMetadata(default(IAxisManager), ChartUpdate));
+            new FrameworkPropertyMetadata(
+                default(IAxisManager),
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
+                OnHorizontalAxisChanged));
 
-        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
-            nameof(VerticalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
-            new PropertyMetadata(default(IAxisManager), ChartUpdate)
-            );
-
-        public static readonly DependencyProperty RangeXProperty = DependencyProperty.Register(
-            nameof(RangeX), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
-            );
-
-        public static readonly DependencyProperty RangeYProperty = DependencyProperty.Register(
-            nameof(RangeY), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
-            );
-
-        public static readonly DependencyProperty FlippedXProperty = DependencyProperty.Register(
-            nameof(FlippedX), typeof(bool), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(false, ChartUpdate)
-            );
-
-        public static readonly DependencyProperty FlippedYProperty = DependencyProperty.Register(
-            nameof(FlippedY), typeof(bool), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(true, ChartUpdate)
-            );
-        #endregion
-
-        #region Property
         public IAxisManager HorizontalAxis
         {
             get => (IAxisManager)GetValue(HorizontalAxisProperty);
             set => SetValue(HorizontalAxisProperty, value);
         }
+
+        static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var bc = (ChartBaseControl)d;
+            bc.OnHorizontalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
+        }
+
+        void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            if (oldValue != null) {
+                oldValue.RangeChanged -= OnHorizontalRangeChanged;
+            }
+
+            if (newValue != null) {
+                newValue.RangeChanged += OnHorizontalRangeChanged;
+            }
+        }
+
+        void OnHorizontalRangeChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        public static readonly DependencyProperty VerticalAxisProperty = DependencyProperty.Register(
+            nameof(VerticalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(
+                default(IAxisManager),
+                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
+                OnVerticalAxisChanged));
 
         public IAxisManager VerticalAxis
         {
@@ -54,20 +55,65 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(VerticalAxisProperty, value);
         }
 
-        public Range RangeX {
-            get => (Range)GetValue(RangeXProperty);
-            set => SetValue(RangeXProperty, value);
+        static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var bc = (ChartBaseControl)d;
+            bc.OnVerticalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
         }
 
-        public Range RangeY {
-            get => (Range)GetValue(RangeYProperty);
-            set => SetValue(RangeYProperty, value);
+        void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            if (oldValue != null) {
+                oldValue.RangeChanged -= OnVerticalRangeChanged;
+            }
+
+            if (newValue != null) {
+                newValue.RangeChanged += OnVerticalRangeChanged;
+            }
         }
+
+        void OnVerticalRangeChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        [Obsolete("Range infomation move to Axis.")]
+        public static readonly DependencyProperty RangeXProperty = DependencyProperty.Register(
+            nameof(RangeX), typeof(Range), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+            );
+
+        public Range RangeX {
+            get => HorizontalAxis?.Range;
+            set {
+                if (HorizontalAxis != null)
+                    HorizontalAxis.Range = value;
+            }
+        }
+
+        [Obsolete("Range infomation move to Axis.")]
+        public static readonly DependencyProperty RangeYProperty = DependencyProperty.Register(
+            nameof(RangeY), typeof(Range), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+            );
+
+        public Range RangeY {
+            get => VerticalAxis?.Range;
+            set {
+                if (VerticalAxis != null)
+                    VerticalAxis.Range = value;
+            }
+        }
+
+        public static readonly DependencyProperty FlippedXProperty = DependencyProperty.Register(
+            nameof(FlippedX), typeof(bool), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(false, ChartUpdate));
 
         public bool FlippedX {
             get => (bool)GetValue(FlippedXProperty);
             set => SetValue(FlippedXProperty, value);
         }
+
+        public static readonly DependencyProperty FlippedYProperty = DependencyProperty.Register(
+            nameof(FlippedY), typeof(bool), typeof(ChartBaseControl),
+            new FrameworkPropertyMetadata(true, ChartUpdate));
 
         public bool FlippedY {
             get => (bool)GetValue(FlippedYProperty);
@@ -78,21 +124,11 @@ namespace CompMs.Graphics.Core.Base
         {
             get
             {
-                double minx = 0, miny = 0, maxx = 0, maxy = 0;
-                if (HorizontalAxis != null)
-                {
-                    minx = HorizontalAxis.InitialRange.Minimum;
-                    maxx = HorizontalAxis.InitialRange.Maximum;
-                }
-                if (VerticalAxis != null)
-                {
-                    miny = VerticalAxis.InitialRange.Minimum;
-                    maxy = VerticalAxis.InitialRange.Maximum;
-                }
-                return new Rect(new Point(minx, miny), new Point(maxx, maxy));
+                var rangeX = HorizontalAxis?.InitialRange ?? new Range(0, 1);
+                var rangeY = VerticalAxis?.InitialRange ?? new Range(0, 1);
+                return new Rect(new Point(rangeX.Minimum, rangeY.Minimum), new Point(rangeX.Maximum, rangeY.Maximum));
             }
         }
-        #endregion
 
         #region field
         protected VisualCollection visualChildren;
@@ -112,17 +148,18 @@ namespace CompMs.Graphics.Core.Base
             MouseMove += ZoomOnMouseMove;
         }
 
-        protected virtual void Update() {
-            InvalidateVisual();
-        }
+        protected virtual void Update() { }
 
-        #region Event handler
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => Update();
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+            Update();
+        }
 
         #region PropertyChanged event
         protected static void ChartUpdate(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is ChartBaseControl chart) chart.Update();
+            if (d is ChartBaseControl chart)
+                chart.InvalidateVisual();
         }
         #endregion
 
@@ -146,7 +183,6 @@ namespace CompMs.Graphics.Core.Base
             var p = e.GetPosition(this);
             var delta = e.Delta;
             var scale = 1 - 0.1 * Math.Sign(delta);
-            //Console.WriteLine(delta + "\t" + scale);
             var area = Rect.Intersect(
                 new Rect(
                     RenderPositionToValue(new Point(p.X * (1 - scale), p.Y * (1 - scale))),
@@ -248,7 +284,6 @@ namespace CompMs.Graphics.Core.Base
                 }
             }
         }
-        #endregion
         #endregion
 
         #region VisualCollection

@@ -23,7 +23,7 @@ namespace CompMs.Graphics.Core.Base
     public interface IAxisManager {
         AxisValue Min { get; }
         AxisValue Max { get; }
-        Range Range { get; }
+        Range Range { get; set; }
         Range InitialRange { get; }
         Range Bounds { get; }
 
@@ -45,7 +45,7 @@ namespace CompMs.Graphics.Core.Base
         public static readonly DependencyProperty RangeProperty =
             DependencyProperty.Register(
                 nameof(Range), typeof(Range), typeof(AxisManager),
-                new PropertyMetadata(
+                new FrameworkPropertyMetadata(
                     new Range(minimum: 0, maximum: 1),
                     OnRangeChanged,
                     CoerceRange));
@@ -57,8 +57,10 @@ namespace CompMs.Graphics.Core.Base
 
         static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (AxisManager)d;
-            axis.LabelTicks = axis.GetLabelTicks();
-            axis.AxisMapper = new AxisMapper(axis);
+            axis.ShouldCoerceLabelTicksChanged = true;
+            axis.CoerceValue(LabelTicksProperty);
+            axis.ShouldCoerceAxisMapper = true;
+            axis.CoerceValue(AxisMapperProperty);
             axis.RangeChanged?.Invoke(axis, args);
         }
 
@@ -145,21 +147,54 @@ namespace CompMs.Graphics.Core.Base
         public static readonly DependencyProperty AxisMapperProperty =
             DependencyProperty.Register(
                 nameof(AxisMapper), typeof(IAxisManager), typeof(AxisManager),
-                new PropertyMetadata(null));
+                new PropertyMetadata(
+                    null,
+                    OnAxisMapperChanged,
+                    CoerceAxisMapper));
 
+        [Obsolete("Use this AxisManager class itself instead of AxisMapper property.")]
         public IAxisManager AxisMapper {
             get => (IAxisManager)GetValue(AxisMapperProperty);
             set => SetValue(AxisMapperProperty, value);
         }
 
+        private bool ShouldCoerceAxisMapper = false;
+        static void OnAxisMapperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        }
+
+        static object CoerceAxisMapper(DependencyObject d, object value) {
+            var axis = (AxisManager)d;
+            if (axis.ShouldCoerceAxisMapper) {
+                axis.ShouldCoerceAxisMapper = false;
+                return new AxisMapper(axis);
+            }
+            return value;
+        }
+
         public static readonly DependencyProperty LabelTicksProperty =
             DependencyProperty.Register(
                 nameof(LabelTicks), typeof(List<LabelTickData>), typeof(AxisManager),
-                new PropertyMetadata(new List<LabelTickData>()));
+                new PropertyMetadata(
+                    new List<LabelTickData>(),
+                    OnLabelTicksChanged,
+                    CoerceLabelTicks));
 
         public List<LabelTickData> LabelTicks {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
             set => SetValue(LabelTicksProperty, value);
+        }
+
+        private bool ShouldCoerceLabelTicksChanged = false;
+        static void OnLabelTicksChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        }
+
+        static object CoerceLabelTicks(DependencyObject d, object value) {
+            var axis = (AxisManager)d;
+            if (axis.ShouldCoerceLabelTicksChanged) {
+                axis.ShouldCoerceLabelTicksChanged = false;
+                return axis.GetLabelTicks();
+            }
+            return value;
         }
 
         #endregion

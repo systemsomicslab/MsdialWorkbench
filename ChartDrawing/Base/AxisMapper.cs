@@ -15,7 +15,10 @@ namespace CompMs.Graphics.Base
 
         public AxisValue Min => manager.Min;
         public AxisValue Max => manager.Max;
-        public Range Range => manager.Range;
+        public Range Range {
+            get => manager.Range;
+            set => manager.Range = value;
+        }
         public Range Bounds => manager.Bounds;
 
         private readonly IAxisManager manager;
