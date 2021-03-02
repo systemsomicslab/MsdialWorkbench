@@ -16,7 +16,7 @@ namespace CompMs.Graphics.AxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty TargetAxisMapperProperty = DependencyProperty.Register(
-            nameof(TargetAxisMapper), typeof(AxisMapper), typeof(DependencyContinuousAxisManager),
+            nameof(TargetAxisMapper), typeof(IAxisManager), typeof(DependencyContinuousAxisManager),
             new PropertyMetadata(null, OnTargetAxisMapperChanged)
             );
 
@@ -32,8 +32,8 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         #region Property
-        public AxisMapper TargetAxisMapper {
-            get => (AxisMapper)GetValue(TargetAxisMapperProperty);
+        public IAxisManager TargetAxisMapper {
+            get => (IAxisManager)GetValue(TargetAxisMapperProperty);
             set => SetValue(TargetAxisMapperProperty, value);
         }
 

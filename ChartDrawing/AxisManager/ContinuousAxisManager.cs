@@ -5,7 +5,8 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class ContinuousAxisManager : Core.Base.AxisManager {
+    public class ContinuousAxisManager : FreezableAxisManager
+    {
         static ContinuousAxisManager() {
             InitialRangeProperty.OverrideMetadata(typeof(ContinuousAxisManager), new PropertyMetadata(new Range(minimum: 0, maximum: 1), OnInitialRangeChanged, CoerceInitialRange));
         }

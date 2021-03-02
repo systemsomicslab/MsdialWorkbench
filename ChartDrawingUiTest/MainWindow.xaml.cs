@@ -42,6 +42,7 @@ namespace ChartDrawingUiTest
                 typeof(DataGrid1),
                 typeof(RangeSlider),
                 typeof(ChartUpdate),
+                typeof(TestPage),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();

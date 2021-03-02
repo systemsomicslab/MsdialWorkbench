@@ -12,7 +12,7 @@ using CompMs.Graphics.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class CategoryAxisManager : CompMs.Graphics.Core.Base.AxisManager
+    public class CategoryAxisManager : FreezableAxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(

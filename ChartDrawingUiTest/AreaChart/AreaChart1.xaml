@@ -14,48 +14,144 @@
         <local:AreaChartVM1 x:Key="AreaChartVM"/>
         <CollectionViewSource x:Key="SeriesView"
                               Source="{Binding Series, Source={StaticResource AreaChartVM}}" />
-        <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
-                                           ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                           ValuePropertyName="X"
-                                           ChartMargin="0.05" />
-        <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
-                                           ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                           ValuePropertyName="Y"
-                                           ChartMargin="0.05"/>
     </Page.Resources>
     <Grid DataContext="{StaticResource AreaChartVM}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="30" />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Background="WhiteSmoke"
-                BorderBrush="Black"
-                BorderThickness="2,0,0,2"
-                Margin="0,5,5,0" 
-                Grid.Row="0" Grid.Column="1">
-            <area:AreaChartControl x:Name="area"
-                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                   HorizontalPropertyName="X"
-                                   VerticalPropertyName="Y" >
-            </area:AreaChartControl>
-        </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    Margin="0,0,5,5"
-                                    Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                  Margin="5,5,0,0"
-                                  Grid.Row="0" Grid.Column="0" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.Resources>
+                <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="X"
+                                                   ChartMargin="0.05" />
+                <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="Y"
+                                                   ChartMargin="0.05"/>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Border Background="WhiteSmoke"
+                    BorderBrush="Black"
+                    BorderThickness="2,0,0,2"
+                    Margin="0,5,5,0" 
+                    Grid.Row="0" Grid.Column="1">
+                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                       HorizontalPropertyName="X"
+                                       VerticalPropertyName="Y" >
+                </area:AreaChartControl>
+            </Border>
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="1" Grid.Column="1" />
+            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                      Margin="5,5,0,0"
+                                      Grid.Row="0" Grid.Column="0" />
+            <TextBlock Text="Binding axismapper" Grid.Row="2" Grid.Column="1"/>
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.Resources>
+                <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="X"
+                                                   ChartMargin="0.05" />
+                <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="Y"
+                                                   ChartMargin="0.05"/>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Border Background="WhiteSmoke"
+                    BorderBrush="Black"
+                    BorderThickness="2,0,0,2"
+                    Margin="0,5,5,0" 
+                    Grid.Row="0" Grid.Column="1">
+                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                       HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
+                                       VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
+                                       HorizontalPropertyName="X"
+                                       VerticalPropertyName="Y" >
+                </area:AreaChartControl>
+            </Border>
+            <axis:HorizontalAxisControl HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="1" Grid.Column="1" />
+            <axis:VerticalAxisControl VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                      Margin="5,5,0,0"
+                                      Grid.Row="0" Grid.Column="0" />
+            <TextBlock Text="Binding axis directly" Grid.Row="2" Grid.Column="1"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.Resources>
+                <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="X"
+                                                   ChartMargin="0.05" />
+                <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                                   ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                                   ValuePropertyName="Y"
+                                                   ChartMargin="0.05"/>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Border Background="WhiteSmoke"
+                    BorderBrush="Black"
+                    BorderThickness="2,0,0,2"
+                    Margin="0,5,5,0" 
+                    Grid.Row="0" Grid.Column="1">
+                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                                       HorizontalAxis="{StaticResource HorizontalAxis}"
+                                       VerticalAxis="{StaticResource VerticalAxis}"
+                                       HorizontalPropertyName="X"
+                                       VerticalPropertyName="Y" >
+                </area:AreaChartControl>
+            </Border>
+            <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
+                                        Margin="0,0,5,5"
+                                        Grid.Row="1" Grid.Column="1" />
+            <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
+                                      Margin="5,5,0,0"
+                                      Grid.Row="0" Grid.Column="0" />
+            <TextBlock Text="static resource" Grid.Row="2" Grid.Column="1"/>
+        </Grid>
     </Grid>
 </Page>
