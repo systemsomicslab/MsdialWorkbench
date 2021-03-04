@@ -227,7 +227,7 @@
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundSearchWindow.xaml.cs">
+    <Compile Include="View\CompoundSearchWindow.xaml.cs">
       <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\EicView.xaml.cs">
@@ -465,7 +465,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\CompoundSearchWindow.xaml">
+    <Page Include="View\CompoundSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

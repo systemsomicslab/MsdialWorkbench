@@ -383,7 +383,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void SearchCompound(Window owner) {
             var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
-            var window = new View.Dims.CompoundSearchWindow
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,

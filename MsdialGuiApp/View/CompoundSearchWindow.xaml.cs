@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Dims
+namespace CompMs.App.Msdial.View
 {
     /// <summary>
     /// Interaction logic for CompoundSearchWindow.xaml
