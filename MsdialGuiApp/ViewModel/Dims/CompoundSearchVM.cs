@@ -196,8 +196,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var reference = compound.msReference;
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsConfidence(property, reference, result);
-            // UNDONE: The name should be retrieved from the result, but since it is empty, we will temporarily retrieve the name from the library.
-            property.Name = reference.Name;
             if (property is IAnnotatedObject obj) {
                 obj.MatchResults.AddResult(result);
             }
@@ -211,8 +209,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var reference = compound.msReference;
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsUnsettled(property, reference, result);
-            // UNDONE: The name should be retrieved from the result, but since it is empty, we will temporarily retrieve the name from the library.
-            property.Name = $"Unsettled: {reference.Name}";
             if (property is IAnnotatedObject obj) {
                 obj.MatchResults.AddResult(result);
             }
