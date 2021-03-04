@@ -23,199 +23,199 @@ namespace CompMs.MspGenerator
 
     public class RtCcsPredictOnDotNet
     {
-        public static void GenerateQsarDescriptorFileVS2(string inputFile, string outputFile)
-        {
-            var SmilesParser = new SmilesParser();
+        //public static void GenerateQsarDescriptorFileVS2(string inputFile, string outputFile)
+        //{
+        //    var SmilesParser = new SmilesParser();
 
-            var allDescriptorResultDic = NcdkDescriptor.GenerateNCDKDescriptors("O=C(O)CCCCC"); // Header取得のためのDummy
+        //    var allDescriptorResultDic = NcdkDescriptor.GenerateNCDKDescriptors("O=C(O)CCCCC"); // Header取得のためのDummy
 
-            var allDescriptorHeader = new List<string>();
-            foreach (var item in allDescriptorResultDic)
-            {
-                if (item.Key == "geomShape") { continue; }
+        //    var allDescriptorHeader = new List<string>();
+        //    foreach (var item in allDescriptorResultDic)
+        //    {
+        //        if (item.Key == "geomShape") { continue; }
 
-                allDescriptorHeader.Add(item.Key);
-            }
+        //        allDescriptorHeader.Add(item.Key);
+        //    }
 
-            var headerLine = string.Empty;
-            string[] headerArray = null;
-            var queries = new List<string[]>();
+        //    var headerLine = string.Empty;
+        //    string[] headerArray = null;
+        //    var queries = new List<string[]>();
 
-            var counter = 0;
-            using (var sr = new StreamReader(inputFile, true))
-            {
-                headerLine = sr.ReadLine();
-                headerArray = headerLine.ToUpper().Split('\t');
-                int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
-                int SMILES = Array.IndexOf(headerArray, "SMILES");
+        //    var counter = 0;
+        //    using (var sr = new StreamReader(inputFile, true))
+        //    {
+        //        headerLine = sr.ReadLine();
+        //        headerArray = headerLine.ToUpper().Split('\t');
+        //        int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
+        //        int SMILES = Array.IndexOf(headerArray, "SMILES");
 
-                var line = "";
+        //        var line = "";
 
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Contains("SMILES")) { continue; }
-                    var lineArray = line.Split('\t');
-                    var inchikey = lineArray[InChIKey];
-                    var rawSmiles = lineArray[SMILES];
+        //        while ((line = sr.ReadLine()) != null)
+        //        {
+        //            if (line.Contains("SMILES")) { continue; }
+        //            var lineArray = line.Split('\t');
+        //            var inchikey = lineArray[InChIKey];
+        //            var rawSmiles = lineArray[SMILES];
 
-                    queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles });
-                    counter++;
-                }
-            }
+        //            queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles });
+        //            counter++;
+        //        }
+        //    }
 
-            var syncObj = new object();
-            var results = new List<DescriptorResultTemp>();
-            //var resultArray = new DescriptorResultTemp[queries.Count];
-            counter = 0;
+        //    var syncObj = new object();
+        //    var results = new List<DescriptorResultTemp>();
+        //    //var resultArray = new DescriptorResultTemp[queries.Count];
+        //    counter = 0;
 
-            var descriptors = new Dictionary<long, Dictionary<string, double>>();
-            ParallelOptions parallelOptions = new ParallelOptions();
-            parallelOptions.MaxDegreeOfParallelism = 2;
-            //Parallel.ForEach(queries, parallelOptions, query =>
-            //{
+        //    var descriptors = new Dictionary<long, Dictionary<string, double>>();
+        //    ParallelOptions parallelOptions = new ParallelOptions();
+        //    parallelOptions.MaxDegreeOfParallelism = 2;
+        //    //Parallel.ForEach(queries, parallelOptions, query =>
+        //    //{
 
-            //    var id = long.Parse(query[0]);
-            //    var inchikey = query[1];
-            //    var smiles = query[2];
-            //    //var descriptors = new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(smiles));
+        //    //    var id = long.Parse(query[0]);
+        //    //    var inchikey = query[1];
+        //    //    var smiles = query[2];
+        //    //    //var descriptors = new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(smiles));
 
-            //    descriptors.Add(id, new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(query)));
+        //    //    descriptors.Add(id, new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(query)));
 
-            //    var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors[id] };
-            //    //resultArray[id] = result;
+        //    //    var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors[id] };
+        //    //    //resultArray[id] = result;
 
-            //    lock (syncObj)
-            //    {
-            //        results.Add(result);
-            //        counter++;
-            //        if (!Console.IsOutputRedirected)
-            //        {
-            //            Console.Write("Progress {0}/{1}", counter, queries.Count);
-            //            Console.SetCursorPosition(0, Console.CursorTop);
-            //        }
-            //        else
-            //        {
-            //            Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
-            //        }
-            //    }
-            //});
+        //    //    lock (syncObj)
+        //    //    {
+        //    //        results.Add(result);
+        //    //        counter++;
+        //    //        if (!Console.IsOutputRedirected)
+        //    //        {
+        //    //            Console.Write("Progress {0}/{1}", counter, queries.Count);
+        //    //            Console.SetCursorPosition(0, Console.CursorTop);
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
+        //    //        }
+        //    //    }
+        //    //});
 
-            Parallel.For(0, queries.Count, parallelOptions, i =>
-             {
-                 var id = long.Parse(queries[i][0]);
-                 var inchikey = queries[i][1];
-                 var smiles = queries[i][2];
-                 //var descriptors = new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(smiles));
+        //    Parallel.For(0, queries.Count, parallelOptions, i =>
+        //     {
+        //         var id = long.Parse(queries[i][0]);
+        //         var inchikey = queries[i][1];
+        //         var smiles = queries[i][2];
+        //         //var descriptors = new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(smiles));
 
-                 descriptors.Add(id, new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(queries[i])));
+        //         descriptors.Add(id, new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(queries[i])));
 
-                 var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors[id] };
-                 //resultArray[id] = result;
+        //         var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors[id] };
+        //         //resultArray[id] = result;
 
-                 lock (syncObj)
-                 {
-                     results.Add(result);
-                     counter++;
-                     if (!Console.IsOutputRedirected)
-                     {
-                         Console.Write("Progress {0}/{1}", counter, queries.Count);
-                         Console.SetCursorPosition(0, Console.CursorTop);
-                     }
-                     else
-                     {
-                         Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
-                     }
-                 }
-             });
-
-
-            //results = resultArray.ToList();
-
-            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
-            {
-
-                sw.Write(headerLine);
-                sw.Write("\t");
-                sw.WriteLine(string.Join("\t", allDescriptorHeader));
-
-                foreach (var result in results.OrderBy(n => n.ID))
-                {
-                    var descriptor = result.Descriptor;
-                    sw.Write(string.Join("\t", new string[] { result.InChIKey, result.SMILES }));
-
-                    foreach (var item in allDescriptorHeader)
-                    {
-                        sw.Write("\t");
-                        sw.Write(result.Descriptor[item]);
-                    }
-                    sw.WriteLine("");
-                }
-            }
-        }
-
-        public static void GenerateQsarDescriptorFile(string inputFile, string outputFile)
-        {
-            var SmilesParser = new SmilesParser();
-
-            var allDescriptorResultDic = NcdkDescriptor.GenerateNCDKDescriptors("O=C(O)CCCCC"); // Header取得のためのDummy
-
-            var allDescriptorHeader = new List<string>();
-            foreach (var item in allDescriptorResultDic)
-            {
-                if (item.Key == "geomShape") { continue; }
-
-                allDescriptorHeader.Add(item.Key);
-            }
-
-            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
-            {
-                using (var sr = new StreamReader(inputFile, true))
-                {
-                    var headerLine = sr.ReadLine();
-                    var headerArray = headerLine.ToUpper().Split('\t');
-                    int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
-                    int SMILES = Array.IndexOf(headerArray, "SMILES");
-
-                    sw.Write(headerLine);
-                    sw.Write("\t");
-                    sw.WriteLine(string.Join("\t", allDescriptorHeader));
-
-                    var line = "";
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if (line.Contains("SMILES")) { continue; }
-                        var lineArray = line.Split('\t');
-                        var inchikey = lineArray[InChIKey];
-                        var rawSmiles = lineArray[SMILES];
-
-                        var iAtomContainer = SmilesParser.ParseSmiles(rawSmiles);
-                        allDescriptorResultDic =
-                            new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(rawSmiles));
-                        var allDescriptorResult = new List<string>();
-                        foreach (var item in allDescriptorHeader)
-                        {
-                            if (item == "geomShape") { continue; }
-
-                            if (!allDescriptorResultDic.ContainsKey(item))
-                            {
-                                allDescriptorResult.Add("NA");
-                            }
-                            else
-                            {
-                                allDescriptorResult.Add(allDescriptorResultDic[item].ToString());
-                            }
-                        }
-                        sw.Write(line);
-                        sw.Write("\t");
-                        sw.WriteLine(string.Join("\t", allDescriptorResult));
-                    }
-                }
-            }
-        }
+        //         lock (syncObj)
+        //         {
+        //             results.Add(result);
+        //             counter++;
+        //             if (!Console.IsOutputRedirected)
+        //             {
+        //                 Console.Write("Progress {0}/{1}", counter, queries.Count);
+        //                 Console.SetCursorPosition(0, Console.CursorTop);
+        //             }
+        //             else
+        //             {
+        //                 Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
+        //             }
+        //         }
+        //     });
 
 
+        //    //results = resultArray.ToList();
 
-        public static void mergeRtAndCcsResultFiles2(string resultFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile)
+        //    using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+        //    {
+
+        //        sw.Write(headerLine);
+        //        sw.Write("\t");
+        //        sw.WriteLine(string.Join("\t", allDescriptorHeader));
+
+        //        foreach (var result in results.OrderBy(n => n.ID))
+        //        {
+        //            var descriptor = result.Descriptor;
+        //            sw.Write(string.Join("\t", new string[] { result.InChIKey, result.SMILES }));
+
+        //            foreach (var item in allDescriptorHeader)
+        //            {
+        //                sw.Write("\t");
+        //                sw.Write(result.Descriptor[item]);
+        //            }
+        //            sw.WriteLine("");
+        //        }
+        //    }
+        //}
+
+        //public static void GenerateQsarDescriptorFile(string inputFile, string outputFile)
+        //{
+        //    var SmilesParser = new SmilesParser();
+
+        //    var allDescriptorResultDic = NcdkDescriptor.GenerateNCDKDescriptors("O=C(O)CCCCC"); // Header取得のためのDummy
+
+        //    var allDescriptorHeader = new List<string>();
+        //    foreach (var item in allDescriptorResultDic)
+        //    {
+        //        if (item.Key == "geomShape") { continue; }
+
+        //        allDescriptorHeader.Add(item.Key);
+        //    }
+
+        //    using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+        //    {
+        //        using (var sr = new StreamReader(inputFile, true))
+        //        {
+        //            var headerLine = sr.ReadLine();
+        //            var headerArray = headerLine.ToUpper().Split('\t');
+        //            int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
+        //            int SMILES = Array.IndexOf(headerArray, "SMILES");
+
+        //            sw.Write(headerLine);
+        //            sw.Write("\t");
+        //            sw.WriteLine(string.Join("\t", allDescriptorHeader));
+
+        //            var line = "";
+        //            while ((line = sr.ReadLine()) != null)
+        //            {
+        //                if (line.Contains("SMILES")) { continue; }
+        //                var lineArray = line.Split('\t');
+        //                var inchikey = lineArray[InChIKey];
+        //                var rawSmiles = lineArray[SMILES];
+
+        //                var iAtomContainer = SmilesParser.ParseSmiles(rawSmiles);
+        //                allDescriptorResultDic =
+        //                    new Dictionary<string, double>(NcdkDescriptor.GenerateNCDKDescriptors(rawSmiles));
+        //                var allDescriptorResult = new List<string>();
+        //                foreach (var item in allDescriptorHeader)
+        //                {
+        //                    if (item == "geomShape") { continue; }
+
+        //                    if (!allDescriptorResultDic.ContainsKey(item))
+        //                    {
+        //                        allDescriptorResult.Add("NA");
+        //                    }
+        //                    else
+        //                    {
+        //                        allDescriptorResult.Add(allDescriptorResultDic[item].ToString());
+        //                    }
+        //                }
+        //                sw.Write(line);
+        //                sw.Write("\t");
+        //                sw.WriteLine(string.Join("\t", allDescriptorResult));
+        //            }
+        //        }
+        //    }
+        //}
+
+
+
+        public static void mergeRtAndCcsResultFilesVS2(string resultFile, string rtTrainFile, string rtTestFile, string ccsTrainFile, string ccsTestFile)
         {
 
             var allResultDic = new Dictionary<string, List<string>>();
@@ -257,24 +257,24 @@ namespace CompMs.MspGenerator
                     sw.WriteLine(string.Join("\t", writeLineItem));
                 }
                 //// to test --print ccs only item
-                //foreach (var ccsItem in ccsResultDic)
-                //{
-                //    var writeLineItem = new List<string>();
-                //    writeLineItem.Add(ccsItem.Key);
+                foreach (var ccsItem in ccsResultDic)
+                {
+                    var writeLineItem = new List<string>();
+                    writeLineItem.Add(ccsItem.Key);
 
-                //    // add CCS result 
-                //    if (ccsResultDic.ContainsKey(ccsItem.Key))
-                //    {
+                    // add CCS result 
+                    if (ccsResultDic.ContainsKey(ccsItem.Key))
+                    {
 
-                //        var ccsResultValueList = new List<string>();
-                //        var ccsResult = ccsResultDic[ccsItem.Key];
-                //        foreach (var adduct in ccsAdductHeaderList)
-                //        {
-                //            writeLineItem.Add(ccsResult[adduct].ToString());
-                //        }
-                //    }
-                //    sw.WriteLine(string.Join("\t", writeLineItem));
-                //}
+                        var ccsResultValueList = new List<string>();
+                        var ccsResult = ccsResultDic[ccsItem.Key];
+                        foreach (var adduct in ccsAdductHeaderList)
+                        {
+                            writeLineItem.Add(ccsResult[adduct].ToString());
+                        }
+                    }
+                    sw.WriteLine(string.Join("\t", writeLineItem));
+                }
 
             }
 
@@ -1020,7 +1020,7 @@ namespace CompMs.MspGenerator
 
         }
 
-        public static void GeneratePredictionModelVS2(string prediction, string trainFile, string modelFile)
+        public static void GeneratePredictionModelVS2(string prediction, string trainFile, string output)
         {
             // read trainFile and set to array
             var vectorsTrain = new List<XGVector<Array>>();
@@ -1065,7 +1065,7 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            var parameters = XgbTune(vectorsTrain);
+            var parameters = XgbTuneVS2(vectorsTrain, output);
 
             // use tune result
             int nEstimators = parameters.nEstimators; //nrounds
@@ -1094,12 +1094,12 @@ namespace CompMs.MspGenerator
             XGBArray arrTrain = ConvertToXGBArray(vectorsTrain);
             xgbc.Fit(arrTrain.Vectors, arrTrain.Target);
 
-            xgbc.SaveModelToFile(modelFile);
+            xgbc.SaveModelToFile(output);
 
         }
 
 
-        public static TuningParameter XgbTune(List<XGVector<Array>> vectorsTrain)
+        public static TuningParameter XgbTune(List<XGVector<Array>> vectorsTrain, string output)
         {
             var cval = 7;
             var cvalTrainset = new Dictionary<int, List<XGVector<Array>>>();
@@ -1139,8 +1139,8 @@ namespace CompMs.MspGenerator
             var learningRateTune = new List<float>() { 0.025F, 0.05F, 0.1F };
             var gammaTune = new List<float>() { 0, 0.01F };
             var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
-            var minChildWeightTune = new List<int>() { 0, 1 };
-            var subsampleTune = new List<float>() { 0.5F, 1 };
+            var minChildWeightTune = new List<int>() { 1 };
+            var subsampleTune = new List<float>() { 1 };
 
             ////to check
             //var nEstimatorsTune = new List<int>() { 500 };
@@ -1155,8 +1155,10 @@ namespace CompMs.MspGenerator
             var id2Result = new Dictionary<int, double>();
             var id2ResultStatSet = new Dictionary<int, Dictionary<string, double>>();
 
+            var icounter = 0;
+
             ////check result output
-            using (var sw = new StreamWriter(@"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201224_onDotNet\" + "TuningResult_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", false, Encoding.ASCII))
+            using (var sw = new StreamWriter(output + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", false, Encoding.ASCII))
             {
                 sw.WriteLine("CV=" + cval);
 
@@ -1166,7 +1168,6 @@ namespace CompMs.MspGenerator
                         "RMSE(Mean)","RSquared(Mean)","MAE(Mean)","RMSESD","RSquaredSD","MAESD"
                      }));
 
-                var icounter = 0;
                 for (int i = 0; i < nEstimatorsTune.Count; i++)
                 {
                     for (int j = 0; j < maxDepthTune.Count; j++)
@@ -1177,7 +1178,7 @@ namespace CompMs.MspGenerator
                             {
                                 for (int m = 0; m < colSampleByTreeTune.Count; m++)
                                 {
-                                    for (int n = 0; n < subsampleTune.Count; n++)
+                                    for (int n = 0; n < minChildWeightTune.Count; n++)
                                     {
                                         for (int o = 0; o < subsampleTune.Count; o++)
                                         {
@@ -1256,6 +1257,7 @@ namespace CompMs.MspGenerator
                                             id2Param[icounter] = tParam;
                                             id2Result[icounter] = rmse;
 
+
                                             {
                                                 var item = id2Param[icounter];
                                                 var itemStatResult = id2ResultStatSet[icounter];
@@ -1277,10 +1279,9 @@ namespace CompMs.MspGenerator
                                                     itemStatResult["MAESD"].ToString(),
                                                 }));
                                             }
-                                        icounter++;
+
+                                            icounter++;
                                         }
-
-
                                     }
                                 }
                             }
@@ -1289,8 +1290,9 @@ namespace CompMs.MspGenerator
                 }
             }
 
+
             ////check result output
-            using (var sw = new StreamWriter(@"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201224_onDotNet\" + "TuningResult_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", false, Encoding.ASCII))
+            using (var sw = new StreamWriter(output + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", false, Encoding.ASCII))
             {
                 sw.WriteLine("CV=" + cval);
 
@@ -1324,7 +1326,163 @@ namespace CompMs.MspGenerator
                 }
             }
 
+            var minID = id2Result.Argmin(n => n.Value).Key;
+            var optParam = id2Param[minID];
 
+            return optParam;
+
+        }
+
+        public static TuningParameter XgbTuneVS2(List<XGVector<Array>> vectorsTrain, string output)
+        {
+            var cval = 7;
+            var cvalTrainset = new Dictionary<int, List<XGVector<Array>>>();
+            var cvalTestset = new Dictionary<int, List<XGVector<Array>>>();
+            var correctListSet = new Dictionary<int, List<float>>();
+
+            for (int cvset = 0; cvset < cval; cvset++)
+            {
+                var trainset = new List<XGVector<Array>>();
+                var testset = new List<XGVector<Array>>();
+                var correctList = new List<float>();
+
+                for (int i = 0; i < vectorsTrain.Count; i++)
+                {
+                    if (i + cvset < vectorsTrain.Count)
+                    {
+                        if (i % cval == 0)
+                        {
+                            testset.Add(vectorsTrain[i + cvset]);
+                            correctList.Add(vectorsTrain[i + cvset].Target);
+                        }
+                        else
+                        {
+                            trainset.Add(vectorsTrain[i]);
+                        }
+                    }
+                }
+
+                cvalTrainset.Add(cvset, trainset);
+                cvalTestset.Add(cvset, testset);
+                correctListSet.Add(cvset, correctList);
+
+            }
+
+            var nEstimatorsTune = new List<int>() { 800, 900, 1000 };
+            var maxDepthTune = new List<int>() { 8, 9, 10 };
+            var learningRateTune = new List<float>() { 0.1F,0.05F };
+            var gammaTune = new List<float>() { 0 };
+            var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
+            var minChildWeightTune = new List<int>() { 0, 1 };
+            var subsampleTune = new List<float>() { 0.5F, 1 };
+
+            ////full set
+            //var nEstimatorsTune = new List<int>() { 500, 600, 700, 800, 900, 1000 };
+            //var maxDepthTune = new List<int>() { 5, 6, 7, 8, 9, 10 };
+            //var learningRateTune = new List<float>() { 0.025F, 0.05F, 0.1F };
+            //var gammaTune = new List<float>() { 0, 0.01F };
+            //var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
+            //var minChildWeightTune = new List<int>() { 0, 1 };
+            //var subsampleTune = new List<float>() { 0.5F, 1 };
+
+            ////to check set
+            //var nEstimatorsTune = new List<int>() { 500, 1000 };
+            //var maxDepthTune = new List<int>() { 5,10 };
+            //var learningRateTune = new List<float>() { 0.025F, 0.1F };
+            //var gammaTune = new List<float>() { 0, 0.01F };
+            //var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
+            //var minChildWeightTune = new List<int>() { 0, 1 };
+            //var subsampleTune = new List<float>() { 0.5F, 1 };
+
+            var id2Param = new Dictionary<int, TuningParameter>();
+            var id2Result = new Dictionary<int, double>();
+            var id2ResultStatSet = new Dictionary<int, Dictionary<string, double>>();
+
+            var icounter = 0;
+            var tParamDic = new Dictionary<int, TuningParameter>();
+            for (int i = 0; i < nEstimatorsTune.Count; i++)
+            {
+                for (int j = 0; j < maxDepthTune.Count; j++)
+                {
+                    for (int k = 0; k < learningRateTune.Count; k++)
+                    {
+                        for (int l = 0; l < gammaTune.Count; l++)
+                        {
+                            for (int m = 0; m < colSampleByTreeTune.Count; m++)
+                            {
+                                for (int n = 0; n < minChildWeightTune.Count; n++)
+                                {
+                                    for (int o = 0; o < subsampleTune.Count; o++)
+                                    {
+                                        var tParam = new TuningParameter()
+                                        {
+                                            nEstimators = nEstimatorsTune[i],
+                                            maxDepth = maxDepthTune[j],
+                                            learningRate = learningRateTune[k],
+                                            gamma = gammaTune[l],
+                                            colSampleByTree = colSampleByTreeTune[m],
+                                            minChildWeight = minChildWeightTune[n],
+                                            subsample = subsampleTune[o],
+                                        };
+                                        tParamDic.Add(icounter, tParam);
+                                        icounter++;
+
+                                        // 
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            for (int i = 0; i < tParamDic.Count; i++)
+            {
+
+                var id2ResultStat = getXgboostTuningResult(tParamDic[i], cvalTrainset, cvalTestset, correctListSet, cval);
+
+                id2ResultStatSet.Add(i, id2ResultStat);
+
+                id2Param[i] = tParamDic[i];
+                id2Result[i] = id2ResultStat["RMSE"];
+            }
+
+            ////check result output
+            using (var sw = new StreamWriter(output + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt", false, Encoding.ASCII))
+            {
+                sw.WriteLine("CV=" + cval);
+
+                sw.WriteLine(string.Join("\t", new string[]
+                                {
+                    "id", "learningRate", "maxDepth", "gamma", "colSampleByTree", "minChildWeight", "subsample", "nEstimators",
+                    "RMSE(Mean)","RSquared(Mean)","MAE(Mean)"
+                    ,"RMSESD","RSquaredSD","MAESD"
+                                }));
+                for (int i = 0; i < id2Param.Count; i++)
+                {
+                    var item = id2Param[i];
+                    var itemStatResult = id2ResultStatSet[i];
+                    sw.WriteLine(string.Join(
+                        "\t", new string[] {
+                            i.ToString(),
+                            item.learningRate.ToString(),
+                            item.maxDepth.ToString(),
+                            item.gamma.ToString(),
+                            item.colSampleByTree.ToString(),
+                            item.minChildWeight.ToString(),
+                            item.subsample.ToString(),
+                            item.nEstimators.ToString(),
+                            itemStatResult["RMSE"].ToString(),
+                            itemStatResult["RSquared"].ToString(),
+                            itemStatResult["MAE"].ToString(),
+                            itemStatResult["RMSESD"].ToString(),
+                            itemStatResult["RSquaredSD"].ToString(),
+                            itemStatResult["MAESD"].ToString(),
+                        }));
+                }
+            }
 
             var minID = id2Result.Argmin(n => n.Value).Key;
             var optParam = id2Param[minID];
@@ -1332,6 +1490,82 @@ namespace CompMs.MspGenerator
             return optParam;
 
         }
+
+        public static Dictionary<string, double> getXgboostTuningResult(
+            TuningParameter tParam, Dictionary<int, List<XGVector<Array>>> cvalTrainset, Dictionary<int, List<XGVector<Array>>> cvalTestset,
+             Dictionary<int, List<float>> correctListSet, int cval
+            )
+        {
+            int nEstimators = tParam.nEstimators; //nrounds
+            int maxDepth = tParam.maxDepth; //
+            float learningRate = tParam.learningRate; //eta
+            float gamma = tParam.gamma;
+            float colSampleByTree = tParam.colSampleByTree;
+            int minChildWeight = tParam.minChildWeight;
+            float subsample = tParam.subsample;
+            bool silent = true;
+            string objective = "reg:linear";
+            int nThread = 4; // default -1;
+            int maxDeltaStep = 0;
+            float colSampleByLevel = 1;
+            float regAlpha = 0;
+            float regLambda = 1;// default=1 on R 
+            float scalePosWeight = 1;
+            float baseScore = 0.5F;
+            int seed = 0;
+            float missing = float.NaN;
+
+            var xgbc = new XGBoost.XGBRegressor(maxDepth, learningRate, nEstimators, silent,
+                objective, nThread, gamma, minChildWeight, maxDeltaStep,
+                subsample, colSampleByTree, colSampleByLevel,
+                regAlpha, regLambda, scalePosWeight, baseScore, seed, missing);
+
+
+            double[] rmseValues = new double[cval];
+            double[] rsquaredValues = new double[cval];
+            double[] maeValues = new double[cval];
+            for (int cvset = 0; cvset < cval; cvset++)
+            {
+                XGBArray arrTrain = ConvertToXGBArray(cvalTrainset[cvset]);
+                xgbc.Fit(arrTrain.Vectors, arrTrain.Target);
+                XGBArray arrTest = ConvertToXGBArray(cvalTestset[cvset]);
+
+                var outcomeTest = xgbc.Predict(arrTest.Vectors).ToList();
+
+
+                var correctList = new List<float>(correctListSet[cvset]);
+
+                if (outcomeTest.Count != correctList.Count)
+                {
+                    Console.Write("correctList and outcomeTest is not same number");
+                }
+                rmseValues[cvset] = getRmse(outcomeTest, correctList);
+                rsquaredValues[cvset] = getRsquared(outcomeTest, correctList);
+                maeValues[cvset] = getMae(outcomeTest, correctList);
+            }
+
+            var id2ResultStat = new Dictionary<string, double>();
+            var rmse = rmseValues.Average();
+            var rsquared = rsquaredValues.Average();
+            var mae = maeValues.Average();
+            id2ResultStat.Add("RMSE", rmse);
+            id2ResultStat.Add("RSquared", rsquared);
+            id2ResultStat.Add("MAE", mae);
+
+            var rmsesd = getStdev(rmseValues);
+            var rsquaredsd = getStdev(rsquaredValues);
+            var maesd = getStdev(maeValues);
+            id2ResultStat.Add("RMSESD", rmsesd);
+            id2ResultStat.Add("RSquaredSD", rsquaredsd);
+            id2ResultStat.Add("MAESD", maesd);
+
+            xgbc.Dispose();
+            GC.Collect();
+
+            return id2ResultStat;
+
+        }
+
 
         public static double getRmse(List<float> outcomeTest, List<float> correct)
         {
@@ -1344,11 +1578,6 @@ namespace CompMs.MspGenerator
             float[] diff = diffList.ToArray();
 
             double squareSum = diff.Select(n => n * n).Sum();
-
-            //for (int i = 0; i < diff.Length; i++)
-            //{
-            //    square += Math.Pow(diff[i], 2);
-            //}
 
             // Calculate Mean
             double mean = (squareSum / diff.Length);

@@ -932,6 +932,16 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.DSMSE:
                     return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
+                //add20210216
+                case LbmClass.GPNAE:
+                    return LipidMsmsCharacterization.JudgeIfGpnae(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.MGMG:
+                    return LipidMsmsCharacterization.JudgeIfMgmg(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DGMG:
+                    return LipidMsmsCharacterization.JudgeIfDgmg(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
 
 
                 default:

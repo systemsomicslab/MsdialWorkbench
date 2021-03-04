@@ -20,24 +20,24 @@ using NCDK.Fingerprints;
 namespace CompMs.MspGenerator
 {
     public sealed class qsarDescriptorOnNcdk
-    {        
-        public static Dictionary<string, double> NcdkDescriptors = new Dictionary<string, double>();
+    {
+        //public static Dictionary<string, double> NcdkDescriptors = new Dictionary<string, double>();
 
         public static void GenerateQsarDescriptorFileVS4(string inputFile, string outputFile)
         {
             var SmilesParser = new SmilesParser();
             var dummymol = SmilesParser.ParseSmiles("O=C(O)CCCCC"); // Header取得のためのDummy
 
-            var atomCountDic = atomicNumbersCount(dummymol);
-            var molDescriptorResultDic = calcQsarDescriptorOnNcdkAll(dummymol);
+            var atomCountDicHeader = atomicNumbersCount(dummymol);
+            var molDescriptorResultDicHeader = calcQsarDescriptorOnNcdkAll(dummymol);
 
             var allDescriptorHeader = new List<string>();
-            foreach (var item in atomCountDic)
+            foreach (var item in atomCountDicHeader)
             {
                 allDescriptorHeader.Add(item.Key);
             }
             var MolDescriptorHeader = new List<string>();
-            foreach (var item in molDescriptorResultDic)
+            foreach (var item in molDescriptorResultDicHeader)
             {
                 if (item.Key == "geomShape") { continue; }
 
@@ -48,1185 +48,490 @@ namespace CompMs.MspGenerator
             var headerLine = string.Empty;
             string[] headerArray = null;
             var queries = new List<string[]>();
+            //var responsStr = "";
+            //var responsDic = new Dictionary<int, string>();
 
             var counter = 0;
-            using (var sr = new StreamReader(inputFile, true))
+            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
             {
-                headerLine = sr.ReadLine();
-                headerArray = headerLine.ToUpper().Split('\t');
-                int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
-                int SMILES = Array.IndexOf(headerArray, "SMILES");
 
-                var line = "";
-
-                while ((line = sr.ReadLine()) != null)
+                using (var sr = new StreamReader(inputFile, true))
                 {
-                    if (line.Contains("SMILES")) { continue; }
-                    var lineArray = line.Split('\t');
-                    var inchikey = lineArray[InChIKey];
-                    var rawSmiles = lineArray[SMILES];
+                    headerLine = sr.ReadLine();
+                    headerArray = headerLine.ToUpper().Split('\t');
+                    int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
+                    int SMILES = Array.IndexOf(headerArray, "SMILES");
 
-                    queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles });
-                    counter++;
+                    sw.Write(headerLine);
+                    sw.Write("\t");
+                        sw.Write(string.Join("\t", allDescriptorHeader));
+                    sw.WriteLine("");
+
+                    var line = "";
+
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SMILES")) { continue; }
+                        var lineArray = line.Split('\t');
+                        var inchikey = lineArray[InChIKey];
+                        var rawSmiles = lineArray[SMILES];
+                        queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles ,line});
+                        counter++;
+                    }
                 }
-            }
 
-            var syncObj = new object();
-            var results = new List<DescriptorResultTemp>();
-            //var resultArray = new DescriptorResultTemp[queries.Count];
-            var atomContainers = new Dictionary<long, IAtomContainer>();
-            counter = 0;
+                var syncObj = new object();
+                var results = new List<DescriptorResultTemp>();
+                //var resultArray = new DescriptorResultTemp[queries.Count];
+                var atomContainers = new Dictionary<long, IAtomContainer>();
+                counter = 0;
 
-            var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
-            ParallelOptions parallelOptions = new ParallelOptions();
-            parallelOptions.MaxDegreeOfParallelism = 4;
-            Parallel.For(0, queries.Count, parallelOptions, i =>
-            {
-                var id = long.Parse(queries[i][0]);
-                var inchikey = queries[i][1];
-                var smiles = queries[i][2];
-                var descriptors = new Dictionary<string, double>();
-
-                var smilesParser = new SmilesParser();
-                var atomContainer = smilesParser.ParseSmiles(smiles);
-                if (atomContainer == null)
+                var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
+                ParallelOptions parallelOptions = new ParallelOptions();
+                parallelOptions.MaxDegreeOfParallelism = 4;
+                Parallel.For(0, queries.Count, parallelOptions, i =>
                 {
-                    var smilesParser2 = new SmilesParser(CDK.Builder, false);
-                    atomContainer = smilesParser2.ParseSmiles(smiles);
-                    //if (atomContainer == null)
+                    var id = long.Parse(queries[i][0]);
+                    var inchikey = queries[i][1];
+                    var smiles = queries[i][2];
+                    var descriptors = new Dictionary<string, double>();
+
+                    var smilesParser = new SmilesParser();
+                    var atomContainer = smilesParser.ParseSmiles(queries[i][2]);
+                    if (atomContainer == null)
+                    {
+                        var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                        atomContainer = smilesParser2.ParseSmiles(smiles);
+                        //if (atomContainer == null)
+                        //{
+                        //    return null;
+                        //}
+                    }
+
+                    atomContainers.Add(i, smilesParser.ParseSmiles(queries[i][2]));
+
+                    //atomCountDic = atomicNumbersCount(atomContainers[i]);
+
+                    var atomCountList = new List<string>
+                        {
+                    "H","B","C","N","O","S","P","F","Cl","Br","I"
+                        };
+                    var atomCountDic = new Dictionary<string, string>();
+                    var countAtom = 0;
+
+                    var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(atomContainers[i]);
+                    var formula = MolecularFormulaManipulator.GetString(iMolecularFormula);
+                    var atoms = MolecularFormulaManipulator.GetAtomCount(iMolecularFormula);
+
+                    var exactMass = MolecularFormulaManipulator.GetMass(iMolecularFormula, MolecularWeightTypes.MonoIsotopic);
+                    atomCountDic.Add("ExactMass", exactMass.ToString());
+
+                    foreach (var atom in atomCountList)
+                    {
+                        var elementsCount = MolecularFormulaManipulator.GetElementCount(iMolecularFormula, atom);
+                        atomCountDic.Add("n" + atom, elementsCount.ToString());
+                        countAtom = countAtom + elementsCount;
+                    }
+                    atomCountDic.Add("nX", (atoms - countAtom).ToString());
+
+                    var heavyElements = atoms - int.Parse(atomCountDic["nH"]);
+                    atomCountDic.Add("nHeavyAtom", heavyElements.ToString());
+
+
+                    //molDescriptorResultDic = calcQsarDescriptorOnNcdkAll(atomContainers[i]);
+
+                    var AcidicGroupCount = acidicGroupCountDescriptor(atomContainers[i]);
+                    var ALogP = aLogPDescriptor(atomContainers[i]);
+                    //AminoAcidCount = aminoAcidCountDescriptor(atomContainers[i]);
+                    var APol = aPolDescriptor(atomContainers[i]);
+                    var AromaticAtomsCount = aromaticAtomsCountDescriptor(atomContainers[i]);
+                    var AromaticBondsCount = aromaticBondsCountDescriptor(atomContainers[i]);
+                    var AtomCount = atomCountDescriptor(atomContainers[i]);
+                    var AutocorrelationCharge = autocorrelationChargeDescriptor(atomContainers[i]);
+                    var AutocorrelationMass = autocorrelationMassDescriptor(atomContainers[i]);
+                    var AutocorrelationPolarizability = autocorrelationPolarizabilityDescriptor(atomContainers[i]);
+                    var BasicGroupCount = basicGroupCountDescriptor(atomContainers[i]);
+                    var BCUT = bcutDescriptor(atomContainers[i]);
+                    var BondCount = bondCountDescriptor(atomContainers[i]);
+                    var BPol = bPolDescriptor(atomContainers[i]);
+                    var CarbonTypes = carbonTypesDescriptor(atomContainers[i]);
+                    var ChiChain = chiChainDescriptor(atomContainers[i]);
+                    var ChiCluster = chiClusterDescriptor(atomContainers[i]);
+                    var ChiPathCluster = chiPathClusterDescriptor(atomContainers[i]);
+                    var ChiPath = chiPathDescriptor(atomContainers[i]);
+                    //CPSA = cpsaDescriptor(atomContainers[i]);
+                    var EccentricConnectivityIndex = eccentricConnectivityIndexDescriptor(atomContainers[i]);
+                    var FMF = fmfDescriptor(atomContainers[i]);
+                    var FractionalCSP3 = fractionalCSP3Descriptor(atomContainers[i]);
+                    var FractionalPSA = fractionalPSADescriptor(atomContainers[i]);
+                    var FragmentComplexity = fragmentComplexityDescriptor(atomContainers[i]);
+                    //GravitationalIndex = gravitationalIndexDescriptor(atomContainers[i]);
+                    var HBondAcceptorCount = hBondAcceptorCountDescriptor(atomContainers[i]);
+                    var HBondDonorCount = hBondDonorCountDescriptor(atomContainers[i]);
+                    var HybridizationRatio = hybridizationRatioDescriptor(atomContainers[i]);
+                    var JPlogP = jPlogPDescriptor(atomContainers[i]);
+                    var KappaShapeIndices = kappaShapeIndicesDescriptor(atomContainers[i]);
+                    var KierHallSmarts = kierHallSmartsDescriptor(atomContainers[i]);
+                    var LargestChain = largestChainDescriptor(atomContainers[i]);
+                    var LargestPiSystem = largestPiSystemDescriptor(atomContainers[i]);
+                    //LengthOverBreadth = lengthOverBreadthDescriptor(atomContainers[i]);
+                    //var LongestAliphaticChain = longestAliphaticChainDescriptor(atomContainers[i]);
+                    var MannholdLogP = mannholdLogPDescriptor(atomContainers[i]);
+                    var MDE = mdeDescriptor(atomContainers[i]);
+                    //MomentOfInertia = momentOfInertiaDescriptor(atomContainers[i]);
+                    var PetitjeanNumber = petitjeanNumberDescriptor(atomContainers[i]);
+                    var PetitjeanShapeIndex = petitjeanShapeIndexDescriptor(atomContainers[i]);
+                    var RotatableBondsCount = rotatableBondsCountDescriptor(atomContainers[i]);
+                    var RuleOfFive = ruleOfFiveDescriptor(atomContainers[i]);
+                    var SmallRing = smallRingDescriptor(atomContainers[i]);
+                    var SpiroAtomCount = spiroAtomCountDescriptor(atomContainers[i]);
+                    var TPSA = tpsaDescriptor(atomContainers[i]);
+                    //VABC = vabcDescriptor(atomContainers[i]);
+                    var VAdjMa = vadjMaDescriptor(atomContainers[i]);
+                    var Weight = weightDescriptor(atomContainers[i]);
+                    var WeightedPath = weightedPathDescriptor(atomContainers[i]);
+                    //WHIM = whimDescriptor(atomContainers[i]);
+                    var WienerNumbers = wienerNumbersDescriptor(atomContainers[i]);
+                    var XLogP = xLogPDescriptor(atomContainers[i]);
+                    var ZagrebIndex = zagrebIndexDescriptor(atomContainers[i]);
+                    //};
+
+                    var MolDescriptorResuitDic = new Dictionary<string, string>();
+
+
+                    foreach (var item in AcidicGroupCount)//AcidicGroupCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ALogP)//ALogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in AminoAcidCount)//AminoAcidCount
                     //{
-                    //    return null;
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
                     //}
-                }
 
-                atomContainers.Add(i, atomContainer);
+                    foreach (var item in APol)//APol
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
 
-                atomCountDic = atomicNumbersCount(atomContainers[i]);
-                molDescriptorResultDic = calcQsarDescriptorOnNcdkAll(atomContainers[i]);
-                foreach (var item in atomCountDic)
-                {
-                    descriptors.Add(item.Key, double.Parse(item.Value));
-                }
-                foreach (var item in molDescriptorResultDic)
-                {
+                    foreach (var item in AromaticAtomsCount)//AromaticAtomsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AromaticBondsCount)//AromaticBondsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AtomCount)//AtomCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationCharge)//AutocorrelationCharge
+                    {
+                        MolDescriptorResuitDic.Add("ATSc" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationMass)//AutocorrelationMass
+                    {
+                        MolDescriptorResuitDic.Add("ATSm" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationPolarizability)//AutocorrelationPolarizability
+                    {
+                        MolDescriptorResuitDic.Add("ATSp" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in BasicGroupCount)//BasicGroupCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in BCUT)//BCUT
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in BondCount)//BondCount
+                    {
+                        MolDescriptorResuitDic.Add("BondCount" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in BPol)//BPol
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in CarbonTypes)//CarbonTypes
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiChain)//ChiChain
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiCluster)//ChiCluster
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiPathCluster)//ChiPathCluster
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiPath)//ChiPath
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in CPSA)//CPSA
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in EccentricConnectivityIndex)//EccentricConnectivityIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FMF)//FMF
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FractionalCSP3)//FractionalCSP3
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FractionalPSA)//FractionalPSA
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FragmentComplexity)//FragmentComplexity
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in GravitationalIndex)//GravitationalIndex
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in HBondAcceptorCount)//HBondAcceptorCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in HBondDonorCount)//HBondDonorCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in HybridizationRatio)//HybridizationRatio
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in JPlogP)//JPlogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in KappaShapeIndices)//KappaShapeIndices
+                    {
+                        MolDescriptorResuitDic.Add("KappaShapeIndices" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in KierHallSmarts)//KierHallSmarts
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in LargestChain)//LargestChain
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in LargestPiSystem)//LargestPiSystem
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in LengthOverBreadth)//LengthOverBreadth
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    //foreach (var item in LongestAliphaticChain)//LongestAliphaticChain
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in MannholdLogP)//MannholdLogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in MDE)//MDE
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in MomentOfInertia)//MomentOfInertia
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in PetitjeanNumber)//PetitjeanNumber
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in PetitjeanShapeIndex)//PetitjeanShapeIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in RotatableBondsCount)//RotatableBondsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in RuleOfFive)//RuleOfFive
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in SmallRing)//SmallRing
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in SpiroAtomCount)//SpiroAtomCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in TPSA)//TPSA
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in VABC)//VABC
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in VAdjMa)//VAdjMa
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in Weight)//Weight
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in WeightedPath)//WeightedPath
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in WHIM)//WHIM
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in WienerNumbers)//WienerNumbers
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in XLogP)//XLogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ZagrebIndex)//ZagrebIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+
+
+                    foreach (var item in atomCountDic)
+                    {
                         descriptors.Add(item.Key, double.Parse(item.Value));
-                }
-
-                var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors };
-                //resultArray[id] = result;
-
-                lock (syncObj)
-                {
-                    results.Add(result);
-                    counter++;
-                    if (!Console.IsOutputRedirected)
-                    {
-                        Console.Write("Progress {0}/{1}", counter, queries.Count);
-                        Console.SetCursorPosition(0, Console.CursorTop);
                     }
-                    else
+                    foreach (var item in MolDescriptorResuitDic)
                     {
-                        Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
+                        descriptors.Add(item.Key, double.Parse(item.Value));
                     }
-                }
-            });
+
+                    var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors };
+                    //resultArray[id] = result;
+
+                    lock (syncObj)
+                    {
+                        results.Add(result);
+
+                            sw.Write(queries[i][3]);
+                        foreach (var item in allDescriptorHeader)
+                        {
+                            sw.Write("\t");
+                            sw.Write(result.Descriptor[item]);
+                        }
+                        sw.WriteLine("");
+                        counter++;
+                        if (!Console.IsOutputRedirected)
+                        {
+                            Console.Write("Progress {0}/{1}", counter, queries.Count);
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
+                        }
+                    }
+                });
+            }
 
 
             //results = resultArray.ToList();
 
-            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
-            {
+            //using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+            //{
 
-                sw.Write(headerLine);
-                sw.Write("\t");
-                sw.WriteLine(string.Join("\t", allDescriptorHeader));
+            //    sw.Write(string.Join("\t", new string[] { "ID", "InChIKey", "SMILES" }));
+            //    sw.Write("\t");
+            //    sw.WriteLine(string.Join("\t", allDescriptorHeader));
 
-                foreach (var result in results.OrderBy(n => n.ID))
-                {
-                    var descriptor = result.Descriptor;
-                    sw.Write(string.Join("\t", new string[] { result.InChIKey, result.SMILES }));
+            //    foreach (var result in results.OrderBy(n => n.ID))
+            //    {
+            //        var descriptor = result.Descriptor;
+            //        sw.Write(string.Join("\t", new string[] { result.ID.ToString(), result.InChIKey, result.SMILES }));
 
-                    foreach (var item in allDescriptorHeader)
-                    {
-                        sw.Write("\t");
-                        sw.Write(result.Descriptor[item]);
-                    }
-                    sw.WriteLine("");
-                }
-            }
+            //        foreach (var item in allDescriptorHeader)
+            //        {
+            //            sw.Write("\t");
+            //            sw.Write(result.Descriptor[item]);
+            //        }
+            //        sw.WriteLine("");
+            //    }
+            //}
         }
-
-        public static void GenerateQsarDescriptorFileVS3(string inputFile, string outputFile)
-        {
-            var SmilesParser = new SmilesParser();
-
-            var allDescriptorResultDic = GenerateNCDKDescriptors("O=C(O)CCCCC"); // Header取得のためのDummy
-
-            var allDescriptorHeader = new List<string>();
-            foreach (var item in allDescriptorResultDic)
-            {
-                if (item.Key == "geomShape") { continue; }
-
-                allDescriptorHeader.Add(item.Key);
-            }
-
-            var headerLine = string.Empty;
-            string[] headerArray = null;
-            var queries = new List<string[]>();
-
-            var counter = 0;
-            using (var sr = new StreamReader(inputFile, true))
-            {
-                headerLine = sr.ReadLine();
-                headerArray = headerLine.ToUpper().Split('\t');
-                int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
-                int SMILES = Array.IndexOf(headerArray, "SMILES");
-
-                var line = "";
-
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Contains("SMILES")) { continue; }
-                    var lineArray = line.Split('\t');
-                    var inchikey = lineArray[InChIKey];
-                    var rawSmiles = lineArray[SMILES];
-
-                    queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles });
-                    counter++;
-                }
-            }
-
-            var syncObj = new object();
-            var results = new List<DescriptorResultTemp>();
-            //var resultArray = new DescriptorResultTemp[queries.Count];
-            var atomContainers = new Dictionary<long, IAtomContainer>();
-            counter = 0;
-
-            var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
-            ParallelOptions parallelOptions = new ParallelOptions();
-            parallelOptions.MaxDegreeOfParallelism = 4;
-            Parallel.For(0, queries.Count, parallelOptions, i =>
-            {
-                var id = long.Parse(queries[i][0]);
-                var inchikey = queries[i][1];
-                var smiles = queries[i][2];
-                var descriptors = new Dictionary<string, double>();
-
-                var smilesParser = new SmilesParser();
-                var atomContainer = smilesParser.ParseSmiles(smiles);
-                if (atomContainer == null)
-                {
-                    var smilesParser2 = new SmilesParser(CDK.Builder, false);
-                    atomContainer = smilesParser2.ParseSmiles(smiles);
-                    //if (atomContainer == null)
-                    //{
-                    //    return null;
-                    //}
-                }
-
-                atomContainers.Add(i, atomContainer);
-                ////NCDK.Geometries.AtomTools.Add3DCoordinates1(atomContainer);
-
-                AtomicNumbersCountDescriptors(atomContainers[i]);
-                AcidicGroupCountDescriptors(atomContainers[i]);
-                ALogPDescriptors(atomContainers[i]);
-                // AminoAcidCountDescriptors(atomContainer); // bit slow
-                APolDescriptors(atomContainers[i]);
-                AromaticAtomsCountDescriptors(atomContainers[i]);
-                AromaticBondsCountDescriptors(atomContainers[i]);
-                AtomCountDescriptors(atomContainers[i]);
-                AutocorrelationChargeDescriptors(atomContainers[i]);
-                AutocorrelationMassDescriptors(atomContainers[i]);
-                AutocorrelationPolarizabilityDescriptors(atomContainers[i]);
-                BasicGroupCountDescriptors(atomContainers[i]);
-                BcutDescriptors(atomContainers[i]);
-                BondCountDescriptors(atomContainers[i]);
-                BPolDescriptors(atomContainers[i]);
-                CarbonTypesDescriptors(atomContainers[i]);
-                ChiChainDescriptors(atomContainers[i]);
-                ChiClusterDescriptors(atomContainers[i]);
-                ChiPathClusterDescriptors(atomContainers[i]);
-                ChiPathDescriptors(atomContainers[i]);
-                // CpsaDescriptors(atomContainer); //3D
-                EccentricConnectivityIndexDescriptors(atomContainers[i]);
-                FmfDescriptors(atomContainers[i]);
-                FractionalCSP3Descriptors(atomContainers[i]);
-                FractionalPSADescriptors(atomContainers[i]);
-                FragmentComplexityDescriptors(atomContainers[i]);
-                // GravitationalIndexDescriptors(atomContainer); //3D
-                HBondAcceptorCountDescriptors(atomContainers[i]);
-                HBondDonorCountDescriptors(atomContainers[i]);
-                HybridizationRatioDescriptors(atomContainers[i]);
-                JPlogPDescriptors(atomContainers[i]);
-                KappaShapeIndicesDescriptors(atomContainers[i]);
-                KierHallSmartsDescriptors(atomContainers[i]);
-                LargestChainDescriptors(atomContainers[i]);
-                LargestPiSystemDescriptors(atomContainers[i]);
-                // LengthOverBreadthDescriptors(atomContainer); // 3D
-                // LongestAliphaticChainDescriptors(atomContainer);  // some structure cause stack over flow
-                MannholdLogPDescriptors(atomContainers[i]);
-                MdeDescriptors(atomContainers[i]);
-                // MomentOfInertiaDescriptors(atomContainer); // 3D
-                PetitjeanNumberDescriptors(atomContainers[i]);
-                PetitjeanShapeIndexDescriptors(atomContainers[i]);
-                RotatableBondsCountDescriptors(atomContainers[i]);
-                RuleOfFiveDescriptors(atomContainers[i]);
-                SmallRingDescriptors(atomContainers[i]);
-                SpiroAtomCountDescriptors(atomContainers[i]);
-                TpsaDescriptors(atomContainers[i]);
-                // VabcDescriptors(atomContainer);  // NaN return
-                VadjMaDescriptors(atomContainers[i]);
-                WeightDescriptors(atomContainers[i]);
-                WeightedPathDescriptors(atomContainers[i]);
-                // WhimDescriptors(atomContainer); // 3D
-                WienerNumbersDescriptors(atomContainers[i]);
-                XLogPDescriptors(atomContainers[i]);
-                ZagrebIndexDescriptors(atomContainers[i]);
-
-                descriptorsAll.Add(id, descriptors);
-
-                var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptorsAll[id] };
-                //resultArray[id] = result;
-
-                lock (syncObj)
-                {
-                    results.Add(result);
-                    counter++;
-                    if (!Console.IsOutputRedirected)
-                    {
-                        Console.Write("Progress {0}/{1}", counter, queries.Count);
-                        Console.SetCursorPosition(0, Console.CursorTop);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
-                    }
-                }
-            });
-
-
-            //results = resultArray.ToList();
-
-            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
-            {
-
-                sw.Write(headerLine);
-                sw.Write("\t");
-                sw.WriteLine(string.Join("\t", allDescriptorHeader));
-
-                foreach (var result in results.OrderBy(n => n.ID))
-                {
-                    var descriptor = result.Descriptor;
-                    sw.Write(string.Join("\t", new string[] { result.InChIKey, result.SMILES }));
-
-                    foreach (var item in allDescriptorHeader)
-                    {
-                        sw.Write("\t");
-                        sw.Write(result.Descriptor[item]);
-                    }
-                    sw.WriteLine("");
-                }
-            }
-        }
-
-
-        public static Dictionary<string, double> GenerateNCDKDescriptors(string smiles)
-        //without finger print
-        {
-
-            var smilesParser = new SmilesParser();
-            var atomContainer = smilesParser.ParseSmiles(smiles);
-            if (atomContainer == null)
-            {
-                var smilesParser2 = new SmilesParser(CDK.Builder, false);
-                atomContainer = smilesParser2.ParseSmiles(smiles);
-                if (atomContainer == null)
-                {
-                    return null;
-                }
-            }
-            //NCDK.Geometries.AtomTools.Add3DCoordinates1(atomContainer);
-
-            AtomicNumbersCountDescriptors(atomContainer);
-            AcidicGroupCountDescriptors(atomContainer);
-            ALogPDescriptors(atomContainer);
-            // AminoAcidCountDescriptors(atomContainer); // bit slow
-            APolDescriptors(atomContainer);
-            AromaticAtomsCountDescriptors(atomContainer);
-            AromaticBondsCountDescriptors(atomContainer);
-            AtomCountDescriptors(atomContainer);
-            AutocorrelationChargeDescriptors(atomContainer);
-            AutocorrelationMassDescriptors(atomContainer);
-            AutocorrelationPolarizabilityDescriptors(atomContainer);
-            BasicGroupCountDescriptors(atomContainer);
-            BcutDescriptors(atomContainer);
-            BondCountDescriptors(atomContainer);
-            BPolDescriptors(atomContainer);
-            CarbonTypesDescriptors(atomContainer);
-            ChiChainDescriptors(atomContainer);
-            ChiClusterDescriptors(atomContainer);
-            ChiPathClusterDescriptors(atomContainer);
-            ChiPathDescriptors(atomContainer);
-            // CpsaDescriptors(atomContainer); //3D
-            EccentricConnectivityIndexDescriptors(atomContainer);
-            FmfDescriptors(atomContainer);
-            FractionalCSP3Descriptors(atomContainer);
-            FractionalPSADescriptors(atomContainer);
-            FragmentComplexityDescriptors(atomContainer);
-            // GravitationalIndexDescriptors(atomContainer); //3D
-            HBondAcceptorCountDescriptors(atomContainer);
-            HBondDonorCountDescriptors(atomContainer);
-            HybridizationRatioDescriptors(atomContainer);
-            JPlogPDescriptors(atomContainer);
-            KappaShapeIndicesDescriptors(atomContainer);
-            KierHallSmartsDescriptors(atomContainer);
-            LargestChainDescriptors(atomContainer);
-            LargestPiSystemDescriptors(atomContainer);
-            // LengthOverBreadthDescriptors(atomContainer); // 3D
-            // LongestAliphaticChainDescriptors(atomContainer);  // some structure cause stack over flow
-            MannholdLogPDescriptors(atomContainer);
-            MdeDescriptors(atomContainer);
-            // MomentOfInertiaDescriptors(atomContainer); // 3D
-            PetitjeanNumberDescriptors(atomContainer);
-            PetitjeanShapeIndexDescriptors(atomContainer);
-            RotatableBondsCountDescriptors(atomContainer);
-            RuleOfFiveDescriptors(atomContainer);
-            SmallRingDescriptors(atomContainer);
-            SpiroAtomCountDescriptors(atomContainer);
-            TpsaDescriptors(atomContainer);
-            // VabcDescriptors(atomContainer);  // NaN return
-            VadjMaDescriptors(atomContainer);
-            WeightDescriptors(atomContainer);
-            WeightedPathDescriptors(atomContainer);
-            // WhimDescriptors(atomContainer); // 3D
-            WienerNumbersDescriptors(atomContainer);
-            XLogPDescriptors(atomContainer);
-            ZagrebIndexDescriptors(atomContainer);
-
-            //// fingerprinters
-            //ExecutePubchemFingerprinter(atomContainer);
-            //ExecuteKlekotaRothFingerprinter(atomContainer);
-            //ExecuteMACCSFingerprinter(atomContainer);
-            //Top50MostCommonFunctionalGroups2020Fingerprinter(atomContainer);
-
-            return NcdkDescriptors;
-        }
-
-        public static void AtomicNumbersCountDescriptors(IAtomContainer mol)
-        {
-            var atomCountList = new List<string> {
-                "H","B","C","N","O","S","P","F","Cl","Br","I"
-            };
-
-            var countAtom = 0;
-            var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(mol);
-            var formula = MolecularFormulaManipulator.GetString(iMolecularFormula);
-            var atoms = MolecularFormulaManipulator.GetAtomCount(iMolecularFormula);
-
-            var exactMass = MolecularFormulaManipulator.GetMass(iMolecularFormula, MolecularWeightTypes.MonoIsotopic);
-            NcdkDescriptors["ExactMass"] = exactMass;
-            foreach (var atom in atomCountList)
-            {
-                var elementsCount = MolecularFormulaManipulator.GetElementCount(iMolecularFormula, atom);
-                NcdkDescriptors["n" + atom] = elementsCount;
-                countAtom += elementsCount;
-            }
-            NcdkDescriptors["nX"] = atoms - countAtom;
-
-            var heavyElements = atoms - (int)NcdkDescriptors["nH"];
-            NcdkDescriptors["nHeavyAtom"] = heavyElements;
-        }
-
-        public static void AcidicGroupCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AcidicGroupCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AcidicGroupCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        public static void ALogPDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ALogPDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ALogPDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        // bit slow
-        public static void AminoAcidCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AminoAcidCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AminoAcidCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void APolDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new APolDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("APolDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AromaticAtomsCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AromaticAtomsCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AromaticAtomsCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AromaticBondsCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AromaticBondsCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AromaticBondsCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AtomCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AtomCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AtomCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AutocorrelationChargeDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AutocorrelationDescriptorCharge();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AutocorrelationDescriptorCharge returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AutocorrelationMassDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AutocorrelationDescriptorMass();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AutocorrelationDescriptorMass returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void AutocorrelationPolarizabilityDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new AutocorrelationDescriptorPolarizability();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AutocorrelationDescriptorPolarizability returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void BasicGroupCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new BasicGroupCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("BasicGroupCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        /// <summary>
-        /// MathNet.Numerics.dll is needed in a local directory
-        /// </summary>
-        /// <param name="atom"></param>
-        public static void BcutDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new BCUTDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("BCUTDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void BondCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new BondCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("BondCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void BPolDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new BPolDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("BPolDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void CarbonTypesDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new CarbonTypesDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("AminoAcidCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void ChiChainDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ChiChainDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ChiChainDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void ChiClusterDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ChiClusterDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ChiClusterDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void ChiPathClusterDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ChiPathClusterDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ChiPathClusterDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void ChiPathDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ChiPathDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ChiPathDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        // need 3D coordinates
-        public static void CpsaDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new CPSADescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("CPSADescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void EccentricConnectivityIndexDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new EccentricConnectivityIndexDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("EccentricConnectivityIndexDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void FmfDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new FMFDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("FMFDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void FractionalCSP3Descriptors(IAtomContainer atom)
-        {
-            var descriptor = new FractionalCSP3Descriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("FractionalCSP3Descriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void FractionalPSADescriptors(IAtomContainer atom)
-        {
-            var descriptor = new FractionalPSADescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("FractionalPSADescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void FragmentComplexityDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new FragmentComplexityDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("FragmentComplexityDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        /// <summary>
-        /// it needs 3D coordinates
-        /// </summary>
-        /// <param name="atom"></param>
-        public static void GravitationalIndexDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new GravitationalIndexDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("GravitationalIndexDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void HBondAcceptorCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new HBondAcceptorCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("HBondAcceptorCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void HBondDonorCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new HBondDonorCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("HBondDonorCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void HybridizationRatioDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new HybridizationRatioDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("HybridizationRatioDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void JPlogPDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new JPlogPDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("JPlogPDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void KappaShapeIndicesDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new KappaShapeIndicesDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("KappaShapeIndicesDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void KierHallSmartsDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new KierHallSmartsDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("KierHallSmartsDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void LargestChainDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new LargestChainDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("LargestChainDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void LargestPiSystemDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new LargestPiSystemDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("LargestPiSystemDescriptors returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        /// <summary>
-        /// it needs 3D coordinates
-        /// </summary>
-        /// <param name="atom"></param>
-        public static void LengthOverBreadthDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new LengthOverBreadthDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("LengthOverBreadthDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void LongestAliphaticChainDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new LongestAliphaticChainDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("LongestAliphaticChainDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void MannholdLogPDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new MannholdLogPDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("MannholdLogPDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void MdeDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new MDEDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("MDEDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        /// <summary>
-        /// it needs 3D coordinates
-        /// </summary>
-        /// <param name="atom"></param>
-        public static void MomentOfInertiaDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new MomentOfInertiaDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("MomentOfInertiaDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void PetitjeanNumberDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new PetitjeanNumberDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("PetitjeanNumberDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void PetitjeanShapeIndexDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new PetitjeanShapeIndexDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("PetitjeanShapeIndexDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void RotatableBondsCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new RotatableBondsCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("RotatableBondsCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void RuleOfFiveDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new RuleOfFiveDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("RuleOfFiveDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void SmallRingDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new SmallRingDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("SmallRingDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void SpiroAtomCountDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new SpiroAtomCountDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("SpiroAtomCountDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void TpsaDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new TPSADescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("TPSADescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void VabcDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new VABCDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("VABCDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void VadjMaDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new VAdjMaDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("VAdjMaDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void WeightDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new WeightDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("WeightDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void WeightedPathDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new WeightedPathDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("WeightedPathDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-        /// <summary>
-        /// it needs 3D coordinates
-        /// </summary>
-        /// <param name="atom"></param>
-        public static void WhimDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new WHIMDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("WHIMDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-
-        public static void WienerNumbersDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new WienerNumbersDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("WienerNumbersDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void XLogPDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new XLogPDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("XLogPDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-        public static void ZagrebIndexDescriptors(IAtomContainer atom)
-        {
-            var descriptor = new ZagrebIndexDescriptor();
-            var result = descriptor.Calculate(atom);
-            if (result == null || result.Values.IsEmptyOrNull())
-            {
-                Console.WriteLine("ZagrebIndexDescriptor returned an error");
-            }
-            foreach (var item in result)
-            {
-                NcdkDescriptors[item.Key] = Convert.ToDouble(item.Value);
-                // Console.WriteLine("item {0} value {1}", item.Key, Convert.ToDouble(item.Value));
-            }
-        }
-
-
 
 
 

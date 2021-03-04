@@ -19,7 +19,7 @@ namespace CompMs.MspGenerator
             { "[M-H]-",new AdductIon(){ AdductIonName= "[M-H]-", AdductIonMass = -MassDictionary.Proton ,AdductSurfix ="H", IonMode ="Negative"} },
             { "[M+HCOO]-",new AdductIon(){ AdductIonName= "[M+HCOO]-", AdductIonMass = MassDictionary.HCOOadduct ,AdductSurfix ="FA", IonMode ="Negative"} },
             { "[M+CH3COO]-",new AdductIon(){ AdductIonName= "[M+CH3COO]-", AdductIonMass = MassDictionary.CH3COOadduct ,AdductSurfix ="Hac", IonMode ="Negative"} },
-            { "[M-2H]2-",new AdductIon(){ AdductIonName= "[M-2H]2-", AdductIonMass = -MassDictionary.Proton ,AdductSurfix ="2H-", IonMode ="Negative"} },
+            { "[M-2H]2-",new AdductIon(){ AdductIonName= "[M-2H]2-", AdductIonMass = -MassDictionary.Proton*2 ,AdductSurfix ="2H-", IonMode ="Negative"} },
             { "[M+H-H2O]+",new AdductIon(){ AdductIonName= "[M+H-H2O]+", AdductIonMass = MassDictionary.Proton-MassDictionary.H2OMass ,AdductSurfix ="H-H2O", IonMode ="Positive"} },
         };
 
@@ -68,6 +68,7 @@ namespace CompMs.MspGenerator
                 {   "EtherLPG" ,    new List<string>(){ "[M-H]-"}    },
                 {   "LDGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+"  }    },
                 {   "LDGCC" ,    new List<string>(){ "[M+H]+"  }    },
+                {   "GPNAE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
 
 
             // (GL)glyceroLipids 2 eqally acyl chains
@@ -84,6 +85,9 @@ namespace CompMs.MspGenerator
 
             // (GL)glyceroLipids mono acyl(ester) chains
                 {   "MG" ,    new List<string>(){ "[M+NH4]+"  }    },
+                {   "DGMG" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
+                {   "MGMG" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
+
 
             // (GP)glycerophosphoLipids 2 not eqally acyl chains
                 {   "OxPC" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-"}    },
@@ -185,7 +189,7 @@ namespace CompMs.MspGenerator
             //single chain
                 {   "CAR" ,    new List<string>(){ "[M+H]+" }    },
                 {   "VAE" ,    new List<string>(){ "[M+H]+", "[M+Na]+"  , }    },
-                {   "NAE" ,    new List<string>(){ "[M+H]+"  }    },
+                {   "NAE" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "NAGly_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
                 {   "NAGlySer_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+"  , }    },
                 {   "NAOrn_OxFA" ,    new List<string>(){ "[M+H]+"  }    },
@@ -234,7 +238,7 @@ namespace CompMs.MspGenerator
                 {   "SPE" ,    new List<string>(){ "[M-H]-", "[M+H]+"  , }    },
                 {   "SSulfate" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
 
-                {   "CoQ" ,    new List<string>(){ "[M+H]+"  }    },
+                {   "CoQ" ,    new List<string>(){ "[M+H]+","[M+Na]+", "[M+NH4]+" }    },
                 {   "Vitamin_D" ,    new List<string>(){ "[M+H]+"  }    },
                 {   "VitaminE" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-" , }    },
                 {   "BileAcid" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },

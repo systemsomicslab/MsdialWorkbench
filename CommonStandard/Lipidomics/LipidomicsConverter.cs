@@ -2768,6 +2768,16 @@ namespace CompMs.Common.Lipidomics {
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount;
             var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            //add MT
+            if (lipidname.Substring(0, 2) == "O-")
+            {
+                totalChain = "O-" + totalChain;
+            }
+            else if (lipidname.Substring(0, 2) == "P-")
+            {
+                totalChain = "P-" + totalChain;
+            }
+
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -2787,15 +2797,19 @@ namespace CompMs.Common.Lipidomics {
         }
 
         private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass) {
-            var oxString = oxidized == 0 
-                ? string.Empty 
-                : oxidized == 1 
-                    ? ";O" 
-                    : ";" + oxidized + "O";
             var rdbString = rdb.ToString();
-            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS) {
+            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS || lipidclass == LbmClass.ASM
+                || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
+                || lipidclass == LbmClass.TG_EST)
+            {
                 rdbString = (rdb + 1).ToString();
+                oxidized = oxidized + 1;
             }
+            var oxString = oxidized == 0
+                 ? string.Empty
+                 : oxidized == 1
+                     ? ";O"
+                     : ";" + oxidized + "O";
             return carbon + ":" + rdbString + oxString;
         }
 
@@ -2832,7 +2846,7 @@ namespace CompMs.Common.Lipidomics {
         //        (sn1DoubleBond + sn2DoubleBond).ToString() + sn1Suffix + oxString; // d48:2
         //    var sublevelLipidName = lipidheader + " " + totalChain; // SM d48:2
         //    setChainProperties(totalChain, out totalCarbonCount, out totalDoubleBond, out totalOxidizedCount);
-           
+
         //    molecule.SublevelLipidName = sublevelLipidName;
         //    molecule.LipidName = lipidName;
         //    molecule.LipidClass = lipidclass;
@@ -2939,6 +2953,12 @@ namespace CompMs.Common.Lipidomics {
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
             var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            //add MT
+            if (lipidname.Substring(0, 2) == "O-")
+            {
+                totalChain = "O-" + totalChain;
+            }
+
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -3240,15 +3260,15 @@ namespace CompMs.Common.Lipidomics {
             if (chainString.Contains(";")) { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
-                 //comment out and add MT 2020/12/11
-                //var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
-                //if (expectedOxCount == string.Empty || expectedOxCount == "") {
-                //    expectedOxCount = "1";
-                //}
-                var expectedOxCount = "1";
-                if(!oxidizedmoiety.Contains("(2OH)")&& !oxidizedmoiety.Contains("(3OH)"))
+                //modified by MT 2020/12/11 & 2021/01/12
+                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
                 {
-                    expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty);
+                    expectedOxCount = "1";
+                }
+                else if (oxidizedmoiety.Contains("(2OH)")|| oxidizedmoiety.Contains("(3OH)"))
+                {
+                        expectedOxCount = "1";
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
@@ -3803,6 +3823,9 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.ASM: return "ASM";
                 case LbmClass.EtherSMGDG: return "EtherSMGDG";
                 case LbmClass.SMGDG: return "SMGDG";
+                case LbmClass.GPNAE: return "GPNAE";
+                case LbmClass.MGMG: return "MGMG";
+                case LbmClass.DGMG: return "DGMG";
 
                 default: return "Undefined";
             }
@@ -4223,6 +4246,10 @@ namespace CompMs.Common.Lipidomics {
                 case "AHexCer": return LbmClass.AHexCer;
                 case "ASM": return LbmClass.ASM;
 
+                case"GPNAE": return LbmClass.GPNAE;
+                case "MGMG": return LbmClass.MGMG;
+                case "DGMG": return LbmClass.DGMG;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -4637,6 +4664,11 @@ namespace CompMs.Common.Lipidomics {
                 case "SL+O": return "Sphingolipids";
                 case "GM3": return "Sphingolipids";
                 case "GM3[NeuAc]": return "Sphingolipids";
+
+                case "GPNAE": return "Glycerophospholipids";
+                case "MGMG": return "Glycerolipids";
+                case "DGMG": return "Glycerolipids";
+
 
                 default: return "Unassigned lipid";
             }

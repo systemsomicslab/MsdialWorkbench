@@ -115,7 +115,7 @@ namespace CompMs.MspGenerator
                                     shortNameList.Add(shortName);
                                     name = shortName;
                                 }
-                                GlycerolipidFragmentation.piFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.piFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "PS": // 
                                 if (adductIon == "[M+Na]+")
@@ -124,17 +124,17 @@ namespace CompMs.MspGenerator
                                     shortNameList.Add(shortName);
                                     name = shortName;
                                 }
-                                GlycerolipidFragmentation.psFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.psFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "PA": // 
-                                GlycerolipidFragmentation.paFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.paFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
 
                             case "PEtOH": // 
-                                GlycerolipidFragmentation.petohFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.petohFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "PMeOH": // 
-                                GlycerolipidFragmentation.pmeohFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.pmeohFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
 
                             case "DG": // 
@@ -144,35 +144,35 @@ namespace CompMs.MspGenerator
                                     shortNameList.Add(shortName);
                                     name = shortName;
                                 }
-                                GlycerolipidFragmentation.dgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
 
                             case "BMP": // 
-                                GlycerolipidFragmentation.bmpFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.bmpFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "MGDG": // 
-                                GlycerolipidFragmentation.mgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.mgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "DGDG": // 
-                                GlycerolipidFragmentation.dgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "SQDG": // 
-                                GlycerolipidFragmentation.sqdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.sqdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "DGTS": // 
-                                GlycerolipidFragmentation.dgtsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dgtsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "DGGA": // 
-                                GlycerolipidFragmentation.dggaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dggaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "DLCL": // 
-                                GlycerolipidFragmentation.dlclFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dlclFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "SMGDG": // 
-                                GlycerolipidFragmentation.smgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.smgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "DGCC": // 
-                                GlycerolipidFragmentation.dgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.dgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
 
                             case "MMPE": // 
@@ -316,7 +316,7 @@ namespace CompMs.MspGenerator
                         {
                             //normal
                             case "EtherPC":
-                                GlycerolipidFragmentation.etherPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PC O-" + chain1String + "_" + chain2String;
                                 shortName = "PC O-" + totalChain + ":" + totalBond;
                                 if (adductIon == "[M+H]+")
@@ -327,7 +327,7 @@ namespace CompMs.MspGenerator
                                 }
                                 break;
                             case "EtherPE":
-                                GlycerolipidFragmentation.etherPePFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPePFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PE O-" + chain1String + "_" + chain2String;
                                 shortName = "PE O-" + totalChain + ":" + totalBond;
                                 if (adductIon == "[M+H]+" && chain1Double > 0)
@@ -338,89 +338,89 @@ namespace CompMs.MspGenerator
 
                                 break;
                             case "EtherPE_O":
-                                GlycerolipidFragmentation.etherPeOFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPeOFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PE O-" + chain1String + "_" + chain2String;
                                 shortName = "PE O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherPG":
-                                GlycerolipidFragmentation.etherPgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PG O-" + chain1String + "_" + chain2String;
                                 shortName = "PG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherPI":
-                                GlycerolipidFragmentation.etherPiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PI O-" + chain1String + "_" + chain2String;
                                 shortName = "PI O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherPS":
-                                GlycerolipidFragmentation.etherPsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherPsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PS O-" + chain1String + "_" + chain2String;
                                 shortName = "PS O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherDG":
-                                GlycerolipidFragmentation.etherDgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherDgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "DG O-" + chain1String + "_" + chain2String;
                                 shortName = "DG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherDGDG":
-                                GlycerolipidFragmentation.etherDgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherDgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "DGDG O-" + chain1String + "_" + chain2String;
                                 shortName = "DGDG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherMGDG":
-                                GlycerolipidFragmentation.etherMgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherMgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "MGDG O-" + chain1String + "_" + chain2String;
                                 shortName = "MGDG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "EtherSMGDG":
-                                GlycerolipidFragmentation.etherSmgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.etherSmgdgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "SMGDG O-" + chain1String + "_" + chain2String;
                                 shortName = "SMGDG O-" + totalChain + ":" + totalBond;
                                 break;
                             case "OxPC":
-                                GlycerolipidFragmentation.oxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.oxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PC " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PC " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "OxPE":
-                                GlycerolipidFragmentation.oxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.oxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PE " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PE " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "OxPG":
-                                GlycerolipidFragmentation.oxPgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.oxPgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PG " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PG " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "OxPI":
-                                GlycerolipidFragmentation.oxPiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.oxPiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PI " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PI " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "OxPS":
-                                GlycerolipidFragmentation.oxPsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.oxPsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PS " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PS " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "EtherOxPC":
-                                GlycerolipidFragmentation.etherOxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.etherOxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PC O-" + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PC O-" + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "EtherOxPE":
-                                GlycerolipidFragmentation.etherOxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain2Ox);
+                                GlycerolipidFragmentation.etherOxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
                                 name = "PE O-" + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
                                 shortName = "PE O-" + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
                                 break;
                             case "LNAPE":
-                                GlycerolipidFragmentation.lnapeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.lnapeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 //name = "LNAPE " + chain1String + "/N-" + chain2String;
                                 //shortName = "LNAPE " + totalChain + ":" + totalBond;
                                 name = "LPE-N (FA " + chain2String + ")" + chain1String;
                                 shortName = "LPE-N (FA)" + totalChain + ":" + totalBond;
                                 break;
                             case "LNAPS":
-                                GlycerolipidFragmentation.lnapsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.lnapsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 //name = "LNAPS " + chain1String + "/N-" + chain2String;
                                 //shortName = "LNAPS " + totalChain + ":" + totalBond;                                
                                 name = "LPS-N (FA " + chain2String + ")" + chain1String;
@@ -524,66 +524,78 @@ namespace CompMs.MspGenerator
                             //normal
                             case "LPC": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, lipidClass);
+                                GlycerolipidFragmentation.lpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, lipidClass);
                                 break;
                             case "LPCSN1": // 
                                 var lipidClass2 = "LPC";
                                 name = lipidClass2 + " " + chain1String + "-SN1";
-                                GlycerolipidFragmentation.lpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, lipidClass);
+                                GlycerolipidFragmentation.lpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, lipidClass);
                                 break;
 
                             case "LPE": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.lpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "LPG": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.lpgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "LPI": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.lpiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "LPS": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.lpsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "LPA": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.lpaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.lpaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
 
                             case "EtherLPC": // 
                                 name = "LPC O-" + chain1String;
-                                GlycerolipidFragmentation.etherLpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.etherLpcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "EtherLPE": // 
                                 name = "LPE O-" + chain1String;
-                                GlycerolipidFragmentation.etherLpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.etherLpeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "EtherLPE_P": // 
                                 name = "LPE P-" + chain1Carbon + ":" + (chain1Double - 1);
-                                GlycerolipidFragmentation.etherLpePFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.etherLpePFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "EtherLPG": // 
                                 name = "LPG O-" + chain1String;
-                                GlycerolipidFragmentation.etherLpgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.etherLpgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
 
                             case "MG": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.mgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.mgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
 
                             case "LDGTS": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.ldgtsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.ldgtsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "LDGCC": // 
                                 name = lipidClass + " " + chain1String;
-                                GlycerolipidFragmentation.ldgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double);
+                                GlycerolipidFragmentation.ldgccFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
 
+                            case "GPNAE": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.GpnaeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
+                            case "MGMG": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.mgmgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
+                            case "DGMG": // 
+                                name = lipidClass + " " + chain1String;
+                                GlycerolipidFragmentation.dgmgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                break;
 
                             default:
                                 Console.WriteLine("Error in lipidClass switch. Please check settings...");
@@ -702,7 +714,7 @@ namespace CompMs.MspGenerator
                             case "TG": // 
                                 meta = Common.getMetaProperty(rawSmiles);
                                 name = lipidClass + " " + chain1String + "_" + chain2String + "_" + chain3String;
-                                GlycerolipidFragmentation.tgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.tgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 break;
 
                             default:
@@ -842,7 +854,7 @@ namespace CompMs.MspGenerator
                         {
                             //normal
                             case "ADGGA": // 
-                                GlycerolipidFragmentation.adggaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.adggaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 if (adduct.IonMode == "Positive")
                                 {
                                     name = lipidClass + " (O-" + chain3String + ")" + chain1String + "_" + chain2String;
@@ -853,19 +865,19 @@ namespace CompMs.MspGenerator
                                 }
                                 break;
                             case "MLCL": // 
-                                GlycerolipidFragmentation.mlclFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.mlclFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 name = lipidClass + " " + chain3String + "_" + chain1String + "_" + chain2String;
                                 break;
                             case "HBMP": // 
-                                GlycerolipidFragmentation.hbmpFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.hbmpFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 name = lipidClass + " " + chain3String + "_" + chain1String + "_" + chain2String;
                                 break;
                             case "OxTG":
-                                GlycerolipidFragmentation.oxTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain3Ox);
+                                GlycerolipidFragmentation.oxTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain3Ox);
                                 name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";" + chain3Ox + "O";
                                 break;
                             case "EtherTG":
-                                GlycerolipidFragmentation.etherTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.etherTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 name = "TG" + " O-" + chain3String + "_" + chain1String + "_" + chain2String;
 
                                 break;
@@ -1010,7 +1022,7 @@ namespace CompMs.MspGenerator
                                     shortNameList01.Add(shortName2);
                                     name = shortName2;
                                 }
-                                GlycerolipidFragmentation.cardiolipinFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
+                                GlycerolipidFragmentation.cardiolipinFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
                                 break;
 
                             default:
@@ -1021,9 +1033,9 @@ namespace CompMs.MspGenerator
 
                         //
                         var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
-                        if(adduct.AdductIonName == "[M-2H]2-")
+                        if (adduct.AdductIonName == "[M-2H]2-")
                         {
-                            precursorMZ = Math.Round(meta.ExactMass / 2 + adduct.AdductIonMass, 4);
+                            precursorMZ = Math.Round((meta.ExactMass + adduct.AdductIonMass) / 2, 4);
                         }
                         ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
 
@@ -1311,19 +1323,19 @@ namespace CompMs.MspGenerator
                             //normal
                             case "Ac2PIM1": // 
                                 name = lipidClass + " " + chain1String + "_" + chain2String;
-                                GlycerolipidFragmentation.Ac2PIM1Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.Ac2PIM1Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "Ac2PIM2": // 
                                 name = lipidClass + " " + chain1String + "_" + chain2String;
-                                GlycerolipidFragmentation.Ac2PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                GlycerolipidFragmentation.Ac2PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
                             case "Ac3PIM2": // 
                                 name = lipidClass + " " + chain1String + "_" + chain2String + "_" + chain3String;
-                                GlycerolipidFragmentation.Ac3PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
+                                GlycerolipidFragmentation.Ac3PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
                                 break;
                             case "Ac4PIM2": // 
                                 name = lipidClass + " " + chain1String + "_" + chain2String + "_" + chain3String + "_" + chain4String;
-                                GlycerolipidFragmentation.Ac4PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
+                                GlycerolipidFragmentation.Ac4PIM2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
                                 break;
 
                             default:
