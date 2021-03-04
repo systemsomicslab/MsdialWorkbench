@@ -258,7 +258,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             await Task.Run(() => {
-                if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
+                if (target.innerModel.MatchResults.Representative is MsScanMatchResult matched) {
+                    // TODO: It should not be limitted to TextDB. MsScanMatchResult should be able to find its own references.
+                    if (target.innerModel.MatchResults.TextDbBasedMatchResults.Contains(matched))
+                        return;
                     var reference = mspAnnotator.Refer(matched);
                     Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
@@ -305,6 +308,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             if (window.ShowDialog() == true) {
                 Target.RaisePropertyChanged();
+                OnPropertyChanged(nameof(Target));
             }
         }
 

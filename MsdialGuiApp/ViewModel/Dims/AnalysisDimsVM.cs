@@ -392,6 +392,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             if (window.ShowDialog() == true) {
                 Target.RaisePropertyChanged();
+                OnPropertyChanged(nameof(Target));
             }
         }
 
