@@ -374,7 +374,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             await Task.Run(() => {
                 var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
-                Console.WriteLine($"Drift time: {provider.LoadMsSpectrums()[target.MS2RawSpectrumId].DriftTime}");
                 if (parameter.RemoveAfterPrecursor)
                     spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
                 token.ThrowIfCancellationRequested();

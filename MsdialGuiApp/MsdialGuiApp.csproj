@@ -186,7 +186,7 @@
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
-    <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\DisplayFilter.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
