@@ -2765,7 +2765,18 @@ namespace Riken.Metabolomics.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount;
+
             var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            //add MT
+            if (lipidname.Substring(0, 2)=="O-") 
+            {
+                totalChain = "O-" + totalChain;
+            }
+            else if (lipidname.Substring(0, 2)=="P-")
+            {
+                totalChain = "P-" + totalChain;
+            }
+
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -2785,16 +2796,19 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass) {
-            var oxString = oxidized == 0 
+            var rdbString = rdb.ToString();
+            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS || lipidclass == LbmClass.ASM
+                || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
+                || lipidclass == LbmClass.TG_EST) {
+                rdbString = (rdb + 1).ToString();
+                oxidized = oxidized + 1;
+            }
+           var oxString = oxidized == 0 
                 ? string.Empty 
                 : oxidized == 1 
                     ? ";O" 
                     : ";" + oxidized + "O";
-            var rdbString = rdb.ToString();
-            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS) {
-                rdbString = (rdb + 1).ToString();
-            }
-            return carbon + ":" + rdbString + oxString;
+           return carbon + ":" + rdbString + oxString;
         }
 
         public static void setDoubleAcylChainsLipidAnnotation(LipidMolecule molecule,
@@ -2937,6 +2951,12 @@ namespace Riken.Metabolomics.Lipidomics {
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
             var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            //add MT
+            if (lipidname.Substring(0, 2)=="O-")
+            {
+                totalChain = "O-" + totalChain;
+            }
+
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
