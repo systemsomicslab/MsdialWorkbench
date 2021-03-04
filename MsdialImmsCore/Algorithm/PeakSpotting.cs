@@ -190,6 +190,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var spectrumList = provider.LoadMsNSpectrums(level: 2);
 
             var mass = feature.Mass;
+            var dt = feature.ChromXsTop.Drift.Value;
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
             var ms2Tol = FixMassTolerance(param.CentroidMs2Tolerance, mass);
 
@@ -210,11 +211,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var representatives = specs
                 .GroupBy(spec => Math.Round(spec.CollisionEnergy, 2))  // grouping by ce
-                .Select(group => group.Argmin(spec => Math.Abs(spec.Precursor.SelectedIonMz - mass))) // choose closest mz, for each ce
+                .Select(group => group.Argmin(spec => Math.Abs(spec.DriftTime - dt))) // choose closest at drift time, for each ce
                 .ToList();
 
-            feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
-            feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
+            if (representatives.Any()) {
+                feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
+                feature.MS2RawSpectrumID = representatives.Argmin(spec => Math.Abs(spec.DriftTime - dt)).OriginalIndex;
+            }
         }
 
         private static double FixMassTolerance(double tolerance, double mass) {

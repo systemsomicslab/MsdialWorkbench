@@ -17,6 +17,9 @@ namespace CompMs.MsdialImmsCore.Parameter
             MspSearchParam.ReverseDotProductCutOff = 0.3f;
             MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
             MspSearchParam.MinimumSpectrumMatch = 1;
+            MSDataType = MSDataType.Centroid;
+            MS2DataType = MSDataType.Centroid;
+            MinimumAmplitude = 100;
         }
 
         [Key(150)]

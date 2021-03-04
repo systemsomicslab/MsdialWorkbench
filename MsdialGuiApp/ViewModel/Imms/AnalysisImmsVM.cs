@@ -289,10 +289,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private CancellationTokenSource cts;
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
             cts?.Cancel();
-            cts = new CancellationTokenSource();
+            var localCts = cts = new CancellationTokenSource();
 
             try {
-                await OnTargetChangedAsync(target, cts.Token).ConfigureAwait(false);
+                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
+                    t => {
+                        localCts.Dispose();
+                        if (cts == localCts)
+                            cts = null;
+                    }).ConfigureAwait(false);
             }
             catch (OperationCanceledException) {
 
@@ -369,6 +374,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             await Task.Run(() => {
                 var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
+                Console.WriteLine($"Drift time: {provider.LoadMsSpectrums()[target.MS2RawSpectrumId].DriftTime}");
                 if (parameter.RemoveAfterPrecursor)
                     spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
                 token.ThrowIfCancellationRequested();
