@@ -58,6 +58,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
 
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, Common.DataObj.Result.MsScanMatchResult>();
+            spot.MatchResults.ClearMspResults();
         }
     }
 
@@ -100,6 +101,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
 
             spot.TextDbBasedMatchResult = null;
+            spot.MatchResults.ClearTextDbResults();
         }
     }
 

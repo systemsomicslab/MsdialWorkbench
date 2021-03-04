@@ -93,6 +93,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, CcsSimilarity = (float)ccsSimilarity, IsotopeSimilarity = (float)isotopeSimilarity,
+                Priority = DataBasePriority.TextDB,
             };
 
             var scores = new List<float> { };

@@ -7,12 +7,13 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentSpotProperty : IMSProperty, IIonProperty, IMoleculeProperty {
+    public class AlignmentSpotProperty : IMSProperty, IIonProperty, IMoleculeProperty, IAnnotatedObject{
 
         // IDs to link properties
         [Key(0)]
@@ -138,6 +139,13 @@ namespace CompMs.MsdialCore.DataObj {
                 return MspID < 0 && TextDbID < 0;
             }
         }
+
+        [Key(56)]
+        public MsScanMatchResultContainer MatchResults {
+            get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
+            set => matchResults = value;
+        }
+        private MsScanMatchResultContainer matchResults;
 
 
         [Key(28)]

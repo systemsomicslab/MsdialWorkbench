@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
         xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
         xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
         xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:CompoundSearchVM}}"
         Name="CompoundSearch"
         Title="Compound search" Height="720" Width="1280">
     <Window.Resources>
@@ -41,11 +41,14 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <StackPanel Orientation="Horizontal"
+                        Margin="8"
+                        Grid.Row="0">
                 <Label Content="Selected library ID:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Label Name="Label_SelectedLibraryID"
@@ -53,32 +56,55 @@
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <StackPanel Orientation="Horizontal"
+                        Margin="8,8,8,0"
+                        Grid.Row="1">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="85"/>
+                        <Setter Property="Height" Value="25"/>
+                        <Setter Property="Margin" Value="8,0"/>
+                    </Style>
+                </StackPanel.Resources>
+
+                <TextBlock Text="Change annotation:"
+                           VerticalAlignment="Center"
+                           Margin="8,0"/>
+                <Button Content="Confidence" Command="{Binding SetConfidenceCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Unsettled" Command="{Binding SetUnsettledCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Unknown" Command="{Binding SetUnknownCommand, Mode=OneTime}" Click="Ok_Click"/>
+                <Button Content="Close" Click="Cancel_Click"/>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="8"
+                        Grid.Row="2">
                 <Label Content="MS1 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBox Name="TextBox_Ms1Tolerance"
-                         Text="{Binding ParameterVM.Ms1Tolerance, Mode=TwoWay, StringFormat=F4}"
+                         Text="{Binding ParameterVM.Ms1Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
                 <Label Content="MS2 tol. [Da]:"
                        HorizontalAlignment="Left" VerticalAlignment="Center"
                        Margin="10,0,0,0"/>
                 <TextBox Name="TextBox_Ms2Tolerance"
-                         Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4}"
+                         Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
 
                 <Button Name="Button_ReAnalysis"
                         Content="Search"
                         Command="{Binding SearchCommand, Mode=OneTime}"
-                        Width="75" Height="25"
+                        Width="85" Height="25"
                         HorizontalAlignment="Left" VerticalAlignment="Center"
                         Margin="30,0,0,0"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal"
-                        Margin="10,10"
-                        Grid.Row="2">
+                        Margin="8"
+                        Grid.Row="3">
                 <StackPanel.Resources>
                     <Style TargetType="Label">
                         <Setter Property="Width" Value="120"/>
@@ -150,38 +176,42 @@
                 </StackPanel>
             </StackPanel>
 
-            <Label Content="Library information" FontStyle="Italic"
-                   HorizontalAlignment="Left" VerticalAlignment="Top"
-                   Margin="5,0,0,0"
-                   Grid.Row="3" />
-            <DataGrid Name="DataGrid_LibraryInformation"
-                      ItemsSource="{Binding Path=Compounds}"
-                      IsSynchronizedWithCurrentItem="True"
-                      CanUserAddRows="False" CanUserDeleteRows="False"
-                      CanUserReorderColumns="False" CanUserSortColumns="True"
-                      SelectionUnit="FullRow" IsReadOnly="True"
-                      HeadersVisibility="All" AutoGenerateColumns="False"
-                      Margin="5,30,10,10"
-                      Grid.Row="3" >
-                      <!--SelectionChanged="DataGrid_LibraryInformation_SelectionChanged"-->
-                <DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="DataGridColumnHeader" >
-                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>
+            <Grid Margin="8" Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=AdductName}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Pre. m/z" Width="*" Binding="{Binding Path=PrecursorMz}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=0.00}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=0.00}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=0.00}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
+                <Label Content="Library information" FontStyle="Italic"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Grid.Row="0"/>
+                <DataGrid Name="DataGrid_LibraryInformation"
+                          ItemsSource="{Binding Path=Compounds, IsAsync=True}"
+                          IsSynchronizedWithCurrentItem="True"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          CanUserReorderColumns="False" CanUserSortColumns="True"
+                          SelectionUnit="FullRow" IsReadOnly="True"
+                          HeadersVisibility="All" AutoGenerateColumns="False"
+                          Grid.Row="1">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader" >
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=AdductName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Pre. m/z" Width="*" Binding="{Binding Path=PrecursorMz}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=0.00}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=0.00}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=0.00}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
 
         </Grid>
         <Grid Grid.Column="1">

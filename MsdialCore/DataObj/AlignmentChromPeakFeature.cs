@@ -9,10 +9,11 @@ using System.Text;
 using MessagePack;
 using CompMs.Common.Extension;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty, IAnnotatedObject {
 
         // ID metadata
         [Key(0)]
@@ -152,6 +153,9 @@ namespace CompMs.MsdialCore.DataObj {
             if (MspID() < 0 && TextDbID() < 0) return true;
             return false;
         }
+
+        [Key(47)]
+        public MsScanMatchResultContainer MatchResults { get; set; } = new MsScanMatchResultContainer();
 
 
         // peak characters

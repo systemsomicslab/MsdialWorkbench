@@ -1,4 +1,8 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
@@ -21,36 +25,61 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
 
         public string Name {
-            get => innerModel.Name;
+            get => ((IMoleculeProperty)innerModel).Name;
             set {
                 if (innerModel.Name != value) {
-                    innerModel.Name = value;
+                    ((IMoleculeProperty)innerModel).Name = value;
                     OnPropertyChanged(nameof(Name));
                 }
             }
         }
-
-        public string AdductIonName => innerModel.PeakCharacter.AdductType.AdductIonName;
-        public string Formula => innerModel.Formula.FormulaString;
-        public string Ontology => innerModel.Ontology;
-        public string InChIKey => innerModel.InChIKey;
-        public string SMILES => innerModel.SMILES;
-        public string Comment {
-            get => innerModel.Comment;
+        public Formula Formula {
+            get => ((IMoleculeProperty)innerModel).Formula;
             set {
-                if (innerModel.Comment != value) {
-                    innerModel.Comment = value;
-                    OnPropertyChanged(nameof(Comment));
+                if (innerModel.Formula != value) {
+                    ((IMoleculeProperty)innerModel).Formula = value;
+                    OnPropertyChanged(nameof(Formula));
                 }
             }
         }
+        public string Ontology {
+            get => ((IMoleculeProperty)innerModel).Ontology;
+            set {
+                if (innerModel.Ontology != value) {
+                    ((IMoleculeProperty)innerModel).Ontology = value;
+                    OnPropertyChanged(nameof(Ontology));
+                }
+            }
+        }
+        public string SMILES {
+            get => ((IMoleculeProperty)innerModel).SMILES;
+            set {
+                if (innerModel.SMILES != value) {
+                    ((IMoleculeProperty)innerModel).SMILES = value;
+                    OnPropertyChanged(nameof(SMILES));
+                }
+            }
+        }
+        public string InChIKey {
+            get => ((IMoleculeProperty)innerModel).InChIKey;
+            set {
+                if (innerModel.InChIKey != value) {
+                    ((IMoleculeProperty)innerModel).InChIKey = value;
+                    OnPropertyChanged(nameof(InChIKey));
+                }
+            }
+        }
+
+        public string AdductIonName => innerModel.AdductType.AdductIonName;
+        public string Comment => innerModel.Comment;
+
         public double SignalToNoiseAve => innerModel.SignalToNoiseAve;
         public double FillPercentage => innerModel.FillParcentage;
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
-        public MsScanMatchResult ScanMatchResult => innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
+        public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
         public bool IsRefMatched => innerModel.IsReferenceMatched;
         public bool IsSuggested => innerModel.IsAnnotationSuggested;
         public bool IsUnknown => innerModel.IsUnknown;
@@ -100,6 +129,10 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             .GroupBy(peak => id2class[peak.FileID])
             .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
             .ToList());
+        }
+
+        public void RaisePropertyChanged() {
+            OnPropertyChanged(string.Empty);
         }
     }
 }

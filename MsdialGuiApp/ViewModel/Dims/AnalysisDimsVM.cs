@@ -390,7 +390,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
 
-            window.ShowDialog();
+            if (window.ShowDialog() == true) {
+                Target.RaisePropertyChanged();
+            }
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));

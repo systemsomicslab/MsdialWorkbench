@@ -7,12 +7,14 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class ChromatogramPeakFeature: IChromatogramPeakFeature, IMoleculeMsProperty {
+    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IMoleculeMsProperty, IAnnotatedObject
+    {
 
         // basic property of IChromatogramPeakFeature
         [Key(0)]
@@ -40,6 +42,8 @@ namespace CompMs.MsdialCore.DataObj {
 
         [Key(43)]
         public double Mass { get => mass; set => mass = value; }
+
+        [Key(48)]
         private double mass;
 
         public double PeakWidth(ChromXType type) {
@@ -146,7 +150,7 @@ namespace CompMs.MsdialCore.DataObj {
         public Dictionary<int, List<int>> MSRawID2MspIDs { get; set; } = new Dictionary<int, List<int>>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS). ID list having the metabolite candidates exceeding the threshold
         [Key(36)]
         public Dictionary<int, MsScanMatchResult> MSRawID2MspBasedMatchResult { get; set; } = new Dictionary<int, MsScanMatchResult>(); // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
-       
+
         //[Key(34)]
         //public int TextDbID { get; set; }// representative text id
         //[Key(49)]
@@ -155,7 +159,7 @@ namespace CompMs.MsdialCore.DataObj {
         public List<int> TextDbIDs { get; set; } = new List<int>(); // ID list having the metabolite candidates exceeding the threshold (optional)
         [Key(37)]
         public MsScanMatchResult TextDbBasedMatchResult { get; set; } = null;
-        
+
         [IgnoreMember]
         public MsScanMatchResult MspBasedMatchResult { // get result having max score
             get {
@@ -227,10 +231,13 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
+        [Key(49)]
+        public MsScanMatchResultContainer MatchResults { get; set; } = new MsScanMatchResultContainer();
+
         [IgnoreMember]
         public bool IsMsmsContained => MS2RawSpectrumID >= 0;
 
-      
+
         [Key(38)]
         public string Comment { get; set; }
 
