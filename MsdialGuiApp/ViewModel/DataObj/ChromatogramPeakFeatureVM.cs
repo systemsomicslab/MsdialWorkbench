@@ -5,6 +5,10 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Windows.Media;
 using System.Linq;
+using CompMs.Common.Interfaces;
+using CompMs.Common.Components;
+using CompMs.Common.Enum;
+using CompMs.Common.DataObj.Property;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
@@ -22,13 +26,53 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
-        public MsScanMatchResult ScanMatchResult => innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
+        public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
         public string AdductIonName => innerModel.AdductType.AdductIonName;
-        public string Name => innerModel.Name;
-        public string Formula => innerModel.Formula.FormulaString;
-        public string InChIKey => innerModel.InChIKey;
-        public string Ontology => innerModel.Ontology;
-        public string SMILES => innerModel.SMILES;
+        public string Name {
+            get => ((IMoleculeProperty)innerModel).Name;
+            set {
+                if (innerModel.Name != value) {
+                    ((IMoleculeProperty)innerModel).Name = value;
+                    OnPropertyChanged(nameof(Name));
+                }
+            }
+        }
+        public Formula Formula {
+            get => ((IMoleculeProperty)innerModel).Formula;
+            set {
+                if (innerModel.Formula != value) {
+                    ((IMoleculeProperty)innerModel).Formula = value;
+                    OnPropertyChanged(nameof(Formula));
+                }
+            }
+        }
+        public string Ontology {
+            get => ((IMoleculeProperty)innerModel).Ontology;
+            set {
+                if (innerModel.Ontology != value) {
+                    ((IMoleculeProperty)innerModel).Ontology = value;
+                    OnPropertyChanged(nameof(Ontology));
+                }
+            }
+        }
+        public string SMILES {
+            get => ((IMoleculeProperty)innerModel).SMILES;
+            set {
+                if (innerModel.SMILES != value) {
+                    ((IMoleculeProperty)innerModel).SMILES = value;
+                    OnPropertyChanged(nameof(SMILES));
+                }
+            }
+        }
+        public string InChIKey {
+            get => ((IMoleculeProperty)innerModel).InChIKey;
+            set {
+                if (innerModel.InChIKey != value) {
+                    ((IMoleculeProperty)innerModel).InChIKey = value;
+                    OnPropertyChanged(nameof(InChIKey));
+                }
+            }
+        }
         public string Comment => innerModel.Comment;
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
         public int IsotopeWeightNumber => innerModel.PeakCharacter.IsotopeWeightNumber;
@@ -78,6 +122,10 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             }
 
             SpotColor.Freeze();
+        }
+
+        public void RaisePropertyChanged() {
+            OnPropertyChanged(string.Empty);
         }
     }
 }

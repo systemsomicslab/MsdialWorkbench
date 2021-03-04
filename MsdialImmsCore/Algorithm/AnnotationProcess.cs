@@ -120,6 +120,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (results.Count > 0) {
                 var best = results.Argmax(result => result.TotalScore);
                 chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
+                chromPeakFeature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, mspAnnotator.Refer(best), best);
             }
         }
@@ -137,6 +138,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
+            chromPeakFeature.MatchResults.AddTextDbResults(results);
             if (results.Count > 0) {
                 var best = results.Argmax(result => result.TotalScore);
                 if (chromPeakFeature.TextDbBasedMatchResult == null || chromPeakFeature.TextDbBasedMatchResult.TotalScore < best.TotalScore) {

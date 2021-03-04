@@ -7,7 +7,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
@@ -19,8 +18,6 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace CompMs.MsdialCore.Utility {
     public sealed class DataAccess {
@@ -1040,24 +1037,46 @@ namespace CompMs.MsdialCore.Utility {
 
         // annotation
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
-            feature.Formula = reference.Formula;
-            feature.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
-            feature.SMILES = reference.SMILES;
-            feature.InChIKey = reference.InChIKey;
+            SetMoleculePropertyCore(feature, reference);
             feature.Name = result.Name;
             feature.AddAdductType(reference.AdductType);
             if (isTextDB) return;
             if (!result.IsSpectrumMatch) {
                 feature.Name = "w/o MS2: " + result.Name;
             }
-
-            //if (result.IsSpectrumMatch) {
-            //    Console.WriteLine(feature.Name + "\t" + feature.AdductType.AdductIonName);
-            //}
         }
 
         public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculeMsProperty(feature, reference, result, true);
+        }
+
+        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+            where T: IMoleculeProperty, IIonProperty {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AdductType = reference.AdductType;
+            feature.Name = result.Name;
+        }
+
+        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+            where T: IMoleculeProperty, IIonProperty {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AdductType = reference.AdductType;
+            feature.Name = "Unsettled: " + result.Name;
+        }
+
+        private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {
+            property.Formula = reference.Formula;
+            property.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
+            property.SMILES = reference.SMILES;
+            property.InChIKey = reference.InChIKey;
+        }
+
+        public static void ClearMoleculePropertyInfomation(IMoleculeProperty property) {
+            property.Name = string.Empty;
+            property.Formula = new Formula();
+            property.Ontology = string.Empty;
+            property.SMILES = string.Empty;
+            property.InChIKey = string.Empty;
         }
 
         public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {

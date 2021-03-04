@@ -76,6 +76,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 {
                     var best = results.Argmax(result => result.TotalScore);
                     feature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
+                    feature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
                     DataAccess.SetMoleculeMsProperty(feature, mspAnnotator.Refer(best), best);
                 }
             }
@@ -95,6 +96,10 @@ namespace CompMs.MsdialDimsCore.Common {
                     refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
                 var results = GetMatchResults(textDB, feature.Mass, ms1Tol, getMatchResult).Where(result => result.IsPrecursorMzMatch).ToList();
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
+                foreach (var result in results) {
+                    result.Priority = DataBasePriority.TextDB;
+                    feature.MatchResults.AddTextDbResult(result);
+                }
                 if (results.Count > 0)
                 {
                     var best = results.Argmax(result => result.TotalScore);

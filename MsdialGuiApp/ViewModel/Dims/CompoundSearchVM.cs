@@ -7,19 +7,37 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
-    {
+    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty {
         public ObservableCollection<CompoundResult> Compounds {
             get => compounds;
-            set => SetProperty(ref compounds, value);
+            set {
+                var old = compounds;
+                if (SetProperty(ref compounds, value)) {
+                    if (compoundsView != null) {
+                        compoundsView.CurrentChanged -= RaiseExecuteChange;
+                    }
+                    compoundsView = CollectionViewSource.GetDefaultView(compounds);
+                    if (compoundsView != null) {
+                        compoundsView.MoveCurrentToFirst();
+                        compoundsView.CurrentChanged += RaiseExecuteChange;
+                    }
+                }
+            }
         }
         private ObservableCollection<CompoundResult> compounds = new ObservableCollection<CompoundResult>();
+        private ICollectionView compoundsView;
 
         public List<SpectrumPeakWrapper> Ms2DecSpectrum {
             get => ms2DecSpectrum;
@@ -29,7 +47,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public MsRefSearchParameterVM ParameterVM {
             get => parameterVM;
-            set => SetProperty(ref parameterVM, value);
+            set {
+                var oldValue = parameterVM;
+                var newValue = value;
+                if (SetProperty(ref parameterVM, value)) {
+                    if (oldValue != null) {
+                        oldValue.PropertyChanged -= OnParameterChanged;
+                    }
+                    if (newValue != null) {
+                        newValue.PropertyChanged += OnParameterChanged;
+                    }
+                }
+            }
         }
         private MsRefSearchParameterVM parameterVM;
 
@@ -54,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase(parameter) ?? new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
 
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
@@ -68,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public CompoundSearchVM(
-            AlignmentFileBean alignmentFile, 
+            AlignmentFileBean alignmentFile,
             T spot, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
             IAnnotator<T, MSDecResult> annotator,
@@ -77,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
             this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(new MsRefSearchParameterBase(parameter) ?? new MsRefSearchParameterBase { });
+            this.ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;
@@ -90,14 +119,122 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Search();
         }
 
-        public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search));
+        public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search, CanSearch));
         private DelegateCommand searchCommand;
 
+        private bool canSearch = false;
+        private bool CanSearch() {
+            return canSearch;
+        }
+
+        private CancellationTokenSource cts = null;
+
         private void Search() {
-            var mspResults = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            canSearch = false;
+            if (cts != null) {
+                cts.Cancel();
+            }
+
+            var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
+            foreach (var candidate in candidates) {
+                candidate.IsManuallyModified = true;
+                candidate.Priority |= DataBasePriority.Manual;
+            }
             Compounds = new ObservableCollection<CompoundResult>(
-                mspResults.OrderByDescending(result => result.TotalScore)
+                candidates.OrderByDescending(result => result.TotalScore)
                     .Select(result => new CompoundResult(Annotator.Refer(result), result)));
+
+            canSearch = true;
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+        }
+
+        private async void OnParameterChanged(object sender, PropertyChangedEventArgs e) {
+            if (cts != null) {
+                cts.Cancel();
+            }
+
+            var localCts = new CancellationTokenSource();
+            cts = localCts;
+
+            await SearchAsync(cts.Token).ContinueWith(
+                t => {
+                    localCts.Dispose();
+                    if (cts == localCts)
+                        cts = null;
+                });
+        }
+
+        private async Task SearchAsync(CancellationToken token) {
+            if (!canSearch)
+                return;
+
+            var compounds = await Task.Run(() => {
+                var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
+                foreach (var candidate in candidates) {
+                    candidate.IsManuallyModified = true;
+                    candidate.Priority |= DataBasePriority.Manual;
+                }
+                token.ThrowIfCancellationRequested();
+
+                return new ObservableCollection<CompoundResult>(
+                    candidates
+                        .OrderByDescending(result => result.TotalScore)
+                        .Select(result => new CompoundResult(Annotator.Refer(result), result)));
+            }, token);
+
+            token.ThrowIfCancellationRequested();
+
+            Compounds = compounds;
+        }
+
+        public DelegateCommand SetConfidenceCommand => setConfidenceCommand ?? (setConfidenceCommand = new DelegateCommand(SetConfidence, CanSetAnnotation));
+        private DelegateCommand setConfidenceCommand;
+
+        private void SetConfidence() {
+            var compound = (CompoundResult)compoundsView.CurrentItem;
+            var reference = compound.msReference;
+            var result = compound.matchResult;
+            DataAccess.SetMoleculeMsPropertyAsConfidence(property, reference, result);
+            // UNDONE: The name should be retrieved from the result, but since it is empty, we will temporarily retrieve the name from the library.
+            property.Name = reference.Name;
+            if (property is IAnnotatedObject obj) {
+                obj.MatchResults.AddResult(result);
+            }
+        }
+
+        public DelegateCommand SetUnsettledCommand => setUnsettledCommand ?? (setUnsettledCommand = new DelegateCommand(SetUnsettled, CanSetAnnotation));
+        private DelegateCommand setUnsettledCommand;
+
+        private void SetUnsettled() {
+            var compound = (CompoundResult)compoundsView.CurrentItem;
+            var reference = compound.msReference;
+            var result = compound.matchResult;
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(property, reference, result);
+            // UNDONE: The name should be retrieved from the result, but since it is empty, we will temporarily retrieve the name from the library.
+            property.Name = $"Unsettled: {reference.Name}";
+            if (property is IAnnotatedObject obj) {
+                obj.MatchResults.AddResult(result);
+            }
+        }
+
+        private bool CanSetAnnotation() {
+            return (CompoundResult)compoundsView.CurrentItem != null;
+        }
+
+        private void RaiseExecuteChange(object sender, EventArgs e) {
+            SetConfidenceCommand.RaiseCanExecuteChanged();
+            SetUnsettledCommand.RaiseCanExecuteChanged();
+        }
+
+        public DelegateCommand SetUnknownCommand => setUnknownCommand ?? (setUnknownCommand = new DelegateCommand(SetUnknown));
+        private DelegateCommand setUnknownCommand;
+
+        private void SetUnknown() {
+            DataAccess.ClearMoleculePropertyInfomation(property);
+            if (property is IAnnotatedObject obj) {
+                obj.MatchResults.ClearResults();
+            }
         }
     }
 
@@ -118,8 +255,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public List<SpectrumPeakWrapper> Spectrum => spectrum ?? (spectrum = msReference.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList());
         private List<SpectrumPeakWrapper> spectrum = null;
 
-        private readonly MoleculeMsReference msReference;
-        private readonly MsScanMatchResult matchResult;
+        internal readonly MoleculeMsReference msReference;
+        internal readonly MsScanMatchResult matchResult;
         public CompoundResult(MoleculeMsReference msReference, MsScanMatchResult matchResult) {
             this.msReference = msReference;
             this.matchResult = matchResult;
