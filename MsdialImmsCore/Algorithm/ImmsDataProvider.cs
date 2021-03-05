@@ -83,7 +83,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private readonly List<RawSpectrum> accumulatedSpectrum;
 
         public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance) : base(rawObj) {
-            this.accumulatedSpectrum = AccumulateSpectrum(rawObj.SpectrumList, massTolerance, driftTolerance).OrderBy(spectrum => spectrum.DriftTime).ToList();
+            this.accumulatedSpectrum = AccumulateSpectrum(rawObj.SpectrumList, massTolerance, driftTolerance).ToList();
         }
 
         public ImmsAverageDataProvider(RawMeasurement rawObj)
@@ -100,7 +100,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var numOfMeasurement = ms1Spectrum.Select(spectrum => spectrum.ScanStartTime).Distinct().Count();
 
             var groups = ms1Spectrum.GroupBy(spectrum => Math.Ceiling(spectrum.DriftTime / driftTolerance));
-            var result = groups.Select(group => AccumulateRawSpectrums(group.ToList(), massTolerance, numOfMeasurement)).ToList();
+            var result = groups
+                .Select(group => AccumulateRawSpectrums(group.ToList(), massTolerance, numOfMeasurement))
+                .OrderBy(spectrum => spectrum.DriftTime)
+                .ToList();
             for (var i = 0; i < result.Count; i++) {
                 result[i].Index = i;
             }

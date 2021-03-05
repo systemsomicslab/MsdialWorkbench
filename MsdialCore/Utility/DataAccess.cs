@@ -1061,7 +1061,7 @@ namespace CompMs.MsdialCore.Utility {
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
             feature.AdductType = reference.AdductType;
-            feature.Name = "Unsettled: " + result.Name;
+            feature.Name = $"Unsettled: {result.Name}";
         }
 
         private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
@@ -100,13 +101,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance);
 
-            SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
+            SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam, parameter.TargetOmics);
             SetTextDBAnnotationResult(chromPeakFeature, msdecResult, isotopes, textDBAnnotator, parameter.TextDbSearchParam);
         }
 
         private static void SetMspAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter, TargetOmics omics) {
 
             if (mspAnnotator == null)
                 return;
@@ -114,8 +115,15 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var results = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                 .Where(candidate => candidate.TotalScore >= mspSearchParameter.TotalScoreCutoff)
-                .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
+            if (omics == TargetOmics.Lipidomics)
+                results = results.Where(
+                    candidate =>
+                        candidate.IsLipidClassMatch
+                        || candidate.IsLipidChainsMatch
+                        || candidate.IsLipidPositionMatch
+                        || candidate.IsOtherLipidMatch)
+                    .ToList();
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             if (results.Count > 0) {
                 var best = results.Argmax(result => result.TotalScore);
@@ -135,7 +143,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var results = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch)
                 .Where(candidate => candidate.TotalScore >= textDBSearchParameter.TotalScoreCutoff)
-                .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
             chromPeakFeature.MatchResults.AddTextDbResults(results);

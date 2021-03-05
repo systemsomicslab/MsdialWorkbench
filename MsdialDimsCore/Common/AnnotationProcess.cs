@@ -54,14 +54,15 @@ namespace CompMs.MsdialDimsCore.Common {
             IReadOnlyList<IsotopicPeak> isotopes
             ) {
             var mspAnnotator = new DimsMspAnnotator(mspDB, param, omics);
-            Run(feature, msdecResult, mspAnnotator, textDB, param, isotopes);
+            Run(feature, msdecResult, mspAnnotator, textDB, param, isotopes, omics);
         }
 
         public static void Run(
             ChromatogramPeakFeature feature, MSDecResult msdecResult,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, List<MoleculeMsReference> textDB,
             MsRefSearchParameterBase param,
-            IReadOnlyList<IsotopicPeak> isotopes
+            IReadOnlyList<IsotopicPeak> isotopes,
+            TargetOmics omics
             ) {
 
             if (mspAnnotator != null)
@@ -69,8 +70,15 @@ namespace CompMs.MsdialDimsCore.Common {
                 var results = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, param)
                     .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                     .Where(candidate => candidate.TotalScore >= param.TotalScoreCutoff)
-                    .Where(candidate => !string.IsNullOrEmpty(candidate.Name)) // in lipidomics
                     .ToList();
+                if (omics == TargetOmics.Lipidomics)
+                    results = results.Where(
+                        candidate =>
+                            candidate.IsLipidClassMatch
+                            || candidate.IsLipidChainsMatch
+                            || candidate.IsLipidPositionMatch
+                            || candidate.IsOtherLipidMatch)
+                        .ToList();
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 if (results.Count > 0)
                 {
