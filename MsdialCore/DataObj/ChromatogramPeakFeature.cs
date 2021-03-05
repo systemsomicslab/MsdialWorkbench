@@ -267,8 +267,17 @@ namespace CompMs.MsdialCore.DataObj {
         private MsScanMatchResultContainer matchResults;
 
         [IgnoreMember]
-        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
+        public bool IsManuallyModifiedForAnnotation {
+            get {
+                if (MatchResults?.Representative is MsScanMatchResult result) {
+                    return (result.Priority & DataBasePriority.Manual) != DataBasePriority.None;
+                }
+                return false;
+            }
+        }
 
+        [IgnoreMember]
+        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
 
         [Key(38)]
         public string Comment { get; set; }

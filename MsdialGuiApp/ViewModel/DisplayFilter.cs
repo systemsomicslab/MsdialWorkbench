@@ -18,8 +18,9 @@ namespace CompMs.App.Msdial.ViewModel
         Blank = 0x20,
         UniqueIons = 0x40,
         CcsMatched = 0x80,
+        ManuallyModified = 0x100,
 
-        Annotates = RefMatched | Suggested | Unknown | CcsMatched,
+        Annotates = RefMatched | Suggested | Unknown | CcsMatched | ManuallyModified,
     }
 
     static class DisplayFilterExtention

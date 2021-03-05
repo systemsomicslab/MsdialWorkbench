@@ -29,21 +29,6 @@ using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    [Flags]
-    enum DisplayFilter : uint
-    {
-        Unset = 0x0,
-        RefMatched = 0x1,
-        Suggested = 0x2,
-        Unknown = 0x4,
-        Ms2Acquired = 0x8,
-        MolecularIon = 0x10,
-        Blank = 0x20,
-        UniqueIons = 0x40,
-
-        Annotates = RefMatched | Suggested | Unknown,
-    }
-
     public class DimsMethodVM : MethodVM {
         public AnalysisDimsVM AnalysisVM {
             get => analysisVM;
@@ -112,6 +97,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public bool UniqueIonsChecked {
             get => ReadDisplayFilter(DisplayFilter.UniqueIons);
             set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
+        }
+        public bool ManuallyModifiedChecked {
+            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
+            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
         }
         private DisplayFilter displayFilters = 0;
 
