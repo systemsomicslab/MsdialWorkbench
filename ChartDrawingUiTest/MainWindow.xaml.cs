@@ -43,6 +43,7 @@ namespace ChartDrawingUiTest
                 typeof(RangeSlider),
                 typeof(ChartUpdate),
                 typeof(TestPage),
+                typeof(DependencyPropertyTest),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
