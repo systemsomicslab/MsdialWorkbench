@@ -191,6 +191,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var mass = feature.Mass;
             var dt = feature.ChromXsTop.Drift.Value;
+            var dtStart = feature.ChromXsLeft.Value;
+            var dtEnd = feature.ChromXsRight.Value;
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
             var ms2Tol = FixMassTolerance(param.CentroidMs2Tolerance, mass);
 
@@ -204,19 +206,21 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
 
                     if (specPrecMz - lowerOffset - ms2Tol < mass & mass < specPrecMz + upperOffset + ms2Tol) {
-                        specs.Add(spec);
+                        if (dtStart <= spec.DriftTime && spec.DriftTime <= dtEnd) {
+                            specs.Add(spec);
+                        }
                     }
                 }
             }
 
             var representatives = specs
                 .GroupBy(spec => Math.Round(spec.CollisionEnergy, 2))  // grouping by ce
-                .Select(group => group.Argmin(spec => Math.Abs(spec.DriftTime - dt))) // choose closest at drift time, for each ce
+                .Select(group => group.Argmax(spec => spec.TotalIonCurrent)) // choose largest ion current, for each ce
                 .ToList();
 
             if (representatives.Any()) {
                 feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
-                feature.MS2RawSpectrumID = representatives.Argmin(spec => Math.Abs(spec.DriftTime - dt)).OriginalIndex;
+                feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
             }
         }
 
