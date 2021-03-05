@@ -10,9 +10,25 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public class MsScanMatchResultContainer
     {
+        public static readonly MsScanMatchResult UnknownResult;
+
+        static MsScanMatchResultContainer() {
+            UnknownResult = new MsScanMatchResult
+            {
+                Priority = DataBasePriority.Unknown,
+            };
+        }
+
+        public MsScanMatchResultContainer() {
+            MatchResults = new List<MsScanMatchResult>
+            {
+                UnknownResult,
+            };
+        }
+
         // general match results
         [Key(0)]
-        public List<MsScanMatchResult> MatchResults { get; set; } = new List<MsScanMatchResult>();
+        public List<MsScanMatchResult> MatchResults { get; set; }
 
         [IgnoreMember]
         public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore)) : null;
@@ -27,6 +43,11 @@ namespace CompMs.MsdialCore.DataObj
 
         public void ClearResults() {
             MatchResults.Clear();
+            MatchResults.Add(UnknownResult);
+        }
+
+        public void RemoveManuallyResults() {
+            MatchResults.RemoveAll(result => (result.Priority & DataBasePriority.Manual) != DataBasePriority.None);
         }
 
 

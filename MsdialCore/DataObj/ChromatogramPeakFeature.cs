@@ -163,7 +163,9 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public MsScanMatchResult MspBasedMatchResult { // get result having max score
             get {
-                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return null;
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) {
+                    return null;
+                }
                 else {
                     return MSRawID2MspBasedMatchResult.Argmax(n => n.Value.TotalScore).Value;
                 }
@@ -173,25 +175,35 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public int TextDbID {
             get {
-                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryID;
-                else return -1;
+                if (TextDbBasedMatchResult != null) {
+                    return TextDbBasedMatchResult.LibraryID;
+                }
+                else {
+                    return -1;
+                }
             }
         }
 
         [IgnoreMember]
         public int TextDbIDWhenOrdered {
             get {
-                if (TextDbBasedMatchResult != null) return TextDbBasedMatchResult.LibraryIDWhenOrdered;
-                else return -1;
+                if (TextDbBasedMatchResult != null) {
+                    return TextDbBasedMatchResult.LibraryIDWhenOrdered;
+                }
+                else {
+                    return -1;
+                }
             }
         }
 
         [IgnoreMember]
         public int MspID {
             get {
-                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) {
+                    return -1;
+                }
                 else {
-                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryID)).LibraryID;
+                    return MSRawID2MspBasedMatchResult.Values.Argmax(n => n.TotalScore).LibraryID;
                 }
             }
         }
@@ -199,9 +211,11 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public int MspIDWhenOrdered {
             get {
-                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) return -1;
+                if (MSRawID2MspBasedMatchResult.IsEmptyOrNull()) {
+                    return -1;
+                }
                 else {
-                    return MSRawID2MspBasedMatchResult.Max(n => (n.Value.TotalScore, n.Value.LibraryIDWhenOrdered)).LibraryIDWhenOrdered;
+                    return MSRawID2MspBasedMatchResult.Values.Argmax(n => n.TotalScore).LibraryIDWhenOrdered;
                 }
             }
         }
@@ -209,8 +223,18 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public bool IsReferenceMatched {
             get {
-                if (TextDbID >= 0) return true;
-                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
+                if (MatchResults?.Representative is MsScanMatchResult result) {
+                    if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
+                        return false;
+                    if ((result.Priority & DataBasePriority.Unknown) == DataBasePriority.None)
+                        return true;
+                }
+                if (TextDbID >= 0) {
+                    return true;
+                }
+                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch)) {
+                    return true;
+                }
                 return false;
             }
         }
@@ -218,21 +242,29 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public bool IsAnnotationSuggested {
             get {
-                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
-                return false;
+                if (IsReferenceMatched)
+                    return false;
+                if (MatchResults?.Representative is MsScanMatchResult result) {
+                    if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
+                        return false;
+                }
+                return MspID >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
             }
         }
 
         [IgnoreMember]
         public bool IsUnknown {
             get {
-                if (MspID < 0 && TextDbID < 0) return true;
-                return false;
+                return !IsReferenceMatched && !IsAnnotationSuggested;
             }
         }
 
         [Key(49)]
-        public MsScanMatchResultContainer MatchResults { get; set; } = new MsScanMatchResultContainer();
+        public MsScanMatchResultContainer MatchResults {
+            get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
+            set => matchResults = value;
+        }
+        private MsScanMatchResultContainer matchResults;
 
         [IgnoreMember]
         public bool IsMsmsContained => MS2RawSpectrumID >= 0;

@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.DataObj.Result {
+    [Flags]
     public enum DataBasePriority : byte
     {
+        None = 0,
+        Unknown = 1 << 0,
         MspDB = 1 << 2,
         TextDB = 1 << 4,
         Manual = 1 << 6,

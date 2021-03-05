@@ -205,6 +205,7 @@ namespace CompMs.App.Msdial.ViewModel
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsConfidence(property, reference, result);
             if (property is IAnnotatedObject obj) {
+                obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(result);
             }
         }
@@ -218,6 +219,7 @@ namespace CompMs.App.Msdial.ViewModel
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsUnsettled(property, reference, result);
             if (property is IAnnotatedObject obj) {
+                obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(result);
             }
         }
@@ -237,7 +239,8 @@ namespace CompMs.App.Msdial.ViewModel
         private void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(property);
             if (property is IAnnotatedObject obj) {
-                obj.MatchResults.ClearResults();
+                obj.MatchResults.RemoveManuallyResults();
+                obj.MatchResults.AddResult(new MsScanMatchResult { Priority = DataBasePriority.Manual | DataBasePriority.Unknown });
             }
         }
     }
