@@ -243,8 +243,8 @@ namespace Rfx.Riken.OsakaUniv
                 var invalidChars = System.IO.Path.GetInvalidFileNameChars();
                 var converted = string.Concat(
                           file_name.Select(c => invalidChars.Contains(c) ? '_' : c));
-                SaveChartAsPng(dv, export_dir + "\\" + converted + ".png");
-                SaveChartAsEmf(dv, export_dir + "\\" + converted + ".emf");
+                SaveChartAsPng(dv, Path.Combine(export_dir, converted + ".png"));
+                SaveChartAsEmf(dv, Path.Combine(export_dir, converted + ".emf"));
             }
             #endregion
 
@@ -270,8 +270,8 @@ namespace Rfx.Riken.OsakaUniv
                 var invalidChars = System.IO.Path.GetInvalidFileNameChars();
                 var converted = string.Concat(
                   file_name.Select(c => invalidChars.Contains(c) ? '_' : c));
-                SaveChartAsPng(dv, export_dir + "\\" + converted + ".png");
-                SaveChartAsEmf(dv, export_dir + "\\" + converted + ".emf");
+                SaveChartAsPng(dv, Path.Combine(export_dir, converted + ".png"));
+                SaveChartAsEmf(dv, Path.Combine(export_dir, converted + ".emf"));
             }
             #endregion
         }

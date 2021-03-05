@@ -33,11 +33,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             _rttol = rttol;
             _rtfactor = rtfactor;
             _rtbucket = rtbucket;
-            _rtwidth = (int)Math.Ceiling(_rtbucket / _rttol);
+            _rtwidth = (int)Math.Ceiling(_rttol / _rtbucket);
             _mztol = mztol;
             _mzfactor = mzfactor;
             _mzbucket = mzbucket;
-            _mzwidth = (int)Math.Ceiling(_mzbucket / _mztol);
+            _mzwidth = (int)Math.Ceiling(_mztol / _mzbucket);
         }
 
         public LcmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor) : this(rttol, rtfactor, rttol * 2, mztol, mzfactor, mztol * 2) { }
@@ -126,7 +126,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
                 dummy.ChromXs = new ChromXs(target.ChromXs.RT.Value - _rttol, ChromXType.RT);
-                dummy.PrecursorMz = target.PrecursorMz - _rttol;
+                dummy.PrecursorMz = target.PrecursorMz - _mztol;
                 var lo = SearchCollection.LowerBound(masters, dummy, Comparer);
                 for (var i = lo; i < n; i++) {
                     if (target.ChromXs.RT.Value + _rttol < masters[i].ChromXs.RT.Value)

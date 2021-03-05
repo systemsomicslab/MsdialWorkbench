@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.DataObj.Result {
+    [Flags]
+    public enum DataBasePriority : byte
+    {
+        None = 0,
+        Unknown = 1 << 0,
+        MspDB = 1 << 2,
+        TextDB = 1 << 4,
+        Manual = 1 << 6,
+    }
+
     [MessagePackObject]
     public class MsScanMatchResult {
         // basic annotated information
@@ -66,6 +76,12 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
+
+        // Support for multiple annotation method
+        [Key(25)]
+        public bool IsManuallyModified { get; set; }
+        [Key(26)]
+        public DataBasePriority Priority { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

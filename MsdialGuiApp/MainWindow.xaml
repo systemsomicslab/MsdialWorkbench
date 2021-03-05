@@ -13,6 +13,12 @@
     <i:Interaction.Behaviors>
         <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
     </i:Interaction.Behaviors>
+    <i:Interaction.Triggers>
+        <i:PropertyChangedTrigger Binding="{Binding MethodVM, Mode=OneWay}">
+            <i:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                MethodName="CloseOwnedWindows"/>
+        </i:PropertyChangedTrigger>
+    </i:Interaction.Triggers>
 
     <RibbonWindow.DataContext>
         <local:MainWindowVM />
@@ -38,8 +44,8 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center">
                 <StackPanel VerticalAlignment="Center">
-                    <Image Source="{StaticResource Version_is}" Width="200"/>
-                    <TextBlock Text="MS-DIAL" FontSize="100" FontStyle="Italic" VerticalAlignment="Center"/>
+                    <Image Source="/Resources/msdial_icon.png" Width="200"/>
+                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center"
@@ -79,7 +85,9 @@
                                        Margin="20,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <Button Margin="0,50,0,0"
+                    <Button Command="{Binding GoToTutorialCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                            Margin="0,50,0,0"
                             Background="Transparent"
                             ToolTip="Learn MS-DIAL.">
                         <StackPanel Orientation="Horizontal">
@@ -106,6 +114,11 @@
                               xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
                               xmlns:divw="clr-namespace:CompMs.App.Msdial.View.Dims">
                     <divw:MainView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type imvm:ImmsMethodVM}"
+                              xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+                              xmlns:imvw="clr-namespace:CompMs.App.Msdial.View.Imms">
+                    <imvw:MainView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

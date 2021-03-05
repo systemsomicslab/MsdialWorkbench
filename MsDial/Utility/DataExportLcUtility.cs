@@ -2285,6 +2285,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             var projectProp = mainWindow.ProjectProperty;
             var mspDB = mainWindow.MspDB;
+            var txtDB = mainWindow.PostIdentificationTxtDB;
             var param = mainWindow.AnalysisParamForLC;
 
             var name = param.IsIonMobility
@@ -2310,7 +2311,8 @@ namespace Rfx.Riken.OsakaUniv
             }
 
             var alignmentID = param.IsIonMobility ? driftProperty.MasterID : alignmentProperty.AlignmentID;
-            var libraryID = param.IsIonMobility ? driftProperty.LibraryID : alignmentProperty.LibraryID;
+            var mspID = param.IsIonMobility ? driftProperty.LibraryID : alignmentProperty.LibraryID;
+            var txtID = param.IsIonMobility ? driftProperty.PostIdentificationLibraryID : alignmentProperty.PostIdentificationLibraryID;
             var comment = param.IsIonMobility ? driftProperty.Comment : alignmentProperty.Comment;
 
             sw.WriteLine("NAME: " + name);
@@ -2326,9 +2328,10 @@ namespace Rfx.Riken.OsakaUniv
             sw.WriteLine("IONMODE: " + mainWindow.ProjectProperty.IonMode);
             sw.WriteLine("SPECTRUMTYPE: Centroid");
             sw.WriteLine("INTENSITY: " + ms2DecResult.Ms1PeakHeight);
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(libraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(libraryID, mspDB));
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(libraryID, mspDB));
+            sw.WriteLine("INCHIKEY: " + RefDataRetrieve.GetInChIKey(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("SMILES: " + RefDataRetrieve.GetSMILES(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("FORMULA: " + RefDataRetrieve.GetFormula(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("ONTOLOGY: " + RefDataRetrieve.GetOntology(mspID, mspDB, txtID, txtDB));
 
             if (projectProp.FinalSavedDate != null)
             {
@@ -2389,6 +2392,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             var projectProp = mainWindow.ProjectProperty;
             var mspDB = mainWindow.MspDB;
+            var txtDB = mainWindow.PostIdentificationTxtDB;
             var param = mainWindow.AnalysisParamForLC;
             var isIonMobility = param.IsIonMobility;
             var name = isIonMobility ? driftSpot.MetaboliteName : peakAreaBean.MetaboliteName;
@@ -2404,7 +2408,8 @@ namespace Rfx.Riken.OsakaUniv
             }
 
             var scanNum = isIonMobility ? driftSpot.MasterPeakID : peakAreaBean.PeakID;
-            var libraryID = isIonMobility ? driftSpot.LibraryID : peakAreaBean.LibraryID;
+            var mspID = isIonMobility ? driftSpot.LibraryID : peakAreaBean.LibraryID;
+            var txtID = isIonMobility ? driftSpot.PostIdentificationLibraryId : peakAreaBean.PostIdentificationLibraryId;
             var intensity = isIonMobility ? driftSpot.IntensityAtPeakTop : peakAreaBean.IntensityAtPeakTop;
             var comment = isIonMobility ? driftSpot.Comment : peakAreaBean.Comment;
 
@@ -2420,9 +2425,10 @@ namespace Rfx.Riken.OsakaUniv
 
             }
             sw.WriteLine("IONMODE: " + mainWindow.ProjectProperty.IonMode);
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(libraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(libraryID, mspDB));
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(libraryID, mspDB));
+            sw.WriteLine("INCHIKEY: " + RefDataRetrieve.GetInChIKey(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("SMILES: " + RefDataRetrieve.GetSMILES(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("FORMULA: " + RefDataRetrieve.GetFormula(mspID, mspDB, txtID, txtDB));
+            sw.WriteLine("ONTOLOGY: " + RefDataRetrieve.GetOntology(mspID, mspDB, txtID, txtDB));
 
 
             sw.Write("SPECTRUMTYPE: ");

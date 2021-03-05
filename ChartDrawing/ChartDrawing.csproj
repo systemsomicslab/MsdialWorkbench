@@ -74,11 +74,13 @@
     <Compile Include="Base\ChartBaseControl.cs" />
     <Compile Include="AxisManager\ContinuousAxisManager.cs" />
     <Compile Include="Base\ChartMargin.cs" />
+    <Compile Include="AxisManager\FreezableAxisManager.cs" />
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\ChildDoubleClickBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />
     <Compile Include="Chart\Annotator.cs" />
+    <Compile Include="Chart\SimpleChartControl.cs" />
     <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
     <Compile Include="Converter\AxisValueToDoubleConverter.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="UI\LabeledContent.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">
       <DependentUpon>ProgressBarMultiContainerWindow.xaml</DependentUpon>
@@ -117,7 +120,7 @@
     <Compile Include="UI\ShortMessageWindow.xaml.cs">
       <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Window\FileBrowseDialog.cs" />
+    <Compile Include="Window\SelectFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">

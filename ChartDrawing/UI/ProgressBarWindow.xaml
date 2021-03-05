@@ -11,7 +11,12 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
-        <ProgressBar Name="ProgressView" Grid.Column="0" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Margin="5,5,5,5"/>
-        <Label Name="ProgressBar_Label" Content="" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <ProgressBar Name="ProgressView"
+                     Value="{Binding CurrentValue}"
+                     IsIndeterminate="{Binding IsIndeterminate}"
+                     HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"
+                     Margin="5,5,5,5"
+                     Grid.Column="0" />
+        <Label Name="ProgressBar_Label" Content="{Binding Label}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Grid>
 </Window>

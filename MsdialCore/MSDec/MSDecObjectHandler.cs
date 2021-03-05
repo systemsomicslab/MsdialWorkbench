@@ -37,6 +37,7 @@ namespace CompMs.MsdialCore.MSDec {
             result.PrecursorMz = chromPeakFeature.Mass;
             result.ModelPeakMz = (float)chromPeakFeature.Mass;
             result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
+            result.IonMode = chromPeakFeature.IonMode;
             return result;
         }
 
@@ -49,6 +50,7 @@ namespace CompMs.MsdialCore.MSDec {
             result.ModelPeakMz = (float)chromPeakFeature.Mass;
             result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
             result.Spectrum = spectra;
+            result.IonMode = chromPeakFeature.IonMode;
             return result;
         }
     }

@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Parser {
         public static string GetNewMspFileName(string path) {
             var fileName = Path.GetFileNameWithoutExtension(path);
             var folder = Path.GetDirectoryName(path);
-            return folder + "\\" + fileName + "_Loaded.msp2";
+            return Path.Combine(folder, fileName + "_Loaded.msp2");
         }
     }
 }

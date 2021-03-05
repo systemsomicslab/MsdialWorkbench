@@ -20,14 +20,10 @@ namespace CompMs.MspGenerator
             var predictedList = new List<string>();
             var headerLine = "";
 
-            if (File.Exists(dbFileName))
-            {
-                File.Delete(dbFileName);
-            }
-            else
-            {
-                File.Create(dbFileName).Close();
-            }
+            //if (File.Exists(dbFileName))
+            //{
+            //    File.Delete(dbFileName);
+            //}
             var predictedFileList = new List<string>(Directory.GetFiles(predictedFilesDirectry));
 
             foreach (var predictedFile in predictedFileList)
@@ -90,7 +86,7 @@ namespace CompMs.MspGenerator
             Console.WriteLine("Loading the msp file.");
 
             var mspDB = MspFileParser.MspFileReader(mspFilePath);
-            var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
+            //var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
             var inchikeyToSmiles = new Dictionary<string, string>();
             foreach (var query in mspDB)
             {
@@ -224,6 +220,7 @@ namespace CompMs.MspGenerator
             }
             else
             {
+                var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
                 foreach (var query in mspDB2)
                 {
                     if (query.InchiKey == "" || query.InchiKey == null)

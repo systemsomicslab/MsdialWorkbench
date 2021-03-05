@@ -137,7 +137,12 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 if (peakAreaBeanList[i].SymmetryValue > 0.9 && peakAreaBeanList[i].BasePeakValue > 0.9 && peakAreaBeanList[i].IdealSlopeValue > 0.9 && Math.Abs(peakAreaBeanList[i].ScanNumberAtRightPeakEdge + peakAreaBeanList[i].ScanNumberAtLeftPeakEdge - 2 * peakAreaBeanList[i].ScanNumberAtPeakTop) < 2)
                     shapnessValueList.Add(new float[] { i, peakAreaBeanList[i].ShapenessValue });
             // very add hoc
-            if (shapnessValueList.Count == 0) { dataSummary.ModelPeakBean = getWorstCaseModelPeaklist(dataSummary); Console.WriteLine("No model peak in ms1"); return; }
+            if (shapnessValueList.Count == 0) { 
+                dataSummary.ModelPeakBean = getWorstCaseModelPeaklist(dataSummary);
+#if DEBUG
+                Console.WriteLine("No model peak in ms1"); 
+#endif
+                return; }
 
             shapnessValueList = shapnessValueList.OrderBy(n => n[1]).ToList();
             candidateID = (int)shapnessValueList[(int)(shapnessValueList.Count / 2)][0];
@@ -172,7 +177,13 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
 
                     limitCounter++;
                 }
-                if (createriaChecker == false) { dataSummary.ModelPeakBean = getWorstCaseModelPeaklist(dataSummary); Console.WriteLine("No model peak in ms1"); return; }
+                if (createriaChecker == false) { 
+                    dataSummary.ModelPeakBean = getWorstCaseModelPeaklist(dataSummary);
+#if DEBUG
+                    Console.WriteLine("No model peak in ms1"); 
+#endif
+                    return;
+                }
             }
             dataSummary.ModelPeakBean = getModelPeakBean(peakAreaBeanList[candidateID], peaklist);
         }

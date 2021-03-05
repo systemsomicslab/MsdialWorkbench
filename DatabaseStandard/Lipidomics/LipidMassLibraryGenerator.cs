@@ -294,9 +294,11 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
                     break;
                 case LbmClass.NAGly:
                     generateFAHFAmideGlySpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    generateOxfaAmideGlySpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
                     break;
                 case LbmClass.NAGlySer:
                     generateFAHFAmideGlySerSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    generateOxfaAmideGlySerSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
                     break;
                 case LbmClass.SL:
                     generateSulfonolipidSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, maxOxygen);
@@ -332,6 +334,7 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
 
                 case LbmClass.NAOrn:
                     generateFAHFAmideOrnSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    generateOxfaOrnSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
                     break;
 
                 case LbmClass.BRSE:
@@ -1068,7 +1071,7 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
             var adductString = adduct.AdductIonName;
             var filepath = outputfolder + "\\" + "FAHFAmide(Gly)" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C2H4NO2");
-            fahfaGenerator(filepath, "NAAG", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+            fahfamideGenerator(filepath, "NAGly", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
         }
 
         private static void generateFAHFAmideGlySerSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
@@ -1076,8 +1079,25 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
             var adductString = adduct.AdductIonName;
             var filepath = outputfolder + "\\" + "FAHFAmide(GlySer)" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C5H9N2O4");
-            fahfaGenerator(filepath, "NAAGS", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+            fahfamideGenerator(filepath, "NAGlySer", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
         }
+
+        private static void generateOxfaAmideGlySpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "OxfaAmide(Gly)" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C2H4NO2");
+            nOxfaAmideGenerator(filepath, "NAGly", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+        }
+
+        private static void generateOxfaAmideGlySerSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "OxfaAmide(GlySer)" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C5H9N2O4");
+            nOxfaAmideGenerator(filepath, "NAGlySer", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+        }
+
 
         private static void generateSulfonolipidSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond,int oxygenCount)
         {
@@ -1184,8 +1204,16 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
             var adductString = adduct.AdductIonName;
             var filepath = outputfolder + "\\" + "FAHFAmide(Orn)" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C5H11N2O2");
-            fahfaGenerator(filepath, "NAAO", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+            fahfamideGenerator(filepath, "NAOrn", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
         }
+        private static void generateOxfaOrnSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "OxFAAmide(Orn)" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C5H11N2O2");
+            nOxfaAmideGenerator(filepath, "NAOrn", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+        }
+
 
         private static void generateBrseSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
         {
@@ -1358,8 +1386,8 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
                             var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
-                            var lipidname = classString + " " + totalChainCarbon + ":" + totalChainDoubleBond;
-                            
+                            var lipidname = classString + " " + totalChainCarbon + ":" + (totalChainDoubleBond + 1) + ";2O";
+
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
                         }
@@ -1367,6 +1395,67 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
                 }
             }
         }
+        private static void fahfamideGenerator(string filepath, string classString, Formula headerFormula, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            using (var sw = new StreamWriter(filepath, false, Encoding.ASCII))
+            {
+                writeHeader(sw);
+                for (int i = minCarbonCount; i <= maxCarbonCount; i++)
+                {
+                    for (int j = minDoubleBond; j <= maxDoubleBond; j++)
+                    {
+                        if (isPracticalDoubleBondSize(i, j))
+                        {
+
+                            var totalChainCarbon = i;
+                            var totalChainDoubleBond = j;
+                            var totalChainHydrogen = totalChainCarbon * 2 - 2 * totalChainDoubleBond - 3; // scafold FA
+                            var totalChainOxygen = 3;
+
+                            var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
+                                headerFormula.Nnum, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
+                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var lipidname = classString + " " + totalChainCarbon + ":" + (totalChainDoubleBond+1) + ";2O";
+
+
+                            sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void nOxfaAmideGenerator(string filepath, string classString, Formula headerFormula, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            using (var sw = new StreamWriter(filepath, false, Encoding.ASCII))
+            {
+                writeHeader(sw);
+                for (int i = minCarbonCount; i <= maxCarbonCount; i++)
+                {
+                    for (int j = minDoubleBond; j <= maxDoubleBond; j++)
+                    {
+                        if (isPracticalDoubleBondSize(i, j))
+                        {
+
+                            var totalChainCarbon = i;
+                            var totalChainDoubleBond = j;
+                            var totalChainHydrogen = totalChainCarbon * 2 - 2 * totalChainDoubleBond - 1; // scafold FA
+                            var totalChainOxygen = 2;
+
+                            var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
+                                headerFormula.Nnum, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
+                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var lipidname = classString + " " + totalChainCarbon + ":" + totalChainDoubleBond + ";O";
+
+
+                            sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
+                        }
+                    }
+                }
+            }
+        }
+
+
 
 
         private static void commonCeramideGenerator(string filepath, string classString, Formula headerFormula, AdductIon adduct,

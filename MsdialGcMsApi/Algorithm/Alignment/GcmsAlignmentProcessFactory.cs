@@ -25,7 +25,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             MspDB = mspDB;
         }
 
-        public override AlignmentRefiner CreateAlignmentRefiner() {
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
             return new GcmsAlignmentRefiner(GcmsParameter, Iupac);
         }
 
@@ -34,7 +34,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override GapFiller CreateGapFiller() {
-            return new GcmsGapFiller(Files, MspDB, GcmsParameter);
+            switch (GcmsParameter.AlignmentIndexType) {
+                case Common.Enum.AlignmentIndexType.RT:
+                    return new GcmsRTGapFiller(Files, MspDB, GcmsParameter);
+                case Common.Enum.AlignmentIndexType.RI:
+                default:
+                    return new GcmsRIGapFiller(Files, MspDB, GcmsParameter);
+            }
         }
 
         public override PeakAligner CreatePeakAligner() {
@@ -42,7 +48,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         }
 
         public override IPeakJoiner CreatePeakJoiner() {
-            return new GcmsPeakJoiner(GcmsParameter.AlignmentIndexType, GcmsParameter.RiCompoundType, GcmsParameter.MspSearchParam);
+            switch (GcmsParameter.AlignmentIndexType) {
+                case Common.Enum.AlignmentIndexType.RT:
+                    return GcmsPeakJoiner.CreateRTJoiner(
+                        GcmsParameter.RiCompoundType,
+                        GcmsParameter.MspSearchParam,
+                        GcmsParameter.Ms1AlignmentTolerance,
+                        GcmsParameter.RetentionTimeAlignmentTolerance);
+                case Common.Enum.AlignmentIndexType.RI:
+                default:
+                    return GcmsPeakJoiner.CreateRIJoiner(
+                        GcmsParameter.RiCompoundType,
+                        GcmsParameter.MspSearchParam,
+                        GcmsParameter.Ms1AlignmentTolerance,
+                        GcmsParameter.RetentionIndexAlignmentTolerance);
+            }
         }
     }
 }

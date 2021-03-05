@@ -124,7 +124,7 @@ namespace Msdial.Lcms.Dataprocess.Test
             ObservableCollection<AnalysisFileBean> analysisFileBeanCollection, 
             RdamPropertyBean rdamProperty, ProjectPropertyBean projectProperty, AnalysisParametersBean param)
         {
-            var checkFilePath = outputFolder + "\\Checklist-" + libraryname + ".txt";
+            var checkFilePath = Path.Combine(outputFolder, "Checklist-" + libraryname + ".txt");
             using (StreamWriter swC = new StreamWriter(checkFilePath, false, Encoding.ASCII)) {
                 var count = 1;
                 foreach (var metadata in metadataList) {
@@ -163,8 +163,8 @@ namespace Msdial.Lcms.Dataprocess.Test
                                                 peak.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, param.PeakDetectionBasedCentroid);
 
                                             var ms2Spectrum = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peak.PeakID).MassSpectra;
-                                            var outputFilePath = outputFolder + "\\" + metadata.AbfFileName + "_" + Math.Round(rt, 2).ToString() + "_"
-                                                + Math.Round(mz, 5).ToString() + "_" + metadata.MatFileName + ".mat";
+                                            var outputFilePath = Path.Combine(outputFolder, metadata.AbfFileName + "_" + Math.Round(rt, 2).ToString() + "_"
+                                                + Math.Round(mz, 5).ToString() + "_" + metadata.MatFileName + ".mat");
                                            
                                             using (StreamWriter sw = new StreamWriter(outputFilePath, false, Encoding.ASCII)) {
                                                 sw.WriteLine("NAME: " + metadata.CommonName);
@@ -209,8 +209,8 @@ namespace Msdial.Lcms.Dataprocess.Test
                                                 peak.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, param.PeakDetectionBasedCentroid);
 
                                             var ms2Spectrum = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peak.PeakID).MassSpectra;
-                                            var outputFilePath = outputFolder + "\\" + metadata.AbfFileName + "_" + Math.Round(rt, 2).ToString() + "_"
-                                                + Math.Round(mz_formate, 5).ToString() + "_" + metadata.MatFileName + ".mat";
+                                            var outputFilePath = Path.Combine(outputFolder, metadata.AbfFileName + "_" + Math.Round(rt, 2).ToString() + "_"
+                                                + Math.Round(mz_formate, 5).ToString() + "_" + metadata.MatFileName + ".mat");
 
                                             using (StreamWriter sw = new StreamWriter(outputFilePath, false, Encoding.ASCII)) {
                                                 

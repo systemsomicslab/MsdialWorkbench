@@ -24,7 +24,7 @@ namespace Common.BarChart
 
         //Graph area format
         private double leftMargin = 40;
-        private double topMargin = 20;
+        private double topMargin = 20; 
         private double rightMargin = 10;
         private double bottomMargin = 40;
         private double topMarginForLabel = 20;

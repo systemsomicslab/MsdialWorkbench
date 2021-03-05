@@ -12,11 +12,528 @@ using NCDK.Tools.Manipulator;
 using NCDK.Smiles;
 using System.IO;
 using System.Net;
+using CompMs.Common.Extension;
+using NCDK.Fingerprints;
+
+
 
 namespace CompMs.MspGenerator
 {
-    public class qsarDescriptorOnNcdk
+    public sealed class qsarDescriptorOnNcdk
     {
+        //public static Dictionary<string, double> NcdkDescriptors = new Dictionary<string, double>();
+
+        public static void GenerateQsarDescriptorFileVS4(string inputFile, string outputFile)
+        {
+            var SmilesParser = new SmilesParser();
+            var dummymol = SmilesParser.ParseSmiles("O=C(O)CCCCC"); // Header取得のためのDummy
+
+            var atomCountDicHeader = atomicNumbersCount(dummymol);
+            var molDescriptorResultDicHeader = calcQsarDescriptorOnNcdkAll(dummymol);
+
+            var allDescriptorHeader = new List<string>();
+            foreach (var item in atomCountDicHeader)
+            {
+                allDescriptorHeader.Add(item.Key);
+            }
+            var MolDescriptorHeader = new List<string>();
+            foreach (var item in molDescriptorResultDicHeader)
+            {
+                if (item.Key == "geomShape") { continue; }
+
+                allDescriptorHeader.Add(item.Key);
+            }
+
+
+            var headerLine = string.Empty;
+            string[] headerArray = null;
+            var queries = new List<string[]>();
+            //var responsStr = "";
+            //var responsDic = new Dictionary<int, string>();
+
+            var counter = 0;
+            using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+            {
+
+                using (var sr = new StreamReader(inputFile, true))
+                {
+                    headerLine = sr.ReadLine();
+                    headerArray = headerLine.ToUpper().Split('\t');
+                    int InChIKey = Array.IndexOf(headerArray, "INCHIKEY");
+                    int SMILES = Array.IndexOf(headerArray, "SMILES");
+
+                    sw.Write(headerLine);
+                    sw.Write("\t");
+                        sw.Write(string.Join("\t", allDescriptorHeader));
+                    sw.WriteLine("");
+
+                    var line = "";
+
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains("SMILES")) { continue; }
+                        var lineArray = line.Split('\t');
+                        var inchikey = lineArray[InChIKey];
+                        var rawSmiles = lineArray[SMILES];
+                        queries.Add(new string[] { counter.ToString(), inchikey, rawSmiles ,line});
+                        counter++;
+                    }
+                }
+
+                var syncObj = new object();
+                var results = new List<DescriptorResultTemp>();
+                //var resultArray = new DescriptorResultTemp[queries.Count];
+                var atomContainers = new Dictionary<long, IAtomContainer>();
+                counter = 0;
+
+                var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
+                ParallelOptions parallelOptions = new ParallelOptions();
+                parallelOptions.MaxDegreeOfParallelism = 4;
+                Parallel.For(0, queries.Count, parallelOptions, i =>
+                {
+                    var id = long.Parse(queries[i][0]);
+                    var inchikey = queries[i][1];
+                    var smiles = queries[i][2];
+                    var descriptors = new Dictionary<string, double>();
+
+                    var smilesParser = new SmilesParser();
+                    var atomContainer = smilesParser.ParseSmiles(queries[i][2]);
+                    if (atomContainer == null)
+                    {
+                        var smilesParser2 = new SmilesParser(CDK.Builder, false);
+                        atomContainer = smilesParser2.ParseSmiles(smiles);
+                        //if (atomContainer == null)
+                        //{
+                        //    return null;
+                        //}
+                    }
+
+                    atomContainers.Add(i, smilesParser.ParseSmiles(queries[i][2]));
+
+                    //atomCountDic = atomicNumbersCount(atomContainers[i]);
+
+                    var atomCountList = new List<string>
+                        {
+                    "H","B","C","N","O","S","P","F","Cl","Br","I"
+                        };
+                    var atomCountDic = new Dictionary<string, string>();
+                    var countAtom = 0;
+
+                    var iMolecularFormula = MolecularFormulaManipulator.GetMolecularFormula(atomContainers[i]);
+                    var formula = MolecularFormulaManipulator.GetString(iMolecularFormula);
+                    var atoms = MolecularFormulaManipulator.GetAtomCount(iMolecularFormula);
+
+                    var exactMass = MolecularFormulaManipulator.GetMass(iMolecularFormula, MolecularWeightTypes.MonoIsotopic);
+                    atomCountDic.Add("ExactMass", exactMass.ToString());
+
+                    foreach (var atom in atomCountList)
+                    {
+                        var elementsCount = MolecularFormulaManipulator.GetElementCount(iMolecularFormula, atom);
+                        atomCountDic.Add("n" + atom, elementsCount.ToString());
+                        countAtom = countAtom + elementsCount;
+                    }
+                    atomCountDic.Add("nX", (atoms - countAtom).ToString());
+
+                    var heavyElements = atoms - int.Parse(atomCountDic["nH"]);
+                    atomCountDic.Add("nHeavyAtom", heavyElements.ToString());
+
+
+                    //molDescriptorResultDic = calcQsarDescriptorOnNcdkAll(atomContainers[i]);
+
+                    var AcidicGroupCount = acidicGroupCountDescriptor(atomContainers[i]);
+                    var ALogP = aLogPDescriptor(atomContainers[i]);
+                    //AminoAcidCount = aminoAcidCountDescriptor(atomContainers[i]);
+                    var APol = aPolDescriptor(atomContainers[i]);
+                    var AromaticAtomsCount = aromaticAtomsCountDescriptor(atomContainers[i]);
+                    var AromaticBondsCount = aromaticBondsCountDescriptor(atomContainers[i]);
+                    var AtomCount = atomCountDescriptor(atomContainers[i]);
+                    var AutocorrelationCharge = autocorrelationChargeDescriptor(atomContainers[i]);
+                    var AutocorrelationMass = autocorrelationMassDescriptor(atomContainers[i]);
+                    var AutocorrelationPolarizability = autocorrelationPolarizabilityDescriptor(atomContainers[i]);
+                    var BasicGroupCount = basicGroupCountDescriptor(atomContainers[i]);
+                    var BCUT = bcutDescriptor(atomContainers[i]);
+                    var BondCount = bondCountDescriptor(atomContainers[i]);
+                    var BPol = bPolDescriptor(atomContainers[i]);
+                    var CarbonTypes = carbonTypesDescriptor(atomContainers[i]);
+                    var ChiChain = chiChainDescriptor(atomContainers[i]);
+                    var ChiCluster = chiClusterDescriptor(atomContainers[i]);
+                    var ChiPathCluster = chiPathClusterDescriptor(atomContainers[i]);
+                    var ChiPath = chiPathDescriptor(atomContainers[i]);
+                    //CPSA = cpsaDescriptor(atomContainers[i]);
+                    var EccentricConnectivityIndex = eccentricConnectivityIndexDescriptor(atomContainers[i]);
+                    var FMF = fmfDescriptor(atomContainers[i]);
+                    var FractionalCSP3 = fractionalCSP3Descriptor(atomContainers[i]);
+                    var FractionalPSA = fractionalPSADescriptor(atomContainers[i]);
+                    var FragmentComplexity = fragmentComplexityDescriptor(atomContainers[i]);
+                    //GravitationalIndex = gravitationalIndexDescriptor(atomContainers[i]);
+                    var HBondAcceptorCount = hBondAcceptorCountDescriptor(atomContainers[i]);
+                    var HBondDonorCount = hBondDonorCountDescriptor(atomContainers[i]);
+                    var HybridizationRatio = hybridizationRatioDescriptor(atomContainers[i]);
+                    var JPlogP = jPlogPDescriptor(atomContainers[i]);
+                    var KappaShapeIndices = kappaShapeIndicesDescriptor(atomContainers[i]);
+                    var KierHallSmarts = kierHallSmartsDescriptor(atomContainers[i]);
+                    var LargestChain = largestChainDescriptor(atomContainers[i]);
+                    var LargestPiSystem = largestPiSystemDescriptor(atomContainers[i]);
+                    //LengthOverBreadth = lengthOverBreadthDescriptor(atomContainers[i]);
+                    //var LongestAliphaticChain = longestAliphaticChainDescriptor(atomContainers[i]);
+                    var MannholdLogP = mannholdLogPDescriptor(atomContainers[i]);
+                    var MDE = mdeDescriptor(atomContainers[i]);
+                    //MomentOfInertia = momentOfInertiaDescriptor(atomContainers[i]);
+                    var PetitjeanNumber = petitjeanNumberDescriptor(atomContainers[i]);
+                    var PetitjeanShapeIndex = petitjeanShapeIndexDescriptor(atomContainers[i]);
+                    var RotatableBondsCount = rotatableBondsCountDescriptor(atomContainers[i]);
+                    var RuleOfFive = ruleOfFiveDescriptor(atomContainers[i]);
+                    var SmallRing = smallRingDescriptor(atomContainers[i]);
+                    var SpiroAtomCount = spiroAtomCountDescriptor(atomContainers[i]);
+                    var TPSA = tpsaDescriptor(atomContainers[i]);
+                    //VABC = vabcDescriptor(atomContainers[i]);
+                    var VAdjMa = vadjMaDescriptor(atomContainers[i]);
+                    var Weight = weightDescriptor(atomContainers[i]);
+                    var WeightedPath = weightedPathDescriptor(atomContainers[i]);
+                    //WHIM = whimDescriptor(atomContainers[i]);
+                    var WienerNumbers = wienerNumbersDescriptor(atomContainers[i]);
+                    var XLogP = xLogPDescriptor(atomContainers[i]);
+                    var ZagrebIndex = zagrebIndexDescriptor(atomContainers[i]);
+                    //};
+
+                    var MolDescriptorResuitDic = new Dictionary<string, string>();
+
+
+                    foreach (var item in AcidicGroupCount)//AcidicGroupCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ALogP)//ALogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in AminoAcidCount)//AminoAcidCount
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in APol)//APol
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AromaticAtomsCount)//AromaticAtomsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AromaticBondsCount)//AromaticBondsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AtomCount)//AtomCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationCharge)//AutocorrelationCharge
+                    {
+                        MolDescriptorResuitDic.Add("ATSc" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationMass)//AutocorrelationMass
+                    {
+                        MolDescriptorResuitDic.Add("ATSm" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in AutocorrelationPolarizability)//AutocorrelationPolarizability
+                    {
+                        MolDescriptorResuitDic.Add("ATSp" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in BasicGroupCount)//BasicGroupCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in BCUT)//BCUT
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in BondCount)//BondCount
+                    {
+                        MolDescriptorResuitDic.Add("BondCount" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in BPol)//BPol
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in CarbonTypes)//CarbonTypes
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiChain)//ChiChain
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiCluster)//ChiCluster
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiPathCluster)//ChiPathCluster
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ChiPath)//ChiPath
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in CPSA)//CPSA
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in EccentricConnectivityIndex)//EccentricConnectivityIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FMF)//FMF
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FractionalCSP3)//FractionalCSP3
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FractionalPSA)//FractionalPSA
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in FragmentComplexity)//FragmentComplexity
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in GravitationalIndex)//GravitationalIndex
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in HBondAcceptorCount)//HBondAcceptorCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in HBondDonorCount)//HBondDonorCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in HybridizationRatio)//HybridizationRatio
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in JPlogP)//JPlogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in KappaShapeIndices)//KappaShapeIndices
+                    {
+                        MolDescriptorResuitDic.Add("KappaShapeIndices" + item.Key, item.Value);
+                    }
+
+                    foreach (var item in KierHallSmarts)//KierHallSmarts
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in LargestChain)//LargestChain
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in LargestPiSystem)//LargestPiSystem
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in LengthOverBreadth)//LengthOverBreadth
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    //foreach (var item in LongestAliphaticChain)//LongestAliphaticChain
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in MannholdLogP)//MannholdLogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in MDE)//MDE
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in MomentOfInertia)//MomentOfInertia
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in PetitjeanNumber)//PetitjeanNumber
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in PetitjeanShapeIndex)//PetitjeanShapeIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in RotatableBondsCount)//RotatableBondsCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in RuleOfFive)//RuleOfFive
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in SmallRing)//SmallRing
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in SpiroAtomCount)//SpiroAtomCount
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in TPSA)//TPSA
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in VABC)//VABC
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in VAdjMa)//VAdjMa
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in Weight)//Weight
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in WeightedPath)//WeightedPath
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    //foreach (var item in WHIM)//WHIM
+                    //{
+                    //    MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    //}
+
+                    foreach (var item in WienerNumbers)//WienerNumbers
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in XLogP)//XLogP
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+                    foreach (var item in ZagrebIndex)//ZagrebIndex
+                    {
+                        MolDescriptorResuitDic.Add(item.Key, item.Value);
+                    }
+
+
+
+                    foreach (var item in atomCountDic)
+                    {
+                        descriptors.Add(item.Key, double.Parse(item.Value));
+                    }
+                    foreach (var item in MolDescriptorResuitDic)
+                    {
+                        descriptors.Add(item.Key, double.Parse(item.Value));
+                    }
+
+                    var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors };
+                    //resultArray[id] = result;
+
+                    lock (syncObj)
+                    {
+                        results.Add(result);
+
+                            sw.Write(queries[i][3]);
+                        foreach (var item in allDescriptorHeader)
+                        {
+                            sw.Write("\t");
+                            sw.Write(result.Descriptor[item]);
+                        }
+                        sw.WriteLine("");
+                        counter++;
+                        if (!Console.IsOutputRedirected)
+                        {
+                            Console.Write("Progress {0}/{1}", counter, queries.Count);
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Progress {0}/{1}", counter, queries.Count);
+                        }
+                    }
+                });
+            }
+
+
+            //results = resultArray.ToList();
+
+            //using (var sw = new StreamWriter(outputFile, false, Encoding.ASCII))
+            //{
+
+            //    sw.Write(string.Join("\t", new string[] { "ID", "InChIKey", "SMILES" }));
+            //    sw.Write("\t");
+            //    sw.WriteLine(string.Join("\t", allDescriptorHeader));
+
+            //    foreach (var result in results.OrderBy(n => n.ID))
+            //    {
+            //        var descriptor = result.Descriptor;
+            //        sw.Write(string.Join("\t", new string[] { result.ID.ToString(), result.InChIKey, result.SMILES }));
+
+            //        foreach (var item in allDescriptorHeader)
+            //        {
+            //            sw.Write("\t");
+            //            sw.Write(result.Descriptor[item]);
+            //        }
+            //        sw.WriteLine("");
+            //    }
+            //}
+        }
+
+
 
         public static void outputDescriptors(string inputFile, string output)
         {
@@ -1123,6 +1640,8 @@ namespace CompMs.MspGenerator
             return zagrebIndexValues;
         }
 
-    }
 
+
+
+    }
 }

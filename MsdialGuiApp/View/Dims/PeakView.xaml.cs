@@ -21,10 +21,19 @@ namespace CompMs.App.Msdial.View.Dims
     /// </summary>
     public partial class PeakView : UserControl
     {
-        public static readonly DependencyProperty MassAxisProperty = DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(PeakView));
+        public static readonly DependencyProperty ChromAxisProperty =
+            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(PeakView));
+
+        public static readonly DependencyProperty MassAxisProperty =
+            DependencyProperty.Register(nameof(MassAxis), typeof(IAxisManager), typeof(PeakView));
         
-        public AxisManager MassAxis {
-            get => (AxisManager)GetValue(MassAxisProperty);
+        public IAxisManager ChromAxis {
+            get => (IAxisManager)GetValue(ChromAxisProperty);
+            set => SetValue(ChromAxisProperty, value);
+        }
+
+        public IAxisManager MassAxis {
+            get => (IAxisManager)GetValue(MassAxisProperty);
             set => SetValue(MassAxisProperty, value);
         }
 

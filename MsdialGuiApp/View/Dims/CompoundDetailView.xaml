@@ -66,7 +66,7 @@
                             <TextBox Name="TextBox_PeakInformation_MS2DotSimilarity"
                                      Text="{Binding ScanMatchResult.WeightedDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
                                      Height="25"/>
-                            <Label Content="|" />
+                            <TextBlock Text="|" VerticalAlignment="Center"/>
                             <TextBox Text="(Rev)" />
                             <TextBox Name="TextBox_PeakInformation_MS2ReverseSimilarity"
                                      Text="{Binding ScanMatchResult.ReverseDotProduct, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"
@@ -79,9 +79,9 @@
                             <TextBox Name="TextBox_PeakInformation_Forumula" Height="25">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding Formula, Mode=OneWay}"/>
+                                        <Setter Property="Text" Value="{Binding Formula.FormulaString, Mode=OneWay}"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Formula, TargetNullValue=''}" Value="" >
+                                            <DataTrigger Binding="{Binding Formula.FormulaString, TargetNullValue=''}" Value="" >
                                                 <Setter Property="Text" Value="NA"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -181,9 +181,9 @@
                             <TextBox Name="TextBox_PeakInformation_Forumula" Height="25">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding Formula, Mode=OneWay}"/>
+                                        <Setter Property="Text" Value="{Binding Formula.FormulaString, Mode=OneWay}"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Formula, TargetNullValue=''}" Value="" >
+                                            <DataTrigger Binding="{Binding Formula.FormulaString, TargetNullValue=''}" Value="" >
                                                 <Setter Property="Text" Value="NA"/>
                                             </DataTrigger>
                                         </Style.Triggers>

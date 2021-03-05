@@ -16,7 +16,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Export
 
         public static void ExportMs1DecResult(AnalysisFileBean file, string exportFolder, List<MspFormatCompoundInformationBean> mspDB)
         {
-            var outputfile = exportFolder + "\\" + file.AnalysisFilePropertyBean.AnalysisFileName + ".msdial";
+            var outputfile = Path.Combine(exportFolder, file.AnalysisFilePropertyBean.AnalysisFileName + ".msdial");
 			Console.WriteLine("Exporting Deconvolution data: {0}", outputfile);
 
 			using (var sw = new StreamWriter(outputfile, false, Encoding.ASCII))

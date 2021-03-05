@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -18,15 +19,18 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected DataAccessor Accessor { get; set; }
         protected IPeakJoiner Joiner { get; set; }
         protected GapFiller Filler { get; set; }
-        protected AlignmentRefiner Refiner { get; set; }
+        protected IAlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
+        protected List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
 
-        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, AlignmentRefiner refiner, ParameterBase param) {
+        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param, List<MoleculeMsReference> mspDB = null) {
             Accessor = accessor;
             Joiner = joiner;
             Filler = filler;
             Refiner = refiner;
             Param = param;
+            if (mspDB != null)
+                MspDB = mspDB;
         }
 
         public PeakAligner(AlignmentProcessFactory factory) {
@@ -47,7 +51,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
             spots = Refiner.Refine(spots);
 
-            return PackingSpots(spots);
+            var container = PackingSpots(spots);
+
+            if (Param.TrackingIsotopeLabels) {
+                IsotopeTracking.SetIsotopeTrackingID(container, Param, MspDB, null);
+            }
+
+            return container;
         }
 
         private static List<AlignmentSpotProperty> FilterAlignments(List<AlignmentSpotProperty> spots, ParameterBase param) {
@@ -80,6 +90,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
             foreach (var spot in spots)
                 PackingSpot(spot);
+
+            //foreach (var spot in spots.Where(n => n.IsReferenceMatched)) {
+            //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
+            //}
 
             if (chromPeakInfoSerializer != null)
                 SerializeSpotInfo(spots, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
@@ -139,6 +153,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 DataObjConverter.SetRepresentativeProperty(child);
 
             DataObjConverter.SetRepresentativeProperty(spot);
+            //Console.WriteLine(spot.Name + "\t" + spot.AdductType.AdductIonName);
         }
 
         private void SerializeSpotInfo(

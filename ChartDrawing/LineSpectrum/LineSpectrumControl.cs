@@ -31,7 +31,7 @@ namespace CompMs.Graphics.LineSpectrum
 
         public static readonly DependencyProperty LinePenProperty = DependencyProperty.Register(
             nameof(LinePen), typeof(Pen), typeof(LineSpectrumControl),
-            new PropertyMetadata(new Pen(Brushes.Black, 1))
+            new PropertyMetadata(new Pen(Brushes.Black, 2))
             );
 
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(

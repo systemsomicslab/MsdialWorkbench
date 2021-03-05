@@ -6,6 +6,7 @@ using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -21,6 +22,19 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
+    [Flags]
+    enum DisplayFilter : uint {
+        Unset = 0x0,
+        RefMatched = 0x1,
+        Suggested = 0x2,
+        Unknown = 0x4,
+        Ms2Acquired = 0x8,
+        MolecularIon = 0x10,
+        Blank = 0x20,
+        UniqueIons = 0x40,
+
+        Annotates = RefMatched | Suggested | Unknown,
+    }
     public class LcmsMethodVM : MethodVM {
         public AnalysisLcmsVM AnalysisVM {
             get => analysisVM;
@@ -108,22 +122,26 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
         }
 
-        public override void InitializeNewProject(Window window) {
+        public override int InitializeNewProject(Window window) {
             // Set analysis param
-            var success = ProcessSetAnalysisParameter(window);
-            if (!success) return;
+            if (!ProcessSetAnalysisParameter(window))
+                return -1;
 
             // Run Identification
-            ProcessAnnotaion(window, Storage);
+            if (!ProcessAnnotaion(window, Storage))
+                return -1;
 
             // Run Alignment
-            ProcessAlignment(window, Storage);
+            if (!ProcessAlignment(window, Storage))
+                return -1;
 
             AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+
+            return 0;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetForLcVM((MsdialLcmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcmsParameter>((MsdialLcmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForLcWindow
             {
                 DataContext = analysisParamSetVM,
@@ -143,6 +161,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     FileName = filename,
                     FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                     EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
                 }
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -199,7 +218,34 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
             return true;
+        }
+
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+            var files = storage.AnalysisFiles;
+
+            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
+            foreach (var file in files) {
+                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+                pointerss.Add((version, pointers, isAnnotationInfo));
+            }
+
+            var streams = new List<System.IO.FileStream>();
+            try {
+                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+                foreach (var spot in spots) {
+                    var repID = spot.RepresentativeFileID;
+                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var decResult = MsdecResultsReader.ReadMSDecResult(
+                        streams[repID], pointerss[repID].pointers[peakID],
+                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
+                    yield return decResult;
+                }
+            }
+            finally {
+                streams.ForEach(stream => stream.Close());
+            }
         }
 
         public override void LoadProject() {
@@ -234,7 +280,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public override void SaveProject() {
-            throw new NotImplementedException();
+            AlignmentVM?.SaveProject();
         }
     }
 }

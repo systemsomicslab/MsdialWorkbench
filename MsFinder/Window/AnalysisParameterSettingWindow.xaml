@@ -673,7 +673,7 @@
                                                         NotifyOnValidationError=True}"
                                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
                                     <ToolTipService.ToolTip>
-                                        <ToolTip Content="Time out setting" />
+                                        <ToolTip Content="Cut off setting" />
                                     </ToolTipService.ToolTip>
                                 </TextBox>
 
@@ -685,7 +685,7 @@
                                                         NotifyOnValidationError=True}"
                                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
                                     <ToolTipService.ToolTip>
-                                        <ToolTip Content="Time out setting" />
+                                        <ToolTip Content="Cut off setting" />
                                     </ToolTipService.ToolTip>
                                 </TextBox>
 

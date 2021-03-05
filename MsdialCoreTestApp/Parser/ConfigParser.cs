@@ -14,6 +14,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using Accord.Math;
 using CompMs.Common.DataObj.Property;
+using CompMs.MsdialImmsCore.Parameter;
 
 namespace CompMs.App.MsdialConsole.Parser
 {
@@ -91,6 +92,21 @@ namespace CompMs.App.MsdialConsole.Parser
             return param;
         }
 
+        public static MsdialImmsParameter ReadForImmsParameter(string filepath) {
+            var param = new MsdialImmsParameter();
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (isReadable) {
+                        if (!ReadCommonParameter(param, method, value)) {
+                            ReadImmsSpecificParameter(param, method, value);
+                        }
+                    }
+                }
+            }
+            return param;
+        }
+
         private static void readFieldValues(string line, out string method, out string value, out bool isReadable) {
             method = string.Empty; value = string.Empty; isReadable = false;
             if (line == string.Empty) return;
@@ -144,6 +160,23 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (value == "true")
                         param.IsAccumulateMS2Spectra = true;
                     return true;
+                case "drift time alignment tolerance": if (float.TryParse(value, out float dtaligntol)) param.DriftTimeAlignmentTolerance = dtaligntol; return true;
+                case "drift time alignment factor": if (float.TryParse(value, out float dtalignfactor)) param.DriftTimeAlignmentFactor = dtalignfactor; return true;
+                case "ion mobility type":
+                    if (value == "tims" || value == "dtims" || value == "twims" || value == "ccs")
+                        param.IonMobilityType = (IonMobilityType)Enum.Parse(typeof(IonMobilityType), value, true); return true;
+                default: return false;
+            }
+        }
+
+        public static bool ReadImmsSpecificParameter(MsdialImmsParameter param, string method, string value) {
+            if (value.IsEmptyOrNull()) return false;
+            if (method.IsEmptyOrNull()) return false;
+            method = method.ToLower();
+            value = value.ToLower();
+            switch (method) {
+                case "drift time begin": if (float.TryParse(value, out float dtBegin)) param.DriftTimeBegin = dtBegin; return true;
+                case "drift time end": if (float.TryParse(value, out float dtEnd)) param.DriftTimeEnd = dtEnd; return true;
                 case "drift time alignment tolerance": if (float.TryParse(value, out float dtaligntol)) param.DriftTimeAlignmentTolerance = dtaligntol; return true;
                 case "drift time alignment factor": if (float.TryParse(value, out float dtalignfactor)) param.DriftTimeAlignmentFactor = dtalignfactor; return true;
                 case "ion mobility type":

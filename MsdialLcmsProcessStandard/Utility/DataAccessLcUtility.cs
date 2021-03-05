@@ -492,12 +492,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
                 libTxtId = dSpot.PostIdentificationLibraryID;
                 MspId = dSpot.LibraryID;
             }
-
-            var ontology = PostIdentificationReferenceDataRetrieve.GetOntology(libTxtId, txtDB);
-            if (string.IsNullOrEmpty(ontology))
-                ontology = MspDataRetrieve.GetOntology(MspId, mspDB);
-
-            return ontology;
+            return RefDataRetrieve.GetOntology(MspId, mspDB, libTxtId, txtDB);
         }
 
         public static double GetIonAbundanceOfMzInSpectrum(RawPeakElement[] massSpectra, 
@@ -1830,7 +1825,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             }
             if (rt - rtLeft > rtRange)
             {
-                Console.WriteLine("Peak: " + pSpot.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                //Console.WriteLine("Peak: " + pSpot.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
                 rtLeft = rt - rtRange;
             }
 

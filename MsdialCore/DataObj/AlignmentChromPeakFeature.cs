@@ -9,10 +9,11 @@ using System.Text;
 using MessagePack;
 using CompMs.Common.Extension;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty, IAnnotatedObject {
 
         // ID metadata
         [Key(0)]
@@ -138,20 +139,37 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public bool IsReferenceMatched() {
+            if (MatchResults?.Representative is MsScanMatchResult result) {
+                if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
+                    return false;
+                if ((result.Priority & DataBasePriority.Unknown) == DataBasePriority.None)
+                    return true;
+            }
             if (TextDbID() >= 0) return true;
             if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
             return false;
         }
 
         public bool IsAnnotationSuggested() {
-            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) == 0) return true;
-            return false;
+            if (IsReferenceMatched())
+                return false;
+            if (MatchResults?.Representative is MsScanMatchResult result) {
+                if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
+                    return false;
+            }
+            return MspID() >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
         }
 
         public bool IsUnknown() {
-            if (MspID() < 0 && TextDbID() < 0) return true;
-            return false;
+            return !IsReferenceMatched() && !IsAnnotationSuggested();
         }
+
+        [Key(47)]
+        public MsScanMatchResultContainer MatchResults {
+            get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
+            set => matchResults = value;
+        }
+        private MsScanMatchResultContainer matchResults;
 
 
         // peak characters
@@ -166,5 +184,28 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(46)]
         public double NormalizedPeakAreaAboveBaseline { get; set; }
 
+        // IMSProperty members
+        ChromXs IMSProperty.ChromXs {
+            get => ChromXsTop;
+            set => ChromXsTop = value;
+        }
+        IonMode IMSProperty.IonMode {
+            get => IonMode;
+            set => IonMode = value;
+        }
+        double IMSProperty.PrecursorMz {
+            get => Mass;
+            set => Mass = value;
+        }
+
+        // IIonProperty members
+        AdductIon IIonProperty.AdductType {
+            get => PeakCharacter.AdductType;
+            set => PeakCharacter.AdductType = value;
+        }
+        double IIonProperty.CollisionCrossSection {
+            get => CollisionCrossSection;
+            set => CollisionCrossSection = value;
+        }
     }
 }

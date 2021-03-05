@@ -44,28 +44,42 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> createNewProjectCommand;
 
         private void CreateNewProject(Window window) {
-            Storage = new MsdialDataStorage();
+            var storage = new MsdialDataStorage();
 
             //Get IUPAC reference
             var iupacdb = IupacResourceParser.GetIUPACDatabase();
-            Storage.IupacDatabase = iupacdb;
+            storage.IupacDatabase = iupacdb;
 
             // Set parameterbase
             var parameter = ProcessStartUp(window);
-            if (parameter == null) return;
-            Storage.ParameterBase = parameter;
+            if (parameter == null)
+                return;
+            storage.ParameterBase = parameter;
 
             // Set analysis file property
-            var success = ProcessSetAnalysisFile(window, Storage);
-            if (!success) return;
+            if (!ProcessSetAnalysisFile(window, storage))
+                return;
 
-            MethodVM = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-            MethodVM.InitializeNewProject(window);
+            RunProcessAll(window, storage);
+
+            Storage = storage;
+        }
+
+        public DelegateCommand<Window> RunProcessAllCommand => runProcessAllCommand ?? (runProcessAllCommand = new DelegateCommand<Window>(owner => RunProcessAll(owner, Storage)));
+
+        private DelegateCommand<Window> runProcessAllCommand;
+
+        private void RunProcessAll(Window window, MsdialDataStorage storage) {
+            var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+            if (method.InitializeNewProject(window) != 0)
+                return;
 
 #if DEBUG
-            Console.WriteLine(string.Join("\n", Storage.ParameterBase.ParametersAsText()));
+            Console.WriteLine(string.Join("\n", storage.ParameterBase.ParametersAsText()));
 #endif
-            SaveProject();
+
+            MethodVM = method;
+            SaveProject(method, storage);
         }
 
         private static MethodVM CreateNewMethodVM(MachineCategory category, MsdialDataStorage storage) {
@@ -74,11 +88,13 @@ namespace CompMs.App.Msdial
                     return new ViewModel.Lcms.LcmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                case MachineCategory.IMMS:
+                    return new ViewModel.Imms.ImmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
             }
             throw new NotImplementedException("This method is not implemented");
         }
 
-        private ParameterBase ProcessStartUp(Window owner) {
+        private static ParameterBase ProcessStartUp(Window owner) {
             var startUpWindowVM = new StartUpWindowVM();
             var suw = new StartUpWindow()
             {
@@ -97,7 +113,7 @@ namespace CompMs.App.Msdial
             return parameter;
         }
 
-        private bool ProcessSetAnalysisFile(Window owner, MsdialDataStorage storage) {
+        private static bool ProcessSetAnalysisFile(Window owner, MsdialDataStorage storage) {
             var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
             {
                 ProjectFolderPath = storage.ParameterBase.ProjectFolderPath,
@@ -113,8 +129,8 @@ namespace CompMs.App.Msdial
             var afpsw_result = afpsw.ShowDialog();
             if (afpsw_result != true) return false;
 
-            Storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
-            ParameterFactory.SetParameterFromAnalysisFiles(storage.ParameterBase, Storage.AnalysisFiles);
+            storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+            ParameterFactory.SetParameterFromAnalysisFiles(storage.ParameterBase, storage.AnalysisFiles);
 
             return true;
         }
@@ -140,8 +156,7 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                var serializer = SerializerResolver.ResolveMsdialSerializer(ofd.FileName);
-                Storage = serializer.LoadMsdialDataStorageBase(ofd.FileName);
+                Storage = loadProjectFromPath(ofd.FileName);
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -154,30 +169,77 @@ namespace CompMs.App.Msdial
             }
         }
 
+        // TODO: Move this method. MainWindowVM shouldn't know each analysis and alignment files.
+        private static MsdialDataStorage loadProjectFromPath(string projectfile) {
+            var projectFolder = System.IO.Path.GetDirectoryName(projectfile);
+
+            var serializer = SerializerResolver.ResolveMsdialSerializer(projectfile);
+            var storage = serializer.LoadMsdialDataStorageBase(projectfile);
+
+            var previousFolder = storage.ParameterBase.ProjectFolderPath;
+
+            if (projectFolder == previousFolder)
+                return storage;
+
+            storage.ParameterBase.ProjectFolderPath = projectFolder;
+
+            storage.ParameterBase.ProjectFilePath = replaceFolderPath(storage.ParameterBase.ProjectFilePath, previousFolder, projectFolder);
+            // storage.ParameterBase.MspFilePath = replaceFolderPath(storage.ParameterBase.MspFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.TextDBFilePath = replaceFolderPath(storage.ParameterBase.TextDBFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.IsotopeTextDBFilePath = replaceFolderPath(storage.ParameterBase.IsotopeTextDBFilePath, previousFolder, projectFolder);
+
+            foreach (var file in storage.AnalysisFiles) {
+                file.AnalysisFilePath = replaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
+                file.DeconvolutionFilePath = replaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
+                file.PeakAreaBeanInformationFilePath = replaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
+                file.RiDictionaryFilePath = replaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
+
+                file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => replaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
+            }
+
+            foreach (var file in storage.AlignmentFiles) {
+                file.FilePath = replaceFolderPath(file.FilePath, previousFolder, projectFolder);
+                file.EicFilePath = replaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
+                file.SpectraFilePath = replaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
+            }
+
+            return storage;
+        }
+
+        private static string replaceFolderPath(string path, string previous, string current) {
+            if (string.IsNullOrEmpty(path))
+                return path;
+            if (path.StartsWith(previous))
+                return System.IO.Path.Combine(current, path.Substring(previous.Length).TrimStart('\\', '/'));
+            if (!System.IO.Path.IsPathRooted(path))
+                return System.IO.Path.Combine(current, path);
+            throw new ArgumentException("Invalid path or directory.");
+        }
+
         public DelegateCommand SaveProjectCommand {
-            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand(SaveProject));
+            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand(() => SaveProject(MethodVM, Storage)));
         }
         private DelegateCommand saveProjectCommand;
 
-        private void SaveProject() {
+        private static void SaveProject(MethodVM methodVM, MsdialDataStorage storage) {
             // TODO: implement process when project save failed.
-            MethodVM.Serializer.SaveMsdialDataStorage(Storage.ParameterBase.ProjectFilePath, Storage);
-            MethodVM?.SaveProject();
+            methodVM.Serializer.SaveMsdialDataStorage(storage.ParameterBase.ProjectFilePath, storage);
+            methodVM?.SaveProject();
         }
 
         public DelegateCommand<Window> SaveAsProjectCommand {
-            get => saveAsProjectCommand ?? (saveAsProjectCommand = new DelegateCommand<Window>(SaveAsProject));
+            get => saveAsProjectCommand ?? (saveAsProjectCommand = new DelegateCommand<Window>(owner => SaveAsProject(owner, methodVM, Storage)));
         }
         private DelegateCommand<Window> saveAsProjectCommand;
 
-        private void SaveAsProject(Window owner) {
+        private static void SaveAsProject(Window owner, MethodVM methodVM, MsdialDataStorage storage) {
             var sfd = new SaveFileDialog();
             sfd.Filter = "MTD file(*.mtd2)|*.mtd2";
             sfd.Title = "Save project dialog";
-            sfd.InitialDirectory = Storage.ParameterBase.ProjectFolderPath;
+            sfd.InitialDirectory = storage.ParameterBase.ProjectFolderPath;
 
             if (sfd.ShowDialog() == true) {
-                if (System.IO.Path.GetDirectoryName(sfd.FileName) != Storage.ParameterBase.ProjectFolderPath) {
+                if (System.IO.Path.GetDirectoryName(sfd.FileName) != storage.ParameterBase.ProjectFolderPath) {
                     MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
@@ -191,23 +253,23 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                Storage.ParameterBase.ProjectFilePath = sfd.FileName;
-                SaveProject();
+                storage.ParameterBase.ProjectFilePath = sfd.FileName;
+                SaveProject(methodVM, storage);
 
                 message.Close();
                 Mouse.OverrideCursor = null;
             }
         }
 
-        public DelegateCommand<Window> SaveParameterCommand => saveParameterCommand ?? (saveParameterCommand = new DelegateCommand<Window>(SaveParameter));
+        public DelegateCommand<Window> SaveParameterCommand => saveParameterCommand ?? (saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
         private DelegateCommand<Window> saveParameterCommand;
 
-        private void SaveParameter(Window owner) {
+        private static void SaveParameter(Window owner, MsdialDataStorage storage) {
             // TODO: implement process when parameter save failed.
             var sfd = new SaveFileDialog();
             sfd.Filter = "MED file(*.med)|*.med";
             sfd.Title = "Save file dialog";
-            sfd.InitialDirectory = Storage.ParameterBase.ProjectFolderPath;
+            sfd.InitialDirectory = storage.ParameterBase.ProjectFolderPath;
 
             if (sfd.ShowDialog() == true) {
                 Mouse.OverrideCursor = Cursors.Wait;
@@ -219,12 +281,22 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                MessagePackHandler.SaveToFile(Storage.ParameterBase, sfd.FileName);
+                MessagePackHandler.SaveToFile(storage.ParameterBase, sfd.FileName);
 
                 message.Close();
                 Mouse.OverrideCursor = null;
             }
         }
+
+        public DelegateCommand<Window> GoToTutorialCommand {
+            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand<Window>(GoToTutorial));
+        }
+
+        private void GoToTutorial(Window obj) {
+            System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+        }
+
+        private DelegateCommand<Window> goToTutorialCommand;
 
     }
 }

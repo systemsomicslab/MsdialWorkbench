@@ -152,7 +152,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             // very add hoc
             if (shapnessValueList.Count == 0) {
 				dataSummaryBean.ModelPeakBean = getWorstCaseModelPeaklist(dataSummaryBean);
-				Console.WriteLine("No model peak in ms1");
+#if DEBUG
+                Console.WriteLine("No model peak in ms1");
+#endif
 				return;
 			}
 
@@ -188,7 +190,13 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                     limitCounter++;
                 }
-                if (createriaChecker == false) { dataSummaryBean.ModelPeakBean = getWorstCaseModelPeaklist(dataSummaryBean); Console.WriteLine("No model peak in ms1"); return; }
+                if (createriaChecker == false) { 
+                    dataSummaryBean.ModelPeakBean = getWorstCaseModelPeaklist(dataSummaryBean);
+#if DEBUG
+                    Console.WriteLine("No model peak in ms1");
+#endif
+                    return; 
+                }
             }
             dataSummaryBean.ModelPeakBean = getModelPeakBean(peakAreaBeanCollection[candidateID], peaklist);
         }

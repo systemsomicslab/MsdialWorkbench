@@ -77,8 +77,10 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         private readonly MsdialDataStorage container;
 
-        public AlignmentResultExportVM(ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) {
+        public AlignmentResultExportVM(AlignmentFileBean alignmentFile, ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) {
             this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
+            if (alignmentFile != null)
+                this.alignmentFiles.MoveCurrentTo(alignmentFile);
             this.container = container;
         }
 
@@ -86,14 +88,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private DelegateCommand browseDirectoryCommand;
 
         private void BrowseDirectory() {
-            var fbd = new System.Windows.Forms.FolderBrowserDialog
+            var fbd = new Graphics.Window.SelectFolderDialog
             {
-                RootFolder = Environment.SpecialFolder.Desktop,
-                Description = "Chose a export folder.",
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Title = "Chose a export folder.",
             };
 
-            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+            if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 ExportDirectory = fbd.SelectedPath;
             }
         }
@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             foreach (var exportType in ExportTypes.Where(type => type.IsSelected)) {
-                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt.ToString("yyyy_MM_dd_hh_mm_ss")}.txt");
+                var outfile = System.IO.Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 ExportAlignmentResult(
                     outfile, exportType.TypeName,
                     resultContainer, msdecResults,

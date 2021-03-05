@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.Parameter {
+    [MessagePackObject]
     public class CoefficientsForCcsCalculation {
         [Key(0)]
         public bool IsAgilentIM { get; set; } = false;
@@ -12,6 +13,7 @@ namespace CompMs.Common.Parameter {
         [Key(2)]
         public bool IsWatersIM { get; set; } = false;
 
+        [Key(3)]
         public double AgilentBeta { get; set; } = -1.0;
         [Key(4)]
         public double AgilentTFix { get; set; } = -1.0;

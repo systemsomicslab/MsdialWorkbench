@@ -18,7 +18,13 @@ namespace CompMs.Graphics.UI.ProgressBar
             set => SetProperty(ref currentValue, value);
         }
 
+        public bool IsIndeterminate {
+            get => isIndeterminate;
+            set => SetProperty(ref isIndeterminate, value);
+        }
+
         private string label = string.Empty;
         private int currentValue = 0;
+        private bool isIndeterminate = false;
     }
 }

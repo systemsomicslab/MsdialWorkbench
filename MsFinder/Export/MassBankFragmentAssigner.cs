@@ -47,8 +47,8 @@ namespace Rfx.Riken.OsakaUniv
             Parallel.ForEach(files, file =>
             {
                 var rawData = RawDataParcer.RawDataFileReader(file, param);
-                var sfdFile = System.IO.Path.GetDirectoryName(file) + "\\" + System.IO.Path.GetFileNameWithoutExtension(file) + ".sfd";
-                var outputFile = System.IO.Path.GetDirectoryName(file) + "\\" + System.IO.Path.GetFileNameWithoutExtension(file) + ".sfdmsp";
+                var sfdFile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".sfd");
+                var outputFile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".sfdmsp");
                 var strctureData = FragmenterResultParcer.FragmenterResultReader(sfdFile);
 
                 writeMspFile(outputFile, rawData, strctureData[0]);

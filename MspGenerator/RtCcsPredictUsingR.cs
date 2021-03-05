@@ -54,7 +54,7 @@ namespace CompMs.MspGenerator
                 //# Predict over LIPIDOMICS DATABASE
                 //# import your database
                 r.Evaluate("setwd(\"" + outputFolderPath + "\")");
-                r.Evaluate("files <- list.files(pattern=\"*RTpred.csv\", recursive=FALSE)");
+                r.Evaluate("files <- list.files(pattern=\"RTpred*\", recursive=FALSE)");
                 r.Evaluate(@"
                     rtPredict <- function(x) {
 
@@ -114,12 +114,12 @@ namespace CompMs.MspGenerator
 
                 ////#Load libraries
                 //r.Evaluate("library(Retip)");
-                r.Evaluate("library(tidyverse)");
+                r.Evaluate("library(\"tidyverse\")");
 
-                r.Evaluate("library(xgboost)");
+                r.Evaluate("library(\"xgboost)");
                 //r.Evaluate("prep.wizard()");
                 //# import training set table
-                r.Evaluate("library(readxl)");
+                r.Evaluate("library(\"readxl\")");
 
                 r.Evaluate("CCS_All <- read_csv(\"masterCCS.csv\")");
                 r.Evaluate("db_CCS <- data.frame(CCS_All[,-c(1:3)])");
@@ -173,7 +173,7 @@ namespace CompMs.MspGenerator
 
             REngine.SetEnvironmentVariables(rPath);
 
-            using (REngine r = GetInitiazedREngine())
+            using (REngine r = REngine.GetInstance())
             {
                 r.Initialize();
 
@@ -182,12 +182,16 @@ namespace CompMs.MspGenerator
 
                 // from Xgb_RTprediction
                 //#Load libraries
+                //r.Evaluate("install.packages(\"tidyverse\")");
+                //r.Evaluate("install.packages(\"xgboost\")");
+                //r.Evaluate("install.packages(\"readxl\")");
+
                 //r.Evaluate("library(Retip)");
-                r.Evaluate("library(tidyverse)");
-                r.Evaluate("library(xgboost)");
+                r.Evaluate("library(\"tidyverse\")");
+                r.Evaluate("library(\"xgboost\")");
                 //r.Evaluate("prep.wizard()");
                 //# import training set table
-                r.Evaluate("library(readxl)");
+                r.Evaluate("library(\"readxl\")");
                 r.Evaluate("lipidomics_edit <- read_csv(\"masterRT.csv\")");
                 //# Clean dataset from NA and low variance value
                 r.Evaluate("db_rt_padel <- data.frame(lipidomics_edit[,-c(1:3)])");
@@ -228,10 +232,10 @@ namespace CompMs.MspGenerator
                 //r.Evaluate("source(\"fuctions_import.R\")");
                 ////#Load libraries
                 //r.Evaluate("library(Retip)");
-                r.Evaluate("library(xgboost)");
+                r.Evaluate("library(\"xgboost\")");
                 //r.Evaluate("prep.wizard()");
                 //# import training set table
-                r.Evaluate("library(readxl)");
+                r.Evaluate("library(\"readxl\")");
 
                 r.Evaluate("CCS_All <- read_csv(\"masterCCS.csv\")");
                 r.Evaluate("db_CCS <- data.frame(CCS_All[,-c(1:3)])");
@@ -390,11 +394,11 @@ namespace CompMs.MspGenerator
             }
         }
         public static REngine r = null;
-        public static REngine GetInitiazedREngine()
+        public static REngine GetInitiazedREngine(string rPath)
         {
             if (r == null)
             {
-                REngine.SetEnvironmentVariables();
+                REngine.SetEnvironmentVariables(rPath);
                 r = REngine.GetInstance();
                 r.Initialize();
             }

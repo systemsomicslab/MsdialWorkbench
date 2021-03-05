@@ -22,16 +22,16 @@ namespace CompMs.App.Msdial.View
     public partial class Footer : UserControl
     {
         public static readonly DependencyProperty ChromAxisProperty =
-            DependencyProperty.Register(nameof(ChromAxis), typeof(AxisManager), typeof(Footer));
-        public AxisManager ChromAxis {
-            get => (AxisManager)GetValue(ChromAxisProperty);
+            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(Footer));
+        public IAxisManager ChromAxis {
+            get => (IAxisManager)GetValue(ChromAxisProperty);
             set => SetValue(ChromAxisProperty, value);
         }
 
         public static readonly DependencyProperty MassAxisProperty =
-            DependencyProperty.Register(nameof(MassAxis), typeof(AxisManager), typeof(Footer));
-        public AxisManager MassAxis {
-            get => (AxisManager)GetValue(MassAxisProperty);
+            DependencyProperty.Register(nameof(MassAxis), typeof(IAxisManager), typeof(Footer));
+        public IAxisManager MassAxis {
+            get => (IAxisManager)GetValue(MassAxisProperty);
             set => SetValue(MassAxisProperty, value);
         }
 

@@ -15,117 +15,30 @@ using CompMs.MsdialGcMsApi.Parameter;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
-    public class GcmsGapFiller : GapFiller
+    public abstract class GcmsGapFiller : GapFiller
     {
         private readonly List<AnalysisFileBean> files;
         private readonly MsdialGcmsParameter param;
-        private readonly AlignmentIndexType indexType;
-        private Dictionary<int, float> FiehnRiDictionary;
-        private Dictionary<int, FiehnRiCoefficient> FileId2FiehnRiCoefficient, FileId2RevFiehnRiCoefficient;
-        private Dictionary<int, RiDictionaryInfo> FileId2RiDictionary;
-        protected readonly double rtTol;
+        protected readonly AlignmentIndexType indexType;
         private List<MoleculeMsReference> mspDB;
         private readonly bool isRepresentativeQuantMassBasedOnBasePeakMz;
 
         private bool IsReplaceMode => !mspDB.IsEmptyOrNull();
         private int Bin => param?.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
 
-        protected override double AxTol => rtTol;
-
         public GcmsGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param) : base(param) {
             this.files = files;
             this.mspDB = mspDB;
             this.param = param;
-            this.FileId2RiDictionary = param.FileIdRiInfoDictionary;
             this.isRepresentativeQuantMassBasedOnBasePeakMz = param.IsRepresentativeQuantMassBasedOnBasePeakMz;
 
             indexType = param.AlignmentIndexType;
-            rtTol = param.RetentionTimeAlignmentTolerance;
-
-            if (this.param.AlignmentIndexType == AlignmentIndexType.RI && this.param.RiCompoundType == RiCompoundType.Fames) {
-                FiehnRiDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
-                FileId2FiehnRiCoefficient = new Dictionary<int, FiehnRiCoefficient>();
-                FileId2RevFiehnRiCoefficient = new Dictionary<int, FiehnRiCoefficient>();
-                foreach (var file in this.files) {
-                    var id = file.AnalysisFileId;
-                    var riDict = FileId2RiDictionary[id].RiDictionary;
-                    FileId2FiehnRiCoefficient[id] = RetentionIndexHandler.GetFiehnRiCoefficient(FiehnRiDictionary, riDict);
-                    FileId2RevFiehnRiCoefficient[id] = RetentionIndexHandler.GetFiehnRiCoefficient(riDict, FiehnRiDictionary);
-                }
-            }
         }
 
-        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            var peaklist = peaks.ToList();
-            var quantMass = GetQuantmass(peaklist);
-            if (indexType == AlignmentIndexType.RT) {
-                return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
-                {
-                    RI = new RetentionIndex(peaklist.Average(peak => peak.ChromXsTop.RI.Value)),
-                    Mz = new MzValue(quantMass),
-                };
-            }
-            return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RI.Value), ChromXType.RI, ChromXUnit.None)
-            {
-                RT = new RetentionTime(peaklist.Average(peak => peak.ChromXsTop.RT.Value)),
-                Mz = new MzValue(quantMass),
-            };
-        }
-
-        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
-            if (indexType == AlignmentIndexType.RI) {
-                return peaks.Max(peak => peak.PeakWidth(ChromXType.RI));
-            }
-            else {
-                return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
-            }
-        }
-
-        /// <summary>
-        /// peak width is RT range or RI range
-        /// </summary>
-        /// <param name="center"></param>
-        /// <param name="peakWidth"></param>
-        /// <param name="spectrumList"></param>
-        /// <param name="fileID"></param>
-        /// <returns></returns>
-        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-
-            var centralRT = center.RT.Value;
-            var centralRI = center.RI.Value;
-            var maxRt = centralRT + peakWidth * 0.5; // temp
-            var maxRi = centralRI + peakWidth * 0.5; // temp
-            var minRt = centralRT - peakWidth * 0.5; // temp
-            var minRi = centralRI - peakWidth * 0.5; // temp
-
-            var centralMz = center.Mz.Value;
-            #region // RT conversion if needed
-            if (indexType == AlignmentIndexType.RI) {
-                var riDictionary = FileId2RiDictionary[fileID].RiDictionary;
-                if (param.RiCompoundType == RiCompoundType.Alkanes) {
-                    centralRT = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, centralRI);
-                    maxRt = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, maxRi);
-                    minRt = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, minRi);
-                }
-                else {
-                    var revFiehnRiCoeff = FileId2RevFiehnRiCoefficient[fileID];
-                    centralRT = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, centralRI);
-                    maxRt = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, maxRi);
-                    minRt = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, minRi);
-                }
-            }
-            #endregion
-            var rtTol = maxRt - minRt;
-            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
-               spectrum, centralRT,
-               centralRT - rtTol * 3.0F,
-               centralRT + rtTol * 3.0F, centralMz, param);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
-        }
-
-        private double GetQuantmass(List<AlignmentChromPeakFeature> peaks) {
+        protected double GetQuantmass(List<AlignmentChromPeakFeature> peaks) {
             var repFileID = DataObjConverter.GetRepresentativeFileID(peaks);
-            var mspId = peaks[repFileID].MspID();
+            var repPeak = peaks.FirstOrDefault(peak => peak.FileID == repFileID);
+            var mspId = repPeak.MspID();
             
             if (IsReplaceMode && repFileID >= 0 && mspId >= 0) {
                 var refQuantMass = mspDB[mspId].QuantMass;
@@ -135,7 +48,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             }
 
             var dclFile = files[repFileID].DeconvolutionFilePath;
-            var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, peaks[repFileID].SeekPointToDCLFile);
+            var msdecResult = MsdecResultsReader.ReadMSDecResult(dclFile, repPeak.SeekPointToDCLFile);
             var spectrum = msdecResult.Spectrum;
             var basepeak = GetBasePeak(spectrum);
             if (isRepresentativeQuantMassBasedOnBasePeakMz) {
@@ -152,7 +65,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                 return quantMassCandidate;
             }
 
-            var repQuantMass = peaks[repFileID].Mass;
+            var repQuantMass = repPeak.Mass;
             var isSuitableQuantMassExist = SuitableQuantMassExists(repQuantMass, basepeak.Intensity, spectrum, bin, 10.0 * 0.01);
             if (isSuitableQuantMassExist)
                 return repQuantMass;
@@ -160,16 +73,150 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return basepeak.Mass;
         }
 
-        private static SpectrumPeak GetBasePeak(List<SpectrumPeak> spectrum) {
+        protected static SpectrumPeak GetBasePeak(List<SpectrumPeak> spectrum) {
             return spectrum.Argmax(peak => peak.Intensity);
         }
 
         // spectrum should be ordered by m/z value
-        private static bool SuitableQuantMassExists(double mass, double intensity, List<SpectrumPeak> spectrum, double bin, double threshold) {
+        protected static bool SuitableQuantMassExists(double mass, double intensity, List<SpectrumPeak> spectrum, double bin, double threshold) {
             return spectrum.Where(peak => mass - bin <= peak.Mass)
                            .TakeWhile(peak => peak.Mass <= mass + bin)
                            .Any(peak => Math.Abs(peak.Mass - mass) <= bin
                                      && peak.Intensity > intensity * threshold);
+        }
+    }
+
+    public class GcmsRTGapFiller : GcmsGapFiller
+    {
+        private readonly MsdialGcmsParameter param;
+
+
+        private readonly double rtTol;
+        protected override double AxTol => rtTol;
+
+        public GcmsRTGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param) : base(files, mspDB, param) {
+            this.param = param;
+            rtTol = param.RetentionTimeAlignmentTolerance;
+        }
+
+        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+            var peaklist = peaks.ToList();
+            return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RT.Value), ChromXType.RT, ChromXUnit.Min)
+            {
+                RI = new RetentionIndex(peaklist.Average(peak => peak.ChromXsTop.RI.Value)),
+                Mz = new MzValue(GetQuantmass(peaklist)),
+            };
+        }
+
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+            return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
+        }
+
+        /// <summary>
+        /// peak width is RT range
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="peakWidth"></param>
+        /// <param name="spectrumList"></param>
+        /// <param name="fileID"></param>
+        /// <returns></returns>
+        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+
+            var centralRT = center.RT.Value;
+            var maxRt = centralRT + peakWidth * 0.5; // temp
+            var minRt = centralRT - peakWidth * 0.5; // temp
+
+            var centralMz = center.Mz.Value;
+            var rtTol = maxRt - minRt;
+            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
+               spectrum, centralRT,
+               centralRT - rtTol * 3.0F,
+               centralRT + rtTol * 3.0F, centralMz, param);
+            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+        }
+    }
+
+    public class GcmsRIGapFiller : GcmsGapFiller
+    {
+        private readonly List<AnalysisFileBean> files;
+        private readonly MsdialGcmsParameter param;
+        private Dictionary<int, float> FiehnRiDictionary;
+        private Dictionary<int, FiehnRiCoefficient> FileId2FiehnRiCoefficient, FileId2RevFiehnRiCoefficient;
+        private Dictionary<int, RiDictionaryInfo> FileId2RiDictionary;
+
+        private readonly double riTol;
+        protected override double AxTol => riTol;
+
+        public GcmsRIGapFiller(List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param) : base(files, mspDB, param) {
+            this.files = files;
+            this.param = param;
+            this.FileId2RiDictionary = param.FileIdRiInfoDictionary;
+            riTol = param.RetentionIndexAlignmentTolerance;
+
+            if (this.param.RiCompoundType == RiCompoundType.Fames) {
+                FiehnRiDictionary = RetentionIndexHandler.GetFiehnFamesDictionary();
+                FileId2FiehnRiCoefficient = new Dictionary<int, FiehnRiCoefficient>();
+                FileId2RevFiehnRiCoefficient = new Dictionary<int, FiehnRiCoefficient>();
+                foreach (var file in this.files) {
+                    var id = file.AnalysisFileId;
+                    var riDict = FileId2RiDictionary[id].RiDictionary;
+                    FileId2FiehnRiCoefficient[id] = RetentionIndexHandler.GetFiehnRiCoefficient(FiehnRiDictionary, riDict);
+                    FileId2RevFiehnRiCoefficient[id] = RetentionIndexHandler.GetFiehnRiCoefficient(riDict, FiehnRiDictionary);
+                }
+            }
+        }
+
+        protected override ChromXs GetCenter(IEnumerable<AlignmentChromPeakFeature> peaks) {
+            var peaklist = peaks.ToList();
+            return new ChromXs(peaklist.Average(peak => peak.ChromXsTop.RI.Value), ChromXType.RI, ChromXUnit.None)
+            {
+                RT = new RetentionTime(peaklist.Average(peak => peak.ChromXsTop.RT.Value)),
+                Mz = new MzValue(GetQuantmass(peaklist)),
+            };
+        }
+
+        protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
+            return peaks.Max(peak => peak.PeakWidth(ChromXType.RI));
+        }
+
+        /// <summary>
+        /// peak width is RI range
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="peakWidth"></param>
+        /// <param name="spectrumList"></param>
+        /// <param name="fileID"></param>
+        /// <returns></returns>
+        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+
+            var centralRT = center.RT.Value;
+            var centralRI = center.RI.Value;
+            var maxRt = centralRT + peakWidth * 0.5; // temp
+            var maxRi = centralRI + peakWidth * 0.5; // temp
+            var minRt = centralRT - peakWidth * 0.5; // temp
+            var minRi = centralRI - peakWidth * 0.5; // temp
+
+            var centralMz = center.Mz.Value;
+            #region // RT conversion
+            var riDictionary = FileId2RiDictionary[fileID].RiDictionary;
+            if (param.RiCompoundType == RiCompoundType.Alkanes) {
+                centralRT = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, centralRI);
+                maxRt = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, maxRi);
+                minRt = RetentionIndexHandler.ConvertKovatsRiToRetentiontime(riDictionary, minRi);
+            }
+            else {
+                var revFiehnRiCoeff = FileId2RevFiehnRiCoefficient[fileID];
+                centralRT = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, centralRI);
+                maxRt = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, maxRi);
+                minRt = RetentionIndexHandler.ConvertFiehnRiToRetentionTime(revFiehnRiCoeff, minRi);
+            }
+            #endregion
+            var rtTol = maxRt - minRt;
+            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
+               spectrum, centralRT,
+               centralRT - rtTol * 3.0F,
+               centralRT + rtTol * 3.0F, centralMz, param);
+            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
         }
     }
 }

@@ -1,15 +1,23 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -65,7 +73,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public AlignmentSpotPropertyVM Target {
             get => target;
-            set => SetProperty(ref target, value);
+            set {
+                if (SetProperty(ref target, value))
+                    SearchCompoundCommand.RaiseCanExecuteChanged();
+            }
         }
         private AlignmentSpotPropertyVM target;
 
@@ -125,6 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
         public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
         // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
         internal DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -141,7 +153,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
         private readonly string spectraFile = string.Empty;
-        private readonly List<MoleculeMsReference> msp = new List<MoleculeMsReference>();
+        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator;
 
         private MSDecResult msdecResult = null;
 
@@ -152,7 +164,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Mz);
         }
 
-        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, List<MoleculeMsReference> msp) {
+        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, List<MoleculeMsReference> msp)
+            : this(alignmentFileBean, param, new DimsMspAnnotator(msp, param.MspSearchParam, param.TargetOmics)) {
+        }
+
+        public AlignmentDimsVM(AlignmentFileBean alignmentFileBean, ParameterBase param, IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator) {
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
             resultFile = alignmentFileBean.FilePath;
@@ -160,7 +176,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             spectraFile = alignmentFileBean.SpectraFilePath;
 
             this.param = param;
-            this.msp = msp;
+            this.mspAnnotator = mspAnnotator;
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
@@ -243,14 +259,29 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             await Task.Run(() => {
-                if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = msp[matched.LibraryIDWhenOrdered];
-                    if (matched.LibraryID != reference.ScanID) {
-                        reference = msp.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
-                    }
-                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+                var representative = RetrieveMspMatchResult(target.innerModel);
+                if (representative == null)
+                    return;
+
+                var reference = mspAnnotator.Refer(representative);
+                if (reference != null) {
+                    Ms2ReferenceSpectrum = reference.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }
             }).ConfigureAwait(false);
+        }
+
+        MsScanMatchResult RetrieveMspMatchResult(AlignmentSpotProperty prop) {
+            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
+                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                    return null;
+                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
+                    return null;
+                }
+                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                    return representative;
+                }
+            }
+            return prop.MspBasedMatchResult;
         }
 
         bool PeakFilter(object obj) {
@@ -268,7 +299,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched
                 || SuggestedChecked && spot.IsSuggested
-                || UnknownChecked && spot.IsUnknown;
+                || UnknownChecked && spot.IsUnknown
+                || ManuallyModifiedChecked && spot.innerModel.IsManuallyModifiedForAnnotation;
         }
 
         bool MzFilter(AlignmentSpotPropertyVM spot) {
@@ -276,19 +308,62 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 && spot.MassCenter <= MassUpper;
         }
 
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
+        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound, CanSearchCompound));
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, msp, param.MspSearchParam, param.TargetOmics, null);
-            var window = new View.Dims.CompoundSearchWindow
+            if (Target?.innerModel == null)
+                return;
+
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
 
-            window.ShowDialog();
+            if (window.ShowDialog() == true) {
+                Target.RaisePropertyChanged();
+                OnPropertyChanged(nameof(Target));
+                Ms1Spots?.Refresh();
+            }
+        }
+
+        private bool CanSearchCompound(Window owner) => (Target?.innerModel) != null;
+
+        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        private void SaveSpectra(Window owner)
+        {
+            var sfd = new SaveFileDialog
+            {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true)
+            {
+                var filename = sfd.FileName;
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    filename,
+                    Target.innerModel,
+                    msdecResult,
+                    param);
+            }
+        }
+
+        private bool CanSaveSpectra(Window owner)
+        {
+            if (Target.innerModel == null)
+                return false;
+            if (msdecResult == null)
+                return false;
+            return true;
         }
 
         public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));

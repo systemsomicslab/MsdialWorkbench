@@ -35,8 +35,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return msdecResults.Cast<IMSScanProperty>().ToList();
         }
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, List<RawSpectrum> spectrum) {
-            throw new NotImplementedException();
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
+            return null;
         }
     }
 }

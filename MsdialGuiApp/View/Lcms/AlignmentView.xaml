@@ -53,6 +53,7 @@
                                         RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                         HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
+                                        EachPlotBrushName="SpotColor"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=OneWayToSource}"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"

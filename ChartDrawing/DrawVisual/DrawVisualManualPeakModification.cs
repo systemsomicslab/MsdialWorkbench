@@ -799,7 +799,7 @@ namespace CompMs.Graphics.Chromatogram.ManualPeakModification
 
             InitializeGetChart(drawingVisual);
 
-            Console.WriteLine(this.drawingContext);
+            //Console.WriteLine(this.drawingContext);
 
             #region manual peak modification      
             if (IsTargetManualPickMode) {

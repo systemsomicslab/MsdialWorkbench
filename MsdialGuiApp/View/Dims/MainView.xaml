@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
@@ -159,7 +160,7 @@
         </Grid.ColumnDefinitions>
 
         <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-        <local:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+        <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2"
                       ResizeDirection="Columns"
@@ -189,7 +190,7 @@
                         <TabControl.ItemContainerStyle>
                             <Style TargetType="TabItem">
                                 <Setter Property="Height" Value="25"/>
-                                <Setter Property="Background" Value="LightSteelBlue"/>
+                                <Setter Property="Background" Value="{StaticResource LightThemeColor}"/>
                             </Style>
                         </TabControl.ItemContainerStyle>
 
@@ -213,19 +214,19 @@
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
-                                 Name="TabItem_EicViewer" Background="LightSteelBlue">
-                            <local:EicView DataContext="{Binding AnalysisVM}" MzAxis="{StaticResource MassAxis}"/>
+                                 Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
+                            <local:EicView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
-                                 Background="LightSteelBlue">
+                                 Background="{StaticResource LightThemeColor}">
                             <local:BarChartView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>
 
 
-                        <!--<TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="LightSteelBlue">
+                        <!--<TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
                             <local:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
                         </TabItem>-->
 
@@ -276,15 +277,15 @@
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
-                                 Background="LightSteelBlue">
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
+                                 Background="{StaticResource LightThemeColor}">
+                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
-                                 Background="LightSteelBlue">
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
+                                 Background="{StaticResource LightThemeColor}">
+                                <local:CompoundDetailView DataContext="{Binding Target, Mode=OneWay}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -295,25 +296,38 @@
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Grid.Row="1" >
 
-                        <TabItem Header="Exp. vs. Ref." 
-                                 Name="TabItem_MeasurementVsReference" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-                            <local:ExpRefView DataContext="{Binding AnalysisVM}"/>
+                        <TabItem Name="TabItem_MeasurementVsReference" 
+                                 Header="Exp. vs. Ref." 
+                                 DataContext="{Binding AnalysisVM}"
+                                 Background="{StaticResource LightThemeColor}"
+                                 Height="25">
+                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
+                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
+                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
+                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
+                                <commonview:ExpRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </commonview:ExpRefView.ContextMenu>
+                            </commonview:ExpRefView>
                         </TabItem>
 
-                        <TabItem Header="MS2 Chrom." 
-                                 Name="TabItem_MS2Chromatogram" 
-                                 Height="25"
-                                 Background="LightSteelBlue">
-                            <local:ChromatogramView />
-                        </TabItem>
-
-                        <TabItem Header="Rep. vs. Ref." 
-                                 Height="25"
-                                 Background="LightSteelBlue" 
-                                 Name="TabItem_RepresentativeVsReference">
-                            <local:RepRefView DataContext="{Binding AlignmentVM}" />
+                        <TabItem Name="TabItem_RepresentativeVsReference"
+                                 Header="Rep. vs. Ref." 
+                                 DataContext="{Binding AlignmentVM}"
+                                 Background="{StaticResource LightThemeColor}" 
+                                 Height="25">
+                            <commonview:RepRefView 
+                                                   Spectrum="{Binding Ms2Spectrum}"
+                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
+                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
+                                <commonview:RepRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </commonview:RepRefView.ContextMenu>
+                            </commonview:RepRefView>
                         </TabItem>
 
                     </TabControl>

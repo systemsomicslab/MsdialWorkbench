@@ -21,9 +21,9 @@ namespace CompMs.Common.Parameter {
         [Key(6)]
         public float Ms2Tolerance { get; set; } = 0.05F;
         [Key(7)]
-        public float RelativeAmpCutoff { get; set; } = 0.1F;
+        public float RelativeAmpCutoff { get; set; } = 0F;
         [Key(8)]
-        public float AbsoluteAmpCutoff { get; set; } = 5;
+        public float AbsoluteAmpCutoff { get; set; } = 0;
 
         // by [0-1]
         [Key(9)]
@@ -51,5 +51,28 @@ namespace CompMs.Common.Parameter {
         [Key(18)]
         public bool IsUseCcsForAnnotationScoring { get; set; } = false;
 
+
+        public MsRefSearchParameterBase() { }
+        public MsRefSearchParameterBase(MsRefSearchParameterBase parameter) {
+            MassRangeBegin = parameter.MassRangeBegin;
+            MassRangeEnd = parameter.MassRangeEnd;
+            RtTolerance = parameter.RtTolerance;
+            RiTolerance = parameter.RiTolerance;
+            CcsTolerance = parameter.CcsTolerance;
+            Ms1Tolerance = parameter.Ms1Tolerance;
+            Ms2Tolerance = parameter.Ms2Tolerance;
+            RelativeAmpCutoff = parameter.RelativeAmpCutoff;
+            AbsoluteAmpCutoff = parameter.AbsoluteAmpCutoff;
+            WeightedDotProductCutOff = parameter.WeightedDotProductCutOff;
+            SimpleDotProductCutOff = parameter.SimpleDotProductCutOff;
+            ReverseDotProductCutOff = parameter.ReverseDotProductCutOff;
+            MatchedPeaksPercentageCutOff = parameter.MatchedPeaksPercentageCutOff;
+            TotalScoreCutoff = parameter.TotalScoreCutoff;
+            MinimumSpectrumMatch = parameter.MinimumSpectrumMatch;
+            IsUseTimeForAnnotationFiltering = parameter.IsUseTimeForAnnotationFiltering;
+            IsUseTimeForAnnotationScoring = parameter.IsUseTimeForAnnotationScoring;
+            IsUseCcsForAnnotationFiltering = parameter.IsUseCcsForAnnotationFiltering;
+            IsUseCcsForAnnotationScoring = parameter.IsUseCcsForAnnotationScoring;
+        }
     }
 }

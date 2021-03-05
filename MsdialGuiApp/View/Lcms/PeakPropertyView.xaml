@@ -122,9 +122,9 @@
                             <TextBox Name="TextBox_PeakInformation_Formula" Height="25">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                                        <Setter Property="Text" Value="{Binding Formula, Mode=OneWay, StringFormat=F0}"/>
+                                        <Setter Property="Text" Value="{Binding Formula.FormulaString, Mode=OneWay, StringFormat=F0}"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Formula, TargetNullValue=''}" Value="" >
+                                            <DataTrigger Binding="{Binding Formula.FormulaString, TargetNullValue=''}" Value="" >
                                                 <Setter Property="Text" Value="NA"/>
                                             </DataTrigger>
                                         </Style.Triggers>

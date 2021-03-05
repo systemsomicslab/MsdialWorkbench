@@ -10,6 +10,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Parser;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
@@ -72,52 +73,69 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             var refiner = new LcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            alignments[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.8f) }, {1, BuildMsScanMatchResult(1, 0.2f) },
-            };
+            alignments[0].MatchResults.ClearMspResults();
+            alignments[0].MatchResults.AddMspResults(
+                alignments[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.8f) }, {1, BuildMsScanMatchResult(1, 0.2f) },
+                });
             alignments[0].Name = alignments[0].MspBasedMatchResult.Name;
-            alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.2f) }, {1, BuildMsScanMatchResult(1, 0.8f) },
-            };
+            alignments[1].MatchResults.ClearMspResults();
+            alignments[1].MatchResults.AddMspResults(
+                alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.2f) }, {1, BuildMsScanMatchResult(1, 0.8f) },
+                });
             alignments[1].Name = alignments[1].MspBasedMatchResult.Name;
-            alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.7f) }, {1, BuildMsScanMatchResult(1, 0.1f) },
-            };
+            alignments[2].MatchResults.ClearMspResults();
+            alignments[2].MatchResults.AddMspResults(
+                alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.7f) }, {1, BuildMsScanMatchResult(1, 0.1f) },
+                });
             alignments[2].Name = alignments[2].MspBasedMatchResult.Name;
-            alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.9f) }, {1, BuildMsScanMatchResult(1, 0.1f) }, {2, BuildMsScanMatchResult(2, 1.0f) },
-            };
+            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].MatchResults.AddMspResults(
+                alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.9f) }, {1, BuildMsScanMatchResult(1, 0.1f) }, {2, BuildMsScanMatchResult(2, 1.0f) },
+                });
             alignments[3].Name = alignments[3].MspBasedMatchResult.Name;
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
-            expects[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.8f) }, {1, BuildMsScanMatchResult(1, 0.2f) },
-            };
+            expects[0].MatchResults.ClearMspResults();
+            expects[0].MatchResults.AddMspResults(
+                expects[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.8f) }, {1, BuildMsScanMatchResult(1, 0.2f) },
+                });
             expects[0].Name = expects[0].MspBasedMatchResult.Name;
-            expects[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.2f) }, {1, BuildMsScanMatchResult(1, 0.8f) },
-            };
+            expects[1].MatchResults.ClearMspResults();
+            expects[1].MatchResults.AddMspResults(
+                expects[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.2f) }, {1, BuildMsScanMatchResult(1, 0.8f) },
+                });
             expects[1].Name = expects[1].MspBasedMatchResult.Name;
-            alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.7f) }, {1, BuildMsScanMatchResult(1, 0.1f) },
-            };
+            expects[2].MatchResults.ClearMspResults();
+            expects[2].MatchResults.AddMspResults(
+                expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.7f) }, {1, BuildMsScanMatchResult(1, 0.1f) },
+                });
             expects[2].Name = expects[2].MspBasedMatchResult.Name;
-            expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-            {
-                {0, BuildMsScanMatchResult(0, 0.9f) }, {1, BuildMsScanMatchResult(1, 0.1f) }, {2, BuildMsScanMatchResult(2, 1.0f) },
-            };
+            expects[3].MatchResults.ClearMspResults();
+            expects[3].MatchResults.AddMspResults(
+                expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
+                {
+                    {0, BuildMsScanMatchResult(0, 0.9f) }, {1, BuildMsScanMatchResult(1, 0.1f) }, {2, BuildMsScanMatchResult(2, 1.0f) },
+                });
             expects[3].Name = expects[3].MspBasedMatchResult.Name;
 
             expects[2].Name = string.Empty;
             expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[2].MatchResults.ClearMspResults();
 
             var actuals = refiner.Refine(alignments);
 
@@ -152,28 +170,37 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             var refiner = new LcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            alignments[0].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 100);
+            alignments[0].MatchResults.AddTextDbResult(
+                alignments[0].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 100));
             alignments[0].Name = alignments[0].TextDbBasedMatchResult.Name;
-            alignments[1].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.8f);
+            alignments[1].MatchResults.AddTextDbResult(
+                alignments[1].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.8f));
             alignments[1].Name = alignments[1].TextDbBasedMatchResult.Name;
-            alignments[2].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.9f);
+            alignments[2].MatchResults.AddTextDbResult(
+                alignments[2].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.9f));
             alignments[2].Name = alignments[2].TextDbBasedMatchResult.Name;
-            alignments[3].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 103);
+            alignments[3].MatchResults.AddTextDbResult(
+                alignments[3].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 103));
             alignments[3].Name = alignments[3].TextDbBasedMatchResult.Name;
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
-            expects[0].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 100);
+            expects[0].MatchResults.AddTextDbResult(
+                expects[0].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 100));
             expects[0].Name = expects[0].TextDbBasedMatchResult.Name;
-            expects[1].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.8f);
+            expects[1].MatchResults.AddTextDbResult(
+                expects[1].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.8f));
             expects[1].Name = expects[1].TextDbBasedMatchResult.Name;
-            expects[2].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.9f);
+            expects[2].MatchResults.AddTextDbResult(
+                expects[2].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 102, score: 0.9f));
             expects[2].Name = expects[2].TextDbBasedMatchResult.Name;
-            expects[3].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 103);
+            expects[3].MatchResults.AddTextDbResult(
+                expects[3].TextDbBasedMatchResult = BuildMsScanMatchResult(id: 103));
             expects[3].Name = expects[3].TextDbBasedMatchResult.Name;
 
             expects[1].Name = string.Empty;
             expects[1].TextDbBasedMatchResult = null;
+            expects[1].MatchResults.ClearTextDbResults();
 
             var actuals = refiner.Refine(alignments);
 
@@ -205,8 +232,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             var refiner = new LcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            foreach (var alignment in alignments) alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            foreach (var alignment in alignments) alignment.TextDbBasedMatchResult = null;
+            foreach (var alignment in alignments) {
+                alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+                alignment.MatchResults.ClearMspResults();
+            }
+            foreach (var alignment in alignments) {
+                alignment.TextDbBasedMatchResult = null;
+                alignment.MatchResults.ClearTextDbResults();
+            }
             alignments[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
             {
                 BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
@@ -239,8 +272,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
 
             var expects = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            foreach (var expect in expects) expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            foreach (var expect in expects) expect.TextDbBasedMatchResult = null;
+            foreach (var expect in expects) {
+                expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+                expect.MatchResults.ClearMspResults();
+            }
+            foreach (var expect in expects) {
+                expect.TextDbBasedMatchResult = null;
+                expect.MatchResults.ClearTextDbResults();
+            }
             expects[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
             {
                 BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
@@ -307,8 +346,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             var refiner = new LcmsAlignmentRefiner(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            foreach (var alignment in alignments) alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            foreach (var alignment in alignments) alignment.TextDbBasedMatchResult = null;
+            foreach (var alignment in alignments) {
+                alignment.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+                alignment.MatchResults.ClearMspResults();
+            }
+            foreach (var alignment in alignments) {
+                alignment.TextDbBasedMatchResult = null;
+                alignment.MatchResults.ClearTextDbResults();
+            }
             alignments[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
             {
                 BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
@@ -341,8 +386,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
 
             var expects = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
-            foreach (var expect in expects) expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            foreach (var expect in expects) expect.TextDbBasedMatchResult = null;
+            foreach (var expect in expects) {
+                expect.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+                expect.MatchResults.ClearMspResults();
+            }
+            foreach (var expect in expects) {
+                expect.TextDbBasedMatchResult = null;
+                expect.MatchResults.ClearTextDbResults();
+            }
             expects[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
             {
                 BuildAlignmentChromPeakFeature(fileid: 0, peak: 10000), BuildAlignmentChromPeakFeature(fileid: 1, peak: 10000), 
@@ -412,25 +463,41 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
             var alignments = BatchBuildAlignmentSpotProperty(8, d_mass: -param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[0].MatchResults.ClearMspResults();
             alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[1].MatchResults.ClearMspResults();
             alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[2].MatchResults.ClearMspResults();
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[3].MatchResults.ClearMspResults();
 
             alignments[0].TextDbBasedMatchResult = null;
+            alignments[0].MatchResults.ClearTextDbResults();
             alignments[1].TextDbBasedMatchResult = null;
+            alignments[1].MatchResults.ClearTextDbResults();
             alignments[4].TextDbBasedMatchResult = null;
+            alignments[4].MatchResults.ClearTextDbResults();
             alignments[5].TextDbBasedMatchResult = null;
+            alignments[5].MatchResults.ClearTextDbResults();
 
             var expects = BatchBuildAlignmentSpotProperty(8, d_mass: -param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             expects[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[0].MatchResults.ClearMspResults();
             expects[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[1].MatchResults.ClearMspResults();
             expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[2].MatchResults.ClearMspResults();
             expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[3].MatchResults.ClearMspResults();
 
             expects[0].TextDbBasedMatchResult = null;
+            expects[0].MatchResults.ClearTextDbResults();
             expects[1].TextDbBasedMatchResult = null;
+            expects[1].MatchResults.ClearTextDbResults();
             expects[4].TextDbBasedMatchResult = null;
+            expects[4].MatchResults.ClearTextDbResults();
             expects[5].TextDbBasedMatchResult = null;
+            expects[5].MatchResults.ClearTextDbResults();
 
             expects.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
             for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
@@ -773,7 +840,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             alignments[2].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
             alignments[2].PeakCharacter.IsotopeWeightNumber = 1;
             alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[2].MatchResults.ClearMspResults();
             alignments[2].TextDbBasedMatchResult = null;
+            alignments[2].MatchResults.ClearTextDbResults();
             alignments[3].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
 
 
@@ -861,14 +930,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Adduct },
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.FoundInUpperMsMs },
             };
-            alignments[1].AdductType.AdductIonName = "[M+Na]+";
+            alignments[1].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[2].RepresentativeFileID = 2;
             alignments[2].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Isotope },
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Adduct },
             };
-            alignments[2].AdductType.AdductIonName = "[M+Na]+";
+            alignments[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[3].RepresentativeFileID = 3;
             alignments[3].AlignedPeakProperties[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
@@ -876,9 +945,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Adduct },
             };
             alignments[3].PeakCharacter.Charge = 1;
-            alignments[3].AlignedPeakProperties[1].PeakCharacter.AdductType.AdductIonName = "[M+2H]2+";
+            alignments[3].AlignedPeakProperties[1].PeakCharacter.AdductType = AdductIonParser.GetAdductIonBean("[M+2H]2+");
             alignments[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearMspResults();
+            alignments[3].MatchResults.ClearTextDbResults();
             alignments[4].RepresentativeFileID = 2;
             alignments[4].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
@@ -886,6 +957,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
             alignments[4].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[4].TextDbBasedMatchResult = null;
+            alignments[4].MatchResults.ClearMspResults();
+            alignments[4].MatchResults.ClearTextDbResults();
 
             var expects = BatchBuildAlignmentSpotProperty(5, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var expect in expects) expect.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
@@ -926,7 +999,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.FoundInUpperMsMs },
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.SameFeature },
             };
-            expects[1].AdductType.AdductIonName = "[M+Na]+";
+            expects[1].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[1].PeakCharacter.PeakGroupID = 0;
             expects[2].RepresentativeFileID = 2;
             expects[2].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
@@ -938,7 +1011,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.Adduct },
             };
-            expects[2].AdductType.AdductIonName = "[M+Na]+";
+            expects[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[2].PeakCharacter.PeakGroupID = 0;
             expects[3].RepresentativeFileID = 3;
             expects[3].AlignedPeakProperties[3].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
@@ -952,9 +1025,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.SameFeature },
             };
             expects[3].PeakCharacter.Charge = 1;
-            expects[3].AlignedPeakProperties[1].PeakCharacter.AdductType.AdductIonName = "[M+2H]2+";
+            expects[3].AlignedPeakProperties[1].PeakCharacter.AdductType = AdductIonParser.GetAdductIonBean("[M+2H]2+");
             expects[3].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[3].TextDbBasedMatchResult = null;
+            expects[3].MatchResults.ClearMspResults();
+            expects[3].MatchResults.ClearTextDbResults();
             expects[3].PeakCharacter.PeakGroupID = 0;
             expects[4].RepresentativeFileID = 2;
             expects[4].AlignedPeakProperties[2].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
@@ -971,6 +1046,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
             expects[4].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[4].TextDbBasedMatchResult = null;
+            expects[4].MatchResults.ClearMspResults();
+            expects[4].MatchResults.ClearTextDbResults();
             expects[4].PeakCharacter.PeakGroupID = 0;
 
             var actuals = refiner.Refine(alignments);
@@ -1011,15 +1088,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 }
             }
             foreach (var alignment in alignments) alignment.RepresentativeFileID = 1;
-            alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            alignments[1].TextDbBasedMatchResult = null;
-            alignments[2].TextDbBasedMatchResult = null;
             alignments[1].Name = alignments[2].Name = "Unknown";
+            alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[1].TextDbBasedMatchResult = null;
+            alignments[1].MatchResults.ClearMspResults();
+            alignments[1].MatchResults.ClearTextDbResults();
+            alignments[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[2].TextDbBasedMatchResult = null;
+            alignments[2].MatchResults.ClearMspResults();
+            alignments[2].MatchResults.ClearTextDbResults();
             foreach (var kvp in alignments[3].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
             foreach (var kvp in alignments[4].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
             alignments[3].TextDbBasedMatchResult = null;
+            alignments[3].MatchResults.ClearTextDbResults();
             alignments[4].TextDbBasedMatchResult = null;
+            alignments[4].MatchResults.ClearTextDbResults();
             alignments[3].Name = "w/o MS2: " + alignments[3].Name;
             alignments[4].Name = "w/o MS2: " + alignments[4].Name;
 
@@ -1055,15 +1138,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             }
             // Unknown
             expects[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
-            expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[1].TextDbBasedMatchResult = null;
-            expects[2].TextDbBasedMatchResult = null;
+            expects[1].MatchResults.ClearMspResults();
+            expects[1].MatchResults.ClearTextDbResults();
             expects[1].Name = expects[2].Name = "Unknown";
+            expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            expects[2].TextDbBasedMatchResult = null;
+            expects[2].MatchResults.ClearMspResults();
+            expects[2].MatchResults.ClearTextDbResults();
             // Suggested
             foreach (var kvp in expects[3].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
             foreach (var kvp in expects[4].MSRawID2MspBasedMatchResult) kvp.Value.IsSpectrumMatch = false;
             expects[3].TextDbBasedMatchResult = null;
+            expects[3].MatchResults.ClearTextDbResults();
             expects[4].TextDbBasedMatchResult = null;
+            expects[4].MatchResults.ClearTextDbResults();
             expects[3].Name = "w/o MS2: " + expects[3].Name;
             expects[4].Name = "w/o MS2: " + expects[4].Name;
 
@@ -1166,13 +1255,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 new LinkedPeakFeature {LinkedPeakID = 3, Character = PeakLinkFeatureEnum.Adduct },
             };
-            alignments[2].AdductType.AdductIonName = "[M+Na]+";
+            alignments[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[3].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.SameFeature },
             };
             alignments[4].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature> { };
-            alignments[4].AdductType.AdductIonName = "[M+Na]+";
+            alignments[4].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             alignments[5].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope },
@@ -1229,7 +1318,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 0, Character = PeakLinkFeatureEnum.CorrelSimilar },
             };
             expects[2].PeakCharacter.PeakGroupID = 1;
-            expects[2].AdductType.AdductIonName = "[M+Na]+";
+            expects[2].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[3].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.SameFeature },
@@ -1247,7 +1336,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 6, Character = PeakLinkFeatureEnum.Adduct },
             };
             expects[4].PeakCharacter.PeakGroupID = 2;
-            expects[4].AdductType.AdductIonName = "[M+Na]+";
+            expects[4].AdductType = AdductIonParser.GetAdductIonBean("[M+Na]+");
             expects[5].AlignedPeakProperties[0].PeakCharacter.PeakLinks = new List<LinkedPeakFeature>
             {
                 new LinkedPeakFeature {LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope },
@@ -1376,20 +1465,22 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
         }
 
         AlignmentSpotProperty BuildAlignmentSpotProperty(int id = 0, double d_mass = 0, double d_time = 0) {
+            var mspResults = new Dictionary<int, MsScanMatchResult>
+            {
+                {0, BuildMsScanMatchResult(0, 0.1f) },
+                {1, BuildMsScanMatchResult(1, 0.3f) },
+                {2, BuildMsScanMatchResult(2, 0.9f) },
+                {3, BuildMsScanMatchResult(3, 0.5f) },
+            };
+            var textDbResult = BuildMsScanMatchResult(id: 5);
             var result = new AlignmentSpotProperty
             {
                 MasterAlignmentID = id, AlignmentID = id, RepresentativeFileID = 2,
                 MassCenter = 100 + d_mass, TimesCenter = new ChromXs(20 + d_time),
-                MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>
-                {
-                    {0, BuildMsScanMatchResult(0, 0.1f) },
-                    {1, BuildMsScanMatchResult(1, 0.3f) },
-                    {2, BuildMsScanMatchResult(2, 0.9f) },
-                    {3, BuildMsScanMatchResult(3, 0.5f) },
-                },
-                TextDbBasedMatchResult = BuildMsScanMatchResult(id:5),
+                MSRawID2MspBasedMatchResult = mspResults,
+                TextDbBasedMatchResult = textDbResult,
                 PeakCharacter = BuildIonFeatureCharacter(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
                 AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                 {
@@ -1401,6 +1492,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             };
             result.Name = result.TextDbBasedMatchResult.Name;
             result.HeightAverage = (float)result.AlignedPeakProperties.Average(peak => peak.PeakHeightTop);
+            result.MatchResults.AddMspResults(mspResults);
+            result.MatchResults.AddTextDbResult(textDbResult);
             return result;
         }
 
@@ -1421,7 +1514,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 IsotopeWeightNumber = weight, Charge = charge,
                 PeakLinks = new List<LinkedPeakFeature>(),
-                AdductType = new AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
             };
         }
         #endregion

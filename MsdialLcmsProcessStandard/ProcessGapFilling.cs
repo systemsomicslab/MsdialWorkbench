@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using CompMs.RawDataHandler.Core;
@@ -31,7 +32,7 @@ namespace Msdial.Lcms.DataProcess
             int flag = 0;
 
             var dt = projectProp.ProjectDate;
-            var dirname = projectProp.ProjectFolderPath + "\\" + "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder";
+            var dirname = System.IO.Path.Combine(projectProp.ProjectFolderPath, "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder");
             if (!System.IO.Directory.Exists(dirname))
                 System.IO.Directory.CreateDirectory(dirname);
 
@@ -100,7 +101,7 @@ namespace Msdial.Lcms.DataProcess
 
                         
                     }
-                    var filename = dirname + "\\peaklist_" + i + ".pll";
+                    var filename = Path.Combine(dirname, "peaklist_" + i + ".pll");
                     AlignedEic.WritePeakList(alignedPeakSpotInfoList, projectProp, filename);
                 }
                 if (flag == 0) flag = 1;
@@ -130,7 +131,7 @@ namespace Msdial.Lcms.DataProcess
             int flag = 0;
 
             var dt = projectProperty.ProjectDate;
-            var dirname = projectProperty.ProjectFolderPath + "\\" + "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder";
+            var dirname = System.IO.Path.Combine(projectProperty.ProjectFolderPath, "project_" + dt.Year + "_" + dt.Month + "_" + dt.Day + "_" + dt.Hour + "_" + dt.Minute + "_" + dt.Second + "_tmpFolder");
             if (!System.IO.Directory.Exists(dirname))
                 System.IO.Directory.CreateDirectory(dirname);
 
@@ -244,7 +245,7 @@ namespace Msdial.Lcms.DataProcess
 
                     }
 
-                    var filename = dirname + "\\peaklist_" + i + ".pll";
+                    var filename = Path.Combine(dirname, "peaklist_" + i + ".pll");
                     AlignedEic.WritePeakList(alignedPeakSpotInfoList, projectProperty, filename);
                 }
 

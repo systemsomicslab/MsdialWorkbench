@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.Utility
                 { MachineCategory.LCMS, new MsdialLcMsApi.Parser.MsdialLcmsSerializer() },
                 { MachineCategory.IFMS, new MsdialDimsCore.Parser.MsdialDimsSerializer() },
                 { MachineCategory.LCIMMS, new MsdialLcImMsApi.Parser.MsdialLcImMsSerializer() },
+                { MachineCategory.IMMS, new MsdialImmsCore.Parser.MsdialImmsSerializer() },
             };
         }
 
@@ -27,14 +28,11 @@ namespace CompMs.App.Msdial.Utility
 
         // UNDONE: temporary method. (should not deserialize twice)
         private static MachineCategory ResolveProjectType(string path) {
-            MsdialDataStorage storage;
-            foreach (var serializer in serializers.Values) {
-                try {
-                    storage = serializer.LoadMsdialDataStorageBase(path);
-                    return storage.ParameterBase.MachineCategory;
-                }
-                catch (System.InvalidOperationException) {
-                }
+            try {
+                var storage = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<MsdialDataStorage>(path);
+                return storage.ParameterBase.MachineCategory;
+            }
+            catch (System.InvalidOperationException) {
             }
             throw new System.Runtime.Serialization.SerializationException("Invalid file format.");
         }

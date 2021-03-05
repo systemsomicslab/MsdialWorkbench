@@ -197,22 +197,22 @@ namespace CompMs.Common.Parser {
             //if (queries[0].IonMode != mspRecord.IonMode) return false;
             if (mspRecord.IonMode != ionMode) return false;
             if (ionMode == IonMode.Negative) {
-                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.AdductIonName == "[M+HCOO]-") {
+                if (solventType == SolventType.CH3COONH4 && mspRecord.AdductType.IsFA) {
                     return false;
                 }
-                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.AdductIonName == "[M+CH3COO]-") {
+                else if (solventType == SolventType.HCOONH4 && mspRecord.AdductType.IsHac) {
                     return false;
                 }
             }
             if (mspRecord.CompoundClass == "Others" || mspRecord.CompoundClass == "Unknown" || mspRecord.CompoundClass == "SPLASH") {
                 return true;
             }
-            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.AdductIonName)) return true;
+            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) return true;
             return false;
         }
 
         private static bool queryCheck(MoleculeMsReference mspRecord, List<string> queries) {
-            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.AdductIonName)) return true;
+            if (queries.Contains(mspRecord.CompoundClass + "_" + mspRecord.AdductType.ToString())) return true;
             return false;
         }
 
@@ -445,7 +445,7 @@ namespace CompMs.Common.Parser {
                 var converted = string.Concat(
                   filename.Select(c => invalidChars.Contains(c) ? '_' : c));
 
-                var filepath = folderpath + "\\" + counter.ToString("0000") + "_" + converted + ".msp";
+                var filepath = Path.Combine(folderpath, counter.ToString("0000") + "_" + converted + ".msp");
                 using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
                     writeMspFields(record, sw);
                 }
@@ -456,7 +456,7 @@ namespace CompMs.Common.Parser {
         private static void writeMspFields(MoleculeMsReference record, StreamWriter sw) {
 
             var adducttype = string.Empty;
-            if (record.AdductType == null || record.AdductType.AdductIonName == null || record.AdductType.AdductIonName == string.Empty) {
+            if (record.AdductType == null || !record.AdductType.HasAdduct) {
                 if (record.IonMode == IonMode.Positive) {
                     adducttype = "[M+H]+";
                 }

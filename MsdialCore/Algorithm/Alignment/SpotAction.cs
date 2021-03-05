@@ -52,12 +52,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // if spot.Name is based on msp match result.
             if (spot.Name == mspdb.Name && spot.Name != textdb.Name) {
-                spot.AdductType.AdductIonName = string.Empty;
+                spot.AdductType.Unset();
                 spot.PeakCharacter.Charge = 1;
                 spot.Name = string.Empty;
             }
 
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, Common.DataObj.Result.MsScanMatchResult>();
+            spot.MatchResults.ClearMspResults();
         }
     }
 
@@ -94,12 +95,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             // if spot.Name is based on text db match result.
             if (spot.Name == textdb.Name && spot.Name != mspdb.Name) {
-                spot.AdductType.AdductIonName = string.Empty;
+                spot.AdductType.Unset();
                 spot.PeakCharacter.Charge = 1;
                 spot.Name = string.Empty;
             }
 
             spot.TextDbBasedMatchResult = null;
+            spot.MatchResults.ClearTextDbResults();
         }
     }
 

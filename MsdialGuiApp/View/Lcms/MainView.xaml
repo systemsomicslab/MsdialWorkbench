@@ -191,6 +191,9 @@
 
                     <local:SurveyScanView DataContext="{Binding AnalysisVM}"
                                           MassAxis="{StaticResource MassAxis}"
+                                          Spectrum="{Binding Ms1Spectrum}"
+                                          SplashKey="{Binding Ms1SplashKey}"
+                                          MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
                                           Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 

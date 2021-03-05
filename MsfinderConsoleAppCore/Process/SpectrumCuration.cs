@@ -167,9 +167,9 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
                 foreach (var rawdata in rawdatas) {
                     counter++;
-                    if (rawdata.InchiKey.Split('-')[0] == "USNPULRDBDVJAO") {
-                        Console.WriteLine();
-                    }
+                    //if (rawdata.InchiKey.Split('-')[0] == "USNPULRDBDVJAO") {
+                    //    Console.WriteLine();
+                    //}
 
                     var formulaResult = MolecularFormulaFinder.GetMolecularFormulaList(this.productIonDB, this.neutralLossDB, this.existFormulaDB, rawdata, this.param);
                    

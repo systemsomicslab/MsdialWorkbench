@@ -352,7 +352,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             maxChromIntensity = double.MinValue;
             minChromIntensity = double.MaxValue;
             ssPeaklist = Smoothing.LinearWeightedMovingAverage(Smoothing.LinearWeightedMovingAverage(peaklist, 1), 1);
-            baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 30), 30);
+            baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 10), 10);
             baselineCorrectedPeaklist = new List<ChromatogramPeak>();
 
             var amplitudeDiffs = new List<double>();

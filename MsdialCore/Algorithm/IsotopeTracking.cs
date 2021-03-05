@@ -266,10 +266,12 @@ namespace CompMs.MsdialCore.Algorithm
 
         private static void setDefaultCompoundInformation(AlignmentSpotProperty alignmentSpot)
         {
-
             alignmentSpot.MSRawID2MspBasedMatchResult = new Dictionary<int, Common.DataObj.Result.MsScanMatchResult>();
             alignmentSpot.TextDbBasedMatchResult = null;
-            alignmentSpot.AdductType.AdductIonName = string.Empty;
+            alignmentSpot.MatchResults.ClearResults();
+            alignmentSpot.MatchResults.ClearMspResults();
+            alignmentSpot.MatchResults.ClearTextDbResults();
+            alignmentSpot.AdductType.Unset();
             alignmentSpot.Name = string.Empty;
         }
 
@@ -569,6 +571,8 @@ namespace CompMs.MsdialCore.Algorithm
         private static void setToAlignmentProperty(AlignmentSpotProperty spot, MoleculeMsReference query, MsScanMatchResult result)
         {
             spot.TextDbBasedMatchResult = result;
+            result.Priority = DataBasePriority.TextDB;
+            spot.MatchResults.AddTextDbResult(result);
             spot.Formula = query.Formula;
             spot.AdductType = query.AdductType;
         }

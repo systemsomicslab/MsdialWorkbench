@@ -51,6 +51,17 @@ namespace CompMs.MsdialCore.DataObj
             ChromXsRight = new ChromXs(chromRight);
         }
 
+        public ChromatogramPeakInfo(int id, IEnumerable<IChromatogramPeak> chromatogram, ChromX chromTop, ChromX chromLeft, ChromX chromRight) {
+            var chroms = chromatogram?.ToList() ?? new List<IChromatogramPeak>();
+            chroms.Sort((a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
+            Chromatogram = new ReadOnlyCollection<IChromatogramPeak>(chroms);
+
+            FileID = id;
+            ChromXsTop = new ChromXs(chromTop.Value, chromTop.Type, chromTop.Unit);
+            ChromXsLeft = new ChromXs(chromLeft.Value, chromLeft.Type, chromLeft.Unit);
+            ChromXsRight = new ChromXs(chromRight.Value, chromRight.Type, chromLeft.Unit);
+        }
+
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;

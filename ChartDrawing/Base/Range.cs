@@ -8,12 +8,17 @@ namespace CompMs.Graphics.Core.Base
     [TypeConverter(typeof(RangeTypeConverter))]
     public class Range
     {
-        public AxisValue Minimum { get; set; }
-        public AxisValue Maximum { get; set; }
+        public AxisValue Minimum { get; private set; }
+        public AxisValue Maximum { get; private set; }
 
         public Range(AxisValue minimum, AxisValue maximum) {
             Minimum = minimum;
             Maximum = maximum;
+        }
+
+        public bool Contains(AxisValue value)
+        {
+            return Minimum <= value && value <= Maximum;
         }
     }
 

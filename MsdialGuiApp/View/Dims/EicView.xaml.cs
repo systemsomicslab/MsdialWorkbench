@@ -21,11 +21,12 @@ namespace CompMs.App.Msdial.View.Dims
     /// </summary>
     public partial class EicView : UserControl
     {
-        public static readonly DependencyProperty MzAxisProperty = DependencyProperty.Register(nameof(MzAxis), typeof(AxisManager), typeof(EicView));
+        public static readonly DependencyProperty MassAxisProperty =
+            DependencyProperty.Register(nameof(MassAxis), typeof(IAxisManager), typeof(EicView));
 
-        public AxisManager MzAxis {
-            get => (AxisManager)GetValue(MzAxisProperty);
-            set => SetValue(MzAxisProperty, value);
+        public IAxisManager MassAxis {
+            get => (IAxisManager)GetValue(MassAxisProperty);
+            set => SetValue(MassAxisProperty, value);
         }
 
         public EicView() {

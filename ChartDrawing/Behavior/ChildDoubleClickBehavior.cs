@@ -42,10 +42,10 @@ namespace CompMs.Graphics.Behavior
 
         static void OnIsEnableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is Control control) {
-                if ((bool)e.NewValue)
-                    OnAttached(control);
                 if ((bool)e.OldValue)
                     OnDetaching(control);
+                if ((bool)e.NewValue)
+                    OnAttached(control);
             }
         }
 

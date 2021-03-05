@@ -20,6 +20,8 @@ using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialCore.Parser;
 using CompMs.App.MsdialConsole.Export;
+using CompMs.MsdialGcMsApi.Algorithm.Alignment;
+using CompMs.Common.DataObj.Database;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -99,9 +101,11 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
 
+            CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _);
+
             var container = new MsdialDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-                MspDB = mspDB, ParameterBase = param
+                MspDB = mspDB, ParameterBase = param, IupacDatabase = iupacDB, IsotopeTextDB = isotopeTextDB, TextDB = txtDB
             };
 
             Console.WriteLine("Start processing..");
@@ -176,6 +180,13 @@ namespace CompMs.App.MsdialConsole.Process
 
                 ResultExporter.ExportChromPeakFeatures(file, outputFolder, container, null, chromPeakFeatures, msdecResults);
             }
+
+            var alignmentFile = container.AlignmentFiles.First();
+            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.ParameterBase as MsdialGcmsParameter, container.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, null);
+
+            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             new MsdialGcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }

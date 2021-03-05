@@ -35,9 +35,9 @@ namespace Msdial.Gcms.Dataprocess.Utility
 
 
             using (var rawDataAccess = new RawDataAccess(filepath, measurementID, true)) {
-                Console.WriteLine("open stream: {0}", sw.ElapsedMilliseconds);
+                //Console.WriteLine("open stream: {0}", sw.ElapsedMilliseconds);
                 var mes = rawDataAccess.GetMeasurement();
-                Console.WriteLine("got functions: {0}", sw.ElapsedMilliseconds);
+                //Console.WriteLine("got functions: {0}", sw.ElapsedMilliseconds);
                 peaklist = GetMs1SlicePeaklist(mes.SpectrumList, targetMz, mzTolerance, rtBegin, rtEnd, ionmode);
             }
             sw.Stop();

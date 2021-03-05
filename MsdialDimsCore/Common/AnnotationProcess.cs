@@ -5,17 +5,17 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialDimsCore.Common {
@@ -51,49 +51,66 @@ namespace CompMs.MsdialDimsCore.Common {
             ChromatogramPeakFeature feature, MSDecResult msdecResult,
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsRefSearchParameterBase param, TargetOmics omics,
+            IReadOnlyList<IsotopicPeak> isotopes
+            ) {
+            var mspAnnotator = new DimsMspAnnotator(mspDB, param, omics);
+            Run(feature, msdecResult, mspAnnotator, textDB, param, isotopes, omics);
+        }
+
+        public static void Run(
+            ChromatogramPeakFeature feature, MSDecResult msdecResult,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, List<MoleculeMsReference> textDB,
+            MsRefSearchParameterBase param,
             IReadOnlyList<IsotopicPeak> isotopes,
-            out List<MsScanMatchResult> mspResults, out List<MsScanMatchResult> textResults
+            TargetOmics omics
             ) {
 
-            var mz = feature.PrecursorMz;
-            var ms1Tol = param.Ms1Tolerance;
-            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-            #region // practical parameter changes
-            if (mz > 500) {
-                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(mz, ppm);
-            }
-            #endregion
-
-            mspResults = new List<MsScanMatchResult>();
-            textResults = new List<MsScanMatchResult>();
-
-            if (mspDB != null)
+            if (mspAnnotator != null)
             {
-                Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = null;
+                var results = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, param)
+                    .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
+                    .Where(candidate => candidate.TotalScore >= param.TotalScoreCutoff)
+                    .ToList();
                 if (omics == TargetOmics.Lipidomics)
-                    getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
-                else if (omics == TargetOmics.Metabolomics)
-                    getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
-
-                mspResults = GetMatchResults(mspDB, feature.Mass, ms1Tol, getMatchResult).ToList();
-                feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = mspResults.Select(result => result.LibraryIDWhenOrdered).ToList();
-                if (mspResults.Count > 0)
+                    results = results.Where(
+                        candidate =>
+                            candidate.IsLipidClassMatch
+                            || candidate.IsLipidChainsMatch
+                            || candidate.IsLipidPositionMatch
+                            || candidate.IsOtherLipidMatch)
+                        .ToList();
+                feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
+                if (results.Count > 0)
                 {
-                    var best = mspResults.Argmax(result => result.TotalScore);
+                    var best = results.Argmax(result => result.TotalScore);
                     feature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
-                    DataAccess.SetMoleculeMsProperty(feature, mspDB[best.LibraryIDWhenOrdered], best);
+                    feature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
+                    DataAccess.SetMoleculeMsProperty(feature, mspAnnotator.Refer(best), best);
                 }
             }
 
             if (textDB != null)
             {
+                var mz = feature.PrecursorMz;
+                var ms1Tol = param.Ms1Tolerance;
+                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
+                #region // practical parameter changes
+                if (mz > 500) {
+                    ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(mz, ppm);
+                }
+                #endregion
+
                 Func<MoleculeMsReference, MsScanMatchResult> getMatchResult =
                     refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
-                textResults = GetMatchResults(textDB, feature.Mass, ms1Tol, getMatchResult).Where(result => result.IsPrecursorMzMatch).ToList();
-                feature.TextDbIDs = textResults.Select(result => result.LibraryIDWhenOrdered).ToList();
-                if (textResults.Count > 0)
+                var results = GetMatchResults(textDB, feature.Mass, ms1Tol, getMatchResult).Where(result => result.IsPrecursorMzMatch).ToList();
+                feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
+                foreach (var result in results) {
+                    result.Priority = DataBasePriority.TextDB;
+                    feature.MatchResults.AddTextDbResult(result);
+                }
+                if (results.Count > 0)
                 {
-                    var best = textResults.Argmax(result => result.TotalScore);
+                    var best = results.Argmax(result => result.TotalScore);
                     feature.TextDbBasedMatchResult = best;
                     DataAccess.SetMoleculeMsProperty(feature, textDB[best.LibraryIDWhenOrdered], best, true);
                 }

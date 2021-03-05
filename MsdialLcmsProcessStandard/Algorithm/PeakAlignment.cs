@@ -1177,7 +1177,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             var alignedSpots = alignmentResultBean.AlignmentPropertyBeanCollection;
 
-            Console.WriteLine("Calculating basic properties");
+            //Console.WriteLine("Calculating basic properties");
             for (int i = 0; i < alignedSpots.Count; i++)
             {
                 setBasicAlignmentProperties(alignedSpots[i], i, param, out minInt, out maxInt, out fileIdOfMaxIntensity, out fileIdOfMaxIntensityWithMSMS, out fileIdOfMaxTotalScore, out fileIdOfMaxTotalScoreWithMSMS);
@@ -1279,6 +1279,10 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 //spot.PostDefinedIsotopeWeightNumber = 0;
                 #region
                 if ((spot.LibraryID >= 0 || spot.PostDefinedAdductParentID >= 0) && !spot.MetaboliteName.Contains("w/o")) { //identified metabolite must be defined as mono isotopic ions.
+                    spot.PostDefinedIsotopeParentID = spot.AlignmentID;
+                    spot.PostDefinedIsotopeWeightNumber = 0;
+                }
+                else if ((spot.PostIdentificationLibraryID >= 0 || spot.PostDefinedAdductParentID >= 0) && (spot.AdductIonName != null && spot.AdductIonName != string.Empty)) { //identified metabolite must be defined as mono isotopic ions.
                     spot.PostDefinedIsotopeParentID = spot.AlignmentID;
                     spot.PostDefinedIsotopeWeightNumber = 0;
                 }
@@ -1833,7 +1837,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             alignmentProperty.CentralRetentionTime = (float)(sumRt / countFill);
             //alignmentProperty.CentralAccurateMass = (float)(sumMass / countFill);
             alignmentProperty.CentralAccurateMass = (float)maxIntMz;
-            alignmentProperty.AverageValiable = (int)(sumInt / countFill);
+            alignmentProperty.AverageValiable = (float)(sumInt / countFill);
             alignmentProperty.AveragePeakWidth = (float)(sumPeakWidth / countFill);
             alignmentProperty.FillParcentage = (float)countFill / (float)alignedPeakCollection.Count;
             alignmentProperty.MonoIsotopicPercentage = (float)countMonoIsotopic / (float)countFill;

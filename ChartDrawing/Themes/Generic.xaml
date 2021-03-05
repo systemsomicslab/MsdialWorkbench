@@ -1,6 +1,9 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:control="clr-namespace:CompMs.Graphics.Controls" >
+                    xmlns:chart="clr-namespace:CompMs.Graphics.Chart"
+                    xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis"
+                    xmlns:control="clr-namespace:CompMs.Graphics.Controls"
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI">
 
     <!--FileOpenControl-->
     <Style TargetType="{x:Type control:FileOpenControl}">
@@ -81,6 +84,83 @@
                                 VerticalAlignment="Center"
                                 Template="{StaticResource simpleSlider}"
                                 Margin="10,0,0,0"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:LabeledContent}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:LabeledContent}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{TemplateBinding PrependLabel}" />
+                        <ContentPresenter />
+                        <Label Content="{TemplateBinding AppendLabel}" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:SimpleChartControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontStyle" Value="Italic"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>                           
+                        </Grid.Resources>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,0,0,1"
+                                Grid.Row="0" Grid.Column="2">
+                            <ContentPresenter/>
+                        </Border>
+
+                        <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="1,0,0,0"
+                                                    Grid.Row="1" Grid.RowSpan="2" Grid.Column="2"/>
+                        <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                                  HorizontalAxis="{x:Null}"
+                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                  Margin="0,0,0,1"
+                                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                        <TextBlock Text="{TemplateBinding HorizontalTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="2" Grid.Column="2"/>
+                        <TextBlock Text="{TemplateBinding VerticalTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="-90"/>
+                                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                                </TransformGroup>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

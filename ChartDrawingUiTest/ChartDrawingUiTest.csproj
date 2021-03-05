@@ -71,6 +71,14 @@
       <DependentUpon>Bar1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bar\BarVM1.cs" />
+    <Compile Include="Chart\ChartUpdate.xaml.cs">
+      <DependentUpon>ChartUpdate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\ChartUpdateVM.cs" />
+    <Compile Include="Chart\SimpleChart1.xaml.cs">
+      <DependentUpon>SimpleChart1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\SimpleChartVM1.cs" />
     <Compile Include="Controls\FileOpenControl1.xaml.cs">
       <DependentUpon>FileOpenControl1.xaml</DependentUpon>
     </Compile>
@@ -94,6 +102,10 @@
     <Compile Include="LineSpectrum\LineSpectrum1.xaml.cs">
       <DependentUpon>LineSpectrum1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LineSpectrum\LineSpectrum2.xaml.cs">
+      <DependentUpon>LineSpectrum2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LineSpectrum\LineSpectrumVM2.cs" />
     <Compile Include="Scatter\Scatter3.xaml.cs">
       <DependentUpon>Scatter3.xaml</DependentUpon>
     </Compile>
@@ -102,14 +114,30 @@
     </Compile>
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
+    <Compile Include="UI\DependencyPropertyTest.xaml.cs">
+      <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\DPControl.cs" />
     <Compile Include="UI\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TestControl.cs" />
+    <Compile Include="UI\TestPage.xaml.cs">
+      <DependentUpon>TestPage.xaml</DependentUpon>
     </Compile>
     <Page Include="AreaChart\AreaChart1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Bar\Bar1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\ChartUpdate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\SimpleChart1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -141,6 +169,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="LineSpectrum\LineSpectrum2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -164,7 +196,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\DependencyPropertyTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\RangeSlider.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\TestPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

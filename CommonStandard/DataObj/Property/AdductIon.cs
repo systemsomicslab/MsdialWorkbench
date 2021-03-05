@@ -35,6 +35,40 @@ namespace CompMs.Common.DataObj.Property {
         [Key(9)]
         public bool IsIncluded { get; set; } // used for applications
 
+        [IgnoreMember]
+        public bool HasAdduct => !string.IsNullOrEmpty(AdductIonName);
+        [IgnoreMember]
+        public bool IsFA => AdductIonName == "[M+HCOO]-" || AdductIonName == "[M+FA-H]-";
+        [IgnoreMember]
+        public bool IsHac => AdductIonName == "[M+CH3COO]-" || AdductIonName == "[M+Hac-H]-";
+
+        // UNDONE: replace 'A.AdductIonName = B.AdductIonName' to 'A.Set(B)' and 'AdductIonName = string.Empty' to 'A.Unset()'
+        // this method should (un)set other properties?
+        public void Set(AdductIon other) {
+            AdductIonName = other.AdductIonName;
+        }
+
+        public void Unset() {
+            AdductIonName = string.Empty;
+        }
+
+        public void SetStandard(int charge, IonMode ion) {
+            switch (ion) {
+                case IonMode.Positive:
+                    if (charge >= 2)
+                        AdductIonName = $"[M+{charge}H]{charge}+";
+                    else
+                        AdductIonName = "[M+H]+";
+                    break;
+                case IonMode.Negative:
+                    if (charge >= 2)
+                        AdductIonName = $"[M-{charge}H]{charge}-";
+                    else
+                        AdductIonName = "[M-H]-";
+                    break;
+            }
+        }
+
         public override string ToString() {
             return AdductIonName;
         }

@@ -392,12 +392,12 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             var resultArray = GetMatchedPeaksScores(msScanProp, molMsRef, bin, massBegin, massEnd); // [0] matched ratio [1] matched count
             var compClass = molMsRef.CompoundClass;
-            var adductname = molMsRef.AdductType.AdductIonName;
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
                 if (molecule == null || molecule.Adduct == null) return resultArray;
-                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3) return resultArray;
+                //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3) return resultArray;
+                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
                 if (result != null) {
@@ -442,7 +442,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             // the bonus 0.5 is added to the normal presence score
 
             var compClass = molMsRef.CompoundClass;
-            var adductname = molMsRef.AdductType.AdductIonName;
             var comment = molMsRef.Comment;
            
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
@@ -1118,8 +1117,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DSMSE:
                     return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
-
-
+                //add20210216
+                case LbmClass.GPNAE:
+                    return LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.MGMG:
+                    return LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
+                case LbmClass.DGMG:
+                    return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }

@@ -657,6 +657,18 @@ namespace CompMs.Common.Lipidomics {
                     case LbmClass.DSMSE:
                         return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                    //add20210216
+                    case LbmClass.GPNAE:
+                        return LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    case LbmClass.MGMG:
+                        return LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    case LbmClass.DGMG:
+                        return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                    default:
+                        return null;
 
 
                 }
@@ -668,11 +680,11 @@ namespace CompMs.Common.Lipidomics {
 
                 if (result != null && result.AnnotationLevel == 2)
                 {
-                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
+                    //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
                 }
                 else
                 {
-                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
+                    //Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
                 }
             }
 

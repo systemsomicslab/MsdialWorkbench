@@ -123,18 +123,18 @@ namespace Riken.Metabolomics.StructureFinder.Utility
                 errorMessage = "ExplicitHydrogenAdder was not passed.";
                 return null;
             }
-            Console.WriteLine("ok1");
+            //Console.WriteLine("ok1");
             var acidicProtons = new List<AcidicProton>();
             var methoxymOxigens = new List<MethoxymOxigen>();
             var atomBondsDict = MoleculeConverter.GetAtomBondsDictionary(atomContainer); // get atom to bonds dictionary
-            Console.WriteLine("ok2");
+           // Console.WriteLine("ok2");
 
             var numberedContainer = moleculeNumberingWithReactionPlaceCount(atomContainer, atomBondsDict, out acidicProtons, out methoxymOxigens);
-            Console.WriteLine("ok3");
+            //Console.WriteLine("ok3");
 
             if (acidicProtons.Count < tmsCount || methoxymOxigens.Count < meoxCount) return null;
             var derivatizedContainer = ConvertToDerivatizedCompound(numberedContainer, atomBondsDict, acidicProtons, methoxymOxigens, tmsCount, meoxCount);
-            Console.WriteLine("ok4");
+           // Console.WriteLine("ok4");
 
             return derivatizedContainer;
         }

@@ -352,7 +352,7 @@ namespace Common.BarChart
         private void drawGraphTitle(string graphTitle)
         {
             this.formattedText = new FormattedText(graphTitle, CultureInfo.GetCultureInfo("en-us"), 
-                FlowDirection.LeftToRight, new Typeface("Calibri"), 15, Brushes.Black);
+                FlowDirection.LeftToRight, new Typeface("Calibri"), 15, Brushes.Black); // 30 > temp, 15 > default
             this.formattedText.TextAlignment = TextAlignment.Left;
             //this.drawingContext.DrawText(formattedText, new Point(this.barChartUI.LeftMargin, this.barChartUI.TopMargin - 17));
             this.drawingContext.DrawText(formattedText, new Point(15, -2));

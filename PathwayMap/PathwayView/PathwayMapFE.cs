@@ -116,7 +116,7 @@ namespace Riken.Metabolomics.Pathwaymap
                 var edgeTargetXY = new Point();
                 var sourceAngle = 0.0;
                 var targetAngle = 0.0;
-                Console.WriteLine(edge.TargetArrow + "\t" + edge.SourceArrow);
+                //Console.WriteLine(edge.TargetArrow + "\t" + edge.SourceArrow);
 
                 setEdgeProperties(edge, out edgeSourceXY, out edgeTargetXY, out sourceAngle, out targetAngle);
                 edge.SourceX = (float)edgeSourceXY.X;

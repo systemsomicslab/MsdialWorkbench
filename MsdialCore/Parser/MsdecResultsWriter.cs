@@ -239,8 +239,9 @@ namespace CompMs.MsdialCore.Parser {
 
 
         public static void WriteHeaders(FileStream fs, List<long> seekPointer, int totalPeakNumber, bool isAnnotationInfoIncluded = false) {
+#if DEBUG
             Console.WriteLine("Writing deconvolution file: " + fs.Name + " (Ver: DC" + DCL_VERSION, "INFO");
-
+#endif
             //first header
             seekPointer.Add(fs.Position);
             fs.Write(Encoding.ASCII.GetBytes("DC"), 0, 2);
@@ -263,6 +264,6 @@ namespace CompMs.MsdialCore.Parser {
             for (int i = 3; i < seekPointer.Count; i++)
                 fs.Write(BitConverter.GetBytes(seekPointer[i]), 0, 8);
         }
-        #endregion
+#endregion
     }
 }

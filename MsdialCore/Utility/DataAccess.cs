@@ -7,8 +7,8 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
-using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
@@ -18,8 +18,6 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace CompMs.MsdialCore.Utility {
     public sealed class DataAccess {
@@ -281,7 +279,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatograms
-        public static List<ChromatogramPeak> GetMs1Peaklist(List<RawSpectrum> spectrumList, double targetMass, double ms1Tolerance, IonMode ionmode,
+        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, double targetMass, double ms1Tolerance, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
@@ -341,7 +339,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
 
-        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(List<RawSpectrum> spectrumList, double precursorMz,
+        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(IReadOnlyList<RawSpectrum> spectrumList, double precursorMz,
             int startScanID, int endScanID, List<double> productMzList, ParameterBase param, double targetCE = -1,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             var chromPeakslist = new List<List<ChromatogramPeak>>();
@@ -353,7 +351,7 @@ namespace CompMs.MsdialCore.Utility {
             return chromPeakslist;
         }
 
-        public static List<ChromatogramPeak> GetMs2Peaklist(List<RawSpectrum> spectrumList,
+        public static List<ChromatogramPeak> GetMs2Peaklist(IReadOnlyList<RawSpectrum> spectrumList,
             double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
@@ -810,12 +808,18 @@ namespace CompMs.MsdialCore.Utility {
                 return spectra;
         }
 
-        public static List<SpectrumPeak> GetCentroidMassSpectra(List<RawSpectrum> spectrumList, MSDataType dataType,
+        public static List<SpectrumPeak> GetCentroidMassSpectra(IReadOnlyList<RawSpectrum> spectrumList, MSDataType dataType,
             int msScanPoint, float amplitudeThresh, float mzBegin, float mzEnd) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
 
+            return GetCentroidMassSpectra(spectrumList[msScanPoint], dataType, amplitudeThresh, mzBegin, mzEnd);
+        }
+
+        public static List<SpectrumPeak> GetCentroidMassSpectra(RawSpectrum spectrum, MSDataType dataType,
+            float amplitudeThresh, float mzBegin, float mzEnd) {
+            if (spectrum == null) return new List<SpectrumPeak>();
+
             var spectra = new List<SpectrumPeak>();
-            var spectrum = spectrumList[msScanPoint];
             var massSpectra = spectrum.Spectrum;
 
             for (int i = 0; i < massSpectra.Length; i++) {
@@ -903,7 +907,7 @@ namespace CompMs.MsdialCore.Utility {
                 rtRight = rt + rtRange;
             }
             if (rt - rtLeft > rtRange) {
-                Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
+                //Console.WriteLine("Peak: " + rtChromFeature.PeakID + " has large peak width (left: " + rtLeft + ", top: " + rt + ", right: " + rtRight + ").");
                 rtLeft = rt - rtRange;
             }
 
@@ -976,11 +980,14 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static MSScanProperty GetNormalizedMSScanProperty(MSDecResult result, ParameterBase param) {
-            var specMatchParam = param.MspSearchParam;
+        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, ParameterBase param) {
+            return GetNormalizedMSScanProperty(scanProp, param.MspSearchParam);
+        }
+
+        public static MSScanProperty GetNormalizedMSScanProperty(IMSScanProperty scanProp, MsRefSearchParameterBase specMatchParam) {
             var prop = new MSScanProperty() {
-                ChromXs = result.ChromXs, IonMode = result.IonMode, PrecursorMz = result.PrecursorMz,
-                Spectrum = GetNormalizedMs2Spectra(result.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = result.ScanID
+                ChromXs = scanProp.ChromXs, IonMode = scanProp.IonMode, PrecursorMz = scanProp.PrecursorMz,
+                Spectrum = GetNormalizedMs2Spectra(scanProp.Spectrum, specMatchParam.AbsoluteAmpCutoff, specMatchParam.RelativeAmpCutoff), ScanID = scanProp.ScanID
             };
             return prop;
         }
@@ -999,7 +1006,7 @@ namespace CompMs.MsdialCore.Utility {
             var massSpec = new List<SpectrumPeak>();
             var maxIntensity = spectrum.Max(n => n.Intensity);
             foreach (var peak in spectrum) {
-                if (peak.Intensity > maxIntensity * relcutoff * 0.01 && peak.Intensity > abscutoff) {
+                if (peak.Intensity > maxIntensity * relcutoff && peak.Intensity > abscutoff) {
                     massSpec.Add(new SpectrumPeak() { Mass = peak.Mass, Intensity = peak.Intensity / maxIntensity * 100.0 });
                 }
             }
@@ -1013,7 +1020,7 @@ namespace CompMs.MsdialCore.Utility {
         /// <param name="spectrumList"></param>
         /// <param name="ionmode"></param>
         /// <returns>[0] min Mz [1] max Mz</returns>
-        public static float[] GetMs1Range(List<RawSpectrum> spectrumList, IonMode ionmode) {
+        public static float[] GetMs1Range(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode) {
             float minMz = float.MaxValue, maxMz = float.MinValue;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
@@ -1030,16 +1037,46 @@ namespace CompMs.MsdialCore.Utility {
 
         // annotation
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
-            feature.Formula = reference.Formula;
-            feature.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
-            feature.SMILES = reference.SMILES;
-            feature.InChIKey = reference.InChIKey;
+            SetMoleculePropertyCore(feature, reference);
             feature.Name = result.Name;
             feature.AddAdductType(reference.AdductType);
             if (isTextDB) return;
             if (!result.IsSpectrumMatch) {
                 feature.Name = "w/o MS2: " + result.Name;
             }
+        }
+
+        public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
+            SetMoleculeMsProperty(feature, reference, result, true);
+        }
+
+        public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+            where T: IMoleculeProperty, IIonProperty {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AdductType = reference.AdductType;
+            feature.Name = result.Name;
+        }
+
+        public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
+            where T: IMoleculeProperty, IIonProperty {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AdductType = reference.AdductType;
+            feature.Name = $"Unsettled: {result.Name}";
+        }
+
+        private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {
+            property.Formula = reference.Formula;
+            property.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
+            property.SMILES = reference.SMILES;
+            property.InChIKey = reference.InChIKey;
+        }
+
+        public static void ClearMoleculePropertyInfomation(IMoleculeProperty property) {
+            property.Name = string.Empty;
+            property.Formula = new Formula();
+            property.Ontology = string.Empty;
+            property.SMILES = string.Empty;
+            property.InChIKey = string.Empty;
         }
 
         public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {

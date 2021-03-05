@@ -2,12 +2,14 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Extension;
-using System;
-
-using System.Collections.Generic;
-using System.Text;
+using CompMs.MsdialDimsCore;
+using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialDimsCore.Parser;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process {
     public class DimsProcess {
@@ -30,8 +32,38 @@ namespace CompMs.App.MsdialConsole.Process {
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-
+                ProcessFile.Run(file, container);
             }
+
+            var alignmentFile = container.AlignmentFiles.First();
+            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, null);
+
+            foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {
+                Console.WriteLine(group.Key);
+                foreach (var spot in group.OrderBy(s => s.MassCenter)) {
+                    Console.WriteLine($"\t{spot.Name}\t{spot.AdductType.AdductIonName}\t{spot.MassCenter}");
+                }
+            }
+
+            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+
+            return 0;
+        }
+
+        private async Task<int> ExecuteAsync(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+            var files = container.AnalysisFiles;
+            var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, container)));
+            await Task.WhenAll(tasks);
+
+            var alignmentFile = container.AlignmentFiles.First();
+            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            var result = aligner.Alignment(files, alignmentFile, null);
+
+            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;
         }

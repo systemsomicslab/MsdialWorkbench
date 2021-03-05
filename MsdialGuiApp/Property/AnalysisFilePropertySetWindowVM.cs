@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Property
                 RestoreDirectory = true,
                 Multiselect = true,
             };
-            if (MachineCategory == MachineCategory.LCIMMS) {
+            if (MachineCategory == MachineCategory.LCIMMS || MachineCategory == MachineCategory.IMMS) {
                 ofd.Filter = "IBF file(*.ibf)|*.ibf";
             }
             else {

@@ -16,6 +16,20 @@ namespace Rfx.Riken.OsakaUniv
     {
         private UiAccessLcUtility() { }
 
+        public static List<DriftSpotBean> GetDriftSpotBean(IEnumerable<PeakAreaBean> peakSpots) {
+            var driftSpots = peakSpots.SelectMany(peak => peak.DriftSpots.OrEmptyIfNull());
+            if (driftSpots == null)
+                return new List<DriftSpotBean>();
+            return driftSpots.OrderBy(n => n.IntensityAtPeakTop).ToList();
+        }
+
+        public static List<AlignedDriftSpotPropertyBean> GetDriftSpotBean(IEnumerable<AlignmentPropertyBean> alignedSpots) {
+            var driftSpots = alignedSpots.SelectMany(spot => spot.AlignedDriftSpots.OrEmptyIfNull());
+            if (driftSpots == null)
+                return new List<AlignedDriftSpotPropertyBean>();
+            return driftSpots.OrderBy(n => n.MaxValiable).ToList();
+        }
+
         public static PairwisePlotBean GetRtMzPairwisePlotPeakViewBean(AnalysisFileBean analysisFileBean, bool isColoredByCompoundClass = false, List<MspFormatCompoundInformationBean> mspDB = null)
         {
             var xAxisRtDatapointCollection = new ObservableCollection<double>();
