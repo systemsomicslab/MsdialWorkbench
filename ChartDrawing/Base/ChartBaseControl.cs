@@ -14,7 +14,9 @@ namespace CompMs.Graphics.Core.Base
             nameof(HorizontalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
             new FrameworkPropertyMetadata(
                 default(IAxisManager),
-                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender
+                | FrameworkPropertyMetadataOptions.Inherits,
                 OnHorizontalAxisChanged));
 
         public IAxisManager HorizontalAxis
@@ -46,7 +48,9 @@ namespace CompMs.Graphics.Core.Base
             nameof(VerticalAxis), typeof(IAxisManager), typeof(ChartBaseControl),
             new FrameworkPropertyMetadata(
                 default(IAxisManager),
-                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
+                FrameworkPropertyMetadataOptions.AffectsRender
+                | FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender
+                | FrameworkPropertyMetadataOptions.Inherits,
                 OnVerticalAxisChanged));
 
         public IAxisManager VerticalAxis
@@ -104,7 +108,10 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty FlippedXProperty = DependencyProperty.Register(
             nameof(FlippedX), typeof(bool), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(false, ChartUpdate));
+            new FrameworkPropertyMetadata(
+                false,
+                FrameworkPropertyMetadataOptions.Inherits,
+                ChartUpdate));
 
         public bool FlippedX {
             get => (bool)GetValue(FlippedXProperty);
@@ -113,7 +120,10 @@ namespace CompMs.Graphics.Core.Base
 
         public static readonly DependencyProperty FlippedYProperty = DependencyProperty.Register(
             nameof(FlippedY), typeof(bool), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(true, ChartUpdate));
+            new FrameworkPropertyMetadata(
+                true,
+                FrameworkPropertyMetadataOptions.Inherits,
+                ChartUpdate));
 
         public bool FlippedY {
             get => (bool)GetValue(FlippedYProperty);

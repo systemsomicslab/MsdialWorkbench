@@ -75,6 +75,10 @@
       <DependentUpon>ChartUpdate.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\ChartUpdateVM.cs" />
+    <Compile Include="Chart\SimpleChart1.xaml.cs">
+      <DependentUpon>SimpleChart1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\SimpleChartVM1.cs" />
     <Compile Include="Controls\FileOpenControl1.xaml.cs">
       <DependentUpon>FileOpenControl1.xaml</DependentUpon>
     </Compile>
@@ -130,6 +134,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Chart\ChartUpdate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\SimpleChart1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
