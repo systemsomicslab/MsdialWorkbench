@@ -190,24 +190,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var numThreads = Math.Min(Math.Min(storage.ParameterBase.NumThreads, storage.AnalysisFiles.Count), Environment.ProcessorCount);
-                var semaphore = new SemaphoreSlim(0, numThreads);
-                var tasks = new Task[storage.AnalysisFiles.Count];
-                var counter = 0;
-                foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)
-                    .WithIndex()) {
-                    tasks[idx] = Task.Run(async () => {
-                        await semaphore.WaitAsync();
-                        FileProcess.Run(analysisfile, storage, mspChromatogramAnnotator, textDBChromatogramAnnotator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
-                        Interlocked.Increment(ref counter);
-                        vm.CurrentValue = counter;
-                        semaphore.Release();
-                    });
+                foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, mspChromatogramAnnotator, textDBChromatogramAnnotator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    vm.CurrentValue++;
                 }
-                semaphore.Release(numThreads);
-
-                await Task.WhenAll(tasks);
-
                 pbmcw.Close();
             };
 
