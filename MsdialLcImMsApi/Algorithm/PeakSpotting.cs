@@ -70,7 +70,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawMeasurement rawObj, float focusedMass, MsdialLcImMsParameter param) {
 
             var accumulatedMs1Spectrum = rawObj.AccumulatedSpectrumList;
-            var allSpectrum = rawObj.SpectrumList;
 
             //get EIC chromatogram
             var peaklist = DataAccess.GetMs1Peaklist(accumulatedMs1Spectrum, focusedMass, param.MassSliceWidth, param.IonMode, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);

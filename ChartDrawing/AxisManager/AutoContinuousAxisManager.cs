@@ -93,5 +93,10 @@ namespace CompMs.Graphics.AxisManager
             SetMinAndMaxValues();
         }
         #endregion
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new AutoContinuousAxisManager();
+        }
     }
 }

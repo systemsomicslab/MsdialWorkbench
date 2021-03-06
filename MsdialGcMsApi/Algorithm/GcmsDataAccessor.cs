@@ -36,7 +36,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

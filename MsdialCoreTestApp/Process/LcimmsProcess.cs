@@ -34,7 +34,6 @@ namespace CompMs.App.MsdialConsole.Process {
         private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-
             }
             new MsdialLcImMsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
             return 0;

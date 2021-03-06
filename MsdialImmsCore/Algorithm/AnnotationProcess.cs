@@ -113,6 +113,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var results = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
+                .Where(candidate => candidate.TotalScore >= mspSearchParameter.TotalScoreCutoff)
                 .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
@@ -132,6 +133,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var results = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch)
+                .Where(candidate => candidate.TotalScore >= textDBSearchParameter.TotalScoreCutoff)
                 .Where(candidate => !string.IsNullOrEmpty(candidate.Name))
                 .ToList();
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));

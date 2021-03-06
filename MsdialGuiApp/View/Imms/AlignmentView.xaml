@@ -4,246 +4,142 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
-             xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
-             xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
-             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
-    <d:DesingerProperties.DesignStyle>
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
+             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             Name="AlignmentSpotView"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentImmsVM}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
         </Style>
-    </d:DesingerProperties.DesignStyle>
+    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <manager:AutoContinuousAxisManager x:Key="TimeAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="TimesCenter"
+                                           ChartMargin="0.05" />
+        <manager:AutoContinuousAxisManager x:Key="MzAxis"
+                                           ItemsSource="{Binding DataContext.Ms1Spots, Source={x:Reference AlignmentSpotView}}"
+                                           ValuePropertyName="MassCenter"
+                                           ChartMargin="0.05" />
     </UserControl.Resources>
     <Grid>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30" />
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="160" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="5,0" Grid.Row="0">
-
-            <Label Content="Alignment parameters setting" FontStyle="Italic"
-                   HorizontalAlignment="Left" VerticalAlignment="Top"
-                   Margin="5,0" />
-            <StackPanel  Margin="20,5">
-                <StackPanel.Resources>
-                    <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
-                        <Setter Property="Height" Value="30"/>
-                    </Style>
-                </StackPanel.Resources>
-
-                <ui:LabeledContent PrependLabel="Result name:">
-                    <TextBox Text="{Binding AlignmentResultFileName, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"
-                             ToolTip="Decide an alignment file name"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             Height="25"
-                             HorizontalContentAlignment="Right"/>
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="Reference file:">
-                    <ComboBox ItemsSource="{Binding AnalysisFiles}"
-                              DisplayMemberPath="AnalysisFileName"
-                              SelectedIndex="0"
-                              Height="25"
-                              VerticalContentAlignment="Center" />
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="MS1 tolerance:"
-                                   AppendLabel="Da">
-                    <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                             ToolTip="At least for QTOF, 0.01-0.025 is better."
-                             Height="25">
-                        <TextBox.Text>
-                            <Binding Path="Param.Ms1AlignmentTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                                <Binding.ValidationRules>
-                                    <validator:PositiveDoubleNumericValidation />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
-                </ui:LabeledContent>
-
-            </StackPanel>
-        </StackPanel>
-
-        <Grid Grid.Row="1">
-            <Expander Header="Advanced"
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Stretch" 
-                      ExpandDirection="Down">
-
-                <StackPanel Margin="20,0">
-                    <StackPanel.Resources>
-                        <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
-                            <Setter Property="Height" Value="30"/>
-                        </Style>
-                    </StackPanel.Resources>
-
-                    <ui:LabeledContent PrependLabel="MS1 factor:"
-                                       AppendLabel="(0-1)">
-                        <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 ToolTip="At least for QTOF column, 0.5-0.7 is good."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.Ms1AlignmentFactor" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="Peak count filter:"
-                                       AppendLabel="%">
-                        <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.PeakCountFilter" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="N% detected in at least one group:"
-                                       AppendLabel="%">
-                        <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                 ToolTip="Present in at least n% of samples in at least one sample group."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                    <Binding Path="Param.NPercentDetectedInOneGroup" 
-                                             ValidatesOnDataErrors="True" 
-                                             UpdateSourceTrigger="LostFocus" 
-                                             NotifyOnSourceUpdated="True">
-                                        <Binding.ValidationRules>
-                                            <validator:PositiveDoubleNumericValidation />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                        </TextBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="Remove features based on blank information:">
-                        <CheckBox IsChecked="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                  Height="25"/>
-                    </ui:LabeledContent>
-
-                    <Grid Height="30">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="80"/>
-                        </Grid.ColumnDefinitions>
-
-                        <ComboBox SelectedValue="{Binding Param.BlankFiltering}" SelectedValuePath="DataContext"
-                                  ToolTip="Select the filtering criterion."
-                                  HorizontalContentAlignment="Left" HorizontalAlignment="Stretch"
-                                  Height="25" Margin="0,0,5,0"
-                                  Grid.Column="0">
-                            <ComboBox.ItemsSource>
-                                <x:Array Type="ContentControl">
-                                    <ContentControl Content="Sample max / blank average: " DataContext="{x:Static enum:BlankFiltering.SampleMaxOverBlankAve}"/>
-                                    <ContentControl Content="Sample average / blank average: " DataContext="{x:Static enum:BlankFiltering.SampleAveOverBlankAve}"/>
-                                </x:Array>
-                            </ComboBox.ItemsSource>
-                        </ComboBox>
-                        <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                 IsEnabled="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                 HorizontalContentAlignment="Right" 
-                                 Height="25"
-                                 Grid.Column="1">
-                            <TextBox.Text>
-                                <Binding Path="Param.FoldChangeForBlankFiltering" 
-                                         ValidatesOnDataErrors="True" 
-                                         UpdateSourceTrigger="LostFocus" 
-                                         NotifyOnSourceUpdated="True">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                            <ToolTipService.ToolTip>
-                                <TextBlock>
-                                      1. For instance, if a fold-change of 10 is used: for an average peak height over all samples (or max. value in all samples) of 10,000 
-                                    <LineBreak /> 
-                                         and an average peak height in blanks of 500, the fold-change 10,000/500 = 20 means that this feature stays in the data set.
-                                    <LineBreak /> 
-                                      2. Users must specify in File property setting -> File type which files are blanks and actual samples.
-                                    <LineBreak /> 
-                                         if more blanks are available, an average value would be used for calculation.
-                                    <LineBreak /> 
-                                      3. If in blanks all values are zero (even after gap filling), 1/10 of minimal peak height over all samples is used.
-                                </TextBlock>
-                            </ToolTipService.ToolTip>
-                        </TextBox>
-                        <Label Content="fold change" VerticalContentAlignment="Center" Grid.Column="2"/>
-                    </Grid>
-
-                    <ui:LabeledContent PrependLabel="Keep 'reference matched' metabolite features:">
-                        <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                  IsEnabled="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                  IsChecked="{Binding Path=Param.IsKeepRefMatchedMetaboliteFeatures}"
-                                  Height="25">
-                            <ToolTipService.ToolTip>
-                                <TextBlock>
-                                      This would allow the user to retain their, for example, internal standards before removing all features 
-                                    <LineBreak /> 
-                                      that are not at least x-fold greater intensity in the samples than in the blanks.
-                                </TextBlock>
-                            </ToolTipService.ToolTip>
-                        </CheckBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="Keep 'suggested (w/o MS2)' metabolite features: ">
-                        <CheckBox HorizontalAlignment="Left"
-                                  IsEnabled="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                  IsChecked="{Binding Path=Param.IsKeepRefMatchedMetaboliteFeatures}"
-                                  Height="25">
-                            <ToolTipService.ToolTip>
-                                <TextBlock>
-                                      This would allow the user to retain their, for example, internal standards before removing all features 
-                                    <LineBreak /> 
-                                      that are not at least x-fold greater intensity in the samples than in the blanks.
-                                </TextBlock>
-                            </ToolTipService.ToolTip>
-                        </CheckBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="Keep removable features and assign the tag: ">
-                        <CheckBox HorizontalAlignment="Left"
-                                  IsEnabled="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                  IsChecked="{Binding Path=Param.IsKeepRemovableFeaturesAndAssignedTagForChecking}"
-                                  Height="25">
-                            <ToolTipService.ToolTip>
-                                <TextBlock>
-                                      All features are kept even if the filtering is applied, but users can check if the feature is satisfied with the blank checking or not.
-                                    <LineBreak /> 
-                                      Moreover, users can export the alignment result by the filtering options.
-                                </TextBlock>
-                            </ToolTipService.ToolTip>
-                        </CheckBox>
-                    </ui:LabeledContent>
-
-                    <ui:LabeledContent PrependLabel="Gap filling by compulsion:">
-                        <CheckBox IsChecked="{Binding Path=Param.IsForceInsertForGapFilling}"
-                                  HorizontalAlignment="Left"
-                                  ToolTip="Ad hoc peak area is forcibly detected within +- 5 data points even if there is no local maximum. "
-                                  Height="25"/>
-                    </ui:LabeledContent>
-
-                </StackPanel>
-
-            </Expander>
-        </Grid>
+        <Border Background="WhiteSmoke" BorderBrush="Black" BorderThickness="1,0,0,1"
+                Margin="0,5,5,0" Grid.Row="1" Grid.Column="2">
+            <Grid Margin="-1,0,0,-1">
+                <scatter:ScatterControl x:Name="alignmentScatter"
+                                        ItemsSource="{Binding Ms1Spots}"
+                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                        RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
+                                        RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                        HorizontalPropertyName="TimesCenter"
+                                        VerticalPropertyName="MassCenter"
+                                        EachPlotBrushName="SpotColor"
+                                        Radius="5.5"
+                                        SelectedItem="{Binding Target, Mode=OneWayToSource}"
+                                        behavior:ScatterFocusBehavior.EnableOuter="True"
+                                        behavior:ScatterFocusBehavior.OuterScale="1.3"
+                                        behavior:ScatterFocusBehavior.InnerScale="1.2"
+                                        behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
+                                        behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}" >
+                    <behavior:ScatterFocusBehavior.LabelTemplate>
+                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="9"/>
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="ID #: "/>
+                                <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
+                                <TextBlock Text="; "/>
+                                <TextBlock Text="DT [1/k0]: "/>
+                                <TextBlock Text="{Binding TimesCenter, StringFormat=N2, Mode=OneTime}"/>
+                                <TextBlock Text="; "/>
+                                <TextBlock Text="Mass[Da]: "/>
+                                <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
+                                <TextBlock Text=";"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </behavior:ScatterFocusBehavior.LabelTemplate>
+                </scatter:ScatterControl>
+                <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
+                                ContentTemplate="{DynamicResource FocusCross}"
+                                IsHitTestVisible="False">
+                    <ContentControl.Resources>
+                        <DataTemplate x:Key="FocusCross">
+                            <Canvas ClipToBounds="True">
+                                <Canvas.Resources>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedPoint, ElementName=alignmentScatter}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Canvas.Resources>
+                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Left="{Binding X}"/>
+                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                           Canvas.Top="{Binding Y}"/>
+                            </Canvas>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
+        </Border>
+        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+                                    LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
+                                    RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
+                                    Margin="0,0,5,5"
+                                    Grid.Row="2" Grid.Column="2" />
+        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
+                                  RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                  Margin="5,5,0,0"
+                                  Grid.Row="1" Grid.Column="1" />
+        <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"
+                   VerticalAlignment="Bottom"
+                   Grid.Row="0" Grid.Column="2"/>
+        <TextBlock Text="Drift time [1/k0]"
+                   FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Grid.Row="3" Grid.Column="2"/>
+        <TextBlock Text="m/z"
+                   FontFamily="Calibri" FontStyle="Italic" FontSize="13"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" 
+                   Grid.Row="1" Grid.Column="0">
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-90"/>
+                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>
     </Grid>
 </UserControl>

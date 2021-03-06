@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.Utility
                 { MachineCategory.LCMS, new MsdialLcMsApi.Parser.MsdialLcmsSerializer() },
                 { MachineCategory.IFMS, new MsdialDimsCore.Parser.MsdialDimsSerializer() },
                 { MachineCategory.LCIMMS, new MsdialLcImMsApi.Parser.MsdialLcImMsSerializer() },
+                { MachineCategory.IMMS, new MsdialImmsCore.Parser.MsdialImmsSerializer() },
             };
         }
 

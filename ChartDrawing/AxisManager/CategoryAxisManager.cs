@@ -12,7 +12,7 @@ using CompMs.Graphics.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
-    public class CategoryAxisManager : CompMs.Graphics.Core.Base.AxisManager
+    public class CategoryAxisManager : FreezableAxisManager
     {
         #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
@@ -154,6 +154,11 @@ namespace CompMs.Graphics.AxisManager
                 axis.iPropertyReflection = axis.dataType.GetProperty(axis.IdentityPropertyName);
 
             axis.UpdateConverter();
+        }
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new CategoryAxisManager();
         }
         #endregion
     }

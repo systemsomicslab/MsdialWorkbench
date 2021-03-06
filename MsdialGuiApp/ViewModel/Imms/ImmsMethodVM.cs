@@ -11,6 +11,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
@@ -97,6 +98,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public bool UnknownChecked {
             get => ReadDisplayFilter(DisplayFilter.Unknown);
             set => WriteDisplayFilter(DisplayFilter.Unknown, value);
+        }
+        public bool CcsChecked {
+            get => ReadDisplayFilter(DisplayFilter.CcsMatched);
+            set => WriteDisplayFilter(DisplayFilter.CcsMatched, value);
         }
         public bool Ms2AcquiredChecked {
             get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
@@ -276,7 +281,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (cacheAnalysisFile == analysis) return;
 
             cacheAnalysisFile = analysis;
-            AnalysisVM = new AnalysisImmsVM(analysis, Storage.ParameterBase, mspChromatogramAnnotator, textDBChromatogramAnnotator) { DisplayFilters = displayFilters };
+            AnalysisVM = new AnalysisImmsVM(
+                analysis,
+                new ImmsAverageDataProvider(analysis),
+                Storage.ParameterBase,
+                mspChromatogramAnnotator,
+                textDBChromatogramAnnotator)
+            {
+                DisplayFilters = displayFilters
+            };
         }
 
         private AnalysisFileBean cacheAnalysisFile;
@@ -298,7 +311,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(Storage.AlignmentFiles, Storage);
+            var vm = new AlignmentResultExportVM(cacheAlignmentFile, Storage.AlignmentFiles, Storage);
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,

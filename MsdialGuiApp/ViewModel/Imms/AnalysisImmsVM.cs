@@ -1,28 +1,25 @@
 ﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
-using CompMs.RawDataHandler.Core;
 using NSSplash;
 using NSSplash.impl;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -31,23 +28,24 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     {
         public AnalysisImmsVM(
             AnalysisFileBean analysisFile,
+            IDataProvider provider,
             ParameterBase parameter,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
 
             this.analysisFile = analysisFile;
+            this.provider = provider;
             this.parameter = parameter;
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
-
             peakAreaFile = analysisFile.PeakAreaBeanInformationFilePath;
             deconvolutionFile = analysisFile.DeconvolutionFilePath;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak))
+                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
             );
             Peaks = peaks;
             AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
@@ -56,20 +54,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
-            using (var access = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true)) {
-                RawMeasurement rawObj = null;
-                foreach (var i in Enumerable.Range(0, 5)) {
-                    rawObj = DataAccess.GetRawDataMeasurement(access);
-                    if (rawObj != null) break;
-                    Thread.Sleep(2000);
-                }
-                if (rawObj == null) {
-                    throw new FileLoadException($"Loading {analysisFile.AnalysisFilePath} failed.");
-                }
-                spectrumList = rawObj.SpectrumList;
-            }
-
-            PropertyChanged += OnTargetChanged;
             PropertyChanged += OnFilterChanged;
 
             Target = _ms1Peaks.FirstOrDefault();
@@ -82,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly string deconvolutionFile;
         private readonly ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
         private readonly List<long> seekPointers;
-        private readonly List<RawSpectrum> spectrumList;
+        private readonly IDataProvider provider;
         
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -95,6 +79,26 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         private ICollectionView ms1Peaks;
+
+        public List<SpectrumPeakWrapper> Ms1Spectrum
+        {
+            get => ms1Spectrum;
+            set {
+                if (SetProperty(ref ms1Spectrum, value)) {
+                    OnPropertyChanged(nameof(Ms1SpectrumMaxIntensity));
+                }
+            }
+        }
+        private List<SpectrumPeakWrapper> ms1Spectrum = new List<SpectrumPeakWrapper>();
+
+        public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+
+        public string Ms1SplashKey {
+            get => ms1SplashKey;
+            set => SetProperty(ref ms1SplashKey, value);
+        }
+        private string ms1SplashKey = string.Empty;
+
 
         public List<ChromatogramPeakWrapper> Eic {
             get => eic;
@@ -173,7 +177,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ChromatogramPeakFeatureVM Target {
             get => target;
-            set => SetProperty(ref target, value);
+            set {
+                if (SetProperty(ref target, value)) {
+                    _ = OnTargetChangedAsync(value);
+                }
+            }
         }
         private ChromatogramPeakFeatureVM target;
 
@@ -228,12 +236,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private int focusID;
 
+        public double FocusDt {
+            get => focusDt;
+            set => SetProperty(ref focusDt, value);
+        }
+        private double focusDt;
+
         public double FocusMz {
             get => focusMz;
             set => SetProperty(ref focusMz, value);
         }
         private double focusMz;
 
+        public double ChromMin => _ms1Peaks.Min(peak => peak.ChromXValue) ?? 0;
+        public double ChromMax => _ms1Peaks.Max(peak => peak.ChromXValue) ?? 0;
         public double MassMin => _ms1Peaks.Min(peak => peak.Mass);
         public double MassMax => _ms1Peaks.Max(peak => peak.Mass);
         public double IntensityMin => _ms1Peaks.Min(peak => peak.Intensity);
@@ -270,25 +286,51 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Ms1Peaks?.Refresh();
         }
 
-        async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Target))
-                await OnTargetChanged(Target).ConfigureAwait(false);
-        }
-        async Task OnTargetChanged(ChromatogramPeakFeatureVM target) {
-            await Task.WhenAll(
-                LoadEicAsync(target),
-                LoadMs2SpectrumAsync(target),
-                LoadMs2DecSpectrumAsync(target),
-                LoadMs2ReferenceAsync(target)
-            ).ConfigureAwait(false);
+        private CancellationTokenSource cts;
+        async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
 
-            if (target != null) {
-                FocusID = target.InnerModel.MasterPeakID;
-                FocusMz = target.Mass;
+            try {
+                await OnTargetChangedAsync(target, cts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) {
+
             }
         }
 
-        async Task LoadEicAsync(ChromatogramPeakFeatureVM target) {
+        async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+            if (target != null) {
+                FocusID = target.InnerModel.MasterPeakID;
+                FocusDt = target.ChromXValue ?? 0;
+                FocusMz = target.Mass;
+            }
+
+            await Task.WhenAll(
+                LoadMs1SpectrumAsync(target, token),
+                LoadEicAsync(target, token),
+                LoadMs2SpectrumAsync(target, token),
+                LoadMs2DecSpectrumAsync(target, token),
+                LoadMs2ReferenceAsync(target, token)
+            ).ConfigureAwait(false);
+        }
+
+        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+            Ms1Spectrum = new List<SpectrumPeakWrapper>();
+            Ms1SplashKey = string.Empty;
+
+            if (target == null)
+                return;
+
+            await Task.Run(() => {
+                var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                token.ThrowIfCancellationRequested();
+                Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                Ms1SplashKey = CalculateSplashKey(spectra);
+            }, token);
+        }
+
+        async Task LoadEicAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
             Eic = new List<ChromatogramPeakWrapper>();
             PeakEic = new List<ChromatogramPeakWrapper>();
             FocusedEic = new List<ChromatogramPeakWrapper>();
@@ -296,12 +338,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (target == null)
                 return;
 
-            var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
-            var leftMz = target.ChromXLeftValue * 2 - target.ChromXRightValue ?? double.MinValue;
-            var rightMz = target.ChromXRightValue * 2 - target.ChromXLeftValue ?? double.MaxValue;
             await Task.Run(() => {
                 Eic = DataAccess.GetSmoothedPeaklist(
-                        DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, leftMz, rightMz),
+                        DataAccess.GetMs1Peaklist(provider.LoadMs1Spectrums(), target.Mass, parameter.CentroidMs1Tolerance, parameter.IonMode),
                         parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -310,16 +349,18 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 if (Eic.Count == 0)
                     return;
 
+                token.ThrowIfCancellationRequested();
                 PeakEic = Eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
 
+                token.ThrowIfCancellationRequested();
                 FocusedEic = new List<ChromatogramPeakWrapper> {
                     Eic.Where(peak => peak.ChromXValue.HasValue)
                        .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))
                 };
-            }).ConfigureAwait(false);
+            }, token).ConfigureAwait(false);
         }
 
-        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureVM target) {
+        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
             Ms2Spectrum = new List<SpectrumPeakWrapper>();
             RawSplashKey = string.Empty;
 
@@ -327,13 +368,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return;
 
             await Task.Run(() => {
-                var spectra = DataAccess.GetCentroidMassSpectra(spectrumList, parameter.MS2DataType, target.MS2RawSpectrumId, 0, float.MinValue, float.MaxValue);
+                var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
+                if (parameter.RemoveAfterPrecursor)
+                    spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
+                token.ThrowIfCancellationRequested();
                 Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 RawSplashKey = CalculateSplashKey(spectra);
-            }).ConfigureAwait(false);
+            }, token).ConfigureAwait(false);
         }
 
-        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureVM target) {
+        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
             Ms2DecSpectrum = new List<SpectrumPeakWrapper>();
             DeconvolutionSplashKey = string.Empty;
 
@@ -343,11 +387,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             await Task.Run(() => {
                 var idx = _ms1Peaks.IndexOf(target);
                 msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[idx]);
+                token.ThrowIfCancellationRequested();
                 Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
-            }).ConfigureAwait(false);
+            }, token).ConfigureAwait(false);
         }
 
-        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureVM target) {
+        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
             Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
 
             if (target == null)
@@ -356,9 +401,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             await Task.Run(() => {
                 if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
                     var reference = mspAnnotator.Refer(matched);
+                    token.ThrowIfCancellationRequested();
                     Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
                 }
-            }).ConfigureAwait(false);
+            }, token).ConfigureAwait(false);
         }
 
         static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
@@ -368,21 +414,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return new Splash().splashIt(msspectrum);
         }
 
-        public DelegateCommand<object> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object>(FocusByID));
-        private DelegateCommand<object> focusByIDCommand;
+        public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
+        private DelegateCommand<IAxisManager> focusByIDCommand;
 
-        private void FocusByID(object axis) {
+        private void FocusByID(IAxisManager axis) {
             var focus = _ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
             Ms1Peaks.MoveCurrentTo(focus);
-            (axis as AxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
+            axis?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
         }
 
-        public DelegateCommand<AxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<AxisManager>(FocusByMz));
-        private DelegateCommand<AxisManager> focusByMzCommand;
+        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
+        private DelegateCommand<IAxisManager> focusByMzCommand;
 
         private static readonly double MzTol = 20;
-        private void FocusByMz(AxisManager axis) {
-            axis.Focus(FocusMz - MzTol, FocusMz + MzTol);
+        private void FocusByMz(IAxisManager axis) {
+            axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
         /*

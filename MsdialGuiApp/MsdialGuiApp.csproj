@@ -147,6 +147,24 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imms\AlignmentView.xaml.cs">
+      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
+      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
+      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
     </Compile>
@@ -215,7 +233,7 @@
     <Compile Include="View\Dims\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\ExpRefView.xaml.cs">
+    <Compile Include="View\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
@@ -236,14 +254,14 @@
     <Compile Include="View\Dims\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\RepRefView.xaml.cs">
+    <Compile Include="View\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
+      <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\AnalysisParamSetVM.cs" />
     <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
@@ -310,13 +328,13 @@
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\PeakSpotNavigator.xaml.cs">
+    <Compile Include="View\PeakSpotNavigator.xaml.cs">
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\SurveyScanView.xaml.cs">
+    <Compile Include="View\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
     <Page Include="Dims\AlignmentView.xaml">
@@ -375,6 +393,30 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Imms\AlignmentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\CompoundDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\MainRibbon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\PeakPropertyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\PeakView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\PeakDetectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -431,7 +473,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\ExpRefView.xaml">
+    <Page Include="View\ExpRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -459,7 +501,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\RepRefView.xaml">
+    <Page Include="View\RepRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -467,7 +509,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imms\AlignmentView.xaml">
+    <Page Include="View\Imms\AlignmentParameterView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -559,7 +601,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\PeakSpotNavigator.xaml">
+    <Page Include="View\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -567,7 +609,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\SurveyScanView.xaml">
+    <Page Include="View\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

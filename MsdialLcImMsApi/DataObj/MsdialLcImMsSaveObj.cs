@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialLcImMsApi.DataObj {
+    [MessagePack.MessagePackObject]
     public class MsdialLcImMsSaveObj {
         [Key(0)]
         public List<AnalysisFileBean> AnalysisFiles { get; set; }

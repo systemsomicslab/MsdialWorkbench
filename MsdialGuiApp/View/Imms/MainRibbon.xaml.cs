@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Dims
+namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for RepRefView.xaml
+    /// Interaction logic for MainWindowRibbon.xaml
     /// </summary>
-    public partial class RepRefView : UserControl
+    public partial class MainRibbon : UserControl
     {
-        public RepRefView() {
+        public MainRibbon() {
             InitializeComponent();
         }
     }

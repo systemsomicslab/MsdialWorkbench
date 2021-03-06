@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Dims
+namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for ExpRefView.xaml
+    /// Interaction logic for CompoundDetailView.xaml
     /// </summary>
-    public partial class ExpRefView : UserControl
+    public partial class CompoundDetailView : UserControl
     {
-        public ExpRefView() {
+        public CompoundDetailView() {
             InitializeComponent();
         }
     }

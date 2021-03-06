@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using CompMs.Graphics.Core.Base;
 
 namespace MsdialDimsCoreUiTestApp.View
@@ -27,12 +26,12 @@ namespace MsdialDimsCoreUiTestApp.View
             InitializeComponent();
         }
 
-        public AxisManager HorizontalAxis {
-            get { return (AxisManager)GetValue(HorizontalAxisProperty); }
+        public IAxisManager HorizontalAxis {
+            get { return (IAxisManager)GetValue(HorizontalAxisProperty); }
             set { SetValue(HorizontalAxisProperty, value); }
         }
 
         public static readonly DependencyProperty HorizontalAxisProperty =
-            DependencyProperty.Register(nameof(HorizontalAxis), typeof(AxisManager), typeof(MS1Control), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(HorizontalAxis), typeof(IAxisManager), typeof(MS1Control), new PropertyMetadata(null));
     }
 }

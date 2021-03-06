@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
@@ -19,7 +18,7 @@
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
-                                                 ItemsSource="{Binding DataContext.Ms1Spectrum, Source={x:Reference Name=Ms1Plot}}"
+                                                 ItemsSource="{Binding Spectrum, Source={x:Reference Name=Ms1Plot}}"
                                                  TargetAxisMapper="{Binding MassAxis.AxisMapper, Source={x:Reference Name=Ms1Plot}}"
                                                  TargetPropertyName="Mass"
                                                  ValuePropertyName="Intensity"
@@ -32,7 +31,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="Survey scan (MS1) spectrum"
-               Foreground="Black" Background="LightSteelBlue"
+               Foreground="Black" Background="{StaticResource LightThemeColor}"
                HorizontalContentAlignment="Center" VerticalAlignment="Top"
                Grid.Row="0"/>
         <Grid VerticalAlignment="Stretch"
@@ -52,7 +51,7 @@
             <Border Background="WhiteSmoke"
                     Margin="5,5,0,0"
                     Grid.Row="1" Grid.Column="1">
-                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms1Spectrum}"
+                <spectrum:LineSpectrumControl ItemsSource="{Binding Spectrum, ElementName=Ms1Plot}"
                                        HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=Ms1Plot}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                        RangeX="{Binding MassAxis.Range, ElementName=Ms1Plot, Mode=TwoWay}"
@@ -99,9 +98,9 @@
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="MS1 spectra Max intensity: " FontSize="12"/>
-                    <TextBlock Text="{Binding Ms1SpectrumMaxIntensity}" FontSize="12"/>
+                    <TextBlock Text="{Binding MaxIntensity, ElementName=Ms1Plot}" FontSize="12"/>
                 </StackPanel>
-                <TextBlock Text="{Binding Ms1SplashKey}" FontSize="11"/>
+                <TextBlock Text="{Binding SplashKey, ElementName=Ms1Plot}" FontSize="11"/>
                 <StackPanel.LayoutTransform>
                     <TransformGroup>
                         <RotateTransform Angle="-90"/>
