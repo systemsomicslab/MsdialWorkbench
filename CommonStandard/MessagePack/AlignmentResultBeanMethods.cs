@@ -52,14 +52,19 @@ namespace CompMs.Common.MessagePack
                 var filePath = GetNewPeakFileName(path);
                 var driftPath = GetNewDriftFileName(path);
                 //check 190819 updated LargeListMessagePack
-                if (File.Exists(filePath))
-                {
+                if (File.Exists(filePath) && File.Exists(driftPath)) {
                     var alignedPeakPropertyBeans = MessagePackDefaultHandler.LoadLargerListFromFile<ObservableCollection<AlignedPeakPropertyBean>>(filePath);
                     var alignedDriftSpotPropertyBeans = MessagePackDefaultHandler.LoadLargerListFromFile<ObservableCollection<AlignedDriftSpotPropertyBean>>(driftPath);
-                    for (var i = 0; i < alignedPeakPropertyBeans.Count; i++)
-                    {
+                    for (var i = 0; i < alignedPeakPropertyBeans.Count; i++) {
                         collection[i].AlignedPeakPropertyBeanCollection = alignedPeakPropertyBeans[i];
                         collection[i].AlignedDriftSpots = alignedDriftSpotPropertyBeans[i];
+                    }
+                }
+                else if (File.Exists(filePath))
+                {
+                    var alignedPeakPropertyBeans = MessagePackDefaultHandler.LoadLargerListFromFile<ObservableCollection<AlignedPeakPropertyBean>>(filePath);
+                    for (var i = 0; i < alignedPeakPropertyBeans.Count; i++) {
+                        collection[i].AlignedPeakPropertyBeanCollection = alignedPeakPropertyBeans[i];
                     }
                 }
                 else // read from many files in the folder

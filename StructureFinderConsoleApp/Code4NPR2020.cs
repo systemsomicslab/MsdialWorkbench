@@ -28,7 +28,7 @@ namespace StructureFinderConsoleApp {
             }
 
             using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
-                sw.WriteLine("PrecursorMz");
+                sw.WriteLine("[M+H]+\t[M+Na]+\t[M+K]+\t[M-H]-");
                 var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
                 var adductNa = AdductIonParser.GetAdductIonBean("[M+Na]+");
                 var adductK = AdductIonParser.GetAdductIonBean("[M+K]+");
