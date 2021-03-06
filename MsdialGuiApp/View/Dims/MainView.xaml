@@ -162,10 +162,13 @@
         <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
-        <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+        <GridSplitter Margin="0, 0, 0, 0" Width="2"
+                      ResizeDirection="Columns"
+                      VerticalAlignment="Stretch" HorizontalAlignment="Right"
+                      Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"/>
 
         <Grid Grid.Row="1" Grid.Column="1">
-            <Grid Name="Grid_DataViewer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid Name="Grid_DataViewer">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="370"/>
@@ -275,14 +278,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target, Mode=OneWay}"/>
                             </TabItem>
                          
                         </TabControl>

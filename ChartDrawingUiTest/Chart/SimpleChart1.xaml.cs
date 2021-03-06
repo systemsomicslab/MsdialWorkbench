@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Dims
+namespace ChartDrawingUiTest.Chart
 {
     /// <summary>
-    /// Interaction logic for CompoundSearchWindow.xaml
+    /// Interaction logic for SimpleChart1.xaml
     /// </summary>
-    public partial class CompoundSearchWindow : Window
+    public partial class SimpleChart1 : Page
     {
-        public CompoundSearchWindow() {
+        public SimpleChart1() {
             InitializeComponent();
         }
     }

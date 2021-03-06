@@ -1,0 +1,60 @@
+﻿<Page x:Class="ChartDrawingUiTest.UI.DependencyPropertyTest"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.UI"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DependencyPropertyTest">
+
+    <Grid>
+        <StackPanel>
+            <local:DPControl Having="this string is setted."
+                             Content="{Binding Having, RelativeSource={RelativeSource self}}"/>
+            <local:DPControl Attached="this string is directly attached."
+                             Content="{Binding Attached, RelativeSource={RelativeSource self}}"/>
+            <local:DerivedDPControl local:DPControl.Attached="this string is attached to derived class."
+                                    Content="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+            <local:DPControl Having="this string is setted to logical parent control.">
+                <local:DPControl Content="{Binding Having, RelativeSource={RelativeSource self}}"/>
+            </local:DPControl>
+            <local:DPControl Attached="this string is attached to logical parent control.">
+                <local:DPControl Content="{Binding Attached, RelativeSource={RelativeSource self}}"/>
+            </local:DPControl>
+            <local:DPControl Having="this string is setted to logical parent control and child control is normal content control.">
+                <ContentControl>
+                    <local:DPControl Content="{Binding Having, RelativeSource={RelativeSource self}}"/>
+                </ContentControl>
+            </local:DPControl>
+            <local:DPControl Attached="this string is attached to logical parent control and child control is normal content control.">
+                <ContentControl>
+                    <local:DPControl Content="{Binding Attached, RelativeSource={RelativeSource self}}"/>
+                </ContentControl>
+            </local:DPControl>
+            <local:DPControl Attached="this string is attached to logical parent control and referenced from textblock.">
+                <TextBlock Text="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+            </local:DPControl>
+            <ListBox local:DPControl.Attached="this string is attached to listbox">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ContentControl">
+                                    <Border BorderBrush="Chocolate" BorderThickness="1"
+                                            Background="Brown">
+                                        <ContentPresenter/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <TextBlock Text="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+                <TextBlock Text="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+                <TextBlock Text="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+                <TextBlock Text="{Binding (local:DPControl.Attached), RelativeSource={RelativeSource self}}"/>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</Page>

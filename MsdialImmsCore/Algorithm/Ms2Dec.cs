@@ -71,6 +71,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
             var precursorMz = chromPeakFeature.Mass;
 
+            if (targetSpecID < 0 || targetSpecID >= spectrumList.Count)
+                return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
+
             var curatedSpectra = GetCuratedSpectrum(spectrumList[targetSpecID], precursorMz, parameter);
             if (curatedSpectra.IsEmptyOrNull())
                 return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);

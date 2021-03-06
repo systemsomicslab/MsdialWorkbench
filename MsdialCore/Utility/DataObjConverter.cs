@@ -37,6 +37,7 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.IonMode = peak.IonMode;
             alignmentPeak.MSRawID2MspIDs = new Dictionary<int, List<int>>() { { peak.RawSpectrumID, peak.MspIDs } };
             alignmentPeak.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>() { { peak.RawSpectrumID, peak.MspBasedMatchResult } };
+            alignmentPeak.MatchResults.AddMspResult(peak.RawSpectrumID, peak.MspBasedMatchResult);
             alignmentPeak.PeakShape = new ChromatogramPeakShape()
             {
                 EstimatedNoise = peak.EstimatedNoise, SignalToNoise = peak.SignalNoiseRatio, AmplitudeScoreValue = peak.AmplitudeScore,
@@ -82,6 +83,7 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.TextDbIDs = peak.TextDbIDs;
             alignmentPeak.MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult;
             alignmentPeak.TextDbBasedMatchResult = peak.TextDbBasedMatchResult;
+            alignmentPeak.MatchResults.MergeContainers(peak.MatchResults);
             alignmentPeak.PeakCharacter = peak.PeakCharacter;
             alignmentPeak.PeakShape = peak.PeakShape;
             //if (peak.IsReferenceMatched) {
@@ -135,6 +137,7 @@ namespace CompMs.MsdialCore.Utility
             spot.TextDbIDs = new List<int>(representative.TextDbIDs);
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>(representative.MSRawID2MspBasedMatchResult);
             spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
+            spot.MatchResults.MergeContainers(representative.MatchResults);
 
             spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
             spot.HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop);

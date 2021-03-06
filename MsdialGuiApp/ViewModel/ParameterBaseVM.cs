@@ -453,8 +453,9 @@ namespace CompMs.App.Msdial.ViewModel
         public int NumThreads {
             get => innerModel.NumThreads;
             set {
-                if (innerModel.NumThreads == value) return;
-                innerModel.NumThreads = value;
+                var val = Math.Max(1, Math.Min(Environment.ProcessorCount, value));
+                if (innerModel.NumThreads == val) return;
+                innerModel.NumThreads = val;
                 OnPropertyChanged(nameof(NumThreads));
             }
         }

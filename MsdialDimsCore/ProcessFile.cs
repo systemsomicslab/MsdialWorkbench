@@ -100,7 +100,7 @@ namespace CompMs.MsdialDimsCore {
 
                 Console.WriteLine("Annotation started");
                 foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
-                    AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textDB, param.MspSearchParam, null);
+                    AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textDB, param.MspSearchParam, null, param.TargetOmics);
                 }
 
                 new PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);

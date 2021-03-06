@@ -28,12 +28,12 @@
                                            ItemsSource="{Binding Spectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.5" />
+                                           ChartMargin="0,0.1" />
         <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
                                            ItemsSource="{Binding ReferenceSpectrum, Source={x:Reference Name=ExpRefPlot}}"
                                            ValuePropertyName="Intensity"
                                            Bounds="0,0"
-                                           ChartMargin="0,0.5"/>
+                                           ChartMargin="0,0.1"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>

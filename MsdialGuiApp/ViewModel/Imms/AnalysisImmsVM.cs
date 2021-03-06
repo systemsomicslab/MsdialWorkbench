@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -289,10 +290,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private CancellationTokenSource cts;
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
             cts?.Cancel();
-            cts = new CancellationTokenSource();
+            var localCts = cts = new CancellationTokenSource();
 
             try {
-                await OnTargetChangedAsync(target, cts.Token).ConfigureAwait(false);
+                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
+                    t => {
+                        localCts.Dispose();
+                        if (cts == localCts)
+                            cts = null;
+                    }).ConfigureAwait(false);
             }
             catch (OperationCanceledException) {
 
@@ -431,13 +437,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
-        /*
         public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
             var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
-            var window = new View.Dims.CompoundSearchWindow
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,
@@ -446,6 +451,5 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             window.ShowDialog();
         }
-        */
     }
 }

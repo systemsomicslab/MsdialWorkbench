@@ -75,6 +75,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
                         result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
                     }
+                    result.Priority = DataBasePriority.MspDB;
                     if (result != null && (result.IsSpectrumMatch || result.IsPrecursorMzMatch)) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
@@ -84,6 +85,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
                         chromPeak.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = result;
+                        chromPeak.MatchResults.AddMspResult(msdecResult.RawSpectrumID, result);
                         DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[result.LibraryIDWhenOrdered], result);
                         chromPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID] = new List<int>();
                     }
@@ -102,6 +104,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
                     var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    result.Priority = DataBasePriority.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
@@ -114,6 +117,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                         DataAccess.SetMoleculeMsProperty(chromPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     chromPeak.TextDbIDs.Add(result.LibraryID);
+                    chromPeak.MatchResults.AddTextDbResult(result);
                 }
             }
         }

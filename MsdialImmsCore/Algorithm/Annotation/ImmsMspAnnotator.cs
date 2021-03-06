@@ -5,6 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -57,11 +58,13 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
 
             (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
+            var pc160182 = mspDB.FirstOrDefault(msp => msp.Name.Contains("18:2") && msp.Name.Contains("16:0") && msp.Name.Contains("PC"));
+            if (pc160182 != null)
+                Console.WriteLine(pc160182.Name);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
-                if (candidate.ChromXs.Drift.Value < property.ChromXs.Drift.Value - parameter.CcsTolerance
-                    || property.ChromXs.Drift.Value + parameter.CcsTolerance < candidate.ChromXs.Drift.Value)
+                if (Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) > parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics);
                 result.LibraryIDWhenOrdered = i;
@@ -106,6 +109,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, CcsSimilarity = (float)ccsSimilarity, IsotopeSimilarity = (float)isotopeSimilarity,
+                Priority = DataBasePriority.MspDB,
             };
 
             var scores = new List<float> { };
@@ -201,11 +205,26 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
 
-            result.Name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+            MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
             result.IsLipidChainsMatch = isLipidChainsMatch;
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
             result.IsOtherLipidMatch = isOtherLipidMatch;
+
+            if (result.IsOtherLipidMatch)
+                return;
+
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
+            if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
+                result.Name = reference.Name; // for others and splash etc in compoundclass
+            }
+
+            if (molecule.SublevelLipidName == molecule.LipidName) {
+                result.Name = molecule.LipidName;
+            }
+            else {
+                result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
+            }
         }
     }
 }

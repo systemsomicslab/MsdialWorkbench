@@ -68,12 +68,16 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             if (maxMspMatchedScore >= 0) {
-                chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
+                var result = chromPeak.DriftChromFeatures[maxMspMatchedDriftSpotID].MspBasedMatchResult.Clone();
+                chromPeak.MSRawID2MspBasedMatchResult[msdecResults[chromPeak.MasterPeakID].RawSpectrumID] = result;
+                chromPeak.MatchResults.AddMspResult(msdecResults[chromPeak.MasterPeakID].RawSpectrumID, result);
                 DataAccess.SetMoleculeMsProperty(chromPeak, mspDB[chromPeak.MspIDWhenOrdered], chromPeak.MspBasedMatchResult);
             }
 
             if (maxTextDBMatchedDriftSpotID >= 0) {
-                chromPeak.TextDbBasedMatchResult = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbBasedMatchResult.Clone();
+                var result = chromPeak.DriftChromFeatures[maxTextDBMatchedDriftSpotID].TextDbBasedMatchResult.Clone();
+                chromPeak.TextDbBasedMatchResult = result;
+                chromPeak.MatchResults.AddTextDbResult(result);
                 DataAccess.SetMoleculeMsProperty(chromPeak, textDB[chromPeak.TextDbIDWhenOrdered], chromPeak.TextDbBasedMatchResult, true);
             }
         }
@@ -107,6 +111,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
                         result = MsScanMatching.CompareIMMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
                     }
+                    result.Priority = DataBasePriority.MspDB;
                     if (result.IsSpectrumMatch || result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
@@ -116,6 +121,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 foreach (var (result, index) in candidates.OrEmptyIfNull().OrderByDescending(n => n.TotalScore).WithIndex()) {
                     if (index == 0) {
                         driftPeak.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = result;
+                        driftPeak.MatchResults.AddMspResult(msdecResult.RawSpectrumID, result);
                         DataAccess.SetMoleculeMsProperty(driftPeak, mspDB[result.LibraryIDWhenOrdered], result);
 
                         driftPeak.MSRawID2MspIDs[msdecResult.RawSpectrumID] = new List<int>();
@@ -129,12 +135,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     new MoleculeMsReference() { PrecursorMz = chromPeak.Mass - ms1Tol },
                     (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
                 var candidates = new List<MsScanMatchResult>();
-                for (int i = startID; i < mspDB.Count; i++) {
-                    var refSpec = mspDB[i];
+                for (int i = startID; i < textDB.Count; i++) {
+                    var refSpec = textDB[i];
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
                     var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    result.Priority = DataBasePriority.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
@@ -147,6 +154,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                         DataAccess.SetMoleculeMsProperty(driftPeak, textDB[result.LibraryIDWhenOrdered], result, true);
                     }
                     driftPeak.TextDbIDs.Add(result.LibraryID);
+                    driftPeak.MatchResults.AddTextDbResult(result);
                 }
             }
         }

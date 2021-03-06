@@ -29,21 +29,6 @@ using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    [Flags]
-    enum DisplayFilter : uint
-    {
-        Unset = 0x0,
-        RefMatched = 0x1,
-        Suggested = 0x2,
-        Unknown = 0x4,
-        Ms2Acquired = 0x8,
-        MolecularIon = 0x10,
-        Blank = 0x20,
-        UniqueIons = 0x40,
-
-        Annotates = RefMatched | Suggested | Unknown,
-    }
-
     public class DimsMethodVM : MethodVM {
         public AnalysisDimsVM AnalysisVM {
             get => analysisVM;
@@ -113,6 +98,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             get => ReadDisplayFilter(DisplayFilter.UniqueIons);
             set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
         }
+        public bool ManuallyModifiedChecked {
+            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
+            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
+        }
         private DisplayFilter displayFilters = 0;
 
         void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
@@ -136,7 +125,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Mz);
         }
 
-        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
+        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
+            : base(serializer) {
             Storage = storage;
             mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
 
