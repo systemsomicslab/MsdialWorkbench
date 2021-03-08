@@ -129,8 +129,8 @@ namespace CompMs.Graphics.Core.Base
                     FrameworkPropertyMetadataOptions.Inherits,
                     ChartUpdate));
 
-        public static IAxisManager GetFlippedX(DependencyObject d)
-            => (IAxisManager)d.GetValue(FlippedXProperty);
+        public static bool GetFlippedX(DependencyObject d)
+            => (bool)d.GetValue(FlippedXProperty);
 
         public static void SetFlippedX(DependencyObject d, IAxisManager value)
             => d.SetValue(FlippedXProperty, value);
@@ -148,8 +148,8 @@ namespace CompMs.Graphics.Core.Base
                     FrameworkPropertyMetadataOptions.Inherits,
                     ChartUpdate));
 
-        public static IAxisManager GetFlippedY(DependencyObject d)
-            => (IAxisManager)d.GetValue(FlippedYProperty);
+        public static bool GetFlippedY(DependencyObject d)
+            => (bool)d.GetValue(FlippedYProperty);
 
         public static void SetFlippedY(DependencyObject d, IAxisManager value)
             => d.SetValue(FlippedYProperty, value);

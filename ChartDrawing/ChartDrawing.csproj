@@ -79,6 +79,7 @@
     <Compile Include="Behavior\ChildDoubleClickBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />
+    <Compile Include="Behavior\ZoomByDragBehavior.cs" />
     <Compile Include="Chart\Annotator.cs" />
     <Compile Include="Chart\SimpleChartControl.cs" />
     <Compile Include="Controls\FileOpenControl.cs" />

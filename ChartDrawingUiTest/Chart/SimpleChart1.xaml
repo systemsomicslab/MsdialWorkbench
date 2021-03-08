@@ -50,6 +50,7 @@
                                   VerticalTitle="Vertical title"
                                   Background="WhiteSmoke"
                                   BorderBrush="Black"
+                                  behavior:ZoomByDragBehavior.IsEnabled="True"
                                   Grid.Row="1">
             <scatter:ScatterControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                     HorizontalPropertyName="X"
