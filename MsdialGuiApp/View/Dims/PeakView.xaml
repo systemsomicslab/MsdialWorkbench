@@ -10,6 +10,7 @@
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:special="clr-namespace:CompMs.Graphics.Specialized;assembly=MsdialGuiApi"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
@@ -166,7 +167,7 @@
             <TextBlock.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
-                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
+                    <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
                 </TransformGroup>
             </TextBlock.LayoutTransform>
         </TextBlock>
