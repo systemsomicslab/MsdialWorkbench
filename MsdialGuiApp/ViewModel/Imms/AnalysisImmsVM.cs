@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -374,7 +375,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             await Task.Run(() => {
                 var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
-                Console.WriteLine($"Drift time: {provider.LoadMsSpectrums()[target.MS2RawSpectrumId].DriftTime}");
                 if (parameter.RemoveAfterPrecursor)
                     spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
                 token.ThrowIfCancellationRequested();
@@ -437,13 +437,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
-        /*
         public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
             var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
-            var window = new View.Dims.CompoundSearchWindow
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,
@@ -452,6 +451,5 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             window.ShowDialog();
         }
-        */
     }
 }

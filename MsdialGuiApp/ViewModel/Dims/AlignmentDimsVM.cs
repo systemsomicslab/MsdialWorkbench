@@ -136,6 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
         public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
         // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
         internal DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -258,16 +259,29 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             await Task.Run(() => {
-                if ((target.innerModel.MatchResults.Representative ?? target.innerModel.MspBasedMatchResult) is MsScanMatchResult matched) {
-                    // TODO: It should not be limitted to TextDB. MsScanMatchResult should be able to find its own references.
-                    if (target.innerModel.MatchResults.TextDbBasedMatchResults.Contains(matched))
-                        return;
-                    var reference = mspAnnotator.Refer(matched);
-                    if (reference != null) {
-                        Ms2ReferenceSpectrum = reference.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                    }
+                var representative = RetrieveMspMatchResult(target.innerModel);
+                if (representative == null)
+                    return;
+
+                var reference = mspAnnotator.Refer(representative);
+                if (reference != null) {
+                    Ms2ReferenceSpectrum = reference.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }
             }).ConfigureAwait(false);
+        }
+
+        MsScanMatchResult RetrieveMspMatchResult(AlignmentSpotProperty prop) {
+            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
+                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                    return null;
+                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
+                    return null;
+                }
+                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                    return representative;
+                }
+            }
+            return prop.MspBasedMatchResult;
         }
 
         bool PeakFilter(object obj) {
@@ -285,7 +299,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched
                 || SuggestedChecked && spot.IsSuggested
-                || UnknownChecked && spot.IsUnknown;
+                || UnknownChecked && spot.IsUnknown
+                || ManuallyModifiedChecked && spot.innerModel.IsManuallyModifiedForAnnotation;
         }
 
         bool MzFilter(AlignmentSpotPropertyVM spot) {
@@ -301,7 +316,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
-            var window = new View.Dims.CompoundSearchWindow
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,
@@ -311,6 +326,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (window.ShowDialog() == true) {
                 Target.RaisePropertyChanged();
                 OnPropertyChanged(nameof(Target));
+                Ms1Spots?.Refresh();
             }
         }
 

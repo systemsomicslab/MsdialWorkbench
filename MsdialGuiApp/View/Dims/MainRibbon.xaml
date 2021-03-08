@@ -223,6 +223,7 @@
                 <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}"/>
                 <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
                 <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
+                <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"

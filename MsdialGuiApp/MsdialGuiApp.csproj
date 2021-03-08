@@ -186,7 +186,7 @@
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
-    <Compile Include="ViewModel\Dims\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\DisplayFilter.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
@@ -224,10 +224,13 @@
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Dims\ChromatogramView.xaml.cs" >
+      <DependentUpon>ChromatogramView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundSearchWindow.xaml.cs">
+    <Compile Include="View\CompoundSearchWindow.xaml.cs">
       <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\EicView.xaml.cs">
@@ -461,11 +464,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\Dims\ChromatogramView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Dims\CompoundDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\CompoundSearchWindow.xaml">
+    <Page Include="View\CompoundSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

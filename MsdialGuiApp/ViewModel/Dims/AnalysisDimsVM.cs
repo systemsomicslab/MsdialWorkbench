@@ -146,6 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
         // public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
         // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
         internal DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -249,7 +250,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
-                || UnknownChecked && peak.IsUnknown;
+                || UnknownChecked && peak.IsUnknown
+                || ManuallyModifiedChecked && peak.InnerModel.IsManuallyModifiedForAnnotation;
         }
 
         bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
@@ -347,11 +349,29 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             await Task.Run(() => {
-                if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = mspAnnotator.Refer(matched);
-                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+                var representative = RetrieveMspMatchResult(target.InnerModel);
+                if (representative == null)
+                    return;
+
+                var reference = mspAnnotator.Refer(representative);
+                if (reference != null) {
+                    Ms2ReferenceSpectrum = reference.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }
             }).ConfigureAwait(false);
+        }
+
+        MsScanMatchResult RetrieveMspMatchResult(ChromatogramPeakFeature prop) {
+            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
+                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                    return null;
+                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
+                    return null;
+                }
+                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                    return representative;
+                }
+            }
+            return prop.MspBasedMatchResult;
         }
 
         static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
@@ -383,7 +403,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void SearchCompound(Window owner) {
             var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator, param.MspSearchParam);
-            var window = new View.Dims.CompoundSearchWindow
+            var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
                 Owner = owner,
@@ -393,6 +413,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (window.ShowDialog() == true) {
                 Target.RaisePropertyChanged();
                 OnPropertyChanged(nameof(Target));
+                Ms1Peaks?.Refresh();
             }
         }
 

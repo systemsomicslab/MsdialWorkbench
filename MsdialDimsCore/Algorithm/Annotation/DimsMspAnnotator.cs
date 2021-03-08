@@ -155,22 +155,26 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private static void ValidateOnLipidomics(MsScanMatchResult result, IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             ValidateBase(result, property, reference, parameter);
 
+            MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+            result.IsLipidChainsMatch = isLipidChainsMatch;
+            result.IsLipidClassMatch = isLipidClassMatch;
+            result.IsLipidPositionMatch = isLipidPositionMatch;
+            result.IsOtherLipidMatch = isOtherLipidMatch;
+
+            if (result.IsOtherLipidMatch)
+                return;
+
             var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
             if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
                 result.Name = reference.Name; // for others and splash etc in compoundclass
             }
+
             if (molecule.SublevelLipidName == molecule.LipidName) {
                 result.Name = molecule.LipidName;
             }
             else {
                 result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
             }
-
-            MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
-            result.IsLipidChainsMatch = isLipidChainsMatch;
-            result.IsLipidClassMatch = isLipidClassMatch;
-            result.IsLipidPositionMatch = isLipidPositionMatch;
-            result.IsOtherLipidMatch = isOtherLipidMatch;
         }
     }
 }

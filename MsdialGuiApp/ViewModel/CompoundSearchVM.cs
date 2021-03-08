@@ -17,9 +17,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace CompMs.App.Msdial.ViewModel.Dims
+namespace CompMs.App.Msdial.ViewModel
 {
-    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty {
+    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
+    {
         public ObservableCollection<CompoundResult> Compounds {
             get => compounds;
             set {
@@ -82,8 +83,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
-            this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
+            Annotator = annotator;
+            ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
 
             FileID = analysisFile.AnalysisFileId;
             FileName = analysisFile.AnalysisFileName;
@@ -105,8 +106,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             this.msdecResult = msdecResult;
             this.isotopes = isotopes;
-            this.Annotator = annotator;
-            this.ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
+            Annotator = annotator;
+            ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
 
             FileID = alignmentFile.FileID;
             FileName = alignmentFile.FileName;
@@ -123,7 +124,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand searchCommand;
 
         private bool canSearch = false;
+        private static double EPS = 1e-10;
         private bool CanSearch() {
+            if (ParameterVM.Ms1Tolerance <= EPS || ParameterVM.Ms2Tolerance <= EPS)
+                return false;
             return canSearch;
         }
 
@@ -150,6 +154,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private async void OnParameterChanged(object sender, PropertyChangedEventArgs e) {
+            if (!CanSearch()) {
+                return;
+            }
+
             if (cts != null) {
                 cts.Cancel();
             }
@@ -197,6 +205,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsConfidence(property, reference, result);
             if (property is IAnnotatedObject obj) {
+                obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(result);
             }
         }
@@ -210,6 +219,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var result = compound.matchResult;
             DataAccess.SetMoleculeMsPropertyAsUnsettled(property, reference, result);
             if (property is IAnnotatedObject obj) {
+                obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(result);
             }
         }
@@ -229,11 +239,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(property);
             if (property is IAnnotatedObject obj) {
-                obj.MatchResults.ClearResults();
+                obj.MatchResults.RemoveManuallyResults();
+                obj.MatchResults.AddResult(new MsScanMatchResult { Priority = DataBasePriority.Manual | DataBasePriority.Unknown });
             }
         }
     }
+}
 
+namespace CompMs.App.Msdial.ViewModel
+{
     public class CompoundResult
     {
         public int LibraryID => matchResult.LibraryID;
@@ -258,7 +272,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.matchResult = matchResult;
         }
     }
+}
 
+namespace CompMs.App.Msdial.ViewModel
+{
     public class MsRefSearchParameterVM : ViewModelBase
     {
         public float Ms1Tolerance {
