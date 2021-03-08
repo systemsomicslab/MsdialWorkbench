@@ -33,6 +33,16 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore)) : null;
 
+        [IgnoreMember]
+        public bool IsMspBasedRepresentative => MSRawID2MspBasedMatchResult.Values.Contains(Representative);
+
+        [IgnoreMember]
+        public bool IsTextDbBasedRepresentative => TextDbBasedMatchResults.Contains(Representative);
+        [IgnoreMember]
+        public bool IsManuallyModifiedRepresentative => (Representative.Priority & DataBasePriority.Manual) == DataBasePriority.Manual;
+        [IgnoreMember]
+        public bool IsUnknown => (Representative.Priority & DataBasePriority.Unknown) == DataBasePriority.Unknown;
+
         public void AddResult(MsScanMatchResult result) {
             MatchResults.Add(result);
         }

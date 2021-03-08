@@ -116,20 +116,27 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                 .Where(candidate => candidate.TotalScore >= mspSearchParameter.TotalScoreCutoff)
                 .ToList();
+            chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
+            var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
             if (omics == TargetOmics.Lipidomics)
-                results = results.Where(
+                matches = matches.Where(
                     candidate =>
                         candidate.IsLipidClassMatch
                         || candidate.IsLipidChainsMatch
                         || candidate.IsLipidPositionMatch
                         || candidate.IsOtherLipidMatch)
                     .ToList();
-            chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-            if (results.Count > 0) {
-                var best = results.Argmax(result => result.TotalScore);
+            if (matches.Count > 0) {
+                var best = matches.Argmax(result => result.TotalScore);
                 chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
                 chromPeakFeature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, mspAnnotator.Refer(best), best);
+            }
+            else if (results.Count > 0) {
+                var best = results.Argmax(result => result.TotalScore);
+                chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
+                chromPeakFeature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
+                DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, mspAnnotator.Refer(best), best);
             }
         }
 

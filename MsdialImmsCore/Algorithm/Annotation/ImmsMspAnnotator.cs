@@ -58,9 +58,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
 
             (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
-            var pc160182 = mspDB.FirstOrDefault(msp => msp.Name.Contains("18:2") && msp.Name.Contains("16:0") && msp.Name.Contains("PC"));
-            if (pc160182 != null)
-                Console.WriteLine(pc160182.Name);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];

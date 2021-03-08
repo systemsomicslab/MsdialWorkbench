@@ -128,16 +128,13 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public bool IsReferenceMatched {
             get {
-                if (MatchResults?.Representative is MsScanMatchResult result) {
-                    if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
-                        return false;
-                    if ((result.Priority & DataBasePriority.Unknown) == DataBasePriority.None)
-                        return true;
+                if (MatchResults.IsManuallyModifiedRepresentative) {
+                    return !MatchResults.IsUnknown;
                 }
-                if (TextDbID >= 0) {
+                if (TextDbBasedMatchResult != null) {
                     return true;
                 }
-                if (MspID >= 0 && MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch)) {
+                if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
                     return true;
                 }
                 return false;
@@ -147,20 +144,32 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public bool IsAnnotationSuggested {
             get {
-                if (IsReferenceMatched)
+                if (MatchResults.IsManuallyModifiedRepresentative) {
                     return false;
-                if (MatchResults?.Representative is MsScanMatchResult result) {
-                    if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
-                        return false;
                 }
-                return MspID >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
+                else if (TextDbBasedMatchResult != null) {
+                    return false;
+                }
+                else if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
+                    return false;
+                }
+                else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
+                    return true;
+                }
+                return false;
             }
         }
 
         [IgnoreMember]
         public bool IsUnknown {
             get {
-                return !IsReferenceMatched && !IsAnnotationSuggested;
+                if (matchResults.IsManuallyModifiedRepresentative && matchResults.IsUnknown) {
+                    return true;
+                }
+                if (matchResults.IsUnknown && (TextDbBasedMatchResult == null || MspBasedMatchResult == null)) {
+                    return true;
+                }
+                return false;
             }
         }
 

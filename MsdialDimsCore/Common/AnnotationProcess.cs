@@ -71,21 +71,28 @@ namespace CompMs.MsdialDimsCore.Common {
                     .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
                     .Where(candidate => candidate.TotalScore >= param.TotalScoreCutoff)
                     .ToList();
+                feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
+                var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
                 if (omics == TargetOmics.Lipidomics)
-                    results = results.Where(
+                    matches = matches.Where(
                         candidate =>
                             candidate.IsLipidClassMatch
                             || candidate.IsLipidChainsMatch
                             || candidate.IsLipidPositionMatch
                             || candidate.IsOtherLipidMatch)
                         .ToList();
-                feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-                if (results.Count > 0)
+                if (matches.Count > 0) {
+                    var best = matches.Argmax(result => result.TotalScore);
+                    feature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
+                    feature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
+                    DataAccess.SetMoleculeMsProperty(feature, mspAnnotator.Refer(best), best);
+                }
+                else if (results.Count > 0)
                 {
                     var best = results.Argmax(result => result.TotalScore);
                     feature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
                     feature.MatchResults.AddMspResult(msdecResult.RawSpectrumID, best);
-                    DataAccess.SetMoleculeMsProperty(feature, mspAnnotator.Refer(best), best);
+                    DataAccess.SetMoleculeMsPropertyAsSuggested(feature, mspAnnotator.Refer(best), best);
                 }
             }
 

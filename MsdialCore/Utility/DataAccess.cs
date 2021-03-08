@@ -1050,6 +1050,12 @@ namespace CompMs.MsdialCore.Utility {
             SetMoleculeMsProperty(feature, reference, result, true);
         }
 
+        public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AddAdductType(reference.AdductType);
+            feature.Name = "w/o MS2: " + result.Name;
+        }
+
         public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);

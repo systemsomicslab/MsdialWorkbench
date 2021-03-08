@@ -50,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             analysisFilesView = CollectionViewSource.GetDefaultView(AnalysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
             alignmentFilesView = CollectionViewSource.GetDefaultView(AlignmentFiles);
+
+            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;
@@ -119,7 +121,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             get => ReadDisplayFilter(DisplayFilter.UniqueIons);
             set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
         }
+        public bool ManuallyModifiedChecked {
+            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
+            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
+        }
         private DisplayFilter displayFilters = DisplayFilter.Unset;
+
+        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(displayFilters)) {
+                if (AnalysisVM != null)
+                    AnalysisVM.DisplayFilters = displayFilters;
+                if (AlignmentVM != null)
+                    AlignmentVM.DisplayFilters = displayFilters;
+            }
+        }
 
         public override int InitializeNewProject(Window window) {
             // Set analysis param
@@ -314,6 +329,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private void WriteDisplayFilter(DisplayFilter flag, bool set) {
             displayFilters.Write(flag, set);
+            OnPropertyChanged(nameof(displayFilters));
         }
     }
 }

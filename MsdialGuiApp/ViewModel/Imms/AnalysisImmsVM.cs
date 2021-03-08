@@ -206,6 +206,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public bool CcsChecked => ReadDisplayFilters(DisplayFilter.CcsMatched);
         public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
         public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
+        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
         internal DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -322,95 +323,134 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            Ms1Spectrum = new List<SpectrumPeakWrapper>();
-            Ms1SplashKey = string.Empty;
+            var ms1Spectrum = new List<SpectrumPeakWrapper>();
+            var ms1SplashKey = string.Empty;
 
-            if (target == null)
-                return;
+            if (target != null) {
+                await Task.Run(() => {
+                    if (target.MS1RawSpectrumIdTop < 0) {
+                        return;
+                    }
+                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                    ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                    ms1SplashKey = CalculateSplashKey(spectra);
+                }, token);
+            }
 
-            await Task.Run(() => {
-                var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
-                token.ThrowIfCancellationRequested();
-                Ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                Ms1SplashKey = CalculateSplashKey(spectra);
-            }, token);
+            token.ThrowIfCancellationRequested();
+            Ms1Spectrum = ms1Spectrum;
+            Ms1SplashKey = ms1SplashKey;
         }
 
         async Task LoadEicAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            Eic = new List<ChromatogramPeakWrapper>();
-            PeakEic = new List<ChromatogramPeakWrapper>();
-            FocusedEic = new List<ChromatogramPeakWrapper>();
+            var eic = new List<ChromatogramPeakWrapper>();
+            var peakEic = new List<ChromatogramPeakWrapper>();
+            var focusedEic = new List<ChromatogramPeakWrapper>();
 
-            if (target == null)
-                return;
+            if (target != null) {
+                await Task.Run(() => {
+                    eic = DataAccess.GetSmoothedPeaklist(
+                            DataAccess.GetMs1Peaklist(provider.LoadMs1Spectrums(), target.Mass, parameter.CentroidMs1Tolerance, parameter.IonMode),
+                            parameter.SmoothingMethod, parameter.SmoothingLevel)
+                    .Where(peak => peak != null)
+                    .Select(peak => new ChromatogramPeakWrapper(peak))
+                    .ToList();
 
-            await Task.Run(() => {
-                Eic = DataAccess.GetSmoothedPeaklist(
-                        DataAccess.GetMs1Peaklist(provider.LoadMs1Spectrums(), target.Mass, parameter.CentroidMs1Tolerance, parameter.IonMode),
-                        parameter.SmoothingMethod, parameter.SmoothingLevel)
-                .Where(peak => peak != null)
-                .Select(peak => new ChromatogramPeakWrapper(peak))
-                .ToList();
+                    if (eic.Count == 0)
+                        return;
 
-                if (Eic.Count == 0)
-                    return;
+                    token.ThrowIfCancellationRequested();
 
-                token.ThrowIfCancellationRequested();
-                PeakEic = Eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
+                    peakEic = eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
 
-                token.ThrowIfCancellationRequested();
-                FocusedEic = new List<ChromatogramPeakWrapper> {
-                    Eic.Where(peak => peak.ChromXValue.HasValue)
-                       .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))
-                };
-            }, token).ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
+                    focusedEic = new List<ChromatogramPeakWrapper> {
+                        eic.Where(peak => peak.ChromXValue.HasValue)
+                           .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))
+                    };
+                }, token).ConfigureAwait(false);
+            }
+
+            token.ThrowIfCancellationRequested();
+            Eic = eic;
+            PeakEic = peakEic;
+            FocusedEic = focusedEic;
         }
 
         async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            Ms2Spectrum = new List<SpectrumPeakWrapper>();
-            RawSplashKey = string.Empty;
+            var ms2Spectrum = new List<SpectrumPeakWrapper>(); 
+            var rawSplashKey = string.Empty;
 
-            if (target == null)
-                return;
+            if (target != null) {
+                await Task.Run(() => {
+                    if (target.MS2RawSpectrumId < 0)
+                        return;
+                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
+                    if (parameter.RemoveAfterPrecursor)
+                        spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
+                    token.ThrowIfCancellationRequested();
+                    ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                    rawSplashKey = CalculateSplashKey(spectra);
+                }, token).ConfigureAwait(false);
+            }
 
-            await Task.Run(() => {
-                var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
-                if (parameter.RemoveAfterPrecursor)
-                    spectra = spectra.Where(peak => peak.Mass <= target.Mass + parameter.KeptIsotopeRange).ToList();
-                token.ThrowIfCancellationRequested();
-                Ms2Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                RawSplashKey = CalculateSplashKey(spectra);
-            }, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            Ms2Spectrum = ms2Spectrum;
+            RawSplashKey = rawSplashKey;
         }
 
         async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            Ms2DecSpectrum = new List<SpectrumPeakWrapper>();
-            DeconvolutionSplashKey = string.Empty;
+            var ms2DecSpectrum = new List<SpectrumPeakWrapper>();
+            var deconvolutionSplashKey = string.Empty;
 
-            if (target == null)
-                return;
+            if (target != null) {
+                await Task.Run(() => {
+                    var idx = _ms1Peaks.IndexOf(target);
+                    msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[idx]);
+                    token.ThrowIfCancellationRequested();
+                    ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
+                    deconvolutionSplashKey = CalculateSplashKey(msdecResult.Spectrum);
+                }, token).ConfigureAwait(false);
+            }
 
-            await Task.Run(() => {
-                var idx = _ms1Peaks.IndexOf(target);
-                msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[idx]);
-                token.ThrowIfCancellationRequested();
-                Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
-            }, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            Ms2DecSpectrum = ms2DecSpectrum;
+            DeconvolutionSplashKey = deconvolutionSplashKey;
         }
 
         async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
+            var ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
 
-            if (target == null)
-                return;
+            if (target != null) {
+                await Task.Run(() => {
+                    var representative = RetrieveMspMatchResult(target.InnerModel);
+                    if (representative == null)
+                        return;
 
-            await Task.Run(() => {
-                if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = mspAnnotator.Refer(matched);
-                    token.ThrowIfCancellationRequested();
-                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
+                    var reference = mspAnnotator.Refer(representative);
+                    if (reference != null) {
+                        token.ThrowIfCancellationRequested();
+                        ms2ReferenceSpectrum = reference.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                    }
+                }, token).ConfigureAwait(false);
+            }
+
+            token.ThrowIfCancellationRequested();
+            Ms2ReferenceSpectrum = ms2ReferenceSpectrum;
+        }
+
+        MsScanMatchResult RetrieveMspMatchResult(ChromatogramPeakFeature prop) {
+            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
+                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                    return null;
+                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
+                    return null;
                 }
-            }, token).ConfigureAwait(false);
+                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                    return representative;
+                }
+            }
+            return prop.MspBasedMatchResult;
         }
 
         static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
