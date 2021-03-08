@@ -137,7 +137,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{TemplateBinding GraphTitle}"
+                        <TextBlock Name="GraphTitle"
+                                   Text="{TemplateBinding GraphTitle}"
                                    Style="{StaticResource GraphTitle}"
                                    IsHitTestVisible="False"
                                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
@@ -160,19 +161,18 @@
                                                   Margin="0,0,0,1"
                                                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                        <TextBlock Text="{TemplateBinding HorizontalTitle}"
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
                                    Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
                                    Grid.Row="3" Grid.Column="2"/>
-                        <TextBlock Text="{TemplateBinding VerticalTitle}"
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
                                    Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
                                    Grid.Row="1" Grid.Column="0">
                             <TextBlock.LayoutTransform>
-                                <TransformGroup>
-                                    <RotateTransform Angle="-90"/>
-                                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
-                                </TransformGroup>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
                             </TextBlock.LayoutTransform>
                         </TextBlock>
                     </Grid>
