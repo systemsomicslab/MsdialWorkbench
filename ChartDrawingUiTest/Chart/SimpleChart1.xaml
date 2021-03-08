@@ -45,6 +45,7 @@
         <chart:SimpleChartControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                   VerticalAxis="{StaticResource VerticalAxis}"
                                   FlippedY="False"
+                                  GraphTitle="Graph Title"
                                   HorizontalTitle="Horizontal title"
                                   VerticalTitle="Vertical title"
                                   Background="WhiteSmoke"

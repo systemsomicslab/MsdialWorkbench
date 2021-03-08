@@ -110,16 +110,23 @@
                 <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
                     <Grid>
                         <Grid.Resources>
-                            <Style TargetType="TextBlock">
+                            <Style TargetType="TextBlock" x:Key="GraphTitle">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontSize" Value="18"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                            <Style TargetType="TextBlock" x:Key="AxisTitle">
                                 <Setter Property="FontFamily" Value="Calibri"/>
                                 <Setter Property="FontStyle" Value="Italic"/>
                                 <Setter Property="FontSize" Value="13"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>                           
+                            </Style>
                         </Grid.Resources>
 
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
                             <RowDefinition />
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="15"/>
@@ -129,11 +136,16 @@
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        
+
+                        <TextBlock Text="{TemplateBinding GraphTitle}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+
                         <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="1,0,0,1"
-                                Grid.Row="0" Grid.Column="2">
+                                Grid.Row="1" Grid.Column="2">
                             <ContentPresenter/>
                         </Border>
 
@@ -141,19 +153,21 @@
                                                     LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
-                                                    Grid.Row="1" Grid.RowSpan="2" Grid.Column="2"/>
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
                         <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
                                                   LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
-                                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
                         <TextBlock Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
-                                   Grid.Row="2" Grid.Column="2"/>
+                                   Grid.Row="3" Grid.Column="2"/>
                         <TextBlock Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
-                                   Grid.Row="0" Grid.Column="0">
+                                   Grid.Row="1" Grid.Column="0">
                             <TextBlock.LayoutTransform>
                                 <TransformGroup>
                                     <RotateTransform Angle="-90"/>

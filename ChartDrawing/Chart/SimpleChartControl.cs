@@ -102,10 +102,20 @@ namespace CompMs.Graphics.Chart
             set => SetValue(FlippedYProperty, BooleanBoxes.Box(value));
         }
 
+        public static readonly DependencyProperty GraphTitleProperty =
+            DependencyProperty.Register(
+                nameof(GraphTitle), typeof(string), typeof(SimpleChartControl),
+                new PropertyMetadata(string.Empty));
+
+        public string GraphTitle {
+            get => (string)GetValue(GraphTitleProperty);
+            set => SetValue(GraphTitleProperty, value);
+        }
+
         public static readonly DependencyProperty HorizontalTitleProperty =
             DependencyProperty.Register(
                 nameof(HorizontalTitle), typeof(string), typeof(SimpleChartControl),
-                new FrameworkPropertyMetadata(string.Empty));
+                new PropertyMetadata(string.Empty));
 
         public string HorizontalTitle {
             get => (string)GetValue(HorizontalTitleProperty);
@@ -115,7 +125,7 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty VerticalTitleProperty =
             DependencyProperty.Register(
                 nameof(VerticalTitle), typeof(string), typeof(SimpleChartControl),
-                new FrameworkPropertyMetadata(string.Empty));
+                new PropertyMetadata(string.Empty));
 
         public string VerticalTitle {
             get => (string)GetValue(VerticalTitleProperty);
@@ -128,7 +138,7 @@ namespace CompMs.Graphics.Chart
             get => horizontalAxisElement;
             set {
                 if (horizontalAxisElement != null) {
-                    horizontalAxisElement.ClearValue(ChartBaseControl.HorizontalAxisProperty);
+                    BindingOperations.ClearBinding(horizontalAxisElement, ChartBaseControl.HorizontalAxisProperty);
                 }
                 horizontalAxisElement = value;
                 if (horizontalAxisElement != null) {
@@ -141,7 +151,7 @@ namespace CompMs.Graphics.Chart
             get => verticalAxisElement;
             set {
                 if (verticalAxisElement != null) {
-                    verticalAxisElement.ClearValue(ChartBaseControl.VerticalAxisProperty);
+                    BindingOperations.ClearBinding(verticalAxisElement, ChartBaseControl.VerticalAxisProperty);
                 }
                 verticalAxisElement = value;
                 if (verticalAxisElement != null) {
