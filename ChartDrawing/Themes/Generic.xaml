@@ -3,7 +3,8 @@
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart"
                     xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis"
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
-                    xmlns:ui="clr-namespace:CompMs.Graphics.UI">
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI"
+                    xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
     <!--FileOpenControl-->
     <Style TargetType="{x:Type control:FileOpenControl}">
@@ -143,11 +144,13 @@
                                    IsHitTestVisible="False"
                                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
 
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="1,0,0,1"
                                 Grid.Row="1" Grid.Column="2">
-                            <ContentPresenter/>
+                            <Border Background="{TemplateBinding Background}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="True">
+                                <ContentPresenter/>
+                            </Border>
                         </Border>
 
                         <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"

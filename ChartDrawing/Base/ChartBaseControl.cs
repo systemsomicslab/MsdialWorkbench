@@ -182,9 +182,7 @@ namespace CompMs.Graphics.Core.Base
             MouseLeftButtonDown += MoveOnMouseLeftButtonDown;
             MouseLeftButtonUp += MoveOnMouseLeftButtonUp;
             MouseMove += MoveOnMouseMove;
-            MouseRightButtonDown += ZoomOnMouseRightButtonDown;
-            MouseRightButtonUp += ZoomOnMouseRightButtonUp;
-            MouseMove += ZoomOnMouseMove;
+            Behavior.ZoomByDragBehavior.SetIsEnabled(this, true);
         }
 
         protected virtual void Update() { }
@@ -238,6 +236,7 @@ namespace CompMs.Graphics.Core.Base
         {
             zoomInitial = e.GetPosition(this);
             adorner = new RubberAdorner(this, zoomInitial);
+            adorner.Attach();
             CaptureMouse();
         }
 

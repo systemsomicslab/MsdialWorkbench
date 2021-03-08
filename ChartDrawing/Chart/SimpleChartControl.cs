@@ -164,5 +164,12 @@ namespace CompMs.Graphics.Chart
             HorizontalAxisElement = GetTemplateChild("PART_HorizontalAxis") as ChartBaseControl;
             VerticalAxisElement = GetTemplateChild("PART_VerticalAxis") as ChartBaseControl;
         }
+
+        protected override void OnContentChanged(object oldContent, object newContent) {
+            base.OnContentChanged(oldContent, newContent);
+            if (newContent is DependencyObject d) {
+                Behavior.ZoomByDragBehavior.SetIsEnabled(d, false);
+            }
+        }
     }
 }

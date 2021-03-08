@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Documents;
 using CompMs.Graphics.Core.Base;
+using System.Windows.Media;
 
 namespace CompMs.Graphics.Behavior
 {
@@ -45,9 +46,8 @@ namespace CompMs.Graphics.Behavior
         }
 
         static readonly DependencyProperty InitialPointProperty =
-            DependencyProperty.RegisterAttached(
-                "InitialPoint", typeof(Point), typeof(ZoomByDragBehavior),
-                new PropertyMetadata(new Point(0, 0)));
+            RubberAdorner.InitialPointProperty.AddOwner(
+                typeof(ZoomByDragBehavior));
 
         static Point GetInitialPoint(DependencyObject d) =>
             (Point)d.GetValue(InitialPointProperty);
@@ -66,11 +66,31 @@ namespace CompMs.Graphics.Behavior
         static void SetAdorner(DependencyObject d, RubberAdorner value) =>
             d.SetValue(AdornerProperty, value);
 
+        public static readonly DependencyProperty RubberBrushProperty
+            = RubberAdorner.RubberBrushProperty.AddOwner(typeof(ZoomByDragBehavior));
+
+        public static Brush GetRubberBrush(DependencyObject d)
+            => (Brush)d.GetValue(RubberBrushProperty);
+
+        public static void SetRubberBrush(DependencyObject d, Brush value)
+            => d.SetValue(RubberBrushProperty, value);
+
+        public static readonly DependencyProperty BorderPenProperty
+            = RubberAdorner.BorderPenProperty.AddOwner(typeof(ZoomByDragBehavior));
+
+        public static Pen GetBorderPen(DependencyObject d)
+            => (Pen)d.GetValue(BorderPenProperty);
+
+        public static void SetBorderPen(DependencyObject d, Pen value)
+            => d.SetValue(BorderPenProperty, value);
+
         static void ZoomOnMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             if (sender is FrameworkElement fe) {
                 var initial = e.GetPosition(fe);
                 SetInitialPoint(fe, initial);
-                SetAdorner(fe, new RubberAdorner(fe, initial));
+                var adorner = new RubberAdorner(fe, initial);
+                adorner.Attach();
+                SetAdorner(fe, adorner);
                 fe.CaptureMouse();
             }
         }
