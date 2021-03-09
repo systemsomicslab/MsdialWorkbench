@@ -19,72 +19,38 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="30" />
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition MaxHeight="40" />
-            <RowDefinition />
-            <RowDefinition Height="30" />
-            <RowDefinition MaxHeight="30" />
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+    </UserControl.Resources>
 
-        <Border Background="WhiteSmoke"
-                Margin="0,5,5,0" 
-                Grid.Row="1" Grid.Column="2">
+    <Grid>
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis, ElementName=PeakPairPlot}"
+                                  VerticalAxis="{Binding VerticalAxis, ElementName=PeakPairPlot}"
+                                  HorizontalTitle="{Binding HorizontalTitle, ElementName=PeakPairPlot}"
+                                  VerticalTitle="{Binding VerticalTitle, ElementName=PeakPairPlot}"
+                                  GraphTitle="{Binding GraphTitle, ElementName=PeakPairPlot}"
+                                  Background="WhiteSmoke" BorderBrush="Black"
+                                  Style="{StaticResource BasicChart}">
             <Grid>
                 <scatter:ScatterControl x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
-                                        HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                        VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                        RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                        RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
                                         HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
                                         EachPlotBrushName="SpotColor"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
+                                        behavior:ZoomByDragBehavior.IsEnabled="False"
                                         behavior:ScatterFocusBehavior.EnableOuter="True"
                                         behavior:ScatterFocusBehavior.OuterScale="1.3"
                                         behavior:ScatterFocusBehavior.InnerScale="1.2"
                                         behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
                                         behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
                                         behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
-                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}">
-                    <behavior:ScatterFocusBehavior.LabelTemplate>
-                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="FontSize" Value="9"/>
-                                        <Setter Property="Foreground" Value="Gray"/>
-                                    </Style>
-                                </StackPanel.Resources>
-                                <TextBlock Text="Spot ID: "/>
-                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}"/>
-                                <TextBlock Text="; "/>
-                                <TextBlock Text="Scan #: "/>
-                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}"/>
-                                <TextBlock Text="; "/>
-                                <TextBlock Text="DT[1/k0]: "/>
-                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N4, Mode=OneTime}"/>
-                                <TextBlock Text="; "/>
-                                <TextBlock Text="Mass[Da]: "/>
-                                <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}"/>
-                                <TextBlock Text=";"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </behavior:ScatterFocusBehavior.LabelTemplate>
-                </scatter:ScatterControl>
+                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}"
+                                        behavior:ScatterFocusBehavior.LabelTemplate="{Binding LabelTemplate, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
-                                 HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                 VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                 RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
-                                 RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=OneWay}"
                                  HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
-                                 LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"/>
+                                 LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"
+                                 behavior:ZoomByDragBehavior.IsEnabled="False"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
                                 ContentTemplate="{DynamicResource FocusCross}"
                                 IsHitTestVisible="False">
@@ -112,56 +78,6 @@
                     </ContentControl.Resources>
                 </ContentControl>
             </Grid>
-        </Border>
-        <Border BorderBrush="Black"
-                BorderThickness="1,0,0,1"
-                Margin="0,5,5,0" 
-                Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding ChromAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                    RangeX="{Binding ChromAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                    LabelTicks="{Binding ChromAxis.LabelTicks, ElementName=PeakPairPlot}"
-                                    Margin="0,0,5,5"
-                                    Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding MassAxis.AxisMapper, ElementName=PeakPairPlot}"
-                                  LabelTicks="{Binding MassAxis.LabelTicks, ElementName=PeakPairPlot}"
-                                  RangeY="{Binding MassAxis.Range, ElementName=PeakPairPlot, Mode=TwoWay}"
-                                  Margin="5,5,0,0"
-                                  Grid.Row="1" Grid.Column="1" />
-        <StackPanel Orientation="Horizontal"
-                    VerticalAlignment="Bottom"
-                    Grid.Row="0" Grid.Column="2">
-            <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="12"/>
-            <ContentControl Content="{Binding Target}">
-                <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Spot ID: " FontSize="12" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}" FontSize="12"/>
-                            <TextBlock Text="Scan: " FontSize="12" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime}" FontSize="12"/>
-                            <TextBlock Text="DT 1/k0: " FontSize="12" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, StringFormat=N4, Mode=OneTime}" FontSize="12"/>
-                            <TextBlock Text="Mass m/z:" FontSize="12" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding InnerModel.Mass, StringFormat=N5, Mode=OneTime}" FontSize="12"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
-        </StackPanel>
-        <TextBlock Text="Drift time [1/k0]"
-                   FontFamily="Calibri" FontStyle="Italic" FontSize="13"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Grid.Row="3" Grid.Column="2"/>
-        <TextBlock Text="m/z"
-                   FontFamily="Calibri" FontStyle="Italic" FontSize="13"
-                   VerticalAlignment="Center" HorizontalAlignment="Center" 
-                   Grid.Row="1" Grid.Column="0">
-            <TextBlock.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="-90"/>
-                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
-                </TransformGroup>
-            </TextBlock.RenderTransform>
-        </TextBlock>
+        </chart:SimpleChartControl>
     </Grid>
 </UserControl>

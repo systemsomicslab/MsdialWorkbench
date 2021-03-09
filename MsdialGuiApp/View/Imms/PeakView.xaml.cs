@@ -21,20 +21,57 @@ namespace CompMs.App.Msdial.View.Imms
     /// </summary>
     public partial class PeakView : UserControl
     {
-        public static readonly DependencyProperty ChromAxisProperty =
-            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(PeakView));
-
-        public static readonly DependencyProperty MassAxisProperty =
-            DependencyProperty.Register(nameof(MassAxis), typeof(IAxisManager), typeof(PeakView));
+        public static readonly DependencyProperty HorizontalAxisProperty =
+            DependencyProperty.Register(nameof(HorizontalAxis), typeof(IAxisManager), typeof(PeakView));
         
-        public IAxisManager ChromAxis {
-            get => (IAxisManager)GetValue(ChromAxisProperty);
-            set => SetValue(ChromAxisProperty, value);
+        public IAxisManager HorizontalAxis {
+            get => (IAxisManager)GetValue(HorizontalAxisProperty);
+            set => SetValue(HorizontalAxisProperty, value);
         }
 
-        public IAxisManager MassAxis {
-            get => (IAxisManager)GetValue(MassAxisProperty);
-            set => SetValue(MassAxisProperty, value);
+        public static readonly DependencyProperty HorizontalTitleProperty
+            = DependencyProperty.Register(
+                nameof(HorizontalTitle), typeof(string), typeof(PeakView));
+
+        public string HorizontalTitle {
+            get => (string)GetValue(HorizontalTitleProperty);
+            set => SetValue(HorizontalTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty VerticalAxisProperty =
+            DependencyProperty.Register(nameof(VerticalAxis), typeof(IAxisManager), typeof(PeakView));
+
+        public IAxisManager VerticalAxis {
+            get => (IAxisManager)GetValue(VerticalAxisProperty);
+            set => SetValue(VerticalAxisProperty, value);
+        }
+
+        public static readonly DependencyProperty VerticalTitleProperty
+            = DependencyProperty.Register(
+                nameof(VerticalTitle), typeof(string), typeof(PeakView));
+        
+        public string VerticalTitle {
+            get => (string)GetValue(VerticalTitleProperty);
+            set => SetValue(VerticalTitleProperty, value);
+        }
+
+
+        public static readonly DependencyProperty GraphTitleProperty
+            = DependencyProperty.Register(
+                nameof(GraphTitle), typeof(string), typeof(PeakView));
+
+        public string GraphTitle {
+            get => (string)GetValue(GraphTitleProperty);
+            set => SetValue(GraphTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty LabelTemplateProperty
+            = DependencyProperty.Register(
+                nameof(LabelTemplate), typeof(DataTemplate), typeof(PeakView));
+
+        public DataTemplate LabelTemplate {
+            get => (DataTemplate)GetValue(LabelTemplateProperty);
+            set => SetValue(LabelTemplateProperty, value);
         }
 
         public PeakView() {
