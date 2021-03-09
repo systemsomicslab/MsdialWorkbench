@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Imms
+namespace CompMs.App.Msdial.View
 {
     /// <summary>
     /// Interaction logic for PeakView.xaml
