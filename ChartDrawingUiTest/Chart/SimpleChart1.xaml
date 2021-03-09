@@ -57,6 +57,7 @@
                                     Radius="10"
                                     PointGeometry= "F1 M 0.0 -8.0 L 4.702282018339786 6.472135954999579 L -7.608452130361229 -2.472135954999578
                                         L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z"
+                                    behavior:ZoomByDragBehavior.IsEnabled="False"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
                                     behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
                                     behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"

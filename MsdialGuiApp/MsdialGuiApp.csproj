@@ -224,7 +224,7 @@
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\ChromatogramView.xaml.cs" >
+    <Compile Include="View\Dims\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
@@ -301,7 +301,7 @@
     <Compile Include="View\Lcms\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\EicView.xaml.cs">
+    <Compile Include="View\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
@@ -564,7 +564,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\EicView.xaml">
+    <Page Include="View\EicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

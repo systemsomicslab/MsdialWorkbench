@@ -126,6 +126,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private List<ChromatogramPeakWrapper> focusedEic;
 
+        public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
+
         public List<SpectrumPeakWrapper> Ms2Spectrum {
             get => ms2Spectrum;
             set {
@@ -350,7 +352,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (target != null) {
                 await Task.Run(() => {
                     eic = DataAccess.GetSmoothedPeaklist(
-                            DataAccess.GetMs1Peaklist(provider.LoadMs1Spectrums(), target.Mass, parameter.CentroidMs1Tolerance, parameter.IonMode),
+                            DataAccess.GetMs1Peaklist(
+                                provider.LoadMs1Spectrums(),
+                                target.Mass, parameter.CentroidMs1Tolerance,
+                                parameter.IonMode,
+                                ChromXType.Drift, ChromXUnit.Msec),
                             parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))

@@ -229,10 +229,8 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
-                                 <!--
-                            <eic:EicView DataContext="{Binding AnalysisVM}"
-                                         ChromAxis="{StaticResource ChromAxis}"/>
-                                         -->
+                            <commonview:EicView DataContext="{Binding AnalysisVM}"
+                                                ChromAxis="{StaticResource ChromAxis}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 

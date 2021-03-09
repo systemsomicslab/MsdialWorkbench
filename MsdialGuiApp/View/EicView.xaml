@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.EicView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
+             mc:Ignorable="d" 
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             Name="EicPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
+                                                 ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                                 TargetAxisMapper="{Binding ChromAxis.AxisMapper, Source={x:Reference Name=EicPlot}}"
+                                                 TargetPropertyName="ChromXValue"
+                                                 ValuePropertyName="Intensity"
+                                                 TargetRange="{Binding ChromAxis.Range, Source={x:Reference Name=EicPlot}}"
+                                                 ChartMargin="0,0.05" Bounds="0,0"/>
+    </UserControl.Resources>
+    <Grid>
+        <chart:SimpleChartControl HorizontalAxis="{Binding ChromAxis, ElementName=EicPlot}"
+                                  VerticalAxis="{StaticResource VerticalAxis}"
+                                  HorizontalTitle="Retention time [min]"
+                                  VerticalTitle="Abundance"
+                                  BorderBrush="Black"
+                                  Background="WhiteSmoke"
+                                  Grid.Row="0">
+            <Grid>
+                <spectrum:LineSpectrumControl ItemsSource="{Binding FocusedEic}"
+                                              HorizontalPropertyName="ChromXValue"
+                                              VerticalPropertyName="Intensity"
+                                              behavior:ZoomByDragBehavior.IsEnabled="False">
+                    <spectrum:LineSpectrumControl.LinePen>
+                        <Pen Brush="Red" LineJoin="Miter" PresentationOptions:Freeze="True"/>
+                    </spectrum:LineSpectrumControl.LinePen>
+                </spectrum:LineSpectrumControl>
+                <area:AreaChartControl ItemsSource="{Binding PeakEic}"
+                                       HorizontalPropertyName="ChromXValue"
+                                       VerticalPropertyName="Intensity"
+                                       behavior:ZoomByDragBehavior.IsEnabled="False">
+                    <area:AreaChartControl.AreaBrush>
+                        <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
+                    </area:AreaChartControl.AreaBrush>
+                </area:AreaChartControl>
+                <line:LineChartControl ItemsSource="{Binding Eic}"
+                                       HorizontalPropertyName="ChromXValue"
+                                       VerticalPropertyName="Intensity"
+                                       behavior:ZoomByDragBehavior.IsEnabled="False">
+                    <line:LineChartControl.LinePen>
+                        <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
+                    </line:LineChartControl.LinePen>
+                </line:LineChartControl>
+            </Grid>
+            <chart:SimpleChartControl.GraphTitle>
+                <MultiBinding StringFormat="EIC chromatogram of {0:N4} tolerance [Da]: {1:F} Max intensity: {2:F0}">
+                    <Binding Path="Target.InnerModel.Mass"
+                             Mode="OneTime"/>
+                    <Binding Path="DataContext.Ms1Tolerance"
+                             Mode="OneTime"
+                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="DataContext.EicMaxIntensity"
+                             Mode="OneWay"
+                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                </MultiBinding>
+            </chart:SimpleChartControl.GraphTitle>
+        </chart:SimpleChartControl>
+    </Grid>
+</UserControl>
