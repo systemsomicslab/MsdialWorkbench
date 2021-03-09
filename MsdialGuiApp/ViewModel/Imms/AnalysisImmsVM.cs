@@ -49,8 +49,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
             );
             Peaks = peaks;
-            AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
-            AmplitudeOrderMax = _ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
+            AmplitudeOrderMin = _ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
+            AmplitudeOrderMax = _ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
             Ms1Peaks = CollectionViewSource.GetDefaultView(_ms1Peaks);
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);

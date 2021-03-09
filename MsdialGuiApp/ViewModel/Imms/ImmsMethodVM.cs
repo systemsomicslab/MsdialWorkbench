@@ -183,8 +183,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             mspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             mspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             Storage.TextDB = analysisParamSetVM.TextDB;
-            textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam);
-            textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam);
+            textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
+            textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
             return true;
         }
 

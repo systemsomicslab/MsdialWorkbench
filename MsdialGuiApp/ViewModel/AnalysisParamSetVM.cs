@@ -254,7 +254,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         private void LipidDBSet(Window owner) {
             var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly).Length != 1) {
+            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly).Length != 1) {
                 MessageBox.Show("There is no LBM file or several LBM files are existed in this application folder. Please see the tutorial.",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
