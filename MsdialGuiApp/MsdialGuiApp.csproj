@@ -254,9 +254,6 @@
     <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakView.xaml.cs">
-      <DependentUpon>PeakView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
@@ -505,10 +502,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Dims\PeakPropertyView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\PeakView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

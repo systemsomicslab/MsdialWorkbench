@@ -34,7 +34,8 @@
             <Grid>
                 <scatter:ScatterControl x:Name="scatter"
                                         ItemsSource="{Binding Ms1Peaks}"
-                                        HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                        HorizontalPropertyName="{Binding HorizontalProperty, ElementName=PeakPairPlot}"
+                                        VerticalPropertyName="{Binding VerticalProperty, ElementName=PeakPairPlot}"
                                         EachPlotBrushName="SpotColor"
                                         Radius="5.5"
                                         SelectedItem="{Binding Target, Mode=TwoWay}"
@@ -48,7 +49,8 @@
                                         behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}"
                                         behavior:ScatterFocusBehavior.LabelTemplate="{Binding LabelTemplate, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
-                                 HorizontalPropertyName="ChromXValue" VerticalPropertyName="Mass"
+                                 HorizontalPropertyName="{Binding HorizontalProperty, ElementName=PeakPairPlot}"
+                                 VerticalPropertyName="{Binding VerticalProperty, ElementName=PeakPairPlot}"
                                  LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"
                                  behavior:ZoomByDragBehavior.IsEnabled="False"/>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"

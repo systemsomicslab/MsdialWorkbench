@@ -29,6 +29,15 @@ namespace CompMs.App.Msdial.View
             set => SetValue(HorizontalAxisProperty, value);
         }
 
+        public static readonly DependencyProperty HorizontalPropertyProperty
+            = DependencyProperty.Register(
+                nameof(HorizontalProperty), typeof(string), typeof(PeakView));
+
+        public string HorizontalProperty {
+            get => (string)GetValue(HorizontalPropertyProperty);
+            set => SetValue(HorizontalPropertyProperty, value);
+        }
+
         public static readonly DependencyProperty HorizontalTitleProperty
             = DependencyProperty.Register(
                 nameof(HorizontalTitle), typeof(string), typeof(PeakView));
@@ -44,6 +53,15 @@ namespace CompMs.App.Msdial.View
         public IAxisManager VerticalAxis {
             get => (IAxisManager)GetValue(VerticalAxisProperty);
             set => SetValue(VerticalAxisProperty, value);
+        }
+
+        public static readonly DependencyProperty VerticalPropertyProperty
+            = DependencyProperty.Register(
+                nameof(VerticalProperty), typeof(string), typeof(PeakView));
+
+        public string VerticalProperty {
+            get => (string)GetValue(VerticalPropertyProperty);
+            set => SetValue(VerticalPropertyProperty, value);
         }
 
         public static readonly DependencyProperty VerticalTitleProperty
