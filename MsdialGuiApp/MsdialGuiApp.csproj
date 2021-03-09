@@ -380,6 +380,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ChartStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DeconvolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

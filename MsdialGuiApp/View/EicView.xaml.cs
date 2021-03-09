@@ -29,6 +29,14 @@ namespace CompMs.App.Msdial.View
             set => SetValue(ChromAxisProperty, value);
         }
 
+        public static readonly DependencyProperty ChromTitleProperty =
+            DependencyProperty.Register(nameof(ChromTitle), typeof(string), typeof(EicView));
+
+        public string ChromTitle {
+            get => (string)GetValue(ChromTitleProperty);
+            set => SetValue(ChromTitleProperty, value);
+        }
+
         public EicView() {
             InitializeComponent();
         }

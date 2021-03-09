@@ -22,22 +22,40 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
-                                                 ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
-                                                 TargetAxisMapper="{Binding ChromAxis.AxisMapper, Source={x:Reference Name=EicPlot}}"
-                                                 TargetPropertyName="ChromXValue"
-                                                 ValuePropertyName="Intensity"
-                                                 TargetRange="{Binding ChromAxis.Range, Source={x:Reference Name=EicPlot}}"
-                                                 ChartMargin="0,0.05" Bounds="0,0"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
+                                                     ItemsSource="{Binding DataContext.Eic, Source={x:Reference Name=EicPlot}}"
+                                                     TargetAxisMapper="{Binding ChromAxis.AxisMapper, Source={x:Reference Name=EicPlot}}"
+                                                     TargetPropertyName="ChromXValue"
+                                                     ValuePropertyName="Intensity"
+                                                     TargetRange="{Binding ChromAxis.Range, Source={x:Reference Name=EicPlot}}"
+                                                     ChartMargin="0,0.05" Bounds="0,0"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <chart:SimpleChartControl HorizontalAxis="{Binding ChromAxis, ElementName=EicPlot}"
                                   VerticalAxis="{StaticResource VerticalAxis}"
-                                  HorizontalTitle="Retention time [min]"
+                                  HorizontalTitle="{Binding ChromTitle, ElementName=EicPlot}"
                                   VerticalTitle="Abundance"
                                   BorderBrush="Black"
                                   Background="WhiteSmoke"
+                                  Style="{StaticResource BasicChart}"
                                   Grid.Row="0">
+            <chart:SimpleChartControl.GraphTitle>
+                <MultiBinding StringFormat="EIC chromatogram of {0:N4} tolerance [Da]: {1:F} Max intensity: {2:F0}" Mode="OneWay">
+                    <Binding Path="Target.InnerModel.Mass"
+                             Mode="OneWay"/>
+                    <Binding Path="DataContext.Ms1Tolerance"
+                             Mode="OneWay"
+                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                    <Binding Path="DataContext.EicMaxIntensity"
+                             Mode="OneWay"
+                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                </MultiBinding>
+            </chart:SimpleChartControl.GraphTitle>
             <Grid>
                 <spectrum:LineSpectrumControl ItemsSource="{Binding FocusedEic}"
                                               HorizontalPropertyName="ChromXValue"
@@ -64,18 +82,6 @@
                     </line:LineChartControl.LinePen>
                 </line:LineChartControl>
             </Grid>
-            <chart:SimpleChartControl.GraphTitle>
-                <MultiBinding StringFormat="EIC chromatogram of {0:N4} tolerance [Da]: {1:F} Max intensity: {2:F0}">
-                    <Binding Path="Target.InnerModel.Mass"
-                             Mode="OneTime"/>
-                    <Binding Path="DataContext.Ms1Tolerance"
-                             Mode="OneTime"
-                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                    <Binding Path="DataContext.EicMaxIntensity"
-                             Mode="OneWay"
-                             RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                </MultiBinding>
-            </chart:SimpleChartControl.GraphTitle>
         </chart:SimpleChartControl>
     </Grid>
 </UserControl>

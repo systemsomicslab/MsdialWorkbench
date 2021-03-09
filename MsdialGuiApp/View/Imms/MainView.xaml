@@ -230,7 +230,8 @@
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
                             <commonview:EicView DataContext="{Binding AnalysisVM}"
-                                                ChromAxis="{StaticResource ChromAxis}"/>
+                                                ChromAxis="{StaticResource ChromAxis}"
+                                                ChromTitle="Drift time [1/k0]"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
