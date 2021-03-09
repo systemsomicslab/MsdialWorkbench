@@ -71,7 +71,7 @@
             </ToolTipService.ToolTip>
         </Button>
         <CheckBox Name="CheckBox_WithAlignment" Content="Together with Alignment"
-                  IsChecked="{Binding Path=Param.TogetherWithAlignment}"
+                  IsChecked="{Binding Path=TogetherWithAlignment, Mode=TwoWay}"
                   Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"
                   Margin="90,0,0,0" />
     </Grid>

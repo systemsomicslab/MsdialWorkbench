@@ -34,7 +34,14 @@ namespace CompMs.Common.Enum {
     public enum PeakLinkFeatureEnum {
         SameFeature, Isotope, Adduct, ChromSimilar, FoundInUpperMsMs, CorrelSimilar
     }
-    public enum ProcessOption { All, IdentificationPlusAlignment, Alignment };
+    [Flags]
+    public enum ProcessOption {
+        PeakSpotting = 1 << 0,
+        Identification = 1 << 1,
+        Alignment = 1 << 2,
+        IdentificationPlusAlignment = Identification | Alignment,
+        All = PeakSpotting | Identification | Alignment,
+    };
     public enum BlankFiltering { SampleMaxOverBlankAve, SampleAveOverBlankAve }
     public enum MultivariateAnalysisOption { Pca, Plsda, Plsr, Oplsda, Oplsr, Hca }
     public enum IonMobilityType { Tims, Dtims, Twims, CCS }

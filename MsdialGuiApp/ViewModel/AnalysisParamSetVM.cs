@@ -64,6 +64,21 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref searchedAdductIons, value);
         }
 
+        public bool TogetherWithAlignment {
+            get => (Param.ProcessOption.HasFlag(ProcessOption.Alignment));
+            set {
+                if (Param.ProcessOption.HasFlag(ProcessOption.Alignment) == value)
+                    return;
+                if (value) {
+                    Param.ProcessOption |= ProcessOption.Alignment;
+                }
+                else {
+                    Param.ProcessOption &= ~ProcessOption.Alignment;
+                }
+                OnPropertyChanged(nameof(TogetherWithAlignment));
+            }
+        }
+
         public List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
         public List<MoleculeMsReference> TextDB { get; set; } = new List<MoleculeMsReference>();
 

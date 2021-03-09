@@ -141,13 +141,18 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
+            var processOption = Storage.ParameterBase.ProcessOption;
             // Run Identification
-            if (!ProcessAnnotaion(window, Storage))
-                return -1;
+            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
+                if (!ProcessAnnotaion(window, Storage))
+                    return -1;
+            }
 
             // Run Alignment
-            if (!ProcessAlignment(window, Storage))
-                return -1;
+            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Alignment)) {
+                if (!ProcessAlignment(window, Storage))
+                    return -1;
+            }
 
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
 
