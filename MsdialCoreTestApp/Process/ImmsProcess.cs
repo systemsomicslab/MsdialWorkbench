@@ -1,7 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialImmsCore.Algorithm.Alignment;
+using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Parser;
 using CompMs.MsdialImmsCore.Process;
@@ -36,8 +36,10 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new ImmsAlignmentProcessFactory(container.ParameterBase as MsdialImmsParameter, container.IupacDatabase);
-            var aligner = factory.CreatePeakAligner();
+            var factory = new ImmsProcessFactory(container.ParameterBase as MsdialImmsParameter, container.IupacDatabase);
+            var aFactory = factory.CreateAlignmentFactory();
+            var aligner = aFactory.CreatePeakAligner();
+            aligner.ProcessFactory = factory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
 
             foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {

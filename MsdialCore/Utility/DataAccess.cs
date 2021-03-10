@@ -243,7 +243,7 @@ namespace CompMs.MsdialCore.Utility {
             return startIndex;
         }
 
-        public static int GetScanStartIndexByRt(float focusedRt, float rtTol, List<RawSpectrum> spectrumList) {
+        public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
 
             var targetRt = focusedRt - rtTol;
             int startIndex = 0, endIndex = spectrumList.Count - 1;
@@ -555,7 +555,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(List<RawSpectrum> spectrumList,
+        public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(IReadOnlyList<RawSpectrum> spectrumList,
            float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
 
             var startID = GetScanStartIndexByRt(rt, rtWidth * 0.5F, spectrumList);

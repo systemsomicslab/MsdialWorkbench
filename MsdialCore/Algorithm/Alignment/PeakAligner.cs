@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected IAlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
         protected List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
-        protected IProcessFactory ProcessFactory { get; set; }
+        public IProcessFactory ProcessFactory { get; set; }
 
         public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param, List<MoleculeMsReference> mspDB = null) {
             Accessor = accessor;

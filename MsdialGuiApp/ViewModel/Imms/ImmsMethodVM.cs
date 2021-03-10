@@ -223,9 +223,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private static bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
-            AlignmentProcessFactory factory = new ImmsAlignmentProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
+            var factory = new ImmsProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
+            AlignmentProcessFactory aFactory = factory.CreateAlignmentFactory();
             var alignmentFile = storage.AlignmentFiles.Last();
-            var aligner = factory.CreatePeakAligner();
+            var aligner = aFactory.CreatePeakAligner();
+            aligner.ProcessFactory = factory; // TODO: I'll remove this later.
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
