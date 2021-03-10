@@ -103,15 +103,19 @@ namespace CompMs.Graphics.AxisManager
 
             if (Min >= Max || double.IsNaN(Min) || double.IsNaN(Max)) return result;
             var TickInterval = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Max - Min)));
-            var exp = Math.Floor(Math.Log10(Max));
-            var LabelFormat = exp > 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
             if (TickInterval == 0) return result;
             var fold = (decimal)(Max - Min) / TickInterval;
+            if (fold <= 2) {
+                TickInterval /= 2;
+                fold *= 2;
+            }
             decimal shortTickInterval =
                 TickInterval * (decimal)(fold >= 5 ? 0.5 :
                                          fold >= 2 ? 0.25 :
                                                      0.1);
 
+            var exp = Math.Floor(Math.Log10(Max));
+            var LabelFormat = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
             for(var i = Math.Ceiling((decimal)Min.Value / TickInterval); i * TickInterval <= (decimal)Max.Value; ++i)
             {
                 var item = new LabelTickData()
