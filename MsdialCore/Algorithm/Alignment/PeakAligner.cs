@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
@@ -109,7 +110,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             List<AlignmentSpotProperty> spots,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
-            var peakInfos = new List<ChromatogramPeakInfo>();
             var provider = ProcessFactory?.CreateProvider(analysisFile);
             IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
             if (spectra == null) {
@@ -117,15 +117,19 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 }
             }
-            foreach ((var peak, var spot) in peaks.Zip(spots)) {
-                if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
-                    Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
-                }
+            var peakInfos = peaks.Zip(spots)
+                .AsParallel()
+                .AsOrdered()
+                .Select(peakAndSpot => {
+                    (var peak, var spot) = peakAndSpot;
+                    if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
+                        Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
+                    }
 
-                // UNDONE: retrieve spectrum data
-                var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
-                peakInfos.Add(peakinfo);
-            }
+                    // UNDONE: retrieve spectrum data
+                    return Accessor.AccumulateChromatogram(peak, spot, spectra);
+                }).ToList();
+
             var file = Path.GetTempFileName();
             serializer?.SerializeAllToFile(file, peakInfos);
             return file;
