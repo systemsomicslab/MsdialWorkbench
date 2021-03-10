@@ -160,6 +160,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
             result.IsOtherLipidMatch = isOtherLipidMatch;
+            result.IsSpectrumMatch &= isLipidChainsMatch | isLipidClassMatch | isLipidPositionMatch | isOtherLipidMatch;
 
             if (result.IsOtherLipidMatch)
                 return;

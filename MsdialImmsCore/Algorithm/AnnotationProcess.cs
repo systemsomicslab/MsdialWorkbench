@@ -118,14 +118,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .ToList();
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
-            if (omics == TargetOmics.Lipidomics)
-                matches = matches.Where(
-                    candidate =>
-                        candidate.IsLipidClassMatch
-                        || candidate.IsLipidChainsMatch
-                        || candidate.IsLipidPositionMatch
-                        || candidate.IsOtherLipidMatch)
-                    .ToList();
             if (matches.Count > 0) {
                 var best = matches.Argmax(result => result.TotalScore);
                 chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
