@@ -92,8 +92,8 @@
                             <Style TargetType="TextBlock" x:Key="GraphTitle">
                                 <Setter Property="FontFamily" Value="Calibri"/>
                                 <Setter Property="FontSize" Value="13"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Bottom"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                             </Style>
                             <Style TargetType="TextBlock" x:Key="AxisTitle">
                                 <Setter Property="FontFamily" Value="Calibri"/>

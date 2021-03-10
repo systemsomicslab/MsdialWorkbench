@@ -223,6 +223,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private static bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+            var vm = new ProgressBarVM
+            {
+                IsIndeterminate = true,
+                Label = "Process alignment..",
+            };
+            var pbw = new ProgressBarWindow
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            pbw.Show();
+
             var factory = new ImmsProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
             AlignmentProcessFactory aFactory = factory.CreateAlignmentFactory();
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -231,6 +244,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+
+            pbw.Close();
+
             return true;
         }
 

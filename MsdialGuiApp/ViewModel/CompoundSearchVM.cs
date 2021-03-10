@@ -150,7 +150,7 @@ namespace CompMs.App.Msdial.ViewModel
                     .Select(result => new CompoundResult(Annotator.Refer(result), result)));
 
             canSearch = true;
-            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+            System.Windows.Input.Mouse.OverrideCursor = null;
         }
 
         private async void OnParameterChanged(object sender, PropertyChangedEventArgs e) {
