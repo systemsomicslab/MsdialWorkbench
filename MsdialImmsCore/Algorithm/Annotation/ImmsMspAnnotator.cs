@@ -216,8 +216,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
                 result.Name = reference.Name; // for others and splash etc in compoundclass
             }
-
-            if (molecule.SublevelLipidName == molecule.LipidName) {
+            else if (molecule.SublevelLipidName == molecule.LipidName) {
                 result.Name = molecule.LipidName;
             }
             else {

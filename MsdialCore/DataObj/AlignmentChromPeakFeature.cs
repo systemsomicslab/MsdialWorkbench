@@ -168,10 +168,10 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public bool IsUnknown() {
-            if (matchResults.IsManuallyModifiedRepresentative && matchResults.IsUnknown) {
+            if (MatchResults.IsManuallyModifiedRepresentative && MatchResults.IsUnknown) {
                 return true;
             }
-            if (matchResults.IsUnknown && (TextDbBasedMatchResult == null || MspBasedMatchResult() == null)) {
+            if (MatchResults.IsUnknown && (TextDbBasedMatchResult == null || MspBasedMatchResult() == null)) {
                 return true;
             }
             return false;
