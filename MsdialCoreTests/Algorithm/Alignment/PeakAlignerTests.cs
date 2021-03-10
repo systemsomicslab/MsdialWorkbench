@@ -136,7 +136,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             };
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             return new List<ChromatogramPeak> {
                 new ChromatogramPeak(0, 50, 100, new RetentionTime(0.5)),
                 new ChromatogramPeak(0, 70, 120, new RetentionTime(1)),

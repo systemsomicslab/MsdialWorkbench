@@ -40,7 +40,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = Math.Max(this.mzTol, 0.005f);
             peakWidth = Math.Max(peakWidth, 0.2f);
 

@@ -2,51 +2,29 @@
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace CompMs.MsdialImmsCore.Algorithm
 {
-    public abstract class ImmsBaseDataProvider : IDataProvider
+    public abstract class ImmsBaseDataProvider : BaseDataProvider
     {
-        private readonly RawMeasurement rawObj;
+        public ImmsBaseDataProvider(RawMeasurement rawObj) : base(rawObj) {
 
-        public ImmsBaseDataProvider(RawMeasurement rawObj) {
-            this.rawObj = rawObj;
         }
 
-        public ImmsBaseDataProvider(AnalysisFileBean file)
-            :this(LoadMeasurement(file, false, 5)) { }
+        public ImmsBaseDataProvider(AnalysisFileBean file) : this(LoadMeasurement(file, false, 5)) {
 
-        public ImmsBaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            :this(LoadMeasurement(file, isGuiProcess, retry)) { }
-
-        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isGuiProcess)) {
-                for (var i = 0; i < retry; i++) {
-                    var rawObj = DataAccess.GetRawDataMeasurement(access);
-                    if (rawObj != null) {
-                        return rawObj;
-                    }
-                    Thread.Sleep(5000);
-                }
-            }
-            throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
         }
 
-        public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return new ReadOnlyCollection<RawSpectrum>(rawObj.SpectrumList);
+        public ImmsBaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry) : this(LoadMeasurement(file, isGuiProcess, retry)) {
+
         }
 
-        public abstract ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums();
-
-        public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
+        public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
             return new ReadOnlyCollection<RawSpectrum>(rawObj.SpectrumList
                 .Where(spectrum => spectrum.MsLevel == level)
                 .OrderBy(spectrum => spectrum.DriftTime)

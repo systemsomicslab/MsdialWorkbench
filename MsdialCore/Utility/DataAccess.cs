@@ -374,7 +374,7 @@ namespace CompMs.MsdialCore.Utility {
             return chromPeaks;
         }
 
-        public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
+        public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
             double quantMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -848,7 +848,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static RawPeakElement[] AccumulateMS1Spectrum(List<RawSpectrum> spectra, double rtBegin, double rtEnd, int bin = 5) {
+        public static RawPeakElement[] AccumulateMS1Spectrum(IReadOnlyList<RawSpectrum> spectra, double rtBegin, double rtEnd, int bin = 5) {
             var factor = Math.Pow(10, 5);
             var dict = new Dictionary<long, double>();
             var counter = 0;
@@ -879,7 +879,7 @@ namespace CompMs.MsdialCore.Utility {
             return elements.OrderBy(n => n.Mz).ToArray();
         }
 
-        public static RawPeakElement[] AccumulateMS1Spectrum(List<RawSpectrum> spectra, int bin = 5) {
+        public static RawPeakElement[] AccumulateMS1Spectrum(IReadOnlyList<RawSpectrum> spectra, int bin = 5) {
             return AccumulateMS1Spectrum(spectra, double.MinValue, double.MaxValue, bin);
         }
 

@@ -35,7 +35,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return peaks.Max(peak => peak.PeakWidth(ChromXType.Mz));
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             if (!peakElementsMemo.ContainsKey(fileID))
                 peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrum); // TODO: remove cache (too much memory use)
             var peakElements = peakElementsMemo[fileID];

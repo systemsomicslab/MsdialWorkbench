@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -22,6 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected IAlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
         protected List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
+        protected IProcessFactory ProcessFactory { get; set; }
 
         public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param, List<MoleculeMsReference> mspDB = null) {
             Accessor = accessor;
@@ -108,17 +110,21 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
             var peakInfos = new List<ChromatogramPeakInfo>();
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
-                var spectra = DataAccess.GetAllSpectra(rawDataAccess);
-                foreach ((var peak, var spot) in peaks.Zip(spots)) {
-                    if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
-                        Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
-                    }
-
-                    // UNDONE: retrieve spectrum data
-                    var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
-                    peakInfos.Add(peakinfo);
+            var provider = ProcessFactory?.CreateProvider(analysisFile);
+            IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
+            if (spectra == null) {
+                using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
+                    spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 }
+            }
+            foreach ((var peak, var spot) in peaks.Zip(spots)) {
+                if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
+                    Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
+                }
+
+                // UNDONE: retrieve spectrum data
+                var peakinfo = Accessor.AccumulateChromatogram(peak, spot, spectra);
+                peakInfos.Add(peakinfo);
             }
             var file = Path.GetTempFileName();
             serializer?.SerializeAllToFile(file, peakInfos);

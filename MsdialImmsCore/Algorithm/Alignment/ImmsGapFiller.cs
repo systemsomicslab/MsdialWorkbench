@@ -33,7 +33,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             };
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = this.mzTol;
 
             var peaklist = DataAccess.GetMs1Peaklist(
