@@ -10,7 +10,7 @@ namespace Rfx.Riken.OsakaUniv
 {
     public enum TargetOmics { Metablomics, Lipidomics }
     public enum Ionization { ESI, EI }
-    public enum ExportSpectraFileFormat { mgf, msp, txt, mat }
+    public enum ExportSpectraFileFormat { mgf, msp, txt, mat, ms }
     public enum ExportspectraType { profile, centroid, deconvoluted }
 
     [DataContract]

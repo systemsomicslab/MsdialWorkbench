@@ -50,6 +50,8 @@ namespace Rfx.Riken.OsakaUniv
                 peaklistMspExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType);
             else if (exportSpectraFileFormat == ExportSpectraFileFormat.mat)
                 peaklistMatExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
+            else if (exportSpectraFileFormat == ExportSpectraFileFormat.ms)
+                peaklistSriusMsExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
             else if (exportSpectraFileFormat == ExportSpectraFileFormat.txt)
                 peaklistTxtExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
 
@@ -2905,6 +2907,84 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        private static void peaklistSriusMsExport(MainWindow mainWindow, string folderpath,
+            ObservableCollection<AnalysisFileBean> files,
+            MethodType methodType, ExportspectraType exportSpectraType, float isotopeExportMax) {
+
+            var rdamProp = mainWindow.RdamProperty;
+            var rdamFileToID = rdamProp.RdamFilePath_RdamFileID;
+            var rdamFileCollection = rdamProp.RdamFileContentBeanCollection;
+            var param = mainWindow.AnalysisParamForLC;
+            var project = mainWindow.ProjectProperty;
+            var dt = DateTime.Now;
+            var timeString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            for (int i = 0; i < files.Count; i++) {
+                var fileProp = files[i].AnalysisFilePropertyBean;
+                var output_dir = System.IO.Path.Combine(folderpath, fileProp.AnalysisFileName);
+                if (!Directory.Exists(output_dir)) {
+                    Directory.CreateDirectory(output_dir);
+                }
+
+                var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
+                var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs)) { // open rdam stream
+                    using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite)) { // open dcl stream
+
+                        //set seekpoint to retrieve MS2DecResult
+                        var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+
+                        //set List<PeakAreaBean> on AnalysisFileBean
+                        DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+
+                        //set raw spectra collection to spectrumCollection
+                        var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                        var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                        var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
+
+                        foreach (var peakspot in files[i].PeakAreaBeanCollection) {
+                            if (param.IsIonMobility) {
+                                foreach (var driftspot in peakspot.DriftSpots) {
+
+                                    var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(driftspot.DriftTimeAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.ms;
+                                    var filePath = System.IO.Path.Combine(output_dir, filename);
+
+                                    using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+                                        if (exportSpectraType == ExportspectraType.profile) {
+                                            ResultExportLcUtility.WriteProfileAsSiriusMs(sw, spectrumCollection, peakspot, driftspot, mainWindow.MspDB, isotopeExportMax);
+                                        }
+                                        else {
+                                            ResultExportLcUtility.WriteMs2DecAsSiriusMs(sw, spectrumCollection, fs, seekpointList,
+                                               peakspot, driftspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                    + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.ms;
+                                var filePath = System.IO.Path.Combine(output_dir, filename);
+                                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+                                    if (exportSpectraType == ExportspectraType.profile) {
+                                        ResultExportLcUtility.WriteProfileAsSiriusMs(sw, spectrumCollection, peakspot, mainWindow.MspDB, isotopeExportMax);
+                                    }
+                                    else {
+                                        ResultExportLcUtility.WriteMs2DecAsSiriusMs(sw, spectrumCollection, fs, seekpointList,
+                                           peakspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                                    }
+                                }
+                            }
+                        }
+
+                        //refresh
+                        DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
+                    }
+                }
+            }
+        }
+
         private static void peaklistMatExport(MainWindow mainWindow, string folderpath,
             ObservableCollection<AnalysisFileBean> files,
             MethodType methodType, ExportspectraType exportSpectraType, float isotopeExportMax)
@@ -2914,72 +2994,139 @@ namespace Rfx.Riken.OsakaUniv
             var rdamFileCollection = rdamProp.RdamFileContentBeanCollection;
             var param = mainWindow.AnalysisParamForLC;
             var project = mainWindow.ProjectProperty;
-
+            var dt = DateTime.Now;
+            var timeString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
             for (int i = 0; i < files.Count; i++)
             {
-
                 var fileProp = files[i].AnalysisFilePropertyBean;
-                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mat;
+                //var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mat;
+
+                var output_dir = System.IO.Path.Combine(folderpath, fileProp.AnalysisFileName);
+                if (!Directory.Exists(output_dir)) {
+                    Directory.CreateDirectory(output_dir);
+                }
+
                 var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
+                var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs)) { // open rdam stream
+                    using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite)) { // open dcl stream
 
-                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
-                {
-                    var fileID = rdamFileToID[fileProp.AnalysisFilePath];
-                    var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                        //set seekpoint to retrieve MS2DecResult
+                        var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
 
-                    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
-                    { // open rdam stream
+                        //set List<PeakAreaBean> on AnalysisFileBean
+                        DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
 
-                        using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
-                        { // open dcl stream
+                        //set raw spectra collection to spectrumCollection
+                        var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                        var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                        var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
 
-                            //set seekpoint to retrieve MS2DecResult
-                            var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+                        foreach (var peakspot in files[i].PeakAreaBeanCollection) {
+                            if (param.IsIonMobility) {
+                                foreach (var driftspot in peakspot.DriftSpots) {
 
-                            //set List<PeakAreaBean> on AnalysisFileBean
-                            DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+                                    var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(driftspot.DriftTimeAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.mat;
+                                    var filePath = System.IO.Path.Combine(output_dir, filename);
 
-                            //set raw spectra collection to spectrumCollection
-                            var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
-                            var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
-                            var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
-
-                            foreach (var peakspot in files[i].PeakAreaBeanCollection)
-                            {
-                                if (param.IsIonMobility)
-                                {
-                                    foreach (var driftspot in peakspot.DriftSpots)
-                                    {
-                                        if (exportSpectraType == ExportspectraType.profile)
-                                        {
+                                    using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+                                        if (exportSpectraType == ExportspectraType.profile) {
                                             ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, driftspot, mainWindow.MspDB, isotopeExportMax);
                                         }
-                                        else
-                                        {
+                                        else {
                                             ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
                                                peakspot, driftspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
                                         }
                                     }
                                 }
-                                else
-                                {
-                                    if (exportSpectraType == ExportspectraType.profile)
-                                    {
+                            }
+                            else {
+                                var filename = "fID_" + fileID +  "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_" 
+                                    + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.mat;
+                                var filePath = System.IO.Path.Combine(output_dir, filename);
+                                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+                                    if (exportSpectraType == ExportspectraType.profile) {
                                         ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, mainWindow.MspDB, isotopeExportMax);
                                     }
-                                    else
-                                    {
+                                    else {
                                         ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
                                            peakspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
                                     }
                                 }
                             }
-
-                            //refresh
-                            DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
                         }
+
+                        //refresh
+                        DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
                     }
                 }
+
+
+
+
+                
+
+                //using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
+                //{
+                //    var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                //    var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+
+                //    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                //    { // open rdam stream
+
+                //        using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
+                //        { // open dcl stream
+
+                //            //set seekpoint to retrieve MS2DecResult
+                //            var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+
+                //            //set List<PeakAreaBean> on AnalysisFileBean
+                //            DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+
+                //            //set raw spectra collection to spectrumCollection
+                //            var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                //            var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                //            var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
+
+                //            foreach (var peakspot in files[i].PeakAreaBeanCollection)
+                //            {
+                //                if (param.IsIonMobility)
+                //                {
+                //                    foreach (var driftspot in peakspot.DriftSpots)
+                //                    {
+                //                        if (exportSpectraType == ExportspectraType.profile)
+                //                        {
+                //                            ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, driftspot, mainWindow.MspDB, isotopeExportMax);
+                //                        }
+                //                        else
+                //                        {
+                //                            ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
+                //                               peakspot, driftspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                //                        }
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    if (exportSpectraType == ExportspectraType.profile)
+                //                    {
+                //                        ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, mainWindow.MspDB, isotopeExportMax);
+                //                    }
+                //                    else
+                //                    {
+                //                        ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
+                //                           peakspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                //                    }
+                //                }
+                //            }
+
+                //            //refresh
+                //            DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
+                //        }
+                //    }
+                //}
             }
         }
 

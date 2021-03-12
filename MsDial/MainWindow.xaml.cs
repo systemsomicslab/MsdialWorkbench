@@ -99,7 +99,7 @@ namespace Rfx.Riken.OsakaUniv
     /// <summary>
     /// Enum properties to deal with MS-DIAL project
     /// </summary>
-    public enum SaveFileFormat { abf, mtd, dcl, arf, med, pai, mat, lbm, dcm, ldp, ldn }
+    public enum SaveFileFormat { abf, mtd, dcl, arf, med, pai, mat, lbm, dcm, ldp, ldn, ms }
     //public enum ExportSpectraFileFormat { mgf, msp, txt, mat }
     //public enum ExportspectraType { profile, centroid, deconvoluted }
     public enum MatExportOption { OnlyFocusedPeak, UnknownPeaks, UnknownPeaksWithoutIsotope, AllPeaks, IdentifiedPeaks, MsmsPeaks, MonoisotopicAndMsmsPeaks }

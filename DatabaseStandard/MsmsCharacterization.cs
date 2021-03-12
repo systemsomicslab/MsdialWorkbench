@@ -8406,7 +8406,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     if (candidates.Count == 0) return null; // 20201203 edit
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
-                    totalDoubleBond = totalDoubleBond + 1;
+                    //totalDoubleBond = totalDoubleBond + 1;
 
                     return returnAnnotationResult("Cer", LbmClass.Cer_EOS, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, extraOxygen, candidates, 3);
@@ -8642,7 +8642,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     if (candidates.Count == 0 && isClassIonFound != true) return null;
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
-                    totalDoubleBond = totalDoubleBond + 1;
+                    // totalDoubleBond = totalDoubleBond + 1;
 
                     return returnAnnotationResult("HexCer", LbmClass.HexCer_EOS, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, extraOxygen, candidates, 3);
@@ -13228,8 +13228,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         }
 
         private static LipidMolecule getEsterceramideMoleculeObjAsLevel2_1(string lipidClass, LbmClass lbmClass,
-    string hydroxyString, //d: 2*OH, t: 3*OH
-    int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, double score)
+            string hydroxyString, //d: 2*OH, t: 3*OH
+            int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, double score)
         {
             var sphHydroxyCount = 0;
             switch (hydroxyString)

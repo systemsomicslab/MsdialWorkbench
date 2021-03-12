@@ -202,7 +202,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             {
                 alignmentResult = new AlignmentResultBean();
 
-                PeakAlignment.JointAligner(new ObservableCollection<AnalysisFileBean>(analysisFiles), gcmsParam, alignmentResult, mspDB, null);
+                PeakAlignment.JointAligner(projectProp, new ObservableCollection<AnalysisFileBean>(analysisFiles), gcmsParam, alignmentResult, mspDB, null);
                 Console.WriteLine("Joint aligner finished");
                 
                 PeakAlignment.QuantAndGapFilling(rdamProperty, new ObservableCollection<AnalysisFileBean>(analysisFiles), gcmsParam, alignmentResult, alignmentFile, projectProp, mspDB, null);

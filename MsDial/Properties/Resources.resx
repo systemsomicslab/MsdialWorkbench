@@ -127,6 +127,6 @@
     <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-DIAL ver. 4.50-dev</value>
+    <value>MS-DIAL ver. 4.60</value>
   </data>
 </root>

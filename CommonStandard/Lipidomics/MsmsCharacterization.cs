@@ -8492,7 +8492,7 @@ AdductIon adduct)
                     if (candidates.Count == 0) return null; // 20201203 edit
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
-                    totalDoubleBond = totalDoubleBond + 1;
+                    //totalDoubleBond = totalDoubleBond + 1;
 
                     return returnAnnotationResult("Cer", LbmClass.Cer_EOS, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, extraOxygen, candidates, 3);
@@ -8794,7 +8794,7 @@ AdductIon adduct)
                     }
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
-                    totalDoubleBond = totalDoubleBond + 1;
+                    // totalDoubleBond = totalDoubleBond + 1;
 
                     return returnAnnotationResult("HexCer", LbmClass.HexCer_EOS, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, extraOxygen, candidates, 3);

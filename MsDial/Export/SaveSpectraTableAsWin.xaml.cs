@@ -71,7 +71,7 @@ namespace Rfx.Riken.OsakaUniv
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.FileName = "*.txt";
-            sfd.Filter = "MassBank format(*.txt)|*.txt;|NIST format(*.msp)|*.msp;|MASCOT format(*.mgf)|*.mgf;";
+            sfd.Filter = "MassBank format(*.txt)|*.txt|NIST format(*.msp)|*.msp|MASCOT format(*.mgf)|*.mgf";
             sfd.Title = "Save file dialog";
             sfd.RestoreDirectory = true;
 

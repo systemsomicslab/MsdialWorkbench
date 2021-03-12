@@ -402,6 +402,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 sw.WriteLine("#Filtering setting");
                 sw.WriteLine("Peak count filter\t" + param.PeakCountFilter);
+                sw.WriteLine("N% detected in at least one group\t" + param.NPercentDetectedInOneGroup);
                 //sw.WriteLine("QC at least filter\t" + param.QcAtLeastFilter.ToString());
                 sw.WriteLine("Remove feature based on peak height fold-change\t" + param.IsRemoveFeatureBasedOnPeakHeightFoldChange);
                 sw.WriteLine("Sample max / blank average\t" + param.SampleMaxOverBlankAverage);

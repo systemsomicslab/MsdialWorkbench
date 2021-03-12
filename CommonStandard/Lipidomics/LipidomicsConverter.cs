@@ -2767,17 +2767,8 @@ namespace CompMs.Common.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount;
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
-            //add MT
-            if (lipidname.Substring(0, 2) == "O-")
-            {
-                totalChain = "O-" + totalChain;
-            }
-            else if (lipidname.Substring(0, 2) == "P-")
-            {
-                totalChain = "P-" + totalChain;
-            }
-
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 2);
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -2796,21 +2787,33 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn2Oxidizedount = sn2OxidizedCount;
         }
 
-        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass) {
+        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount) {
             var rdbString = rdb.ToString();
-            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS || lipidclass == LbmClass.ASM
+            
+            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
+                || lipidclass == LbmClass.ASM
                 || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
-                || lipidclass == LbmClass.TG_EST)
-            {
+                || lipidclass == LbmClass.TG_EST) {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
+            }
+
+            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS) {
+                if (acylChainCount != 2) {
+                    rdbString = (rdb + 1).ToString();
+                    oxidized = oxidized + 1;
+                }
+            }
+
+            if (chainPrefix == "P-") {
+                rdbString = (rdb - 1).ToString();
             }
             var oxString = oxidized == 0
                  ? string.Empty
                  : oxidized == 1
                      ? ";O"
                      : ";" + oxidized + "O";
-            return carbon + ":" + rdbString + oxString;
+            return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
         //public static void setDoubleAcylChainsLipidAnnotation(LipidMolecule molecule,
@@ -2952,12 +2955,8 @@ namespace CompMs.Common.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
-            //add MT
-            if (lipidname.Substring(0, 2) == "O-")
-            {
-                totalChain = "O-" + totalChain;
-            }
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 3);
 
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
@@ -3007,7 +3006,8 @@ namespace CompMs.Common.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount + sn4CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond + sn4DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount + sn4OxidizedCount;
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 4);
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;

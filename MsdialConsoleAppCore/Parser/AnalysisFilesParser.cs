@@ -27,7 +27,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
             if (isExistMultipleFormats(analysisFiles)) {
                 while (true) {
-                    Console.WriteLine("Your input contains several format files to be processed (abf, cdf, mzml)." +
+                    Console.WriteLine("Your input contains several format files to be processed (abf, cdf, mzml, ibf, wiff)." +
                         " Do you want to continue this process? Y/N");
                     var userResponse = Console.ReadLine();
                     if (userResponse.ToLower() == "n") return null;
@@ -45,7 +45,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 var filepath = file.AnalysisFilePropertyBean.AnalysisFilePath;
                 if (System.IO.File.Exists(filepath)) {
                     var extension = System.IO.Path.GetExtension(filepath).ToLower();
-                    if (extension == ".abf" || extension == "cdf" || extension == "mzml") {
+                    if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" || extension == ".wiff" || extension == ".wiff2") {
                         if (!extensions.Contains(extension)) {
                             extensions.Add(extension);
                         }
@@ -64,7 +64,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
             foreach (var file in filepathes) {
                 var extension = System.IO.Path.GetExtension(file).ToLower();
-                if (extension == ".abf" || extension == ".cdf" || extension == ".mzml")
+                if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" || extension == ".wiff" || extension == ".wiff2")
                     importableFiles.Add(file);
             }
 

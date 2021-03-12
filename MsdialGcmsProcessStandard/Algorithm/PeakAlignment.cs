@@ -19,7 +19,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
     {
         private const int versionNumber = 1;
 
-        public static void JointAligner(ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult, 
+        public static void JointAligner(ProjectPropertyBean project, ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult, 
             List<MspFormatCompoundInformationBean> mspDB, Action<int> reportAction)
         {
             var masterMS1DecResults = PeakAlignment.getJointAlignerMasterList(files, param);
@@ -38,7 +38,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 reportAction?.Invoke(i + 1);
             }
 
-            filteringJointAligner(files, param, alignmentResult);
+            filteringJointAligner(project, files, param, alignmentResult);
         }
 
         private static List<MS1DecResult> getJointAlignerMasterList(ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param)
@@ -160,12 +160,15 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
             }
         }
 
-        private static void filteringJointAligner(ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult)
+        private static void filteringJointAligner(ProjectPropertyBean project, ObservableCollection<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param, AlignmentResultBean alignmentResult)
         {
             var maxQcNumber = 0;
             foreach (var file in files) if (file.AnalysisFilePropertyBean.AnalysisFileType == AnalysisFileType.QC) maxQcNumber++;
 
+            var masterGroupCountDict = getGroupCountDictionary(project, alignmentResult.AlignmentPropertyBeanCollection[0]);
             var alignmentSpots = alignmentResult.AlignmentPropertyBeanCollection;
+         
+
             for (int i = 0; i < alignmentSpots.Count; i++)
             {
                 var peakCount = 0; 
@@ -179,6 +182,9 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 double maxSN = double.MinValue, minSN = double.MaxValue, sumSN = 0;
 
                 var spotProperties = alignmentSpots[i].AlignedPeakPropertyBeanCollection;
+                var localGroupCountDict = new Dictionary<string, int>();
+                foreach (var key in masterGroupCountDict.Keys) localGroupCountDict[key] = 0;
+
                 for (int j = 0; j < spotProperties.Count; j++)
                 {
                     if (spotProperties[j].PeakID < 0) continue;
@@ -203,6 +209,11 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                     if (maxNoise < spotProperties[j].EstimatedNoise) maxNoise = spotProperties[j].EstimatedNoise;
 
                     peakCount++;
+                    var fileId = spotProperties[j].FileID;
+                    var classID = project.FileID_ClassName[fileId];
+                    var filetype = project.FileID_AnalysisFileType[fileId];
+                    //if (filetype == AnalysisFileType.Sample)
+                    localGroupCountDict[classID]++;
                 }
 
                 if (peakCount == 0)
@@ -221,6 +232,23 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
 
                 if (param.QcAtLeastFilter && maxQcNumber != qcCount)
                 {
+                    alignmentResult.AlignmentPropertyBeanCollection.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
+                var isNpercentDetectedAtOneGroup = false;
+                foreach (var pair in localGroupCountDict) {
+                    var id = pair.Key;
+                    var count = pair.Value;
+                    var totalCount = masterGroupCountDict[id];
+                    if ((float)count / (float)totalCount * 100 >= param.NPercentDetectedInOneGroup) {
+                        isNpercentDetectedAtOneGroup = true;
+                        break;
+                    }
+                }
+
+                if (isNpercentDetectedAtOneGroup == false) {
                     alignmentResult.AlignmentPropertyBeanCollection.RemoveAt(i);
                     i--;
                     continue;
@@ -250,6 +278,21 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 alignmentResult.AlignmentPropertyBeanCollection[i].EstimatedNoiseAve = (float)(sumNoise / peakCount);
 
             }
+        }
+
+        private static Dictionary<string, int> getGroupCountDictionary(ProjectPropertyBean project, AlignmentPropertyBean alignProp) {
+            var groupCountDic = new Dictionary<string, int>();
+
+            foreach (var prop in alignProp.AlignedPeakPropertyBeanCollection) {
+                var fileid = prop.FileID;
+                var classid = project.FileID_ClassName[fileid];
+
+                if (groupCountDic.ContainsKey(classid))
+                    groupCountDic[classid]++;
+                else
+                    groupCountDic[classid] = 1;
+            }
+            return groupCountDic;
         }
 
         public static void QuantmassUpdate(RdamPropertyBean rdamProperty, ObservableCollection<AnalysisFileBean> files,

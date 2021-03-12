@@ -44,7 +44,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else {
                 //ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2";
-                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf";
+                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2";
             }
             ofd.Title = "Import analysis files";
             ofd.InitialDirectory = mainWindow.ProjectProperty.ProjectFolderPath;
@@ -329,7 +329,8 @@ namespace Rfx.Riken.OsakaUniv
             var extension = System.IO.Path.GetExtension(file).ToLower();
             if (extension != ".abf" && extension != ".mzml" &&
                 extension != ".cdf" && extension != ".raw" &&
-                extension != ".d" && extension != ".iabf" && extension != ".ibf")
+                extension != ".d" && extension != ".iabf" && extension != ".ibf" &&
+                extension != ".wiff" && extension != ".wiff2")
                 return false;
             else
                 return true;

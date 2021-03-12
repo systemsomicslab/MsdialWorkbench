@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Accord.Statistics.Kernels;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -63,11 +64,18 @@ namespace Rfx.Riken.OsakaUniv
             for (int i = margin; i < ssPeaklist.Count - margin; i++) {
                 if (i > nextPeakCheckReminder + 2) nextPeakCheck = false;
                 if (isPeakStarted(i, ssPeaklist, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, results, nextPeakCheck)) {
+
+                    if (Math.Abs(ssPeaklist[i][1] - 1.967) < 0.05 && Math.Abs(ssPeaklist[i][2] - 609.14703) < 0.1) {
+                        Console.WriteLine("rt {0}, m/z {1}, intensity {2}", ssPeaklist[i][1], ssPeaklist[i][2], ssPeaklist[i][3]);
+                    }
+
+
                     datapoints = new List<double[]>();
                     datapoints.Add(new double[] { peaklist[i][0], peaklist[i][1], peaklist[i][2], peaklist[i][3],
                         firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
-                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise);
+                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, 
+                        slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
                     var isBreak = false;
                     i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out isBreak);
                     if (isBreak) break;
@@ -208,24 +216,63 @@ namespace Rfx.Riken.OsakaUniv
             return i;
         }
         private static int searchRightEdgeCandidate(int i, List<double[]> datapoints, List<double[]> peaklist, List<double[]> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist, 
-            double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise) {
+            double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise, double minimumDatapointCriteria) {
             var peaktopCheck = false;
             var peaktopCheckPoint = i;
             while (true) {
-                if (i + 1 == ssPeaklist.Count - 1) break;
+                if (i + 2 == ssPeaklist.Count - 1) break;
 
                 i++;
                 datapoints.Add(new double[] { peaklist[i][0], peaklist[i][1], peaklist[i][2], peaklist[i][3],
                             firstDiffPeaklist[i], secondDiffPeaklist[i] });
+                
+                // peak top check
                 if (peaktopCheck == false &&
                     (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i] < 0) || (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i + 1] < 0) &&
                     secondDiffPeaklist[i] < -1 * peaktopNoise) {
                     peaktopCheck = true; peaktopCheckPoint = i;
                 }
-                if (peaktopCheck == true && peaktopCheckPoint + 3 <= i - 1) {
+                
+                if (peaktopCheck == false && 
+                    (ssPeaklist[i - 2][3] <= ssPeaklist[i - 1][3]) &&
+                    (ssPeaklist[i - 1][3] <= ssPeaklist[i][3]) &&
+                    (ssPeaklist[i][3] >= ssPeaklist[i + 1][3]) &&
+                    (ssPeaklist[i + 1][3] >= ssPeaklist[i + 2][3])) {
+                    peaktopCheck = true; peaktopCheckPoint = i;
+                }
+
+                // peak top check force
+                if (peaktopCheck == false && minimumDatapointCriteria < 1.5 &&
+                    ((ssPeaklist[i - 2][3] <= ssPeaklist[i - 1][3]) &&
+                    (ssPeaklist[i - 1][3] <= ssPeaklist[i][3]) &&
+                    (ssPeaklist[i][3] >= ssPeaklist[i + 1][3])) || 
+                    ((ssPeaklist[i - 1][3] <= ssPeaklist[i][3]) &&
+                    (ssPeaklist[i][3] >= ssPeaklist[i + 1][3]) &&
+                    (ssPeaklist[i + 1][3] >= ssPeaklist[i + 2][3]))) {
+                    peaktopCheck = true; peaktopCheckPoint = i;
+                }
+
+                var minimumPointFromTop = minimumDatapointCriteria <= 3 ? 1 : minimumDatapointCriteria * 0.5;
+                if (peaktopCheck == true && peaktopCheckPoint + minimumPointFromTop <= i - 1) {
                     if (firstDiffPeaklist[i] > -1 * slopeNoise * slopeNoiseFoldCriteria) break;
                     if (Math.Abs(ssPeaklist[i - 2][3] - ssPeaklist[i - 1][3]) < amplitudeNoise &&
                           Math.Abs(ssPeaklist[i - 1][3] - ssPeaklist[i][3]) < amplitudeNoise) break;
+                    
+                    if ((ssPeaklist[i - 2][3] >= ssPeaklist[i - 1][3]) &&
+                        (ssPeaklist[i - 1][3] >= ssPeaklist[i][3]) &&
+                        (ssPeaklist[i][3] <= ssPeaklist[i + 1][3]) &&
+                        (ssPeaklist[i + 1][3] <= ssPeaklist[i + 2][3])) break;
+
+                    // peak right check force
+                    if (minimumDatapointCriteria < 1.5 &&
+                        ((ssPeaklist[i - 2][3] >= ssPeaklist[i - 1][3]) &&
+                        (ssPeaklist[i - 1][3] >= ssPeaklist[i][3]) &&
+                        (ssPeaklist[i][3] <= ssPeaklist[i + 1][3])) ||
+                        ((ssPeaklist[i - 1][3] >= ssPeaklist[i][3]) &&
+                        (ssPeaklist[i][3] <= ssPeaklist[i + 1][3]) &&
+                        (ssPeaklist[i + 1][3] <= ssPeaklist[i + 2][3]))) {
+                        peaktopCheck = true; peaktopCheckPoint = i;
+                    }
                 }
             }
             return i;
