@@ -71,7 +71,17 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
 
         public string AdductIonName => innerModel.AdductType.AdductIonName;
-        public string Comment => innerModel.Comment;
+        public string Comment {
+            get => innerModel.Comment;
+            set
+            {
+                if (innerModel.Comment != value)
+                {
+                    innerModel.Comment = value;
+                    OnPropertyChanged(nameof(Comment));
+                }
+            }
+        }
 
         public double SignalToNoiseAve => innerModel.SignalToNoiseAve;
         public double FillPercentage => innerModel.FillParcentage;
