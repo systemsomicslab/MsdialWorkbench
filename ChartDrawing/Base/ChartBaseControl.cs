@@ -177,10 +177,10 @@ namespace CompMs.Graphics.Core.Base
         {
             visualChildren = new VisualCollection(this);
 
-            MouseLeftButtonDown += ResetChartAreaOnDoubleClick;
             Behavior.ZoomByDragBehavior.SetIsEnabled(this, true);
             Behavior.ZoomByWheelBehavior.SetIsEnabled(this, true);
             Behavior.MoveByDragBehavior.SetIsEnabled(this, true);
+            Behavior.ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);
         }
 
         protected virtual void Update() { }
@@ -195,33 +195,6 @@ namespace CompMs.Graphics.Core.Base
         {
             if (d is FrameworkElement fe) {
                 fe.InvalidateVisual();
-            }
-        }
-        #endregion
-
-        Point RenderPositionToValue(Point p)
-        {
-            double x = 0, y = 0;
-            if (HorizontalAxis != null)
-                x = HorizontalAxis.TranslateFromRenderPoint(p.X / ActualWidth, FlippedX).Value;
-            if (VerticalAxis != null)
-                y = VerticalAxis.TranslateFromRenderPoint(p.Y / ActualHeight, FlippedY).Value;
-            return new Point(x, y);
-        }
-
-        #region Chart update Event 
-        void ResetChartAreaOnDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                if (HorizontalAxis != null)
-                {
-                    RangeX = HorizontalAxis.InitialRange;
-                }
-                if (VerticalAxis != null)
-                {
-                    RangeY = VerticalAxis.InitialRange;
-                }
             }
         }
         #endregion

@@ -78,6 +78,8 @@
     <Compile Include="Base\Range.cs" />
     <Compile Include="Behavior\ChildDoubleClickBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
+    <Compile Include="Behavior\MoveByDragBehavior.cs" />
+    <Compile Include="Behavior\ResetRangeByDoubleClickBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />
     <Compile Include="Behavior\ZoomByDragBehavior.cs" />
     <Compile Include="Behavior\ZoomByWheelBehavior.cs" />

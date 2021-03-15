@@ -60,6 +60,7 @@
                                     behavior:ZoomByDragBehavior.IsEnabled="False"
                                     behavior:ZoomByWheelBehavior.IsEnabled="False"
                                     behavior:MoveByDragBehavior.IsEnabled="False"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
                                     behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
                                     behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
