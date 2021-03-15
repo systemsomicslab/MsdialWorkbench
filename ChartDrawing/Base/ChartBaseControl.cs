@@ -178,11 +178,11 @@ namespace CompMs.Graphics.Core.Base
             visualChildren = new VisualCollection(this);
 
             MouseLeftButtonDown += ResetChartAreaOnDoubleClick;
-            MouseWheel += ZoomOnMouseWheel;
             MouseLeftButtonDown += MoveOnMouseLeftButtonDown;
             MouseLeftButtonUp += MoveOnMouseLeftButtonUp;
             MouseMove += MoveOnMouseMove;
             Behavior.ZoomByDragBehavior.SetIsEnabled(this, true);
+            Behavior.ZoomByWheelBehavior.SetIsEnabled(this, true);
         }
 
         protected virtual void Update() { }
@@ -212,70 +212,8 @@ namespace CompMs.Graphics.Core.Base
         }
 
         #region Chart update Event 
-        private Point zoomInitial, moveCurrent;
-        private RubberAdorner adorner;
+        private Point moveCurrent;
         private bool moving;
-
-        void ZoomOnMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            var p = e.GetPosition(this);
-            var delta = e.Delta;
-            var scale = 1 - 0.1 * Math.Sign(delta);
-            var area = Rect.Intersect(
-                new Rect(
-                    RenderPositionToValue(new Point(p.X * (1 - scale), p.Y * (1 - scale))),
-                    RenderPositionToValue(new Point(p.X + (ActualWidth - p.X) * scale, p.Y + (ActualHeight - p.Y) * scale))
-                    ),
-                InitialArea
-                );
-            RangeX = new Range(minimum: area.Left, maximum: area.Right);
-            RangeY = new Range(minimum: area.Top, maximum: area.Bottom);
-        }
-
-        void ZoomOnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            zoomInitial = e.GetPosition(this);
-            adorner = new RubberAdorner(this, zoomInitial);
-            adorner.Attach();
-            CaptureMouse();
-        }
-
-        void ZoomOnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (adorner != null)
-            {
-                var initial = zoomInitial;
-                var current = e.GetPosition(this);
-                adorner.Offset = current - initial;
-            }
-        }
-
-        void ZoomOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (adorner != null)
-            {
-                ReleaseMouseCapture();
-                adorner.Detach();
-                adorner = null;
-
-                var current = e.GetPosition(this);
-                var area = Rect.Intersect(
-                    new Rect(
-                        RenderPositionToValue(zoomInitial),
-                        RenderPositionToValue(current)
-                        ),
-                    InitialArea
-                    );
-                if (area.Width > 0)
-                {
-                    RangeX = new Range(minimum: area.Left, maximum: area.Right);
-                }
-                if (area.Height > 0)
-                {
-                    RangeY = new Range(minimum: area.Top, maximum: area.Bottom);
-                }
-            }
-        }
 
         void MoveOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

@@ -60,7 +60,8 @@
                 <spectrum:LineSpectrumControl ItemsSource="{Binding FocusedEic}"
                                               HorizontalPropertyName="ChromXValue"
                                               VerticalPropertyName="Intensity"
-                                              behavior:ZoomByDragBehavior.IsEnabled="False">
+                                              behavior:ZoomByDragBehavior.IsEnabled="False"
+                                              behavior:ZoomByWheelBehavior.IsEnabled="False">
                     <spectrum:LineSpectrumControl.LinePen>
                         <Pen Brush="Red" LineJoin="Miter" PresentationOptions:Freeze="True"/>
                     </spectrum:LineSpectrumControl.LinePen>
@@ -68,7 +69,8 @@
                 <area:AreaChartControl ItemsSource="{Binding PeakEic}"
                                        HorizontalPropertyName="ChromXValue"
                                        VerticalPropertyName="Intensity"
-                                       behavior:ZoomByDragBehavior.IsEnabled="False">
+                                       behavior:ZoomByDragBehavior.IsEnabled="False"
+                                       behavior:ZoomByWheelBehavior.IsEnabled="False">
                     <area:AreaChartControl.AreaBrush>
                         <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
                     </area:AreaChartControl.AreaBrush>
@@ -76,7 +78,8 @@
                 <line:LineChartControl ItemsSource="{Binding Eic}"
                                        HorizontalPropertyName="ChromXValue"
                                        VerticalPropertyName="Intensity"
-                                       behavior:ZoomByDragBehavior.IsEnabled="False">
+                                       behavior:ZoomByDragBehavior.IsEnabled="False"
+                                       behavior:ZoomByWheelBehavior.IsEnabled="False">
                     <line:LineChartControl.LinePen>
                         <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
                     </line:LineChartControl.LinePen>
