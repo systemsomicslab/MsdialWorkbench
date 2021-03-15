@@ -124,7 +124,8 @@ namespace CompMs.MspGenerator
                         //    acylSmiles = "O" + acylSmiles;
                         //    acylOx = acylOx + 1;
                         //}
-                        else if (lipidClass == "CerP" || lipidClass == "Hex2Cer" || lipidClass == "Hex3Cer" || lipidClass == "GM3") //NS
+                        else if (lipidClass == "CerP" || lipidClass == "Hex2Cer" || lipidClass == "Hex3Cer" || lipidClass == "GM3"
+                            || lipidClass == "GD1a" || lipidClass == "GD1b" || lipidClass == "GD2" || lipidClass == "GD3") //NS
                         {
                             if (AcylChainDic.sphingoBaseSDictionary.ContainsKey(chainArray[0]) == false) { continue; }
                             sphSmiles = new List<string>(AcylChainDic.sphingoBaseSDictionary[chainArray[0]])[3];
@@ -363,6 +364,32 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GM3Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon,sphDouble, acylCarbon,acylDouble, acylOx);
                                 break;
 
+                            case "GD1a":
+                            case "GD1b":
+                            case "GD3":
+                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                if (adduct.IonMode == "Negative")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.GD1aGD1bGD3Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+                            case "GD2":
+                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                if (adduct.IonMode == "Negative")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.GD2Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+
+
                             case "MIPC":
                                 name = "MIPC " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
                                 shortName = "MIPC " + totalChain + ":" + totalBond + ";4O";
@@ -473,6 +500,11 @@ namespace CompMs.MspGenerator
 
                         //
                         var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
+                        if (adduct.AdductIonName == "[M-2H]2-")
+                        {
+                            precursorMZ = Math.Round((meta.ExactMass + adduct.AdductIonMass) / 2, 4);
+                        }
+
                         ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
 
                         smileslist.Add(meta.inChIKey + "\t" + meta.Smiles);

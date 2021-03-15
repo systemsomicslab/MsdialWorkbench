@@ -305,7 +305,6 @@ ASM	[M+H]+	Positive	FALSE
 ASM	[M+HCOO]-	Negative	FALSE
 ASM	[M+CH3COO]-	Negative	FALSE
 SHexCer	[M-H]-	Negative	FALSE
-GM3	[M-H]-	Negative	FALSE
 Ac2PIM1	[M-H]-	Negative	FALSE
 Ac2PIM2	[M-H]-	Negative	FALSE
 Ac3PIM2	[M-H]-	Negative	FALSE
@@ -336,3 +335,13 @@ KDCAE	[M+NH4]+	Positive	TRUE
 NAE	[M+HCOO]-	Negative	TRUE
 NAE	[M+CH3COO]-	Negative	TRUE
 GPNAE	[M-H]-	Negative	TRUE
+GM3	[M-H]-	Negative	FALSE
+GM3	[M-2H]2-	Negative	FALSE
+GD1a	[M-H]-	Negative	FALSE
+GD1a	[M-2H]2-	Negative	FALSE
+GD1b	[M-H]-	Negative	FALSE
+GD1b	[M-2H]2-	Negative	FALSE
+GD2	[M-H]-	Negative	FALSE
+GD2	[M-2H]2-	Negative	FALSE
+GD3	[M-H]-	Negative	FALSE
+GD3	[M-2H]2-	Negative	FALSE

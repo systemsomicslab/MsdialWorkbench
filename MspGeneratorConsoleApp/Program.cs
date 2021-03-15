@@ -25,17 +25,17 @@ namespace CompMs.MspGenerator
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\PI_Cer\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\PI_Cer_d+O_InChIKey-smiles.txt"; // 計算させたいInChIKeyとSMILESのリスト
-            var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
-            var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
-            var descriptorSelecerCSSFile = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
-            var rScriptAvdModelPath = @"D:\takahashi\desktop\Tsugawa-san_work\20200710_addLipid\msp\RTCCS_prediction\setting\";// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
+            var workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict\";//作業用フォルダ
+            var toPredictFileName = workingDirectry + @"\txt\20210315141433_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            var padelDescriptortypes = @"D:\takahashi\desktop\Tsugawa-san_work\2020\20200710_addLipid\msp\RTCCS_prediction\setting\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            var descriptorSelecerRTFile = @"D:\takahashi\desktop\Tsugawa-san_work\2020\20200710_addLipid\msp\RTCCS_prediction\setting\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            var descriptorSelecerCSSFile = @"D:\takahashi\desktop\Tsugawa-san_work\2020\20200710_addLipid\msp\RTCCS_prediction\setting\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+            var rScriptAvdModelPath = @"D:\takahashi\desktop\Tsugawa-san_work\2020\20200710_addLipid\msp\RTCCS_prediction\setting\";// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
             var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
             var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
 
 
-            var padelProgramPath = @"D:\takahashi\desktop\Tsugawa-san_work\20200601_RTprediction\PaDEL-Descriptor\";//PaDELのフォルダパス
+            var padelProgramPath = @"D:\takahashi\desktop\Tsugawa-san_work\2020\20200601_RTprediction\PaDEL-Descriptor\";//PaDELのフォルダパス
             var rLocationPath = @"D:\Program Files\R\R-4.0.3\bin\x64"; // Rのpath
 
 
@@ -55,7 +55,7 @@ namespace CompMs.MspGenerator
             //RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
             // RT and CCS predict
-            RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+            //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
             //// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
@@ -74,26 +74,26 @@ namespace CompMs.MspGenerator
 
             //////フォルダ連続処理
             /////
-            //workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\PI_Cer\";
-            //var toGenarateSdfDirectry = workingDirectry + "\\txt\\"; // sdfを作成するInChIKey-SMILESのリスト（テキスト）の入っているフォルダ
-            //var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\"; // 作成したsdfを保存するフォルダ
+            workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict\";
+            var toGenarateSdfDirectry = workingDirectry + "\\txt\\"; // sdfを作成するInChIKey-SMILESのリスト（テキスト）の入っているフォルダ
+            var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\"; // 作成したsdfを保存するフォルダ
 
             //RtCcsPredictManager.generateSdfsOnNCDK(toGenarateSdfDirectry);
             //RtCcsPredictManager.runFoldersToPaDEL(toPadelDirectry, padelDescriptortypes, padelProgramPath); //これを使うより直接PaDELを利用したほうが早いです
 
-            ////padel結果ファイルを1つのディレクトリに入れて開始(予測結果をpredictResultディレクトリに保存するところまで)
+            //////padel結果ファイルを1つのディレクトリに入れて開始(予測結果をpredictResultディレクトリに保存するところまで)
             //var padelResultDirectry = workingDirectry + "\\PadelResult\\";
-            //(作業ディレクトリ, (基本的には)toGenarateSdfDirectry, padel結果ファイルの入ったディレクトリ,
-            //RT予測に使用するdescriptorのリスト, CCS予測に使用するdescriptorのリスト, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile)
+            //////(作業ディレクトリ, (基本的には)toGenarateSdfDirectry, padel結果ファイルの入ったディレクトリ,
+            //////RT予測に使用するdescriptorのリスト, CCS予測に使用するdescriptorのリスト, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile)
             //RtCcsPredictManager.runFolderToFitting(workingDirectry, workingDirectry + "\\txt\\", padelResultDirectry,
             //   descriptorSelecerRTFile, descriptorSelecerCSSFile, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+            //dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20210315.txt"; //generateFileName
+            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
             //var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";
             //var mspFilePath = @"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM\" + @"\Msp20200903072650.jointedmsp";
             //var predictedFilesDirectry = workingDirectry + "\\predictResult\\";
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20200903.txt"; //generateFileName
 
-            //MergeRTandCCSintoMsp.generateDicOfPredict(predictedFilesDirectry, dbFileName);
 
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(mspFilePath, dbFileName, outputResultFolderPath);
 
@@ -109,7 +109,7 @@ namespace CompMs.MspGenerator
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
             ////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20201214.txt", workingDirectry);
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210315.txt", workingDirectry);
 
 
 
@@ -130,7 +130,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210212_add_library\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -179,9 +179,16 @@ namespace CompMs.MspGenerator
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 28, 3);
             //acylChains = Common.GenerateAcylChains(12, 0, 28, 6);
             //Common.switchingLipid(sphingoChains, acylChains, "CerP", outputFolder);
-            //Common.switchingLipid(sphingoChains, acylChains, "GM3", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "SHexCer", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "SHexCer+O", outputFolder);
+
+            //sphingoChains = Common.GenerateSphingoChains(16, 0, 24, 2);
+            //acylChains = Common.GenerateAcylChains(14, 0, 28, 6);
+            //Common.switchingLipid(sphingoChains, acylChains, "GM3", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "GD1a", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "GD1b", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "GD2", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "GD3", outputFolder);
 
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 22, 3);
             //acylChains = Common.GenerateAcylChains(12, 0, 36, 6);
