@@ -178,11 +178,9 @@ namespace CompMs.Graphics.Core.Base
             visualChildren = new VisualCollection(this);
 
             MouseLeftButtonDown += ResetChartAreaOnDoubleClick;
-            MouseLeftButtonDown += MoveOnMouseLeftButtonDown;
-            MouseLeftButtonUp += MoveOnMouseLeftButtonUp;
-            MouseMove += MoveOnMouseMove;
             Behavior.ZoomByDragBehavior.SetIsEnabled(this, true);
             Behavior.ZoomByWheelBehavior.SetIsEnabled(this, true);
+            Behavior.MoveByDragBehavior.SetIsEnabled(this, true);
         }
 
         protected virtual void Update() { }
@@ -212,41 +210,6 @@ namespace CompMs.Graphics.Core.Base
         }
 
         #region Chart update Event 
-        private Point moveCurrent;
-        private bool moving;
-
-        void MoveOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            moveCurrent = e.GetPosition(this);
-            moving = true;
-            CaptureMouse();
-        }
-
-        void MoveOnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (moving)
-            {
-                var previous = moveCurrent;
-                moveCurrent = e.GetPosition(this);
-                var area = Rect.Offset(new Rect(RenderSize), previous - moveCurrent);
-                var cand = new Rect(RenderPositionToValue(area.TopLeft), RenderPositionToValue(area.BottomRight));
-                if (InitialArea.Contains(cand))
-                {
-                    RangeX = new Range(minimum: cand.Left, maximum: cand.Right);
-                    RangeY = new Range(minimum: cand.Top, maximum: cand.Bottom);
-                }
-            }
-        }
-
-        void MoveOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (moving)
-            {
-                moving = false;
-                ReleaseMouseCapture();
-            }
-        }
-
         void ResetChartAreaOnDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)

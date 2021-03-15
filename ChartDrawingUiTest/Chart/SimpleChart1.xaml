@@ -59,6 +59,7 @@
                                         L 7.60845213036123 -2.4721359549995747 L -4.702282018339782 6.472135954999581 Z"
                                     behavior:ZoomByDragBehavior.IsEnabled="False"
                                     behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                    behavior:MoveByDragBehavior.IsEnabled="False"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
                                     behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
                                     behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"

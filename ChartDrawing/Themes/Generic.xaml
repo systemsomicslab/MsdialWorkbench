@@ -149,7 +149,8 @@
                                 Grid.Row="1" Grid.Column="2">
                             <Border Background="{TemplateBinding Background}"
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
-                                    behavior:ZoomByWheelBehavior.IsEnabled="True">
+                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                    behavior:MoveByDragBehavior.IsEnabled="True">
                                 <ContentPresenter/>
                             </Border>
                         </Border>

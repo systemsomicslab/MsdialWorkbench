@@ -27,6 +27,11 @@ namespace CompMs.Graphics.Core.Base
             return Minimum <= value && value <= Maximum;
         }
 
+        public bool Contains(Range other)
+        {
+            return Contains(other.Minimum) && Contains(other.Maximum);
+        }
+
         public Range Intersect(Range other) {
             return new Range(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
         }
