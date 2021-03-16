@@ -46,6 +46,7 @@ namespace ChartDrawingUiTest
                 typeof(DependencyPropertyTest),
                 typeof(SimpleChart1),
                 typeof(MultiChart1),
+                typeof(ErrorBar1),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
