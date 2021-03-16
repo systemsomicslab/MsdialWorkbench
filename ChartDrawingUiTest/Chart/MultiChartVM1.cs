@@ -1,13 +1,14 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-
-namespace ChartDrawingUiTest.LineSpectrum
+namespace ChartDrawingUiTest.Chart
 {
-    internal class LineSpecrumVM1 : INotifyPropertyChanged
+    class MultiChartVM1 : INotifyPropertyChanged
     {
         public ObservableCollection<DataPoint> Series
         {
@@ -45,9 +46,9 @@ namespace ChartDrawingUiTest.LineSpectrum
         private double minY;
         private double maxY;
 
-        public LineSpecrumVM1()
+        public MultiChartVM1()
         {
-            var xs = Enumerable.Range(0, 628).Select(x => new DataPoint() { X = x / 100d, Y = Math.Sin(x / 100d) });
+            var xs = Enumerable.Range(0, 6000).Select(x => new DataPoint() { X = x / 1000d, Y = Math.Sin(x / 1000d), Type = x / 2000});
             Series = new ObservableCollection<DataPoint>(xs);
             MinX = xs.Min(dp => dp.X);
             MaxX = xs.Max(dp => dp.X);
@@ -66,12 +67,5 @@ namespace ChartDrawingUiTest.LineSpectrum
             RaiseProerptyChanged(propertyname);
             return true;
         }
-    }
-
-    internal class DataPoint
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public int Type { get; internal set; }
     }
 }

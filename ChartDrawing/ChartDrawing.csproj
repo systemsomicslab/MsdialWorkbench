@@ -84,6 +84,7 @@
     <Compile Include="Behavior\ZoomByDragBehavior.cs" />
     <Compile Include="Behavior\ZoomByWheelBehavior.cs" />
     <Compile Include="Chart\Annotator.cs" />
+    <Compile Include="Chart\MultiChart.cs" />
     <Compile Include="Chart\SimpleChartControl.cs" />
     <Compile Include="Controls\FileOpenControl.cs" />
     <Compile Include="Converter\AreEqualsConverter.cs" />
