@@ -36,8 +36,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            if (!peakElementsMemo.ContainsKey(fileID))
-                peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrum); // TODO: remove cache (too much memory use)
+            lock (peakElementsMemo) {
+                if (!peakElementsMemo.ContainsKey(fileID))
+                    peakElementsMemo[fileID] = DataAccess.AccumulateMS1Spectrum(spectrum); // TODO: remove cache (too much memory use)
+            }
             var peakElements = peakElementsMemo[fileID];
             var peaklist = DataAccess.ConvertRawPeakElementToChromatogramPeakList(peakElements, center.Mz.Value - peakWidth * 2.0, center.Mz.Value + peakWidth * 2.0);
             return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
