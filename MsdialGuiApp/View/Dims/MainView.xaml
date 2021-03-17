@@ -8,8 +8,11 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="MainControl"
+             MouseRightButtonDown="MainControl_MouseRightButtonDown"
+             ContextMenuOpening="MainControl_ContextMenuOpening"
              d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodVM}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
@@ -190,7 +193,7 @@
                     <TabControl Name="TabControl_PairwisePlotViewer"
                                 SelectedIndex="0"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Grid.Row="2" >
+                                Grid.Row="2" SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged" >
                         <TabControl.ItemContainerStyle>
                             <Style TargetType="TabItem">
                                 <Setter Property="Height" Value="25"/>
@@ -200,7 +203,8 @@
 
                         <TabItem Name="TabItem_RtMzPairwisePlotPeakView"
                                  Header="Peak spot viewer" 
-                                 DataContext="{Binding AnalysisVM}">
+                                 DataContext="{Binding AnalysisVM}"
+                                 DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
                             <commonview:PeakView HorizontalAxis="{StaticResource MassAxis}"
                                                  VerticalAxis="{StaticResource KMDAxis}"
                                                  HorizontalProperty="Mass"
@@ -234,8 +238,16 @@
 
                         <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
                                  Header="Alignment spot viewer" 
-                                 DataContext="{Binding AlignmentVM}">
-                            <local:AlignmentView />
+                                 DataContext="{Binding AlignmentVM}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
+                            <local:AlignmentView >
+                                <local:AlignmentView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Create new view as window"
+                                                  Command="{x:Static ui:SubContentWindow.CreateNewViewCommand}"
+                                                  CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
+                                    </ContextMenu>
+                                </local:AlignmentView.ContextMenu>
+                            </local:AlignmentView>
                         </TabItem>
 
                     </TabControl>
@@ -310,7 +322,15 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}">
+                                    <local:PeakPropertyView.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Create new view as window"
+                                                      Command="{x:Static ui:SubContentWindow.CreateNewViewCommand}"
+                                                      CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
+                                        </ContextMenu>
+                                    </local:PeakPropertyView.ContextMenu>
+                                </local:PeakPropertyView>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 

@@ -126,6 +126,9 @@
     <Compile Include="UI\ShortMessageWindow.xaml.cs">
       <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SubContentWindow.xaml.cs">
+      <DependentUpon>SubContentWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Window\SelectFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +151,10 @@
     <Page Include="UI\ShortMessageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\SubContentWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
