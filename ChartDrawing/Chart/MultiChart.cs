@@ -170,5 +170,13 @@ namespace CompMs.Graphics.Chart
             HorizontalAxisElement = GetTemplateChild("PART_HorizontalAixs") as ChartBaseControl;
             VerticalAxisElement = GetTemplateChild("PART_VerticalAixs") as ChartBaseControl;
         }
+
+        protected override bool IsItemItsOwnContainerOverride(object item) {
+            return false;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride() {
+            return new ContentControl();
+        }
     }
 }
