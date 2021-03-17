@@ -9,7 +9,8 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="ExpRefPlot"
              d:DesignHeight="600" d:DesignWidth="370"
@@ -20,20 +21,25 @@
         </Style>
     </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:ContinuousAxisManager x:Key="MassAxisManager"
-                                       MinValue="{Binding MassMin, Source={x:Reference Name=ExpRefPlot}}"
-                                       MaxValue="{Binding MassMax, Source={x:Reference Name=ExpRefPlot}}"
-                                       ChartMargin="0.05"/>
-        <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding Spectrum, Source={x:Reference Name=ExpRefPlot}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.1" />
-        <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding ReferenceSpectrum, Source={x:Reference Name=ExpRefPlot}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.1"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <manager:ContinuousAxisManager x:Key="MassAxisManager"
+                                           MinValue="{Binding MassMin, Source={x:Reference Name=ExpRefPlot}}"
+                                           MaxValue="{Binding MassMax, Source={x:Reference Name=ExpRefPlot}}"
+                                           ChartMargin="0.05"/>
+            <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
+                                               ItemsSource="{Binding Spectrum, Source={x:Reference Name=ExpRefPlot}}"
+                                               ValuePropertyName="Intensity"
+                                               Bounds="0,0"
+                                               ChartMargin="0,0.1" />
+            <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
+                                               ItemsSource="{Binding ReferenceSpectrum, Source={x:Reference Name=ExpRefPlot}}"
+                                               ValuePropertyName="Intensity"
+                                               Bounds="0,0"
+                                               ChartMargin="0,0.1"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -115,33 +121,17 @@
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="0,0,10,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-            <Border Background="WhiteSmoke"
-                    Grid.Row="1" Grid.Column="3" >
-                <Grid>
-                    <spectrum:LineSpectrumControl x:Name="MS2Line"
-                                                  ItemsSource="{Binding Spectrum, ElementName=ExpRefPlot}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  HorizontalPropertyName="Mass" VerticalPropertyName="Intensity">
-                        <spectrum:LineSpectrumControl.Style>
-                            <Style TargetType="{x:Type spectrum:LineSpectrumControl}">
+
+            <chart:MultiChart Style="{StaticResource VerticalConcatChart}"
+                              HorizontalAxis="{StaticResource MassAxisManager}"
+                              GraphTitle="Measurement vs. Reference"
+                              HorizontalTitle="m/z"
+                              VerticalTitle="Abundance"
+                              Background="WhiteSmoke" BorderBrush="Black">
+                <Grid core:ChartBaseControl.VerticalAxis="{StaticResource MeasureIntensityAxisManager}">
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowCentroid}" Value="False">
@@ -149,48 +139,39 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </spectrum:LineSpectrumControl.Style>
-                        <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
-                        </spectrum:LineSpectrumControl.LinePen>
-                        <spectrum:LineSpectrumControl.ToolTip>
-                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="m/z: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                    <TextBlock Text=" Intensity: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                                </StackPanel>
-                            </ToolTip>
-                        </spectrum:LineSpectrumControl.ToolTip>
-                    </spectrum:LineSpectrumControl>
-                    <chart:Annotator ItemsSource="{Binding Spectrum, ElementName=ExpRefPlot}"
-                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                     RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
-                                     OrderingPropertyName="Intensity" TopN="3" Format="N2">
-                        <chart:Annotator.Style>
-                            <Style TargetType="{x:Type chart:Annotator}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowCentroid}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </chart:Annotator.Style>
-                    </chart:Annotator>
-                    <spectrum:LineSpectrumControl x:Name="MS2DecLine"
-                                                  ItemsSource="{Binding DeconvolutionSpectrum, ElementName=ExpRefPlot}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" >
-                        <spectrum:LineSpectrumControl.Style>
-                            <Style TargetType="{x:Type spectrum:LineSpectrumControl}">
+                        </Grid.Style>
+                        <spectrum:LineSpectrumControl x:Name="MS2Line"
+                                                      ItemsSource="{Binding Spectrum, ElementName=ExpRefPlot}"
+                                                      HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
+                                                      behavior:ZoomByDragBehavior.IsEnabled="False"
+                                                      behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                                      behavior:MoveByDragBehavior.IsEnabled="False"
+                                                      behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
+                            <spectrum:LineSpectrumControl.LinePen>
+                                <Pen Thickness="2" Brush="Blue" PresentationOptions:Freeze="True" />
+                            </spectrum:LineSpectrumControl.LinePen>
+                            <spectrum:LineSpectrumControl.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="m/z: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                        <TextBlock Text=" Intensity: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </spectrum:LineSpectrumControl.ToolTip>
+                        </spectrum:LineSpectrumControl>
+                        <chart:Annotator ItemsSource="{Binding Spectrum, ElementName=ExpRefPlot}"
+                                         HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                         OrderingPropertyName="Intensity" TopN="3" Format="N2"
+                                         behavior:ZoomByDragBehavior.IsEnabled="False"
+                                         behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                         behavior:MoveByDragBehavior.IsEnabled="False"
+                                         behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowDeconvolution}" Value="False">
@@ -198,128 +179,63 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </spectrum:LineSpectrumControl.Style>
-                        <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
-                        </spectrum:LineSpectrumControl.LinePen>
-                        <spectrum:LineSpectrumControl.ToolTip>
-                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="m/z: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                    <TextBlock Text=" Intensity: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                                </StackPanel>
-                            </ToolTip>
-                        </spectrum:LineSpectrumControl.ToolTip>
-                    </spectrum:LineSpectrumControl>
-                    <chart:Annotator ItemsSource="{Binding DeconvolutionSpectrum, ElementName=ExpRefPlot}"
-                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                     RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                     HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
-                                     OrderingPropertyName="Intensity" TopN="3" Format="N2">
-                        <chart:Annotator.Style>
-                            <Style TargetType="{x:Type chart:Annotator}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowDeconvolution}" Value="False">
-                                        <Setter Property="Visibility" Value="Hidden"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </chart:Annotator.Style>
-                    </chart:Annotator>
+                        </Grid.Style>
+                        <spectrum:LineSpectrumControl x:Name="MS2DecLine"
+                                                      ItemsSource="{Binding DeconvolutionSpectrum, ElementName=ExpRefPlot}"
+                                                      HorizontalPropertyName="Mass" VerticalPropertyName="Intensity"
+                                                      behavior:ZoomByDragBehavior.IsEnabled="False"
+                                                      behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                                      behavior:MoveByDragBehavior.IsEnabled="False"
+                                                      behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
+                            <spectrum:LineSpectrumControl.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="m/z: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                        <TextBlock Text=" Intensity: "/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </spectrum:LineSpectrumControl.ToolTip>
+                        </spectrum:LineSpectrumControl>
+                        <chart:Annotator ItemsSource="{Binding DeconvolutionSpectrum, ElementName=ExpRefPlot}"
+                                         HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
+                                         OrderingPropertyName="Intensity" TopN="3" Format="N2"
+                                         behavior:ZoomByDragBehavior.IsEnabled="False"
+                                         behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                         behavior:MoveByDragBehavior.IsEnabled="False"
+                                         behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
+                    </Grid>
                 </Grid>
-            </Border>
-            <Border Background="WhiteSmoke"
-                    Grid.Row="3" Grid.Column="3" >
-                <Grid>
+
+                <Grid core:ChartBaseControl.VerticalAxis="{StaticResource ReferenceIntensityAxisManager}"
+                      core:ChartBaseControl.FlippedY="False">
                     <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                           ItemsSource="{Binding ReferenceSpectrum, ElementName=ExpRefPlot}"
-                                           HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                           VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                           RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                           RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                           FlippedY="False"
-                                           HorizontalPropertyName="Mass"
-                                           VerticalPropertyName="Intensity">
+                                                  ItemsSource="{Binding ReferenceSpectrum, ElementName=ExpRefPlot}"
+                                                  HorizontalPropertyName="Mass"
+                                                  VerticalPropertyName="Intensity"
+                                                  behavior:ZoomByDragBehavior.IsEnabled="False"
+                                                  behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                                  behavior:MoveByDragBehavior.IsEnabled="False"
+                                                  behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
                         <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
+                            <Pen Thickness="2" Brush="Red" PresentationOptions:Freeze="true"/>
                         </spectrum:LineSpectrumControl.LinePen>
                     </spectrum:LineSpectrumControl>
                     <chart:Annotator ItemsSource="{Binding ReferenceSpectrum, ElementName=ExpRefPlot}"
-                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                     RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                     RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                     FlippedY="False"
                                      HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" LabelPropertyName="Mass"
-                                     OrderingPropertyName="Intensity" TopN="3" ContentAlignment="BottomCenter" Format="N2"/>
+                                     OrderingPropertyName="Intensity" TopN="3" ContentAlignment="BottomCenter" Format="N2"
+                                     behavior:ZoomByDragBehavior.IsEnabled="False"
+                                     behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                     behavior:MoveByDragBehavior.IsEnabled="False"
+                                     behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
                 </Grid>
-            </Border>
-            <axis:HorizontalAxisControl x:Name="MzAxis"
-                                        DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                        HorizontalAxis="{Binding AxisMapper}"
-                                        LabelTicks="{Binding LabelTicks}"
-                                        RangeX="{Binding Range}"
-                                        Grid.Row="5" Grid.Column="3" />
-            <axis:VerticalAxisControl x:Name="MeasureIntensityAxis"
-                                      DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
-                                      VerticalAxis="{Binding AxisMapper}"
-                                      LabelTicks="{Binding LabelTicks}"
-                                      RangeY="{Binding Range}"
-                                      Grid.Row="1" Grid.Column="1" />
-            <axis:VerticalAxisControl x:Name="ReferenceIntensityAxis"
-                                      DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
-                                      VerticalAxis="{Binding AxisMapper}"
-                                      LabelTicks="{Binding LabelTicks}"
-                                      RangeY="{Binding Range}"
-                                      FlippedY="False"
-                                      Grid.Row="3" Grid.Column="1" />
-            <TextBlock Text="m/z"
-                       FontStyle="Italic"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Grid.Row="6" Grid.Column="3" />
-            <TextBlock Text="Relative abundance"
-                       FontStyle="Italic"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Grid.Row="1" Grid.Column="0" Grid.RowSpan="3">
-                <TextBlock.LayoutTransform>
-                    <TransformGroup>
-                        <RotateTransform Angle="-90" />
-                        <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}" />
-                    </TransformGroup>
-                </TextBlock.LayoutTransform>
-            </TextBlock>
-            <TextBlock Text="Measurement vs. Reference"
-                       VerticalAlignment="Bottom"
-                       Grid.Row="0" Grid.Column="3"/>
+            </chart:MultiChart>
             <TextBlock Text="Measurement" FontStyle="Italic" FontFamily="Calibri"
-                       VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                       Grid.Row="0" Grid.Column="3"/>
+                       VerticalAlignment="Top" HorizontalAlignment="Right" />
             <TextBlock Text="Reference" FontStyle="Italic" FontFamily="Calibri"
                        VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                       Margin="0,0,5,5"
-                       Grid.Row="6" Grid.Column="3"/>
-            <GridSplitter Background="Black"
-                          Height="2"
-                          Margin="0,-3"
-                          HorizontalAlignment="Stretch"
-                          Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" />
-            <GridSplitter Background="Black"
-                          Height="2"
-                          Margin="0,-3"
-                          HorizontalAlignment="Stretch"
-                          Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" />
-            <GridSplitter Background="Black"
-                          Width="2"
-                          Margin="-3,0"
-                          HorizontalAlignment="Stretch"
-                          Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" />
+                       Margin="0,0,5,5"/>
         </Grid>
     </Grid>
 </UserControl>
