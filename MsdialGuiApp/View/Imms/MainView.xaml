@@ -8,6 +8,8 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
