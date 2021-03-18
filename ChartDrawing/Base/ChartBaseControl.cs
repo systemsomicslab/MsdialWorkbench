@@ -176,11 +176,6 @@ namespace CompMs.Graphics.Core.Base
         public ChartBaseControl()
         {
             visualChildren = new VisualCollection(this);
-
-            Behavior.ZoomByDragBehavior.SetIsEnabled(this, true);
-            Behavior.ZoomByWheelBehavior.SetIsEnabled(this, true);
-            Behavior.MoveByDragBehavior.SetIsEnabled(this, true);
-            Behavior.ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);
         }
 
         protected virtual void Update() { }
