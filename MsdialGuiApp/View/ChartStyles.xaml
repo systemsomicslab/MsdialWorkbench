@@ -234,4 +234,70 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="OverlapChart">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:MultiChart}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Name="GraphTitle"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="2"/>
+
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,0,0,1"
+                                Grid.Row="1" Grid.Column="2">
+                            <Border Background="{TemplateBinding Background}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="True"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                    behavior:MoveByDragBehavior.IsEnabled="True"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                <Grid IsItemsHost="True"/>
+                            </Border>
+                        </Border>
+
+                        <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="1,0,0,0"
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
+                        <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                                  HorizontalAxis="{x:Null}"
+                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                  Margin="0,0,0,1"
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
