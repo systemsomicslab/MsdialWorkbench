@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
-        d:DataContext="{d:DesignData AnalysisParamSetForLcVM}"
         Name="AnalysisParamSetView"
         Height="630" Width="650">
     <Window.Resources>

@@ -239,15 +239,7 @@
                         <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
                                  Header="Alignment spot viewer" 
                                  DataContext="{Binding AlignmentVM}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
-                            <local:AlignmentView >
-                                <local:AlignmentView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Create new view as window"
-                                                  Command="{x:Static ui:SubContentWindow.CreateNewViewCommand}"
-                                                  CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                    </ContextMenu>
-                                </local:AlignmentView.ContextMenu>
-                            </local:AlignmentView>
+                            <local:AlignmentView />
                         </TabItem>
 
                     </TabControl>
@@ -322,15 +314,7 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}">
-                                    <local:PeakPropertyView.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Create new view as window"
-                                                      Command="{x:Static ui:SubContentWindow.CreateNewViewCommand}"
-                                                      CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                        </ContextMenu>
-                                    </local:PeakPropertyView.ContextMenu>
-                                </local:PeakPropertyView>
+                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
