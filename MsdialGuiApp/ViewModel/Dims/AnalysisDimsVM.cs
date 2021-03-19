@@ -46,16 +46,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private ICollectionView ms1Peaks;
 
-        public List<ChromatogramPeakWrapper> Eic {
-            get => eic;
-            set {
-                if (SetProperty(ref eic, value)) {
-                    OnPropertyChanged(nameof(EicMaxIntensity));
-                }
-            }
+        public List<ChromatogramPeakWrapper> Ms1Chromatogram {
+            get => ms1Chromatogram;
+            set => SetProperty(ref ms1Chromatogram, value);
         }
 
-        public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+        private List<ChromatogramPeakWrapper> ms1Chromatogram;
+
+        public List<ChromatogramPeakWrapper> Eic {
+            get => eic;
+            set => SetProperty(ref eic, value);
+        }
 
         private List<ChromatogramPeakWrapper> eic;
 
@@ -67,9 +68,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public List<ChromatogramPeakWrapper> FocusedEic {
             get => focusedEic;
-            set => SetProperty(ref focusedEic, value);
+            set {
+                if (SetProperty(ref focusedEic, value)) {
+                    OnPropertyChanged(nameof(EicMaxIntensity));
+                }
+            }
         }
         private List<ChromatogramPeakWrapper> focusedEic;
+        public double EicMaxIntensity => FocusedEic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+
 
         public List<SpectrumPeakWrapper> Ms2Spectrum {
             get => ms2Spectrum;
@@ -230,6 +237,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 spectrumList = rawObj.SpectrumList;
             }
 
+            var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
+            Ms1Chromatogram = DataAccess.GetSmoothedPeaklist(
+                    DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, double.MinValue, double.MaxValue),
+                    param.SmoothingMethod, param.SmoothingLevel).Select(peak => new ChromatogramPeakWrapper(peak)).ToList();
+
             PropertyChanged += OnTargetChanged;
             PropertyChanged += OnFilterChanged;
 
@@ -293,8 +305,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
-            var leftMz = target.ChromXValue ?? 0 - 10;
-            var rightMz = target.ChromXValue ?? 0 + 10;
+            var leftMz = target.ChromXValue - 10 ?? 0;
+            var rightMz = target.ChromXValue + 10 ?? 0;
             await Task.Run(() => {
                 Eic = DataAccess.GetSmoothedPeaklist(
                         DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, leftMz, rightMz),
