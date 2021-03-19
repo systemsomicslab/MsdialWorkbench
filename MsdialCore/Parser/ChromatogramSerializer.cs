@@ -39,6 +39,16 @@ namespace CompMs.MsdialCore.Parser
             return DeserializeAll(stream).Take(num);
         }
 
+        public virtual IEnumerable<T> DeserializeEach(Stream stream, IEnumerable<int> indices) {
+            if (!stream.CanSeek)
+                throw new ArgumentException("Please use stream which supports seeking for DeserializeEach.");
+            var point = stream.Position;
+            foreach (var index in indices) {
+                yield return DeserializeAt(stream, index);
+                stream.Seek(point, SeekOrigin.Begin);
+            }
+        }
+
         public void SerializeToFile(string path, T chromatogram) {
             using (var fs = File.OpenWrite(path)) {
                 Serialize(fs, chromatogram);
@@ -81,6 +91,50 @@ namespace CompMs.MsdialCore.Parser
                 foreach (var v in DeserializeN(fs, num))
                     yield return v;
             }
+        }
+
+        public IEnumerable<T> DeserializeEachFromFile(string path, IEnumerable<int> indices) {
+            using (var fs = File.OpenRead(path)) {
+                foreach (var v in DeserializeEach(fs, indices))
+                    yield return v;
+            }
+        }
+    }
+
+    public abstract class ChromatogramSerializerDecorator<T> : ChromatogramSerializer<T>
+    {
+        protected ChromatogramSerializer<T> Serializer;
+
+        public override void Serialize(Stream stream, T chromatogram) {
+            Serializer.Serialize(stream, chromatogram);
+        }
+
+        public override void SerializeAll(Stream stream, IEnumerable<T> chromatograms) {
+            Serializer.SerializeAll(stream, chromatograms);
+        }
+
+        public override void SerializeN(Stream stream, IEnumerable<T> chromatograms, int num) {
+            Serializer.SerializeN(stream, chromatograms, num);
+        }
+
+        public override T Deserialize(Stream stream) {
+            return Serializer.Deserialize(stream);
+        }
+
+        public override T DeserializeAt(Stream stream, int index) {
+            return Serializer.DeserializeAt(stream, index);
+        }
+
+        public override IEnumerable<T> DeserializeAll(Stream stream) {
+            return Serializer.DeserializeAll(stream);
+        }
+
+        public override IEnumerable<T> DeserializeN(Stream stream, int num) {
+            return Serializer.DeserializeN(stream, num);
+        }
+
+        public override IEnumerable<T> DeserializeEach(Stream stream, IEnumerable<int> indices) {
+            return Serializer.DeserializeEach(stream, indices);
         }
     }
 }
