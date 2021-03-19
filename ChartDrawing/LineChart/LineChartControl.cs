@@ -77,7 +77,8 @@ namespace CompMs.Graphics.LineChart
         }
 
         public LineChartControl() : base() {
-            dv = new DrawingVisual { Clip = new RectangleGeometry(new Rect(RenderSize)) };
+            ClipToBounds = true;
+            dv = new DrawingVisual();
             visualChildren.Add(dv);
         }
 
@@ -95,8 +96,48 @@ namespace CompMs.Graphics.LineChart
             var points = ValuesToRenderPositions(datas, ActualWidth, ActualHeight);
 
             if (points.Count != 0)
-                for (int i = 1; i < points.Count; ++i)
-                    dc.DrawLine(LinePen, points[i - 1], points[i]);
+            {
+                var areaGeometry = new PathGeometry();
+
+                var area = new Rect(RenderSize);
+                var path = new PathFigure() { IsClosed = false };
+                var i = 0;
+                while (i < points.Count) {
+                    while (i < points.Count && !area.Contains(points[i])) {
+                        i++;
+                    }
+
+                    if (0 <= i - 1 && i - 1 < points.Count) {
+                        path.Segments.Add(new LineSegment()
+                        {
+                            Point = points[i - 1],
+                        });
+                    }
+
+                    while (i < points.Count && area.Contains(points[i])) {
+                        path.Segments.Add(new LineSegment()
+                        {
+                            Point = points[i],
+                        });
+                        i++;
+                    }
+
+                    if (i < points.Count) {
+                        path.Segments.Add(new LineSegment()
+                        {
+                            Point = points[i],
+                        });
+                    }
+                }
+
+                var p = (path.Segments.First() as LineSegment).Point;
+                path.StartPoint = p;
+                path.Freeze();
+
+                areaGeometry.Figures = new PathFigureCollection { path };
+
+                dc.DrawGeometry(null, LinePen, areaGeometry);
+            }
             
             dc.Close();
         }
@@ -169,11 +210,6 @@ namespace CompMs.Graphics.LineChart
             chart.SetVerticalDatas();
 
             chart.Update();
-        }
-
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
-            dv.Clip = new RectangleGeometry(new Rect(RenderSize));
-            base.OnRenderSizeChanged(sizeInfo);
         }
         #endregion
 
