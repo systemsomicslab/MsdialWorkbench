@@ -681,6 +681,14 @@ namespace CompMs.Common.Lipidomics {
                     case LbmClass.GD3:
                         return LipidMsmsCharacterization.JudgeIfGD3(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    case LbmClass.GM1:
+                        return LipidMsmsCharacterization.JudgeIfGM1(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+
+                    case LbmClass.ST:
+                        return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+
 
                     default:
                         return null;

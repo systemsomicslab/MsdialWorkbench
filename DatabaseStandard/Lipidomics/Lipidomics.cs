@@ -681,6 +681,13 @@ namespace Riken.Metabolomics.Lipidomics
                     case LbmClass.GD3:
                         return LipidMsmsCharacterization.JudgeIfGD3(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    case LbmClass.GM1:
+                        return LipidMsmsCharacterization.JudgeIfGM1(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+
+                    case LbmClass.ST:
+                        return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass,
+                            spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
 
 
                 }

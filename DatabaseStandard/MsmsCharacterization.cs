@@ -3625,7 +3625,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     // seek SN1+
                     var threshold1 = 1;
-                    var diagnosticMz1 = acylCainMass(totalCarbon, totalDoubleBond) -Electron;
+                    var diagnosticMz1 = acylCainMass(totalCarbon, totalDoubleBond) - Electron;
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found == false) return null;
 
@@ -3679,7 +3679,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
                         - (12 * 12 + MassDiffDictionary.HydrogenMass * 20 + MassDiffDictionary.OxygenMass * 10) - H2O;
                     // seek SN1(acyl)+
-                    var diagnosticMz2 = acylCainMass(totalCarbon, totalDoubleBond) -Electron;
+                    var diagnosticMz2 = acylCainMass(totalCarbon, totalDoubleBond) - Electron;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -9487,14 +9487,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
                 var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
-                //// seek [M-C11H17NO8-H]-
-                //var threshold2 = 0.01;
-                //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
-
                 var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
 
-                // from here, acyl level annotation is executed.
+                //// seek  [C11H17NO8-H]- *2 as 581.19 must be not found
+                var threshold2 = 0.1;
+                var diagnosticMz2 = diagnosticMz1 * 2 + MassDiffDictionary.HydrogenMass;
+                var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                if (isClassIon2Found == true) return null;
                 //   may be not found fragment to define sphingo and acyl chain
                 var candidates = new List<LipidMolecule>();
 
@@ -9591,9 +9591,44 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return null;
         }
 
+        public static LipidMolecule JudgeIfGM1(ObservableCollection<double[]> spectrum, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
+            {
+                // seek [C11H17NO8-H]-  as 290.0875914768
+                var threshold1 = 0.01;
+                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                if (isClassIon1Found != true) return null;
+                //// seek  [C11H17NO8-H]- *2 as 581.19 must be not found
+                var threshold2 = 0.1;
+                var diagnosticMz2 = diagnosticMz1 * 2 + MassDiffDictionary.HydrogenMass;
+                var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                if (isClassIon2Found == true) return null;
+
+
+                //   may be not found fragment to define sphingo and acyl chain
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("GM1", LbmClass.GM1, "d", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
+            return null;
+        }
+
+
+
+
+
 
         public static LipidMolecule JudgeIfSphinganine(ObservableCollection<double[]> spectrum, double ms2Tolerance, float theoreticalMz,
-    int totalCarbon, int totalDoubleBond, AdductIon adduct)
+         int totalCarbon, int totalDoubleBond, AdductIon adduct)
         {
             if (spectrum == null || spectrum.Count == 0) return null;
             if (adduct.IonMode == IonMode.Positive)
@@ -11958,12 +11993,65 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
             return null;
         }
+
+
+        public static LipidMolecule JudgeIfnoChainSterol(string lipidname, LbmClass lipidclass, ObservableCollection<double[]> spectrum, double ms2Tolerance,
+       double theoreticalMz, int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
+                {
+                    // calc [M+H-H2O]+
+                    var diagnosticMz = adduct.AdductIonName == "[M+NH4]+"? theoreticalMz - 17.02600055 : theoreticalMz;
+                    diagnosticMz = diagnosticMz - H2O;
+                    var threshold = 1;
+                    var isSterolFrag = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isSterolFrag == true)
+                    {
+                        var candidates = new List<LipidMolecule>();
+                        return returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                if (adduct.AdductIonName == "[M+Na]+")
+                {
+                    // calc [M+H-H2O]+
+                    var diagnosticMz = theoreticalMz;
+                    diagnosticMz = diagnosticMz - H2O;
+                    var threshold = 0.1;
+                    var isSterolFrag = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isSterolFrag == true)
+                    {
+                        var candidates = new List<LipidMolecule>();
+                        return returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                if (adduct.AdductIonName == "[M+H-H2O]+")
+                {
+                    // calc [M+H-H2O]+
+                    var diagnosticMz = theoreticalMz;
+                    diagnosticMz = diagnosticMz - H2O;
+                    var threshold = 1;
+                    var isSterolFrag = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                        var candidates = new List<LipidMolecule>();
+                        return returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                }
+
+
+            }
+            return null;
+        }
+
         // yeast lipid add 20200714
 
         public static LipidMolecule JudgeIfMonoMethylPE(ObservableCollection<double[]> spectrum, double ms2Tolerance,
-            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PE 46:6, totalCarbon = 46 and totalDoubleBond = 6
-            int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
-            AdductIon adduct)
+        double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PE 46:6, totalCarbon = 46 and totalDoubleBond = 6
+        int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+        AdductIon adduct)
         {
             if (spectrum == null || spectrum.Count == 0) return null;
             if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;

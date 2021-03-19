@@ -2603,6 +2603,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "EGSE", "rgb(210, 145, 50)" },
             { "DEGSE", "rgb(210, 145, 55)" },
             { "DSMSE", "rgb(210, 145, 60)" },
+            { "ST", "rgb(210, 145, 65)" },
             { "AHexBRS", "rgb(200, 165, 20)" },
             { "AHexCAS", "rgb(200, 165, 20)" },
             { "AHexCS", "rgb(200, 165, 20)" },
@@ -2740,6 +2741,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "GD1b", "rgb(168, 0, 47)" },
             { "GD2", "rgb(168, 0, 47)" },
             { "GD3", "rgb(168, 0, 47)" },
+            { "GM1", "rgb(168, 0, 47)" },
             { "Unknown", "rgb(181, 181, 181)" }
 
         };
@@ -5339,6 +5341,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "EGSE", Color.FromArgb(180, 210, 145, 50) },
             { "DEGSE", Color.FromArgb(180, 210, 145, 55) },
             { "DSMSE", Color.FromArgb(180, 210, 145, 60) },
+            { "ST", Color.FromArgb(180, 210, 145, 65) },
             { "AHexBRS", Color.FromArgb(180, 200, 165, 20) },
             { "AHexCAS", Color.FromArgb(180, 200, 165, 20) },
             { "AHexCS", Color.FromArgb(180, 200, 165, 20) },
@@ -5476,6 +5479,7 @@ namespace CompMs.CommonMVVM.ChemView {
             { "GD1b", Color.FromArgb(180, 168, 0, 47) },
             { "GD2", Color.FromArgb(180, 168, 0, 47) },
             { "GD3", Color.FromArgb(180, 168, 0, 47) },
+            { "GM1", Color.FromArgb(180, 168, 0, 47) },
             { "Unknown", Color.FromArgb(180, 181, 181, 181) },
             { "", Color.FromArgb(180, 181, 181, 181) },
             { "null", Color.FromArgb(180, 181, 181, 181) },

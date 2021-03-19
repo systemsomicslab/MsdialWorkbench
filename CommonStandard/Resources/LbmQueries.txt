@@ -322,6 +322,10 @@ DEGSE	[M+H]+	Positive	TRUE
 DEGSE	[M+NH4]+	Positive	TRUE
 DEGSE	[M+Na]+	Positive	TRUE
 DSMSE	[M+NH4]+	Positive	TRUE
+ST	[M+H]+	Positive	TRUE
+ST	[M+NH4]+	Positive	TRUE
+ST	[M+Na]+	Positive	TRUE
+ST	[M+H-H2O]+	Positive	TRUE
 OxTG	[M+NH4]+	Positive	TRUE
 TG_EST	[M+NH4]+	Positive	TRUE
 MIPC	[M-H]-	Negative	TRUE
@@ -335,6 +339,8 @@ KDCAE	[M+NH4]+	Positive	TRUE
 NAE	[M+HCOO]-	Negative	TRUE
 NAE	[M+CH3COO]-	Negative	TRUE
 GPNAE	[M-H]-	Negative	TRUE
+GM1	[M-H]-	Negative	FALSE
+GM1	[M-2H]2-	Negative	FALSE
 GM3	[M-H]-	Negative	FALSE
 GM3	[M-2H]2-	Negative	FALSE
 GD1a	[M-H]-	Negative	FALSE
@@ -345,4 +351,3 @@ GD2	[M-H]-	Negative	FALSE
 GD2	[M-2H]2-	Negative	FALSE
 GD3	[M-H]-	Negative	FALSE
 GD3	[M-2H]2-	Negative	FALSE
-
