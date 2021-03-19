@@ -177,6 +177,10 @@ namespace CompMs.MspGenerator
                 case "HexCer_HDS":
                 case "CerP":
                 case "GM3":
+                case "GD1a":
+                case "GD1b":
+                case "GD2":
+                case "GD3":
                 case "MIPC":
                     CeramideMspGenerator.twoChainsCeramideGenerator(chain1, chain2, lipidClass, output);
                     break;

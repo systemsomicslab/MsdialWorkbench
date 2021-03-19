@@ -9540,7 +9540,7 @@ AdductIon adduct)
             }
             else
             {
-                if (adduct.AdductIonName == "[M-H]-")
+                if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
                 {
                     // seek [C11H17NO8-H]-  as 290.0875914768
                     var threshold1 = 0.01;
@@ -9567,6 +9567,129 @@ AdductIon adduct)
             }
             return null;
         }
+
+        public static LipidMolecule JudgeIfGD1a(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
+            {
+                // seek [C11H17NO8-H]-  as 290.0875914768
+                var threshold1 = 0.01;
+                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                //// seek [M-C11H17NO8-H]-
+                //var threshold2 = 0.01;
+                //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
+
+                var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                if (isClassIon1Found != true) return null;
+
+                // from here, acyl level annotation is executed.
+                //   may be not found fragment to define sphingo and acyl chain
+                var candidates = new List<LipidMolecule>();
+ 
+                return returnAnnotationResult("GD1a", LbmClass.GD1a, "d", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfGD1b(IMSScanProperty msScanProp, double ms2Tolerance,
+    double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+    int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+    AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
+            {
+                // seek [C11H17NO8-H]-  as 290.0875914768
+                var threshold1 = 0.01;
+                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                //// seek [M-C11H17NO8-H]-
+                //var threshold2 = 0.01;
+                //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
+
+                var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                if (isClassIon1Found != true) return null;
+
+                // from here, acyl level annotation is executed.
+                //   may be not found fragment to define sphingo and acyl chain
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("GD1b", LbmClass.GD1b, "d", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfGD2(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
+            {
+                // seek [C11H17NO8-H]-  as 290.0875914768
+                var threshold1 = 0.01;
+                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                //// seek [M-C11H17NO8-H]-
+                //var threshold2 = 0.01;
+                //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
+
+                var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                if (isClassIon1Found != true) return null;
+
+                // from here, acyl level annotation is executed.
+                //   may be not found fragment to define sphingo and acyl chain
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("GD2", LbmClass.GD2, "d", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
+            return null;
+        }
+        public static LipidMolecule JudgeIfGD3(IMSScanProperty msScanProp, double ms2Tolerance,
+            double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSphCarbon > totalCarbon) maxSphCarbon = totalCarbon;
+            if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
+            {
+                // seek [C11H17NO8-H]-  as 290.0875914768
+                var threshold1 = 0.01;
+                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                //// seek [M-C11H17NO8-H]-
+                //var threshold2 = 0.01;
+                //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
+
+                var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                if (isClassIon1Found != true) return null;
+
+                // from here, acyl level annotation is executed.
+                //   may be not found fragment to define sphingo and acyl chain
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("GD3", LbmClass.GD3, "d", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, 0, candidates, 2);
+            }
+            return null;
+        }
+
+
 
         public static LipidMolecule JudgeIfSphinganine(IMSScanProperty msScanProp, double ms2Tolerance, float theoreticalMz,
     int totalCarbon, int totalDoubleBond, AdductIon adduct)

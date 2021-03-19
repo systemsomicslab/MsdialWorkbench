@@ -1127,6 +1127,21 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.DGMG:
                     return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, adduct);
+
+                //add 20210315
+                case LbmClass.GD1a:
+                    return LipidMsmsCharacterization.JudgeIfGD1a(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD1b:
+                    return LipidMsmsCharacterization.JudgeIfGD1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD2:
+                    return LipidMsmsCharacterization.JudgeIfGD2(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GD3:
+                    return LipidMsmsCharacterization.JudgeIfGD3(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 default:
                     return null;
             }

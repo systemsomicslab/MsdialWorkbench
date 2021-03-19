@@ -668,6 +668,20 @@ namespace Riken.Metabolomics.Lipidomics
                     case LbmClass.DGMG:
                         return LipidMsmsCharacterization.JudgeIfDgmg(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                    //add 20210315
+                    case LbmClass.GD1a:
+                        return LipidMsmsCharacterization.JudgeIfGD1a(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    case LbmClass.GD1b:
+                        return LipidMsmsCharacterization.JudgeIfGD1b(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    case LbmClass.GD2:
+                        return LipidMsmsCharacterization.JudgeIfGD2(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                    case LbmClass.GD3:
+                        return LipidMsmsCharacterization.JudgeIfGD3(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+
 
                 }
 

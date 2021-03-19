@@ -41,9 +41,8 @@ namespace CompMs.Common.Enum {
         LCAE, KLCAE, KDCAE,
         MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE, 
         OxTG, TG_EST,
-        GPNAE, DGMG, MGMG
-
-
+        GPNAE, DGMG, MGMG,
+        GD1a, GD1b, GD2, GD3,
     }
 
     /// <summary>

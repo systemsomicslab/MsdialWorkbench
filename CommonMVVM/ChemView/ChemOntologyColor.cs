@@ -2736,6 +2736,10 @@ namespace CompMs.CommonMVVM.ChemView {
             { "NAGlySer", "rgb(225, 39, 30)" },
             { "NAOrn", "rgb(215, 29, 40)" },
             { "GM3", "rgb(168, 0, 47)" },
+            { "GD1a", "rgb(168, 0, 47)" },
+            { "GD1b", "rgb(168, 0, 47)" },
+            { "GD2", "rgb(168, 0, 47)" },
+            { "GD3", "rgb(168, 0, 47)" },
             { "Unknown", "rgb(181, 181, 181)" }
 
         };
@@ -5468,6 +5472,10 @@ namespace CompMs.CommonMVVM.ChemView {
             { "NAGlySer", Color.FromArgb(180, 225, 39, 30) },
             { "NAOrn", Color.FromArgb(180, 215, 29, 40) },
             { "GM3", Color.FromArgb(180, 168, 0, 47) },
+            { "GD1a", Color.FromArgb(180, 168, 0, 47) },
+            { "GD1b", Color.FromArgb(180, 168, 0, 47) },
+            { "GD2", Color.FromArgb(180, 168, 0, 47) },
+            { "GD3", Color.FromArgb(180, 168, 0, 47) },
             { "Unknown", Color.FromArgb(180, 181, 181, 181) },
             { "", Color.FromArgb(180, 181, 181, 181) },
             { "null", Color.FromArgb(180, 181, 181, 181) },
