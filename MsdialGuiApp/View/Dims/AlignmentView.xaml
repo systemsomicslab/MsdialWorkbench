@@ -45,8 +45,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart HorizontalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                          VerticalAxis="{Binding AxisMapper, Source={StaticResource KMDAxis}}"
+        <chart:MultiChart HorizontalAxis="{StaticResource MzAxis}"
+                          VerticalAxis="{StaticResource KMDAxis}"
                           GraphTitle="{Binding FileName, Mode=OneTime}"
                           HorizontalTitle="m/z"
                           VerticalTitle="Kendrick mass defect"
