@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public interface IAlignmentRefiner
     {
-        List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments);
+        Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments);
     }
 
     public abstract class AlignmentRefiner : IAlignmentRefiner
@@ -31,18 +31,18 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public AlignmentRefiner(IupacDatabase iupac) : this(new ParameterBase(), iupac) { }
 
-        public List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments) {
+        public Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments) {
             var spots = alignments.ToList();
 
             Deduplicate(spots);
             var cleaned = GetCleanedSpots(spots);
             var filtered = FilterByBlank(cleaned);
-            SetAlignmentID(filtered);
+            var ids = SetAlignmentID(filtered);
             IsotopeAnalysis(filtered);
             SetLinks(filtered);
             PostProcess(filtered);
 
-            return filtered;
+            return Tuple.Create(filtered, ids);
         }
 
         protected virtual void Deduplicate(List<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)
@@ -72,7 +72,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return alignments;
         }
 
-        protected virtual void SetAlignmentID(List<AlignmentSpotProperty> alignments) { }
+        protected virtual List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) { return alignments.Select(align => align.MasterAlignmentID).ToList(); }
 
         private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
             foreach (var spot in alignmentSpots) {

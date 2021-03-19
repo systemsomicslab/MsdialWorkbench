@@ -7,7 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -51,14 +53,21 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
             spots = FilterAlignments(spots, Param);
 
-            CollectPeakSpots(analysisFiles, alignmentFile, spots, spotSerializer);
-            spots = Refiner.Refine(spots);
+            var chromPeakInfoSerializer = spotSerializer == null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
+            var files = CollectPeakSpots(analysisFiles, alignmentFile, spots, chromPeakInfoSerializer);
+            (var refined, var ids) = Refiner.Refine(spots);
 
-            var container = PackingSpots(spots);
+            var container = PackingSpots(refined);
 
             if (Param.TrackingIsotopeLabels) {
                 IsotopeTracking.SetIsotopeTrackingID(container, Param, MspDB, null);
             }
+
+            if (chromPeakInfoSerializer != null)
+                SerializeSpotInfo(refined, ids, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
+            foreach (var f in files)
+                if (File.Exists(f))
+                    File.Delete(f);
 
             return container;
         }
@@ -78,12 +87,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return filter.Filter(result).ToList();
         }
 
-        private void CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
-            List<AlignmentSpotProperty> spots, ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer) {
+        private List<string> CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
+            List<AlignmentSpotProperty> spots, ChromatogramSerializer<ChromatogramPeakInfo> chromPeakInfoSerializer) {
 
             var files = new List<string>();
-            var chromPeakInfoSerializer = spotSerializer == null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-
             foreach (var analysisFile in analysisFiles) {
                 var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
                 foreach (var spot in spots)
@@ -94,15 +101,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach (var spot in spots)
                 PackingSpot(spot);
 
-            //foreach (var spot in spots.Where(n => n.IsReferenceMatched)) {
-            //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
-            //}
-
-            if (chromPeakInfoSerializer != null)
-                SerializeSpotInfo(spots, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
-            foreach (var f in files)
-                if (File.Exists(f))
-                    File.Delete(f);
+            return files;
         }
 
         protected virtual string CollectAlignmentPeaks(
@@ -167,11 +166,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         private void SerializeSpotInfo(
-            IReadOnlyCollection<AlignmentSpotProperty> spots, IEnumerable<string> files,
+            IReadOnlyCollection<AlignmentSpotProperty> spots,
+            IReadOnlyList<int> ids,
+            IEnumerable<string> files,
             AlignmentFileBean alignmentFile,
             ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer,
             ChromatogramSerializer<ChromatogramPeakInfo> peakSerializer) {
-            var pss = files.Select(file => peakSerializer.DeserializeAllFromFile(file)).ToList();
+            var pss = files.Select(file => peakSerializer.DeserializeEachFromFile(file, ids)).ToList();
             var qss = pss.Sequence();
 
             Debug.WriteLine("Serialize start.");
@@ -181,6 +182,22 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Debug.WriteLine("Serialize finish.");
 
             pss.ForEach(ps => ((IDisposable)ps).Dispose());
+        }
+
+        private IEnumerable<List<ChromatogramPeakInfo>> JoinPeakAndSpot(
+            IReadOnlyCollection<AlignmentSpotProperty> spots,
+            IEnumerable<List<ChromatogramPeakInfo>> peaks) {
+            var tree = KdTree<IMSProperty>.Build(
+                spots,
+                spot => spot.PrecursorMz,
+                spot => spot.ChromXs.Value);
+            foreach (var peak in peaks) {
+                var spot = tree.NearestNeighbor(new double[] { peak[0].Mass, peak[0].ChromXsTop.Value });
+                if (Math.Abs(spot.PrecursorMz - peak[0].Mass) <= Param.Ms1AlignmentTolerance
+                    && Math.Abs(1 - spot.ChromXs.Value / peak[0].ChromXsTop.Value) <= 0.01) {
+                    yield return peak;
+                }
+            }
         }
     }
 }

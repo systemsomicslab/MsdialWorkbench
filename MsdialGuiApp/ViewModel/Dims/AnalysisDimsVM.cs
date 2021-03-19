@@ -293,8 +293,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
-            var leftMz = target.ChromXLeftValue * 2 - target.ChromXRightValue ?? double.MinValue;
-            var rightMz = target.ChromXRightValue * 2 - target.ChromXLeftValue ?? double.MaxValue;
+            var leftMz = target.ChromXValue ?? 0 - 10;
+            var rightMz = target.ChromXValue ?? 0 + 10;
             await Task.Run(() => {
                 Eic = DataAccess.GetSmoothedPeaklist(
                         DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, leftMz, rightMz),
