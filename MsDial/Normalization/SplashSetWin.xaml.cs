@@ -249,7 +249,10 @@ namespace Rfx.Riken.OsakaUniv {
             this.OutputUnits = new List<string>() {
                 "nmol/μL plasma", "pmol/μL plasma", "fmol/μL plasma",
                 "nmol/mg tissue", "pmol/mg tissue", "fmol/mg tissue",
-                "nmol/10^6 cells", "pmol/10^6 cells", "fmol/10^6 cells" };
+                "nmol/10^6 cells", "pmol/10^6 cells", "fmol/10^6 cells",
+                "nmol/individual", "pmol/individual", "fmol/individual",
+                "nmol/μg protein", "pmol/μg protein", "fmol/μg protein"
+            };
             this.OutputUnitID = 1;
             if (this.ProjectProp.Ionization == Ionization.ESI) {
                 if (this.ParamLC.StandardCompounds == null || this.ParamLC.StandardCompounds.Count == 0) {

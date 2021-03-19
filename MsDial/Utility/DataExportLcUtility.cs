@@ -129,12 +129,7 @@ namespace Rfx.Riken.OsakaUniv
             var exportSpectraFileFormat = projectProp.ExportSpectraFileFormat;
             var isExportedAsMzTabM = projectProp.IsExportedAsMzTabM;
 
-            if (isNormalizedData == true && alignmentResult.Normalized == false)
-            {
-                MessageBox.Show("Data is not normalized yet. If you want to export the normalized data matrix, please at first perform data normalization methods from statistical analysis procedure.", "Error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-                isNormalizedData = false;
-            }
-
+            
             mainWindow.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
 
@@ -168,6 +163,11 @@ namespace Rfx.Riken.OsakaUniv
             string heightMztabFile = exportFolderPath + "\\" + "Height_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
             string normalizedMztabFile = exportFolderPath + "\\" + "Normalized_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
             string areaMztabFile = exportFolderPath + "\\" + "Area_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
+
+            if (isNormalizedData == true && alignmentResult.Normalized == false) {
+                MessageBox.Show("Data is not normalized yet. If you want to export the normalized data matrix, please at first perform data normalization methods from statistical analysis procedure.", "Error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                isNormalizedData = false;
+            }
 
             if (isRawData == true)
             {

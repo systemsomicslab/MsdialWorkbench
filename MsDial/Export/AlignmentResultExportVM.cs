@@ -131,6 +131,12 @@ namespace Rfx.Riken.OsakaUniv
             if (this.sampleAxisDeconvolution == true && this.massTolerance < 0) { MessageBox.Show("If you do sample axis de-convolution method, please add the mass tolerance.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return false; }
             copyExportParametersToProjectProperty();
 
+            
+            if (IsExportAsMzTabM && !RawDatamatrix && !NormalizedDatamatrix && !PeakareaMatrix) {
+                MessageBox.Show("For mzTab-M export, please check at least one of peak height, area, and normalized data table exports.", "Error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                return false;
+            }
+
             try {
                 if (this.mainWindow.ProjectProperty.Ionization == Ionization.ESI) {
                     if (this.mainWindow.ProjectProperty.IsLabPrivateVersion && this.mainWindow.ProjectProperty.IsLabPrivateVersionTada) {
