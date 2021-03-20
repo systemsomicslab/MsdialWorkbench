@@ -40,7 +40,8 @@ namespace Rfx.Riken.OsakaUniv
         MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
         OxTG, TG_EST,
         GPNAE, DGMG, MGMG,
-        GD1a, GD1b, GD2, GD3,
+        GD1a, GD1b, GD2, GD3, GM1,
+        ST
 
 
         // new version

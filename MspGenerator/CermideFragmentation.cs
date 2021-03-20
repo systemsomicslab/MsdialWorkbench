@@ -1673,7 +1673,58 @@ namespace CompMs.MspGenerator
                 //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             }
         }
-        public static void GD1aGD1bGD3Fragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
+        public static void GD1aFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
+        {
+            //{ "GD2" ,    new List<string>() { "[M-H]-", "[M-2H]2-" }    },
+            var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
+            var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 100;
+                var fra03comment = "[C11H17NO8-H]-";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 100;
+                var fra04comment = "[C3H4O3-H]-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                //var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
+                //var fra02int = 10;
+                //var fra02comment = "[M-C11H17NO8(290)-H]- ";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+            else if (adduct == "[M-2H]2-")
+            {
+                var fra01mass = (exactMass + adductDic.adductIonDic[adduct].AdductIonMass) / 2;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 100;
+                var fra03comment = "[C11H17NO8-H]-";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 100;
+                var fra04comment = "[C3H4O3-H]-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                //var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
+                //var fra02int = 10;
+                //var fra02comment = "[M-C11H17NO8(290)-H]- ";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+        }
+
+        public static void GD1bFragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
         {
             //{ "GD2" ,    new List<string>() { "[M-H]-", "[M-2H]2-" }    },
             var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
@@ -1708,7 +1759,41 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
                 var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
-                var fra03int = 100;
+                var fra03int = 999;
+                var fra03comment = "[C11H17NO8-H]-";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 100;
+                var fra04comment = "[C3H4O3-H]-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8) * 2 - MassDictionary.Proton;
+                var fra05int = 700;
+                var fra05comment = "[(C11H17NO8)*2 -H]-";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                //var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
+                //var fra02int = 10;
+                //var fra02comment = "[M-C11H17NO8(290)-H]- ";
+                //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+        }
+
+        public static void GD3Fragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
+        {
+            //{ "GD2" ,    new List<string>() { "[M-H]-", "[M-2H]2-" }    },
+            var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
+            var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 10;
                 var fra03comment = "[C11H17NO8-H]-";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
 
@@ -1717,12 +1802,123 @@ namespace CompMs.MspGenerator
                 var fra04comment = "[C3H4O3-H]-";
                 fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 
+                var fra05mass = (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8) * 2 - MassDictionary.Proton;
+                var fra05int = 100;
+                var fra05comment = "[(C11H17NO8)*2 -H]-"; //581
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
+                var fra02int = 100;
+                var fra02comment = "[M-C11H17NO8(290)-H]- ";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+            else if (adduct == "[M-2H]2-")
+            {
+                var fra01mass = (exactMass + adductDic.adductIonDic[adduct].AdductIonMass) / 2;
+                var fra01int = 300;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 999;
+                var fra03comment = "[C11H17NO8-H]-"; //290
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 300;
+                var fra04comment = "[C3H4O3-H]-"; 
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8) * 2 - MassDictionary.Proton;
+                var fra05int = 300;
+                var fra05comment = "[(C11H17NO8)*2 -H]-"; //581
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra06mass = 12 * 19 + MassDictionary.HydrogenMass * 30 + MassDictionary.NitrogenMass *2 + MassDictionary.OxygenMass * 13 - MassDictionary.Proton;
+                var fra06int = 50;
+                var fra06comment = "[C19H30N2O12-H]-"; //493 
+                fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+
+                var fra07mass = sphMass + acylMass - MassDictionary.Proton;
+                var fra07int = 50;
+                var fra07comment = "ceramide fragment"; 
+                fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
+                //var fra08mass = fra07mass -  MassDictionary.H2OMass ;
+                //var fra08int = 100;
+                //var fra08comment = "ceramide fragment - H2O";
+                //fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
+
+
                 //var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
                 //var fra02int = 10;
                 //var fra02comment = "[M-C11H17NO8(290)-H]- ";
                 //fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
             }
         }
+
+        public static void GM1Fragment(List<string> fragmentList, string adduct, double exactMass, int sphCarbon, int sphDouble, int acylCarbon, int acylDouble, int acylOx)
+        {
+            //{ "GM1" ,    new List<string>() { "[M-H]-", "[M-2H]2-" }    },
+            var sphMass = sphingo2OHMassCalc(sphCarbon, sphDouble);
+            var acylMass = acylMassCalc(acylCarbon, acylDouble, acylOx);
+            if (adduct == "[M-H]-")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 999;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 5;
+                var fra03comment = "[C11H17NO8-H]-";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 5;
+                var fra04comment = "[C3H4O3-H]-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra02mass = fra01mass - (12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8);
+                var fra02int = 5;
+                var fra02comment = "[M-C11H17NO8(290)-H]- ";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+            }
+            else if (adduct == "[M-2H]2-")
+            {
+                var fra01mass = (exactMass + adductDic.adductIonDic[adduct].AdductIonMass) / 2;
+                var fra01int = 200;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = 12 * 11 + MassDictionary.HydrogenMass * 17 + MassDictionary.NitrogenMass + MassDictionary.OxygenMass * 8 - MassDictionary.Proton;
+                var fra03int = 999;
+                var fra03comment = "[C11H17NO8-H]-"; //290
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = 12 * 3 + MassDictionary.HydrogenMass * 4 + MassDictionary.OxygenMass * 3 - MassDictionary.Proton;
+                var fra04int = 300;
+                var fra04comment = "[C3H4O3-H]-";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = fra03mass + MassDictionary.H2OMass;
+                var fra05int = 300;
+                var fra05comment = "[C11H17NO8-H + H2O]-"; //581
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra07mass = sphMass + acylMass - MassDictionary.Proton;
+                var fra07int = 50;
+                var fra07comment = "ceramide fragment";
+                fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
+                //var fra08mass = fra07mass - MassDictionary.H2OMass;
+                //var fra08int = 100;
+                //var fra08comment = "ceramide fragment - H2O";
+                //fragmentList.Add(fra08mass + "\t" + fra08int + "\t" + fra08comment);
+
+            }
+        }
+
 
         //
 

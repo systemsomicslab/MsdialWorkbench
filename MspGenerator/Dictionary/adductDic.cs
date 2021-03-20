@@ -149,6 +149,10 @@ namespace CompMs.MspGenerator
                 {   "GD1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
                 {   "GD2" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
                 {   "GD3" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "GM1" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "GT1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "GQ1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "NGcGM3" ,    new List<string>(){ "[M-H]-" }    },
                 {   "CerP" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
                 {   "Hex2Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "Hex3Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
@@ -260,6 +264,8 @@ namespace CompMs.MspGenerator
                 {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
                 {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
                 {"DSMSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+
+                {"ST",  new List<string>(){ "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M+H-H2O]+" } },
 
     };
 

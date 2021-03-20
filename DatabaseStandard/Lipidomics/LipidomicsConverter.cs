@@ -3694,7 +3694,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GD1b: return "GD1b";
                 case LbmClass.GD2: return "GD2";
                 case LbmClass.GD3: return "GD3";
-
+                case LbmClass.GM1: return "GM1";
+                case LbmClass.ST: return "ST";
 
                 default: return "Undefined";
             }
@@ -3851,6 +3852,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GD1b: return "GD1b";
                 case LbmClass.GD2: return "GD2";
                 case LbmClass.GD3: return "GD3";
+                case LbmClass.GM1: return "GM1";
+                case LbmClass.ST: return "ST";
 
 
                 default: return "Undefined";
@@ -4061,7 +4064,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GD1b": return LbmClass.GD1b;
                 case "GD2": return LbmClass.GD2;
                 case "GD3": return LbmClass.GD3;
+                case "GM1": return LbmClass.GM1;
 
+                case "ST": return LbmClass.ST;
 
                 default: return LbmClass.Undefined;
             }
@@ -4294,7 +4299,9 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GD1b": return LbmClass.GD1b;
                 case "GD2": return LbmClass.GD2;
                 case "GD3": return LbmClass.GD3;
+                case "GM1": return LbmClass.GM1;
 
+                case "ST": return LbmClass.ST;
 
                 default: return LbmClass.Undefined;
             }
@@ -4383,6 +4390,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "SSulfate": return "Sterol sulfate";
                 case "BAHex": return "Sterol hexoside";
                 case "BASulfate": return "Sterol sulfate";
+
+                case "ST": return "Sterol";
 
                 case "BRSE": return "Steryl ester";
                 case "CASE": return "Steryl ester";
@@ -4483,6 +4492,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GD1b": return "Ganglioside";
                 case "GD2": return "Ganglioside";
                 case "GD3": return "Ganglioside";
+                case "GM1": return "Ganglioside";
 
                 default: return "Unassigned lipid";
             }
@@ -4630,6 +4640,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "AHexSIS": return "SterolLipids";
                 case "AHexSTS": return "SterolLipids";
 
+                case "ST": return "SterolLipids";
+
                 case "DCAE": return "SterolLipids";
                 case "GDCAE": return "SterolLipids";
                 case "GLCAE": return "SterolLipids";
@@ -4728,6 +4740,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GD1b": return "Sphingolipids";
                 case "GD2": return "Sphingolipids";
                 case "GD3": return "Sphingolipids";
+                case "GM1": return "Sphingolipids";
 
                 default: return "Unassigned lipid";
             }
