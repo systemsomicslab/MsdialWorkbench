@@ -10,232 +10,31 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using CompMs.Common.Extension;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Scatter
 {
     public class ScatterControl : ChartBaseControl
     {
-        #region DependencyProperty
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-            nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(ScatterControl),
-            new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
-            );
+        public ScatterControl()
+        {
+            ClipToBounds = true;
+        }
 
-        public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
-            nameof(HorizontalPropertyName), typeof(string), typeof(ScatterControl),
-            new PropertyMetadata(default(string), OnHorizontalPropertyNameChanged)
-            );
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register(
+                nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(ScatterControl),
+                new PropertyMetadata(
+                    default(System.Collections.IEnumerable),
+                    OnItemsSourceChanged));
 
-        public static readonly DependencyProperty VerticalPropertyNameProperty = DependencyProperty.Register(
-            nameof(VerticalPropertyName), typeof(string), typeof(ScatterControl),
-            new PropertyMetadata(default(string), OnVerticalPropertyNameChanged)
-            );
-
-        public static readonly DependencyProperty PointGeometryProperty = DependencyProperty.Register(
-            nameof(PointGeometry), typeof(Geometry), typeof(ScatterControl),
-            new PropertyMetadata(new EllipseGeometry(new Rect(0, 0, 1, 1)))
-            );
-
-        public static readonly DependencyProperty PointBrushProperty = DependencyProperty.Register(
-            nameof(PointBrush), typeof(Brush), typeof(ScatterControl),
-            new PropertyMetadata(Brushes.Black)
-            );
-
-        public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(
-            nameof(Radius), typeof(double), typeof(ScatterControl),
-            new PropertyMetadata(3d)
-            );
-
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
-            nameof(SelectedItem), typeof(object), typeof(ScatterControl),
-            new PropertyMetadata(null, OnSelectedItemChanged));
-
-        public static readonly DependencyProperty SelectedPointProperty = DependencyProperty.Register(
-            nameof(SelectedPoint), typeof(Point?), typeof(ScatterControl),
-            new PropertyMetadata(default)
-            );
-
-        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
-            nameof(FocusedItem), typeof(object), typeof(ScatterControl),
-            new PropertyMetadata(null)
-            );
-
-        public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
-            nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
-            new PropertyMetadata(default)
-            );
-
-        // test
-        public static readonly DependencyProperty EachPlotBrushNameProperty = DependencyProperty.Register(
-           nameof(EachPlotBrushName), typeof(string), typeof(ScatterControl),
-           new PropertyMetadata(default(string), OnEachPlotBrushNameChanged)
-           );
-        #endregion
-
-        #region Property
         public System.Collections.IEnumerable ItemsSource
         {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
-            get => (string)GetValue(HorizontalPropertyNameProperty);
-            set => SetValue(HorizontalPropertyNameProperty, value);
-        }
-
-        public string VerticalPropertyName
-        {
-            get => (string)GetValue(VerticalPropertyNameProperty);
-            set => SetValue(VerticalPropertyNameProperty, value);
-        }
-
-        public Geometry PointGeometry
-        {
-            get => (Geometry)GetValue(PointGeometryProperty);
-            set => SetValue(PointGeometryProperty, value);
-        }
-
-        public Brush PointBrush
-        {
-            get => (Brush)GetValue(PointBrushProperty);
-            set => SetValue(PointBrushProperty, value);
-        }
-
-        public double Radius
-        {
-            get => (double)GetValue(RadiusProperty);
-            set => SetValue(RadiusProperty, value);
-        }
-
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
-        }
-
-        public Point? SelectedPoint
-        {
-            get => (Point?)GetValue(SelectedPointProperty);
-            set => SetValue(SelectedPointProperty, value);
-        }
-
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
-            set => SetValue(FocusedItemProperty, value);
-        }
-
-        public Point? FocusedPoint
-        {
-            get => (Point?)GetValue(FocusedPointProperty);
-            set => SetValue(FocusedPointProperty, value);
-        }
-
-        //test
-        public string EachPlotBrushName {
-            get => (string)GetValue(EachPlotBrushNameProperty);
-            set => SetValue(EachPlotBrushNameProperty, value);
-        }
-        #endregion
-
-        #region field
-        private CollectionView cv;
-        private Type dataType;
-        private PropertyInfo hPropertyReflection;
-        private PropertyInfo vPropertyReflection;
-        private PropertyInfo pPropertyReflection;
-        private AnnotatedDrawingVisual focus, select;
-        #endregion
-
-        public ScatterControl()
-        {
-            MouseLeftButtonDown += VisualSelectOnClick;
-            MouseMove += VisualFocusOnMouseOver;
-            ClipToBounds = true;
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            if (  hPropertyReflection == null
-               || vPropertyReflection == null
-               || HorizontalAxis == null
-               || VerticalAxis == null
-               || PointBrush == null
-               )
-                return;
-
-            Brush brush = new DrawingBrush(new GeometryDrawing(PointBrush, null, PointGeometry));
-            brush.Freeze();
-            double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
-
-            foreach(var visual in visualChildren)
-            {
-                if (!(visual is AnnotatedDrawingVisual dv)) continue;
-                var o = dv.Annotation;
-                var x = hPropertyReflection.GetValue(o);
-                var y = vPropertyReflection.GetValue(o);
-                
-                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
-                dv.Center = new Point(xx, yy);
-
-                using (var dc = dv.RenderOpen()) {
-                    if (pPropertyReflection != null) {
-                        var plotBrushObj = pPropertyReflection.GetValue(o);
-                        if (plotBrushObj != null) {
-                            var pbrush = (Brush)plotBrushObj;
-                            brush = new DrawingBrush(new GeometryDrawing(pbrush, null, PointGeometry)); ;
-                        }
-                    }
-                    dc.DrawRectangle(brush, null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
-                }
-            }
-        }
-
-        private void SetDrawingVisuals() {
-            visualChildren.Clear();
-            if (cv == null) return;
-
-            foreach (var o in cv)
-                visualChildren.Add(new AnnotatedDrawingVisual(o));
-        }
-
-        private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            SetDrawingVisuals();
-            Update();
-        }
-
-        #region Event
-        public static RoutedEvent FocusChangedEvent =
-            EventManager.RegisterRoutedEvent(nameof(FocusChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
-        private static RoutedEventArgs FocusChangedEventArgs = new RoutedEventArgs(FocusChangedEvent);
-
-        public event RoutedEventHandler FocusChanged {
-            add => AddHandler(FocusChangedEvent, value);
-            remove => RemoveHandler(FocusChangedEvent, value);
-        }
-
-        public static RoutedEvent SelectChangedEvent =
-            EventManager.RegisterRoutedEvent(nameof(SelectChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
-        private static RoutedEventArgs SelectChangedEventArgs = new RoutedEventArgs(SelectChangedEvent);
-
-        public event RoutedEventHandler SelectChanged {
-            add => AddHandler(SelectChangedEvent, value);
-            remove => RemoveHandler(SelectChangedEvent, value);
-        }
-        #endregion
-
-        protected override void OnRender(DrawingContext drawingContext) {
-            base.OnRender(drawingContext);
-            FocusedPoint = focus?.Center;
-            SelectedPoint = select?.Center;
-        }
-
-        #region Event handler
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as ScatterControl;
@@ -279,6 +78,11 @@ namespace CompMs.Graphics.Scatter
             chart.Update();
         }
 
+        private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            SetDrawingVisuals();
+            Update();
+        }
+
         void OnCurrentChanged(object obj, EventArgs e) {
             if (cv == null) return;
             var item = cv.CurrentItem;
@@ -297,6 +101,19 @@ namespace CompMs.Graphics.Scatter
             SelectedPoint = select.Center;
         }
 
+        public static readonly DependencyProperty HorizontalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(HorizontalPropertyName), typeof(string), typeof(ScatterControl),
+                new PropertyMetadata(
+                    default(string),
+                    OnHorizontalPropertyNameChanged));
+
+        public string HorizontalPropertyName
+        {
+            get => (string)GetValue(HorizontalPropertyNameProperty);
+            set => SetValue(HorizontalPropertyNameProperty, value);
+        }
+
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = d as ScatterControl;
@@ -306,6 +123,21 @@ namespace CompMs.Graphics.Scatter
                 chart.hPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
 
             chart.Update();
+        }
+
+        private PropertyInfo hPropertyReflection;
+
+        public static readonly DependencyProperty VerticalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(VerticalPropertyName), typeof(string), typeof(ScatterControl),
+                new PropertyMetadata(
+                    default(string),
+                    OnVerticalPropertyNameChanged));
+
+        public string VerticalPropertyName
+        {
+            get => (string)GetValue(VerticalPropertyNameProperty);
+            set => SetValue(VerticalPropertyNameProperty, value);
         }
 
         static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -319,15 +151,119 @@ namespace CompMs.Graphics.Scatter
             chart.Update();
         }
 
+        private PropertyInfo vPropertyReflection;
+
+        public static readonly DependencyProperty PointGeometryProperty =
+            DependencyProperty.Register(
+                nameof(PointGeometry), typeof(Geometry), typeof(ScatterControl),
+                new PropertyMetadata(
+                    new EllipseGeometry(new Rect(0, 0, 1, 1)),
+                    OnPointGeometryChanged));
+
+        public Geometry PointGeometry
+        {
+            get => (Geometry)GetValue(PointGeometryProperty);
+            set => SetValue(PointGeometryProperty, value);
+        }
+
+        static void OnPointGeometryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is ScatterControl scatter) {
+                scatter.Generator.UpdateBrush(scatter);
+            }
+        }
+
+        public static readonly DependencyProperty PointBrushProperty =
+            DependencyProperty.Register(
+                nameof(PointBrush), typeof(Brush), typeof(ScatterControl),
+                new PropertyMetadata(
+                    Brushes.Black,
+                    OnPointBrushChanged));
+
+        public Brush PointBrush
+        {
+            get => (Brush)GetValue(PointBrushProperty);
+            set => SetValue(PointBrushProperty, value);
+        }
+
+        static void OnPointBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is ScatterControl scatter) {
+                scatter.Generator.UpdateBrush(scatter);
+            }
+        }
+
+        public static readonly DependencyProperty RadiusProperty =
+            DependencyProperty.Register(
+                nameof(Radius), typeof(double), typeof(ScatterControl),
+                new PropertyMetadata(3d));
+
+        // test
+        public static readonly DependencyProperty EachPlotBrushNameProperty =
+            DependencyProperty.Register(
+               nameof(EachPlotBrushName), typeof(string), typeof(ScatterControl),
+               new PropertyMetadata(
+                   default(string),
+                   OnEachPlotBrushNameChanged));
+
+        public string EachPlotBrushName {
+            get => (string)GetValue(EachPlotBrushNameProperty);
+            set => SetValue(EachPlotBrushNameProperty, value);
+        }
+
         static void OnEachPlotBrushNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as ScatterControl;
             if (chart == null) return;
 
-            if (chart.dataType != null)
+            if (chart.dataType != null) {
                 chart.pPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+                chart.Generator.UpdateBrush(chart);
+            }
 
             chart.Update();
         }
+
+        private PropertyInfo pPropertyReflection;
+
+        public static readonly DependencyProperty BrushMapperProperty =
+            DependencyProperty.Register(
+                nameof(BrushMapper), typeof(IBrushMapper), typeof(ScatterControl),
+                new FrameworkPropertyMetadata(
+                    default,
+                    OnBrushMapperChanged));
+
+        public IBrushMapper BrushMapper {
+            get => (IBrushMapper)GetValue(BrushMapperProperty);
+            set => SetValue(BrushMapperProperty, value);
+        }
+
+        static void OnBrushMapperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is ScatterControl scatter) {
+                scatter.Generator.UpdateBrush(scatter);
+            }
+        }
+
+        public double Radius
+        {
+            get => (double)GetValue(RadiusProperty);
+            set => SetValue(RadiusProperty, value);
+        }
+
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(
+                nameof(SelectedItem), typeof(object), typeof(ScatterControl),
+                new PropertyMetadata(
+                    null,
+                    OnSelectedItemChanged));
+
+        public object SelectedItem
+        {
+            get { return (object)GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedPointProperty =
+            DependencyProperty.Register(
+                nameof(SelectedPoint), typeof(Point?), typeof(ScatterControl),
+                new PropertyMetadata(default));
 
         static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -337,23 +273,31 @@ namespace CompMs.Graphics.Scatter
             if (chart.cv != null)
                 chart.cv.MoveCurrentTo(e.NewValue);
         }
-        #endregion
 
-        #region Mouse event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
+        public Point? SelectedPoint
         {
-            var pt = e.GetPosition(this);
-
-            VisualTreeHelper.HitTest(this,
-                new HitTestFilterCallback(VisualHitTestFilter),
-                new HitTestResultCallback(VisualFocusHitTest),
-                new PointHitTestParameters(pt)
-                // new GeometryHitTestParameters(new EllipseGeometry(pt, 50d, 50d))
-                );
+            get => (Point?)GetValue(SelectedPointProperty);
+            set => SetValue(SelectedPointProperty, value);
         }
 
-        void VisualSelectOnClick(object sender, MouseButtonEventArgs e)
+        public static RoutedEvent SelectChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(SelectChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs SelectChangedEventArgs = new RoutedEventArgs(SelectChangedEvent);
+
+        public event RoutedEventHandler SelectChanged {
+            add => AddHandler(SelectChangedEvent, value);
+            remove => RemoveHandler(SelectChangedEvent, value);
+        }
+
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
         {
+            if (d is AnnotatedDrawingVisual)
+                return HitTestFilterBehavior.Continue;
+            return HitTestFilterBehavior.ContinueSkipSelf;
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonDown(e);
             if (e.ClickCount == 1)
             {
                 var pt = e.GetPosition(this);
@@ -366,11 +310,61 @@ namespace CompMs.Graphics.Scatter
             }
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
         {
-            if (d is AnnotatedDrawingVisual)
-                return HitTestFilterBehavior.Continue;
-            return HitTestFilterBehavior.ContinueSkipSelf;
+            var dv = (AnnotatedDrawingVisual)result.VisualHit;
+            if (dv != select) {
+                select = dv;
+                RaiseEvent(SelectChangedEventArgs);
+            }
+            if (select.Annotation != SelectedItem) {
+                SelectedItem = select.Annotation;
+            }
+            if (select.Center != SelectedPoint) {
+                SelectedPoint = select.Center;
+            }
+            return HitTestResultBehavior.Stop;
+        }
+
+        public static readonly DependencyProperty FocusedItemProperty =
+            DependencyProperty.Register(
+                nameof(FocusedItem), typeof(object), typeof(ScatterControl),
+                new PropertyMetadata(null));
+
+        public object FocusedItem
+        {
+            get => (object)GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        public static readonly DependencyProperty FocusedPointProperty =
+            DependencyProperty.Register(
+                nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
+                new PropertyMetadata(default));
+
+        public Point? FocusedPoint
+        {
+            get => (Point?)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
+        }
+
+        public static RoutedEvent FocusChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(FocusChanged), RoutingStrategy.Bubble, typeof(RoutedEvent), typeof(ScatterControl));
+        private static RoutedEventArgs FocusChangedEventArgs = new RoutedEventArgs(FocusChangedEvent);
+
+        public event RoutedEventHandler FocusChanged {
+            add => AddHandler(FocusChangedEvent, value);
+            remove => RemoveHandler(FocusChangedEvent, value);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            var pt = e.GetPosition(this);
+
+            VisualTreeHelper.HitTest(this,
+                new HitTestFilterCallback(VisualHitTestFilter),
+                new HitTestResultCallback(VisualFocusHitTest),
+                new PointHitTestParameters(pt));
         }
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
@@ -389,21 +383,110 @@ namespace CompMs.Graphics.Scatter
             return HitTestResultBehavior.Stop;
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
-            var dv = (AnnotatedDrawingVisual)result.VisualHit;
-            if (dv != select) {
-                select = dv;
-                RaiseEvent(SelectChangedEventArgs);
+        private BrushGenerator Generator {
+            get {
+                if (generator != null) {
+                    return generator;
+                }
+                generator = new BrushGenerator();
+                generator.UpdateBrush(this);
+                return generator;
             }
-            if (select.Annotation != SelectedItem) {
-                SelectedItem = select.Annotation;
-            }
-            if (select.Center != SelectedPoint) {
-                SelectedPoint = select.Center;
-            }
-            return HitTestResultBehavior.Stop;
         }
-        #endregion
+        private BrushGenerator generator;
+
+        private CollectionView cv;
+        private Type dataType;
+        private AnnotatedDrawingVisual focus, select;
+
+        protected override void Update()
+        {
+            base.Update();
+            if (  hPropertyReflection == null
+               || vPropertyReflection == null
+               || HorizontalAxis == null
+               || VerticalAxis == null
+               || PointBrush == null
+               )
+                return;
+
+            double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
+
+            foreach(var visual in visualChildren)
+            {
+                if (!(visual is AnnotatedDrawingVisual dv)) continue;
+                var o = dv.Annotation;
+                var x = hPropertyReflection.GetValue(o);
+                var y = vPropertyReflection.GetValue(o);
+                
+                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
+                dv.Center = new Point(xx, yy);
+
+                using (var dc = dv.RenderOpen()) {
+                    dc.DrawRectangle(Generator.GetBrush(o), null, new Rect(xx - radius, yy - radius, radius * 2, radius * 2));
+                }
+            }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+            FocusedPoint = focus?.Center;
+            SelectedPoint = select?.Center;
+        }
+
+        private void SetDrawingVisuals() {
+            visualChildren.Clear();
+            if (cv == null) return;
+
+            foreach (var o in cv)
+                visualChildren.Add(new AnnotatedDrawingVisual(o));
+        }
+
+        class BrushGenerator
+        {
+            // 1. pPropertyReflection, BrushMapper
+            // 2. pPropertyReflection
+            // 3. BrushMapper
+            // 4. PointBrush
+            private PropertyInfo pPropertyInfo;
+            private IBrushMapper mapper;
+            private Brush pointBrush;
+            private Geometry geometry;
+            private readonly Dictionary<object, Brush> cache = new Dictionary<object, Brush>();
+
+            internal Brush GetBrush(object o) {
+                if (cache.ContainsKey(o)) {
+                    return cache[o];
+                }
+                Brush brush;
+                if (pPropertyInfo != null && mapper != null) {
+                    var v = pPropertyInfo.GetValue(o);
+                    brush = mapper.Map(v);
+                }
+                else if (pPropertyInfo != null) {
+                    brush = (Brush)pPropertyInfo.GetValue(o);
+                }
+                else if (mapper != null) {
+                    brush = mapper.Map(o);
+                }
+                else {
+                    brush = pointBrush;
+                }
+                if (geometry != null) {
+                    brush = new DrawingBrush(new GeometryDrawing(brush, null, geometry));
+                    brush.Freeze();
+                }
+                return cache[o] = brush;
+            }
+
+            internal void UpdateBrush(ScatterControl scatter) {
+                pPropertyInfo = scatter.pPropertyReflection;
+                mapper = scatter.BrushMapper;
+                pointBrush = scatter.PointBrush;
+                geometry = scatter.PointGeometry;
+                cache.Clear();
+            }
+        }
     }
 }
