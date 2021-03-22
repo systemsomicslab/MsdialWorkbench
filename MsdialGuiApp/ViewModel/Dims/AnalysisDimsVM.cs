@@ -176,6 +176,40 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public double AmplitudeOrderMin { get; }
         public double AmplitudeOrderMax { get; }
 
+        public string CommentFilterKeyword {
+            get => commentFilterKeyword;
+            set {
+                if (SetProperty(ref commentFilterKeyword, value)){
+                    if (!string.IsNullOrEmpty(commentFilterKeyword)) {
+                        commentFilterKeywords = commentFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        commentFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Peaks?.Refresh();
+                }
+            }
+        }
+        private string commentFilterKeyword;
+        private List<string> commentFilterKeywords = new List<string>(0);
+
+        public string MetaboliteFilterKeyword {
+            get => metaboliteFilterKeyword;
+            set {
+                if (SetProperty(ref metaboliteFilterKeyword, value)) {
+                    if (!string.IsNullOrEmpty(metaboliteFilterKeyword)) {
+                        metaboliteFilterKeywords = metaboliteFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        metaboliteFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Peaks?.Refresh();
+                }
+            }
+        }
+        private string metaboliteFilterKeyword;
+        private List<string> metaboliteFilterKeywords = new List<string>(0);
+
         public int FocusID {
             get => focusID;
             set => SetProperty(ref focusID, value);
@@ -253,7 +287,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0);
+                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
+                    && MetaboliteFilter(peak, metaboliteFilterKeywords)
+                    && CommentFilter(peak, commentFilterKeywords);
             }
             return false;
         }
@@ -269,6 +305,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
             return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
+        }
+
+        bool CommentFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Comment.Contains(keyword));
+        }
+
+        bool MetaboliteFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {

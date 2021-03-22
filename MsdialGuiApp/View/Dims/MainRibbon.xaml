@@ -224,6 +224,9 @@
                 <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
                 <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
                 <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
+
+                <RibbonTextBox Text="{Binding MetaboliteFilterKeyword}" Label="Metabolite filter" IsEnabled="False"/>
+                <RibbonTextBox Text="{Binding CommentFilterKeyword}" Label="Comment filter" IsEnabled="False"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"
