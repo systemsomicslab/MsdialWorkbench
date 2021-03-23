@@ -194,7 +194,7 @@
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodVM.cs" />
-    <Compile Include="ViewModel\MsdialProjectParameterVM.cs" />
+    <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />

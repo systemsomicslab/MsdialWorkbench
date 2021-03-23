@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel
     class AnalysisParamSetVM<T> : ViewModelBase where T : ParameterBase
     {
         #region Property
-        public MsdialProjectParameterVM<T> Param {
+        public ParameterBaseVM Param {
             get => paramVM;
             set => SetProperty(ref paramVM, value);
         }
@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         #region Field
         T param;
-        MsdialProjectParameterVM<T> paramVM;
+        ParameterBaseVM paramVM;
         MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
         ObservableCollection<AnalysisFileBean> analysisFiles;
@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         public AnalysisParamSetVM(T parameter, IEnumerable<AnalysisFileBean> files) {
             param = parameter;
-            Param = new MsdialProjectParameterVM<T>(parameter);
+            Param = MsdialProjectParameterFactory.Create(parameter);
             MspSearchParam = new MsRefSearchParameterBaseVM(parameter.MspSearchParam);
             TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
 

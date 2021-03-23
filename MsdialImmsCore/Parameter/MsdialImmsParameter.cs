@@ -34,7 +34,7 @@ namespace CompMs.MsdialImmsCore.Parameter
         public float DriftTimeAlignmentFactor { get; set; } = 0.5F;
 
         [Key(155)]
-        public bool IsAllCalibrantDataImported = false;
+        public bool IsAllCalibrantDataImported { get; set; } = false;
 
         [Key(156)]
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
