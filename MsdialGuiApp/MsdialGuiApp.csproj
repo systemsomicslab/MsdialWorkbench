@@ -164,6 +164,18 @@
     <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Lcimms\AlignmentParameterView.xaml.cs">
+      <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForLcimmsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
@@ -275,7 +287,7 @@
     <Compile Include="View\Imms\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\IsotopeTrackView.xaml.cs">
+    <Compile Include="View\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MobilityView.xaml.cs">
@@ -419,6 +431,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\Lcimms\AlignmentParameterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\DataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\IdentificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\PeakView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -531,7 +559,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\IsotopeTrackView.xaml">
+    <Page Include="View\IsotopeTrackView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
