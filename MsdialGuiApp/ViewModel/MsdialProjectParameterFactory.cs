@@ -1,14 +1,17 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.ViewModel
 {
     class MsdialProjectParameterFactory
     {
-        public static ParameterBaseVM Create(ParameterBase innerModel) {
+        public static ParameterBaseVM Create<T>(T innerModel) where T: ParameterBase {
             switch (innerModel) {
                 case MsdialImmsParameter imms:
                     return new MsdialImmsParameterVM(imms);
@@ -31,6 +34,7 @@ namespace CompMs.App.Msdial.ViewModel
                 if (innerModel.DriftTimeBegin == value) return;
                 innerModel.DriftTimeBegin = value;
                 OnPropertyChanged(nameof(DriftTimeBegin));
+
             }
         }
 
@@ -49,6 +53,36 @@ namespace CompMs.App.Msdial.ViewModel
                 if (innerModel.IonMobilityType == value) return;
                 innerModel.IonMobilityType = value;
                 OnPropertyChanged(nameof(IonMobilityType));
+                OnPropertyChanged(nameof(IsTIMS));
+                OnPropertyChanged(nameof(IsDTIMS));
+                OnPropertyChanged(nameof(IsTWIMS));
+            }
+        }
+
+        public bool IsTIMS {
+            get => IonMobilityType == IonMobilityType.Tims;
+            set {
+                if (value) {
+                    IonMobilityType = IonMobilityType.Tims;
+                }
+            }
+        }
+
+        public bool IsDTIMS {
+            get => IonMobilityType == IonMobilityType.Dtims;
+            set {
+                if (value) {
+                    IonMobilityType = IonMobilityType.Dtims;
+                }
+            }
+        }
+
+        public bool IsTWIMS {
+            get => IonMobilityType == IonMobilityType.Twims;
+            set {
+                if (value) {
+                    IonMobilityType = IonMobilityType.Twims;
+                }
             }
         }
 

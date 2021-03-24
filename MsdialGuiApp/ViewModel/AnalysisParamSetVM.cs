@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.ViewModel
         #endregion
 
         #region Field
-        T param;
+        protected readonly T param;
         ParameterBaseVM paramVM;
         MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
@@ -153,8 +153,7 @@ namespace CompMs.App.Msdial.ViewModel
             ContinueProcessCommand.RaiseCanExecuteChanged();
         }
 
-        private async Task<bool> ClosingMethod() {
-            // TODO: need to include M + H or M - H
+        protected virtual async Task<bool> ClosingMethod() {
             if (!param.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;

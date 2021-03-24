@@ -65,6 +65,12 @@ namespace CompMs.MsdialCore.Utility {
             return mes.SpectrumList;
         }
 
+        public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+                return rawDataAccess.ReadIonmobilityCalibrationInfo();
+            }
+        }
+
         // smoother
         public static List<ChromatogramPeak> GetSmoothedPeaklist(List<ChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var smoothedPeaklist = new List<ChromatogramPeak>();

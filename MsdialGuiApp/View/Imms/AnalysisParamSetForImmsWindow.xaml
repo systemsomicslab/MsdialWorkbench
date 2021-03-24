@@ -44,7 +44,7 @@
             </TabItem>
 
             <TabItem Name="TabItem_IonMobility" Header="Ion mobility">
-                <local:MobilityView />
+                <commonview:MobilityView />
             </TabItem>
 
             <TabItem Name="TabItem_IsotopeTrack" Header="Isotope tracking">

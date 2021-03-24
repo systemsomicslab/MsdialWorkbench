@@ -160,7 +160,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialImmsParameter>((MsdialImmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new ImmsAnalysisParamSetVM((MsdialImmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForImmsWindow
             {
                 DataContext = analysisParamSetVM,
