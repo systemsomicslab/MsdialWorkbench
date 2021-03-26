@@ -125,6 +125,10 @@
     </Compile>
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
+    <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
+    <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
