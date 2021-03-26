@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
              xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <d:DesingerProperties.DesignStyle>
@@ -13,6 +14,21 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesingerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <validator:PositiveDoubleNumericValidation x:Key="PosValidator"/>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="Height" Value="25"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
 
         <Grid.RowDefinitions>
@@ -20,188 +36,199 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <StackPanel Grid.Row="0">
+            <Label Content="MSP file and MS/MS identification setting"
+                   FontStyle="Italic"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="10,0,0,0" />
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <DockPanel VerticalAlignment="Center">
+                <Label Content="MSP file: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" DockPanel.Dock="Left"/>
+                <Button Name="Button_LibraryFilePathSelect" Content="Select"
+                        Command="{Binding MspCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Height="24" Width="60" Margin="5,0,5,0"
+                        DockPanel.Dock="Right">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Now, MSP format is just acceptable." />
+                    </ToolTipService.ToolTip>
+                </Button>
+                <TextBox Name="TextBox_LibraryFilePath"
+                         Text="{Binding Path=Param.MspFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24"/>
+            </DockPanel>
 
-            <Label Content="MSP file and MS/MS identification setting" FontStyle="Italic" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-
-            <Label Content="MSP file: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" />
-            <TextBox Name="TextBox_LibraryFilePath"
-                     Text="{Binding Path=Param.MspFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" Margin="90, 0, 70, 0" Grid.Row="1" />
-            <Button Name="Button_LibraryFilePathSelect" Content="Select"
-                    Command="{Binding MspCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Height="24" Width="60" Margin="0,0,5,0"
-                    Grid.Row="1" >
-                <ToolTipService.ToolTip>
-                    <ToolTip Content="Now, MSP format is just acceptable." />
-                </ToolTipService.ToolTip>
-            </Button>
-
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 0, 0,0">
-                    <Label Content="Accurate mass tolerance (MS1):" Height="27" VerticalContentAlignment="Center"/>
-                    <Label Content="Accurate mass tolerance (MS2):" Height="27" VerticalContentAlignment="Center"/>
-                    <Label Content="Identification score cut off:" Height="27" VerticalContentAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 0, 0,0">
-                    <TextBox Name="TextBox_Ms1LibrarySearchTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+            <StackPanel Margin="20,0,0,0">
+                <ui:LabeledContent PrependLabel="Ccs tolerance:"
+                                   AppendLabel="Ao^2">
+                    <TextBox Name="TextBox_CcsLibrarySearchTolerance">
                         <TextBox.Text>
-                            <Binding Path="MspSearchParam.Ms1Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                            <Binding Path="MspSearchParam.CcsTolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
                                 <Binding.ValidationRules>
-                                    <validator:PositiveDoubleNumericValidation />
+                                    <StaticResource ResourceKey="PosValidator"/>
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
-                    <TextBox Name="TextBox_Ms2LibrarySearchTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                                   AppendLabel="Da">
+                    <TextBox Name="TextBox_Ms1LibrarySearchTolerance">
                         <TextBox.Text>
-                            <Binding Path="MspSearchParam.Ms2Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                            <Binding Path="MspSearchParam.Ms1Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
                                 <Binding.ValidationRules>
-                                    <validator:PositiveDoubleNumericValidation />
+                                    <StaticResource ResourceKey="PosValidator"/>
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
-                    <TextBox Name="TextBox_IdentificationScoreCutOff"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                             Height="25" Margin="5,1,5,1">
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                                   AppendLabel="Da">
+                    <TextBox Name="TextBox_Ms2LibrarySearchTolerance">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.Ms2Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnSourceUpdated="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Identification score cut off:"
+                                   AppendLabel="%">
+                    <TextBox Name="TextBox_IdentificationScoreCutOff">
                         <TextBox.Text>
                             <Binding Path="MspSearchParam.TotalScoreCutoff"
                                      UpdateSourceTrigger="LostFocus"
-                                     ValidatesOnDataErrors="True" NotifyOnSourceUpdated="True">
+                                     ValidatesOnDataErrors="True"
+                                     NotifyOnSourceUpdated="True">
                                 <Binding.Converter>
                                     <converter:ToPercentageConverter />
                                 </Binding.Converter>
                                 <Binding.ValidationRules>
-                                    <validator:PositiveDoubleNumericValidation />
+                                    <StaticResource ResourceKey="PosValidator" />
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Only report the top hit:">
+                    <CheckBox Name="CheckBox_OnlyReportTopHitForMspAnnotation" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=Param.OnlyReportTopHitInMspSearch}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="One result having the top score will be reported as a result of the msp." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+            </StackPanel>
+        </StackPanel>
 
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 0, 0,0">
-                    <Label Content="Da" Height="27" VerticalContentAlignment="Center"/>
-                    <Label Content="Da" Height="27" VerticalContentAlignment="Center"/>
-                    <Label Content="%" Height="27" VerticalContentAlignment="Center"/>
-                </StackPanel>
-            </Grid>
+        <Expander Header="Advanced"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  ExpandDirection="Down"
+                  Grid.Row="1">
 
-        </Grid>
+            <StackPanel>
 
-        <Grid Grid.Row="1">
-            <Expander Header="Advanced"
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Stretch" 
-                      ExpandDirection="Down">
+                <Label Content="Text file and post identification (drift time and accurate mass based) setting" FontStyle="Italic" 
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
 
-                <Grid>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="90" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <Label Content="Text file and post identification (retention time and accurate mass based) setting" FontStyle="Italic" 
-                           Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-
-                    <Label Content="Text file: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" />
+                <DockPanel Margin="20,5,5,5">
+                    <Label Content="Text file:" DockPanel.Dock="Left"/>
                     
-                    <TextBox Name="TextBox_PostIdentificationLibraryFilePath" 
-                             Grid.Row="1" 
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                             Text="{Binding Path=Param.TextDBFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                             Height="24" Margin="90, 0, 70, 0" />
-                    <Button Name="Button_PostIdentificationLibraryFilePathSelect" Content="Select" Grid.Row="1" 
+                    <Button Name="Button_PostIdentificationLibraryFilePathSelect"
+                            Content="Select"
                             Command="{Binding TextDBFileSelectCommand}"
-                            HorizontalAlignment="Right" VerticalAlignment="Center" Height="24" Width="60" Margin="0,0,5,0" >
+                            VerticalAlignment="Center" Height="24" Width="60" Margin="5,0"
+                            DockPanel.Dock="Right">
                         <ToolTipService.ToolTip>
                             <ToolTip Content="Text file should include a compound list consisting of metabolite name (first column), accurate mass (second column), and retention time (third). A row header is considered." />
                         </ToolTipService.ToolTip>
                     </Button>
+                    <TextBox Name="TextBox_PostIdentificationLibraryFilePath" 
+                             Text="{Binding Path=Param.TextDBFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
 
-                    <Grid Grid.Row="2">
-                       
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                <StackPanel Margin="20,0,0,0">
+                    <ui:LabeledContent PrependLabel="Ccs tolerance:"
+                                       AppendLabel="Ao^2">
+                        <TextBox Name="TextBox_CcsToleranceOfPostIdentification">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.Ms1Tolerance"
+                                         ValidatesOnDataErrors="True"
+                                         UpdateSourceTrigger="LostFocus"
+                                         NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Accurate mass tolerance:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_AccurateMassToleranceOfPostIdentification">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.Ms1Tolerance"
+                                         ValidatesOnDataErrors="True"
+                                         UpdateSourceTrigger="LostFocus"
+                                         NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Identification score cut off:"
+                                       AppendLabel="%">
+                        <TextBox Name="TextBox_PostIdentificationScoreCutOff">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.TotalScoreCutoff"
+                                         ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                    <Binding.Converter>
+                                        <converter:ToPercentageConverter/>
+                                    </Binding.Converter>
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Only report the top hit:">
+                        <CheckBox Name="CheckBox_OnlyReportTopHitForPostAnnotation" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=Param.OnlyReportTopHitInTextDBSearch}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="One result having the top score will be reported as a result of the post identification process." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                </StackPanel>
 
-                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 0, 0,0">
-                            <Label Content="Accurate mass tolerance:" Height="27" VerticalContentAlignment="Center"/>
-                            <Label Content="Identification score cut off:" Height="27" VerticalContentAlignment="Center"/>
-                        </StackPanel>
-                     
-                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 0, 0,0">
-                            <TextBox Name="TextBox_AccurateMassToleranceOfPostIdentification" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
-                                <TextBox.Text>
-                                    <Binding Path="TextDbSearchParam.Ms1Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                                        <Binding.ValidationRules>
-                                            <validator:PositiveDoubleNumericValidation />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <TextBox Name="TextBox_PostIdentificationScoreCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,1,5,1">
-                                <TextBox.Text>
-                                    <Binding Path="TextDbSearchParam.TotalScoreCutoff"
-                                             ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
-                                        <Binding.Converter>
-                                            <converter:ToPercentageConverter/>
-                                        </Binding.Converter>
-                                        <Binding.ValidationRules>
-                                            <validator:PositiveDoubleNumericValidation />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                        </StackPanel>
-                        
-                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 0, 0,0">
-                            <Label Content="Da" Height="27" VerticalContentAlignment="Center"/>
-                            <Label Content="%" Height="27" VerticalContentAlignment="Center"/>
-                        </StackPanel>
-                    </Grid>
+                <StackPanel>
+                    <Label Content="Options" FontStyle="Italic" 
+                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" />
 
-                    <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Content="Spectrum cut off and report option" FontStyle="Italic" 
-                               Grid.ColumnSpan="3"
-                                    Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" />
-
-                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 30, 0,0">
-                            <Label Content="Relative abundance cut off:" Height="27" VerticalContentAlignment="Center"/>
-                            <Label Content="Only report the top hit:" Height="27" VerticalContentAlignment="Center"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 30, 0,0">
-
-                            <TextBox Name="TextBox_RelativeAbundanceCutOff" Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
-                                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="27" Margin="5,0,5,2.5">
+                    <StackPanel Margin="20,0,0,0">
+                        <ui:LabeledContent PrependLabel="Relative abundance cut off:"
+                                           AppendLabel="%">
+                            <TextBox Name="TextBox_RelativeAbundanceCutOff">
                                 <TextBox.Text>
                                     <Binding Path="MspSearchParam.RelativeAmpCutoff" UpdateSourceTrigger="LostFocus" 
                                              ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -217,25 +244,36 @@
                                     <ToolTip Content="The peak less than defined-abundance will not be used for similarity calculations" />
                                 </ToolTipService.ToolTip>
                             </TextBox>
-
-                            <CheckBox Name="CheckBox_OnlyReportTopHitForPostAnnotation" HorizontalAlignment="Left"
-                                      IsChecked="{Binding Path=Param.OnlyReportTopHitInTextDBSearch}" 
-                                      VerticalAlignment="Center" Margin="5,5,0,0">
+                        </ui:LabeledContent>
+                        <ui:LabeledContent PrependLabel="Use CCS for scoring:"
+                                           IsEnabled="False">
+                            <CheckBox Name="CheckBox_IsUseCcsForScoring" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsUseCcsForIdentificationScoring}" 
+                                      Margin="5,0,0,0">
                                 <ToolTipService.ToolTip>
-                                    <ToolTip Content="One result having the top score will be reported as a result of the post identification process." />
+                                    <ToolTip Content="If checked, CCS is used for scoring candidates." />
                                 </ToolTipService.ToolTip>
                             </CheckBox>
-
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 30, 0,0">
-                            <Label Content="%" Height="27" VerticalAlignment="Center"/>
-                        </StackPanel>
-
-                    </Grid>
-                </Grid>
-
-            </Expander>
-        </Grid>
+                        </ui:LabeledContent>
+                        <ui:LabeledContent PrependLabel="Use CCS for filtering metabolites:"
+                                           IsEnabled="False">
+                            <CheckBox Name="CheckBox_IsUseCcsForFiltering" 
+                                      HorizontalAlignment="Left" 
+                                      VerticalAlignment="Center" 
+                                      IsChecked="{Binding Path=IsUseCcsForIdentificationFiltering}" 
+                                      Margin="5,0,0,0">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="If checked, CCS is used for filtering candidates out." />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                </StackPanel>
+                    
+            </StackPanel>
+        </Expander>
 
     </Grid>
 </UserControl>

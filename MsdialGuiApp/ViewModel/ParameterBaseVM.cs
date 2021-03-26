@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     class ParameterBaseVM : ViewModelBase {
 
-        private readonly ParameterBase innerModel;
+        protected readonly ParameterBase innerModel;
         public ParameterBaseVM(ParameterBase innerModel) {
             this.innerModel = innerModel;
         }

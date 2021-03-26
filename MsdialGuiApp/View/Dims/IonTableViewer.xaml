@@ -135,13 +135,13 @@
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
                 <TextBlock Text="Metabolite Name Filter"/>
-                <TextBox Text="" HorizontalAlignment="Stretch" IsEnabled="False"/>
+                <TextBox Text="{Binding MetaboliteFilterKeyword, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
                 <TextBlock Text="Comment Filter"/>
-                <TextBox Text="" HorizontalAlignment="Stretch" IsEnabled="False"/>
+                <TextBox Text="{Binding CommentFilterKeyword, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <rs:RangeSlider Margin="8,0" Grid.Column="3" IsEnabled="False"/>

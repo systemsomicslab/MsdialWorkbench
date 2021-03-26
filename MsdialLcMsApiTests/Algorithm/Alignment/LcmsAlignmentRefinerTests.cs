@@ -43,7 +43,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -137,7 +137,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[2].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             expects[2].MatchResults.ClearMspResults();
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             actuals.ForEach(actual => Console.WriteLine($"{actual.MasterAlignmentID}"));
             actuals.ForEach(actual => Console.WriteLine($"{actual.AlignmentID}"));
@@ -202,7 +202,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[1].TextDbBasedMatchResult = null;
             expects[1].MatchResults.ClearTextDbResults();
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(4, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -316,7 +316,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -432,7 +432,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -504,7 +504,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].PeakCharacter.PeakGroupID = i;
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -560,7 +560,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             for (int i = 0; i < expects.Count; i++) expects[i].AlignmentID = i;
             for (int i = 0; i < expects.Count; i++) expects[i].MasterAlignmentID = i;
             
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -653,7 +653,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new AlignmentSpotVariableCorrelation { CorrelateAlignmentID = 4, CorrelationScore = 1f},
             };
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -802,7 +802,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new AlignmentSpotVariableCorrelation { CorrelateAlignmentID = 3, CorrelationScore = 1f},
             };
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -877,7 +877,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[3].PeakCharacter.PeakGroupID = 2;
             expects.RemoveAt(2);
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -1050,7 +1050,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             expects[4].MatchResults.ClearTextDbResults();
             expects[4].PeakCharacter.PeakGroupID = 0;
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
             actuals[4].PeakCharacter.PeakLinks.ForEach(link => Console.WriteLine($"{link.Character}, {link.LinkedPeakID}"));
 
             Assert.AreEqual(5, actuals.Count);
@@ -1202,7 +1202,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
             Console.WriteLine("Before alignment:");
             alignments.ForEach(alignment => Console.WriteLine($"\t{alignment.Name}"));
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Console.WriteLine("After alignment:");
             actuals.ForEach(actual => Console.WriteLine($"\t{actual.Name}"));
@@ -1366,7 +1366,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 new LinkedPeakFeature {LinkedPeakID = 1, Character = PeakLinkFeatureEnum.CorrelSimilar },
             };
             expects[7].PeakCharacter.PeakGroupID = 2;
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             actuals[2].PeakCharacter.PeakLinks.ForEach(link => Console.WriteLine($"{link.LinkedPeakID}, {link.Character}"));
             Assert.AreEqual(8, actuals.Count);

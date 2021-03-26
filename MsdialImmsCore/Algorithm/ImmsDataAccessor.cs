@@ -16,8 +16,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var detected = spot.AlignedPeakProperties.Where(prop => prop.MasterPeakID >= 0);
             var peaklist = DataAccess.GetMs1Peaklist(
                 spectrum, (float)peak.Mass,
-                (float)(detected.Max(x => x.Mass) - detected.Min(ChromXsComparer => ChromXsComparer.Mass)) * 1.5f,
-                peak.IonMode);
+                (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
+                peak.IonMode, Common.Components.ChromXType.Drift, Common.Components.ChromXUnit.Msec);
             return new ChromatogramPeakInfo(
                 peak.FileID, peaklist,
                 peak.ChromXsTop.Drift, peak.ChromXsLeft.Drift, peak.ChromXsRight.Drift);

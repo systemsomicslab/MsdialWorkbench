@@ -9,6 +9,7 @@
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              Name="Ms1Plot"
              d:DesignHeight="400" d:DesignWidth="200">
     <d:DesignerProperties.DesignStyle>
@@ -17,13 +18,18 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
-                                                 ItemsSource="{Binding Spectrum, Source={x:Reference Name=Ms1Plot}}"
-                                                 TargetAxisMapper="{Binding MassAxis.AxisMapper, Source={x:Reference Name=Ms1Plot}}"
-                                                 TargetPropertyName="Mass"
-                                                 ValuePropertyName="Intensity"
-                                                 TargetRange="{Binding MassAxis.Range, Source={x:Reference Name=Ms1Plot}}"
-                                                 ChartMargin="0,0.05" Bounds="0,0"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
+                                                     ItemsSource="{Binding Spectrum, Source={x:Reference Name=Ms1Plot}}"
+                                                     TargetAxisMapper="{Binding MassAxis.AxisMapper, Source={x:Reference Name=Ms1Plot}}"
+                                                     TargetPropertyName="Mass"
+                                                     ValuePropertyName="Intensity"
+                                                     TargetRange="{Binding MassAxis.Range, Source={x:Reference Name=Ms1Plot}}"
+                                                     ChartMargin="0,0.05" Bounds="0,0"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,80 +40,27 @@
                Foreground="Black" Background="{StaticResource LightThemeColor}"
                HorizontalContentAlignment="Center" VerticalAlignment="Top"
                Grid.Row="0"/>
-        <Grid VerticalAlignment="Stretch"
-              Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition MaxHeight="40" />
-                <RowDefinition />
-                <RowDefinition Height="30" />
-                <RowDefinition MaxHeight="30" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="30"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Background="WhiteSmoke"
-                    Margin="5,5,0,0"
-                    Grid.Row="1" Grid.Column="1">
-                <spectrum:LineSpectrumControl ItemsSource="{Binding Spectrum, ElementName=Ms1Plot}"
-                                       HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=Ms1Plot}"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                       RangeX="{Binding MassAxis.Range, ElementName=Ms1Plot, Mode=TwoWay}"
-                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                       HorizontalPropertyName="Mass"
-                                       VerticalPropertyName="Intensity">
-                    <spectrum:LineSpectrumControl.LinePen>
-                        <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
-                    </spectrum:LineSpectrumControl.LinePen>
-                    <spectrum:LineSpectrumControl.LayoutTransform>
-                        <TransformGroup>
-                            <RotateTransform Angle="-90"/>
-                            <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type spectrum:LineSpectrumControl}}}"/>
-                        </TransformGroup>
-                    </spectrum:LineSpectrumControl.LayoutTransform>
-                </spectrum:LineSpectrumControl>
-            </Border>
-            <Border BorderBrush="Black"
-                    BorderThickness="0,0,1,1"
-                    Margin="5,5,0,0"
-                    Grid.Row="1" Grid.Column="1"/>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
-                                        FlippedX="True"
-                                        Margin="0,0,5,5"
-                                        Grid.Row="2" Grid.Column="1" />
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding MassAxis.AxisMapper, ElementName=Ms1Plot}"
-                                      RangeX="{Binding MassAxis.Range, ElementName=Ms1Plot, Mode=TwoWay}"
-                                      LabelTicks="{Binding MassAxis.LabelTicks, ElementName=Ms1Plot}"
-                                      Margin="0,5,5,0"
-                                      Grid.Row="1" Grid.Column="2">
-                <axis:HorizontalAxisControl.LayoutTransform>
-                    <TransformGroup>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type axis:HorizontalAxisControl}}}"/>
-                    </TransformGroup>
-                </axis:HorizontalAxisControl.LayoutTransform>
-            </axis:HorizontalAxisControl>
-            <TextBlock Text="Relative abundance"
-                       FontFamily="Calibri" FontStyle="Italic" FontSize="13"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Grid.Row="3" Grid.Column="1"/>
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="MS1 spectra Max intensity: " FontSize="12"/>
-                    <TextBlock Text="{Binding MaxIntensity, ElementName=Ms1Plot}" FontSize="12"/>
-                </StackPanel>
-                <TextBlock Text="{Binding SplashKey, ElementName=Ms1Plot}" FontSize="11"/>
-                <StackPanel.LayoutTransform>
-                    <TransformGroup>
-                        <RotateTransform Angle="-90"/>
-                        <TranslateTransform X="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource AncestorType=StackPanel}}"/>
-                    </TransformGroup>
-                </StackPanel.LayoutTransform>
-            </StackPanel>
-        </Grid>
+        <chart:SimpleChartControl HorizontalAxis="{Binding MassAxis, ElementName=Ms1Plot}"
+                                  VerticalAxis="{StaticResource VerticalAxis}"
+                                  HorizontalTitle=""
+                                  VerticalTitle="Abundance"
+                                  Background="WhiteSmoke"
+                                  BorderBrush="Black"
+                                  Style="{StaticResource RotateLeftChart}"
+                                  Grid.Row="1">
+            <chart:SimpleChartControl.GraphTitle>
+                <MultiBinding StringFormat="MS1 spectra max intensity: {0}&#10;{1}" Mode="OneWay">
+                    <Binding Path="MaxIntensity" ElementName="Ms1Plot" Mode="OneWay"/>
+                    <Binding Path="SplashKey" ElementName="Ms1Plot" Mode="OneWay"/>
+                </MultiBinding>
+            </chart:SimpleChartControl.GraphTitle>
+            <spectrum:LineSpectrumControl ItemsSource="{Binding Spectrum, ElementName=Ms1Plot}"
+                                          HorizontalPropertyName="Mass"
+                                          VerticalPropertyName="Intensity">
+                <spectrum:LineSpectrumControl.LinePen>
+                    <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
+                </spectrum:LineSpectrumControl.LinePen>
+            </spectrum:LineSpectrumControl>
+        </chart:SimpleChartControl>
     </Grid>
 </UserControl>

@@ -58,9 +58,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
 
             (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
-            var pc160182 = mspDB.FirstOrDefault(msp => msp.Name.Contains("18:2") && msp.Name.Contains("16:0") && msp.Name.Contains("PC"));
-            if (pc160182 != null)
-                Console.WriteLine(pc160182.Name);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
@@ -210,6 +207,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
             result.IsOtherLipidMatch = isOtherLipidMatch;
+            result.IsSpectrumMatch &= isLipidChainsMatch | isLipidClassMatch | isLipidPositionMatch | isOtherLipidMatch;
 
             if (result.IsOtherLipidMatch)
                 return;
@@ -218,8 +216,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
                 result.Name = reference.Name; // for others and splash etc in compoundclass
             }
-
-            if (molecule.SublevelLipidName == molecule.LipidName) {
+            else if (molecule.SublevelLipidName == molecule.LipidName) {
                 result.Name = molecule.LipidName;
             }
             else {

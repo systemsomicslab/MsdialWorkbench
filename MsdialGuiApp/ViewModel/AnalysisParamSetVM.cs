@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel
     class AnalysisParamSetVM<T> : ViewModelBase where T : ParameterBase
     {
         #region Property
-        public MsdialProjectParameterVM<T> Param {
+        public ParameterBaseVM Param {
             get => paramVM;
             set => SetProperty(ref paramVM, value);
         }
@@ -64,14 +64,29 @@ namespace CompMs.App.Msdial.ViewModel
             set => SetProperty(ref searchedAdductIons, value);
         }
 
+        public bool TogetherWithAlignment {
+            get => (Param.ProcessOption.HasFlag(ProcessOption.Alignment));
+            set {
+                if (Param.ProcessOption.HasFlag(ProcessOption.Alignment) == value)
+                    return;
+                if (value) {
+                    Param.ProcessOption |= ProcessOption.Alignment;
+                }
+                else {
+                    Param.ProcessOption &= ~ProcessOption.Alignment;
+                }
+                OnPropertyChanged(nameof(TogetherWithAlignment));
+            }
+        }
+
         public List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
         public List<MoleculeMsReference> TextDB { get; set; } = new List<MoleculeMsReference>();
 
         #endregion
 
         #region Field
-        T param;
-        MsdialProjectParameterVM<T> paramVM;
+        protected readonly T param;
+        ParameterBaseVM paramVM;
         MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
         ObservableCollection<AnalysisFileBean> analysisFiles;
@@ -81,7 +96,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         public AnalysisParamSetVM(T parameter, IEnumerable<AnalysisFileBean> files) {
             param = parameter;
-            Param = new MsdialProjectParameterVM<T>(parameter);
+            Param = MsdialProjectParameterFactory.Create(parameter);
             MspSearchParam = new MsRefSearchParameterBaseVM(parameter.MspSearchParam);
             TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
 
@@ -138,8 +153,7 @@ namespace CompMs.App.Msdial.ViewModel
             ContinueProcessCommand.RaiseCanExecuteChanged();
         }
 
-        private async Task<bool> ClosingMethod() {
-            // TODO: need to include M + H or M - H
+        protected virtual async Task<bool> ClosingMethod() {
             if (!param.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -254,7 +268,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         private void LipidDBSet(Window owner) {
             var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "*", SearchOption.TopDirectoryOnly).Length != 1) {
+            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly).Length != 1) {
                 MessageBox.Show("There is no LBM file or several LBM files are existed in this application folder. Please see the tutorial.",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

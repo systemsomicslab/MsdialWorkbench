@@ -245,8 +245,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
-            pbw.Loaded += (s, e) => {
-                var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+            pbw.Loaded += async (s, e) => {
+                var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer));
                 MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
                 MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
                 pbw.Close();

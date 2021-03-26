@@ -39,12 +39,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             return cSpots;
         }
 
-        protected override void SetAlignmentID(List<AlignmentSpotProperty> alignments) {
+        protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
 
+            var ids = new List<int>(alignments.Count);
             for (int i = 0; i < alignments.Count; i++) {
+                ids.Add(alignments[i].MasterAlignmentID);
                 alignments[i].MasterAlignmentID = alignments[i].AlignmentID = i;
             }
+
+            return ids;
         }
 
         protected override void SetLinks(List<AlignmentSpotProperty> alignments) {

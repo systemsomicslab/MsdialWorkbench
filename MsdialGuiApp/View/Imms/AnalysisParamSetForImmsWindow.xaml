@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
-        d:DataContext="{d:DesignData AnalysisParamSetForImmsVM}"
         Name="AnalysisParamSetView"
         Height="630" Width="650">
     <Window.Resources>
@@ -45,11 +44,11 @@
             </TabItem>
 
             <TabItem Name="TabItem_IonMobility" Header="Ion mobility">
-                <local:MobilityView />
+                <commonview:MobilityView />
             </TabItem>
 
             <TabItem Name="TabItem_IsotopeTrack" Header="Isotope tracking">
-                <local:IsotopeTrackView />
+                <commonview:IsotopeTrackView />
             </TabItem>
         
         </TabControl>
@@ -71,7 +70,7 @@
             </ToolTipService.ToolTip>
         </Button>
         <CheckBox Name="CheckBox_WithAlignment" Content="Together with Alignment"
-                  IsChecked="{Binding Path=Param.TogetherWithAlignment}"
+                  IsChecked="{Binding Path=TogetherWithAlignment, Mode=TwoWay}"
                   Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"
                   Margin="90,0,0,0" />
     </Grid>

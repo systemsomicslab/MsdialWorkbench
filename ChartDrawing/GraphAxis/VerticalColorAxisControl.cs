@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using CompMs.Graphics.Behavior;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
@@ -79,6 +79,10 @@ namespace CompMs.Graphics.GraphAxis
             visualChildren = new VisualCollection(this);
 
             MouseMove += VisualFocusOnMouseOver;
+            ZoomByDragBehavior.SetIsEnabled(this, true);
+            ZoomByWheelBehavior.SetIsEnabled(this, true);
+            MoveByDragBehavior.SetIsEnabled(this, true);
+            ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);
         }
 
         protected override void Update()

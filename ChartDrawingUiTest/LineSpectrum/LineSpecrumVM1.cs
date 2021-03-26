@@ -72,5 +72,6 @@ namespace ChartDrawingUiTest.LineSpectrum
     {
         public double X { get; set; }
         public double Y { get; set; }
+        public int Type { get; internal set; }
     }
 }

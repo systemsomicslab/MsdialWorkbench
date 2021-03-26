@@ -123,6 +123,8 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -162,7 +164,19 @@
     <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\PeakView.xaml.cs">
+    <Compile Include="View\Lcimms\AlignmentParameterView.xaml.cs">
+      <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml.cs">
+      <DependentUpon>AnalysisParamSetForLcimmsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\DataCollectionView.xaml.cs">
+      <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\IdentificationView.xaml.cs">
+      <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakDetectionView.xaml.cs">
@@ -194,7 +208,7 @@
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodVM.cs" />
-    <Compile Include="ViewModel\MsdialProjectParameterVM.cs" />
+    <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
@@ -224,7 +238,7 @@
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\ChromatogramView.xaml.cs" >
+    <Compile Include="View\Dims\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
@@ -254,9 +268,6 @@
     <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakView.xaml.cs">
-      <DependentUpon>PeakView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
     </Compile>
@@ -276,10 +287,10 @@
     <Compile Include="View\Imms\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\IsotopeTrackView.xaml.cs">
+    <Compile Include="View\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\MobilityView.xaml.cs">
+    <Compile Include="View\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
@@ -301,7 +312,7 @@
     <Compile Include="View\Lcms\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\EicView.xaml.cs">
+    <Compile Include="View\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
@@ -380,6 +391,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ChartStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DeconvolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -416,7 +431,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\PeakView.xaml">
+    <Page Include="View\Lcimms\AlignmentParameterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\DataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\IdentificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PeakView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -504,10 +535,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\PeakView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\RepRefView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -532,11 +559,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\IsotopeTrackView.xaml">
+    <Page Include="View\IsotopeTrackView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\MobilityView.xaml">
+    <Page Include="View\MobilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -564,7 +591,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\EicView.xaml">
+    <Page Include="View\EicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -724,6 +751,8 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -9,6 +9,7 @@ using System.Windows.Media;
 using CompMs.Graphics.Core.Base;
 using CompMs.Common.Extension;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace CompMs.Graphics.Chart
 {
@@ -17,17 +18,74 @@ namespace CompMs.Graphics.Chart
         static Annotator() {
             culture = System.Globalization.CultureInfo.GetCultureInfo("en-us");
             typeFace = new Typeface("Calibri");
+            IsHitTestVisibleProperty.OverrideMetadata(typeof(Annotator), new FrameworkPropertyMetadata(false));
         }
 
-        public Annotator()
-        {
-            IsHitTestVisible = false;
+        public Annotator() {
+
         }
 
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-            nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(Annotator),
-            new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
-            );
+        public static readonly DependencyProperty DatasProperty =
+            DependencyProperty.Register(
+                nameof(Datas), typeof(LabelData[]), typeof(Annotator),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnDatasChanged,
+                    CoerceDatas));
+
+        LabelData[] Datas {
+            get => (LabelData[])GetValue(DatasProperty);
+            set => SetValue(DatasProperty, value);
+        }
+
+        bool ShouldCoerceDatas = false;
+        static void OnDatasChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+
+        }
+
+        static object CoerceDatas(DependencyObject d, object value) {
+            var chart = (Annotator)d;
+            var datas = value as LabelData[];
+
+            if (chart.ShouldCoerceDatas) {
+                if (!chart.ReadCleanFlag(PropertyClean.ItemsSource)) {
+                    chart.WriteCleanFlag(PropertyClean.ItemsSource, true);
+                    datas = chart.UpdateItemsSource(datas);
+                }
+                if (!chart.ReadCleanFlag(PropertyClean.Item)) {
+                    chart.WriteCleanFlag(PropertyClean.Item, true);
+                    datas = chart.UpdateItem(datas);
+                }
+                if (!chart.ReadCleanFlag(PropertyClean.Horizontal)) {
+                    chart.WriteCleanFlag(PropertyClean.Horizontal, true);
+                    datas = chart.UpdateHorizontalItems(datas);
+                }
+                if (!chart.ReadCleanFlag(PropertyClean.Vertical)) {
+                    chart.WriteCleanFlag(PropertyClean.Vertical, true);
+                    datas = chart.UpdateVerticalItems(datas);
+                }
+                if (!chart.ReadCleanFlag(PropertyClean.Order)) {
+                    chart.WriteCleanFlag(PropertyClean.Order, true);
+                    datas = chart.UpdateOrderItems(datas);
+                }
+                if (!chart.ReadCleanFlag(PropertyClean.Label)) {
+                    chart.WriteCleanFlag(PropertyClean.Label, true);
+                    datas = chart.UpdateLabel(datas);
+                }
+                chart.ShouldCoerceDatas = false;
+                value = datas;
+            }
+            return value;
+        }
+
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register(
+                nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(Annotator),
+                new FrameworkPropertyMetadata(
+                    default(System.Collections.IEnumerable),
+                    OnItemsSourceChanged));
+
         public System.Collections.IEnumerable ItemsSource
         {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
@@ -37,9 +95,11 @@ namespace CompMs.Graphics.Chart
         static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var chart = (Annotator)d;
-            chart.WriteCleanFlag(PropertyClean.ItemsSource, false);
             chart.OnItemsSourceChanged((System.Collections.IEnumerable)e.NewValue, (System.Collections.IEnumerable)e.OldValue);
-            chart.Update();
+
+            chart.ShouldCoerceDatas = true;
+            chart.WriteCleanFlag(PropertyClean.ItemsSource, false);
+            chart.CoerceValue(DatasProperty);
         }
 
         void OnItemsSourceChanged(System.Collections.IEnumerable newValue, System.Collections.IEnumerable oldValue) {
@@ -52,33 +112,36 @@ namespace CompMs.Graphics.Chart
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            ShouldCoerceDatas = true;
             WriteCleanFlag(PropertyClean.Item, false);
-            Update();
+            CoerceValue(DatasProperty);
         }
 
-        private void UpdateItemsSource() {
-            cv = CollectionViewSource.GetDefaultView(ItemsSource);
-            if (cv != null && !cv.IsEmpty) {
-
-                if (cv.IsCurrentBeforeFirst || cv.IsCurrentAfterLast) {
-                    cv.MoveCurrentToFirst();
-                }
-
-                dataType = cv.CurrentItem.GetType();
-                datas = cv.Cast<object>().Select(_ => new LabelData()).ToArray();
-
-                WriteCleanFlag(PropertyClean.Horizontal | PropertyClean.Vertical | PropertyClean.Label | PropertyClean.Order, false);
+        private LabelData[] UpdateItemsSource(LabelData[] value) {
+            source = ItemsSource?.Cast<object>().ToList();
+            if (source == null || !source.Any()) {
+                return new LabelData[0];
             }
+
+            dataType = source.First().GetType();
+            var datas = source.Select(_ => new LabelData()).ToArray();
+
+            WriteCleanFlag(PropertyClean.Horizontal | PropertyClean.Vertical | PropertyClean.Label | PropertyClean.Order, false);
+
+            return datas;
         }
 
-        private void UpdateItem() {
-            UpdateItemsSource();
+        private LabelData[] UpdateItem(LabelData[] value) {
+            return UpdateItemsSource(value);
         }
 
-        public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
-            nameof(HorizontalPropertyName), typeof(string), typeof(Annotator),
-            new PropertyMetadata(default(string), OnHorizontalChanged)
-            );
+        public static readonly DependencyProperty HorizontalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(HorizontalPropertyName), typeof(string), typeof(Annotator),
+                new FrameworkPropertyMetadata(
+                    default(string),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnHorizontalChanged));
         public string HorizontalPropertyName
         {
             get => (string)GetValue(HorizontalPropertyNameProperty);
@@ -89,23 +152,29 @@ namespace CompMs.Graphics.Chart
         {
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Horizontal, false);
-            chart.Update();
+            chart.ShouldCoerceDatas = true;
+            chart.CoerceValue(DatasProperty);
         }
 
-        void UpdateHorizontalItems() {
-            hPropertyInfo = dataType?.GetProperty(HorizontalPropertyName);
-            if (hPropertyInfo == null) return;
-
+        LabelData[] UpdateHorizontalItems(LabelData[] datas) {
+            var hPropertyInfo = dataType?.GetProperty(HorizontalPropertyName);
             var hAxis = HorizontalAxis;
-            foreach ((var obj, var idx) in cv.Cast<object>().WithIndex()) {
+            if (hPropertyInfo == null || hAxis == null || datas == null || !datas.Any())
+                return datas;
+
+            foreach ((var obj, var idx) in source.WithIndex()) {
                 datas[idx].x = hPropertyInfo == null ? 0 : hAxis.TranslateToAxisValue(hPropertyInfo.GetValue(obj));
             }
+            return datas;
         }
 
-        public static readonly DependencyProperty VerticalPropertyNameProperty = DependencyProperty.Register(
-            nameof(VerticalPropertyName), typeof(string), typeof(Annotator),
-            new PropertyMetadata(default(string), OnVerticalChanged)
-            );
+        public static readonly DependencyProperty VerticalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(VerticalPropertyName), typeof(string), typeof(Annotator),
+                new FrameworkPropertyMetadata(
+                    default(string),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnVerticalChanged));
         public string VerticalPropertyName
         {
             get => (string)GetValue(VerticalPropertyNameProperty);
@@ -116,23 +185,28 @@ namespace CompMs.Graphics.Chart
         {
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Vertical, false);
-            chart.Update();
+            chart.ShouldCoerceDatas = true;
+            chart.CoerceValue(DatasProperty);
         }
 
-        void UpdateVerticalItems() {
-            vPropertyInfo = dataType?.GetProperty(VerticalPropertyName);
-            if (vPropertyInfo == null) return;
-
+        LabelData[] UpdateVerticalItems(LabelData[] datas) {
+            var vPropertyInfo = dataType?.GetProperty(VerticalPropertyName);
             var vAxis = VerticalAxis;
-            foreach ((var obj, var idx) in cv.Cast<object>().WithIndex()) {
+            if (vPropertyInfo == null || vAxis == null || datas == null || !datas.Any())
+                return datas;
+
+            foreach ((var obj, var idx) in source.WithIndex()) {
                 datas[idx].y = vPropertyInfo == null ? 0 : vAxis.TranslateToAxisValue(vPropertyInfo.GetValue(obj));
             }
+            return datas;
         }
 
         public static readonly DependencyProperty OrderingPropertyNameProperty =
             DependencyProperty.Register(
                 nameof(OrderingPropertyName), typeof(string), typeof(Annotator),
-                new PropertyMetadata(string.Empty, OnOrderChanged));
+                new PropertyMetadata(
+                    string.Empty,
+                    OnOrderChanged));
         public string OrderingPropertyName {
             get => (string)GetValue(OrderingPropertyNameProperty);
             set => SetValue(OrderingPropertyNameProperty, value);
@@ -141,15 +215,17 @@ namespace CompMs.Graphics.Chart
         private static void OnOrderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Order, false);
-            chart.Update();
+            chart.ShouldCoerceDatas = true;
+            chart.CoerceValue(DatasProperty);
         }
 
-        void UpdateOrderItems() {
-            var prop = dataType?.GetProperty(OrderingPropertyName);
-            if (prop == null) return;
+        LabelData[] UpdateOrderItems(LabelData[] datas) {
+            if (datas == null || !datas.Any())
+                return datas;
 
-            foreach ((var obj, var idx) in cv.Cast<object>().WithIndex()) {
-                var value = prop.GetValue(obj);
+            var prop = dataType?.GetProperty(OrderingPropertyName);
+            foreach ((var obj, var idx) in source.WithIndex()) {
+                var value = prop?.GetValue(obj);
                 if (value is double dvalue) {
                     datas[idx].order = dvalue;
                 }
@@ -160,11 +236,15 @@ namespace CompMs.Graphics.Chart
                     datas[idx].order = 0;
                 }
             }
+            return datas;
         }
 
         public static readonly DependencyProperty LabelPropertyNameProperty = DependencyProperty.Register(
             nameof(LabelPropertyName), typeof(string), typeof(Annotator),
-            new PropertyMetadata(default(string), OnLabelChanged));
+            new FrameworkPropertyMetadata(
+                default(string),
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                OnLabelChanged));
 
         public string LabelPropertyName
         {
@@ -175,16 +255,18 @@ namespace CompMs.Graphics.Chart
         private static void OnLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Label, false);
-            chart.Update();
+            chart.ShouldCoerceDatas = true;
+            chart.CoerceValue(DatasProperty);
         }
 
-        void UpdateLabel() {
-            if (dataType == null) return;
-
-            lPropertyInfo = LabelPropertyName != null ? dataType.GetProperty(LabelPropertyName) : null;
+        LabelData[] UpdateLabel(LabelData[] datas) {
+            if (dataType == null || datas == null || !datas.Any())
+                return datas;
 
             var format = Format;
-            foreach ((var obj, var idx) in cv.Cast<object>().Select(o => lPropertyInfo?.GetValue(o)).WithIndex()) {
+            var lPropertyInfo = LabelPropertyName != null ? dataType.GetProperty(LabelPropertyName) : null;
+
+            foreach ((var obj, var idx) in source.Select(o => lPropertyInfo?.GetValue(o)).WithIndex()) {
                 if (obj == null)
                     datas[idx].label = string.Empty;
                 else if (obj is double val)
@@ -192,7 +274,7 @@ namespace CompMs.Graphics.Chart
                 else
                     datas[idx].label = obj.ToString();
             }
-
+            return datas;
         }
 
         public static readonly DependencyProperty TopNProperty =
@@ -241,52 +323,14 @@ namespace CompMs.Graphics.Chart
             set => SetValue(FontSizeProperty, value);
         }
 
-        private DrawingVisual DV {
-            get {
-                if (dv == null) {
-                    dv = new DrawingVisual();
-                    visualChildren.Add(dv);
-                }
-                return dv;
-            }
-        }
-
-        protected override void Update()
+        protected override void OnRender(DrawingContext drawingContext)
         {
-            base.Update();
+            base.OnRender(drawingContext);
 
-            if (!ReadCleanFlag(PropertyClean.ItemsSource)) {
-                UpdateItemsSource();
-                WriteCleanFlag(PropertyClean.ItemsSource, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Item)) {
-                UpdateItem();
-                WriteCleanFlag(PropertyClean.Item, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Horizontal)) {
-                UpdateHorizontalItems();
-                WriteCleanFlag(PropertyClean.Horizontal, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Vertical)) {
-                UpdateVerticalItems();
-                WriteCleanFlag(PropertyClean.Vertical, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Order)) {
-                UpdateOrderItems();
-                WriteCleanFlag(PropertyClean.Order, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Label)) {
-                UpdateLabel();
-                WriteCleanFlag(PropertyClean.Label, true);
-            }
-            if (!ReadCleanFlag(PropertyClean.Format)) {
-            }
-
-
-            var dv = DV;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             var hAxis = HorizontalAxis;
             var vAxis = VerticalAxis;
+            var datas = Datas;
             if (hAxis == null || vAxis == null || datas == null)
                 return;
 
@@ -312,41 +356,49 @@ namespace CompMs.Graphics.Chart
                 case System.Drawing.ContentAlignment.BottomCenter:
                 case System.Drawing.ContentAlignment.BottomLeft:
                 case System.Drawing.ContentAlignment.BottomRight:
-                    dy = 10;
+                    dy = 5;
                     break;
             }
 
-            var counter = 0;
-            using (var dc = dv.RenderOpen()) {
-                foreach(var data in datas.OrderByDescending(d => d.order)) {
-                    if (TopN.HasValue && counter >= TopN)
-                        break;
-                    if (!string.IsNullOrEmpty(data.label) && hAxis.Contains(data.x) && vAxis.Contains(data.y)) {
+            var texts = new List<Tuple<FormattedText, Point>>();
+            var brush = Brush;
+            var fontSize = FontSize;
+            bool flippedX = FlippedX, flippedY = FlippedY;
+            foreach(var data in datas.OrderByDescending(d => d.order)) {
+                if (TopN.HasValue && texts.Count >= TopN)
+                    break;
+                if (!string.IsNullOrEmpty(data.label) && hAxis.Range.Contains(data.x) && vAxis.Range.Contains(data.y)) {
 
-                        double xx = hAxis.TranslateToRenderPoint(data.x, FlippedX) * actualWidth;
-                        double yy = vAxis.TranslateToRenderPoint(data.y, FlippedY) * actualHeight;
+                    double xx = hAxis.TranslateToRenderPoint(data.x, flippedX) * actualWidth;
+                    double yy = vAxis.TranslateToRenderPoint(data.y, flippedY) * actualHeight;
 
-                        var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, FontSize, Brush, 1)
-                        {
-                            TextAlignment = TextAlignment.Center
-                        };
-                        dc.DrawText(text, new Point(xx + dx, yy + dy));
+                    var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, 1)
+                    {
+                        TextAlignment = TextAlignment.Center
+                    };
+                    var p = new Point(xx + dx, yy + dy);
 
-                        ++counter;
+                    if (!texts.Any(other => IsContact(text, other.Item1, p, other.Item2))) {
+                        texts.Add(Tuple.Create(text, p));
                     }
                 }
             }
+
+            foreach ((var text, var point) in texts) {
+                drawingContext.DrawText(text, point);
+            }
+        }
+
+        private static bool IsContact(FormattedText text1, FormattedText text2, Point p1, Point p2) {
+            return (text1.Width + text2.Width) / 2 > Math.Abs(p1.X - p2.X) && (text1.Height + text2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
         }
 
         #region field
-        private ICollectionView cv;
+        private List<object> source;
         private Type dataType;
-        private PropertyInfo hPropertyInfo, vPropertyInfo, lPropertyInfo;
-        private DrawingVisual dv;
-        private LabelData[] datas;
         private static readonly System.Globalization.CultureInfo culture;
         private static readonly Typeface typeFace;
-        private PropertyClean cleanFlags = PropertyClean.None;
+        private PropertyClean cleanFlags = PropertyClean.All;
         #endregion
 
         private bool ReadCleanFlag(PropertyClean flag) {
@@ -371,6 +423,7 @@ namespace CompMs.Graphics.Chart
             Label = 0x10,
             Order = 0x20,
             Format = 0x40,
+            All = ItemsSource | Item | Horizontal | Vertical | Label | Order | Format,
         }
 
         class LabelData {

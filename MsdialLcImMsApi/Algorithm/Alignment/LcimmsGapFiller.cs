@@ -48,7 +48,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return peaks.Max(peak => peak.PeakWidth(ChromXType.Drift));
         }
 
-        protected override List<ChromatogramPeak> GetPeaksFirst(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaksFirst(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = Math.Max(this.mzTol, 0.005f);
             peakWidth = Math.Max(peakWidth, 0.2f);
 
@@ -57,7 +57,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
         }
 
-        protected override List<ChromatogramPeak> GetPeaksSecond(List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaksSecond(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = Math.Max(this.mzTol, 0.005);
             peakWidth = Math.Max(peakWidth, 0.2f);
             var peaklist = DataAccess.GetDriftChromatogramByRtMz(

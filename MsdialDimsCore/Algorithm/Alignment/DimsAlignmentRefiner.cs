@@ -24,7 +24,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             _iupac = iupac;
         }
 
-        public List<AlignmentSpotProperty> Refine(IList<AlignmentSpotProperty> alignments) {
+        public Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments) {
 
             //foreach (var spot in alignments.Where(n => n.IsReferenceMatched)) {
             //    Console.WriteLine(spot.MspBasedMatchResult.Name + "\t" + spot.AdductType.AdductIonName);
@@ -33,12 +33,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             Deduplicate(alignments);
             var cleaned = GetCleanedSpots(alignments);
             var filtered = FilterByBlank(cleaned);
-            SetAlignmentID(filtered);
+            var ids = SetAlignmentID(filtered);
             SetIsotopes(filtered);
             SetLinks(filtered);
             SetAdducts(filtered.Where(spot => !spot.AdductType.HasAdduct));
 
-            return filtered;
+            return Tuple.Create(filtered, ids);
         }
 
         private void Deduplicate(IList<AlignmentSpotProperty> alignments) { // TODO: change deduplicate process (msp, textdb, metabolite name...)
@@ -114,10 +114,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             return alignments;
         }
 
-        private static void SetAlignmentID(ICollection<AlignmentSpotProperty> alignments) {
+        private static List<int> SetAlignmentID(ICollection<AlignmentSpotProperty> alignments) {
             var id = 0;
-            foreach (var spot in alignments)
+            var ids = new List<int>();
+            foreach (var spot in alignments) {
+                ids.Add(spot.MasterAlignmentID);
                 spot.MasterAlignmentID = spot.AlignmentID = id++;
+            }
+            return ids;
         }
 
         private static void SetIsotopes(IEnumerable<AlignmentSpotProperty> spots) {

@@ -14,30 +14,30 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Imms
+namespace CompMs.App.Msdial.View
 {
     /// <summary>
-    /// Interaction logic for PeakView.xaml
+    /// Interaction logic for EicView.xaml
     /// </summary>
-    public partial class PeakView : UserControl
+    public partial class EicView : UserControl
     {
         public static readonly DependencyProperty ChromAxisProperty =
-            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(PeakView));
+            DependencyProperty.Register(nameof(ChromAxis), typeof(IAxisManager), typeof(EicView));
 
-        public static readonly DependencyProperty MassAxisProperty =
-            DependencyProperty.Register(nameof(MassAxis), typeof(IAxisManager), typeof(PeakView));
-        
         public IAxisManager ChromAxis {
             get => (IAxisManager)GetValue(ChromAxisProperty);
             set => SetValue(ChromAxisProperty, value);
         }
 
-        public IAxisManager MassAxis {
-            get => (IAxisManager)GetValue(MassAxisProperty);
-            set => SetValue(MassAxisProperty, value);
+        public static readonly DependencyProperty ChromTitleProperty =
+            DependencyProperty.Register(nameof(ChromTitle), typeof(string), typeof(EicView));
+
+        public string ChromTitle {
+            get => (string)GetValue(ChromTitleProperty);
+            set => SetValue(ChromTitleProperty, value);
         }
 
-        public PeakView() {
+        public EicView() {
             InitializeComponent();
         }
     }

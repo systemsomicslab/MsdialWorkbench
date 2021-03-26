@@ -258,7 +258,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             // linked by partial matching of MS1 and MS2
             if (param.AcquisitionType == AcquisitionType.AIF) return;
-            assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, spectrumList, param);
+            assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 
         private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
@@ -321,12 +321,16 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
             }
         }
-
+        
         // currently, the method is very simple.
         // if a peak (at least 10% relative abundance) in MS/MS is found in MS1 spectrum,
         // the peak of MS1 is assigned as "Found in upper MSMS"
-        private void assignLinksBasedOnPartialMatchingOfMS1MS2(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, List<RawSpectrum> spectrumList, ParameterBase param) {
+        private void assignLinksBasedOnPartialMatchingOfMS1MS2(
+            List<ChromatogramPeakFeature> chromPeakFeatures,
+            List<MSDecResult> msdecResults,
+            ParameterBase param) {
 
+            chromPeakFeatures = chromPeakFeatures.OrderBy(chromPeakFeature => chromPeakFeature.Mass).ToList();
             for (int i = chromPeakFeatures.Count - 1; i >= 0; i--) {
                 var peak = chromPeakFeatures[i];
                 if (peak.MS2RawSpectrumID < 0) continue;
@@ -337,25 +341,27 @@ namespace CompMs.MsdialCore.Algorithm {
                     : !msdecResults.IsEmptyOrNull()
                         ? msdecResults[peak.GetMSDecResultID()].Spectrum
                         : null;
-                if (spectrum.IsEmptyOrNull()) continue;
+                if (spectrum.IsEmptyOrNull())
+                    continue;
                 var maxIntensity = spectrum.Max(n => n.Intensity);
+                spectrum = spectrum
+                    .Where(specPeak => specPeak.Intensity / maxIntensity >= 0.1)
+                    .OrderBy(specPeak => specPeak.Mass)
+                    .ToList();
 
-                for (int j = i - 1; j >= 0; j--) {
+                var k = 0;
+                for (int j = 0; j < i; j++) {
                     var cPeak = chromPeakFeatures[j];
-                    if (cPeak.PeakCharacter.IsotopeWeightNumber != 0) continue;
-                    var peakMz = cPeak.Mass;
-                    foreach (var specPeak in spectrum) {
-                        var mz = specPeak.Mass;
-                        var revInt = specPeak.Intensity / maxIntensity;
-                        if (revInt < 0.1) continue;
+                    if (cPeak.PeakCharacter.IsotopeWeightNumber != 0)
+                        continue;
+                    while (k < spectrum.Count && spectrum[k].Mass < cPeak.Mass - param.CentroidMs2Tolerance) {
+                        k++;
+                    }
+                    if (k < spectrum.Count && Math.Abs(spectrum[k].Mass - cPeak.Mass) < param.CentroidMs2Tolerance) {
+                        cPeak.PeakCharacter.IsLinked = true;
+                        peak.PeakCharacter.IsLinked = true;
 
-                        if (Math.Abs(peakMz - mz) < param.CentroidMs2Tolerance) {
-
-                            cPeak.PeakCharacter.IsLinked = true;
-                            peak.PeakCharacter.IsLinked = true;
-
-                            registerLinks(peak, cPeak, PeakLinkFeatureEnum.FoundInUpperMsMs);
-                        }
+                        registerLinks(peak, cPeak, PeakLinkFeatureEnum.FoundInUpperMsMs);
                     }
                 }
             }
@@ -574,14 +580,15 @@ namespace CompMs.MsdialCore.Algorithm {
         private void registerLinks(ChromatogramPeakFeature cSpot, ChromatogramPeakFeature rSpot, PeakLinkFeatureEnum rLinkProp) {
             var cSpotCharacter = cSpot.PeakCharacter;
             var rSpotCharacter = rSpot.PeakCharacter;
-            if (cSpotCharacter.PeakLinks.Count(n => n.LinkedPeakID == rSpot.PeakID && n.Character == rLinkProp) == 0) {
-                cSpotCharacter.PeakLinks.Add(new LinkedPeakFeature() {
+            if (cSpotCharacter.PeakLinks.All(n => n.LinkedPeakID != rSpot.PeakID || n.Character != rLinkProp)) {
+                cSpotCharacter.PeakLinks.Add(new LinkedPeakFeature()
+                {
                     LinkedPeakID = rSpot.PeakID,
                     Character = rLinkProp
                 });
                 cSpotCharacter.IsLinked = true;
             }
-            if (rSpotCharacter.PeakLinks.Count(n => n.LinkedPeakID == cSpot.PeakID && n.Character == rLinkProp) == 0) {
+            if (rSpotCharacter.PeakLinks.All(n => n.LinkedPeakID != cSpot.PeakID || n.Character != rLinkProp)) {
                 rSpotCharacter.PeakLinks.Add(new LinkedPeakFeature() {
                     LinkedPeakID = cSpot.PeakID,
                     Character = rLinkProp

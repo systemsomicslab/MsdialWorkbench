@@ -12,23 +12,28 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
     {
         public LcimmsAlignmentRefiner(MsdialLcImMsParameter param, IupacDatabase iupac) : base(param, iupac) { }
 
-        protected override void SetAlignmentID(List<AlignmentSpotProperty> alignments) {
+        protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
             foreach (var spot in alignments) {
                 spot.AlignmentDriftSpotFeatures = new List<AlignmentSpotProperty>(spot.AlignmentDriftSpotFeatures.OrderBy(p => p.TimesCenter.Value));
             }
 
             var masterID = 0;
+            var ids = new List<int>();
             for (int i = 0; i < alignments.Count; i++) {
+                ids.Add(alignments[i].MasterAlignmentID);
                 alignments[i].AlignmentID = i;
                 alignments[i].MasterAlignmentID = masterID++;
                 var driftSpots = alignments[i].AlignmentDriftSpotFeatures;
                 for (int j = 0; j < driftSpots.Count; j++) {
+                    ids.Add(alignments[i].MasterAlignmentID);
                     driftSpots[j].MasterAlignmentID = masterID++;
                     driftSpots[j].AlignmentID = j;
                     driftSpots[j].ParentAlignmentID = i;
                 }
             }
+
+            return ids;
         }
     }
 }

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
@@ -12,6 +13,21 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <validator:PositiveDoubleNumericValidation x:Key="PosValidator"/>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="Height" Value="25"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
 
         <Grid.RowDefinitions>
@@ -19,93 +35,94 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Label Content="Mass accuracy (centroid parameter)" FontStyle="Italic" Margin="10,0,0,0" />
-
-            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
-                <Label Content="MS1 tolerance:" Height="30" VerticalContentAlignment="Center"/>
-                <Label Content="MS2 tolerance:" Height="30" VerticalContentAlignment="Center"/>
+        <StackPanel Margin="10,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Label Content="Mass accuracy (centroid parameter)" FontStyle="Italic"/>
+            <StackPanel Margin="5,0">
+                <ui:LabeledContent PrependLabel="MS1 tolerance:"
+                                   AppendLabel="Da">
+                    <TextBox>
+                        <TextBox.Text>
+                            <Binding Path="Param.CentroidMs1Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                        <TextBox.ToolTip>
+                            This is one of parameters for peak detections. This software utilizes &quot;slice&quot; XIC chromatogram. At least for Q-TOF, 0.01-0.05 is better. The detail algorithm should be published soon.
+                        </TextBox.ToolTip>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="MS2 tolerance:"
+                                   AppendLabel="Da">
+                    <TextBox>
+                        <TextBox.Text>
+                            <Binding Path="Param.CentroidMs2Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                        <TextBox.ToolTip>
+                            This is a parameter to draw MS^2 chromatograms. At least for Q-TOF, 0.05-0.1 is better. The detail algorithm should be published soon.
+                        </TextBox.ToolTip>
+                    </TextBox>
+                </ui:LabeledContent>
             </StackPanel>
+        </StackPanel>
 
-            <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
-                <TextBox Name="TextBox_CentroidMs1Tolerance"
-                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                         Height="25" Margin="5,2.5,5,2.5">
-                    <TextBox.Text>
-                        <Binding Path="Param.CentroidMs1Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                            <Binding.ValidationRules>
-                                <validator:PositiveDoubleNumericValidation />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="This is one of parameters for peak detections. This software utilizes &quot;slice&quot; XIC chromatogram. At least for Q-TOF, 0.01-0.05 is better. The detail algorithm should be published soon." />
-                    </ToolTipService.ToolTip>
-                </TextBox>
-                <TextBox Name="TextBox_CentroidMs2Tolerance"
-                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                         Height="25" Margin="5,2.5,5,2.5">
-                    <TextBox.Text>
-                        <Binding Path="Param.CentroidMs2Tolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                            <Binding.ValidationRules>
-                                <validator:PositiveDoubleNumericValidation />
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="This is a parameter to draw MS^2 chromatograms. At least for Q-TOF, 0.05-0.1 is better. The detail algorithm should be published soon." />
-                    </ToolTipService.ToolTip>
-                </TextBox>
+        <Expander Header="Advanced"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Top" 
+                  ExpandDirection="Down"
+                  Grid.Row="1">
+            <StackPanel Margin="10,0">
 
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
-                <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-                <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-            </StackPanel>
-
-        </Grid>
-
-        <Grid Grid.Row="1">
-        
-            <Expander Header="Advanced"
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Top" 
-                      ExpandDirection="Down">
-                <Grid>
-                  
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Label Content="Data collection parameters" FontStyle="Italic" Margin="10,0,0,0" />
-
-                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 25, 0,0">
-                        <Label Content="MS1 mass range begin:" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="MS1 mass range end:" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="MS/MS mass range begin:" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="MS/MS mass range end:" Height="30" VerticalContentAlignment="Center"/>
-                    </StackPanel>
-               
-                    <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 25, 0,0">
-                        <TextBox Name="TextBox_MassRangeBegin"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                                 Height="25" Margin="5,2.5,5,2.5">
+                <Label Content="Data collection parameters" FontStyle="Italic"/>
+                <StackPanel Margin="10,0">
+                    <ui:LabeledContent PrependLabel="Drift time begin:"
+                                       AppendLabel="1/k0">
+                        <TextBox Name="TextBox_DriftTimeBegin">
+                            <TextBox.Text>
+                                <Binding Path="Param.DriftTimeBegin" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="You can remove un-wanted drift time range." />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Drift time end:"
+                                       AppendLabel="1/k0">
+                        <TextBox Name="TextBox_DriftTimeEnd">
+                            <TextBox.Text>
+                                <Binding Path="Param.DriftTimeEnd" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="You can remove un-wanted drift time range." />
+                            </ToolTipService.ToolTip>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS1 mass range begin:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_MassRangeBegin">
                             <TextBox.Text>
                                 <Binding Path="Param.MassRangeBegin" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
                                     <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
+                                        <StaticResource ResourceKey="PosValidator"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -113,15 +130,14 @@
                                 <ToolTip Content="You can remove un-wanted mass range." />
                             </ToolTipService.ToolTip>
                         </TextBox>
-
-                        <TextBox Name="TextBox_MassRangeEnd"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                                 Height="25" Margin="5,2.5,5,2.5">
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS1 mass range end:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_MassRangeEnd">
                             <TextBox.Text>
                                 <Binding Path="Param.MassRangeEnd" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
                                     <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
+                                        <StaticResource ResourceKey="PosValidator"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -129,14 +145,14 @@
                                 <ToolTip Content="You can remove un-wanted mass range." />
                             </ToolTipService.ToolTip>
                         </TextBox>
-
-                        <TextBox Name="TextBox_Ms2MassRangeBegin"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,2.5,5,2.5">
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS/MS mass range begin:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_Ms2MassRangeBegin">
                             <TextBox.Text>
                                 <Binding Path="Param.Ms2MassRangeBegin" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
                                     <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
+                                        <StaticResource ResourceKey="PosValidator"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -144,15 +160,14 @@
                                 <ToolTip Content="You can remove un-wanted mass range." />
                             </ToolTipService.ToolTip>
                         </TextBox>
-
-                        <TextBox Name="TextBox_Ms2MassRangeEnd"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
-                                 Height="25" Margin="5,2.5,5,2.5">
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS/MS mass range end:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_Ms2MassRangeEnd">
                             <TextBox.Text>
                                 <Binding Path="Param.Ms2MassRangeEnd" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
                                     <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
+                                        <StaticResource ResourceKey="PosValidator"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -160,29 +175,13 @@
                                 <ToolTip Content="You can remove un-wanted mass range." />
                             </ToolTipService.ToolTip>
                         </TextBox>
+                    </ui:LabeledContent>
+                </StackPanel>
 
-
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 25, 0,0">
-                        <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="Da" Height="30" VerticalContentAlignment="Center"/>
-                    </StackPanel>
-
-                    <Label Content="Isotope recognition" FontStyle="Italic" Margin="10,210,0,0" />
-
-                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 235, 0,0">
-                        <Label Content="Maximum charged number:" Height="30" VerticalContentAlignment="Center"/>
-                        <Label Content="Consider Cl and Br elements:" Height="30" VerticalContentAlignment="Center"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 235, 0,0">
-                        <TextBox Name="TextBox_MaximumChargedState" 
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                 HorizontalAlignment="Stretch" 
-                                 HorizontalContentAlignment="Right"
-                                 Height="25" Margin="5,2.5,5,2.5">
+                <Label Content="Isotope recognition" FontStyle="Italic"/>
+                <StackPanel Margin="10,0">
+                    <ui:LabeledContent PrependLabel="Maximum charged number:">
+                        <TextBox Name="TextBox_MaximumChargedState">
                             <TextBox.Text>
                                 <Binding Path="Param.MaxChargeNumber" 
                                          ValidatesOnDataErrors="True" 
@@ -197,39 +196,24 @@
                                 <ToolTip Content="For small molecule profiling, 2 is recommended. For proteome or siRNA researches, multiple charged state (8 or more) should be used." />
                             </ToolTipService.ToolTip>
                         </TextBox>
-
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Consider Cl and Br elements:">
                         <CheckBox Name="CheckBox_IsConsiderBrClForIsotopes" 
                                   HorizontalAlignment="Left" 
                                   VerticalAlignment="Center" 
-                                  Grid.Column="1"
                                   IsEnabled="True"
-                                  IsChecked="{Binding Path=Param.IsBrClConsideredForIsotopes}" 
-                                  Margin="5,10,0,0" Height="25" Width="25">
-
+                                  IsChecked="{Binding Path=Param.IsBrClConsideredForIsotopes}">
                             <ToolTipService.ToolTip>
                                 <ToolTip Content="If checked, the criterion of 'monotonically decreasing ions' is not used for isotope recognitions." />
                             </ToolTipService.ToolTip>
-
                         </CheckBox>
+                    </ui:LabeledContent>
+                </StackPanel>
 
-                    </StackPanel>
-
-                    <StackPanel Orientation="Vertical" Grid.Column="2" Margin="0, 235, 0,0">
-                        
-                    </StackPanel>
-                
-                    <Label Content="Multithreading" FontStyle="Italic" Margin="10,300,0,0" />
-
-                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="20, 325, 0,0">
-                        <Label Content="Number of threads:" Height="30" VerticalContentAlignment="Center"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Vertical" Grid.Column="1" Margin="0, 325, 0,0">
-                        <TextBox Name="TextBox_NumThreads" 
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                 HorizontalAlignment="Stretch" 
-                                 HorizontalContentAlignment="Right"
-                                 Height="25" Margin="5,2.5,5,2.5">
+                <Label Content="Multithreading" FontStyle="Italic"/>
+                <StackPanel Margin="10,0">
+                    <ui:LabeledContent PrependLabel="Number of threads:">
+                        <TextBox Name="TextBox_NumThreads">
                             <TextBox.Text>
                                 <Binding Path="Param.NumThreads" 
                                          StringFormat="D"
@@ -246,11 +230,9 @@
                                 <ToolTip Content="This is one of parameters for peak detections. 1-2 is better for a laptop." />
                             </ToolTipService.ToolTip>
                         </TextBox>
-
-                    </StackPanel>
-
-                </Grid>
-            </Expander>
-        </Grid>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </StackPanel>
+        </Expander>
     </Grid>
 </UserControl>

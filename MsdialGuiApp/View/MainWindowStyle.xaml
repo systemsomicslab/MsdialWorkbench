@@ -7,6 +7,7 @@
     <mvvm:PercentSliderToLabelConverter x:Key="sliderToLabelConverter" />
     -->
     <converter:DoubleToStringConverter x:Key="doubleToStringConverter" />
+    <BooleanToVisibilityConverter x:Key="boolean2visibility"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>

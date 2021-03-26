@@ -45,7 +45,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
             var expects = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -95,7 +95,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 expects[i].AlignmentID = expects[i].MasterAlignmentID = i;
             }
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -146,7 +146,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 expects[i].AlignmentID = expects[i].MasterAlignmentID = i;
             }
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
@@ -197,7 +197,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 expects[i].AlignmentID = expects[i].MasterAlignmentID = i;
             }
 
-            var actuals = refiner.Refine(alignments);
+            (var actuals, _) = refiner.Refine(alignments);
 
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
