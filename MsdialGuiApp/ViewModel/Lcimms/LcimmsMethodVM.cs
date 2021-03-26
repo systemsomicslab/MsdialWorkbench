@@ -39,11 +39,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public LcimmsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) : base(serializer) {
             Storage = storage;
 
-            // mspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-            // textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
+            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
 
-            // mspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-            // textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
+            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             analysisFilesView = CollectionViewSource.GetDefaultView(AnalysisFiles);
@@ -184,11 +184,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
             Storage.MspDB = analysisParamSetVM.MspDB;
-            // mspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-            // mspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             Storage.TextDB = analysisParamSetVM.TextDB;
-            // textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
-            // textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
+            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
+            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
             return true;
         }
 
