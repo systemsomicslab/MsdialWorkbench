@@ -93,19 +93,19 @@ namespace CompMs.MspGenerator
                             //sphMass = sphMass + MassDictionary.OxygenMass;
                         }
 
-                        if (lipidClass.Contains('A'))
+                        if (lipidClass.Contains("_A"))
                         {
                             if (AcylChainDic.AcylChainAlphaOxDictionary.ContainsKey(chainArray[1]) == false) { continue; }
                             acylSmiles = new List<string>(AcylChainDic.AcylChainAlphaOxDictionary[chainArray[1]])[3];
                             acylOx = acylOx + 1;
                         }
-                        else if (lipidClass.Contains('B'))
+                        else if (lipidClass.Contains("_B"))
                         {
                             if (AcylChainDic.AcylChainBetaOxDictionary.ContainsKey(chainArray[1]) == false) { continue; }
                             acylSmiles = new List<string>(AcylChainDic.AcylChainBetaOxDictionary[chainArray[1]])[3];
                             acylOx = acylOx + 1;
                         }
-                        else if (lipidClass.Contains('N'))
+                        else if (lipidClass.Contains("_N"))
                         {
                             if (AcylChainDic.FattyAcylChainDictionary.ContainsKey(chainArray[1]) == false) { continue; }
                             acylSmiles = new List<string>(AcylChainDic.FattyAcylChainDictionary[chainArray[1]])[3];
@@ -422,6 +422,41 @@ namespace CompMs.MspGenerator
                                 CermideFragmentation.GM1Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
                                 break;
 
+                            case "GQ1b":
+                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                if (adduct.IonMode == "Negative")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.GQ1bFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+
+                            case "GT1b":
+                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                if (adduct.IonMode == "Negative")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.GT1bFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+                            case "NGcGM3":
+                                name = lipidClass + " " + chainArray[0] + ";2O/" + chainArray[1];
+                                shortName = lipidClass + " " + totalChain + ":" + totalBond + ";2O";
+                                if (adduct.IonMode == "Negative")
+                                {
+                                    if (shortNameList.Contains(shortName)) { continue; }
+                                    shortNameList.Add(shortName);
+                                    name = shortName;
+                                }
+                                CermideFragmentation.NGcGM3Fragment(fragmentList, adduct.AdductIonName, meta.ExactMass, sphCarbon, sphDouble, acylCarbon, acylDouble, acylOx);
+                                break;
+
                             case "MIPC":
                                 name = "MIPC " + chainArray[0] + ";3O/" + chainArray[1] + ";(2OH)";
                                 shortName = "MIPC " + totalChain + ":" + totalBond + ";4O";
@@ -532,7 +567,7 @@ namespace CompMs.MspGenerator
 
                         //
                         var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
-                        if (adduct.AdductIonName == "[M-2H]2-")
+                        if (adduct.AdductIonName == "[M-2H]2-" || adduct.AdductIonName == "[M+2NH4]2+" || adduct.AdductIonName == "[M+2H]2+")
                         {
                             precursorMZ = Math.Round((meta.ExactMass + adduct.AdductIonMass) / 2, 4);
                         }
