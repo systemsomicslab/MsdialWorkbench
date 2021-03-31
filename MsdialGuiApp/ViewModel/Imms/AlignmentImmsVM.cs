@@ -133,9 +133,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
         public bool CcsChecked => ReadDisplayFilters(DisplayFilter.CcsMatched);
 
-        internal DisplayFilter DisplayFilters {
+        public DisplayFilter DisplayFilters {
             get => displayFilters;
-            set {
+            internal set {
                 if (SetProperty(ref displayFilters, value))
                     Ms1Spots?.Refresh();
             }
