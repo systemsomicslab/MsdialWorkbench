@@ -142,7 +142,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly string spectraFile = string.Empty;
 
         
-        private static ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
         private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(Target)) {

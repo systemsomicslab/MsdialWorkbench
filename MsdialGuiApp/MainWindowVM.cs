@@ -144,10 +144,12 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> openProjectCommand;
 
         private void OpenProject(Window owner) {
-            var ofd = new OpenFileDialog();
-            ofd.Filter = "MTD2 file(*.mtd2)|*.mtd2|All(*)|*";
-            ofd.Title = "Import a project file";
-            ofd.RestoreDirectory = true;
+            var ofd = new OpenFileDialog
+            {
+                Filter = "MTD2 file(*.mtd2)|*.mtd2|All(*)|*",
+                Title = "Import a project file",
+                RestoreDirectory = true
+            };
 
             if (ofd.ShowDialog() == true) {
                 Mouse.OverrideCursor = Cursors.Wait;
@@ -159,7 +161,7 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                Storage = loadProjectFromPath(ofd.FileName);
+                Storage = LoadProjectFromPath(ofd.FileName);
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -173,7 +175,7 @@ namespace CompMs.App.Msdial
         }
 
         // TODO: Move this method. MainWindowVM shouldn't know each analysis and alignment files.
-        private static MsdialDataStorage loadProjectFromPath(string projectfile) {
+        private static MsdialDataStorage LoadProjectFromPath(string projectfile) {
             var projectFolder = System.IO.Path.GetDirectoryName(projectfile);
 
             var serializer = SerializerResolver.ResolveMsdialSerializer(projectfile);
@@ -186,30 +188,30 @@ namespace CompMs.App.Msdial
 
             storage.ParameterBase.ProjectFolderPath = projectFolder;
 
-            storage.ParameterBase.ProjectFilePath = replaceFolderPath(storage.ParameterBase.ProjectFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.ProjectFilePath = ReplaceFolderPath(storage.ParameterBase.ProjectFilePath, previousFolder, projectFolder);
             // storage.ParameterBase.MspFilePath = replaceFolderPath(storage.ParameterBase.MspFilePath, previousFolder, projectFolder);
-            storage.ParameterBase.TextDBFilePath = replaceFolderPath(storage.ParameterBase.TextDBFilePath, previousFolder, projectFolder);
-            storage.ParameterBase.IsotopeTextDBFilePath = replaceFolderPath(storage.ParameterBase.IsotopeTextDBFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.TextDBFilePath = ReplaceFolderPath(storage.ParameterBase.TextDBFilePath, previousFolder, projectFolder);
+            storage.ParameterBase.IsotopeTextDBFilePath = ReplaceFolderPath(storage.ParameterBase.IsotopeTextDBFilePath, previousFolder, projectFolder);
 
             foreach (var file in storage.AnalysisFiles) {
-                file.AnalysisFilePath = replaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
-                file.DeconvolutionFilePath = replaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
-                file.PeakAreaBeanInformationFilePath = replaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
-                file.RiDictionaryFilePath = replaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
+                file.AnalysisFilePath = ReplaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
+                file.DeconvolutionFilePath = ReplaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
+                file.PeakAreaBeanInformationFilePath = ReplaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
+                file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
 
-                file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => replaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
+                file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
             }
 
             foreach (var file in storage.AlignmentFiles) {
-                file.FilePath = replaceFolderPath(file.FilePath, previousFolder, projectFolder);
-                file.EicFilePath = replaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
-                file.SpectraFilePath = replaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
+                file.FilePath = ReplaceFolderPath(file.FilePath, previousFolder, projectFolder);
+                file.EicFilePath = ReplaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
+                file.SpectraFilePath = ReplaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
             }
 
             return storage;
         }
 
-        private static string replaceFolderPath(string path, string previous, string current) {
+        private static string ReplaceFolderPath(string path, string previous, string current) {
             if (string.IsNullOrEmpty(path))
                 return path;
             if (path.StartsWith(previous))
@@ -236,10 +238,12 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> saveAsProjectCommand;
 
         private static void SaveAsProject(Window owner, MethodVM methodVM, MsdialDataStorage storage) {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "MTD file(*.mtd2)|*.mtd2";
-            sfd.Title = "Save project dialog";
-            sfd.InitialDirectory = storage.ParameterBase.ProjectFolderPath;
+            var sfd = new SaveFileDialog
+            {
+                Filter = "MTD file(*.mtd2)|*.mtd2",
+                Title = "Save project dialog",
+                InitialDirectory = storage.ParameterBase.ProjectFolderPath
+            };
 
             if (sfd.ShowDialog() == true) {
                 if (System.IO.Path.GetDirectoryName(sfd.FileName) != storage.ParameterBase.ProjectFolderPath) {
@@ -269,10 +273,12 @@ namespace CompMs.App.Msdial
 
         private static void SaveParameter(Window owner, MsdialDataStorage storage) {
             // TODO: implement process when parameter save failed.
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "MED file(*.med)|*.med";
-            sfd.Title = "Save file dialog";
-            sfd.InitialDirectory = storage.ParameterBase.ProjectFolderPath;
+            var sfd = new SaveFileDialog
+            {
+                Filter = "MED file(*.med)|*.med",
+                Title = "Save file dialog",
+                InitialDirectory = storage.ParameterBase.ProjectFolderPath
+            };
 
             if (sfd.ShowDialog() == true) {
                 Mouse.OverrideCursor = Cursors.Wait;

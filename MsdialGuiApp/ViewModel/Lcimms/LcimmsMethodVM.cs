@@ -109,7 +109,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             // Run Alignment
             if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Alignment)) {
-                if (!ProcessAlignment(window, model.Storage))
+                if (!ProcessAlignment(window))
                     return -1;
             }
 
@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return true;
         }
 
-        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+        private bool ProcessAlignment(Window owner) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,

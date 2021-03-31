@@ -108,7 +108,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         #region Field
 
-        private ChromatogramPeakFeature innerModel;
+        private readonly ChromatogramPeakFeature innerModel;
         #endregion
 
         static ChromatogramPeakFeatureVM() {
