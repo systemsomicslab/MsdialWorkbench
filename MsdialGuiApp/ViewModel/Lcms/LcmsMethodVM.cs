@@ -22,19 +22,6 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    [Flags]
-    enum DisplayFilter : uint {
-        Unset = 0x0,
-        RefMatched = 0x1,
-        Suggested = 0x2,
-        Unknown = 0x4,
-        Ms2Acquired = 0x8,
-        MolecularIon = 0x10,
-        Blank = 0x20,
-        UniqueIons = 0x40,
-
-        Annotates = RefMatched | Suggested | Unknown,
-    }
     public class LcmsMethodVM : MethodVM {
         public AnalysisLcmsVM AnalysisVM {
             get => analysisVM;

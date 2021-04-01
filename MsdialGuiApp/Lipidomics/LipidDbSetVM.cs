@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Lipidomics
         }
 
         private LipidQueryBeanVM queryVM;
-        private ObservableCollection<LbmQueryVM> lbmQueryVMs;
+        private readonly ObservableCollection<LbmQueryVM> lbmQueryVMs;
         private ICollectionView lbmQueryView;
 
         public LipidDbSetVM(LipidQueryBean queryBean, IonMode ionMode) {
@@ -137,7 +137,7 @@ namespace CompMs.App.Msdial.Lipidomics
         private IonMode ionMode;
         private CollisionType collisionType;
         private SolventType solventType;
-        private LipidQueryBean innerModel;
+        private readonly LipidQueryBean innerModel;
 
         public LipidQueryBeanVM(LipidQueryBean innerModel) {
             IonMode = innerModel.IonMode;
@@ -166,7 +166,7 @@ namespace CompMs.App.Msdial.Lipidomics
 
         private bool isSelected;
 
-        private LbmQuery innerModel;
+        private readonly LbmQuery innerModel;
         public LbmQueryVM(LbmQuery innerModel) {
             this.innerModel = innerModel;
             LbmClass = innerModel.LbmClass;

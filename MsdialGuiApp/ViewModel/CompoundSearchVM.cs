@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.ViewModel
         private DelegateCommand searchCommand;
 
         private bool canSearch = false;
-        private static double EPS = 1e-10;
+        private static readonly double EPS = 1e-10;
         private bool CanSearch() {
             if (ParameterVM.Ms1Tolerance <= EPS || ParameterVM.Ms2Tolerance <= EPS)
                 return false;

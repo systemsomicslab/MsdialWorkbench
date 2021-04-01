@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.ViewModel
 {
     [Flags]
-    enum DisplayFilter : uint
+    public enum DisplayFilter : uint
     {
         Unset = 0x0,
         RefMatched = 0x1,

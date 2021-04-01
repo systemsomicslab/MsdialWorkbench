@@ -123,8 +123,15 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
+    <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
+    <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -175,6 +182,9 @@
     </Compile>
     <Compile Include="View\Lcimms\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
@@ -444,6 +454,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcimms\IdentificationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -751,8 +765,6 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

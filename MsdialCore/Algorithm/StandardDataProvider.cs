@@ -1,13 +1,11 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm
 {
-    class StandardDataProvider : BaseDataProvider
+    public class StandardDataProvider : BaseDataProvider
     {
         public StandardDataProvider(RawMeasurement rawObj) : base(rawObj) {
 

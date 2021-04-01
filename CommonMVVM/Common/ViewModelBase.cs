@@ -177,23 +177,13 @@ namespace Rfx.Riken.OsakaUniv
 
 namespace CompMs.CommonMVVM
 {
-    public class ViewModelBase : INotifyPropertyChanged
+    public class ViewModelBase : ValidatableBase
     {
+        [Obsolete("Please use HasErrors property of INotifyDataErrorInfo")]
         public bool HasViewError {
             get => hasViewError;
             set => SetProperty(ref hasViewError, value);
         }
         private bool hasViewError;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
-
-        protected bool SetProperty<T>(ref T prop, T value, [CallerMemberName]string propertyname = "") {
-            if (Equals(prop, value)) return false;
-            prop = value;
-            OnPropertyChanged(propertyname);
-            return true;
-        }
     }
 }
