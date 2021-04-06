@@ -123,9 +123,11 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
+    <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
@@ -143,6 +145,9 @@
     </Compile>
     <Compile Include="LC\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AlignmentPeakPlotView.xaml.cs">
+      <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -227,7 +232,7 @@
     <Compile Include="ViewModel\BarItem.cs" />
     <Compile Include="ViewModel\Chromatogram.cs" />
     <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
-    <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
+    <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
     <Compile Include="ViewModel\Lcms\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
@@ -241,9 +246,6 @@
     </Compile>
     <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Dims\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
@@ -401,6 +403,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\AlignmentPeakPlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ChartStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -498,10 +504,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\AlignmentEicView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\AlignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

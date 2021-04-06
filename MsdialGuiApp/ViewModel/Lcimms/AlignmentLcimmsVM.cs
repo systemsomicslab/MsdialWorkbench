@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System.ComponentModel;
@@ -22,6 +22,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public LcimmsAlignmentModel Model => model;
         private readonly LcimmsAlignmentModel model;
+
+        public AlignmentPeakPlotVM RtPlotVM => rtPlotVM;
+        private AlignmentPeakPlotVM rtPlotVM;
+
+        public AlignmentPeakPlotVM DriftPlotVM => driftPlotVM;
+        private AlignmentPeakPlotVM driftPlotVM;
 
         public ICollectionView Ms1Spots {
             get => ms1Spots;
@@ -70,7 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DisplayFilter displayFilters = 0;
 
         bool PeakFilter(object obj) {
-            if (obj is AlignmentSpotPropertyVM spot) {
+            if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
                     && MzFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
@@ -80,14 +86,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return false;
         }
 
-        bool AnnotationFilter(AlignmentSpotPropertyVM spot) {
+        bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched
                 || SuggestedChecked && spot.IsSuggested
                 || UnknownChecked && spot.IsUnknown;
         }
 
-        bool MzFilter(AlignmentSpotPropertyVM spot) {
+        bool MzFilter(AlignmentSpotPropertyModel spot) {
             return MassLower <= spot.MassCenter
                 && spot.MassCenter <= MassUpper;
         }

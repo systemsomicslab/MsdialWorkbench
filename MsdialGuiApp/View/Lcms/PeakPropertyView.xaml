@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Details"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type do:ChromatogramPeakFeatureVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vmdo:ChromatogramPeakFeatureVM}}"
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -18,7 +19,7 @@
     </UserControl.Resources>
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
                 <Grid>
 
                     <Grid.ColumnDefinitions>

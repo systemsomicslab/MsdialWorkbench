@@ -1,7 +1,5 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
@@ -13,9 +11,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.ViewModel.DataObj
+namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentSpotPropertyVM : ViewModelBase
+    public class AlignmentSpotPropertyModel : ViewModelBase
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -107,16 +105,16 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double KMR => NominalKM % KMNominalUnit;
         public Brush SpotColor { get; set; }
 
-        static AlignmentSpotPropertyVM() {
-            KMIupacUnit = CompMs.Common.DataObj.Property.AtomMass.hMass * 2 + CompMs.Common.DataObj.Property.AtomMass.cMass; // CH2
+        static AlignmentSpotPropertyModel() {
+            KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public AlignmentSpotPropertyVM(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class = null, bool coloredByOntology = false) {
+        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class = null, bool coloredByOntology = false) {
             this.innerModel = innerModel;
 
             if (id2class != null) {
-                 _ = SetBarItems(innerModel, id2class);  // TODO: error handling
+                _ = SetBarItems(innerModel, id2class);  // TODO: error handling
             }
             if (coloredByOntology) {
                 SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?
@@ -133,7 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             SpotColor.Freeze();
         }
 
-        private async Task SetBarItems(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class)  {
+        private async Task SetBarItems(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class) {
             BarItems = await Task.Run(() => innerModel.AlignedPeakProperties
             .GroupBy(peak => id2class[peak.FileID])
             .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })

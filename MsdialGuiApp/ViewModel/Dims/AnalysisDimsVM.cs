@@ -289,7 +289,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
                     && MetaboliteFilter(peak, metaboliteFilterKeywords)
-                    && CommentFilter(peak, commentFilterKeywords);
+                    && CommentFilter(peak, commentFilterKeywords)
+                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation);
             }
             return false;
         }
@@ -298,8 +299,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
-                || UnknownChecked && peak.IsUnknown
-                || ManuallyModifiedChecked && peak.InnerModel.IsManuallyModifiedForAnnotation;
+                || UnknownChecked && peak.IsUnknown;
         }
 
         bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {

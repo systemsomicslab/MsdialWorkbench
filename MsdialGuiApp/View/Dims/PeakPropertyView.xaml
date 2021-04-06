@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyModel}}"
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -26,7 +27,7 @@
 
     <ContentControl Content="{Binding Mode=OneWay}">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120" />
@@ -124,7 +125,7 @@
                 </Grid>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                 
                 <StackPanel>
                     <StackPanel.Resources>

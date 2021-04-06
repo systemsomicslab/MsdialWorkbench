@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
-            ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyVM(prop, param.FileID_ClassName)));
+            ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
             MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
         }
 
@@ -58,8 +58,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
         private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
 
-        public ObservableCollection<AlignmentSpotPropertyVM> Ms1Spots => ms1Spots;
-        private readonly ObservableCollection<AlignmentSpotPropertyVM> ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>();
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots => ms1Spots;
+        private readonly ObservableCollection<AlignmentSpotPropertyModel> ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
 
         public double MassMin => ms1Spots.Min(spot => spot.MassCenter);
         public double MassMax => ms1Spots.Max(spot => spot.MassCenter);
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private AlignmentResultContainer container;
 
-        public AlignmentSpotPropertyVM Target {
+        public AlignmentSpotPropertyModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value)) {
@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
         }
-        private AlignmentSpotPropertyVM target;
+        private AlignmentSpotPropertyModel target;
 
         public List<Chromatogram> EicChromatograms {
             get => eicChromatograms;
@@ -151,7 +151,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private CancellationTokenSource cts;
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyVM target) {
+        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target) {
             cts?.Cancel();
             var localCts = cts = new CancellationTokenSource();
 
@@ -168,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
         }
 
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyVM target, CancellationToken token = default) {
+        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target, CancellationToken token = default) {
             await Task.WhenAll(
                 LoadBarItemsAsync(target, token),
                 LoadEicAsync(target, token),
@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
            ).ConfigureAwait(false);
         }
 
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyVM target, CancellationToken token) {
+        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
             var barItems = new List<BarItem>();
             if (target != null) {
                 // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
@@ -191,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarItems = barItems;
         }
 
-        async Task LoadEicAsync(AlignmentSpotPropertyVM target, CancellationToken token) {
+        async Task LoadEicAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
             var eicChromatograms = new List<Chromatogram>();
             if (target != null) {
                 // maybe using file pointer is better
@@ -215,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             EicChromatograms = eicChromatograms;
         }
 
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyVM target, CancellationToken token) {
+        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
             var ms2Spectrum = new List<SpectrumPeak>();
             if (target != null) {
                 await Task.Run(() => {
@@ -229,7 +229,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Ms2Spectrum = ms2Spectrum;
         }
 
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyVM target, CancellationToken token) {
+        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();
             if (target != null) {
                 await Task.Run(() => {

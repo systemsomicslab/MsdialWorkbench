@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyModel}}"
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -35,7 +36,7 @@
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
 
-            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
 
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
@@ -137,7 +138,7 @@
 
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
 
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">

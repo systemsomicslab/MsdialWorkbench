@@ -1,10 +1,11 @@
-﻿using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -39,7 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
         private ICollectionView ms1Spots;
-        private ObservableCollection<AlignmentSpotPropertyVM> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>();
+        private ObservableCollection<AlignmentSpotPropertyModel> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
 
         public double MassMin => _ms1Spots.Min(spot => spot.MassCenter);
         public double MassMax => _ms1Spots.Max(spot => spot.MassCenter);
@@ -71,14 +72,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private AlignmentResultContainer container;
 
-        public AlignmentSpotPropertyVM Target {
+        public AlignmentSpotPropertyModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value))
                     SearchCompoundCommand.RaiseCanExecuteChanged();
             }
         }
-        private AlignmentSpotPropertyVM target;
+        private AlignmentSpotPropertyModel target;
 
         public List<Chromatogram> EicChromatograms {
             get => eicChromatograms;
@@ -214,23 +215,59 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
-            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyVM(prop, param.FileID_ClassName)));
+            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
             Ms1Spots = CollectionViewSource.GetDefaultView(_ms1Spots);
             MassLower = MassMin;
             MassUpper = MassMax;
 
             MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
 
-            PropertyChanged += OnTargetChanged;
+            var mzAxis = new ContinuousAxisManager
+            {
+                MinValue = MassMin,
+                MaxValue = MassMax,
+                ChartMargin = new Graphics.Core.Base.ChartMargin
+                {
+                    Left = 0.05, Right = 0.05
+                },
+            };
+
+            var kmdAxis = new ContinuousAxisManager
+            {
+                MinValue = -0.5,
+                MaxValue = 0.5,
+                ChartMargin = new Graphics.Core.Base.ChartMargin
+                {
+                    Left = 0.05, Right = 0.05
+                },
+            };
+
+            PlotViewModel = new AlignmentPeakPlotVM(
+                _ms1Spots,
+                mzAxis,
+                kmdAxis,
+                "MassCenter",
+                "KMD",
+                FileName,
+                "m/z",
+                "Kendrick mass defect");
+
+            PlotViewModel.PropertyChanged += OnTargetChanged;
         }
+
+        public AlignmentPeakPlotVM PlotViewModel {
+            get => plotViewModel;
+            private set => SetProperty(ref plotViewModel, value);
+        }
+        private AlignmentPeakPlotVM plotViewModel;
 
         private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(Target)) {
-                await OnTargetChanged(Target).ConfigureAwait(false);
+                await OnTargetChanged(PlotViewModel.Target).ConfigureAwait(false);
             }
         }
 
-        private async Task OnTargetChanged(AlignmentSpotPropertyVM target) {
+        private async Task OnTargetChanged(AlignmentSpotPropertyModel target) {
             await Task.WhenAll(
                 LoadBarItemsAsync(target),
                 LoadEicAsync(target),
@@ -239,7 +276,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
            ).ConfigureAwait(false);
         }
 
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target) {
             BarItems = new List<BarItem>();
             if (target == null)
                 return;
@@ -252,7 +289,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .ToList() ).ConfigureAwait(false);
         }
 
-        async Task LoadEicAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadEicAsync(AlignmentSpotPropertyModel target) {
             EicChromatograms = new List<Chromatogram>();
             if (target == null)
                 return;
@@ -275,7 +312,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }).ConfigureAwait(false);
         }
 
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target) {
             Ms2Spectrum = new List<SpectrumPeakWrapper>();
             if (target == null)
                 return;
@@ -287,7 +324,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }).ConfigureAwait(false);
         }
 
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target) {
             Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
             if (target == null)
                 return;
@@ -319,36 +356,36 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         bool PeakFilter(object obj) {
-            if (obj is AlignmentSpotPropertyVM spot) {
+            if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
                     && MzFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
                     && (!BlankFilterChecked || spot.IsBlankFiltered)
                     && MetaboliteFilter(spot, metaboliteFilterKeywords)
-                    && CommentFilter(spot, commentFilterKeywords);
+                    && CommentFilter(spot, commentFilterKeywords)
+                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation);
             }
             return false;
         }
 
-        bool AnnotationFilter(AlignmentSpotPropertyVM spot) {
+        bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched
                 || SuggestedChecked && spot.IsSuggested
-                || UnknownChecked && spot.IsUnknown
-                || ManuallyModifiedChecked && spot.innerModel.IsManuallyModifiedForAnnotation;
+                || UnknownChecked && spot.IsUnknown;
         }
 
-        bool MzFilter(AlignmentSpotPropertyVM spot) {
+        bool MzFilter(AlignmentSpotPropertyModel spot) {
             return MassLower <= spot.MassCenter
                 && spot.MassCenter <= MassUpper;
         }
 
-        bool CommentFilter(AlignmentSpotPropertyVM spot, IEnumerable<string> keywords) {
+        bool CommentFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
             return keywords.All(keyword => spot.Comment.Contains(keyword));
         }
 
-        bool MetaboliteFilter(AlignmentSpotPropertyVM spot, IEnumerable<string> keywords) {
+        bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
             return keywords.All(keyword => spot.Name.Contains(keyword));
         }
 

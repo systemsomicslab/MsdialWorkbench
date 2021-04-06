@@ -266,7 +266,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0);
+                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
+                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation);
             }
             return false;
         }

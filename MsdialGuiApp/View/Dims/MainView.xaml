@@ -5,10 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
@@ -219,7 +219,7 @@
                                     </MultiBinding>
                                 </commonview:PeakView.GraphTitle>
                                 <commonview:PeakView.LabelTemplate>
-                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                                    <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
                                                 <Style TargetType="TextBlock">
@@ -239,7 +239,27 @@
                         <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
                                  Header="Alignment spot viewer" 
                                  DataContext="{Binding AlignmentVM}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
-                            <local:AlignmentView />
+
+                            <commonview:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                <commonview:AlignmentPeakPlotView.LabelTemplate>
+                                    <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="9"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="ID #: "/>
+                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
+                                            <TextBlock Text="; "/>
+                                            <TextBlock Text="Mass[Da]: "/>
+                                            <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
+                                            <TextBlock Text=";"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </commonview:AlignmentPeakPlotView.LabelTemplate>
+                            </commonview:AlignmentPeakPlotView>
                         </TabItem>
 
                     </TabControl>
