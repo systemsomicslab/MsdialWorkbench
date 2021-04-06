@@ -252,7 +252,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 "m/z",
                 "Kendrick mass defect");
 
-            PlotViewModel.PropertyChanged += OnTargetChanged;
+            PlotViewModel.PropertyChanged += OnPlotViewModelTargetChanged;
+            PropertyChanged += OnTargetChanged;
         }
 
         public AlignmentPeakPlotVM PlotViewModel {
@@ -261,9 +262,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private AlignmentPeakPlotVM plotViewModel;
 
+        private void OnPlotViewModelTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PlotViewModel.Target)) {
+                Target = PlotViewModel.Target;
+            }
+        }
+
         private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(Target)) {
-                await OnTargetChanged(PlotViewModel.Target).ConfigureAwait(false);
+                await OnTargetChanged(Target).ConfigureAwait(false);
             }
         }
 

@@ -250,55 +250,24 @@
                                  Height="25"
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
 
-                                <commonview:AlignmentPeakPlotView DataContext="{Binding RtPlotVM}">
-                                    <commonview:AlignmentPeakPlotView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </commonview:AlignmentPeakPlotView.LabelTemplate>
-                                </commonview:AlignmentPeakPlotView>
-
-                                <commonview:AlignmentPeakPlotView DataContext="{Binding DriftPlotVM}">
-                                    <commonview:AlignmentPeakPlotView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                            <StackPanel>
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.ChromXs.Drift.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </commonview:AlignmentPeakPlotView.LabelTemplate>
-                                </commonview:AlignmentPeakPlotView>
-                            </Grid>
+                            <commonview:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                <commonview:AlignmentPeakPlotView.LabelTemplate>
+                                    <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="9"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </commonview:AlignmentPeakPlotView.LabelTemplate>
+                            </commonview:AlignmentPeakPlotView>
                         </TabItem>
 
                     </TabControl>

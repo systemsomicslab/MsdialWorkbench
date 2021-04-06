@@ -161,9 +161,6 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -426,10 +423,6 @@
     <Page Include="LC\MobilityView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Imms\AlignmentView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\CompoundDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>

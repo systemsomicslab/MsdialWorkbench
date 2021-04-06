@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -23,6 +24,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 {
     public class AlignmentImmsVM : AlignmentFileVM
     {
+        public AlignmentPeakPlotVM PlotViewModel {
+            get => plotViewModel;
+            set => SetProperty(ref plotViewModel, value);
+        }
+        private AlignmentPeakPlotVM plotViewModel;
+
         public ICollectionView Ms1Spots {
             get => ms1Spots;
             set {
@@ -185,7 +192,44 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
 
+            var timeAxis = new AutoContinuousAxisManager
+            {
+                ItemsSource = Ms1Spots,
+                ValuePropertyName = "TimesCenter",
+                ChartMargin = new Graphics.Core.Base.ChartMargin
+                {
+                    Left = 0.05, Right = 0.05
+                },
+            };
+
+            var mzAxis = new AutoContinuousAxisManager
+            {
+                ItemsSource = Ms1Spots,
+                ValuePropertyName = "MassCenter",
+                ChartMargin = new Graphics.Core.Base.ChartMargin
+                {
+                    Left = 0.05, Right = 0.05
+                },
+            };
+
+            PlotViewModel = new AlignmentPeakPlotVM(
+                _ms1Spots,
+                timeAxis,
+                mzAxis,
+                "TimesCenter",
+                "MassCenter",
+                FileName,
+                "Drift time [1/k0]",
+                "m/z");
+
+            PlotViewModel.PropertyChanged += OnPlotModelViewTargetChanged;
             PropertyChanged += OnTargetChanged;
+        }
+
+        private void OnPlotModelViewTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PlotViewModel.Target)) {
+                Target = PlotViewModel.Target;
+            }
         }
 
         private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
