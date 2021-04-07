@@ -124,6 +124,9 @@
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
+    <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
+    <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
+    <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
@@ -760,6 +763,8 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\Imms\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
