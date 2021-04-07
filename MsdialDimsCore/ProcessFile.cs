@@ -10,6 +10,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialDimsCore.Algorithm;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Common;
 using CompMs.MsdialDimsCore.MsmsAll;
@@ -103,7 +104,7 @@ namespace CompMs.MsdialDimsCore {
                     AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textDB, param.MspSearchParam, null, param.TargetOmics);
                 }
 
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
+                new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
 
                 var paifile = file.PeakAreaBeanInformationFilePath;
                 MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);

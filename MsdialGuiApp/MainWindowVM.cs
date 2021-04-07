@@ -90,6 +90,9 @@ namespace CompMs.App.Msdial
                     return new ViewModel.Dims.DimsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IMMS:
                     return new ViewModel.Imms.ImmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                case MachineCategory.LCIMMS:
+                    throw new NotImplementedException("Lcimms method is working now.");
+                    
             }
             throw new NotImplementedException("This method is not implemented");
         }

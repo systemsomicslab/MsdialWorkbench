@@ -50,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             analysisFilesView = CollectionViewSource.GetDefaultView(AnalysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
             alignmentFilesView = CollectionViewSource.GetDefaultView(AlignmentFiles);
+
+            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;
@@ -119,20 +121,38 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             get => ReadDisplayFilter(DisplayFilter.UniqueIons);
             set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
         }
+        public bool ManuallyModifiedChecked {
+            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
+            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
+        }
         private DisplayFilter displayFilters = DisplayFilter.Unset;
+
+        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(displayFilters)) {
+                if (AnalysisVM != null)
+                    AnalysisVM.DisplayFilters = displayFilters;
+                if (AlignmentVM != null)
+                    AlignmentVM.DisplayFilters = displayFilters;
+            }
+        }
 
         public override int InitializeNewProject(Window window) {
             // Set analysis param
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
+            var processOption = Storage.ParameterBase.ProcessOption;
             // Run Identification
-            if (!ProcessAnnotaion(window, Storage))
-                return -1;
+            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
+                if (!ProcessAnnotaion(window, Storage))
+                    return -1;
+            }
 
             // Run Alignment
-            if (!ProcessAlignment(window, Storage))
-                return -1;
+            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Alignment)) {
+                if (!ProcessAlignment(window, Storage))
+                    return -1;
+            }
 
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
 
@@ -140,7 +160,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialImmsParameter>((MsdialImmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new ImmsAnalysisParamSetVM((MsdialImmsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
             var apsw = new AnalysisParamSetForImmsWindow
             {
                 DataContext = analysisParamSetVM,
@@ -168,8 +188,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             mspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             mspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
             Storage.TextDB = analysisParamSetVM.TextDB;
-            textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam);
-            textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam);
+            textDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
+            textDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam);
             return true;
         }
 
@@ -203,12 +223,30 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private static bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
-            AlignmentProcessFactory factory = new ImmsAlignmentProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
+            var vm = new ProgressBarVM
+            {
+                IsIndeterminate = true,
+                Label = "Process alignment..",
+            };
+            var pbw = new ProgressBarWindow
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            pbw.Show();
+
+            var factory = new ImmsProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
+            AlignmentProcessFactory aFactory = factory.CreateAlignmentFactory();
             var alignmentFile = storage.AlignmentFiles.Last();
-            var aligner = factory.CreatePeakAligner();
+            var aligner = aFactory.CreatePeakAligner();
+            aligner.ProcessFactory = factory; // TODO: I'll remove this later.
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+
+            pbw.Close();
+
             return true;
         }
 
@@ -314,6 +352,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private void WriteDisplayFilter(DisplayFilter flag, bool set) {
             displayFilters.Write(flag, set);
+            OnPropertyChanged(nameof(displayFilters));
         }
     }
 }

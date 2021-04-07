@@ -30,6 +30,10 @@ namespace CompMs.Graphics.Core.Base
             return Value.CompareTo(other.Value);
         }
 
+        public override bool Equals(object obj) {
+            return (obj is AxisValue other) && other.Value == Value;
+        }
+
         public override string ToString() {
             return Value.ToString();
         }

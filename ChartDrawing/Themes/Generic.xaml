@@ -3,7 +3,8 @@
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart"
                     xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis"
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
-                    xmlns:ui="clr-namespace:CompMs.Graphics.UI">
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI"
+                    xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
     <!--FileOpenControl-->
     <Style TargetType="{x:Type control:FileOpenControl}">
@@ -110,16 +111,23 @@
                 <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
                     <Grid>
                         <Grid.Resources>
-                            <Style TargetType="TextBlock">
+                            <Style TargetType="TextBlock" x:Key="GraphTitle">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontSize" Value="18"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                            <Style TargetType="TextBlock" x:Key="AxisTitle">
                                 <Setter Property="FontFamily" Value="Calibri"/>
                                 <Setter Property="FontStyle" Value="Italic"/>
                                 <Setter Property="FontSize" Value="13"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>                           
+                            </Style>
                         </Grid.Resources>
 
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
                             <RowDefinition />
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="15"/>
@@ -129,36 +137,130 @@
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
+
+                        <TextBlock Name="GraphTitle"
+                                   Text="{TemplateBinding GraphTitle}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="1,0,0,1"
-                                Grid.Row="0" Grid.Column="2">
-                            <ContentPresenter/>
+                                Grid.Row="1" Grid.Column="2">
+                            <Border Background="{TemplateBinding Background}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="True"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                    behavior:MoveByDragBehavior.IsEnabled="True"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                <ContentPresenter/>
+                            </Border>
                         </Border>
 
                         <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
                                                     LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
-                                                    Grid.Row="1" Grid.RowSpan="2" Grid.Column="2"/>
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
                         <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
                                                   LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
-                                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                        <TextBlock Text="{TemplateBinding HorizontalTitle}"
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
-                                   Grid.Row="2" Grid.Column="2"/>
-                        <TextBlock Text="{TemplateBinding VerticalTitle}"
+                                   Grid.Row="3" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
-                                   Grid.Row="0" Grid.Column="0">
+                                   Grid.Row="1" Grid.Column="0">
                             <TextBlock.LayoutTransform>
-                                <TransformGroup>
-                                    <RotateTransform Angle="-90"/>
-                                    <TranslateTransform Y="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TextBlock}}"/>
-                                </TransformGroup>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:MultiChart}">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock" x:Key="GraphTitle">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontSize" Value="18"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                            <Style TargetType="TextBlock" x:Key="AxisTitle">
+                                <Setter Property="FontFamily" Value="Calibri"/>
+                                <Setter Property="FontStyle" Value="Italic"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Name="GraphTitle"
+                                   Text="{TemplateBinding GraphTitle}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,0,0,1"
+                                Grid.Row="1" Grid.Column="2">
+                            <Border Background="{TemplateBinding Background}"
+                                    behavior:ZoomByDragBehavior.IsEnabled="True"
+                                    behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                    behavior:MoveByDragBehavior.IsEnabled="True"
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                                <Grid IsItemsHost="True"/>
+                            </Border>
+                        </Border>
+
+                        <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="1,0,0,0"
+                                                    Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
+                        <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
+                                                  HorizontalAxis="{x:Null}"
+                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
+                                                  Margin="0,0,0,1"
+                                                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
                             </TextBlock.LayoutTransform>
                         </TextBlock>
                     </Grid>

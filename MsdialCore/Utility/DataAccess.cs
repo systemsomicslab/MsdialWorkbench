@@ -65,6 +65,12 @@ namespace CompMs.MsdialCore.Utility {
             return mes.SpectrumList;
         }
 
+        public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+                return rawDataAccess.ReadIonmobilityCalibrationInfo();
+            }
+        }
+
         // smoother
         public static List<ChromatogramPeak> GetSmoothedPeaklist(List<ChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var smoothedPeaklist = new List<ChromatogramPeak>();
@@ -243,7 +249,7 @@ namespace CompMs.MsdialCore.Utility {
             return startIndex;
         }
 
-        public static int GetScanStartIndexByRt(float focusedRt, float rtTol, List<RawSpectrum> spectrumList) {
+        public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
 
             var targetRt = focusedRt - rtTol;
             int startIndex = 0, endIndex = spectrumList.Count - 1;
@@ -374,7 +380,7 @@ namespace CompMs.MsdialCore.Utility {
             return chromPeaks;
         }
 
-        public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(List<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
+        public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
             double quantMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -555,7 +561,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
-        public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(List<RawSpectrum> spectrumList,
+        public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(IReadOnlyList<RawSpectrum> spectrumList,
            float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
 
             var startID = GetScanStartIndexByRt(rt, rtWidth * 0.5F, spectrumList);
@@ -848,7 +854,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static RawPeakElement[] AccumulateMS1Spectrum(List<RawSpectrum> spectra, double rtBegin, double rtEnd, int bin = 5) {
+        public static RawPeakElement[] AccumulateMS1Spectrum(IReadOnlyList<RawSpectrum> spectra, double rtBegin, double rtEnd, int bin = 5) {
             var factor = Math.Pow(10, 5);
             var dict = new Dictionary<long, double>();
             var counter = 0;
@@ -879,7 +885,7 @@ namespace CompMs.MsdialCore.Utility {
             return elements.OrderBy(n => n.Mz).ToArray();
         }
 
-        public static RawPeakElement[] AccumulateMS1Spectrum(List<RawSpectrum> spectra, int bin = 5) {
+        public static RawPeakElement[] AccumulateMS1Spectrum(IReadOnlyList<RawSpectrum> spectra, int bin = 5) {
             return AccumulateMS1Spectrum(spectra, double.MinValue, double.MaxValue, bin);
         }
 
@@ -1048,6 +1054,12 @@ namespace CompMs.MsdialCore.Utility {
 
         public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculeMsProperty(feature, reference, result, true);
+        }
+
+        public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
+            SetMoleculePropertyCore(feature, reference);
+            feature.AddAdductType(reference.AdductType);
+            feature.Name = "w/o MS2: " + result.Name;
         }
 
         public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)

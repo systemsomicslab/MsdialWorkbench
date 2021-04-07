@@ -10,6 +10,7 @@
              xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
              xmlns:dendrogram="clr-namespace:CompMs.Graphics.Dendrogram;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              x:Name="ClustermapControl"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -67,6 +68,10 @@
                                 HorizontalPropertyName="FileId"
                                 VerticalPropertyName="MetaboliteId"
                                 DegreePropertyName="Intensity"
+                                behavior:MoveByDragBehavior.IsEnabled="True"
+                                behavior:ZoomByDragBehavior.IsEnabled="True"
+                                behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                 Grid.Column="3" Grid.Row="2"
                                 ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}" >
             <heatmap:HeatmapControl.ToolTip>
@@ -94,6 +99,10 @@
                                       FlippedY="True"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
+                                      behavior:MoveByDragBehavior.IsEnabled="True"
+                                      behavior:ZoomByDragBehavior.IsEnabled="True"
+                                      behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                      behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                       Margin="0,5,0,0"
                                       Grid.Column="3" Grid.Row="0" />
         <dendrogram:DendrogramControl x:Name="metabolite_dendrogram"
@@ -105,6 +114,10 @@
                                       RangeY="{Binding Range, Source={StaticResource MetaboliteDendrogramAxis}}"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
+                                      behavior:MoveByDragBehavior.IsEnabled="True"
+                                      behavior:ZoomByDragBehavior.IsEnabled="True"
+                                      behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                      behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                       Margin="0,0,10,0"
                                       Grid.Column="5" Grid.Row="2">
             <dendrogram:DendrogramControl.LayoutTransform>

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Imms
+namespace CompMs.App.Msdial.View.Lcimms
 {
     /// <summary>
-    /// Interaction logic for MobilityView.xaml
+    /// Interaction logic for DataCollectionView.xaml
     /// </summary>
-    public partial class MobilityView : UserControl
+    public partial class DataCollectionView : UserControl
     {
-        public MobilityView() {
+        public DataCollectionView() {
             InitializeComponent();
         }
     }

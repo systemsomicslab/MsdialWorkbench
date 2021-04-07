@@ -52,6 +52,7 @@
         </Ribbon.ApplicationMenu>
         <Ribbon.ContextualTabGroups>
             <RibbonContextualTabGroup Header="Tool" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
+            <RibbonContextualTabGroup Header="Graph" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
         </Ribbon.ContextualTabGroups>
         
         <RibbonTab Header="Processing"
@@ -227,6 +228,23 @@
                 <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
                 <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
                 <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Utility"
+                   ContextualTabGroupHeader="Graph">
+            <RibbonGroup Header="Focus">
+                <RibbonTextBox Label="Focused ID" Text="{Binding AnalysisVM.FocusID}">
+                    <RibbonTextBox.InputBindings>
+                        <KeyBinding Gesture="Enter"
+                                    Command="{Binding AnalysisVM.FocusByIDCommand}"/>
+                    </RibbonTextBox.InputBindings>
+                </RibbonTextBox>
+                <RibbonTextBox Label="Focused m/z" Text="{Binding AnalysisVM.FocusMz}">
+                    <RibbonTextBox.InputBindings>
+                        <KeyBinding Gesture="Enter"
+                                    Command="{Binding AnalysisVM.FocusByMzCommand}"/>
+                    </RibbonTextBox.InputBindings>
+                </RibbonTextBox>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"

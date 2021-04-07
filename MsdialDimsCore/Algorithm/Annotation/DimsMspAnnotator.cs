@@ -160,6 +160,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
             result.IsOtherLipidMatch = isOtherLipidMatch;
+            result.IsSpectrumMatch &= isLipidChainsMatch | isLipidClassMatch | isLipidPositionMatch | isOtherLipidMatch;
 
             if (result.IsOtherLipidMatch)
                 return;
@@ -168,8 +169,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
                 result.Name = reference.Name; // for others and splash etc in compoundclass
             }
-
-            if (molecule.SublevelLipidName == molecule.LipidName) {
+            else if (molecule.SublevelLipidName == molecule.LipidName) {
                 result.Name = molecule.LipidName;
             }
             else {

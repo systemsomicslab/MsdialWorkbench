@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using CompMs.Graphics.Behavior;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.GraphAxis
@@ -104,6 +104,10 @@ namespace CompMs.Graphics.GraphAxis
         public VerticalAxisControl()
         {
             MouseMove += VisualFocusOnMouseOver;
+            ZoomByDragBehavior.SetIsEnabled(this, true);
+            ZoomByWheelBehavior.SetIsEnabled(this, true);
+            MoveByDragBehavior.SetIsEnabled(this, true);
+            ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);
         }
 
         protected override void Update()
@@ -146,7 +150,7 @@ namespace CompMs.Graphics.GraphAxis
                 var center = VerticalAxis.TranslateToRenderPoint(data.Center, FlippedY) * actualHeight;
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(actualWidth / 2, center) };
-                dv.Clip = new RectangleGeometry(new Rect(RenderSize));
+                // dv.Clip = new RectangleGeometry(new Rect(RenderSize));
                 var dc = dv.RenderOpen();
 
                 switch (data.TickType)

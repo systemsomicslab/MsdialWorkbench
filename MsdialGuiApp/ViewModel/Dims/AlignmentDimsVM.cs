@@ -147,6 +147,40 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DisplayFilter displayFilters = 0;
 
+        public string CommentFilterKeyword {
+            get => commentFilterKeyword;
+            set {
+                if (SetProperty(ref commentFilterKeyword, value)){
+                    if (!string.IsNullOrEmpty(commentFilterKeyword)) {
+                        commentFilterKeywords = commentFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        commentFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Spots?.Refresh();
+                }
+            }
+        }
+        private string commentFilterKeyword;
+        private List<string> commentFilterKeywords = new List<string>(0);
+
+        public string MetaboliteFilterKeyword {
+            get => metaboliteFilterKeyword;
+            set {
+                if (SetProperty(ref metaboliteFilterKeyword, value)) {
+                    if (!string.IsNullOrEmpty(metaboliteFilterKeyword)) {
+                        metaboliteFilterKeywords = metaboliteFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        metaboliteFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Spots?.Refresh();
+                }
+            }
+        }
+        private string metaboliteFilterKeyword;
+        private List<string> metaboliteFilterKeywords = new List<string>(0);
+
         private readonly AlignmentFileBean alignmentFile;
         private readonly List<long> seekPointers = new List<long>();
         private readonly ParameterBase param = null;
@@ -290,7 +324,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     && MzFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
-                    && (!BlankFilterChecked || spot.IsBlankFiltered);
+                    && (!BlankFilterChecked || spot.IsBlankFiltered)
+                    && MetaboliteFilter(spot, metaboliteFilterKeywords)
+                    && CommentFilter(spot, commentFilterKeywords);
             }
             return false;
         }
@@ -306,6 +342,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         bool MzFilter(AlignmentSpotPropertyVM spot) {
             return MassLower <= spot.MassCenter
                 && spot.MassCenter <= MassUpper;
+        }
+
+        bool CommentFilter(AlignmentSpotPropertyVM spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Comment.Contains(keyword));
+        }
+
+        bool MetaboliteFilter(AlignmentSpotPropertyVM spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Name.Contains(keyword));
         }
 
         public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound, CanSearchCompound));

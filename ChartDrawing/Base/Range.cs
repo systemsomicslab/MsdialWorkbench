@@ -12,13 +12,32 @@ namespace CompMs.Graphics.Core.Base
         public AxisValue Maximum { get; private set; }
 
         public Range(AxisValue minimum, AxisValue maximum) {
-            Minimum = minimum;
-            Maximum = maximum;
+            if (minimum <= maximum) {
+                Minimum = minimum;
+                Maximum = maximum;
+            }
+            else {
+                Minimum = 0;
+                Maximum = 0;
+            }
         }
 
         public bool Contains(AxisValue value)
         {
             return Minimum <= value && value <= Maximum;
+        }
+
+        public bool Contains(Range other)
+        {
+            return Contains(other.Minimum) && Contains(other.Maximum);
+        }
+
+        public Range Intersect(Range other) {
+            return new Range(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
+        }
+
+        public Range Union(Range other) {
+            return new Range(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
         }
     }
 

@@ -5,8 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
@@ -208,7 +211,37 @@
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}">
-                            <local:PeakView ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"/>
+                            <commonview:PeakView HorizontalAxis="{StaticResource ChromAxis}"
+                                                 VerticalAxis="{StaticResource MassAxis}"
+                                                 HorizontalProperty="ChromXValue"
+                                                 VerticalProperty="Mass"
+                                                 HorizontalTitle="Drift time [1/k0]"
+                                                 VerticalTitle="m/z">
+                                <commonview:PeakView.GraphTitle>
+                                    <MultiBinding Mode="OneWay" StringFormat="Spot ID: {0} Scan: {1} DT 1/k0: {2:N4} Mass m/z: {3:N5}">
+                                        <Binding Path="Target.InnerModel.MasterPeakID" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.MS1RawSpectrumIdTop" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.ChromXs.Value" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.Mass" Mode="OneWay"/>
+                                    </MultiBinding>
+                                </commonview:PeakView.GraphTitle>
+                                <commonview:PeakView.LabelTemplate>
+                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="9"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </commonview:PeakView.LabelTemplate>
+                            </commonview:PeakView>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
@@ -229,10 +262,9 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
-                                 <!--
-                            <eic:EicView DataContext="{Binding AnalysisVM}"
-                                         ChromAxis="{StaticResource ChromAxis}"/>
-                                         -->
+                            <commonview:EicView DataContext="{Binding AnalysisVM}"
+                                                ChromAxis="{StaticResource ChromAxis}"
+                                                ChromTitle="Drift time [1/k0]"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 

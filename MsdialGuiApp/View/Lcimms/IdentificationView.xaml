@@ -1,0 +1,340 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcimms.IdentificationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+             xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="800">
+    <d:DesingerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesingerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <validator:PositiveDoubleNumericValidation x:Key="PosValidator"/>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="Height" Value="25"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <Label Content="MSP file and MS/MS identification setting"
+                   FontStyle="Italic"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="10,0,0,0" />
+
+            <DockPanel VerticalAlignment="Center">
+                <Label Content="MSP file: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,5,5,5" DockPanel.Dock="Left"/>
+                <Button Name="Button_LibraryFilePathSelect" Content="Select"
+                        Command="{Binding MspCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Height="24" Width="60" Margin="5,0,5,0"
+                        DockPanel.Dock="Right">
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Now, MSP format is just acceptable." />
+                    </ToolTipService.ToolTip>
+                </Button>
+                <TextBox Name="TextBox_LibraryFilePath"
+                         Text="{Binding Path=Param.MspFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24"/>
+            </DockPanel>
+
+            <StackPanel Margin="20,0,0,0">
+                <ui:LabeledContent PrependLabel="Retention time tolerance:"
+                                   AppendLabel="min">
+                    <TextBox Name="TextBox_RetentionTimeLibrarySearchTolerance">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.RtTolerance"
+                                     UpdateSourceTrigger="LostFocus">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Ccs tolerance:"
+                                   AppendLabel="Ao^2">
+                    <TextBox Name="TextBox_CcsLibrarySearchTolerance">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.CcsTolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                                   AppendLabel="Da">
+                    <TextBox Name="TextBox_Ms1LibrarySearchTolerance">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.Ms1Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                                   AppendLabel="Da">
+                    <TextBox Name="TextBox_Ms2LibrarySearchTolerance">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.Ms2Tolerance"
+                                     ValidatesOnDataErrors="True"
+                                     UpdateSourceTrigger="LostFocus"
+                                     NotifyOnSourceUpdated="True">
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Identification score cut off:"
+                                   AppendLabel="%">
+                    <TextBox Name="TextBox_IdentificationScoreCutOff">
+                        <TextBox.Text>
+                            <Binding Path="MspSearchParam.TotalScoreCutoff"
+                                     UpdateSourceTrigger="LostFocus"
+                                     ValidatesOnDataErrors="True"
+                                     NotifyOnSourceUpdated="True">
+                                <Binding.Converter>
+                                    <converter:ToPercentageConverter />
+                                </Binding.Converter>
+                                <Binding.ValidationRules>
+                                    <StaticResource ResourceKey="PosValidator" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Use retention time for scoring:" IsEnabled="False">
+                    <CheckBox Name="CheckBox_IsUseRetentionForIdentificationScoring" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=MspSearchParam.IsUseTimeForAnnotationScoring}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="If checked, RT similarity is used for scoring candidates." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Use retention time for filtering:" IsEnabled="False">
+                    <CheckBox Name="CheckBox_IsUseRetentionForIdentificationFiltering" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=MspSearchParam.IsUseTimeForAnnotationFiltering}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="If checked, RT is used for filtering candidates out." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Use CCS for scoring:" IsEnabled="False">
+                    <CheckBox Name="CheckBox_IsUseCcsForIdentificationScoring" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=MspSearchParam.IsUseCcsForAnnotationScoring}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="If checked, CCS is used for scoring candidates." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Use CCS for filtering:" IsEnabled="False">
+                    <CheckBox Name="CheckBox_IsUseCcsForIdentificationFiltering" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=MspSearchParam.IsUseCcsForAnnotationFiltering}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="If checked, CCS is used for filtering candidates out." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Only report the top hit:">
+                    <CheckBox Name="CheckBox_OnlyReportTopHitForMspAnnotation" HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=Param.OnlyReportTopHitInMspSearch}" 
+                              VerticalAlignment="Center" Margin="5,0,0,0">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="One result having the top score will be reported as a result of the msp." />
+                        </ToolTipService.ToolTip>
+                    </CheckBox>
+                </ui:LabeledContent>
+            </StackPanel>
+        </StackPanel>
+
+        <Expander Header="Advanced"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  ExpandDirection="Down"
+                  Grid.Row="1">
+
+            <StackPanel>
+
+                <Label Content="Text file and post identification (retention time, drift time and accurate mass based) setting" FontStyle="Italic" 
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+
+                <DockPanel Margin="20,5,5,5">
+                    <Label Content="Text file:" DockPanel.Dock="Left"/>
+                    
+                    <Button Name="Button_PostIdentificationLibraryFilePathSelect"
+                            Content="Select"
+                            Command="{Binding TextDBFileSelectCommand}"
+                            VerticalAlignment="Center" Height="24" Width="60" Margin="5,0"
+                            DockPanel.Dock="Right">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="Text file should include a compound list consisting of metabolite name (first column), accurate mass (second column), and retention time (third). A row header is considered." />
+                        </ToolTipService.ToolTip>
+                    </Button>
+                    <TextBox Name="TextBox_PostIdentificationLibraryFilePath" 
+                             Text="{Binding Path=Param.TextDBFilePath, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+
+                <StackPanel Margin="20,0,0,0">
+                    <ui:LabeledContent PrependLabel="Ccs tolerance:"
+                                       AppendLabel="Ao^2">
+                        <TextBox Name="TextBox_CcsToleranceOfPostIdentification">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.Ms1Tolerance"
+                                         ValidatesOnDataErrors="True"
+                                         UpdateSourceTrigger="LostFocus"
+                                         NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Accurate mass tolerance:"
+                                       AppendLabel="Da">
+                        <TextBox Name="TextBox_AccurateMassToleranceOfPostIdentification">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.Ms1Tolerance"
+                                         ValidatesOnDataErrors="True"
+                                         UpdateSourceTrigger="LostFocus"
+                                         NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Identification score cut off:"
+                                       AppendLabel="%">
+                        <TextBox Name="TextBox_PostIdentificationScoreCutOff">
+                            <TextBox.Text>
+                                <Binding Path="TextDbSearchParam.TotalScoreCutoff"
+                                         ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnSourceUpdated="True">
+                                    <Binding.Converter>
+                                        <converter:ToPercentageConverter/>
+                                    </Binding.Converter>
+                                    <Binding.ValidationRules>
+                                        <StaticResource ResourceKey="PosValidator"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use retention time for scoring:" IsEnabled="False">
+                        <CheckBox Name="CheckBox_IsUseRetentionForIdentificationScoringOfPostIdentification" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=TextDbSearchParam.IsUseTimeForAnnotationScoring}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="If checked, RT similarity is used for scoring candidates." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use retention time for filtering:" IsEnabled="False">
+                        <CheckBox Name="CheckBox_IsUseRetentionForIdentificationFilteringOfPostIdentification" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=TextDbSearchParam.IsUseTimeForAnnotationFiltering}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="If checked, RT is used for filtering candidates out." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use CCS for scoring:" IsEnabled="False">
+                        <CheckBox Name="CheckBox_IsUseCcsForIdentificationScoringOfPostIdentification" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=TextDbSearchParam.IsUseCcsForAnnotationScoring}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="If checked, CCS is used for scoring candidates." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Use CCS for filtering:" IsEnabled="False">
+                        <CheckBox Name="CheckBox_IsUseCcsForIdentificationFilteringOfPostIdentification" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=TextDbSearchParam.IsUseCcsForAnnotationFiltering}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="If checked, CCS is used for filtering candidates out." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Only report the top hit:">
+                        <CheckBox Name="CheckBox_OnlyReportTopHitForPostAnnotation" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Path=Param.OnlyReportTopHitInTextDBSearch}" 
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="One result having the top score will be reported as a result of the post identification process." />
+                            </ToolTipService.ToolTip>
+                        </CheckBox>
+                    </ui:LabeledContent>
+                </StackPanel>
+
+                <StackPanel>
+                    <Label Content="Options" FontStyle="Italic" 
+                           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" />
+
+                    <StackPanel Margin="20,0,0,0">
+                        <ui:LabeledContent PrependLabel="Relative abundance cut off:"
+                                           AppendLabel="%">
+                            <TextBox Name="TextBox_RelativeAbundanceCutOff">
+                                <TextBox.Text>
+                                    <Binding Path="MspSearchParam.RelativeAmpCutoff" UpdateSourceTrigger="LostFocus" 
+                                             ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                        <Binding.Converter>
+                                            <converter:ToPercentageConverter />
+                                        </Binding.Converter>
+                                        <Binding.ValidationRules>
+                                            <validator:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="The peak less than defined-abundance will not be used for similarity calculations" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+                        </ui:LabeledContent>
+                    </StackPanel>
+                </StackPanel>
+                    
+            </StackPanel>
+        </Expander>
+
+    </Grid>
+</UserControl>

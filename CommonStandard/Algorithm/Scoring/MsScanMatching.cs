@@ -1144,6 +1144,15 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.GM1:
                     return LipidMsmsCharacterization.JudgeIfGM1(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GQ1b:
+                    return LipidMsmsCharacterization.JudgeIfGQ1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.GT1b:
+                    return LipidMsmsCharacterization.JudgeIfGT1b(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                case LbmClass.NGcGM3:
+                    return LipidMsmsCharacterization.JudgeIfNGcGM3(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.ST:
                     return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass, 

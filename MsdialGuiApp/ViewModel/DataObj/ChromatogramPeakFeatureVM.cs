@@ -73,7 +73,16 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 }
             }
         }
-        public string Comment => innerModel.Comment;
+        public string Comment {
+            get => innerModel.Comment;
+            set {
+                if (innerModel.Comment != value) {
+                    innerModel.Comment = value;
+                    OnPropertyChanged(nameof(Comment));
+                }
+            }
+        }
+
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
         public int IsotopeWeightNumber => innerModel.PeakCharacter.IsotopeWeightNumber;
         public bool IsRefMatched => innerModel.IsReferenceMatched;

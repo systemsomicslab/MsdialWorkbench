@@ -139,29 +139,42 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public bool IsReferenceMatched() {
-            if (MatchResults?.Representative is MsScanMatchResult result) {
-                if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
-                    return false;
-                if ((result.Priority & DataBasePriority.Unknown) == DataBasePriority.None)
-                    return true;
+            if (MatchResults.IsManuallyModifiedRepresentative) {
+                return !MatchResults.IsUnknown;
             }
-            if (TextDbID() >= 0) return true;
-            if (MspID() >= 0 && MSRawID2MspBasedMatchResult.Values.Count(n => n.IsSpectrumMatch) > 0) return true;
+            if (TextDbBasedMatchResult != null) {
+                return true;
+            }
+            if (MspBasedMatchResult() != null && MspBasedMatchResult().IsSpectrumMatch) {
+                return true;
+            }
             return false;
         }
 
         public bool IsAnnotationSuggested() {
-            if (IsReferenceMatched())
+            if (MatchResults.IsManuallyModifiedRepresentative) {
                 return false;
-            if (MatchResults?.Representative is MsScanMatchResult result) {
-                if ((result.Priority & (DataBasePriority.Manual | DataBasePriority.Unknown)) == (DataBasePriority.Manual | DataBasePriority.Unknown))
-                    return false;
             }
-            return MspID() >= 0 && !MSRawID2MspBasedMatchResult.Values.Any(n => n.IsSpectrumMatch);
+            else if (TextDbBasedMatchResult != null) {
+                return false;
+            }
+            else if (MspBasedMatchResult() != null && MspBasedMatchResult().IsSpectrumMatch) {
+                return false;
+            }
+            else if (MspBasedMatchResult() != null && MspBasedMatchResult().IsPrecursorMzMatch) {
+                return true;
+            }
+            return false;
         }
 
         public bool IsUnknown() {
-            return !IsReferenceMatched() && !IsAnnotationSuggested();
+            if (MatchResults.IsManuallyModifiedRepresentative && MatchResults.IsUnknown) {
+                return true;
+            }
+            if (MatchResults.IsUnknown && (TextDbBasedMatchResult == null || MspBasedMatchResult() == null)) {
+                return true;
+            }
+            return false;
         }
 
         [Key(47)]

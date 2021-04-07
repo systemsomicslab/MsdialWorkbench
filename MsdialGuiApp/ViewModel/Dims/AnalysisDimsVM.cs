@@ -46,16 +46,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private ICollectionView ms1Peaks;
 
-        public List<ChromatogramPeakWrapper> Eic {
-            get => eic;
-            set {
-                if (SetProperty(ref eic, value)) {
-                    OnPropertyChanged(nameof(EicMaxIntensity));
-                }
-            }
+        public List<ChromatogramPeakWrapper> Ms1Chromatogram {
+            get => ms1Chromatogram;
+            set => SetProperty(ref ms1Chromatogram, value);
         }
 
-        public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+        private List<ChromatogramPeakWrapper> ms1Chromatogram;
+
+        public List<ChromatogramPeakWrapper> Eic {
+            get => eic;
+            set => SetProperty(ref eic, value);
+        }
 
         private List<ChromatogramPeakWrapper> eic;
 
@@ -67,9 +68,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public List<ChromatogramPeakWrapper> FocusedEic {
             get => focusedEic;
-            set => SetProperty(ref focusedEic, value);
+            set {
+                if (SetProperty(ref focusedEic, value)) {
+                    OnPropertyChanged(nameof(EicMaxIntensity));
+                }
+            }
         }
         private List<ChromatogramPeakWrapper> focusedEic;
+        public double EicMaxIntensity => FocusedEic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
+
 
         public List<SpectrumPeakWrapper> Ms2Spectrum {
             get => ms2Spectrum;
@@ -169,6 +176,40 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public double AmplitudeOrderMin { get; }
         public double AmplitudeOrderMax { get; }
 
+        public string CommentFilterKeyword {
+            get => commentFilterKeyword;
+            set {
+                if (SetProperty(ref commentFilterKeyword, value)){
+                    if (!string.IsNullOrEmpty(commentFilterKeyword)) {
+                        commentFilterKeywords = commentFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        commentFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Peaks?.Refresh();
+                }
+            }
+        }
+        private string commentFilterKeyword;
+        private List<string> commentFilterKeywords = new List<string>(0);
+
+        public string MetaboliteFilterKeyword {
+            get => metaboliteFilterKeyword;
+            set {
+                if (SetProperty(ref metaboliteFilterKeyword, value)) {
+                    if (!string.IsNullOrEmpty(metaboliteFilterKeyword)) {
+                        metaboliteFilterKeywords = metaboliteFilterKeyword.Split().ToList();
+                    }
+                    else {
+                        metaboliteFilterKeywords = new List<string>(0);
+                    }
+                    Ms1Peaks?.Refresh();
+                }
+            }
+        }
+        private string metaboliteFilterKeyword;
+        private List<string> metaboliteFilterKeywords = new List<string>(0);
+
         public int FocusID {
             get => focusID;
             set => SetProperty(ref focusID, value);
@@ -230,6 +271,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 spectrumList = rawObj.SpectrumList;
             }
 
+            var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
+            Ms1Chromatogram = DataAccess.GetSmoothedPeaklist(
+                    DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, double.MinValue, double.MaxValue),
+                    param.SmoothingMethod, param.SmoothingLevel).Select(peak => new ChromatogramPeakWrapper(peak)).ToList();
+
             PropertyChanged += OnTargetChanged;
             PropertyChanged += OnFilterChanged;
 
@@ -241,7 +287,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0);
+                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
+                    && MetaboliteFilter(peak, metaboliteFilterKeywords)
+                    && CommentFilter(peak, commentFilterKeywords);
             }
             return false;
         }
@@ -257,6 +305,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
             return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
+        }
+
+        bool CommentFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Comment.Contains(keyword));
+        }
+
+        bool MetaboliteFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 
         void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
@@ -293,8 +349,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 return;
 
             var ms1Spectrum = spectrumList.FirstOrDefault(spectrum => spectrum.MsLevel == 1);
-            var leftMz = target.ChromXLeftValue * 2 - target.ChromXRightValue ?? double.MinValue;
-            var rightMz = target.ChromXRightValue * 2 - target.ChromXLeftValue ?? double.MaxValue;
+            var leftMz = target.ChromXValue - 10 ?? 0;
+            var rightMz = target.ChromXValue + 10 ?? 0;
             await Task.Run(() => {
                 Eic = DataAccess.GetSmoothedPeaklist(
                         DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum, leftMz, rightMz),

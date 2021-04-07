@@ -27,7 +27,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public GapFiller(ParameterBase param) : this(param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        public void GapFill(List<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+        public void GapFill(IDataProvider provider, AlignmentSpotProperty spot, int fileID) {
+            GapFill(provider.LoadMs1Spectrums(), spot, fileID);
+        }
+
+        public void GapFill(IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
@@ -67,7 +71,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         protected abstract List<ChromatogramPeak> GetPeaks(
-            List<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID,
+            IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID,
             SmoothingMethod smoothingMethod, int smoothingLevel);
 
         protected virtual (List<ChromatogramPeak>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {

@@ -3831,6 +3831,9 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.GD2: return "GD2";
                 case LbmClass.GD3: return "GD3";
                 case LbmClass.GM1: return "GM1";
+                case LbmClass.GT1b: return "GT1b";
+                case LbmClass.GQ1b: return "GQ1b";
+                case LbmClass.NGcGM3: return "NGcGM3";
                 case LbmClass.ST: return "ST";
 
 
@@ -4262,6 +4265,9 @@ namespace CompMs.Common.Lipidomics {
                 case "GD2": return LbmClass.GD2;
                 case "GD3": return LbmClass.GD3;
                 case "GM1": return LbmClass.GM1;
+                case "GT1b": return LbmClass.GT1b;
+                case "GQ1b": return LbmClass.GQ1b;
+                case "NGcGM3": return LbmClass.NGcGM3;
                 case "ST": return LbmClass.ST;
 
                 default: return LbmClass.Undefined;
@@ -4689,6 +4695,9 @@ namespace CompMs.Common.Lipidomics {
                 case "GD2": return "Sphingolipids";
                 case "GD3": return "Sphingolipids";
                 case "GM1": return "Sphingolipids";
+                case "GT1b": return "Sphingolipids";
+                case "GQ1b": return "Sphingolipids";
+                case "NGcGM3": return "Sphingolipids";
 
                 default: return "Unassigned lipid";
             }
