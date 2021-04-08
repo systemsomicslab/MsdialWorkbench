@@ -157,6 +157,10 @@ namespace CompMs.Graphics.Chart
         }
 
         LabelData[] UpdateHorizontalItems(LabelData[] datas) {
+            if (string.IsNullOrEmpty(HorizontalPropertyName)) {
+                return datas;
+            }
+
             var hPropertyInfo = dataType?.GetProperty(HorizontalPropertyName);
             var hAxis = HorizontalAxis;
             if (hPropertyInfo == null || hAxis == null || datas == null || !datas.Any())
@@ -190,6 +194,10 @@ namespace CompMs.Graphics.Chart
         }
 
         LabelData[] UpdateVerticalItems(LabelData[] datas) {
+            if (string.IsNullOrEmpty(VerticalPropertyName)) {
+                return datas;
+            }
+
             var vPropertyInfo = dataType?.GetProperty(VerticalPropertyName);
             var vAxis = VerticalAxis;
             if (vPropertyInfo == null || vAxis == null || datas == null || !datas.Any())

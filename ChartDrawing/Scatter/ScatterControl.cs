@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -49,21 +50,23 @@ namespace CompMs.Graphics.Scatter
                 collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
             }
 
-            chart.cv = null;
-            if (e.NewValue == null) return;
+            chart.cv = CollectionViewSource.GetDefaultView(e.NewValue);
+            var cv = chart.cv as CollectionView;
 
-            chart.cv = CollectionViewSource.GetDefaultView(e.NewValue) as CollectionView;
+            if (chart.cv.IsEmpty) {
+                chart.cv.Refresh();
+                if (chart.cv.IsEmpty) {
+                    chart.SetDrawingVisuals();
+                    chart.Update();
+                    return;
+                }
+            }
+            chart.dataType = cv.GetItemAt(0).GetType();
+
             chart.cv.CurrentChanged += chart.OnCurrentChanged;
             if (e.NewValue is INotifyCollectionChanged collectionNew) {
                 collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
             }
-
-            if (chart.cv.Count == 0) {
-                chart.SetDrawingVisuals();
-                chart.Update();
-                return;
-            }
-            chart.dataType = chart.cv.GetItemAt(0).GetType();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -395,7 +398,7 @@ namespace CompMs.Graphics.Scatter
         }
         private BrushGenerator generator;
 
-        private CollectionView cv;
+        private ICollectionView cv;
         private Type dataType;
         private AnnotatedDrawingVisual focus, select;
 

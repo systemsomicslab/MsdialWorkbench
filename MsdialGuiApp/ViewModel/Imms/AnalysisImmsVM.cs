@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -55,6 +56,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
+            var chromAxis = new ContinuousAxisManager
+            {
+                MinValue = ChromMin,
+                MaxValue = ChromMax,
+                ChartMargin = new ChartMargin(0.05),
+            };
+            var massAxis = new ContinuousAxisManager
+            {
+                MinValue = MassMin,
+                MaxValue = MassMax,
+                ChartMargin = new ChartMargin(0.05),
+            };
+            PlotViewModel = new AnalysisPeakPlotVM(new Model.AnalysisPeakPlotModel(_ms1Peaks, chromAxis, massAxis), "ChromXValue", "Mass", string.Empty, "Drift time [1/k0]", "m/z");
+
             PropertyChanged += OnFilterChanged;
 
             Target = _ms1Peaks.FirstOrDefault();
@@ -80,6 +95,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         private ICollectionView ms1Peaks;
+
+        public AnalysisPeakPlotVM PlotViewModel {
+            get => plotViewModel;
+            set => SetProperty(ref plotViewModel, value);
+        }
+        private AnalysisPeakPlotVM plotViewModel;
+
+        private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PlotViewModel.Target)) {
+                var peak = PlotViewModel.Target.InnerModel;
+                PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
+            }
+        }
 
         public List<SpectrumPeakWrapper> Ms1Spectrum
         {

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
@@ -16,14 +17,30 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AnalysisDimsVM(DimsAnalysisModel model) {
             this.model = model;
-            AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
-            AmplitudeOrderMax = model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
             Ms1Peaks = CollectionViewSource.GetDefaultView(model.Ms1Peaks);
 
+            AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
+            AmplitudeOrderMax = model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
             PropertyChanged += OnFilterChanged;
+
+            PlotViewModel = new AnalysisPeakPlotVM(model.PlotModel, "Mass", "KMD", string.Empty, "m/z", "Kendrick mass defect");
+            WeakEventManager<AnalysisPeakPlotModel, PropertyChangedEventArgs>.AddHandler(model.PlotModel, "PropertyChanged", UpdateGraphTitleOnTargetChanged);
         }
 
         private readonly DimsAnalysisModel model;
+
+        public AnalysisPeakPlotVM PlotViewModel {
+            get => plotViewModel;
+            set => SetProperty(ref plotViewModel, value);
+        }
+        private AnalysisPeakPlotVM plotViewModel;
+
+        private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(model.PlotModel.Target)) {
+                var peak = model.PlotModel.Target.InnerModel;
+                PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
+            }
+        }
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;

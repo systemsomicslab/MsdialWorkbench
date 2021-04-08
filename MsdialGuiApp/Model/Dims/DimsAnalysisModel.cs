@@ -5,6 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -19,6 +20,7 @@ using NSSplash.impl;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -47,12 +49,35 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics)));
+                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
             Peaks = peaks;
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
-            Target = ms1Peaks.FirstOrDefault();
+            Target = Ms1Peaks.FirstOrDefault();
+
+            var MassAxis = new ContinuousAxisManager
+            {
+                MinValue = MassMin,
+                MaxValue = MassMax,
+                ChartMargin = new ChartMargin
+                {
+                    Left = 0.05,
+                    Right = 0.05,
+                },
+            };
+            var KMDAxis = new ContinuousAxisManager
+            {
+                MinValue = -0.5,
+                MaxValue = 0.5,
+                ChartMargin = new ChartMargin
+                {
+                    Left = 0.05,
+                    Right = 0.05,
+                },
+            };
+
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, MassAxis, KMDAxis);
         }
 
         private readonly string peakAreaFile;
@@ -75,7 +100,10 @@ namespace CompMs.App.Msdial.Model.Dims
         private string fileName;
 
         public ObservableCollection<ChromatogramPeakFeatureVM> Ms1Peaks => ms1Peaks;
-        private readonly ObservableCollection<ChromatogramPeakFeatureVM> ms1Peaks;
+        private readonly ObservableCollection<ChromatogramPeakFeatureVM> ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>();
+
+        public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak.Mass);
+        public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak.Mass);
 
         public List<ChromatogramPeakFeature> Peaks { get; } = new List<ChromatogramPeakFeature>();
 
@@ -88,6 +116,29 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
         private ChromatogramPeakFeatureVM target;
+
+        public AnalysisPeakPlotModel PlotModel {
+            get => plotModel;
+            private set {
+                var newValue = value;
+                var oldValue = plotModel;
+                if (SetProperty(ref plotModel, value)) {
+                    if (oldValue != null) {
+                        oldValue.PropertyChanged -= OnPlotModelTargetChanged;
+                    }
+                    if (newValue != null) {
+                        newValue.PropertyChanged += OnPlotModelTargetChanged;
+                    }
+                }
+            }
+        }
+        private AnalysisPeakPlotModel plotModel;
+
+        private void OnPlotModelTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PlotModel.Target)) {
+                Target = PlotModel.Target;
+            }
+        }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
@@ -296,13 +347,13 @@ namespace CompMs.App.Msdial.Model.Dims
             var deconvolutionSplashKey = string.Empty;
 
             if (target != null) {
-                await Task.Run(() => {
-                    var idx = ms1Peaks.IndexOf(target);
-                    msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[idx]);
+                await Task.Run((Action)(() => {
+                    var idx = this.Ms1Peaks.IndexOf(target);
+                    msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[(int)idx]);
                     token.ThrowIfCancellationRequested();
                     ms2DecSpectrum = msdecResult.Spectrum;
                     deconvolutionSplashKey = CalculateSplashKey(msdecResult.Spectrum);
-                }, token).ConfigureAwait(false);
+                }), token).ConfigureAwait(false);
             }
 
             token.ThrowIfCancellationRequested();
@@ -358,7 +409,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }       
 
         public void FocusById(IAxisManager mzAxis, int id) {
-            var focus = ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == id);
+            var focus = Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == id);
             Target = focus;
             FocusByMz(mzAxis, focus.Mass);
         }

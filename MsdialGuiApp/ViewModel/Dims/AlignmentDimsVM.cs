@@ -21,6 +21,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MassUpper = model.MassMax;
 
             WeakEventManager<DimsAlignmentModel, PropertyChangedEventArgs>.AddHandler(model, "PropertyChanged", (s, e) => SearchCompoundCommand.RaiseCanExecuteChanged());
+
+            PlotViewModel = new AlignmentPeakPlotVM(Model.PlotModel, "MassCenter", "KMD", Model.FileName, "m/z", "Kendrick mass defect");
         }
 
         public DimsAlignmentModel Model { get; }

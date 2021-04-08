@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel
             string verticalTitle) {
 
             Model = model;
-            WeakEventManager<AlignmentPeakPlotModel, PropertyChangedEventArgs>.AddHandler(Model, "PropertyChanged", (s, e) => this.spots = null);
+            // WeakEventManager<AlignmentPeakPlotModel, PropertyChangedEventArgs>.AddHandler(Model, "PropertyChanged", (s, e) => this.spots = null);
 
             HorizontalProperty = horizontalProperty;
             VerticalProperty = verticalProperty;

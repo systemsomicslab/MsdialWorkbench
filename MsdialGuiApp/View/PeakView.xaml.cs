@@ -21,68 +21,6 @@ namespace CompMs.App.Msdial.View
     /// </summary>
     public partial class PeakView : UserControl
     {
-        public static readonly DependencyProperty HorizontalAxisProperty =
-            DependencyProperty.Register(nameof(HorizontalAxis), typeof(IAxisManager), typeof(PeakView));
-        
-        public IAxisManager HorizontalAxis {
-            get => (IAxisManager)GetValue(HorizontalAxisProperty);
-            set => SetValue(HorizontalAxisProperty, value);
-        }
-
-        public static readonly DependencyProperty HorizontalPropertyProperty
-            = DependencyProperty.Register(
-                nameof(HorizontalProperty), typeof(string), typeof(PeakView));
-
-        public string HorizontalProperty {
-            get => (string)GetValue(HorizontalPropertyProperty);
-            set => SetValue(HorizontalPropertyProperty, value);
-        }
-
-        public static readonly DependencyProperty HorizontalTitleProperty
-            = DependencyProperty.Register(
-                nameof(HorizontalTitle), typeof(string), typeof(PeakView));
-
-        public string HorizontalTitle {
-            get => (string)GetValue(HorizontalTitleProperty);
-            set => SetValue(HorizontalTitleProperty, value);
-        }
-
-        public static readonly DependencyProperty VerticalAxisProperty =
-            DependencyProperty.Register(nameof(VerticalAxis), typeof(IAxisManager), typeof(PeakView));
-
-        public IAxisManager VerticalAxis {
-            get => (IAxisManager)GetValue(VerticalAxisProperty);
-            set => SetValue(VerticalAxisProperty, value);
-        }
-
-        public static readonly DependencyProperty VerticalPropertyProperty
-            = DependencyProperty.Register(
-                nameof(VerticalProperty), typeof(string), typeof(PeakView));
-
-        public string VerticalProperty {
-            get => (string)GetValue(VerticalPropertyProperty);
-            set => SetValue(VerticalPropertyProperty, value);
-        }
-
-        public static readonly DependencyProperty VerticalTitleProperty
-            = DependencyProperty.Register(
-                nameof(VerticalTitle), typeof(string), typeof(PeakView));
-        
-        public string VerticalTitle {
-            get => (string)GetValue(VerticalTitleProperty);
-            set => SetValue(VerticalTitleProperty, value);
-        }
-
-
-        public static readonly DependencyProperty GraphTitleProperty
-            = DependencyProperty.Register(
-                nameof(GraphTitle), typeof(string), typeof(PeakView));
-
-        public string GraphTitle {
-            get => (string)GetValue(GraphTitleProperty);
-            set => SetValue(GraphTitleProperty, value);
-        }
-
         public static readonly DependencyProperty LabelTemplateProperty
             = DependencyProperty.Register(
                 nameof(LabelTemplate), typeof(DataTemplate), typeof(PeakView));

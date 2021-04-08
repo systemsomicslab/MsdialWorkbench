@@ -124,6 +124,7 @@
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
+    <Compile Include="Model\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
+    <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />

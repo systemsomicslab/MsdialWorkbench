@@ -100,21 +100,8 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <commonview:PeakView HorizontalAxis="{StaticResource ChromAxis}"
-                                                     VerticalAxis="{StaticResource MassAxis}"
-                                                     HorizontalProperty="ChromXValue"
-                                                     VerticalProperty="Mass"
-                                                     HorizontalTitle="Drift time [1/k0]"
-                                                     VerticalTitle="m/z"
+                                <commonview:PeakView DataContext="{Binding PlotViewModel}"
                                                      Grid.Column="0">
-                                    <commonview:PeakView.GraphTitle>
-                                        <MultiBinding Mode="OneWay" StringFormat="Spot ID: {0} Scan: {1} DT 1/k0: {2:N4} Mass m/z: {3:N5}">
-                                            <Binding Path="Target.InnerModel.MasterPeakID" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.MS1RawSpectrumIdTop" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.ChromXs.Value" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.Mass" Mode="OneWay"/>
-                                        </MultiBinding>
-                                    </commonview:PeakView.GraphTitle>
                                     <commonview:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
                                             <StackPanel Orientation="Horizontal">
@@ -132,21 +119,8 @@
                                         </DataTemplate>
                                     </commonview:PeakView.LabelTemplate>
                                 </commonview:PeakView>
-                                <commonview:PeakView HorizontalAxis="{StaticResource ChromAxis}"
-                                                     VerticalAxis="{StaticResource MassAxis}"
-                                                     HorizontalProperty="ChromXValue"
-                                                     VerticalProperty="Mass"
-                                                     HorizontalTitle="Drift time [1/k0]"
-                                                     VerticalTitle="m/z"
+                                <commonview:PeakView DataContext="{Binding PlotViewModel}"
                                                      Grid.Column="1">
-                                    <commonview:PeakView.GraphTitle>
-                                        <MultiBinding Mode="OneWay" StringFormat="Spot ID: {0} Scan: {1} DT 1/k0: {2:N4} Mass m/z: {3:N5}">
-                                            <Binding Path="Target.InnerModel.MasterPeakID" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.MS1RawSpectrumIdTop" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.ChromXs.Value" Mode="OneWay"/>
-                                            <Binding Path="Target.InnerModel.Mass" Mode="OneWay"/>
-                                        </MultiBinding>
-                                    </commonview:PeakView.GraphTitle>
                                     <commonview:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
                                             <StackPanel Orientation="Horizontal">

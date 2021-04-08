@@ -72,15 +72,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 },
             };
 
-            PlotViewModel = new AlignmentPeakPlotVM(
-                Ms1Spots,
-                mzAxis,
-                kmdAxis,
-                "MassCenter",
-                "KMD",
-                FileName,
-                "m/z",
-                "Kendrick mass defect");
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, mzAxis, kmdAxis);
         }
 
         public AlignmentResultContainer Container {
@@ -118,26 +110,26 @@ namespace CompMs.App.Msdial.Model.Dims
         public double MassMin => ms1Spots.Min(spot => spot.MassCenter);
         public double MassMax => ms1Spots.Max(spot => spot.MassCenter);
 
-        public AlignmentPeakPlotVM PlotViewModel {
-            get => plotViewModel;
+        public AlignmentPeakPlotModel PlotModel {
+            get => plotModel;
             private set {
                 var newValue = value;
-                var oldValue = plotViewModel;
-                if (SetProperty(ref plotViewModel, value)) {
+                var oldValue = plotModel;
+                if (SetProperty(ref plotModel, value)) {
                     if (oldValue != null) {
-                        oldValue.PropertyChanged -= OnPlotViewModelTargetChanged;
+                        oldValue.PropertyChanged -= OnPlotModelTargetChanged;
                     }
                     if (newValue != null) {
-                        newValue.PropertyChanged += OnPlotViewModelTargetChanged;
+                        newValue.PropertyChanged += OnPlotModelTargetChanged;
                     }
                 }
             }
         }
-        private AlignmentPeakPlotVM plotViewModel;
+        private AlignmentPeakPlotModel plotModel;
 
-        private void OnPlotViewModelTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(PlotViewModel.Target)) {
-                Target = PlotViewModel.Target;
+        private void OnPlotModelTargetChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(PlotModel.Target)) {
+                Target = PlotModel.Target;
             }
         }
 
