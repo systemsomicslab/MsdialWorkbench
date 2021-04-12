@@ -8640,7 +8640,7 @@ AdductIon adduct)
                     var diagnosticMz1 = diagnosticMz - 162.052833;
 
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                    // if (isClassIonFound != true) return null;
+                    if (isClassIonFound != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
                         var diagnosticMz5 = theoreticalMz - MassDiffDictionary.HydrogenMass - 44.998214;
@@ -11012,13 +11012,14 @@ AdductIon adduct)
                     {
                         return null;
                     }
-                    //// reject
-                    //var rejectFragment = diagnosticMz + 2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass;
-                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, rejectFragment, threshold);
-                    //if (isClassIon2Found == true)
-                    //{
-                    //    return null;
-                    //}
+                    // reject acylCainMass + 31
+                    var threshold2 = 50;
+                    var rejectFragment = diagnosticMz + 2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass;
+                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, rejectFragment, threshold2);
+                    if (isClassIon2Found == true)
+                    {
+                        return null;
+                    }
                     var candidates = new List<LipidMolecule>();
                     return returnAnnotationResult("GPNAE", LbmClass.GPNAE, string.Empty, theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 1);

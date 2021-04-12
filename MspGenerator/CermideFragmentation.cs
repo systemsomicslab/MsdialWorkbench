@@ -843,6 +843,11 @@ namespace CompMs.MspGenerator
                 var fra03comment = "[M-C6H10O5-H]-";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
 
+                var fra031mass = fra02mass - MassDictionary.C6H10O5 - MassDictionary.H2OMass;
+                var fra031int = 100;
+                var fra031comment = "[M-C6H10O5-H]- -H2O";
+                fragmentList.Add(fra031mass + "\t" + fra031int + "\t" + fra031comment);
+
                 var fra04mass = acylMass - MassDictionary.Proton + MassDictionary.NitrogenMass + 12 * 3 + MassDictionary.OxygenMass + MassDictionary.HydrogenMass * 7;
                 var fra04int = 700;
                 var fra04comment = "[FA+NC(C)CO-H]-";
@@ -1045,8 +1050,13 @@ namespace CompMs.MspGenerator
 
                 var fra03mass = fra02mass - MassDictionary.C6H10O5;
                 var fra03int = 200;
-                var fra03comment = "[M-C6H10O5-H2O-H]-";
+                var fra03comment = "[M-C6H10O5-H]-";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra031mass = fra02mass - MassDictionary.C6H10O5 - MassDictionary.H2OMass;
+                var fra031int = 100;
+                var fra031comment = "[M-C6H10O5-H]- -H2O";
+                fragmentList.Add(fra031mass + "\t" + fra031int + "\t" + fra031comment);
 
                 var fra04mass = acylMass - MassDictionary.Proton + MassDictionary.NitrogenMass + MassDictionary.HydrogenMass;
                 var fra04int = 100;
