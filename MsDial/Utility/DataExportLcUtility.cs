@@ -5248,7 +5248,8 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (libraryFileExtension == ".lbm" || libraryFileExtension == ".LBM" || libraryFileExtension == ".lbm2" || libraryFileExtension == ".LBM2")
                     {
-                        var lbmVer = libraryFileName.Substring(libraryFileName.IndexOf("-") + 1, libraryFileName.LastIndexOf("-") - libraryFileName.IndexOf("-") - 1);
+                        var lbmVer = libraryFileName;
+                        //var lbmVer = libraryFileName.Substring(libraryFileName.IndexOf("-") + 1, libraryFileName.LastIndexOf("-") - libraryFileName.IndexOf("-") - 1);
                         defaultDatabase = new List<string>() { "[,, MS-DIAL LipidsMsMs database, ]", "lbm", lbmVer, "file://" + projectProp.LibraryFilePath.Replace("\\", "/").Replace(" ", "%20") }; // 
                     }
                     else
