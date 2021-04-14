@@ -3,10 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
-             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyModel}}"
@@ -36,7 +34,7 @@
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
 
-            <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
 
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">

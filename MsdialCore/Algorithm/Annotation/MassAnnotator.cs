@@ -22,14 +22,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private readonly List<MoleculeMsReference> db;
         private readonly TargetOmics omics;
+        private readonly SourceType source;
+        private readonly string sourceKey;
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public MassAnnotator(IEnumerable<MoleculeMsReference> db, MsRefSearchParameterBase parameter, TargetOmics omics) {
+        public MassAnnotator(IEnumerable<MoleculeMsReference> db, MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey) {
             this.db = db.ToList();
             this.db.Sort(comparer);
             this.Parameter = parameter;
             this.omics = omics;
+            this.source = source;
+            this.sourceKey = sourceKey;
+            ReferObject = new DataBaseRefer(this.db, sourceKey);
         }
 
         public MsScanMatchResult Annotate(
@@ -38,7 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, sourceKey).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(
@@ -47,18 +52,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, sourceKey);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
             IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics) {
+            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, SourceType source, string sourceKey) {
 
             (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
-                var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics);
+                var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics, source, sourceKey);
                 result.LibraryIDWhenOrdered = i;
                 ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
@@ -73,13 +78,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, reference, reference.IsotopicPeaks, parameter, omics);
+            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, sourceKey);
         }
 
         private static MsScanMatchResult CalculateScoreCore(
             IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
-            MsRefSearchParameterBase parameter, TargetOmics omics) {
+            MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey) {
 
             var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
@@ -99,7 +104,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Priority = DataBasePriority.MspDB,
+                Source = source, SourceKey = sourceKey
             };
 
             var scores = new List<float> { };
@@ -116,13 +121,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return result;
         }
 
+        public IMatchResultRefer ReferObject { get; }
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (result.LibraryIDWhenOrdered >= 0 && result.LibraryIDWhenOrdered < db.Count) {
-                var msp = db[result.LibraryIDWhenOrdered];
-                if (msp.InChIKey == result.InChIKey)
-                    return msp;
-            }
-            return db.FirstOrDefault(msp => msp.InChIKey == result.InChIKey);
+            return ReferObject.Refer(result);
         }
 
         public List<MoleculeMsReference> Search(IMSProperty property, MsRefSearchParameterBase parameter = null) {

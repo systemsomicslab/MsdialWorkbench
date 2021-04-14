@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -34,11 +35,11 @@ namespace CompMs.App.Msdial.Model.Dims
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
 
-            var mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            var mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             mspAlignmentAnnotator = mspAnnotator;
             mspChromatogramAnnotator = mspAnnotator;
             // TODO: implement text db annotator for dims.
-            var textDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
+            var textDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
             textDBAlignmentAnnotator = textDBAnnotator;
             textDBChromatogramAnnotator = textDBAnnotator;
         }
@@ -117,12 +118,14 @@ namespace CompMs.App.Msdial.Model.Dims
             Storage.AlignmentFiles = AlignmentFiles.ToList();
 
             Storage.MspDB = MspDB;
-            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
+            var mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            mspChromatogramAnnotator = mspAnnotator;
+            mspAlignmentAnnotator = mspAnnotator;
 
             Storage.TextDB = TextDB;
-            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
-            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics);
+            var textAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            textDBChromatogramAnnotator = textAnnotator;
+            textDBAlignmentAnnotator = textAnnotator;
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {

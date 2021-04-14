@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model;
-using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using System.ComponentModel;
@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel
         }
         private string labelProperty;
 
-        public ChromatogramPeakFeatureVM Target {
+        public ChromatogramPeakFeatureModel Target {
             get => Model.Target;
             set {
                 if (Model.Target == value) {

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.App.Msdial.ViewModel;
+using System.Collections.Generic;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.Model.DataObj
 {
     public class Chromatogram
     {

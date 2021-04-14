@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model
     public class AnalysisPeakPlotModel : ValidatableBase
     {
         public AnalysisPeakPlotModel(
-            IList<ChromatogramPeakFeatureVM> spots,
+            IList<ChromatogramPeakFeatureModel> spots,
             IAxisManager horizontalAxis,
             IAxisManager verticalAxis) {
 
@@ -17,11 +17,11 @@ namespace CompMs.App.Msdial.Model
             VerticalAxis = verticalAxis;
         }
 
-        public IList<ChromatogramPeakFeatureVM> Spots {
+        public IList<ChromatogramPeakFeatureModel> Spots {
             get => spots;
             set => SetProperty(ref spots, value);
         }
-        private IList<ChromatogramPeakFeatureVM> spots;
+        private IList<ChromatogramPeakFeatureModel> spots;
 
         public IAxisManager HorizontalAxis {
             get => horizontalAxis;
@@ -35,10 +35,10 @@ namespace CompMs.App.Msdial.Model
         }
         private IAxisManager verticalAxis;
 
-        public ChromatogramPeakFeatureVM Target {
+        public ChromatogramPeakFeatureModel Target {
             get => target;
             set => SetProperty(ref target, value);
         }
-        private ChromatogramPeakFeatureVM target;
+        private ChromatogramPeakFeatureModel target;
     }
 }

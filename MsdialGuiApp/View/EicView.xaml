@@ -36,15 +36,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:SimpleChartControl HorizontalAxis="{Binding ChromAxis, ElementName=EicPlot}"
-                                  VerticalAxis="{StaticResource VerticalAxis}"
-                                  HorizontalTitle="{Binding ChromTitle, ElementName=EicPlot}"
-                                  VerticalTitle="Abundance"
-                                  BorderBrush="Black"
-                                  Background="WhiteSmoke"
-                                  Style="{StaticResource BasicChart}"
-                                  Grid.Row="0">
-            <chart:SimpleChartControl.GraphTitle>
+        <chart:MultiChart HorizontalAxis="{Binding ChromAxis, ElementName=EicPlot}"
+                          VerticalAxis="{StaticResource VerticalAxis}"
+                          HorizontalTitle="{Binding ChromTitle, ElementName=EicPlot}"
+                          VerticalTitle="Abundance"
+                          BorderBrush="Black"
+                          Background="WhiteSmoke"
+                          Style="{StaticResource OverlapChart}"
+                          Grid.Row="0">
+            <chart:MultiChart.GraphTitle>
                 <MultiBinding StringFormat="EIC chromatogram of {0:N4} tolerance [Da]: {1:F} Max intensity: {2:F0}" Mode="OneWay">
                     <Binding Path="Target.InnerModel.Mass"
                              Mode="OneWay"/>
@@ -55,42 +55,40 @@
                              Mode="OneWay"
                              RelativeSource="{RelativeSource AncestorType=UserControl}"/>
                 </MultiBinding>
-            </chart:SimpleChartControl.GraphTitle>
-            <Grid>
-                <spectrum:LineSpectrumControl ItemsSource="{Binding FocusedEic}"
-                                              HorizontalPropertyName="ChromXValue"
-                                              VerticalPropertyName="Intensity"
-                                              behavior:ZoomByDragBehavior.IsEnabled="False"
-                                              behavior:ZoomByWheelBehavior.IsEnabled="False"
-                                              behavior:MoveByDragBehavior.IsEnabled="False"
-                                              behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
-                    <spectrum:LineSpectrumControl.LinePen>
-                        <Pen Brush="Red" LineJoin="Miter" PresentationOptions:Freeze="True"/>
-                    </spectrum:LineSpectrumControl.LinePen>
-                </spectrum:LineSpectrumControl>
-                <area:AreaChartControl ItemsSource="{Binding PeakEic}"
-                                       HorizontalPropertyName="ChromXValue"
-                                       VerticalPropertyName="Intensity"
-                                       behavior:ZoomByDragBehavior.IsEnabled="False"
-                                       behavior:ZoomByWheelBehavior.IsEnabled="False"
-                                       behavior:MoveByDragBehavior.IsEnabled="False"
-                                       behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
-                    <area:AreaChartControl.AreaBrush>
-                        <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
-                    </area:AreaChartControl.AreaBrush>
-                </area:AreaChartControl>
-                <line:LineChartControl ItemsSource="{Binding Eic}"
-                                       HorizontalPropertyName="ChromXValue"
-                                       VerticalPropertyName="Intensity"
-                                       behavior:ZoomByDragBehavior.IsEnabled="False"
-                                       behavior:ZoomByWheelBehavior.IsEnabled="False"
-                                       behavior:MoveByDragBehavior.IsEnabled="False"
-                                       behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
-                    <line:LineChartControl.LinePen>
-                        <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
-                    </line:LineChartControl.LinePen>
-                </line:LineChartControl>
-            </Grid>
-        </chart:SimpleChartControl>
+            </chart:MultiChart.GraphTitle>
+            <spectrum:LineSpectrumControl ItemsSource="{Binding FocusedEic}"
+                                          HorizontalPropertyName="ChromXValue"
+                                          VerticalPropertyName="Intensity"
+                                          behavior:ZoomByDragBehavior.IsEnabled="False"
+                                          behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                          behavior:MoveByDragBehavior.IsEnabled="False"
+                                          behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
+                <spectrum:LineSpectrumControl.LinePen>
+                    <Pen Brush="Red" LineJoin="Miter" PresentationOptions:Freeze="True"/>
+                </spectrum:LineSpectrumControl.LinePen>
+            </spectrum:LineSpectrumControl>
+            <area:AreaChartControl ItemsSource="{Binding PeakEic}"
+                                   HorizontalPropertyName="ChromXValue"
+                                   VerticalPropertyName="Intensity"
+                                   behavior:ZoomByDragBehavior.IsEnabled="False"
+                                   behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                   behavior:MoveByDragBehavior.IsEnabled="False"
+                                   behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
+                <area:AreaChartControl.AreaBrush>
+                    <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
+                </area:AreaChartControl.AreaBrush>
+            </area:AreaChartControl>
+            <line:LineChartControl ItemsSource="{Binding Eic}"
+                                   HorizontalPropertyName="ChromXValue"
+                                   VerticalPropertyName="Intensity"
+                                   behavior:ZoomByDragBehavior.IsEnabled="False"
+                                   behavior:ZoomByWheelBehavior.IsEnabled="False"
+                                   behavior:MoveByDragBehavior.IsEnabled="False"
+                                   behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
+                <line:LineChartControl.LinePen>
+                    <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
+                </line:LineChartControl.LinePen>
+            </line:LineChartControl>
+        </chart:MultiChart>
     </Grid>
 </UserControl>

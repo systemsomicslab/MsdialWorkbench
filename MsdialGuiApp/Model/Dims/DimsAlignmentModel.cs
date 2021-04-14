@@ -294,12 +294,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
         MsScanMatchResult RetrieveMspMatchResult(AlignmentSpotProperty prop) {
             if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
-                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                if ((representative.Source & (SourceType.Unknown | SourceType.Manual)) == (SourceType.Unknown | SourceType.Manual))
                     return null;
                 if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
                     return null;
                 }
-                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                if ((representative.Source & SourceType.Unknown) == SourceType.None) {
                     return representative;
                 }
             }

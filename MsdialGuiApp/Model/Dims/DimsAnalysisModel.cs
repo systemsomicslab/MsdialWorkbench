@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -48,36 +49,50 @@ namespace CompMs.App.Msdial.Model.Dims
             Parameter = parameter;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
-            ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
+            ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
             Peaks = peaks;
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
-            Target = Ms1Peaks.FirstOrDefault();
-
-            var MassAxis = new ContinuousAxisManager
+            HorizontalAxis = new AxisData(new ContinuousAxisManager
             {
                 MinValue = MassMin,
                 MaxValue = MassMax,
-                ChartMargin = new ChartMargin
-                {
-                    Left = 0.05,
-                    Right = 0.05,
-                },
-            };
-            var KMDAxis = new ContinuousAxisManager
+                ChartMargin = new ChartMargin(0.05),
+            }, "Mass", "m/z");
+            VerticalAxis = new AxisData(new ContinuousAxisManager
             {
                 MinValue = -0.5,
                 MaxValue = 0.5,
-                ChartMargin = new ChartMargin
-                {
-                    Left = 0.05,
-                    Right = 0.05,
-                },
-            };
+                ChartMargin = new ChartMargin(0.05),
+            }, "KMD", "Kendrick mass defect");
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, HorizontalAxis.Axis, VerticalAxis.Axis);
 
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, MassAxis, KMDAxis);
+            var abundanceAxis = System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                new AxisData(
+                    new DependencyContinuousAxisManager
+                    {
+                        TargetAxisMapper = HorizontalAxis.Axis,
+                        TargetPropertyName = "ChromXValue",
+                        ValuePropertyName = "Intensity",
+                        TargetRange = HorizontalAxis.Axis.Range,
+                        ChartMargin = new ChartMargin(0, 0.05),
+                        Bounds = new Range(0d, 0d),
+                    },
+                    "Intensity",
+                    "Abundance"));
+
+            EicModel = new EicModel(
+                HorizontalAxis,
+                abundanceAxis,
+                provider,
+                Parameter,
+                ChromXType.Mz,
+                ChromXUnit.Mz,
+                Parameter.MassRangeBegin,
+                Parameter.MassRangeEnd);
+            EicModel.PropertyChanged += OnEicChanged;
         }
 
         private readonly string peakAreaFile;
@@ -99,15 +114,15 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string fileName;
 
-        public ObservableCollection<ChromatogramPeakFeatureVM> Ms1Peaks => ms1Peaks;
-        private readonly ObservableCollection<ChromatogramPeakFeatureVM> ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>();
+        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks => ms1Peaks;
+        private readonly ObservableCollection<ChromatogramPeakFeatureModel> ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>();
 
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak.Mass);
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak.Mass);
 
         public List<ChromatogramPeakFeature> Peaks { get; } = new List<ChromatogramPeakFeature>();
 
-        public ChromatogramPeakFeatureVM Target {
+        public ChromatogramPeakFeatureModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value)) {
@@ -115,7 +130,19 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
         }
-        private ChromatogramPeakFeatureVM target;
+        private ChromatogramPeakFeatureModel target;
+
+        public AxisData HorizontalAxis {
+            get => horizontalAxis;
+            set => SetProperty(ref horizontalAxis, value);
+        }
+        private AxisData horizontalAxis;
+
+        public AxisData VerticalAxis {
+            get => verticalAxis;
+            set => SetProperty(ref verticalAxis, value);
+        }
+        private AxisData verticalAxis;
 
         public AnalysisPeakPlotModel PlotModel {
             get => plotModel;
@@ -140,8 +167,19 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
+        public EicModel EicModel { get; }
+
+        private void OnEicChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(EicModel.Eic)) {
+                var axis = EicModel.VerticalData.Axis as ContinuousAxisManager;
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    ((DependencyContinuousAxisManager)EicModel.VerticalData.Axis).ItemsSource = EicModel.Eic
+                );
+            }
+        }
+
         private CancellationTokenSource cts;
-        public async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
+        public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
             cts?.Cancel();
             var localCts = cts = new CancellationTokenSource();
 
@@ -159,10 +197,10 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             await Task.WhenAll(
                 LoadMs1SpectrumAsync(target, token),
-                LoadEicAsync(target, token),
+                EicModel.LoadEicAsync(target, token),
                 LoadMs2SpectrumAsync(target, token),
                 LoadMs2DecSpectrumAsync(target, token),
                 LoadMs2ReferenceAsync(target, token)
@@ -187,7 +225,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string ms1SplashKey = string.Empty;
 
-        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms1Spectrum = new List<SpectrumPeak>();
             var ms1SplashKey = string.Empty;
 
@@ -204,69 +242,6 @@ namespace CompMs.App.Msdial.Model.Dims
             token.ThrowIfCancellationRequested();
             Ms1Spectrum = ms1Spectrum;
             Ms1SplashKey = ms1SplashKey;
-        }
-
-        public List<ChromatogramPeakWrapper> Eic {
-            get => eic;
-            set {
-                if (SetProperty(ref eic, value)) {
-                    OnPropertyChanged(nameof(EicMaxIntensity));
-                }
-            }
-        }
-        private List<ChromatogramPeakWrapper> eic;
-
-        public double EicMaxIntensity => Eic.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-
-        public List<ChromatogramPeakWrapper> PeakEic {
-            get => peakEic;
-            set => SetProperty(ref peakEic, value);
-        }
-        private List<ChromatogramPeakWrapper> peakEic;
-
-        public List<ChromatogramPeakWrapper> FocusedEic {
-            get => focusedEic;
-            set => SetProperty(ref focusedEic, value);
-        }
-        private List<ChromatogramPeakWrapper> focusedEic;
-
-        async Task LoadEicAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
-            var eic = new List<ChromatogramPeakWrapper>();
-            var peakEic = new List<ChromatogramPeakWrapper>();
-            var focusedEic = new List<ChromatogramPeakWrapper>();
-
-            if (target != null) {
-                await Task.Run(() => {
-                    eic = DataAccess.GetSmoothedPeaklist(
-                            DataAccess.GetMs1Peaklist(
-                                provider.LoadMs1Spectrums(),
-                                target.Mass, Parameter.CentroidMs1Tolerance,
-                                Parameter.IonMode,
-                                ChromXType.Drift, ChromXUnit.Msec),
-                            Parameter.SmoothingMethod, Parameter.SmoothingLevel)
-                    .Where(peak => peak != null)
-                    .Select(peak => new ChromatogramPeakWrapper(peak))
-                    .ToList();
-
-                    if (eic.Count == 0)
-                        return;
-
-                    token.ThrowIfCancellationRequested();
-
-                    peakEic = eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
-
-                    token.ThrowIfCancellationRequested();
-                    focusedEic = new List<ChromatogramPeakWrapper> {
-                        eic.Where(peak => peak.ChromXValue.HasValue)
-                           .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))
-                    };
-                }, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Eic = eic;
-            PeakEic = peakEic;
-            FocusedEic = focusedEic;
         }
 
         public List<SpectrumPeak> Ms2Spectrum {
@@ -317,7 +292,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DecSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Min();
         public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DecSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Max();
 
-        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2Spectrum = new List<SpectrumPeak>(); 
             var rawSplashKey = string.Empty;
 
@@ -342,7 +317,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public MSDecResult MsdecResult => msdecResult;
         private MSDecResult msdecResult = null;
 
-        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2DecSpectrum = new List<SpectrumPeak>();
             var deconvolutionSplashKey = string.Empty;
 
@@ -361,7 +336,7 @@ namespace CompMs.App.Msdial.Model.Dims
             DeconvolutionSplashKey = deconvolutionSplashKey;
         }
 
-        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();
 
             if (target != null) {
@@ -384,12 +359,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
         MsScanMatchResult RetrieveMspMatchResult(ChromatogramPeakFeature prop) {
             if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
-                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                if ((representative.Source & (SourceType.Unknown | SourceType.Manual)) == (SourceType.Unknown | SourceType.Manual))
                     return null;
                 if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
                     return null;
                 }
-                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                if ((representative.Source & SourceType.Unknown) == SourceType.None) {
                     return representative;
                 }
             }

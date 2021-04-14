@@ -15,7 +15,7 @@ namespace CompMs.MsdialCore.DataObj
         static MsScanMatchResultContainer() {
             UnknownResult = new MsScanMatchResult
             {
-                Priority = DataBasePriority.Unknown,
+                Source = SourceType.Unknown,
             };
         }
 
@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.DataObj
         public List<MsScanMatchResult> MatchResults { get; set; }
 
         [IgnoreMember]
-        public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore)) : null;
+        public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Source, result.TotalScore)) : null;
 
         [IgnoreMember]
         public bool IsMspBasedRepresentative => MSRawID2MspBasedMatchResult.Values.Contains(Representative);
@@ -39,9 +39,9 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public bool IsTextDbBasedRepresentative => TextDbBasedMatchResults.Contains(Representative);
         [IgnoreMember]
-        public bool IsManuallyModifiedRepresentative => (Representative.Priority & DataBasePriority.Manual) == DataBasePriority.Manual;
+        public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
         [IgnoreMember]
-        public bool IsUnknown => (Representative.Priority & DataBasePriority.Unknown) == DataBasePriority.Unknown;
+        public bool IsUnknown => (Representative.Source & SourceType.Unknown) == SourceType.Unknown;
 
         public void AddResult(MsScanMatchResult result) {
             MatchResults.Add(result);
@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public void RemoveManuallyResults() {
-            MatchResults.RemoveAll(result => (result.Priority & DataBasePriority.Manual) != DataBasePriority.None);
+            MatchResults.RemoveAll(result => (result.Source & SourceType.Manual) != SourceType.None);
         }
 
 

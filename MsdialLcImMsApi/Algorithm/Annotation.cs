@@ -111,7 +111,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
                         result = MsScanMatching.CompareIMMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
                     }
-                    result.Priority = DataBasePriority.MspDB;
+                    result.Source = SourceType.MspDB;
                     if (result.IsSpectrumMatch || result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
@@ -141,7 +141,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
                     var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
-                    result.Priority = DataBasePriority.TextDB;
+                    result.Source = SourceType.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);

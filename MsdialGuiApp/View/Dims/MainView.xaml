@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
@@ -207,7 +206,7 @@
                                  DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
                             <commonview:PeakView DataContext="{Binding PlotViewModel}">
                                 <commonview:PeakView.LabelTemplate>
-                                    <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
+                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
                                                 <Style TargetType="TextBlock">
@@ -259,7 +258,7 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
-                            <local:EicView DataContext="{Binding AnalysisVM}" MassAxis="{StaticResource MassAxis}"/>
+                            <local:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 

@@ -51,6 +51,10 @@ namespace CompMs.Graphics.Scatter
             }
 
             chart.cv = CollectionViewSource.GetDefaultView(e.NewValue);
+            if (chart.cv == null) {
+                return;
+            }
+
             var cv = chart.cv as CollectionView;
 
             if (chart.cv.IsEmpty) {

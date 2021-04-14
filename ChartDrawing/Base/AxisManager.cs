@@ -36,4 +36,13 @@ namespace CompMs.Graphics.Core.Base
         void Focus(object low, object high);
         List<LabelTickData> GetLabelTicks();
     }
+
+    public interface IAxisManager<T> : IAxisManager
+    {
+        AxisValue TranslateToAxisValue(T value);
+        double TranslateToRenderPoint(T value, bool isFlipped);
+        List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped);
+        bool Contains(T obj);
+        void Focus(T low, T high);
+    }
 }

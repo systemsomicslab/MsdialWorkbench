@@ -21,13 +21,16 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
         private readonly List<MoleculeMsReference> textDB;
+        private readonly string sourceKey;
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public ImmsTextDBAnnotator(IEnumerable<MoleculeMsReference> textDB, MsRefSearchParameterBase parameter) {
+        public ImmsTextDBAnnotator(IEnumerable<MoleculeMsReference> textDB, MsRefSearchParameterBase parameter, string sourceKey) {
             this.textDB = textDB.ToList();
             this.textDB.Sort(comparer);
             this.Parameter = parameter;
+            this.sourceKey = sourceKey;
+            this.ReferObject = new DataBaseRefer(this.textDB, sourceKey);
         }
 
         public MsScanMatchResult Annotate(
@@ -36,7 +39,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, isotopes, parameter, textDB).FirstOrDefault();
+            return FindCandidatesCore(property, isotopes, parameter, textDB, sourceKey).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(
@@ -46,12 +49,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(property, isotopes, parameter, textDB);
+            return FindCandidatesCore(property, isotopes, parameter, textDB, sourceKey);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
             T property, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB) {
+            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string sourceKey) {
 
             (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
@@ -60,7 +63,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 if (candidate.ChromXs.Drift.Value < property.ChromXs.Drift.Value - parameter.CcsTolerance
                     || property.ChromXs.Drift.Value + parameter.CcsTolerance < candidate.ChromXs.Drift.Value)
                     continue;
-                var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter);
+                var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 result.LibraryIDWhenOrdered = i;
                 ValidateCore(result, property, candidate, parameter);
                 results.Add(result);
@@ -74,13 +77,13 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, isotopes, reference, reference.IsotopicPeaks, parameter);
+            return CalculateScoreCore(property, isotopes, reference, reference.IsotopicPeaks, parameter, sourceKey);
         }
 
         private static MsScanMatchResult CalculateScoreCore(
             T property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
-            MsRefSearchParameterBase parameter) {
+            MsRefSearchParameterBase parameter, string sourceKey) {
 
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
@@ -93,7 +96,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, CcsSimilarity = (float)ccsSimilarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Priority = DataBasePriority.TextDB,
+                Source = SourceType.TextDB, SourceKey = sourceKey
             };
 
             var scores = new List<float> { };
@@ -108,14 +111,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return result;
         }
 
+        public IMatchResultRefer ReferObject { get; }
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-
-            if (result.LibraryIDWhenOrdered >= 0 && result.LibraryIDWhenOrdered < textDB.Count) {
-                var text = textDB[result.LibraryIDWhenOrdered];
-                if (text.InChIKey == result.InChIKey)
-                    return text;
-            }
-            return textDB.FirstOrDefault(text => text.InChIKey == result.InChIKey);
+            return ReferObject.Refer(result);
         }
 
         public List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {

@@ -1,6 +1,6 @@
 ﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
@@ -25,6 +25,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PlotViewModel = new AnalysisPeakPlotVM(model.PlotModel, "Mass", "KMD", string.Empty, "m/z", "Kendrick mass defect");
             WeakEventManager<AnalysisPeakPlotModel, PropertyChangedEventArgs>.AddHandler(model.PlotModel, "PropertyChanged", UpdateGraphTitleOnTargetChanged);
+
+            EicViewModel = new EicViewModel(model.EicModel);
+            
         }
 
         private readonly DimsAnalysisModel model;
@@ -39,8 +42,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (e.PropertyName == nameof(model.PlotModel.Target)) {
                 var peak = model.PlotModel.Target.InnerModel;
                 PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
+                EicViewModel.GraphTitle = $"{peak.Mass:N4}[Da]  Max intensity: {EicViewModel.EicMaxIntensity:F0}";
             }
         }
+
+        public EicViewModel EicViewModel {
+            get => eicViewModel;
+            set => SetProperty(ref eicViewModel, value);
+        }
+        private EicViewModel eicViewModel;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -137,7 +147,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private double focusMz;
 
         bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureVM peak) {
+            if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
@@ -149,23 +159,23 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return false;
         }
 
-        bool AnnotationFilter(ChromatogramPeakFeatureVM peak) {
+        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
                 || UnknownChecked && peak.IsUnknown;
         }
 
-        bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
+        bool AmplitudeFilter(ChromatogramPeakFeatureModel peak) {
             return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
         }
 
-        bool CommentFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+        bool CommentFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
             return keywords.All(keyword => peak.Comment.Contains(keyword));
         }
 
-        bool MetaboliteFilter(ChromatogramPeakFeatureVM peak, IEnumerable<string> keywords) {
+        bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
             return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 

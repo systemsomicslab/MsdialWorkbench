@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
-             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
@@ -214,7 +213,7 @@
                                  Background="{StaticResource LightThemeColor}">
                             <commonview:PeakView DataContext="{Binding PlotViewModel}">
                                 <commonview:PeakView.LabelTemplate>
-                                    <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
+                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
                                                 <Style TargetType="TextBlock">

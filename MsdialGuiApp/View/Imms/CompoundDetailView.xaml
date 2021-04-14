@@ -6,7 +6,6 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
-             xmlns:vmdo="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
@@ -39,7 +38,7 @@
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
 
-            <DataTemplate DataType="{x:Type vmdo:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
 
                 <StackPanel>
                     <ui:LabeledContent PrependLabel="Annotation:">

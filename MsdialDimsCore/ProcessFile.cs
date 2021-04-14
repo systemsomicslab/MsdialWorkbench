@@ -50,7 +50,7 @@ namespace CompMs.MsdialDimsCore {
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
-            var mspAnnotator = new DimsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics);
+            var mspAnnotator = new DimsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
             Run(file, container, mspAnnotator, isGuiProcess, reportAction, token);
         }
 
