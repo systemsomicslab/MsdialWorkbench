@@ -26,9 +26,10 @@ namespace CompMs.MsdialCore.Parser
         }
 
         public virtual MsdialDataStorage LoadMsdialDataStorageBase(string file) {
-            var container = LoadMsdialDataStorageCore(file);
-            container.MspDB = LoadMspDB(file);
-            return container;
+            var storage = LoadMsdialDataStorageCore(file);
+            LoadDataBaseMapper(storage);
+            storage.MspDB = LoadMspDB(file);
+            return storage;
         }
 
         protected virtual void SaveMsdialDataStorageCore(string file, MsdialDataStorage container) {
@@ -55,6 +56,10 @@ namespace CompMs.MsdialCore.Parser
                 return MoleculeMsRefMethods.LoadMspFromFile(mspPath);
             }
             return new List<MoleculeMsReference>(0);
+        }
+
+        protected virtual void LoadDataBaseMapper(MsdialDataStorage storage) {
+            storage.DataBaseMapper?.Restore(storage.ParameterBase);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using CompMs.App.MsdialConsole.Process;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.MsdialLcmsApi.Parameter;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole {
@@ -71,7 +71,7 @@ namespace CompMs.App.MsdialConsole {
                 , "-p"
             };
 
-            MainProcess.Run(args);
+            // MainProcess.Run(args);
 
             var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
             var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";

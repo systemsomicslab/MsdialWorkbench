@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             this.omics = omics;
             this.source = source;
             this.sourceKey = sourceKey;
-            ReferObject = new DataBaseRefer(this.db, sourceKey);
+            ReferObject = new DataBaseRefer(this.db);
         }
 
         public MsScanMatchResult Annotate(

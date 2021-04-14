@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     public class AnalysisDimsVM : AnalysisFileVM
     {
         public AnalysisDimsVM(DimsAnalysisModel model) {
-            this.model = model;
+            this.Model = model;
             Ms1Peaks = CollectionViewSource.GetDefaultView(model.Ms1Peaks);
 
             AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             
         }
 
-        private readonly DimsAnalysisModel model;
+        public DimsAnalysisModel Model { get; }
 
         public AnalysisPeakPlotVM PlotViewModel {
             get => plotViewModel;
@@ -39,8 +39,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private AnalysisPeakPlotVM plotViewModel;
 
         private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(model.PlotModel.Target)) {
-                var peak = model.PlotModel.Target.InnerModel;
+            if (e.PropertyName == nameof(Model.PlotModel.Target)) {
+                var peak = Model.PlotModel.Target.InnerModel;
                 PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
                 EicViewModel.GraphTitle = $"{peak.Mass:N4}[Da]  Max intensity: {EicViewModel.EicMaxIntensity:F0}";
             }
@@ -190,7 +190,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<IAxisManager> focusByIDCommand;
 
         private void FocusByID(IAxisManager axis) {
-            model.FocusById(axis, FocusID);
+            Model.FocusById(axis, FocusID);
         }
 
         public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
@@ -198,14 +198,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private static readonly double MzTol = 20;
         private void FocusByMz(IAxisManager axis) {
-            model.FocusByMz(axis, FocusMz);
+            Model.FocusByMz(axis, FocusMz);
         }
 
         public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(model.AnalysisFile, model.Target.InnerModel, model.MsdecResult, null, model.MspAnnotator, model.Parameter.MspSearchParam);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.InnerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
@@ -214,8 +214,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             if (window.ShowDialog() == true) {
-                model.Target.RaisePropertyChanged();
-                _ = model.OnTargetChangedAsync(model.Target);
+                Model.Target.RaisePropertyChanged();
+                _ = Model.OnTargetChangedAsync(Model.Target);
                 Ms1Peaks?.Refresh();
             }
         }
@@ -236,13 +236,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (sfd.ShowDialog(owner) == true)
             {
                 var filename = sfd.FileName;
-                model.SaveSpectra(filename);
+                Model.SaveSpectra(filename);
             }
         }
 
         private bool CanSaveSpectra(Window owner)
         {
-            return model.CanSaveSpectra();
+            return Model.CanSaveSpectra();
         }
 
 

@@ -321,14 +321,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target, Mode=OneWay}"/>
+                                <local:PeakPropertyView DataContext="{Binding Model.Target, Mode=OneWay}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Target, Mode=OneWay}"/>
+                                <local:CompoundDetailView DataContext="{Binding Model.Target, Mode=OneWay}"/>
                             </TabItem>
                          
                         </TabControl>

@@ -30,7 +30,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.textDB.Sort(comparer);
             this.Parameter = parameter;
             this.sourceKey = sourceKey;
-            this.ReferObject = new DataBaseRefer(this.textDB, sourceKey);
+            this.ReferObject = new DataBaseRefer(this.textDB);
         }
 
         public MsScanMatchResult Annotate(

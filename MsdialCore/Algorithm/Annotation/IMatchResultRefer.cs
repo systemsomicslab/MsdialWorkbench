@@ -5,12 +5,10 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    [MessagePack.Union(0, typeof(DataBaseRefer))]
     public interface IMatchResultRefer {
         MoleculeMsReference Refer(MsScanMatchResult result);
     }
 
-    [MessagePack.MessagePackObject]
     public abstract class BaseDataBaseRefer : IMatchResultRefer
     {
         public BaseDataBaseRefer(IReadOnlyList<MoleculeMsReference> db) {
@@ -29,14 +27,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
     }
 
-    [MessagePack.MessagePackObject]
     public class DataBaseRefer : BaseDataBaseRefer
     {
-        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db) {
-            SourceKey = key;
-        }
+        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db) : base(db) {
 
-        [MessagePack.Key(0)]
-        public string SourceKey { get; set; }
+        }
     }
 }

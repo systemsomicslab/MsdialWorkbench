@@ -31,7 +31,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             this.mspDB = mspDB.OrderBy(msp => msp.PrecursorMz).ToList();
             Parameter = parameter;
             this.omics = omics;
-            ReferObject = new DataBaseRefer(this.mspDB, sourceKey);
+            ReferObject = new DataBaseRefer(this.mspDB);
             this.sourceKey = sourceKey;
         }
 
