@@ -47,16 +47,12 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map) {
-            return new ContinuousAxisManager<T>(source.Select(map).ToList());
+        public void UpdateInitialRange(T low, T high) {
+            UpdateInitialRange(new Range(Convert.ToDouble(low), Convert.ToDouble(high)));
         }
 
-        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, T lowBound, T highBound) {
-            return new ContinuousAxisManager<T>(source.Select(map).ToList(), lowBound, highBound);
-        }
-
-        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, Range bound) {
-            return new ContinuousAxisManager<T>(source.Select(map).ToList(), bound);
+        public void UpdateInitialRange(ICollection<T> source) {
+            UpdateInitialRange(new Range(Convert.ToDouble(source.Min()), Convert.ToDouble(source.Max())));
         }
 
         protected override void OnRangeChanged() {
@@ -116,6 +112,18 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public override AxisValue TranslateToAxisValue(T value) {
             return new AxisValue(Convert.ToDouble(value));
+        }
+
+        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map) {
+            return new ContinuousAxisManager<T>(source.Select(map).ToList());
+        }
+
+        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, T lowBound, T highBound) {
+            return new ContinuousAxisManager<T>(source.Select(map).ToList(), lowBound, highBound);
+        }
+
+        public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, Range bound) {
+            return new ContinuousAxisManager<T>(source.Select(map).ToList(), bound);
         }
     }
 }

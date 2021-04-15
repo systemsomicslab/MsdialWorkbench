@@ -14,6 +14,7 @@ namespace CompMs.Graphics.GraphAxis
     public class VerticalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        [Obsolete]
         public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
             nameof(LabelTicks), typeof(List<LabelTickData>), typeof(VerticalAxisControl),
             new PropertyMetadata(null)
@@ -51,6 +52,7 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        [Obsolete]
         public List<LabelTickData> LabelTicks
         {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
@@ -113,7 +115,6 @@ namespace CompMs.Graphics.GraphAxis
         protected override void Update()
         {
             if (VerticalAxis == null
-                || LabelTicks == null
                 || TickPen == null
                 || LabelBrush == null
                 ) return;
@@ -125,7 +126,10 @@ namespace CompMs.Graphics.GraphAxis
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             double basePoint = VerticalAxis.TranslateToRenderPoint(0d, FlippedY);
 
-            var labelTicks = LabelTicks.Where(data => RangeY.Minimum <= data.Center && data.Center <= RangeY.Maximum).ToList();
+            var labelTicks = VerticalAxis
+                .GetLabelTicks()
+                .Where(data => RangeY.Minimum <= data.Center && data.Center <= RangeY.Maximum)
+                .ToList();
             if (labelTicks.Count > 100)
                 labelTicks = labelTicks.Where(data => data.TickType == TickType.LongTick).ToList();
             if (labelTicks.Count > 100)

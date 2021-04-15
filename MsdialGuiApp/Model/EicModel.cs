@@ -28,28 +28,39 @@ namespace CompMs.App.Msdial.Model
             HorizontalData = horizontalData;
             VerticalData = verticalData;
 
-            loader = new EicLoader(this, provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
+            loader = new EicLoader(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
         }
 
-        private EicLoader loader;
+        internal EicModel(
+            AxisData horizontalData,
+            AxisData verticalData,
+            EicLoader loader) {
+
+            HorizontalData = horizontalData;
+            VerticalData = verticalData;
+
+            this.loader = loader;
+        }
+
+        private readonly EicLoader loader;
 
         public IList<ChromatogramPeakWrapper> Eic {
             get => eic;
             set => SetProperty(ref eic, value);
         }
-        private IList<ChromatogramPeakWrapper> eic;
+        private IList<ChromatogramPeakWrapper> eic = new List<ChromatogramPeakWrapper>(0);
 
         public IList<ChromatogramPeakWrapper> EicPeak {
             get => eicPeak;
             set => SetProperty(ref eicPeak, value);
         }
-        private IList<ChromatogramPeakWrapper> eicPeak;
+        private IList<ChromatogramPeakWrapper> eicPeak = new List<ChromatogramPeakWrapper>(0);
 
         public IList<ChromatogramPeakWrapper> EicFocused {
             get => eicFocused;
             set => SetProperty(ref eicFocused, value);
         }
-        private IList<ChromatogramPeakWrapper> eicFocused;
+        private IList<ChromatogramPeakWrapper> eicFocused = new List<ChromatogramPeakWrapper>(0);
 
         public AxisData HorizontalData {
             get => horizontalData;
@@ -70,20 +81,17 @@ namespace CompMs.App.Msdial.Model
         private string graphTitle;
 
         public async Task LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            await loader.LoadEicAsync(target, token);
-            OnPropertyChanged(string.Empty);
+            (Eic, EicPeak, EicFocused) = await loader.LoadEicAsync(target, token);
         }
 
         public void LoadEic(ChromatogramPeakFeatureModel target) {
-            loader.LoadEic(target);
-            OnPropertyChanged(string.Empty);
+            (Eic, EicPeak, EicFocused) = loader.LoadEic(target);
         }
     }
 
     class EicLoader
     {
         public EicLoader(
-            EicModel model,
             IDataProvider provider,
             ParameterBase parameter,
             ChromXType chromXType,
@@ -91,7 +99,6 @@ namespace CompMs.App.Msdial.Model
             double rangeBegin,
             double rangeEnd) {
 
-            this.model = model;
             this.provider = provider;
             this.parameter = parameter;
             this.chromXType = chromXType;
@@ -100,15 +107,15 @@ namespace CompMs.App.Msdial.Model
             this.rangeEnd = rangeEnd;
         }
 
-        private EicModel model;
+        protected readonly IDataProvider provider;
+        protected readonly ParameterBase parameter;
+        protected readonly ChromXType chromXType;
+        protected readonly ChromXUnit chromXUnit;
+        protected readonly double rangeBegin, rangeEnd;
 
-        private readonly IDataProvider provider;
-        private readonly ParameterBase parameter;
-        private readonly ChromXType chromXType;
-        private readonly ChromXUnit chromXUnit;
-        private readonly double rangeBegin, rangeEnd;
+        internal async Task<(List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>)>
+            LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
 
-        internal async Task LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var eic = new List<ChromatogramPeakWrapper>();
             var peakEic = new List<ChromatogramPeakWrapper>();
             var focusedEic = new List<ChromatogramPeakWrapper>();
@@ -130,28 +137,29 @@ namespace CompMs.App.Msdial.Model
             }
 
             token.ThrowIfCancellationRequested();
-            model.Eic = eic;
-            model.EicPeak = peakEic;
-            model.EicFocused = focusedEic;
+            return (eic, peakEic, focusedEic);
         }
 
-        internal void LoadEic(ChromatogramPeakFeatureModel target) {
+        internal (List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>)
+            LoadEic(ChromatogramPeakFeatureModel target) {
+
             var eic = LoadEicCore(target);
             if (eic.Count == 0) {
-                model.Eic = new List<ChromatogramPeakWrapper>();
-                model.EicPeak = new List<ChromatogramPeakWrapper>();
-                model.EicFocused = new List<ChromatogramPeakWrapper>();
-                return;
+                return (
+                    new List<ChromatogramPeakWrapper>(),
+                    new List<ChromatogramPeakWrapper>(),
+                    new List<ChromatogramPeakWrapper>());
             }
 
-            model.Eic = eic;
-            model.EicPeak = LoadEicPeakCore(target, eic);
-            model.EicFocused = LoadEicFocusedCore(target, eic);
+            return (
+                eic,
+                LoadEicPeakCore(target, eic),
+                LoadEicFocusedCore(target, eic));
         }
 
-        private List<ChromatogramPeakWrapper> LoadEicCore(ChromatogramPeakFeatureModel target) {
+        protected virtual List<ChromatogramPeakWrapper> LoadEicCore(ChromatogramPeakFeatureModel target) {
             return DataAccess.GetSmoothedPeaklist(
-                    DataAccess.GetMs1Peaklist(
+                DataAccess.GetMs1Peaklist(
                         provider.LoadMs1Spectrums(),
                         target.Mass, parameter.CentroidMs1Tolerance,
                         parameter.IonMode,
@@ -163,11 +171,11 @@ namespace CompMs.App.Msdial.Model
             .ToList();
         }
 
-        private List<ChromatogramPeakWrapper> LoadEicPeakCore(ChromatogramPeakFeatureModel target, List<ChromatogramPeakWrapper> eic) {
+        protected virtual List<ChromatogramPeakWrapper> LoadEicPeakCore(ChromatogramPeakFeatureModel target, List<ChromatogramPeakWrapper> eic) {
             return eic.Where(peak => target.ChromXLeftValue <= peak.ChromXValue && peak.ChromXValue <= target.ChromXRightValue).ToList();
         }
 
-        private List<ChromatogramPeakWrapper> LoadEicFocusedCore(ChromatogramPeakFeatureModel target, List<ChromatogramPeakWrapper> eic) {
+        protected virtual List<ChromatogramPeakWrapper> LoadEicFocusedCore(ChromatogramPeakFeatureModel target, List<ChromatogramPeakWrapper> eic) {
             return new List<ChromatogramPeakWrapper> {
                 eic.Where(peak => peak.ChromXValue.HasValue)
                    .Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.ChromXValue.Value))

@@ -8,16 +8,16 @@ namespace CompMs.Graphics.AxisManager.Generic
     public abstract class BaseAxisManager<T> : IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
-            InitialRange = range;
+            Range = InitialRange = range;
             Bounds = bounds;
         }
 
         public BaseAxisManager(Range range) {
-            InitialRange = range;
+            Range = InitialRange = range;
         }
 
         public BaseAxisManager(BaseAxisManager<T> source) {
-            InitialRange = source.InitialRange;
+            Range = InitialRange = source.InitialRange;
             Bounds = source.Bounds;
         }
 
@@ -52,6 +52,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         protected virtual void OnRangeChanged() {
             RangeChanged?.Invoke(this, args);
+        }
+
+        public void UpdateInitialRange(Range range) {
+            InitialRange = range;
         }
 
         public bool Contains(AxisValue value) {
@@ -107,7 +111,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
-            return TranslateToRenderPoints(values.Cast<T>(), isFlipped);
+            return TranslateToRenderPoints(values.OfType<T>(), isFlipped);
         }
 
         public List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped) {

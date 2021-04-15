@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.ViewModel
         public EicViewModel(EicModel model) {
             this.model = model;
             WeakEventManager<EicModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), ClearCache);
+            WeakEventManager<EicModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), UpdateAxis);
         }
 
         private readonly EicModel model;
@@ -25,6 +26,22 @@ namespace CompMs.App.Msdial.ViewModel
             OnPropertyChanged(nameof(Eic));
             OnPropertyChanged(nameof(EicPeak));
             OnPropertyChanged(nameof(EicFocused));
+        }
+
+        private void UpdateAxis(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(model.HorizontalData)) {
+                OnPropertyChanged(nameof(HorizontalData));
+                OnPropertyChanged(nameof(HorizontalAxis));
+                OnPropertyChanged(nameof(HorizontalProperty));
+                OnPropertyChanged(nameof(HorizontalTitle));
+            }
+
+            if (e.PropertyName == nameof(model.VerticalData)) {
+                OnPropertyChanged(nameof(VerticalData));
+                OnPropertyChanged(nameof(VerticalAxis));
+                OnPropertyChanged(nameof(VerticalProperty));
+                OnPropertyChanged(nameof(VerticalTitle));
+            }
         }
 
         public ICollectionView Eic {

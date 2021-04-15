@@ -34,6 +34,7 @@ namespace CompMs.Graphics.Core.Base
         static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is ChartBaseControl bc) {
                 bc.OnHorizontalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
+                bc.InvalidateVisual();
             }
         }
 
@@ -76,6 +77,7 @@ namespace CompMs.Graphics.Core.Base
         static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is ChartBaseControl bc) {
                 bc.OnVerticalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
+                bc.InvalidateVisual();
             }
         }
 

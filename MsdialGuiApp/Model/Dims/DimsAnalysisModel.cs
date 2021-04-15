@@ -5,7 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -25,7 +25,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -55,22 +54,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
-            HorizontalAxis = new AxisData(new ContinuousAxisManager
-            {
-                MinValue = MassMin,
-                MaxValue = MassMax,
-                ChartMargin = new ChartMargin(0.05),
-            }, "Mass", "m/z");
-            VerticalAxis = new AxisData(new ContinuousAxisManager
-            {
-                MinValue = -0.5,
-                MaxValue = 0.5,
-                ChartMargin = new ChartMargin(0.05),
-            }, "KMD", "Kendrick mass defect");
+            HorizontalAxis = new AxisData(new ContinuousAxisManager<double>(MassMin, MassMax), "Mass", "m/z");
+            VerticalAxis = new AxisData(new ContinuousAxisManager<double>(-0.5, 0.5), "KMD", "Kendrick mass defect");
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, HorizontalAxis.Axis, VerticalAxis.Axis);
 
-            var abundanceAxis = System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                new AxisData(
+            var abundanceAxis = new AxisData(
+                    /*
                     new DependencyContinuousAxisManager
                     {
                         TargetAxisMapper = HorizontalAxis.Axis,
@@ -80,18 +69,23 @@ namespace CompMs.App.Msdial.Model.Dims
                         ChartMargin = new ChartMargin(0, 0.05),
                         Bounds = new Range(0d, 0d),
                     },
+                    */
+                    new ContinuousAxisManager<double>(0, 1),
                     "Intensity",
-                    "Abundance"));
+                    "Abundance");
+            var massAxis = new AxisData(HorizontalAxis.Axis, "ChromXValue", "m/z");
 
             EicModel = new EicModel(
-                HorizontalAxis,
+                massAxis,
                 abundanceAxis,
-                provider,
-                Parameter,
-                ChromXType.Mz,
-                ChromXUnit.Mz,
-                Parameter.MassRangeBegin,
-                Parameter.MassRangeEnd);
+                new DimsEicLoader(
+                    provider,
+                    Parameter,
+                    ChromXType.Mz,
+                    ChromXUnit.Mz,
+                    Parameter.MassRangeBegin,
+                    Parameter.MassRangeEnd)
+            );
             EicModel.PropertyChanged += OnEicChanged;
         }
 
@@ -171,10 +165,13 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private void OnEicChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(EicModel.Eic)) {
-                var axis = EicModel.VerticalData.Axis as ContinuousAxisManager;
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    ((DependencyContinuousAxisManager)EicModel.VerticalData.Axis).ItemsSource = EicModel.Eic
-                );
+                var axis = EicModel.VerticalData;
+                var type = typeof(ChromatogramPeakWrapper);
+                var prop = type.GetProperty(axis.Property);
+                EicModel.VerticalData = new AxisData(
+                    ContinuousAxisManager<double>.Build(EicModel.Eic, peak => (double)prop.GetValue(peak), 0, 0),
+                    axis.Property,
+                    axis.Title);
             }
         }
 
