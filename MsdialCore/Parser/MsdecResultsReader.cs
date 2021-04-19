@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Parser {
 			}
 		}
 
-        public static void GetSeekPointers(FileStream fs, out int DCL_VERSION, out List<long> seekPoints, out bool isAnnotationInfoIncluded) {
+        public static void GetSeekPointers(Stream fs, out int DCL_VERSION, out List<long> seekPoints, out bool isAnnotationInfoIncluded) {
             var buffer = new byte[7];
             fs.Seek(0, SeekOrigin.Begin);
             fs.Read(buffer, 0, 7);
@@ -88,7 +88,7 @@ namespace CompMs.MsdialCore.Parser {
                 seekPoints.Add(BitConverter.ToInt64(buffer, 8 * i));
         }
 
-        public static MSDecResult ReadMSDecResult(FileStream fs, long seekPoint, int version, bool isAnnotationInfoIncluded) {
+        public static MSDecResult ReadMSDecResult(Stream fs, long seekPoint, int version, bool isAnnotationInfoIncluded) {
             if (version == 1) {
                 fs.Seek(seekPoint, SeekOrigin.Begin);
                 return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
@@ -153,7 +153,7 @@ namespace CompMs.MsdialCore.Parser {
             return results;
         }
 
-        public static MSDecResult ReadMSDecResultVer1(FileStream fs, bool isAnnotationInfoIncluded) {
+        public static MSDecResult ReadMSDecResultVer1(Stream fs, bool isAnnotationInfoIncluded) {
             var result = new MSDecResult();
             //Scan
             var buffer = new byte[MsdecResultsWriter.GetSavedScanDataBytes(result)];

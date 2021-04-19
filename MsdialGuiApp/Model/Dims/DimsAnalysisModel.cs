@@ -1,7 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -14,9 +12,6 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
-using NSSplash;
-using NSSplash.impl;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,9 +28,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
+            IMatchResultRefer refer,
             ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
 
             this.provider = provider;
             this.mspAnnotator = mspAnnotator;
@@ -43,36 +38,18 @@ namespace CompMs.App.Msdial.Model.Dims
 
             AnalysisFile = analysisFile;
             FileName = analysisFile.AnalysisFileName;
-            peakAreaFile = analysisFile.PeakAreaBeanInformationFilePath;
-            deconvolutionFile = analysisFile.DeconvolutionFilePath;
             Parameter = parameter;
 
-            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
+            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
             Peaks = peaks;
-
-            MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
 
             HorizontalAxis = new AxisData(new ContinuousAxisManager<double>(MassMin, MassMax), "Mass", "m/z");
             VerticalAxis = new AxisData(new ContinuousAxisManager<double>(-0.5, 0.5), "KMD", "Kendrick mass defect");
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, HorizontalAxis.Axis, VerticalAxis.Axis);
 
-            var abundanceAxis = new AxisData(
-                    /*
-                    new DependencyContinuousAxisManager
-                    {
-                        TargetAxisMapper = HorizontalAxis.Axis,
-                        TargetPropertyName = "ChromXValue",
-                        ValuePropertyName = "Intensity",
-                        TargetRange = HorizontalAxis.Axis.Range,
-                        ChartMargin = new ChartMargin(0, 0.05),
-                        Bounds = new Range(0d, 0d),
-                    },
-                    */
-                    new ContinuousAxisManager<double>(0, 1),
-                    "Intensity",
-                    "Abundance");
+            var abundanceAxis = new AxisData(new ContinuousAxisManager<double>(0, 1), "Intensity", "Abundance");
             var massAxis = new AxisData(HorizontalAxis.Axis, "ChromXValue", "m/z");
 
             EicModel = new EicModel(
@@ -86,12 +63,38 @@ namespace CompMs.App.Msdial.Model.Dims
                     Parameter.MassRangeBegin,
                     Parameter.MassRangeEnd)
             );
+
+            var ms2MeasureIntensityAxis = new AxisData(
+                new ContinuousAxisManager<double>(0, 1),
+                "Intensity",
+                "Abundance");
+            Ms2SpectrumModel = new Ms2SpectrumModel(
+                new AxisData(
+                    new ContinuousAxisManager<double>(0, 1),
+                    "Mass",
+                    "m/z"),
+                new AxisData[]
+                {
+                    ms2MeasureIntensityAxis,
+                    ms2MeasureIntensityAxis,
+                    new AxisData(
+                        new ContinuousAxisManager<double>(0, 1),
+                        "Intensity",
+                        "Abundance"),
+                },
+                new IMsSpectrumLoader[]
+                {
+                    new MsRawSpectrumLoader(provider, Parameter),
+                    new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks),
+                    new MsRefSpectrumLoader(refer),
+                },
+                "Measure vs. Reference"
+            );
+
             EicModel.PropertyChanged += OnEicChanged;
+            Ms2SpectrumModel.PropertyChanged += OnSpectrumChanged;
         }
 
-        private readonly string peakAreaFile;
-        private readonly string deconvolutionFile;
-        private readonly List<long> seekPointers;
         private readonly IDataProvider provider;
 
         public AnalysisFileBean AnalysisFile { get; }
@@ -175,6 +178,34 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
+        public Ms2SpectrumModel Ms2SpectrumModel { get; }
+
+        private void OnSpectrumChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(Ms2SpectrumModel.Spectrums)) {
+                var spectrums = Ms2SpectrumModel.Spectrums;
+
+                var type = typeof(ChromatogramPeakWrapper);
+                var axes = Ms2SpectrumModel.VerticalDatas;
+                var newAxes = new ObservableCollection<AxisData>();
+                foreach ((var ax, var spectrum) in axes.Zip(spectrums)) {
+                    var prop = type.GetProperty(ax.Property);
+                    newAxes.Add(
+                        new AxisData(
+                            ContinuousAxisManager<double>.Build(spectrum, peak => (double)prop.GetValue(peak), 0, 0),
+                            ax.Property,
+                            ax.Title));
+                }
+
+                var massAxis = Ms2SpectrumModel.HorizontalData;
+                var massProp = type.GetProperty(massAxis.Property);
+                Ms2SpectrumModel.HorizontalData = new AxisData(
+                    ContinuousAxisManager<double>.Build(
+                        spectrums.SelectMany(spectrum => spectrum), peak => (double)massProp.GetValue(peak)),
+                    massAxis.Property,
+                    massAxis.Title);
+            }
+        }
+
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
             cts?.Cancel();
@@ -196,61 +227,10 @@ namespace CompMs.App.Msdial.Model.Dims
 
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             await Task.WhenAll(
-                LoadMs1SpectrumAsync(target, token),
                 EicModel.LoadEicAsync(target, token),
-                LoadMs2SpectrumAsync(target, token),
-                LoadMs2DecSpectrumAsync(target, token),
-                LoadMs2ReferenceAsync(target, token)
+                Ms2SpectrumModel.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
         }
-
-        public List<SpectrumPeak> Ms1Spectrum {
-            get => ms1Spectrum;
-            set {
-                if (SetProperty(ref ms1Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms1SpectrumMaxIntensity));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms1Spectrum = new List<SpectrumPeak>();
-
-        public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-
-        public string Ms1SplashKey {
-            get => ms1SplashKey;
-            set => SetProperty(ref ms1SplashKey, value);
-        }
-        private string ms1SplashKey = string.Empty;
-
-        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms1Spectrum = new List<SpectrumPeak>();
-            var ms1SplashKey = string.Empty;
-
-            if (target != null) {
-                await Task.Run(() => {
-                    if (target.MS1RawSpectrumIdTop < 0) {
-                        return;
-                    }
-                    ms1Spectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], Parameter.MSDataType, 0, float.MinValue, float.MaxValue);
-                    ms1SplashKey = CalculateSplashKey(ms1Spectrum);
-                }, token);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms1Spectrum = ms1Spectrum;
-            Ms1SplashKey = ms1SplashKey;
-        }
-
-        public List<SpectrumPeak> Ms2Spectrum {
-            get => ms2Spectrum;
-            set {
-                if (SetProperty(ref ms2Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2Spectrum;
 
         public string RawSplashKey {
             get => rawSplashKey;
@@ -258,122 +238,14 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string rawSplashKey = string.Empty;
 
-        public List<SpectrumPeak> Ms2DecSpectrum {
-            get => ms2DecSpectrum;
-            set {
-                if (SetProperty(ref ms2DecSpectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2DecSpectrum;
-
         public string DeconvolutionSplashKey {
             get => deconvolutionSplashKey;
             set => SetProperty(ref deconvolutionSplashKey, value);
         }
         private string deconvolutionSplashKey = string.Empty;
 
-        public List<SpectrumPeak> Ms2ReferenceSpectrum {
-            get => ms2ReferenceSpectrum;
-            set {
-                if (SetProperty(ref ms2ReferenceSpectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2ReferenceSpectrum;
-
-        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DecSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Min();
-        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).Concat(Ms2DecSpectrum).Select(peak => peak.Mass).DefaultIfEmpty().Max();
-
-        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms2Spectrum = new List<SpectrumPeak>(); 
-            var rawSplashKey = string.Empty;
-
-            if (target != null) {
-                await Task.Run(() => {
-                    if (target.MS2RawSpectrumId < 0)
-                        return;
-                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrums()[target.MS2RawSpectrumId], Parameter.MS2DataType, 0, float.MinValue, float.MaxValue);
-                    if (Parameter.RemoveAfterPrecursor)
-                        spectra = spectra.Where(peak => peak.Mass <= target.Mass + Parameter.KeptIsotopeRange).ToList();
-                    token.ThrowIfCancellationRequested();
-                    ms2Spectrum = spectra;
-                    rawSplashKey = CalculateSplashKey(spectra);
-                }, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2Spectrum = ms2Spectrum;
-            RawSplashKey = rawSplashKey;
-        }
-
         public MSDecResult MsdecResult => msdecResult;
         private MSDecResult msdecResult = null;
-
-        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms2DecSpectrum = new List<SpectrumPeak>();
-            var deconvolutionSplashKey = string.Empty;
-
-            if (target != null) {
-                await Task.Run((Action)(() => {
-                    var idx = this.Ms1Peaks.IndexOf(target);
-                    msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionFile, seekPointers[(int)idx]);
-                    token.ThrowIfCancellationRequested();
-                    ms2DecSpectrum = msdecResult.Spectrum;
-                    deconvolutionSplashKey = CalculateSplashKey(msdecResult.Spectrum);
-                }), token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2DecSpectrum = ms2DecSpectrum;
-            DeconvolutionSplashKey = deconvolutionSplashKey;
-        }
-
-        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms2ReferenceSpectrum = new List<SpectrumPeak>();
-
-            if (target != null) {
-                await Task.Run(() => {
-                    var representative = RetrieveMspMatchResult(target.InnerModel);
-                    if (representative == null)
-                        return;
-
-                    var reference = mspAnnotator.Refer(representative);
-                    if (reference != null) {
-                        token.ThrowIfCancellationRequested();
-                        ms2ReferenceSpectrum = reference.Spectrum;
-                    }
-                }, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2ReferenceSpectrum = ms2ReferenceSpectrum;
-        }
-
-        MsScanMatchResult RetrieveMspMatchResult(ChromatogramPeakFeature prop) {
-            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
-                if ((representative.Source & (SourceType.Unknown | SourceType.Manual)) == (SourceType.Unknown | SourceType.Manual))
-                    return null;
-                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
-                    return null;
-                }
-                if ((representative.Source & SourceType.Unknown) == SourceType.None) {
-                    return representative;
-                }
-            }
-            return prop.MspBasedMatchResult;
-        }
-
-        static string CalculateSplashKey(IReadOnlyList<SpectrumPeak> spectra) {
-            if (spectra.IsEmptyOrNull() || spectra.Count <= 2 && spectra.All(peak => peak.Intensity == 0))
-                return "N/A";
-            var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
-            return new Splash().splashIt(msspectrum);
-        }
 
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {

@@ -178,6 +178,7 @@ namespace CompMs.App.Msdial.Model.Dims
             return new DimsAnalysisModel(
                     analysisFile,
                     new StandardDataProvider(analysisFile, isGuiProcess: true, retry: 5),
+                    Storage.DataBaseMapper,
                     Storage.ParameterBase,
                     mspChromatogramAnnotator,
                     textDBChromatogramAnnotator);
