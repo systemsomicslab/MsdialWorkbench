@@ -83,6 +83,10 @@ namespace CompMs.Graphics.AxisManager.Generic
             Range = new Range(TranslateToAxisValue(low), TranslateToAxisValue(high)).Intersect(InitialRange);
         }
 
+        public void Focus(Range range) {
+            Range = range.Intersect(InitialRange);
+        }
+
         public abstract List<LabelTickData> GetLabelTicks();
 
         protected virtual AxisValue TranslateFromRenderPointCore(double value, double min, double max, bool isFlipped) {

@@ -34,6 +34,7 @@ namespace CompMs.Graphics.Core.Base
         bool Contains(AxisValue value);
         bool Contains(object obj);
         void Focus(object low, object high);
+        void Focus(Range range);
         List<LabelTickData> GetLabelTicks();
     }
 

@@ -62,6 +62,10 @@ namespace CompMs.Graphics.Base
             manager.Focus(low, high);
         }
 
+        public void Focus(Range range) {
+            manager.Focus(range);
+        }
+
         public List<LabelTickData> GetLabelTicks() {
             return manager.GetLabelTicks();
         }

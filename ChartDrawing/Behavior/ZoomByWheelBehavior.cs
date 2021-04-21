@@ -62,9 +62,7 @@ namespace CompMs.Graphics.Behavior
                     var rangeX = haxis.Range;
                     var point = haxis.TranslateFromRenderPoint(p.X / fe.ActualWidth, flippedX);
                     var range = new Range((1 - scale) * point + rangeX.Minimum * scale, rangeX.Maximum * scale + (1 - scale) * point);
-                    if (haxis.InitialRange.Contains(range)) {
-                        haxis.Range = range;
-                    }
+                    haxis.Focus(range);
                 }
 
                 var vaxis = ChartBaseControl.GetVerticalAxis(fe);
@@ -73,9 +71,7 @@ namespace CompMs.Graphics.Behavior
                     var rangeY = vaxis.Range;
                     var point = vaxis.TranslateFromRenderPoint(p.Y / fe.ActualHeight, flippedY);
                     var range = new Range((1 - scale) * point + rangeY.Minimum * scale, rangeY.Maximum * scale + (1 - scale) * point);
-                    if (vaxis.InitialRange.Contains(range)) {
-                        vaxis.Range = range;
-                    }
+                    vaxis.Focus(range);
                 }
             }
         }

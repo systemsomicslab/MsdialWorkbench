@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MassLower = model.MassMin;
             MassUpper = model.MassMax;
 
-            WeakEventManager<DimsAlignmentModel, PropertyChangedEventArgs>.AddHandler(model, "PropertyChanged", (s, e) => SearchCompoundCommand.RaiseCanExecuteChanged());
+            WeakEventManager<DimsAlignmentModel, PropertyChangedEventArgs>.AddHandler(model, "PropertyChanged", (s, e) => Application.Current.Dispatcher.Invoke(SearchCompoundCommand.RaiseCanExecuteChanged));
 
             PlotViewModel = new AlignmentPeakPlotVM(Model.PlotModel, "MassCenter", "KMD", Model.FileName, "m/z", "Kendrick mass defect");
         }
