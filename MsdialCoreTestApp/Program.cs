@@ -105,8 +105,8 @@ namespace CompMs.App.MsdialConsole {
         private static void DumpN(string file, int n) {
             var allspectra = DataAccess.GetAllSpectra(file);
             Console.WriteLine($"Number of spectrum: {allspectra.Count}");
-            Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}"); 
-            Console.WriteLine($"Number of scan {allspectra.Where(spec => spec.MsLevel == 1).Select(spec => spec.ScanNumber).Distinct().Count()}"); 
+            Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}");
+            Console.WriteLine($"Number of scan {allspectra.Where(spec => spec.MsLevel == 1).Select(spec => spec.ScanNumber).Distinct().Count()}");
             for(int i = 0; i < n; i++) {
                 var spec = allspectra[i];
                 Console.WriteLine("Original index={0} ID={1}, Time={2}, Drift ID={3}, Drift time={4}, Polarity={5}, MS level={6}, Precursor mz={7}, CollisionEnergy={8}, SpecCount={9}",
