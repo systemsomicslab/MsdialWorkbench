@@ -9,6 +9,7 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using Microsoft.Win32;
 using System;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace CompMs.App.Msdial
 
         private void CreateNewProject(Window window) {
             var storage = new MsdialDataStorage();
+            storage.DataBaseMapper = new DataBaseMapper();
 
             //Get IUPAC reference
             var iupacdb = IupacResourceParser.GetIUPACDatabase();
@@ -79,6 +81,11 @@ namespace CompMs.App.Msdial
 #endif
 
             MethodVM = method;
+
+            storage.DataBaseMapper.Add("MspDB", new MspDbRestorationKey(storage.ParameterBase.MspFilePath));
+            storage.DataBaseMapper.Add("TextDB", new TextDbRestorationKey(storage.ParameterBase.TextDBFilePath));
+            storage.DataBaseMapper.Restore(storage.ParameterBase);
+
             SaveProject(method, storage);
         }
 
@@ -165,6 +172,7 @@ namespace CompMs.App.Msdial
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                Storage.DataBaseMapper.Restore(Storage.ParameterBase);
 
                 MethodVM = CreateNewMethodVM(Storage.ParameterBase.MachineCategory, Storage);
                 MethodVM.LoadProject();

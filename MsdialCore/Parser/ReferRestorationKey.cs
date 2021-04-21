@@ -9,8 +9,9 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Parser
 {
-    [MessagePack.Union(0, typeof(MspDbRestorationKey))]
-    [MessagePack.Union(1, typeof(TextDbRestorationKey))]
+    [MessagePack.Union(0, typeof(DataBaseRestorationKey))]
+    [MessagePack.Union(1, typeof(MspDbRestorationKey))]
+    [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     public interface IReferRestorationKey
     {
         IMatchResultRefer Restore(ParameterBase parameter);
@@ -20,8 +21,12 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public abstract class DataBaseRestorationKey : IReferRestorationKey
     {
+        public DataBaseRestorationKey(string path) {
+            DataBasePath = path;
+        }
+
         [MessagePack.Key(0)]
-        public string DataBasePath { get; }
+        public string DataBasePath { get; set; }
 
         public abstract IMatchResultRefer Restore(ParameterBase parameter);
     }
@@ -29,6 +34,10 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class MspDbRestorationKey : DataBaseRestorationKey
     {
+        public MspDbRestorationKey(string path) : base(path) {
+
+        }
+
         public override IMatchResultRefer Restore(ParameterBase parameter) {
             var db = new List<MoleculeMsReference>();
             if (!string.IsNullOrEmpty(DataBasePath)) {
@@ -47,6 +56,10 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class TextDbRestorationKey : DataBaseRestorationKey
     {
+        public TextDbRestorationKey(string path) : base(path) {
+
+        }
+
         public override IMatchResultRefer Restore(ParameterBase parameter) {
             var db = new List<MoleculeMsReference>();
             if (!string.IsNullOrEmpty(DataBasePath)) {

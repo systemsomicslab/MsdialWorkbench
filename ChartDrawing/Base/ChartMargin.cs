@@ -21,6 +21,17 @@ namespace CompMs.Graphics.Core.Base
 
         public double Left { get; set; }
         public double Right { get; set; }
+
+        public Range Add(Range range) {
+            var d = range.Delta;
+            return new Range(range.Minimum - d * Left, range.Maximum + d * Right);
+        }
+
+        public Range Remove(Range range) {
+            var d = range.Delta / (1 + Left + Right);
+            var x = range.Minimum + Left * d;
+            return new Range(x, x + d);
+        }
     }
 
     public class ChartMarginTypeConverter : TypeConverter

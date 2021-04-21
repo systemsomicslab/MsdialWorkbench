@@ -68,31 +68,17 @@ namespace CompMs.App.Msdial.Model.Dims
                 new ContinuousAxisManager<double>(0, 1),
                 "Intensity",
                 "Abundance");
-            Ms2SpectrumModel = new Ms2SpectrumModel(
-                new AxisData(
-                    new ContinuousAxisManager<double>(0, 1),
-                    "Mass",
-                    "m/z"),
-                new AxisData[]
-                {
-                    ms2MeasureIntensityAxis,
-                    ms2MeasureIntensityAxis,
-                    new AxisData(
-                        new ContinuousAxisManager<double>(0, 1),
-                        "Intensity",
-                        "Abundance"),
-                },
-                new IMsSpectrumLoader[]
-                {
-                    new MsRawSpectrumLoader(provider, Parameter),
-                    new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks),
-                    new MsRefSpectrumLoader(refer),
-                },
-                "Measure vs. Reference"
-            );
+            Ms2SpectrumModel = new RawDecSpectrumsModel(
+                horizontalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z"),
+                rawVerticalData: ms2MeasureIntensityAxis,
+                rawLoader: new MsRawSpectrumLoader(provider, Parameter),
+                decVerticalData: ms2MeasureIntensityAxis,
+                decLoader: new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks),
+                refVerticalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Intensity", "Abundance"),
+                refLoader: new MsRefSpectrumLoader(refer),
+                graphTitle: "Measure vs. Reference");
 
             EicModel.PropertyChanged += OnEicChanged;
-            Ms2SpectrumModel.PropertyChanged += OnSpectrumChanged;
         }
 
         private readonly IDataProvider provider;
@@ -178,33 +164,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public Ms2SpectrumModel Ms2SpectrumModel { get; }
-
-        private void OnSpectrumChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Ms2SpectrumModel.Spectrums)) {
-                var spectrums = Ms2SpectrumModel.Spectrums;
-
-                var type = typeof(ChromatogramPeakWrapper);
-                var axes = Ms2SpectrumModel.VerticalDatas;
-                var newAxes = new ObservableCollection<AxisData>();
-                foreach ((var ax, var spectrum) in axes.Zip(spectrums)) {
-                    var prop = type.GetProperty(ax.Property);
-                    newAxes.Add(
-                        new AxisData(
-                            ContinuousAxisManager<double>.Build(spectrum, peak => (double)prop.GetValue(peak), 0, 0),
-                            ax.Property,
-                            ax.Title));
-                }
-
-                var massAxis = Ms2SpectrumModel.HorizontalData;
-                var massProp = type.GetProperty(massAxis.Property);
-                Ms2SpectrumModel.HorizontalData = new AxisData(
-                    ContinuousAxisManager<double>.Build(
-                        spectrums.SelectMany(spectrum => spectrum), peak => (double)massProp.GetValue(peak)),
-                    massAxis.Property,
-                    massAxis.Title);
-            }
-        }
+        public RawDecSpectrumsModel Ms2SpectrumModel { get; }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {

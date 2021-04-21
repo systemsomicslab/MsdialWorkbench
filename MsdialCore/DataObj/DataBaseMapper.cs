@@ -16,41 +16,39 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public ReadOnlyDictionary<string, IMatchResultRefer> KeyToRefer {
             get {
-                return new ReadOnlyDictionary<string, IMatchResultRefer>(cacheKeyToRefer);
+                return new ReadOnlyDictionary<string, IMatchResultRefer>(keyToRefer);
             }
         }
 
-        private Dictionary<string, IMatchResultRefer> cacheKeyToRefer;
+        private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
 
         public void Restore(ParameterBase param) {
-            cacheKeyToRefer = KeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Restore(param));
+            keyToRefer = InnerKeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Restore(param));
         }
 
         [Key(0)]
-        public ReadOnlyDictionary<string, IReferRestorationKey> KeyToRestorationKey {
+        public Dictionary<string, IReferRestorationKey> KeyToRestorationKey { get; set; }
+
+        private Dictionary<string, IReferRestorationKey> InnerKeyToRestorationKey {
             get {
-                if (keyToRestorationKey == null) {
-                    keyToRestorationKey = new Dictionary<string, IReferRestorationKey>();
+                if (KeyToRestorationKey == null) {
+                    KeyToRestorationKey = new Dictionary<string, IReferRestorationKey>();
                 }
-                return new ReadOnlyDictionary<string, IReferRestorationKey>(keyToRestorationKey);
-            }
-            set {
-                keyToRestorationKey = new Dictionary<string, IReferRestorationKey>(value);
+                return KeyToRestorationKey;
             }
         }
 
-        private Dictionary<string, IReferRestorationKey> keyToRestorationKey;
 
         public void Add(string SourceKey, IReferRestorationKey restorationKey) {
-            keyToRestorationKey.Add(SourceKey, restorationKey);
+            InnerKeyToRestorationKey.Add(SourceKey, restorationKey);
         }
 
         public void Remove(string sourceKey) {
-            keyToRestorationKey.Remove(sourceKey);
+            InnerKeyToRestorationKey.Remove(sourceKey);
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (KeyToRefer.TryGetValue(result.SourceKey, out var refer)) {
+            if (result?.SourceKey != null && KeyToRefer.TryGetValue(result.SourceKey, out var refer)) {
                 return refer.Refer(result);
             }
             return null;

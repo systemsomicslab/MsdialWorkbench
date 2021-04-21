@@ -8,8 +8,8 @@ namespace CompMs.Graphics.AxisManager.Generic
     public abstract class BaseAxisManager<T> : IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
-            Range = InitialRange = range;
             Bounds = bounds;
+            Range = InitialRange = range.Union(bounds);
         }
 
         public BaseAxisManager(Range range) {
@@ -17,8 +17,8 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public BaseAxisManager(BaseAxisManager<T> source) {
-            Range = InitialRange = source.InitialRange;
             Bounds = source.Bounds;
+            Range = InitialRange = source.InitialRange.Union(Bounds);
         }
 
         public AxisValue Min => Range.Minimum;
@@ -26,10 +26,13 @@ namespace CompMs.Graphics.AxisManager.Generic
         public AxisValue Max => Range.Maximum;
 
         public Range Range {
-            get => range;
+            get {
+                return ChartMargin.Add(range);
+            }
             set {
-                if (range != value) {
-                    range = value;
+                var r = ChartMargin.Remove(value);
+                if (InitialRange.Contains(r)) {
+                    range = r;
                     OnRangeChanged();
                 }
             }
@@ -39,6 +42,8 @@ namespace CompMs.Graphics.AxisManager.Generic
         public Range InitialRange { get; protected set; }
 
         public Range Bounds { get; protected set; }
+
+        public ChartMargin ChartMargin { get; protected set; } = new ChartMargin(0, 0);
 
         public List<LabelTickData> LabelTicks {
             get => labelTicks ?? GetLabelTicks();
@@ -55,7 +60,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void UpdateInitialRange(Range range) {
-            InitialRange = range;
+            InitialRange = range.Union(Bounds);
         }
 
         public bool Contains(AxisValue value) {

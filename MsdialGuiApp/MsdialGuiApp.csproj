@@ -134,7 +134,7 @@
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
-    <Compile Include="Model\Ms2SpectrumModel.cs" />
+    <Compile Include="Model\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\MsSpectrumModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
@@ -145,6 +145,7 @@
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\RawDecSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\MsSpectrumViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
@@ -172,6 +173,9 @@
     </Compile>
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ExpRef2View.xaml.cs">
+      <DependentUpon>ExpRef2View.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -436,6 +440,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ExpRef2View.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

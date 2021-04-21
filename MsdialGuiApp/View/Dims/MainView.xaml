@@ -344,16 +344,13 @@
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}"
                                  Height="25">
-                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
-                                <commonview:ExpRefView.ContextMenu>
+                            <commonview:ExpRef2View>
+                                <commonview:ExpRef2View.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:ExpRefView.ContextMenu>
-                            </commonview:ExpRefView>
+                                </commonview:ExpRef2View.ContextMenu>
+                            </commonview:ExpRef2View>
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"

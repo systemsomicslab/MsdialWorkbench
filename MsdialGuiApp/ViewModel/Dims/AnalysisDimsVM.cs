@@ -24,10 +24,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PropertyChanged += OnFilterChanged;
 
             PlotViewModel = new AnalysisPeakPlotVM(model.PlotModel, "Mass", "KMD", string.Empty, "m/z", "Kendrick mass defect");
-            WeakEventManager<AnalysisPeakPlotModel, PropertyChangedEventArgs>.AddHandler(model.PlotModel, "PropertyChanged", UpdateGraphTitleOnTargetChanged);
-
             EicViewModel = new EicViewModel(model.EicModel);
-            
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel);
+
+            WeakEventManager<AnalysisPeakPlotModel, PropertyChangedEventArgs>.AddHandler(model.PlotModel, "PropertyChanged", UpdateGraphTitleOnTargetChanged);
         }
 
         public DimsAnalysisModel Model { get; }
@@ -39,8 +39,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private AnalysisPeakPlotVM plotViewModel;
 
         private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Model.PlotModel.Target)) {
-                var peak = Model.PlotModel.Target.InnerModel;
+            if (e.PropertyName == nameof(Model.Target)) {
+                var peak = Model.Target.InnerModel;
                 PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
                 EicViewModel.GraphTitle = $"{peak.Mass:N4}[Da]  Max intensity: {EicViewModel.EicMaxIntensity:F0}";
             }
@@ -51,6 +51,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             set => SetProperty(ref eicViewModel, value);
         }
         private EicViewModel eicViewModel;
+
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
+            get => rawDecSpectrumsViewModel;
+            set => SetProperty(ref rawDecSpectrumsViewModel, value);
+        }
+        private RawDecSpectrumsViewModel rawDecSpectrumsViewModel;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;

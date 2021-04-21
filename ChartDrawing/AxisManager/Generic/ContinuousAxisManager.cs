@@ -35,15 +35,15 @@ namespace CompMs.Graphics.AxisManager.Generic
         public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
         }
 
-        public ContinuousAxisManager(ICollection<T> source) : this(source.Min(), source.Max()) {
+        public ContinuousAxisManager(ICollection<T> source) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max()) {
 
         }
 
-        public ContinuousAxisManager(ICollection<T> source, T low, T high) : this(source.Min(), source.Max(), low, high) {
+        public ContinuousAxisManager(ICollection<T> source, T low, T high) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), low, high) {
 
         }
 
-        public ContinuousAxisManager(ICollection<T> source, Range bounds) : this(source.Min(), source.Max(), bounds) {
+        public ContinuousAxisManager(ICollection<T> source, Range bounds) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), bounds) {
 
         }
 
@@ -52,7 +52,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void UpdateInitialRange(ICollection<T> source) {
-            UpdateInitialRange(new Range(Convert.ToDouble(source.Min()), Convert.ToDouble(source.Max())));
+            UpdateInitialRange(new Range(Convert.ToDouble(source.DefaultIfEmpty().Min()), Convert.ToDouble(source.DefaultIfEmpty().Max())));
         }
 
         protected override void OnRangeChanged() {

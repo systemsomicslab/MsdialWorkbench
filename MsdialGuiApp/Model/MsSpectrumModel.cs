@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
@@ -19,10 +20,10 @@ namespace CompMs.App.Msdial.Model
         public MsSpectrumModel(
             AxisData horizontalData,
             AxisData upperVerticalData,
-            AxisData lowerVerticalData,
-            string graphTitle,
             IMsSpectrumLoader upperLoader,
-            IMsSpectrumLoader lowerLoader) {
+            AxisData lowerVerticalData,
+            IMsSpectrumLoader lowerLoader,
+            string graphTitle) {
 
             HorizontalData = horizontalData;
             UpperVerticalData = upperVerticalData;
@@ -54,6 +55,19 @@ namespace CompMs.App.Msdial.Model
 
             UpperSpectrum = spectrums[0];
             LowerSpectrum = spectrums[1];
+
+            HorizontalData = new AxisData(
+                ContinuousAxisManager<double>.Build(UpperSpectrum.Concat(LowerSpectrum), peak => peak.Mass),
+                HorizontalData.Property,
+                HorizontalData.Title);
+            UpperVerticalData = new AxisData(
+                ContinuousAxisManager<double>.Build(UpperSpectrum, peak => peak.Intensity, 0, 0),
+                UpperVerticalData.Property,
+                UpperVerticalData.Title);
+            LowerVerticalData = new AxisData(
+                ContinuousAxisManager<double>.Build(LowerSpectrum, peak => peak.Intensity, 0, 0),
+                LowerVerticalData.Property,
+                LowerVerticalData.Title);
         }
 
         public AxisData HorizontalData {
@@ -156,7 +170,7 @@ namespace CompMs.App.Msdial.Model
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2DecSpectrum = new List<SpectrumPeak>();
             if (target != null) {
-                await Task.Run(() => LoadSpectrumCore(target) , token).ConfigureAwait(false);
+                ms2DecSpectrum = await Task.Run(() => LoadSpectrumCore(target) , token).ConfigureAwait(false);
             }
             token.ThrowIfCancellationRequested();
             return ms2DecSpectrum;
@@ -188,7 +202,7 @@ namespace CompMs.App.Msdial.Model
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();
 
             if (target != null) {
-                await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
+                ms2ReferenceSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
             }
 
             token.ThrowIfCancellationRequested();
@@ -201,7 +215,7 @@ namespace CompMs.App.Msdial.Model
             if (reference != null) {
                 return reference.Spectrum;
             }
-            return null;
+            return new List<SpectrumPeak>();
         }
     }
 }

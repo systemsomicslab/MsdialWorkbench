@@ -10,8 +10,15 @@ namespace CompMs.App.Msdial.ViewModel
 {
     public class MsSpectrumViewModel : ViewModelBase
     {
-        public MsSpectrumViewModel(MsSpectrumModel model) {
+        public MsSpectrumViewModel(
+            MsSpectrumModel model,
+            string labelProperty,
+            string orderingProperty) {
+
             this.model = model;
+            LabelProperty = labelProperty;
+            OrderingProperty = orderingProperty;
+
             WeakEventManager<MsSpectrumModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), ClearCache);
             WeakEventManager<MsSpectrumModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), UpdateAxis);
         }
@@ -130,5 +137,17 @@ namespace CompMs.App.Msdial.ViewModel
         public string LowerVerticalProperty => LowerVerticalData.Property;
 
         public string LowerVerticalTitle => LowerVerticalData.Title;
+
+        public string LabelProperty {
+            get => labelProperty;
+            set => SetProperty(ref labelProperty, value);
+        }
+        private string labelProperty = string.Empty;
+
+        public string OrderingProperty {
+            get => orderingProperty;
+            set => SetProperty(ref orderingProperty, value);
+        }
+        private string orderingProperty = string.Empty;
     }
 }
