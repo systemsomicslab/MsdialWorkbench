@@ -30,7 +30,7 @@ namespace CompMs.Graphics.AxisManager.Generic
                 return ChartMargin.Add(range);
             }
             set {
-                var r = ChartMargin.Remove(value);
+                var r = ChartMargin.Remove(value).Union(Bounds);
                 if (InitialRange.Contains(r)) {
                     range = r;
                     OnRangeChanged();
