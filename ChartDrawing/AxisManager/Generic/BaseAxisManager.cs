@@ -43,7 +43,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public Range Bounds { get; protected set; }
 
-        public ChartMargin ChartMargin { get; protected set; } = new ChartMargin(0, 0);
+        public ChartMargin ChartMargin { get; set; } = new ChartMargin(0, 0);
 
         public List<LabelTickData> LabelTicks {
             get => labelTicks ?? GetLabelTicks();
