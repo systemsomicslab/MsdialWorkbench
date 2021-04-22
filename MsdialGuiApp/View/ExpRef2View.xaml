@@ -5,11 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="ExpRefPlot"
              d:DesignHeight="600" d:DesignWidth="370"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:RawDecSpectrumsViewModel}}">
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisDimsVM}}">
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>

@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -13,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model
 {
-    public interface IMsSpectrumLoader
+    public interface IMsSpectrumLoader<in T>
     {
-        Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token);
-        List<SpectrumPeak> LoadSpectrum(ChromatogramPeakFeatureModel target);
+        Task<List<SpectrumPeak>> LoadSpectrumAsync(T target, CancellationToken token);
+        List<SpectrumPeak> LoadSpectrum(T target);
     }
 
-    class MsRawSpectrumLoader : IMsSpectrumLoader
+    class MsRawSpectrumLoader : IMsSpectrumLoader<ChromatogramPeakFeatureModel>
     {
         public MsRawSpectrumLoader(IDataProvider provider, ParameterBase parameter) {
             this.provider = provider;
@@ -61,11 +63,11 @@ namespace CompMs.App.Msdial.Model
         }
     }
 
-    class MsDecSpectrumLoader : IMsSpectrumLoader
+    class MsDecSpectrumLoader : IMsSpectrumLoader<object>
     {
         public MsDecSpectrumLoader(
             string deconvolutionFile,
-            IList<ChromatogramPeakFeatureModel> ms1Peaks) {
+            IReadOnlyList<object> ms1Peaks) {
 
             this.ms1Peaks = ms1Peaks;
             deconvolutionStream = File.OpenRead(deconvolutionFile);
@@ -73,35 +75,35 @@ namespace CompMs.App.Msdial.Model
         }
 
         private readonly Stream deconvolutionStream;
-        private readonly IList<ChromatogramPeakFeatureModel> ms1Peaks;
+        private readonly IReadOnlyList<object> ms1Peaks;
         private readonly int version;
         private readonly List<long> seekPointers;
         private readonly bool isAnnotationInfoIncluded;
 
-        public List<SpectrumPeak> LoadSpectrum(ChromatogramPeakFeatureModel target) {
+        public List<SpectrumPeak> LoadSpectrum(object target) {
             if (target == null) {
                 return new List<SpectrumPeak>(0);
             }
             return LoadSpectrumCore(target);
         }
 
-        public async Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        public async Task<List<SpectrumPeak>> LoadSpectrumAsync(object target, CancellationToken token) {
             var ms2DecSpectrum = new List<SpectrumPeak>();
             if (target != null) {
-                ms2DecSpectrum = await Task.Run(() => LoadSpectrumCore(target) , token).ConfigureAwait(false);
+                ms2DecSpectrum = await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
             }
             token.ThrowIfCancellationRequested();
             return ms2DecSpectrum;
         }
 
-        private List<SpectrumPeak> LoadSpectrumCore(ChromatogramPeakFeatureModel target) {
+        private List<SpectrumPeak> LoadSpectrumCore(object target) {
             var idx = ms1Peaks.IndexOf(target);
             var msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
             return msdecResult.Spectrum;
         }
     }
 
-    class MsRefSpectrumLoader : IMsSpectrumLoader
+    class MsRefSpectrumLoader : IMsSpectrumLoader<IAnnotatedObject>
     {
         public MsRefSpectrumLoader(IMatchResultRefer refer) {
             this.refer = refer;
@@ -109,14 +111,14 @@ namespace CompMs.App.Msdial.Model
 
         private readonly IMatchResultRefer refer;
 
-        public List<SpectrumPeak> LoadSpectrum(ChromatogramPeakFeatureModel target) {
+        public List<SpectrumPeak> LoadSpectrum(IAnnotatedObject target) {
             if (target == null) {
                 return new List<SpectrumPeak>();
             }
             return LoadSpectrumCore(target);
         }
 
-        public async Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        public async Task<List<SpectrumPeak>> LoadSpectrumAsync(IAnnotatedObject target, CancellationToken token) {
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();
 
             if (target != null) {
@@ -127,8 +129,8 @@ namespace CompMs.App.Msdial.Model
             return ms2ReferenceSpectrum;
         }
 
-        private List<SpectrumPeak> LoadSpectrumCore(ChromatogramPeakFeatureModel target) {
-            var representative = target.InnerModel.MatchResults.Representative;
+        private List<SpectrumPeak> LoadSpectrumCore(IAnnotatedObject target) {
+            var representative = target.MatchResults.Representative;
             var reference = refer.Refer(representative);
             if (reference != null) {
                 return reference.Spectrum;

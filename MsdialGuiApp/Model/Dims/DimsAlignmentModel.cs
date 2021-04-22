@@ -5,7 +5,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -33,6 +33,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
+            IMatchResultRefer refer,
             ParameterBase param,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
@@ -52,27 +53,28 @@ namespace CompMs.App.Msdial.Model.Dims
             ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
 
-            var mzAxis = new ContinuousAxisManager
+            var mzAxis = new ContinuousAxisManager<double>(MassMin, MassMax)
             {
-                MinValue = MassMin,
-                MaxValue = MassMax,
-                ChartMargin = new Graphics.Core.Base.ChartMargin
-                {
-                    Left = 0.05, Right = 0.05
-                },
+                ChartMargin = new Graphics.Core.Base.ChartMargin(0.05),
             };
 
-            var kmdAxis = new ContinuousAxisManager
+            var kmdAxis = new ContinuousAxisManager<double>(-0.5, 0.5)
             {
-                MinValue = -0.5,
-                MaxValue = 0.5,
-                ChartMargin = new Graphics.Core.Base.ChartMargin
-                {
-                    Left = 0.05, Right = 0.05
-                },
+                ChartMargin = new Graphics.Core.Base.ChartMargin(0.05),
             };
 
             PlotModel = new AlignmentPeakPlotModel(Ms1Spots, mzAxis, kmdAxis);
+
+            var ms2MzAxis = new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z");
+            var repIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
+            var refIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
+            var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, ms1Spots);
+            var refLoader = new MsRefSpectrumLoader(refer);
+            Ms2SpectrumModel = new MsSpectrumModel<AlignmentSpotPropertyModel>(
+                ms2MzAxis,
+                repIntensityAxis, decLoader,
+                refIntensityAxis, refLoader,
+                "Representation vs. Reference");
         }
 
         public AlignmentResultContainer Container {
@@ -133,6 +135,8 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
+        public MsSpectrumModel<AlignmentSpotPropertyModel> Ms2SpectrumModel { get; }
+
         public AlignmentSpotPropertyModel Target {
             get => target;
             set {
@@ -166,8 +170,7 @@ namespace CompMs.App.Msdial.Model.Dims
             await Task.WhenAll(
                 LoadBarItemsAsync(target, token),
                 LoadEicAsync(target, token),
-                LoadMs2SpectrumAsync(target, token),
-                LoadMs2ReferenceAsync(target, token)
+                Ms2SpectrumModel.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
         }
 

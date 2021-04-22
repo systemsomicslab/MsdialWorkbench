@@ -323,6 +323,9 @@
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\RepRef2View.xaml.cs">
+      <DependentUpon>RepRef2View.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
@@ -603,6 +606,10 @@
     <Page Include="View\MobilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\RepRef2View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\UserDefinedAdductSetWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

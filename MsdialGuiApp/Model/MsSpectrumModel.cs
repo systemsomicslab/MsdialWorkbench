@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model
 {
-    public class MsSpectrumModel : ValidatableBase
+    public class MsSpectrumModel<T>: ValidatableBase
     {
         public MsSpectrumModel(
             AxisData horizontalData,
             AxisData upperVerticalData,
-            IMsSpectrumLoader upperLoader,
+            IMsSpectrumLoader<T> upperLoader,
             AxisData lowerVerticalData,
-            IMsSpectrumLoader lowerLoader,
+            IMsSpectrumLoader<T> lowerLoader,
             string graphTitle) {
 
             HorizontalData = horizontalData;
@@ -28,21 +28,47 @@ namespace CompMs.App.Msdial.Model
             this.lowerLoader = lowerLoader;
         }
 
-        private readonly IMsSpectrumLoader upperLoader, lowerLoader;
+        private readonly IMsSpectrumLoader<T> upperLoader;
+
+        private readonly IMsSpectrumLoader<T> lowerLoader;
+        private IList<SpectrumPeak> upperSpectrum = new List<SpectrumPeak>(0);
+        private IList<SpectrumPeak> lowerSpectrum = new List<SpectrumPeak>(0);
+        private AxisData horizontalData;
+        private AxisData upperVerticalData;
+        private AxisData lowerVerticalData;
+        private string graphTitle;
 
         public IList<SpectrumPeak> UpperSpectrum {
             get => upperSpectrum;
             set => SetProperty(ref upperSpectrum, value);
         }
-        private IList<SpectrumPeak> upperSpectrum = new List<SpectrumPeak>(0);
 
         public IList<SpectrumPeak> LowerSpectrum {
             get => lowerSpectrum;
             set => SetProperty(ref lowerSpectrum, value);
         }
-        private IList<SpectrumPeak> lowerSpectrum = new List<SpectrumPeak>(0);
 
-        public async Task LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        public AxisData HorizontalData {
+            get => horizontalData;
+            set => SetProperty(ref horizontalData, value);
+        }
+
+        public AxisData UpperVerticalData {
+            get => upperVerticalData;
+            set => SetProperty(ref upperVerticalData, value);
+        }
+
+        public AxisData LowerVerticalData {
+            get => lowerVerticalData;
+            set => SetProperty(ref lowerVerticalData, value);
+        }
+
+        public string GraphTitle {
+            get => graphTitle;
+            set => SetProperty(ref graphTitle, value);
+        }
+
+        public async Task LoadSpectrumAsync(T target, CancellationToken token) {
             var spectrums = await Task.WhenAll(
                 upperLoader.LoadSpectrumAsync(target, token),
                 lowerLoader.LoadSpectrumAsync(target, token));
@@ -51,41 +77,26 @@ namespace CompMs.App.Msdial.Model
             LowerSpectrum = spectrums[1];
 
             HorizontalData = new AxisData(
-                ContinuousAxisManager<double>.Build(UpperSpectrum.Concat(LowerSpectrum), peak => peak.Mass),
+                ContinuousAxisManager<double>.Build(
+                    UpperSpectrum.Concat(LowerSpectrum),
+                    peak => peak.Mass,
+                    HorizontalData.Axis.Bounds),
                 HorizontalData.Property,
                 HorizontalData.Title);
             UpperVerticalData = new AxisData(
-                ContinuousAxisManager<double>.Build(UpperSpectrum, peak => peak.Intensity, 0, 0),
+                ContinuousAxisManager<double>.Build(
+                    UpperSpectrum,
+                    peak => peak.Intensity,
+                    UpperVerticalData.Axis.Bounds),
                 UpperVerticalData.Property,
                 UpperVerticalData.Title);
             LowerVerticalData = new AxisData(
-                ContinuousAxisManager<double>.Build(LowerSpectrum, peak => peak.Intensity, 0, 0),
+                ContinuousAxisManager<double>.Build(
+                    LowerSpectrum,
+                    peak => peak.Intensity,
+                    LowerVerticalData.Axis.Bounds),
                 LowerVerticalData.Property,
                 LowerVerticalData.Title);
         }
-
-        public AxisData HorizontalData {
-            get => horizontalData;
-            set => SetProperty(ref horizontalData, value);
-        }
-        private AxisData horizontalData;
-
-        public AxisData UpperVerticalData {
-            get => upperVerticalData;
-            set => SetProperty(ref upperVerticalData, value);
-        }
-        private AxisData upperVerticalData;
-
-        public AxisData LowerVerticalData {
-            get => lowerVerticalData;
-            set => SetProperty(ref lowerVerticalData, value);
-        }
-        private AxisData lowerVerticalData;
-
-        public string GraphTitle {
-            get => graphTitle;
-            set => SetProperty(ref graphTitle, value);
-        }
-        private string graphTitle;
     }
 }

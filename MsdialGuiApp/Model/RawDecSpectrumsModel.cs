@@ -10,11 +10,11 @@ namespace CompMs.App.Msdial.Model
         public RawDecSpectrumsModel(
             AxisData horizontalData,
             AxisData rawVerticalData,
-            IMsSpectrumLoader rawLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
             AxisData decVerticalData,
-            IMsSpectrumLoader decLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
             AxisData refVerticalData,
-            IMsSpectrumLoader refLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
             string graphTitle) {
 
             HorizontalData = horizontalData;
@@ -26,12 +26,12 @@ namespace CompMs.App.Msdial.Model
             this.refLoader = refLoader;
             GraphTitle = graphTitle;
 
-            RawRefSpectrumModels = new MsSpectrumModel(
+            RawRefSpectrumModels = new MsSpectrumModel<ChromatogramPeakFeatureModel>(
                 horizontalData,
                 rawVerticalData, rawLoader,
                 refVerticalData, refLoader,
                 graphTitle);
-            DecRefSpectrumModels = new MsSpectrumModel(
+            DecRefSpectrumModels = new MsSpectrumModel<ChromatogramPeakFeatureModel>(
                 HorizontalData,
                 decVerticalData, decLoader,
                 refVerticalData, refLoader,
@@ -45,19 +45,19 @@ namespace CompMs.App.Msdial.Model
             );
         }
 
-        private readonly IMsSpectrumLoader rawLoader, decLoader, refLoader;
+        private readonly IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader, decLoader, refLoader;
 
-        public MsSpectrumModel RawRefSpectrumModels {
+        public MsSpectrumModel<ChromatogramPeakFeatureModel> RawRefSpectrumModels {
             get => rawRefSpectrumModels;
             set => SetProperty(ref rawRefSpectrumModels, value);
         }
-        private MsSpectrumModel rawRefSpectrumModels;
+        private MsSpectrumModel<ChromatogramPeakFeatureModel> rawRefSpectrumModels;
 
-        public MsSpectrumModel DecRefSpectrumModels {
+        public MsSpectrumModel<ChromatogramPeakFeatureModel> DecRefSpectrumModels {
             get => decRefSpectrumModels;
             set => SetProperty(ref decRefSpectrumModels, value);
         }
-        private MsSpectrumModel decRefSpectrumModels;
+        private MsSpectrumModel<ChromatogramPeakFeatureModel> decRefSpectrumModels;
 
         public AxisData HorizontalData {
             get => horizontalData;

@@ -190,6 +190,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             return new DimsAlignmentModel(
                 alignmentFile,
+                Storage.DataBaseMapper,
                 Storage.ParameterBase,
                 mspAlignmentAnnotator,
                 textDBAlignmentAnnotator);

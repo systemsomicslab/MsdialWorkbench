@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.ViewModel
@@ -8,22 +9,22 @@ namespace CompMs.App.Msdial.ViewModel
         public RawDecSpectrumsViewModel(RawDecSpectrumsModel model) {
             this.model = model;
 
-            RawRefSpectrumViewModels = new MsSpectrumViewModel(model.RawRefSpectrumModels, "Mass", "Intensity");
-            DecRefSpectrumViewModels = new MsSpectrumViewModel(model.DecRefSpectrumModels, "Mass", "Intensity");
+            RawRefSpectrumViewModels = new MsSpectrumViewModel<ChromatogramPeakFeatureModel>(model.RawRefSpectrumModels, "Mass", "Intensity");
+            DecRefSpectrumViewModels = new MsSpectrumViewModel<ChromatogramPeakFeatureModel>(model.DecRefSpectrumModels, "Mass", "Intensity");
         }
 
         private readonly RawDecSpectrumsModel model;
 
-        public MsSpectrumViewModel RawRefSpectrumViewModels {
+        public MsSpectrumViewModel<ChromatogramPeakFeatureModel> RawRefSpectrumViewModels {
             get => rawRefSpectrumViewModels;
             set => SetProperty(ref rawRefSpectrumViewModels, value);
         }
-        private MsSpectrumViewModel rawRefSpectrumViewModels;
+        private MsSpectrumViewModel<ChromatogramPeakFeatureModel> rawRefSpectrumViewModels;
 
-        public MsSpectrumViewModel DecRefSpectrumViewModels {
+        public MsSpectrumViewModel<ChromatogramPeakFeatureModel> DecRefSpectrumViewModels {
             get => decRefSpectrumViewModels;
             set => SetProperty(ref decRefSpectrumViewModels, value);
         }
-        private MsSpectrumViewModel decRefSpectrumViewModels;
+        private MsSpectrumViewModel<ChromatogramPeakFeatureModel> decRefSpectrumViewModels;
     }
 }

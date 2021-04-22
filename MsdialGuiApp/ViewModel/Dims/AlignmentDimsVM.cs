@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             WeakEventManager<DimsAlignmentModel, PropertyChangedEventArgs>.AddHandler(model, "PropertyChanged", (s, e) => Application.Current.Dispatcher.Invoke(SearchCompoundCommand.RaiseCanExecuteChanged));
 
             PlotViewModel = new AlignmentPeakPlotVM(Model.PlotModel, "MassCenter", "KMD", Model.FileName, "m/z", "Kendrick mass defect");
+            Ms2SpectrumViewModel = new MsSpectrumViewModel<AlignmentSpotPropertyModel>(model.Ms2SpectrumModel, "Mass", "Intensity");
         }
 
         public DimsAlignmentModel Model { get; }
@@ -44,6 +45,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             private set => SetProperty(ref plotViewModel, value);
         }
         private AlignmentPeakPlotVM plotViewModel;
+
+        public MsSpectrumViewModel<AlignmentSpotPropertyModel> Ms2SpectrumViewModel {
+            get => ms2SpectrumViewModel;
+            private set => SetProperty(ref ms2SpectrumViewModel, value);
+        }
+        private MsSpectrumViewModel<AlignmentSpotPropertyModel> ms2SpectrumViewModel;
 
         public double MassLower {
             get => massLower;

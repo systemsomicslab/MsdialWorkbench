@@ -8,10 +8,10 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public class MsSpectrumViewModel : ViewModelBase
+    public class MsSpectrumViewModel<T> : ViewModelBase
     {
         public MsSpectrumViewModel(
-            MsSpectrumModel model,
+            MsSpectrumModel<T> model,
             string labelProperty,
             string orderingProperty) {
 
@@ -19,11 +19,11 @@ namespace CompMs.App.Msdial.ViewModel
             LabelProperty = labelProperty;
             OrderingProperty = orderingProperty;
 
-            WeakEventManager<MsSpectrumModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), ClearCache);
-            WeakEventManager<MsSpectrumModel, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), UpdateAxis);
+            WeakEventManager<MsSpectrumModel<T>, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), ClearCache);
+            WeakEventManager<MsSpectrumModel<T>, PropertyChangedEventArgs>.AddHandler(model, nameof(model.PropertyChanged), UpdateAxis);
         }
 
-        private readonly MsSpectrumModel model;
+        private readonly MsSpectrumModel<T> model;
 
         private void ClearCache(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(model.LowerSpectrum)) {

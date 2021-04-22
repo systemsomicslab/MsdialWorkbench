@@ -358,16 +358,13 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}" 
                                  Height="25">
-                            <commonview:RepRefView 
-                                                   Spectrum="{Binding Ms2Spectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
-                                <commonview:RepRefView.ContextMenu>
+                            <commonview:RepRef2View>
+                                <commonview:RepRef2View.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:RepRefView.ContextMenu>
-                            </commonview:RepRefView>
+                                </commonview:RepRef2View.ContextMenu>
+                            </commonview:RepRef2View>
                         </TabItem>
 
                     </TabControl>

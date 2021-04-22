@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Dims
             );
 
             var ms2MeasureIntensityAxis = new AxisData(
-                new ContinuousAxisManager<double>(0, 1),
+                new ContinuousAxisManager<double>(0, 1, 0, 0),
                 "Intensity",
                 "Abundance");
             Ms2SpectrumModel = new RawDecSpectrumsModel(
@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 rawLoader: new MsRawSpectrumLoader(provider, Parameter),
                 decVerticalData: ms2MeasureIntensityAxis,
                 decLoader: new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks),
-                refVerticalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Intensity", "Abundance"),
+                refVerticalData: new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance"),
                 refLoader: new MsRefSpectrumLoader(refer),
                 graphTitle: "Measure vs. Reference");
 
