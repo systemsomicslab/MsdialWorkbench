@@ -4,15 +4,12 @@ using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Windows.Media;
-using System.Linq;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Components;
-using CompMs.Common.Enum;
 using CompMs.Common.DataObj.Property;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : ViewModelBase
+    public class ChromatogramPeakFeatureModel : ViewModelBase, IAnnotatedObject
     {
         #region Property
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -24,6 +21,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double PeakArea => innerModel.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
+        public MsScanMatchResultContainer MatchResults {
+            get => innerModel.MatchResults;
+            set => innerModel.MatchResults = value;
+        }
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
