@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
@@ -42,7 +41,6 @@ namespace CompMs.App.Msdial.Model.Dims
             fileName = alignmentFileBean.FileName;
             resultFile = alignmentFileBean.FilePath;
             eicFile = alignmentFileBean.EicFilePath;
-            spectraFile = alignmentFileBean.SpectraFilePath;
 
             this.Parameter = param;
             this.mspAnnotator = mspAnnotator;
@@ -51,7 +49,6 @@ namespace CompMs.App.Msdial.Model.Dims
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
             ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
-            MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
 
             var mzAxis = new ContinuousAxisManager<double>(MassMin, MassMax)
             {
@@ -97,10 +94,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ParameterBase Parameter { get; }
 
-        private readonly List<long> seekPointers = new List<long>();
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
-        private readonly string spectraFile = string.Empty;
 
         public IAnnotator<AlignmentSpotProperty, MSDecResult> MspAnnotator => mspAnnotator;
         public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
@@ -234,79 +229,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             token.ThrowIfCancellationRequested();
             EicChromatograms = eicChromatograms;
-        }
-
-        public List<SpectrumPeak> Ms2Spectrum {
-            get => ms2Spectrum;
-            set {
-                if (SetProperty(ref ms2Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2Spectrum = new List<SpectrumPeak>();
-
-        public List<SpectrumPeak> Ms2ReferenceSpectrum {
-            get => ms2ReferenceSpectrum;
-            set {
-                if (SetProperty(ref ms2ReferenceSpectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2ReferenceSpectrum = new List<SpectrumPeak>();
-
-        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0;
-        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0;
-
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var ms2Spectrum = new List<SpectrumPeak>();
-            if (target != null) {
-                await Task.Run(() => {
-                    var idx = this.ms1Spots.IndexOf(target);
-                    msdecResult = MsdecResultsReader.ReadMSDecResult(spectraFile, seekPointers[idx]);
-                    ms2Spectrum = msdecResult.Spectrum;
-                }, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2Spectrum = ms2Spectrum;
-        }
-
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var ms2ReferenceSpectrum = new List<SpectrumPeak>();
-            if (target != null) {
-                await Task.Run(() => {
-                    var representative = RetrieveMspMatchResult(target.innerModel);
-                    if (representative == null)
-                        return;
-
-                    var reference = mspAnnotator.Refer(representative);
-                    if (reference != null) {
-                        token.ThrowIfCancellationRequested();
-                        ms2ReferenceSpectrum = reference.Spectrum;
-                    }
-                }).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2ReferenceSpectrum = ms2ReferenceSpectrum;
-        }
-
-        MsScanMatchResult RetrieveMspMatchResult(AlignmentSpotProperty prop) {
-            if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
-                if ((representative.Source & (SourceType.Unknown | SourceType.Manual)) == (SourceType.Unknown | SourceType.Manual))
-                    return null;
-                if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
-                    return null;
-                }
-                if ((representative.Source & SourceType.Unknown) == SourceType.None) {
-                    return representative;
-                }
-            }
-            return prop.MspBasedMatchResult;
         }
 
         public void SaveSpectra(string filename) {
