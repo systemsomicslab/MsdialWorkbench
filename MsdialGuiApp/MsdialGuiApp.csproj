@@ -123,6 +123,7 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\AlignmentEicModel.cs" />
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\MsSpectrumModel.cs" />
+    <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
@@ -159,6 +161,9 @@
     </Compile>
     <Compile Include="LC\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\AlignmentPeakPlotView.xaml.cs">
       <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
@@ -255,7 +260,7 @@
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
-    <Compile Include="ViewModel\PeakItem.cs" />
+    <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
@@ -420,6 +425,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\DataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

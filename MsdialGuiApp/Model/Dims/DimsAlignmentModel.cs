@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -72,6 +71,13 @@ namespace CompMs.App.Msdial.Model.Dims
                 repIntensityAxis, decLoader,
                 refIntensityAxis, refLoader,
                 "Representation vs. Reference");
+
+            AlignmentEicModel = new AlignmentEicModel(
+                chromatogramSpotSerializer,
+                eicFile,
+                Parameter.FileID_ClassName,
+                "TIC, EIC, or BPC chromatograms",
+                "m/z");
         }
 
         public AlignmentResultContainer Container {
@@ -132,6 +138,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public MsSpectrumModel<AlignmentSpotPropertyModel> Ms2SpectrumModel { get; }
 
+        public AlignmentEicModel AlignmentEicModel { get; }
+
         public AlignmentSpotPropertyModel Target {
             get => target;
             set {
@@ -164,7 +172,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target, CancellationToken token = default) {
             await Task.WhenAll(
                 LoadBarItemsAsync(target, token),
-                LoadEicAsync(target, token),
+                AlignmentEicModel.LoadEicAsync(target, token),
                 Ms2SpectrumModel.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
         }
@@ -187,48 +195,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             token.ThrowIfCancellationRequested();
             BarItems = barItems;
-        }
-
-        public List<Chromatogram> EicChromatograms {
-            get => eicChromatograms;
-            set {
-                if (SetProperty(ref eicChromatograms, value)) {
-                    OnPropertyChanged(nameof(EicMax));
-                    OnPropertyChanged(nameof(EicMin));
-                    OnPropertyChanged(nameof(IntensityMax));
-                    OnPropertyChanged(nameof(IntensityMin));
-                }
-            }
-        }
-        private List<Chromatogram> eicChromatograms;
-
-        public double EicMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Time) ?? 0;
-        public double EicMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Time) ?? 0;
-        public double IntensityMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0;
-        public double IntensityMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0;
-
-        async Task LoadEicAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var eicChromatograms = new List<Chromatogram>();
-            if (target != null) {
-                // maybe using file pointer is better
-                eicChromatograms = await Task.Run(() => {
-                    var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                    var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                    foreach (var peakinfo in spotinfo.PeakInfos) {
-                        var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
-                        var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                        chroms.Add(new Chromatogram
-                        {
-                            Class = Parameter.FileID_ClassName[peakinfo.FileID],
-                            Peaks = items,
-                            PeakArea = peakitems,
-                        });
-                    }
-                    return chroms;
-                }, token).ConfigureAwait(false);
-            }
-            token.ThrowIfCancellationRequested();
-            EicChromatograms = eicChromatograms;
         }
 
         public void SaveSpectra(string filename) {

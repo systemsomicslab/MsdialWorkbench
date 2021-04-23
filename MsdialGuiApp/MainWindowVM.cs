@@ -172,7 +172,6 @@ namespace CompMs.App.Msdial
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                Storage.DataBaseMapper.Restore(Storage.ParameterBase);
 
                 MethodVM = CreateNewMethodVM(Storage.ParameterBase.MachineCategory, Storage);
                 MethodVM.LoadProject();

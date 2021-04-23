@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PlotViewModel = new AlignmentPeakPlotVM(Model.PlotModel, "MassCenter", "KMD", Model.FileName, "m/z", "Kendrick mass defect");
             Ms2SpectrumViewModel = new MsSpectrumViewModel<AlignmentSpotPropertyModel>(model.Ms2SpectrumModel, "Mass", "Intensity");
+            AlignmentEicViewModel = new AlignmentEicViewModel(Model.AlignmentEicModel);
         }
 
         public DimsAlignmentModel Model { get; }
@@ -51,6 +52,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             private set => SetProperty(ref ms2SpectrumViewModel, value);
         }
         private MsSpectrumViewModel<AlignmentSpotPropertyModel> ms2SpectrumViewModel;
+
+        public AlignmentEicViewModel AlignmentEicViewModel {
+            get => alignmentEicViewModel;
+            private set => SetProperty(ref alignmentEicViewModel, value);
+        }
+        private AlignmentEicViewModel alignmentEicViewModel;
 
         public double MassLower {
             get => massLower;

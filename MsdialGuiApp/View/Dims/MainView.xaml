@@ -270,7 +270,7 @@
 
 
                         <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
-                            <local:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
+                            <commonview:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>

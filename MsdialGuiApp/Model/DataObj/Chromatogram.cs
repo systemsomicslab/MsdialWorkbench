@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.ViewModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {

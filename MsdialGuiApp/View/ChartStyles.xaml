@@ -21,6 +21,8 @@
     </Style>
     
     <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="BasicChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
@@ -87,6 +89,8 @@
     </Style>
 
     <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="RotateLeftChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">
@@ -158,6 +162,8 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type chart:MultiChart}">
@@ -236,6 +242,8 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="OverlapChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type chart:MultiChart}">
