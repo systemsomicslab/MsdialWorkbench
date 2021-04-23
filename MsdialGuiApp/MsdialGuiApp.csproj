@@ -123,9 +123,11 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\IBarItemsLoader.cs" />
     <Compile Include="Model\AlignmentEicModel.cs" />
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\AnalysisPeakPlotModel.cs" />
+    <Compile Include="Model\BarChartModel.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />
     <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
+    <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
@@ -167,6 +170,9 @@
     </Compile>
     <Compile Include="View\AlignmentPeakPlotView.xaml.cs">
       <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -433,6 +439,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AlignmentPeakPlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\BarChartView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

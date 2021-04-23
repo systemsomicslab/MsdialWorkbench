@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -11,7 +12,6 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -78,6 +78,16 @@ namespace CompMs.App.Msdial.Model.Dims
                 Parameter.FileID_ClassName,
                 "TIC, EIC, or BPC chromatograms",
                 "m/z");
+
+            BarChartModel = new BarChartModel(
+                null,
+                new AxisData(
+                    new ContinuousAxisManager<double>(0, 1, 0, 0) {
+                        ChartMargin = new ChartMargin(0, 0.025)
+                    },
+                    "Height",
+                    "Height"),
+                new HeightBarItemsLoader(Parameter.FileID_ClassName));
         }
 
         public AlignmentResultContainer Container {
@@ -140,6 +150,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public AlignmentEicModel AlignmentEicModel { get; }
 
+        public BarChartModel BarChartModel { get; }
+
         public AlignmentSpotPropertyModel Target {
             get => target;
             set {
@@ -171,30 +183,10 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target, CancellationToken token = default) {
             await Task.WhenAll(
-                LoadBarItemsAsync(target, token),
+                BarChartModel.LoadBarItemsAsync(target, token),
                 AlignmentEicModel.LoadEicAsync(target, token),
                 Ms2SpectrumModel.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
-        }
-
-        public List<BarItem> BarItems {
-            get => barItems;
-            set => SetProperty(ref barItems, value);
-        }
-        private List<BarItem> barItems = new List<BarItem>();
-
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var barItems = new List<BarItem>();
-            if (target != null) {
-                // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
-                barItems = await Task.Run(() =>
-                    target.AlignedPeakProperties
-                    .GroupBy(peak => Parameter.FileID_ClassName[peak.FileID])
-                    .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-                    .ToList(), token).ConfigureAwait(false);
-            }
-            token.ThrowIfCancellationRequested();
-            BarItems = barItems;
         }
 
         public void SaveSpectra(string filename) {
