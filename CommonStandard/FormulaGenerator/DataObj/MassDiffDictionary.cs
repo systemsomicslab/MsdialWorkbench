@@ -53,5 +53,13 @@ namespace CompMs.Common.FormulaGenerator.DataObj {
         public static double ChlorideMass = 34.96885268000;
         public static double BromineMass = 78.91833710000;
         public static double IodineMass = 126.90447300000;
+
+        public static double Carbon13Mass = 13.00335484;
+        public static double Hydrogen2Mass = 2.014101778;
+        public static double Nitrogen15Mass = 15.0001089;
+        public static double Oxygen18Mass = 17.999161;
+        public static double Sulfur34Mass = 33.9678669;
+        public static double Chloride37Mass = 36.96590259;
+        public static double Bromine81Mass = 80.9162906;
     }
 }

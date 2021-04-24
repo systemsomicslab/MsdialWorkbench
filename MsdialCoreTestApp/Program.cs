@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Process;
+﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Process;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -60,23 +61,25 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // lcimms
-            args = new string[] {
-                "lcimms"
-                , "-i"
-                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
-                , "-o"
-                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
-                , "-m"
-                , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF\lcimms_param.txt"
-                , "-p"
-            };
+            //args = new string[] {
+            //    "lcimms"
+            //    , "-i"
+            //    , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
+            //    , "-o"
+            //    , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF"
+            //    , "-m"
+            //    , @"D:\msdial_test\Msdial\out\IonMobilityDemoFiles\IonMobilityDemoFiles\IBF\lcimms_param.txt"
+            //    , "-p"
+            //};
 
-            MainProcess.Run(args);
+            //MainProcess.Run(args);
 
             var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
             var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
             var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
             var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
+
+            new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
             // Console.WriteLine("Lcms");
             // DumpN(lcmsfile, 50);
             // Console.WriteLine("Dims");
