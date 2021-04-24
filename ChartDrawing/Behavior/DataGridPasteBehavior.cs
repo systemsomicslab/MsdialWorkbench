@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,23 +22,21 @@ namespace CompMs.Graphics.Behavior
 
         private static void EnablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var datagrid = d as DataGrid;
-            if (datagrid == null) return;
+            if (!(d is DataGrid datagrid)) return;
 
             if ((bool)e.NewValue)
             {
-                datagrid.KeyDown += datagrid_KeyDown;
+                datagrid.KeyDown += Datagrid_KeyDown;
             }
             else
             {
-                datagrid.KeyDown -= datagrid_KeyDown;
+                datagrid.KeyDown -= Datagrid_KeyDown;
             }
         }
 
-        private static void datagrid_KeyDown(object sender, KeyEventArgs e)
+        private static void Datagrid_KeyDown(object sender, KeyEventArgs e)
         {
-            var datagrid = sender as DataGrid;
-            if (datagrid == null) return;
+            if (!(sender is DataGrid datagrid)) return;
 
             if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
             {

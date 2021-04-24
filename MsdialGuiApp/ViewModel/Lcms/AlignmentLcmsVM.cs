@@ -152,9 +152,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
         public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
         public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        internal DisplayFilter DisplayFilters {
+        public DisplayFilter DisplayFilters {
             get => displayFilters;
-            set {
+            internal set {
                 if (SetProperty(ref displayFilters, value))
                     Ms1Spots?.Refresh();
             }

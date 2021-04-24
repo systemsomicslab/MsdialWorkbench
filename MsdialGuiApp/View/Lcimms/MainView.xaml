@@ -1,0 +1,324 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcimms.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             mc:Ignorable="d" 
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             Name="MainControl"
+             d:DesignHeight="775" d:DesignWidth="1280">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <manager:ContinuousAxisManager x:Key="ChromAxis"
+                                           MinValue="{Binding DataContext.AnalysisVM.ChromMin, Source={x:Reference Name=MainControl}}"
+                                           MaxValue="{Binding DataContext.AnalysisVM.ChromMax, Source={x:Reference Name=MainControl}}"
+                                           ChartMargin="0.05" />
+            <manager:ContinuousAxisManager x:Key="MassAxis"
+                                           MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
+                                           MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
+                                           ChartMargin="0.05" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Name="Grid_MainWindow">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" MinWidth="150"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--<local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>-->
+        <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
+
+        <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid Name="Grid_DataViewer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="370"/>
+                    <ColumnDefinition Width="370" MinWidth="370" MaxWidth="730" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="200" />
+                        <ColumnDefinition Width="*" MinWidth="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="220"/>
+                        <RowDefinition Height="*" MinHeight="200" />
+                    </Grid.RowDefinitions>
+
+                    <!--
+                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisVM}"
+                                                  IsEnabled="False"
+                                                  Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
+                    -->
+
+                    <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
+                                               Spectrum="{Binding Ms1Spectrum}"
+                                               SplashKey="{Binding Ms1SplashKey}"
+                                               MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
+                                               MassAxis="{StaticResource MassAxis}"
+                                               Grid.Row="2" Grid.Column="0"/>
+
+                    <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                        <TabItem Header="Peak spot viewer" 
+                                 Name="TabItem_RtMzPairwisePlotPeakView" 
+                                 Height="25"
+                                 DataContext="{Binding AnalysisVM}"
+                                 Background="{StaticResource LightThemeColor}">
+                            <commonview:PeakView HorizontalAxis="{StaticResource ChromAxis}"
+                                                 VerticalAxis="{StaticResource MassAxis}"
+                                                 HorizontalProperty="ChromXValue"
+                                                 VerticalProperty="Mass"
+                                                 HorizontalTitle="Drift time [1/k0]"
+                                                 VerticalTitle="m/z">
+                                <commonview:PeakView.GraphTitle>
+                                    <MultiBinding Mode="OneWay" StringFormat="Spot ID: {0} Scan: {1} DT 1/k0: {2:N4} Mass m/z: {3:N5}">
+                                        <Binding Path="Target.InnerModel.MasterPeakID" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.MS1RawSpectrumIdTop" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.ChromXs.Value" Mode="OneWay"/>
+                                        <Binding Path="Target.InnerModel.Mass" Mode="OneWay"/>
+                                    </MultiBinding>
+                                </commonview:PeakView.GraphTitle>
+                                <commonview:PeakView.LabelTemplate>
+                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="9"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </commonview:PeakView.LabelTemplate>
+                            </commonview:PeakView>
+                        </TabItem>
+
+                        <TabItem Header="Alignment spot viewer" 
+                                 Name="TabItem_RtMzPairwisePlotAlignmentView" 
+                                 Height="25"
+                                 DataContext="{Binding AlignmentVM}"
+                                 Background="{StaticResource LightThemeColor}">
+                            <!--
+                            <local:AlignmentView/>
+                            -->
+                        </TabItem>
+
+                    </TabControl>
+
+                    <TabControl Name="TabControl_EicViewAndBarChart"
+                                xmlns:eic="clr-namespace:CompMs.App.Msdial.View.EicAndBar"
+                                Margin="0,-1,0,0"
+                                Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
+
+                        <TabItem Header="EIC of focused spot" 
+                                 Height="26"
+                                 Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
+                            <commonview:EicView DataContext="{Binding AnalysisVM}"
+                                                ChromAxis="{StaticResource ChromAxis}"
+                                                ChromTitle="Drift time [1/k0]"/>
+                        </TabItem>
+
+                        <TabItem Header="Bar chart of aligned spot" 
+                                 Name="TabItem_BarChartViewer" 
+                                 Height="26"
+                                 Background="{StaticResource LightThemeColor}">
+                                 <!--
+                            <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
+                            -->
+                        </TabItem>
+
+                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
+                        <!--
+                            <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
+                            -->
+                        </TabItem>
+
+                    </TabControl>
+
+                    <Grid Grid.Row="2" Grid.Column="1">
+
+                        <Button Name="Button_TableViewer" Height="25" 
+                                Width="110" Margin="0,2,0,0" 
+                                HorizontalContentAlignment="Right"
+                                Background="AliceBlue"
+                                VerticalAlignment="Top" HorizontalAlignment="Right">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Resources/Table.png"/>
+                                    <TextBlock Text=" Show ion table " VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+
+                    <GridSplitter Margin="0, 0, 0, 0" 
+                                  Width="2" 
+                                  ResizeDirection="Columns" 
+                                  Grid.Column="1" Grid.RowSpan="3" 
+                                  VerticalAlignment="Stretch" HorizontalAlignment="Left" />
+
+                    <GridSplitter Margin="0,0,0,-2" 
+                                  Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                                  Grid.ColumnSpan="2" 
+                                  VerticalAlignment="Bottom" 
+                                  HorizontalAlignment="Stretch" 
+                                  Grid.Row="1" />
+
+                </Grid>
+
+                <Grid Grid.Column="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MinHeight="235" />
+                        <RowDefinition Height="*" MinHeight="300" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+
+                        <TabControl Name="TabControl_PeakCharacter"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                    Grid.Row="0">
+
+                            <TabItem Header="Basic peak property" 
+                                 Name="TabItem_BasicProperty" 
+                                 Height="25"
+                                 Background="{StaticResource LightThemeColor}">
+                                 <!--
+                                <local:PeakPropertyView DataContext="{Binding Target}"/>
+                                -->
+                            </TabItem>
+
+                            <TabItem Header="Compound detail" 
+                                 Name="TabItem_CompoundDetail" 
+                                 Height="25"
+                                 Background="{StaticResource LightThemeColor}">
+                                 <!--
+                                <local:CompoundDetailView DataContext="{Binding Target}"/>
+                                -->
+                            </TabItem>
+                         
+                        </TabControl>
+
+                    </Grid>
+
+                    <TabControl Name="TabControl_MS2Viewer"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.Row="1" >
+
+                        <TabItem Name="TabItem_MeasurementVsReference" 
+                                 Header="Exp. vs. Ref." 
+                                 DataContext="{Binding AnalysisVM}"
+                                 Background="{StaticResource LightThemeColor}"
+                                 Height="25">
+                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
+                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
+                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
+                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
+                                <commonview:ExpRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </commonview:ExpRefView.ContextMenu>
+                            </commonview:ExpRefView>
+                        </TabItem>
+
+                        <TabItem Header="MS2 Chrom." 
+                                 Name="TabItem_MS2Chromatogram" 
+                                 Height="25"
+                                 Background="{StaticResource LightThemeColor}">
+                                 <!--
+                            <ms2:ChromatogramView />
+                            -->
+                        </TabItem>
+
+                        <TabItem Header="Raw vs. Purified" 
+                                 Name="TabItem_RawVsDeconvolution" 
+                                 Height="25"
+                                 Background="{StaticResource LightThemeColor}">
+
+<!--
+                            <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
+                            -->
+                        </TabItem>
+
+                        <TabItem Name="TabItem_RepresentativeVsReference"
+                                 Header="Rep. vs. Ref." 
+                                 DataContext="{Binding AlignmentVM}"
+                                 Background="{StaticResource LightThemeColor}" 
+                                 Height="25">
+                            <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
+                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
+                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
+                                <commonview:RepRefView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
+                                    </ContextMenu>
+                                </commonview:RepRefView.ContextMenu>
+                            </commonview:RepRefView>
+                        </TabItem>
+
+                    </TabControl>
+
+                    <GridSplitter Margin="0, 0, 0, -2" Height="2" 
+                                  ResizeDirection="Rows"
+                                  ResizeBehavior="CurrentAndNext" 
+                                  Grid.Row="0" VerticalAlignment="Bottom" 
+                                  HorizontalAlignment="Stretch" />
+
+                </Grid>
+                <GridSplitter Margin="0, 0, 0, 0" Width="2" 
+                              ResizeDirection="Columns" 
+                              Grid.Column="1" Grid.RowSpan="2" 
+                              VerticalAlignment="Stretch" 
+                              HorizontalAlignment="Left" />
+
+            </Grid>
+        </Grid>
+        <!--
+        <local:Footer DataContext="{Binding AnalysisVM}"
+                      ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
+                      Grid.Row="2" Grid.Column="1"/>
+                      -->
+
+        <GridSplitter Margin="0,0,0,0" 
+                    Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
+                    VerticalAlignment="Bottom" 
+                    HorizontalAlignment="Stretch" 
+                    Grid.Row="1" Grid.Column="1"/>
+    </Grid>
+</UserControl>

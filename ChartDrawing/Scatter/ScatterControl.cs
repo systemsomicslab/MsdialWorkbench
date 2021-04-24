@@ -475,8 +475,8 @@ namespace CompMs.Graphics.Scatter
                 }
                 if (geometry != null) {
                     brush = new DrawingBrush(new GeometryDrawing(brush, null, geometry));
-                    brush.Freeze();
                 }
+                brush?.Freeze();
                 return cache[o] = brush;
             }
 

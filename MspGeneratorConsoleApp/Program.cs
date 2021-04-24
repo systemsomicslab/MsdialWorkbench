@@ -101,16 +101,16 @@ namespace CompMs.MspGenerator
 
             ////// mtb-info上で最終的なmspを出力
             //// 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
-            var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
 
-            Common.jointMspFiles(mspFolder, exportFileName);
-            //////結合したファイルを下記フォルダに移動
-            workingDirectry = mspFolder + @"\LBM\";
-            System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            ////
-            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-                 mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
+            //Common.jointMspFiles(mspFolder, exportFileName);
+            ////////結合したファイルを下記フォルダに移動
+            //workingDirectry = mspFolder + @"\LBM\";
+            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+            //////
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
 
 
@@ -131,7 +131,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210412_lipidLibraryChk\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -167,15 +167,15 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(sphingoChains, acylChains, "Cer_NP", outputFolder);
 
 
-            //sphingoChains = Common.GenerateSphingoChains(16, 0, 22, 3);
-            //acylChains = Common.GenerateAcylChains(12, 0, 38, 6);
-            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_AP", outputFolder);
+            sphingoChains = Common.GenerateSphingoChains(16, 0, 22, 3);
+            acylChains = Common.GenerateAcylChains(12, 0, 38, 6);
+            Common.switchingLipid(sphingoChains, acylChains, "HexCer_AP", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "HexCer_NS", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "HexCer_NDS", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "Hex2Cer", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "Hex3Cer", outputFolder);
-            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_HS", outputFolder);
-            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_HDS", outputFolder);
+            Common.switchingLipid(sphingoChains, acylChains, "HexCer_HS", outputFolder);
+            Common.switchingLipid(sphingoChains, acylChains, "HexCer_HDS", outputFolder);
 
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 28, 3);
             //acylChains = Common.GenerateAcylChains(12, 0, 28, 6);
@@ -183,8 +183,8 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(sphingoChains, acylChains, "SHexCer", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "SHexCer+O", outputFolder);
 
-            sphingoChains = Common.GenerateSphingoChains(16, 0, 20, 2);
-            acylChains = Common.GenerateAcylChains(14, 0, 28, 2);
+            //sphingoChains = Common.GenerateSphingoChains(16, 0, 20, 2);
+            //acylChains = Common.GenerateAcylChains(14, 0, 28, 2);
             //Common.switchingLipid(sphingoChains, acylChains, "GM3", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "GD1a", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "GD1b", outputFolder);
@@ -610,14 +610,18 @@ namespace CompMs.MspGenerator
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
-                var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20210104_calc\";
-                var resultFile = workingFolder + @"\verification\result_other01.txt";
-                var rtTrainModel = workingFolder + @"\test\masterRT_NCDK_20210107120951.model";
-                var rtTestFile = workingFolder + @"\masterRT_NCDK_20210104113720.txt";
-                var ccsTrainModel = workingFolder + @"\test\masterCCS_NCDK_20210106162216.model";
-                var ccsTestFile = workingFolder + @"\masterCCS_NCDK_20210104135202.txt";
+                //var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\prediction1\";
+                //var rtTrainModel = workingFolder + @"\test\masterRT_NCDK_202101081033.model";
+                //var rtTestFile = workingFolder + @"\finished0409_calced_015_.txt";
+                //var ccsTrainModel = workingFolder + @"\test\masterCCS_NCDK_202101081945.model";
+                //var ccsTestFile = rtTestFile;
+                //var resultFile = rtTestFile + @"_predicted.txt";
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                predictedFilesDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\prediction1\NCDKpredicted\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+                dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20210409.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+
+                //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
 
                 {

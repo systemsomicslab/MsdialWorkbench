@@ -155,9 +155,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
         public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
-        internal DisplayFilter DisplayFilters {
+        public DisplayFilter DisplayFilters {
             get => displayFilters;
-            set => SetProperty(ref displayFilters, value);
+            internal set => SetProperty(ref displayFilters, value);
         }
         private DisplayFilter displayFilters = 0;
 

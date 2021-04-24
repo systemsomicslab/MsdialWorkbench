@@ -138,9 +138,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
         public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
 
-        internal DisplayFilter DisplayFilters {
+        public DisplayFilter DisplayFilters {
             get => displayFilters;
-            set {
+            internal set {
                 if (SetProperty(ref displayFilters, value))
                     Ms1Spots?.Refresh();
             }

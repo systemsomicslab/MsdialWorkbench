@@ -7,7 +7,7 @@ namespace CompMs.App.Msdial.ViewModel
         public double Intensity => innerModel.Intensity;
         public double? ChromXValue => innerModel.ChromXs?.Value;
 
-        private ChromatogramPeak innerModel;
+        private readonly ChromatogramPeak innerModel;
         public ChromatogramPeakWrapper(ChromatogramPeak peak) {
             innerModel = peak;
         }

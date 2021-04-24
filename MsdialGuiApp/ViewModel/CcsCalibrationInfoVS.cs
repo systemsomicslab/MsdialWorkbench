@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel
             this.ccsCoef = ccsCoef;
         }
 
-        private CoefficientsForCcsCalculation ccsCoef;
+        private readonly CoefficientsForCcsCalculation ccsCoef;
 
         public string FilePath {
             get => filePath;
