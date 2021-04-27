@@ -39,14 +39,15 @@ namespace CompMs.MsdialCore.Parser
         }
 
         public override IMatchResultRefer Restore(ParameterBase parameter) {
+            var dbpath = Path.GetFullPath(Path.Combine(parameter.ProjectFolderPath, DataBasePath));
             var db = new List<MoleculeMsReference>();
-            if (!string.IsNullOrEmpty(DataBasePath)) {
-                var ext = Path.GetExtension(DataBasePath);
+            if (!string.IsNullOrEmpty(dbpath)) {
+                var ext = Path.GetExtension(dbpath);
                 if (ext == ".msp" || ext == ".msp2") {
-                    db = LibraryHandler.ReadMspLibrary(DataBasePath).OrderBy(msp => msp.PrecursorMz).ToList();
+                    db = LibraryHandler.ReadMspLibrary(dbpath).OrderBy(msp => msp.PrecursorMz).ToList();
                 }
                 else if (ext == ".lbm" || ext == ".lbm2") {
-                    db = LibraryHandler.ReadLipidMsLibrary(DataBasePath, parameter).OrderBy(msp => msp.PrecursorMz).ToList();
+                    db = LibraryHandler.ReadLipidMsLibrary(dbpath, parameter).OrderBy(msp => msp.PrecursorMz).ToList();
                 }
             }
             return new DataBaseRefer(db);
@@ -61,9 +62,10 @@ namespace CompMs.MsdialCore.Parser
         }
 
         public override IMatchResultRefer Restore(ParameterBase parameter) {
+            var dbpath = Path.GetFullPath(Path.Combine(parameter.ProjectFolderPath, DataBasePath));
             var db = new List<MoleculeMsReference>();
-            if (!string.IsNullOrEmpty(DataBasePath)) {
-                db = TextLibraryParser.TextLibraryReader(DataBasePath, out var _);
+            if (!string.IsNullOrEmpty(dbpath)) {
+                db = TextLibraryParser.TextLibraryReader(dbpath, out var _);
             }
             return new DataBaseRefer(db);
         }

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
@@ -12,6 +13,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -82,8 +84,9 @@ namespace CompMs.App.Msdial
 
             MethodVM = method;
 
-            storage.DataBaseMapper.Add("MspDB", new MspDbRestorationKey(storage.ParameterBase.MspFilePath));
-            storage.DataBaseMapper.Add("TextDB", new TextDbRestorationKey(storage.ParameterBase.TextDBFilePath));
+            var parameter = storage.ParameterBase;
+            storage.DataBaseMapper.Add("MspDB", new MspDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFolderPath, parameter.MspFilePath)));
+            storage.DataBaseMapper.Add("TextDB", new TextDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFolderPath, parameter.TextDBFilePath)));
             storage.DataBaseMapper.Restore(storage.ParameterBase);
 
             SaveProject(method, storage);
