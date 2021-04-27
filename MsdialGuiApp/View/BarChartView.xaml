@@ -22,24 +22,16 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <manager:CategoryAxisManager x:Key="ClassAxis"
-                                         ItemsSource="{Binding DataContext.BarItems, Source={x:Reference Name=ClassPeakBarView}}"
-                                         IdentityPropertyName="Class" DisplayPropertyName="Class"/>
-            <manager:AutoContinuousAxisManager x:Key="PeakAxis"
-                                               ItemsSource="{Binding DataContext.BarItems, Source={x:Reference Name=ClassPeakBarView}}"
-                                               ValuePropertyName="Height"
-                                               Bounds="0,0"
-                                               ChartMargin="0,0.25" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:SimpleChartControl HorizontalAxis="{StaticResource ClassAxis}"
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
                                   VerticalAxis="{Binding VerticalAxis}"
-                                  HorizontalTitle="Class"
+                                  HorizontalTitle="{Binding HorizontalTitle}"
                                   VerticalTitle="{Binding VerticalTitle}"
                                   Style="{StaticResource BasicChart}">
             <bar:BarControl ItemsSource="{Binding BarItems}"
-                            HorizontalPropertyName="Class"
+                            HorizontalPropertyName="{Binding HorizontalProperty}"
                             VerticalPropertyName="{Binding VerticalProperty}" >
                 <bar:BarControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">

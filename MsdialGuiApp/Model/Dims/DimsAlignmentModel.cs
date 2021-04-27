@@ -12,6 +12,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -80,7 +81,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 "m/z");
 
             BarChartModel = new BarChartModel(
-                null,
+                new AxisData(
+                    new CategoryAxisManager<string>(new List<string>()),
+                    "Class",
+                    "Class"),
                 new AxisData(
                     new ContinuousAxisManager<double>(0, 1, 0, 0) {
                         ChartMargin = new ChartMargin(0, 0.025)

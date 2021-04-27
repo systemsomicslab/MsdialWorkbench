@@ -66,6 +66,7 @@
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
     <Compile Include="AxisManager\DelegateBrushMapper.cs" />
+    <Compile Include="AxisManager\Generic\CategoryAxisManager.cs" />
     <Compile Include="AxisManager\Generic\ContinuousAxisManager.cs" />
     <Compile Include="AxisManager\IdentityBrushMapper.cs" />
     <Compile Include="AxisManager\KeyBrushMapper.cs" />
