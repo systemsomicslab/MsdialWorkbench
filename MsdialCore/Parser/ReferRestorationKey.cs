@@ -41,7 +41,7 @@ namespace CompMs.MsdialCore.Parser
         public override IMatchResultRefer Restore(ParameterBase parameter) {
             var dbpath = Path.GetFullPath(Path.Combine(parameter.ProjectFolderPath, DataBasePath));
             var db = new List<MoleculeMsReference>();
-            if (!string.IsNullOrEmpty(dbpath)) {
+            if (File.Exists(dbpath)) {
                 var ext = Path.GetExtension(dbpath);
                 if (ext == ".msp" || ext == ".msp2") {
                     db = LibraryHandler.ReadMspLibrary(dbpath).OrderBy(msp => msp.PrecursorMz).ToList();
@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Parser
         public override IMatchResultRefer Restore(ParameterBase parameter) {
             var dbpath = Path.GetFullPath(Path.Combine(parameter.ProjectFolderPath, DataBasePath));
             var db = new List<MoleculeMsReference>();
-            if (!string.IsNullOrEmpty(dbpath)) {
+            if (File.Exists(dbpath)) {
                 db = TextLibraryParser.TextLibraryReader(dbpath, out var _);
             }
             return new DataBaseRefer(db);

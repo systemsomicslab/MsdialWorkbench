@@ -17,4 +17,8 @@
     <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
 </Project>
