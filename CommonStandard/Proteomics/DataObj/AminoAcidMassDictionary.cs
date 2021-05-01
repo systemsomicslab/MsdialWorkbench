@@ -5,76 +5,61 @@ using System.Text;
 
 namespace CompMs.Common.Proteomics.DataObj {
     public static class AminoAcidDictionary {
+
+        public static List<char> AminoAcidLetters = new List<char>() {
+            'A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'U', 'O'
+        };
+
         public static Dictionary<string, double> OneLetter2Mass = new Dictionary<string, double>
         {
-            {"A", 71.03711},
-            {"R", 156.10111},
-            {"N", 114.04293},
-            {"D", 115.02694},
-            {"C", 103.00919},
-            {"E", 129.04259},
-            {"Q", 128.05858},
-            {"G", 57.02146},
-            {"H", 137.05891},
-            {"I", 113.08406},
-            {"L", 113.08406},
-            {"K", 128.09496 },
-            {"M", 131.04049},
-            {"F", 147.06841},
-            {"P", 97.05276},
-            {"S", 87.03203},
-            {"T", 101.04768},
-            {"W", 186.07931},
-            {"Y", 163.06333},
-            {"V", 99.06841}
+            {"A", 71.037113805},
+            {"R", 156.101111050},
+            {"N", 114.042927470},
+            {"D", 115.026943065},
+            {"C", 103.009184505},
+            {"E", 129.042593135},
+            {"Q", 128.058577540},
+            {"G", 57.021463735},
+            {"H", 137.058911875},
+            {"I", 113.084064015},
+            {"L", 113.084064015},
+            {"K", 128.094963050},
+            {"M", 131.040484645},
+            {"F", 147.068413945},
+            {"P", 97.052763875},
+            {"S", 87.032028435},
+            {"T", 101.047678505},
+            {"W", 186.079312980},
+            {"Y", 163.063328575},
+            {"V", 99.068413945},
+            {"U", 150.953633405},
+            {"O", 237.147726925}
         };
 
         public static Dictionary<char, double> OneChar2Mass = new Dictionary<char, double>
         {
-            {'A', 71.03711},
-            {'R', 156.10111},
-            {'N', 114.04293},
-            {'D', 115.02694},
-            {'C', 103.00919},
-            {'E', 129.04259},
-            {'Q', 128.05858},
-            {'G', 57.02146},
-            {'H', 137.05891},
-            {'I', 113.08406},
-            {'L', 113.08406},
-            {'K', 128.09496 },
-            {'M', 131.04049},
-            {'F', 147.06841},
-            {'P', 97.05276},
-            {'S', 87.03203},
-            {'T', 101.04768},
-            {'W', 186.07931},
-            {'Y', 163.06333},
-            {'V', 99.06841}
-        };
-
-        public static Dictionary<string, double> ThreeLetter2Mass = new Dictionary<string, double>
-        {
-            {"Ala",71.03711},
-            {"Arg",156.10111},
-            {"Asn",114.04293},
-            {"Asp",115.02694},
-            {"Cys",103.00919},
-            {"Glu",129.04259},
-            {"Gln",128.05858},
-            {"Gly",57.02146},
-            {"His",137.05891},
-            {"Ile",113.08406},
-            {"Leu",113.08406},
-            {"Lys",128.09496},
-            {"Met",131.04049},
-            {"Phe",147.06841},
-            {"Pro",97.05276},
-            {"Ser",87.03203},
-            {"Thr",101.04768},
-            {"Trp",186.07931},
-            {"Tyr",163.06333},
-            {"Val",99.06841}
+            {'A', 71.037113805},
+            {'R', 156.101111050},
+            {'N', 114.042927470},
+            {'D', 115.026943065},
+            {'C', 103.009184505},
+            {'E', 129.042593135},
+            {'Q', 128.058577540},
+            {'G', 57.021463735},
+            {'H', 137.058911875},
+            {'I', 113.084064015},
+            {'L', 113.084064015},
+            {'K', 128.094963050},
+            {'M', 131.040484645},
+            {'F', 147.068413945},
+            {'P', 97.052763875},
+            {'S', 87.032028435},
+            {'T', 101.047678505},
+            {'W', 186.079312980},
+            {'Y', 163.063328575},
+            {'V', 99.068413945},
+            {'U', 150.953633405},
+            {'O', 237.147726925}
         };
 
         public static Dictionary<string, string> OneLetter2ThreeLetter = new Dictionary<string, string>
@@ -98,7 +83,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T","Thr"},
             {"W","Trp"},
             {"Y","Tyr"},
-            {"V","Val"}
+            {"V","Val"},
+            {"O","Pyl"},
+            {"U","Sec"},
         };
 
         public static Dictionary<char, string> OneChar2ThreeLetter = new Dictionary<char, string>
@@ -122,7 +109,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',"Thr"},
             {'W',"Trp"},
             {'Y',"Tyr"},
-            {'V',"Val"}
+            {'V',"Val"},
+            {'O',"Pyl"},
+            {'U',"Sec"}
         };
 
         public static Dictionary<string, string> ThreeLetter2OneLetter = new Dictionary<string, string>
@@ -146,7 +135,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"Thr","T"},
             {"Trp","W"},
             {"Tyr","Y"},
-            {"Val","V"}
+            {"Val","V"},
+            {"Pyl","O"},
+            {"Sec","U"},
         };
 
 
@@ -171,7 +162,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T","C4H7O2N"},
             {"W","C11H10ON2"},
             {"Y","C9H9O2N"},
-            {"V","C5H9ON"}
+            {"V","C5H9ON"},
+            {"O","C12H19N3O2"},
+            {"U","C3H5NOSe"},
         };
 
         public static Dictionary<char, string> OneChar2FormulaString = new Dictionary<char, string>
@@ -195,7 +188,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',"C4H7O2N"},
             {'W',"C11H10ON2"},
             {'Y',"C9H9O2N"},
-            {'V',"C5H9ON"}
+            {'V',"C5H9ON"},
+            {'O',"C12H19N3O2"},
+            {'U',"C3H5NOSe"},
         };
 
         public static Dictionary<char, Formula> OneChar2Formula = new Dictionary<char, Formula>
@@ -219,7 +214,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T', new Formula("C4H7O2N")},
             {'W', new Formula("C11H10ON2")},
             {'Y', new Formula("C9H9O2N")},
-            {'V', new Formula("C5H9ON")}
+            {'V', new Formula("C5H9ON")},
+            {'O', new Formula("C12H19N3O2")},
+            {'U', new Formula("C3H5NOSe")}
         };
 
 
@@ -244,7 +241,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T",4},
             {"W",11},
             {"Y",9},
-            {"V",5}
+            {"V",5},
+            {"O",12},
+            {"U",3}
         };
 
         public static Dictionary<char, int> OneChar2CarbonNuber = new Dictionary<char, int>
@@ -268,7 +267,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',4},
             {'W',11},
             {'Y',9},
-            {'V',5}
+            {'V',5},
+            {'O',12},
+            {'U',3},
         };
 
         public static Dictionary<string, int> OneLetter2NitrogenNuber = new Dictionary<string, int>
@@ -292,7 +293,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T",1},
             {"W",2},
             {"Y",1},
-            {"V",1}
+            {"V",1},
+            {"O",3},
+            {"U",1}
 
         };
 
@@ -317,7 +320,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',1},
             {'W',2},
             {'Y',1},
-            {'V',1}
+            {'V',1},
+            {'O',3},
+            {'U',1}
         };
 
         public static Dictionary<string, int> OneLetter2HydrogenNuber = new Dictionary<string, int>
@@ -341,7 +346,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T",7},
             {"W",10},
             {"Y",9},
-            {"V",9}
+            {"V",9},
+            {"O",19},
+            {"U",5}
         };
 
         public static Dictionary<char, int> OneChar2HydrogenNuber = new Dictionary<char, int>
@@ -365,7 +372,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',7},
             {'W',10},
             {'Y',9},
-            {'V',9}
+            {'V',9},
+            {'O',19},
+            {'U',5}
         };
 
         public static Dictionary<string, int> OneLetter2OxygenNuber = new Dictionary<string, int>
@@ -389,7 +398,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T",2},
             {"W",1},
             {"Y",2},
-            {"V",1}
+            {"V",1},
+            {"O",2},
+            {"U",1}
         };
 
         public static Dictionary<char, int> OneChar2OxygenNuber = new Dictionary<char, int>
@@ -413,7 +424,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',2},
             {'W',1},
             {'Y',2},
-            {'V',1}
+            {'V',1},
+            {'O',2},
+            {'U',1}
         };
 
         public static Dictionary<string, int> OneLetter2SulfurNuber = new Dictionary<string, int>
@@ -437,7 +450,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"T",0},
             {"W",0},
             {"Y",0},
-            {"V",0}
+            {"V",0},
+            {"O",0},
+            {"U",0}
         };
 
         public static Dictionary<char, int> OneChar2SulfurNuber = new Dictionary<char, int>
@@ -461,7 +476,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'T',0},
             {'W',0},
             {'Y',0},
-            {'V',0}
+            {'V',0},
+            {'O',0},
+            {'U',0}
         };
 
 
@@ -487,7 +504,9 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"Thr","C4H7O2N"},
             {"Trp","C11H10ON2"},
             {"Tyr","C9H9O2N"},
-            {"Val","C5H9ON"}
+            {"Val","C5H9ON"},
+            {"Pyl","C12H19N3O2"},
+            {"Sec","C3H5NOSe"}
         };
     }
 }

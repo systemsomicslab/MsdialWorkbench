@@ -2,6 +2,7 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.DataObj.Property {
@@ -21,8 +22,42 @@ namespace CompMs.Common.DataObj.Property {
         public static double siMass = 27.97692653;
     }
 
+    public class AtomTemp {
+        public string Element { get; set; }
+        public int Order { get; set; }
+        public int Count { get; set; }
+
+    }
+
     public sealed class FormulaCalculateUtility {
         private FormulaCalculateUtility() { }
+
+        public static double GetExactMass(Dictionary<string, int> element2count) {
+            var mass = 0.0;
+            var elem2mass = ElementDictionary.MassDict;
+            foreach (var pair in element2count) {
+                if (elem2mass.ContainsKey(pair.Key)) {
+                    mass += elem2mass[pair.Key] * (double)pair.Value;
+                }
+            }
+            return mass;
+        }
+
+        public static string GetFormulaString(Dictionary<string, int> element2count) {
+            var formulastring = string.Empty;
+            var elem2order = ElementDictionary.HillOrder;
+            var atoms = new List<AtomTemp>();
+            foreach (var pair in element2count) {
+                if (elem2order.ContainsKey(pair.Key)) {
+                    var atom = new AtomTemp() { Element = pair.Key, Count = pair.Value, Order = elem2order[pair.Key] };
+                    atoms.Add(atom);
+                }
+            }
+            foreach (var atom in atoms.OrderBy(n => n.Order)) {
+                formulastring += atom.Count > 1 ? atom.Element + atom.Count : atom.Count < 0 ? atom.Element + "(" + atom.Count + ")" : atom.Element; 
+            }
+            return formulastring;
+        }
 
         public static double GetExactMass(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum) {
             var mass = 0.0;
@@ -57,7 +92,7 @@ namespace CompMs.Common.DataObj.Property {
             return mass;
         }
         public static double GetExactMass(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
-           int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num) {
+           int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum) {
             var mass = MassDiffDictionary.HydrogenMass * (double)hnum + MassDiffDictionary.CarbonMass * (double)cnum 
                 + MassDiffDictionary.NitrogenMass * (double)nnum + MassDiffDictionary.OxygenMass * (double)onum
                 + MassDiffDictionary.PhosphorusMass * (double)pnum + MassDiffDictionary.SulfurMass * (double)snum + MassDiffDictionary.FluorideMass * (double)fnum 
@@ -66,7 +101,8 @@ namespace CompMs.Common.DataObj.Property {
                 + MassDiffDictionary.Hydrogen2Mass * (double)h2num + MassDiffDictionary.Carbon13Mass * (double)c13num
                 + MassDiffDictionary.Nitrogen15Mass * (double)n15num + MassDiffDictionary.Oxygen18Mass * (double)o18num
                 + MassDiffDictionary.Sulfur34Mass * (double)s34num 
-                + MassDiffDictionary.Chloride37Mass * (double)cl37num + MassDiffDictionary.Bromine81Mass * (double)br81num;
+                + MassDiffDictionary.Chloride37Mass * (double)cl37num + MassDiffDictionary.Bromine81Mass * (double)br81num
+                + MassDiffDictionary.SeleniumMass * (double)senum;
 
             return mass;
         }
@@ -107,27 +143,28 @@ namespace CompMs.Common.DataObj.Property {
         }
 
         public static string GetFormulaString(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum, 
-            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num) {
+            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum) {
             var formula = string.Empty;
 
-            formula += cnum == 1 ? "C" : cnum > 1 ? "C" + cnum : string.Empty;
-            formula += c13num == 1 ? "[13C]" : c13num > 1 ? "[13C]" + c13num : string.Empty;
-            formula += hnum == 1 ? "H" : hnum > 1 ? "H" + hnum : string.Empty;
-            formula += h2num == 1 ? "[2H]" : h2num > 1 ? "[2H]" + h2num : string.Empty;
-            formula += brnum == 1 ? "Br" : brnum > 1 ? "Br" + brnum : string.Empty;
-            formula += br81num == 1 ? "[81Br]" : br81num > 1 ? "[81Br]" + br81num : string.Empty;
-            formula += clnum == 1 ? "Cl" : clnum > 1 ? "Cl" + clnum : string.Empty;
-            formula += cl37num == 1 ? "[37Cl]" : cl37num > 1 ? "[37Cl]" + cl37num : string.Empty;
-            formula += fnum == 1 ? "F" : fnum > 1 ? "F" + fnum : string.Empty;
-            formula += inum == 1 ? "I" : inum > 1 ? "I" + inum : string.Empty;
-            formula += nnum == 1 ? "N" : nnum > 1 ? "N" + nnum : string.Empty;
-            formula += n15num == 1 ? "[15N]" : n15num > 1 ? "[15N]" + n15num : string.Empty;
-            formula += onum == 1 ? "O" : onum > 1 ? "O" + onum : string.Empty;
-            formula += o18num == 1 ? "[18O]" : o18num > 1 ? "[18O]" + o18num : string.Empty;
-            formula += pnum == 1 ? "P" : pnum > 1 ? "P" + pnum : string.Empty;
-            formula += snum == 1 ? "S" : snum > 1 ? "S" + snum : string.Empty;
-            formula += s34num == 1 ? "[34S]" : s34num > 1 ? "[34S]" + s34num : string.Empty;
-            formula += sinum == 1 ? "Si" : sinum > 1 ? "Si" + sinum : string.Empty;
+            formula += cnum == 1 ? "C" : cnum > 1 ? "C" + cnum : cnum < 0 ? "C(" + cnum + ")" : string.Empty;
+            formula += c13num == 1 ? "[13C]" : c13num > 1 ? "[13C]" + c13num : c13num < 0 ? "C(" + c13num + ")" : string.Empty;
+            formula += hnum == 1 ? "H" : hnum > 1 ? "H" + hnum : hnum < 0 ? "C(" + hnum + ")" : string.Empty;
+            formula += h2num == 1 ? "[2H]" : h2num > 1 ? "[2H]" + h2num : h2num < 0 ? "C(" + h2num + ")" : string.Empty;
+            formula += brnum == 1 ? "Br" : brnum > 1 ? "Br" + brnum : brnum < 0 ? "C(" + brnum + ")" : string.Empty;
+            formula += br81num == 1 ? "[81Br]" : br81num > 1 ? "[81Br]" + br81num : br81num < 0 ? "C(" + br81num + ")" : string.Empty;
+            formula += clnum == 1 ? "Cl" : clnum > 1 ? "Cl" + clnum : clnum < 0 ? "C(" + clnum + ")" : string.Empty;
+            formula += cl37num == 1 ? "[37Cl]" : cl37num > 1 ? "[37Cl]" + cl37num : cl37num < 0 ? "C(" + cl37num + ")" : string.Empty;
+            formula += fnum == 1 ? "F" : fnum > 1 ? "F" + fnum : fnum < 0 ? "C(" + fnum + ")" : string.Empty;
+            formula += inum == 1 ? "I" : inum > 1 ? "I" + inum : inum < 0 ? "C(" + inum + ")" : string.Empty;
+            formula += nnum == 1 ? "N" : nnum > 1 ? "N" + nnum : nnum < 0 ? "C(" + nnum + ")" : string.Empty;
+            formula += n15num == 1 ? "[15N]" : n15num > 1 ? "[15N]" + n15num : n15num < 0 ? "C(" + n15num + ")" : string.Empty;
+            formula += onum == 1 ? "O" : onum > 1 ? "O" + onum : onum < 0 ? "C(" + onum + ")" : string.Empty;
+            formula += o18num == 1 ? "[18O]" : o18num > 1 ? "[18O]" + o18num : o18num < 0 ? "C(" + o18num + ")" : string.Empty;
+            formula += pnum == 1 ? "P" : pnum > 1 ? "P" + pnum : pnum < 0 ? "C(" + pnum + ")" : string.Empty;
+            formula += snum == 1 ? "S" : snum > 1 ? "S" + snum : snum < 0 ? "C(" + snum + ")" : string.Empty;
+            formula += s34num == 1 ? "[34S]" : s34num > 1 ? "[34S]" + s34num : s34num < 0 ? "C(" + s34num + ")" : string.Empty;
+            formula += sinum == 1 ? "Si" : sinum > 1 ? "Si" + sinum : sinum < 0 ? "C(" + sinum + ")" : string.Empty;
+            formula += senum == 1 ? "Se" : senum > 1 ? "Se" + senum : senum < 0 ? "C(" + senum + ")" : string.Empty;
 
             return formula;
         }
@@ -153,7 +190,8 @@ namespace CompMs.Common.DataObj.Property {
             FormulaString = formulaString;
         }
 
-        public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum, int tmsCount = 0, int meoxCount = 0) {
+        public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum,
+            int clnum, int brnum, int inum, int sinum, int tmsCount = 0, int meoxCount = 0) {
             Cnum = cnum;
             Hnum = hnum;
             Nnum = nnum;
@@ -194,7 +232,7 @@ namespace CompMs.Common.DataObj.Property {
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
-            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num) {
+            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum) {
             Cnum = cnum;
             Hnum = hnum;
             Nnum = nnum;
@@ -213,13 +251,13 @@ namespace CompMs.Common.DataObj.Property {
             S34num = s34num;
             Cl37num = cl37num;
             Br81num = br81num;
+            Senum = senum;
 
             Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                C13num, H2num, N15num, O18num, S34num, Cl37num, Br81num);
+                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num);
+                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
         }
-
 
         [Key(0)]
         public string FormulaString { get; set; }
@@ -271,7 +309,16 @@ namespace CompMs.Common.DataObj.Property {
         public int Br81num { get; set; }
         [Key(24)]
         public bool IsCorrectlyImported { get; set; }
+        [Key(25)]
+        public int Senum { get; set; }
+        [Key(26)]
+        public Dictionary<string, int> Element2Count { get; set; } = new Dictionary<string, int>();
 
+        public Formula(Dictionary<string, int> elem2count) {
+            this.Element2Count = elem2count;
+            this.Mass = FormulaCalculateUtility.GetExactMass(elem2count);
+            this.FormulaString = FormulaCalculateUtility.GetFormulaString(elem2count);
+        }
         public override string ToString() {
             return FormulaString;
         }

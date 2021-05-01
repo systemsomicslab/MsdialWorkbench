@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         public List<Modification> AnywhereMods { get; set; }
         public List<Modification> NotCtermMods { get; set; }
 
-        public Dictionary<char, ModificationSeq> AnywehereSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> AnywehereSite2Mod { get; set; }
 
 
         public ModificationContainer(List<Modification> modifications) {
@@ -25,13 +26,36 @@ namespace CompMs.Common.Proteomics.DataObj {
             AnyCtermMods = modifications.Where(n => n.Position == "anyCterm").ToList(); 
             AnywhereMods = modifications.Where(n => n.Position == "anywhere").ToList();
             NotCtermMods = modifications.Where(n => n.Position == "notCterm").ToList();
+
+            AnywehereSite2Mod = GetModificationProtocolDict(AnywhereMods);
+        }
+
+        public Dictionary<char, ModificationProtocol> GetModificationProtocolDict(List<Modification> modifications) {
+            var dict = GetInitializeObject();
+            foreach (var mod in AnywhereMods) {
+                foreach (var site in mod.ModificationSites) {
+                }
+            }
+            return dict;
+        }
+
+        public Dictionary<char, ModificationProtocol> GetInitializeObject() {
+            var aaletters = AminoAcidDictionary.AminoAcidLetters;
+            var dict = new Dictionary<char, ModificationProtocol>();
+
+            foreach (var oneletter in aaletters) {
+                dict[oneletter] = new ModificationProtocol() {
+                    OriginalAA = new AminoAcid(oneletter)
+                };
+            }
+            return dict;
         }
     }
 
-    public class ModificationSeq {
+    public class ModificationProtocol {
         public AminoAcid OriginalAA { get; set; }
 
-
+        public bool IsModified() { return !ModSequence.IsEmptyOrNull();  }
         public string ModifiedAACode { get; set; } //Tp, K(Acethyl)
         public AminoAcid ModifiedAA { get; set; }
         public List<Modification> ModSequence { get; set; } // A -> K -> K(Acethyl)
@@ -44,13 +68,25 @@ namespace CompMs.Common.Proteomics.DataObj {
     public class Modification {
         public string Title { get; set; }
         public string Description { get; set; }
+        public string CreateDate { get; set; }
+        public string LastModifiedDate { get; set; }
+        public string User { get; set; }
+        public int ReporterCorrectionM2 { get; set; }
+        public int ReporterCorrectionM1 { get; set; }
+        public int ReporterCorrectionP1 { get; set; }
+        public int ReporterCorrectionP2 { get; set; }
+        public bool ReporterCorrectionType { get; set; }
         public Formula Composition { get; set; } // only derivative moiety 
-        public Formula ModifiedAminoResidue { get; set; }
-        public List<string> ModificationSites { get; set; } = new List<string>();
+        public List<ModificationSite> ModificationSites { get; set; } = new List<ModificationSite>();
         public string Position { get; set; } // anyCterm, anyNterm, anywhere, notCterm, proteinCterm, proteinNterm
         public string Type { get; set; } // Standard, Label, IsobaricLabel, Glycan, AaSubstitution, CleavedCrosslink, NeuCodeLabel
+        public string TerminusType { get; set; }
+
+    }
+
+    public class ModificationSite {
+        public string Site { get; set; }
         public List<ProductIon> DiagnosticIons { get; set; } = new List<ProductIon>();
         public List<NeutralLoss> DiagnosticNLs { get; set; } = new List<NeutralLoss>();
-
     }
 }

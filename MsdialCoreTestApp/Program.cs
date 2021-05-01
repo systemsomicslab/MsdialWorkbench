@@ -1,5 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
+using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Proteomics.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -79,7 +81,14 @@ namespace CompMs.App.MsdialConsole {
             var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
             var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
 
-            new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
+            //new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
+            //new EnzymesXmlRefParser().Read();
+            new ModificationsXmlRefParser().Read();
+
+            //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
+            //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
+            //FormulaStringParcer.Convert2FormulaObjV2("C2[13C]2O3Cl3");
+
             // Console.WriteLine("Lcms");
             // DumpN(lcmsfile, 50);
             // Console.WriteLine("Dims");

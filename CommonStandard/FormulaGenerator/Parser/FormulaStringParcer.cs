@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,6 +169,93 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             else return false;
         }
 
+        public static Formula MQComposition2FormulaObj(string composition) {
+            var elements = composition.Split(' ');
+            var dict = new Dictionary<string, int>();
+            foreach (var elem in elements) {
+                if (!elem.Contains("(")) {
+                    dict[elem] = 1;
+                }
+                else {
+                    var elemName = elem.Split('(')[0];
+                    var elemCountString = elem.Split('(')[1].Split(')')[0];
+                    if (int.TryParse(elemCountString, out int elemCount)) {
+                        dict[elemName] = elemCount;
+                    }
+                }
+            }
+
+            return new Formula(dict);
+        }
+
+        public static Formula Convert2FormulaObjV2(string formulaString) {
+           // Console.WriteLine(formulaString);
+            var dict = new Dictionary<string, int>(); // key: C, value: 3; key: H, value 4 etc..
+            var elemString = string.Empty;
+            var numString = string.Empty;
+
+            for (int i = 0; i < formulaString.Length; i++) {
+                var elem = formulaString[i];
+                if (elem == '[') {  // start element
+                    elemString = elem.ToString();
+                    numString = string.Empty;
+                    var endflag = false;
+                    for (int j = i + 1; j < formulaString.Length; j++) {
+                        elem = formulaString[j];
+                        if (elem == ']') {
+                            elemString += elem;
+                            endflag = true;
+                            continue;
+                        }
+                        if (!endflag) {
+                            elemString += elem;
+                            continue;
+                        }
+                        if (Char.IsNumber(elem)) {
+                            numString += elem;
+                        }
+                        else if (Char.IsUpper(elem) || elem == '[') {
+                            i = j - 1;
+                            break;
+                        }
+                    }
+                    var num = numString == string.Empty ? 1 : int.Parse(numString);
+                    if (dict.ContainsKey(elemString))
+                        dict[elemString] += num;
+                    else
+                        dict[elemString] = num;
+                }
+                else if (Char.IsUpper(elem)) { // start element
+                    elemString = elem.ToString();
+                    numString = string.Empty;
+                    for (int j = i + 1; j < formulaString.Length; j++) {
+                        elem = formulaString[j];
+                        if (Char.IsNumber(elem)) {
+                            numString += elem;
+                        }
+                        else if (elem == '[') {
+                            i = j - 1;
+                            break;
+                        }
+                        else if (!Char.IsUpper(elem)) {
+                            elemString += elem;
+                        }
+                        else if (Char.IsUpper(elem)) {
+                            i = j - 1;
+                            break;
+                        }
+                    }
+                    var num = numString == string.Empty ? 1 : int.Parse(numString);
+                    if (dict.ContainsKey(elemString))
+                        dict[elemString] += num;
+                    else
+                        dict[elemString] = num;
+                }
+            }
+
+            return new Formula(dict);
+        }
+
         public static Formula Convert2FormulaObj(string formulaString) {
             MatchCollection mc;
 
@@ -189,6 +277,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             var s34num = 0;
             var cl37num = 0;
             var br81num = 0;
+            var senum = 0;
 
             #region // element parser
             mc = Regex.Matches(formulaString, "C(?!a|d|e|l|o|r|s|u)([0-9]*)", RegexOptions.None);
@@ -334,9 +423,17 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                     int.TryParse(mc[0].Groups[1].Value, out br81num);
                 }
             }
+
+            mc = Regex.Matches(formulaString, "Se([0-9]*)", RegexOptions.None);
+            if (mc.Count > 0) {
+                if (mc[0].Groups[1].Value == string.Empty) senum = 1;
+                else {
+                    int.TryParse(mc[0].Groups[1].Value, out senum);
+                }
+            }
             #endregion
             var formula = new Formula(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num);
+                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
             if (formula.FormulaString.Length == formulaString.Length) formula.IsCorrectlyImported = true;
 
             return formula;

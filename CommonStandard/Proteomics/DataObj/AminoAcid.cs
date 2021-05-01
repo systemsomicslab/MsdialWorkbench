@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.FormulaGenerator.Parser;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +16,14 @@ namespace CompMs.Common.Proteomics.DataObj {
         public bool IsResidueModified { get; set; }
         public bool IsNtermModified { get; set; }
         public bool IsCtermModified { get; set; }
-        public Formula ModifiedFormula { get; set; } // modified molecular formula info
+        public Formula ModifiedFormula { get; set; } = null; // modified molecular formula info
+
+        public AminoAcid(char oneletter) {
+            var char2formula = AminoAcidDictionary.OneChar2FormulaString;
+            var char2string = AminoAcidDictionary.OneChar2ThreeLetter;
+            this.OneLetter = oneletter;
+            this.ThreeLetters = char2string[oneletter]; 
+            this.Formula = FormulaStringParcer.Convert2FormulaObj(char2formula[oneletter]);
+        }
     }
 }

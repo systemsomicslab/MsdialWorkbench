@@ -74,6 +74,7 @@ namespace CompMs.Common.Proteomics.Function {
             var s34num = 0;
             var cl37num = 0;
             var br81num = 0;
+            var senum = 0;
 
             var offsetHydrogen = (sequence.Length - 1) * 2;
             var offsetOxygen = sequence.Length - 1;
@@ -142,7 +143,7 @@ namespace CompMs.Common.Proteomics.Function {
             onum -= offsetOxygen;
 
             var formula = new Formula(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num);
+                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
 
             peptide.ExactMass = formula.Mass;
             peptide.Formula = formula;

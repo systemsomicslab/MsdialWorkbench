@@ -22,6 +22,8 @@ namespace CompMs.Common.DataObj.Ion {
         public double MassDiff { get; set; }
         public double IsotopeDiff { get; set; }
         public string Comment { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
         public List<string> CandidateInChIKeys { get; set; } = new List<string>();
         public double Frequency { get; set; }
         public List<string> CandidateOntologies { get; set; } = new List<string>();
