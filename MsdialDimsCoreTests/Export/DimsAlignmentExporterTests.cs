@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 data.Spots,
                 msdecResults,
                 data.Files,
-                new DimsMetadataFormatter(mapper, data.Parameter),
+                new DimsMetadataAccessor(mapper, data.Parameter),
                 new LegacyQuantValueAccessor("Height", data.Parameter));
 
             var expected = File.ReadAllText(expectedfile);

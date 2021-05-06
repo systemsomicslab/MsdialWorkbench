@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files,
-            IMetadataFormatter metaFormatter,
+            IMetadataAccessor metaFormatter,
             IQuantValueAccessor quantAccessor);
     }
 
@@ -25,7 +25,7 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files,
-            IMetadataFormatter metaFormatter,
+            IMetadataAccessor metaFormatter,
             IQuantValueAccessor quantAccessor) {
 
             using (var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true)) {
@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot,
             MSDecResult result,
             IReadOnlyList<string> headers,
-            IMetadataFormatter metaFormatter,
+            IMetadataAccessor metaFormatter,
             IQuantValueAccessor quantAccessor);
     }
 }

@@ -9,9 +9,9 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialDimsCore.Export
 {
-    public class DimsMetadataFormatter : BaseMetadataFormatter
+    public class DimsMetadataAccessor : BaseMetadataAccessor
     {
-        public DimsMetadataFormatter(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
+        public DimsMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
 
         }
 

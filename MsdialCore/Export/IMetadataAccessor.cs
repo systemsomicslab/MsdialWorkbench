@@ -12,15 +12,15 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
-    public interface IMetadataFormatter
+    public interface IMetadataAccessor
     {
         string[] GetHeaders();
         ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, MSDecResult msdec);
     }
 
-    public abstract class BaseMetadataFormatter : IMetadataFormatter {
+    public abstract class BaseMetadataAccessor : IMetadataAccessor {
 
-        public BaseMetadataFormatter(IMatchResultRefer refer, ParameterBase parameter) {
+        public BaseMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) {
             this.refer = refer;
             this.parameter = parameter;
         }

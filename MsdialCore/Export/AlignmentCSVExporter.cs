@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty spot,
             MSDecResult msdec,
             IReadOnlyList<string> headers,
-            IMetadataFormatter metaFormatter,
+            IMetadataAccessor metaFormatter,
             IQuantValueAccessor quantAccessor) {
             var metadata = metaFormatter.GetContent(spot, msdec);
             var quantValues = quantAccessor.GetQuantValues(spot);
