@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model
             IReadOnlyList<object> ms1Peaks) {
 
             this.ms1Peaks = ms1Peaks;
-            deconvolutionStream = File.OpenRead(deconvolutionFile);
+            deconvolutionStream = File.Open(deconvolutionFile, FileMode.Open, FileAccess.Read, FileShare.Read);
             MsdecResultsReader.GetSeekPointers(deconvolutionStream, out version, out seekPointers, out isAnnotationInfoIncluded);
         }
 

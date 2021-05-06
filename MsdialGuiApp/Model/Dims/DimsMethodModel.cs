@@ -17,6 +17,7 @@ using CompMs.MsdialDimsCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -150,9 +151,9 @@ namespace CompMs.App.Msdial.Model.Dims
                 pointerss.Add((version, pointers, isAnnotationInfo));
             }
 
-            var streams = new List<System.IO.FileStream>();
+            var streams = new List<FileStream>();
             try {
-                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+                streams = files.Select(file => File.Open(file.DeconvolutionFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
                     var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;

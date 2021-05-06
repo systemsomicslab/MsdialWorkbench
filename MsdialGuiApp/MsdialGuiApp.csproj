@@ -146,6 +146,8 @@
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
+    <Compile Include="ViewModel\Export\LecacyQuantValueAccessor.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
