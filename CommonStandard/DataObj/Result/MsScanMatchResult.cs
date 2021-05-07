@@ -76,6 +76,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
+        [IgnoreMember]
+        public bool IsUnknown => Source.HasFlag(SourceType.Unknown);
 
         // Support for multiple annotation method
         [Key(25)]

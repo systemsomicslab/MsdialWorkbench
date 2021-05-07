@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -61,6 +62,64 @@ namespace CompMs.MsdialDimsCore.Export
             content.Add("Reference m/z", reference?.PrecursorMz.ToString("F5") ?? "null");
             content.Add("m/z matched", (matchResult?.IsPrecursorMzMatch ?? false).ToString());
             content.Add("MS/MS matched", (matchResult?.IsSpectrumMatch ?? false).ToString());
+            return content;
+        }
+    }
+
+    public class DimsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
+    {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
+        }
+
+        protected override string[] GetHeadersCore() {
+            return new string[] {
+                "Peak ID",
+                "Name",
+                "Scan",
+                "m/z left",
+                "m/z",
+                "m/z right",
+                "Height",
+                "Area",
+                "Model masses",
+                "Adduct",
+                "Isotope",
+                "Comment",
+                "Reference m/z",
+                "Formula",
+                "Ontology",
+                "InChIKey",
+                "SMILES",
+                "Annotation tag (VS1.0)",
+                "m/z matched",
+                "MS/MS matched",
+                "m/z similarity",
+                "Simple dot product",
+                "Weighted dot product",
+                "Reverse dot product",
+                "Matched peaks count",
+                "Matched peaks percentage",
+                "Total score",
+                "S/N",
+                "MS1 isotopes",
+                "MSMS spectrum" };
+        }
+
+        protected override Dictionary<string, string> GetContentCore(
+            ChromatogramPeakFeature feature,
+            MSDecResult msdec,
+            MoleculeMsReference reference,
+            MsScanMatchResult matchResult,
+            IReadOnlyList<RawSpectrum> spectrumList) {
+
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList);
+            content["m/z left"] = string.Format("{0:F5}", feature.ChromXsLeft.Mz.Value);
+            content["m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
+            content["m/z right"] = string.Format("{0:F5}", feature.ChromXsRight.Mz.Value);
+            content["m/z matched"] = (matchResult?.IsPrecursorMzMatch ?? false).ToString();
+            content["m/z similarity"] = ValueOrNull(matchResult?.AcurateMassSimilarity, "F2");
+            content["Reference m/z"] = ValueOrNull(reference?.PrecursorMz, "F5");
+
             return content;
         }
 

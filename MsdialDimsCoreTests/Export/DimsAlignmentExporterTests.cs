@@ -145,6 +145,8 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         public List<MoleculeMsReference> MspDB { get; set; }
         [MessagePack.Key(5)]
         public List<MoleculeMsReference> TextDB { get; set; }
+        [MessagePack.Key(6)]
+        public List<ChromatogramPeakFeature> Features { get; set; }
     }
 
     class MockKey : IReferRestorationKey
