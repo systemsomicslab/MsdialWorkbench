@@ -151,18 +151,6 @@ namespace CompMs.MspGenerator
                 }
             }
 
-            var tempCsvFilePath = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
-            var counter = 0;
-            using (var sw = new StreamWriter(tempCsvFilePath, false, Encoding.ASCII))
-            {
-                sw.WriteLine("Name,InChIKey,SMILES");
-                foreach (var pair in inchikeyToSmiles)
-                {
-                    sw.WriteLine("ID_" + counter + "," + pair.Key + "," + pair.Value);
-                    counter++;
-                }
-            }
-
             var inchikeyToPredictedRt = new Dictionary<string, float>();
             using (var sr = new StreamReader(calculatedFilePath, true))
             {
@@ -235,7 +223,10 @@ namespace CompMs.MspGenerator
                     {
                         continue;
                     }
-                    query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
+                    else if (query.ChromXs==null)
+                    {
+                        query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
+                    }
                 }
                 else
                 {
@@ -281,6 +272,18 @@ namespace CompMs.MspGenerator
             }
             else
             {
+                var tempCsvFilePath = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
+                var counter = 0;
+                using (var sw = new StreamWriter(tempCsvFilePath, false, Encoding.ASCII))
+                {
+                    sw.WriteLine("Name,InChIKey,SMILES");
+                    foreach (var pair in inchikeyToSmiles)
+                    {
+                        sw.WriteLine("ID_" + counter + "," + pair.Key + "," + pair.Value);
+                        counter++;
+                    }
+                }
+
                 var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
                 foreach (var query in mspDB2)
                 {
