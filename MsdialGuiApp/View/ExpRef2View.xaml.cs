@@ -1,5 +1,4 @@
-﻿using CompMs.Graphics.Core.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Dims
+namespace CompMs.App.Msdial.View
 {
     /// <summary>
-    /// Interaction logic for AlignmentView.xaml
+    /// Interaction logic for ExpRef2View.xaml
     /// </summary>
-    public partial class AlignmentView : UserControl
+    public partial class ExpRef2View : UserControl
     {
-        public AlignmentView() {
+        public ExpRef2View() {
             InitializeComponent();
         }
     }

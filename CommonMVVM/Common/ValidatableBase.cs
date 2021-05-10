@@ -37,7 +37,14 @@ namespace CompMs.CommonMVVM
         protected void ValidateProperty(string propertyName, object value) {
             var context = new ValidationContext(this) { MemberName = propertyName };
             var validationErrors = new List<ValidationResult>();
-            if (System.ComponentModel.DataAnnotations.Validator.TryValidateProperty(value, context, validationErrors)) {
+            bool succeed;
+            try {
+                succeed = System.ComponentModel.DataAnnotations.Validator.TryValidateProperty(value, context, validationErrors);
+            }
+            catch (ArgumentException) {
+                return;
+            }
+            if (succeed) {
                 ClearErrors(propertyName);
             }
             else {
@@ -101,9 +108,6 @@ namespace CompMs.CommonMVVM
                 return;
             }
 
-            if (!this.errors.ContainsKey(propertyname)) {
-                this.errors[propertyname] = new List<string>();
-            }
             this.errors[propertyname] = errors.Where(error => !string.IsNullOrEmpty(error)).ToList();
             OnErrorsChanged(propertyname);
         }

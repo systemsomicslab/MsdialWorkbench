@@ -12,6 +12,7 @@ namespace CompMs.Graphics.GraphAxis
     public class HorizontalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        [Obsolete]
         public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
             nameof(LabelTicks), typeof(List<LabelTickData>), typeof(HorizontalColorAxisControl),
             new PropertyMetadata(null)
@@ -39,6 +40,7 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        [Obsolete]
         public List<LabelTickData> LabelTicks
         {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
@@ -85,7 +87,7 @@ namespace CompMs.Graphics.GraphAxis
 
         protected override void Update()
         {
-            if (HorizontalAxis == null || LabelTicks == null) return;
+            if (HorizontalAxis == null) return;
 
             var memo = new Dictionary<object, int>();
             var id = 0;
@@ -94,7 +96,7 @@ namespace CompMs.Graphics.GraphAxis
             var sign = FlippedX ? 1 : -1;
 
             visualChildren.Clear();
-            foreach (var data in LabelTicks)
+            foreach (var data in HorizontalAxis.GetLabelTicks())
             {
                 if (data.TickType != TickType.LongTick) continue;
 

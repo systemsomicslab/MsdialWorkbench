@@ -114,7 +114,7 @@ namespace CompMs.MsdialCore.Export {
             var modelmasses = String.Join(" ", msdec.ModelMasses);
             var comment = category == MachineCategory.GCMS ? string.Empty : feature.Comment;
             var isotope = category == MachineCategory.GCMS ? "null" : feature.PeakCharacter.IsotopeWeightNumber.ToString();
-            var sn = category == MachineCategory.GCMS ? String.Format("{0:000}", msdec.SignalNoiseRatio) : String.Format("{0:000}", feature.PeakShape.SignalToNoise);
+            var sn = category == MachineCategory.GCMS ? String.Format("{0:0.00}", msdec.SignalNoiseRatio) : String.Format("{0:0.00}", feature.PeakShape.SignalToNoise);
 
             var matchedResult = category == MachineCategory.GCMS ? msdec.MspBasedMatchResult :
                 feature.TextDbBasedMatchResult != null ? feature.TextDbBasedMatchResult : feature.MspBasedMatchResult;
@@ -329,7 +329,7 @@ namespace CompMs.MsdialCore.Export {
             var comment = feature.Comment;
             var isotope = feature.PeakCharacter.IsotopeWeightNumber.ToString();
             var isotopeParent = feature.PeakCharacter.IsotopeParentPeakID.ToString();
-            var sn = String.Format("{0:000}", feature.SignalToNoiseAve);
+            var sn = String.Format("{0:0.00}", feature.SignalToNoiseAve);
 
             var isManuallyModForAnnotation = feature.IsManuallyModifiedForAnnotation.ToString();
             var isManuallyModForQuant = feature.IsManuallyModifiedForQuant.ToString();

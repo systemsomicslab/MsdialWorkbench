@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public double AmplitudeOrderMax { get; }
 
         bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureVM peak) {
+            if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
@@ -87,14 +87,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return false;
         }
 
-        bool AnnotationFilter(ChromatogramPeakFeatureVM peak) {
+        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
                 || UnknownChecked && peak.IsUnknown;
         }
 
-        bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
+        bool AmplitudeFilter(ChromatogramPeakFeatureModel peak) {
             return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
         }

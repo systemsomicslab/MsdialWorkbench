@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.Interfaces;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.Model.DataObj
 {
     public class PeakItem
     {

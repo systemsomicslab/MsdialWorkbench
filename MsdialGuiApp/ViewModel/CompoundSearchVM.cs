@@ -143,7 +143,7 @@ namespace CompMs.App.Msdial.ViewModel
             var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
             foreach (var candidate in candidates) {
                 candidate.IsManuallyModified = true;
-                candidate.Priority |= DataBasePriority.Manual;
+                candidate.Source |= SourceType.Manual;
             }
             Compounds = new ObservableCollection<CompoundResult>(
                 candidates.OrderByDescending(result => result.TotalScore)
@@ -181,7 +181,7 @@ namespace CompMs.App.Msdial.ViewModel
                 var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
                 foreach (var candidate in candidates) {
                     candidate.IsManuallyModified = true;
-                    candidate.Priority |= DataBasePriority.Manual;
+                    candidate.Source |= SourceType.Manual;
                 }
                 token.ThrowIfCancellationRequested();
 
@@ -240,7 +240,7 @@ namespace CompMs.App.Msdial.ViewModel
             DataAccess.ClearMoleculePropertyInfomation(property);
             if (property is IAnnotatedObject obj) {
                 obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(new MsScanMatchResult { Priority = DataBasePriority.Manual | DataBasePriority.Unknown });
+                obj.MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
             }
         }
     }

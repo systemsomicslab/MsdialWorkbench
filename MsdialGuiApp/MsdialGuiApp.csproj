@@ -123,15 +123,38 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\IBarItemsLoader.cs" />
+    <Compile Include="Model\AlignmentEicModel.cs" />
+    <Compile Include="Model\AlignmentPeakPlotModel.cs" />
+    <Compile Include="Model\AnalysisPeakPlotModel.cs" />
+    <Compile Include="Model\BarChartModel.cs" />
+    <Compile Include="Model\DataObj\AxisData.cs" />
+    <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
+    <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
+    <Compile Include="Model\Dims\DimsEicModel.cs" />
+    <Compile Include="Model\Dims\DimsMethodModel.cs" />
+    <Compile Include="Model\EicModel.cs" />
+    <Compile Include="Model\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
+    <Compile Include="Model\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\MsSpectrumModel.cs" />
+    <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
+    <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
+    <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
+    <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\EicViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
+    <Compile Include="ViewModel\Export\LecacyQuantValueAccessor.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\RawDecSpectrumsViewModel.cs" />
+    <Compile Include="ViewModel\MsSpectrumViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -143,6 +166,15 @@
     </Compile>
     <Compile Include="LC\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AlignmentPeakPlotView.xaml.cs">
+      <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -156,8 +188,8 @@
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
+    <Compile Include="View\ExpRef2View.xaml.cs">
+      <DependentUpon>ExpRef2View.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -185,6 +217,9 @@
     </Compile>
     <Compile Include="View\Lcimms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MsSpectrumView.xaml.cs">
+      <DependentUpon>MsSpectrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
@@ -224,16 +259,16 @@
     <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
-    <Compile Include="ViewModel\BarItem.cs" />
-    <Compile Include="ViewModel\Chromatogram.cs" />
-    <Compile Include="ViewModel\ChromatogramPeakWrapper.cs" />
-    <Compile Include="ViewModel\DataObj\AlignmentSpotPropertyVM.cs" />
-    <Compile Include="ViewModel\DataObj\ChromatogramPeakFeatureVM.cs" />
+    <Compile Include="Model\DataObj\BarItem.cs" />
+    <Compile Include="Model\DataObj\Chromatogram.cs" />
+    <Compile Include="Model\DataObj\ChromatogramPeakWrapper.cs" />
+    <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
+    <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
-    <Compile Include="ViewModel\PeakItem.cs" />
+    <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
@@ -241,9 +276,6 @@
     </Compile>
     <Compile Include="View\Dims\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Dims\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
@@ -304,6 +336,9 @@
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\RepRef2View.xaml.cs">
+      <DependentUpon>RepRef2View.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
@@ -401,6 +436,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\AlignmentEicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AlignmentPeakPlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ChartStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -421,9 +468,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imms\AlignmentView.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="View\ExpRef2View.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Imms\CompoundDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -458,6 +505,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcimms\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MsSpectrumView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -498,10 +549,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\AlignmentEicView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\AlignmentView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -580,6 +627,10 @@
     <Page Include="View\MobilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\RepRef2View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\UserDefinedAdductSetWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -765,6 +816,8 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\Imms\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

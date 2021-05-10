@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
@@ -38,7 +38,7 @@
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
 
-            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
 
                 <StackPanel>
                     <ui:LabeledContent PrependLabel="Annotation:">
@@ -135,7 +135,7 @@
                 </StackPanel>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                 <StackPanel>
                     <ui:LabeledContent PrependLabel="Annotation:">
                         <TextBox Name="TextBox_PeakInformation_AnnotationInCompDetail">

@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.View.Lcms;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.Lcms;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
         private ICollectionView ms1Spots;
-        private ObservableCollection<AlignmentSpotPropertyVM> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>();
+        private ObservableCollection<AlignmentSpotPropertyModel> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
 
         public double MassMin => _ms1Spots.Min(spot => spot.MassCenter);
         public double MassMax => _ms1Spots.Max(spot => spot.MassCenter);
@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private AlignmentResultContainer container;
 
-        public AlignmentSpotPropertyVM Target {
+        public AlignmentSpotPropertyModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value)) {
@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 }
             }
         }
-        private AlignmentSpotPropertyVM target;
+        private AlignmentSpotPropertyModel target;
 
         public List<Chromatogram> EicChromatograms {
             get => eicChromatograms;
@@ -190,7 +190,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.param = param;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
-            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyVM>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyVM(prop, param.FileID_ClassName)));
+            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
             Ms1Spots = CollectionViewSource.GetDefaultView(_ms1Spots);
 
             MassLower = MassMin;
@@ -210,7 +210,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        private async Task OnTargetChanged(AlignmentSpotPropertyVM target) {
+        private async Task OnTargetChanged(AlignmentSpotPropertyModel target) {
             await Task.WhenAll(
                 LoadBarItemsAsync(target),
                 LoadEicAsync(target),
@@ -219,7 +219,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
            ).ConfigureAwait(false);
         }
 
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target) {
             BarItems = new List<BarItem>();
             if (target == null)
                 return;
@@ -232,7 +232,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToList()).ConfigureAwait(false);
         }
 
-        async Task LoadEicAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadEicAsync(AlignmentSpotPropertyModel target) {
             EicChromatograms = new List<Chromatogram>();
             if (target == null)
                 return;
@@ -254,7 +254,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }).ConfigureAwait(false);
         }
 
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target) {
             Ms2Spectrum = new List<SpectrumPeakWrapper>();
             if (target == null)
                 return;
@@ -266,7 +266,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }).ConfigureAwait(false);
         }
 
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyVM target) {
+        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target) {
             Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
             if (target == null)
                 return;
@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool PeakFilter(object obj) {
-            if (obj is AlignmentSpotPropertyVM spot) {
+            if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
                     && MzFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
@@ -313,14 +313,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return false;
         }
 
-        bool AnnotationFilter(AlignmentSpotPropertyVM spot) {
+        bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched
                 || SuggestedChecked && spot.IsSuggested
                 || UnknownChecked && spot.IsUnknown;
         }
 
-        bool MzFilter(AlignmentSpotPropertyVM spot) {
+        bool MzFilter(AlignmentSpotPropertyModel spot) {
             return MassLower <= spot.MassCenter
                 && spot.MassCenter <= MassUpper;
         }

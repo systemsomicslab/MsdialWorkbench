@@ -22,6 +22,10 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
+        public double Delta {
+            get => Maximum.Value - Minimum.Value;
+        }
+
         public bool Contains(AxisValue value)
         {
             return Minimum <= value && value <= Maximum;
@@ -33,10 +37,16 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public Range Intersect(Range other) {
+            if (other == null) {
+                return this;
+            }
             return new Range(Math.Max(Minimum.Value, other.Minimum.Value), Math.Min(Maximum.Value, other.Maximum.Value));
         }
 
         public Range Union(Range other) {
+            if (other == null) {
+                return this;
+            }
             return new Range(Math.Min(Minimum.Value, other.Minimum.Value), Math.Max(Maximum.Value, other.Maximum.Value));
         }
     }

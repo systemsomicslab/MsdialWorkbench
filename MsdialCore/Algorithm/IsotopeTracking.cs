@@ -571,7 +571,7 @@ namespace CompMs.MsdialCore.Algorithm
         private static void setToAlignmentProperty(AlignmentSpotProperty spot, MoleculeMsReference query, MsScanMatchResult result)
         {
             spot.TextDbBasedMatchResult = result;
-            result.Priority = DataBasePriority.TextDB;
+            result.Source = SourceType.TextDB;
             spot.MatchResults.AddTextDbResult(result);
             spot.Formula = query.Formula;
             spot.AdductType = query.AdductType;

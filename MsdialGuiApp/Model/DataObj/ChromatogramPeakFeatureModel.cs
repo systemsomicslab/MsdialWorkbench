@@ -4,15 +4,12 @@ using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Windows.Media;
-using System.Linq;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Components;
-using CompMs.Common.Enum;
 using CompMs.Common.DataObj.Property;
 
-namespace CompMs.App.Msdial.ViewModel.DataObj
+namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureVM : ViewModelBase
+    public class ChromatogramPeakFeatureModel : ViewModelBase, IAnnotatedObject
     {
         #region Property
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -24,6 +21,10 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public double PeakArea => innerModel.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
+        public MsScanMatchResultContainer MatchResults {
+            get => innerModel.MatchResults;
+            set => innerModel.MatchResults = value;
+        }
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
@@ -96,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public static readonly double KMIupacUnit;
         public static readonly double KMNominalUnit;
         public double KM => Mass / KMIupacUnit * KMNominalUnit;
-        public double NominalKM => System.Math.Round(KM);
+        public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
 
@@ -111,12 +112,12 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         private readonly ChromatogramPeakFeature innerModel;
         #endregion
 
-        static ChromatogramPeakFeatureVM() {
-            KMIupacUnit = CompMs.Common.DataObj.Property.AtomMass.hMass * 2 + CompMs.Common.DataObj.Property.AtomMass.cMass; // CH2
-            KMNominalUnit = System.Math.Round(KMIupacUnit);
+        static ChromatogramPeakFeatureModel() {
+            KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2
+            KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public ChromatogramPeakFeatureVM(ChromatogramPeakFeature feature, bool coloredByOntology = false) {
+        public ChromatogramPeakFeatureModel(ChromatogramPeakFeature feature, bool coloredByOntology = false) {
             innerModel = feature;
             if (coloredByOntology) {
                 SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?

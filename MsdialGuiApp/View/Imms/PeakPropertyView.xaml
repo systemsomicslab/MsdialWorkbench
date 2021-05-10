@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type={x:Type do:ChromatogramPeakFeatureVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type do:ChromatogramPeakFeatureModel}}"
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -30,7 +30,7 @@
 
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+            <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                 <StackPanel>
                     <ui:LabeledContent PrependLabel="Annotation:">
                         <TextBox Name="TextBox_PeakInformation_AnnotatedMetabolite">
@@ -133,7 +133,7 @@
                 </StackPanel>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyVM}">
+            <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                 
                 <StackPanel>
                     <ui:LabeledContent PrependLabel="Annotation:">

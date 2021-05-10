@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CompMs.Common.DataObj.Result {
     [Flags]
-    public enum DataBasePriority : byte
+    public enum SourceType : byte
     {
         None = 0,
         Unknown = 1 << 0,
@@ -76,12 +76,16 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
+        [IgnoreMember]
+        public bool IsUnknown => Source.HasFlag(SourceType.Unknown);
 
         // Support for multiple annotation method
         [Key(25)]
         public bool IsManuallyModified { get; set; }
         [Key(26)]
-        public DataBasePriority Priority { get; set; }
+        public SourceType Source { get; set; }
+        [Key(27)]
+        public string SourceKey { get; set; }
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

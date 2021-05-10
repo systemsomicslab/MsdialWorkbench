@@ -785,7 +785,7 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // get spectrum
-        public static List<SpectrumPeak> GetMassSpectrum(List<RawSpectrum> spectrumList, MSDecResult msdecResult, ExportspectraType type, int msScanPoint, ParameterBase param) {
+        public static List<SpectrumPeak> GetMassSpectrum(IReadOnlyList<RawSpectrum> spectrumList, MSDecResult msdecResult, ExportspectraType type, int msScanPoint, ParameterBase param) {
             if (msScanPoint < 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.deconvoluted) return msdecResult.Spectrum;
             if (type == ExportspectraType.centroid && param.AcquisitionType == AcquisitionType.DDA) return msdecResult.Spectrum;

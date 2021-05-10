@@ -1,8 +1,8 @@
 ﻿using CompMs.App.MsdialConsole.Process;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.MsdialLcmsApi.Parameter;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.MsdialConsole {
@@ -71,7 +71,7 @@ namespace CompMs.App.MsdialConsole {
                 , "-p"
             };
 
-            MainProcess.Run(args);
+            // MainProcess.Run(args);
 
             var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
             var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
@@ -105,8 +105,8 @@ namespace CompMs.App.MsdialConsole {
         private static void DumpN(string file, int n) {
             var allspectra = DataAccess.GetAllSpectra(file);
             Console.WriteLine($"Number of spectrum: {allspectra.Count}");
-            Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}"); 
-            Console.WriteLine($"Number of scan {allspectra.Where(spec => spec.MsLevel == 1).Select(spec => spec.ScanNumber).Distinct().Count()}"); 
+            Console.WriteLine($"Number of Ms1 spectrum {allspectra.Count(spec => spec.MsLevel == 1)}");
+            Console.WriteLine($"Number of scan {allspectra.Where(spec => spec.MsLevel == 1).Select(spec => spec.ScanNumber).Distinct().Count()}");
             for(int i = 0; i < n; i++) {
                 var spec = allspectra[i];
                 Console.WriteLine("Original index={0} ID={1}, Time={2}, Drift ID={3}, Drift time={4}, Polarity={5}, MS level={6}, Precursor mz={7}, CollisionEnergy={8}, SpecCount={9}",

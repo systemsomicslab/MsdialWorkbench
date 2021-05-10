@@ -53,7 +53,7 @@ namespace CompMs.MsdialDimsCore.Common {
             MsRefSearchParameterBase param, TargetOmics omics,
             IReadOnlyList<IsotopicPeak> isotopes
             ) {
-            var mspAnnotator = new DimsMspAnnotator(mspDB, param, omics);
+            var mspAnnotator = new DimsMspAnnotator(mspDB, param, omics, "MspDB");
             Run(feature, msdecResult, mspAnnotator, textDB, param, isotopes, omics);
         }
 
@@ -104,7 +104,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 var results = GetMatchResults(textDB, feature.Mass, ms1Tol, getMatchResult).Where(result => result.IsPrecursorMzMatch).ToList();
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 foreach (var result in results) {
-                    result.Priority = DataBasePriority.TextDB;
+                    result.Source = SourceType.TextDB;
                     feature.MatchResults.AddTextDbResult(result);
                 }
                 if (results.Count > 0)
