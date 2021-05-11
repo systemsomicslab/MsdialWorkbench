@@ -75,6 +75,7 @@
     <Compile Include="Converter\RadioButtonConverter.cs" />
     <Compile Include="Validator\FileNameCharacterValidation.cs" />
     <Compile Include="Validator\NumericValidation.cs" />
+    <Compile Include="Validator\PathExistsAttribute.cs" />
     <Compile Include="Validator\PositiveDoubleNumericValidation.cs" />
     <Compile Include="Validator\PositiveIntNumericValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
