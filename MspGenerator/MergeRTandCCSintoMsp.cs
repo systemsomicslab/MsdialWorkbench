@@ -223,7 +223,7 @@ namespace CompMs.MspGenerator
                     {
                         continue;
                     }
-                    else if (query.ChromXs==null)
+                    else if (query.ChromXs.RT.Value==-1)
                     {
                         query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
                     }
@@ -298,7 +298,10 @@ namespace CompMs.MspGenerator
                         {
                             continue;
                         }
+                        else if(query.RetentionTime == -1)
+                        {
                         query.RetentionTime = inchikeyToPredictedRt[query.InchiKey];
+                        }
                     }
                     else
                     {
