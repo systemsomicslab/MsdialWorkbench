@@ -17,7 +17,7 @@ namespace CompMs.CommonMVVM
         private readonly Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
 
         protected void OnErrorsChanged(DataErrorsChangedEventArgs args) => ErrorsChanged?.Invoke(this, args);
-        protected void OnErrorsChanged([CallerMemberName] string propertyname = "") => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyname));
+        protected virtual void OnErrorsChanged([CallerMemberName] string propertyname = "") => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyname));
 
         public IEnumerable GetErrors(string propertyName) {
             if (errors.ContainsKey(propertyName)) {
@@ -25,6 +25,8 @@ namespace CompMs.CommonMVVM
             }
             return null;
         }
+
+        public bool ContainsError(string propertyName) => errors.ContainsKey(propertyName);
 
         protected override bool SetProperty<T>(ref T prop, T value, [CallerMemberName] string propertyname = "") {
             var setted = base.SetProperty(ref prop, value, propertyname);

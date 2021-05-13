@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
             : base(serializer) {
 
-            Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles);
+            Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
 
             AnalysisFiles = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
             AnalysisFiles.MoveCurrentToFirst();
@@ -238,6 +239,41 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public override void SaveProject() {
             Model.SaveProject();
+        }
+
+        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
+        private DelegateCommand<Window> exportAnalysisResultCommand;
+
+        private void ExportAnalysis(Window owner) {
+            var container = Model.Storage;
+            var spectraTypes = new List<Model.Export.SpectraType>
+            {
+                new Model.Export.SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
+                new Model.Export.SpectraType(
+                    ExportspectraType.centroid,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
+                new Model.Export.SpectraType(
+                    ExportspectraType.profile,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+            };
+            var spectraFormats = new List<Model.Export.SpectraFormat>
+            {
+                new Model.Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+            };
+
+            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, Model.ProviderFactory)) {
+
+                var dialog = new AnalysisResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+
+                dialog.ShowDialog();
+            }
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));

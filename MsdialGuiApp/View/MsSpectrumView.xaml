@@ -11,8 +11,7 @@
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
              Name="ExpRefPlot"
-             d:DesignHeight="600" d:DesignWidth="370"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:MsSpectrumViewModel}}">
+             d:DesignHeight="600" d:DesignWidth="370" >
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>

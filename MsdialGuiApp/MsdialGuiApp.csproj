@@ -81,6 +81,7 @@
       <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -123,6 +124,7 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\IBarItemsLoader.cs" />
     <Compile Include="Model\AlignmentEicModel.cs" />
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
@@ -147,6 +149,7 @@
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
+    <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Export\LecacyQuantValueAccessor.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
@@ -187,6 +190,9 @@
     </Compile>
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
+      <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ExpRef2View.xaml.cs">
       <DependentUpon>ExpRef2View.xaml</DependentUpon>
@@ -465,6 +471,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Export\AnalysisResultExportWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

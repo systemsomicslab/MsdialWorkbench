@@ -31,10 +31,11 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public DimsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) {
+        public DimsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles, IDataProviderFactory<AnalysisFileBean> providerFactory) {
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
+            ProviderFactory = providerFactory;
 
             var mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             mspAlignmentAnnotator = mspAnnotator;
@@ -102,6 +103,8 @@ namespace CompMs.App.Msdial.Model.Dims
             get => serializer ?? (serializer = new MsdialDimsSerializer());
         }
         private MsdialDimsSerializer serializer;
+
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
             if (AlignmentFiles == null)
@@ -178,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             return new DimsAnalysisModel(
                     analysisFile,
-                    new StandardDataProvider(analysisFile, isGuiProcess: true, retry: 5),
+                    ProviderFactory.Create(analysisFile),
                     Storage.DataBaseMapper,
                     Storage.ParameterBase,
                     mspChromatogramAnnotator,
