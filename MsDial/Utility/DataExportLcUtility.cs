@@ -5196,7 +5196,7 @@ namespace Rfx.Riken.OsakaUniv
                     var commentPrefix = "COM";
                     var mztabVersion = "2.0.0-M"; //Fixed
 
-                    var mzTabExporterVerNo = "1.05";
+                    var mzTabExporterVerNo = "1.07";
                     var mzTabExporterName = "MS-DIAL mzTab exporter";
                     var mztabExporter = "[,, " + mzTabExporterName + ", " + mzTabExporterVerNo + "]";
 
@@ -5211,15 +5211,6 @@ namespace Rfx.Riken.OsakaUniv
                     var softwareVerNumber = analysisParamForLC.MsdialVersionNumber.Replace("MS-DIAL ver.", "");
                     var software = "[MS, MS:1003082, MS-DIAL, " + softwareVerNumber + "]";  //Fixed
                     var quantificationMethod = "[MS, MS:1002019, Label-free raw feature quantitation, ]";  // 
-
-                    var msRunFormat = "[,, ABF(Analysis Base File) file, ]"; // need to consider
-                    var msRunIDFormat = "[,, ABF file Datapoint Number, ]"; // need to consider
-
-                    if (ionMobility == true)
-                    {
-                        msRunFormat = "[,, IBF file, ]"; // need to consider
-                        msRunIDFormat = "[,, IBF file Datapoint Number, ]"; // need to consider
-                    }
 
                     var cvList = new List<List<string>>(); // cv list
                     var cvItem1 = new List<string>() { "MS", "PSI-MS controlled vocabulary", "20-06-2018", "https://www.ebi.ac.uk/ols/ontologies/ms" };
@@ -5236,6 +5227,56 @@ namespace Rfx.Riken.OsakaUniv
                             cvList.Add(cvItem2);
                         }
                     }
+
+                    //var msRunFormat = "[,, ABF(Analysis Base File) file, ]"; // need to consider
+                    //var msRunIDFormat = "[,, ABF file Datapoint Number, ]"; // need to consider
+
+                    //if (ionMobility == true)
+                    //{
+                    //    msRunFormat = "[,, IBF file, ]"; // need to consider
+                    //    msRunIDFormat = "[,, IBF file Datapoint Number, ]"; // need to consider
+                    //}
+                    var msRunFormat = ""; 
+                    var msRunIDFormat = "";
+                    var analysisFileExtention = Path.GetExtension(analysisFiles[0].AnalysisFilePropertyBean.AnalysisFilePath).ToUpper();
+
+                    switch (analysisFileExtention)
+                    {
+                        case (".ABF"):
+                            msRunFormat = "[,, ABF(Analysis Base File) file, ]";
+                            msRunIDFormat = "[,, ABF file Datapoint Number, ]";
+                            break;
+                        case (".IBF"):
+                            msRunFormat = "[,, IBF file, ]";
+                            msRunIDFormat = "[,, IBF file Datapoint Number, ]";
+                            break;
+                        case (".WIFF"):
+                        case (".WIFF2"):
+                            msRunFormat = "[MS, MS:1000562, ABI WIFF format, ]";
+                            msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
+                            break;
+                        case (".D"):
+                            msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
+                            msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
+                            break;
+                        //case ("RAW"):
+                        //    msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
+                        //    msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
+                        //    msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
+                        //    msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
+                        //    break;
+                        case (".CDF"):
+                            msRunFormat = "[EDAM, format:3650, netCDF, ]";
+                            msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
+                            var cvItem3 = new List<string>() { "EDAM", "Bioscientific data analysis ontology", "20-06-2020", "http://edamontology.org/" };
+                            cvList.Add(cvItem3);
+
+                            break;
+                        case (".MZML"):
+                            msRunFormat = "[MS, MS:1000584, mzML format, ]";
+                            msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
+                            break;
+                    };
 
                     var database = new List<List<string>>();
                     var defaultDatabase = new List<string>();
