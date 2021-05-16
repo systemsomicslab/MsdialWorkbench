@@ -9,20 +9,23 @@ using CompMs.Common.Enum;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialCore.MSDec;
+using System.Collections.ObjectModel;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialCore.Export
 {
     public class MztabFormatExport
     {
+
         public static void MztabExporter(
             string outfile,
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files,
-            IMetadataAccessor metaFormatter,
+            ParameterBase parameter,
             IQuantValueAccessor quantAccessor)
         {
-            var meta = new ParameterBase();
+            var meta = parameter;
             //var meta = metaFormatter.GetContent(spots[0], msdecResults[0]);
 
             var mzTabExporterVerNo = "1.10";
@@ -389,7 +392,7 @@ namespace CompMs.MsdialCore.Export
                 {
                     sw.Write("opt_global_Mobility" + "\t" + "opt_global_CCS_values" + "\t");
                 }
-                if (meta.IsNormalizeIS)
+                if (meta.IsNormalizeIS || meta.IsNormalizeSplash)
                 {
                     sw.Write("opt_global_internalStanderdSMLID" + "\t"
                            + "opt_global_internalStanderdMetaboliteName" + "\t"
@@ -402,7 +405,7 @@ namespace CompMs.MsdialCore.Export
 
                 foreach (var spot in spots)
                 {
-                    WriteMztabSMLData(sw, spot, meta, database, idConfidenceDefault, idConfidenceManual);
+                    WriteMztabSMLData(sw, spot, meta, quantAccessor, database,idConfidenceDefault, idConfidenceManual);
                     sw.WriteLine("");
                 }
                 //SML section end
@@ -423,7 +426,7 @@ namespace CompMs.MsdialCore.Export
                     sw.Write("opt_global_Mobility" + "\t" + "opt_global_CCS_values" + "\t");
                 }
                 // opt_global_internalStanderdSMLID, opt_global_internalStanderdMetaboliteName
-                if (meta.IsNormalizeIS)
+                if (meta.IsNormalizeIS || meta.IsNormalizeSplash)
                 {
                     sw.Write("opt_global_internalStanderdSMLID" + "\t"
                            + "opt_global_internalStanderdMetaboliteName" + "\t"
@@ -449,9 +452,13 @@ namespace CompMs.MsdialCore.Export
         public static void WriteMztabSMLData(StreamWriter sw,
             AlignmentSpotProperty spot,
             ParameterBase param,
+            IQuantValueAccessor quantAccessor,
             List<List<string>> database,
             string idConfidenceDefault, string idConfidenceManual)
         {
+            var matchResult = spot.MatchResults.Representative;
+
+
             var inchi = "null";
             var smlPrefix = "SML";
             var smlID = spot.AlignmentID;
@@ -463,7 +470,7 @@ namespace CompMs.MsdialCore.Export
             var chemicalNameDB = "null";
 
             var uri = "null";
-            var reliability = "999"; // as msiLevel
+            var reliability = DataAccess.GetAnnotationCode(matchResult, param).ToString(); // as msiLevel
             var bestIdConfidenceMeasure = "null";
             var theoreticalNeutralMass = "null";
 
@@ -548,6 +555,9 @@ namespace CompMs.MsdialCore.Export
                 metadata2.Add(metadataMember);
             }
             sw.Write(String.Join("\t", metadata2) + "\t");
+            var quantValues = quantAccessor.GetQuantValues(spot);
+            sw.Write(string.Join("\t", quantValues));
+
         }
 
 
@@ -558,6 +568,7 @@ namespace CompMs.MsdialCore.Export
 
         }
 
+  
         //public static void WriteDataMztab(StreamWriter sw, ObservableCollection<AlignedPeakPropertyBean> peaks, string exportType, bool replaceZeroToHalf, float nonZeroMin)
         //{
         //    for (int i = 0; i < peaks.Count; i++)
