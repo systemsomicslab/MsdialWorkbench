@@ -3277,20 +3277,10 @@ namespace Rfx.Riken.OsakaUniv
             var rdamFileID = this.rdamProperty.RdamFilePath_RdamFileID[analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = this.rdamProperty.RdamFileContentBeanCollection[rdamFileID].FileID_MeasurementID[analysisFileBean.AnalysisFilePropertyBean.AnalysisFileId];
 
-            if (System.IO.Path.GetExtension(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath) == ".raw" ||
-                System.IO.Path.GetExtension(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath) == ".d") {
-                if (!Directory.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath)) {
-                    MessageBox.Show("The raw file cannot be found. Please put your all data in the same directory.",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-            }
-            else {
-                if (!File.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath)) {
-                    MessageBox.Show("The abf, cdf, or mzML file cannot be found. Please put your all data in the same directory.",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+            if (!File.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath) && !Directory.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath)) {
+                MessageBox.Show("The raw file cannot be found. Please put your all data in the same directory.",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
             DataStorageLcUtility.SetPeakAreaBeanCollection(analysisFileBean, analysisFileBean.AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
@@ -3402,8 +3392,8 @@ namespace Rfx.Riken.OsakaUniv
             int rdamFileID = this.rdamProperty.RdamFilePath_RdamFileID[analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath];
             int measurementID = this.rdamProperty.RdamFileContentBeanCollection[rdamFileID].FileID_MeasurementID[analysisFileBean.AnalysisFilePropertyBean.AnalysisFileId];
 
-            if (!System.IO.File.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath)) {
-				MessageBox.Show("The abf file cannot be found. Please put all your data in the same directory.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (!File.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath) && !Directory.Exists(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath)) {
+				MessageBox.Show("The raw file cannot be found. Please put all your data in the same directory.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
 			}
 

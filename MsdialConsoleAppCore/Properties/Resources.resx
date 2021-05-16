@@ -117,16 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DATE" xml:space="preserve">
-    <value>Jan. 5th, 2021</value>
-  </data>
-  <data name="String1" xml:space="preserve">
-    <value />
-  </data>
-  <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
-  </data>
   <data name="VERSION" xml:space="preserve">
-    <value>MS-DIAL ver. 4.60-dev</value>
+    <value>MS-DIAL console ver. 4.60</value>
   </data>
 </root>

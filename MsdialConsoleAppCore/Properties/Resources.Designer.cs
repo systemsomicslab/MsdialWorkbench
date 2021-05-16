@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Rfx.Riken.OsakaUniv.Properties {
+namespace MsdialConsoleAppCore.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Rfx.Riken.OsakaUniv.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MsdialConsoleAppCore.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,34 +61,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Jan. 5th, 2021.
-        /// </summary>
-        internal static string DATE {
-            get {
-                return ResourceManager.GetString("DATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vdd.json.
-        /// </summary>
-        internal static string VDD_URI {
-            get {
-                return ResourceManager.GetString("VDD_URI", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MS-DIAL ver. 4.60-dev.
+        ///   Looks up a localized string similar to MS-DIAL console ver. 4.60.
         /// </summary>
         internal static string VERSION {
             get {

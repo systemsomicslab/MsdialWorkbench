@@ -65,9 +65,9 @@ namespace Rfx.Riken.OsakaUniv
                 if (i > nextPeakCheckReminder + 2) nextPeakCheck = false;
                 if (isPeakStarted(i, ssPeaklist, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, results, nextPeakCheck)) {
 
-                    if (Math.Abs(ssPeaklist[i][1] - 1.967) < 0.05 && Math.Abs(ssPeaklist[i][2] - 609.14703) < 0.1) {
-                        Console.WriteLine("rt {0}, m/z {1}, intensity {2}", ssPeaklist[i][1], ssPeaklist[i][2], ssPeaklist[i][3]);
-                    }
+                    //if (Math.Abs(ssPeaklist[i][1] - 1.967) < 0.05 && Math.Abs(ssPeaklist[i][2] - 609.14703) < 0.1) {
+                    //    Console.WriteLine("rt {0}, m/z {1}, intensity {2}", ssPeaklist[i][1], ssPeaklist[i][2], ssPeaklist[i][3]);
+                    //}
 
 
                     datapoints = new List<double[]>();

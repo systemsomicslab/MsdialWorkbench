@@ -46,6 +46,19 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"D:\Lecture for metabolomics software\LCMSMS Wine raw data\Msdial-lcms-dda-Param20200527.txt"
             //    , "-p" };
 
+            ////LC-DDA test using wiff(as profile mode)
+            //args = new string[] {
+            //    "lcmsdda"
+            //    , "-i"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata"
+            //    , "-m"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata\param.txt"
+            //    , "-o"
+            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata"
+            //    , "-p"
+            //};
+
+
             //LC-DDA test using mzML(as profile mode)
             //args = new string[] {
             //    "lcmsdda"
@@ -87,21 +100,6 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs" };
             #endregion
 
-            /*
-                        args = new string[] {
-
-                        "lcmsdda",
-                            "-i",
-                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
-                            "-m",
-                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\Msdial-lcms-dda-Param20200527_2.txt",
-                            "-o",
-                            @"D:\takahashi\desktop\Riken-metadatabase\88_others\msdialconsoleapp\pos\",
-                            "-p"
-                            //, "-mCE" ,"-target", "269.117"
-                        };           
-
-             */
             return MainProcess.Run(args);
         }
     }

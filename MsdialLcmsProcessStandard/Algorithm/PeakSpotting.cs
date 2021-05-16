@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
     public sealed class PeakSpotting
@@ -391,7 +390,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         );
                 }
 
-
+                if (peaklist == null || peaklist.Count <= 5) continue;
                 //if (Math.Abs(spot.RtAtPeakTop - 18.503) < 0.1 && Math.Abs(spot.AccurateMass - 279.1598) < 0.01) {
                 //    Console.WriteLine();
                 //}

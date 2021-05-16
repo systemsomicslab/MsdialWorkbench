@@ -45,7 +45,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 var filepath = file.AnalysisFilePropertyBean.AnalysisFilePath;
                 if (System.IO.File.Exists(filepath)) {
                     var extension = System.IO.Path.GetExtension(filepath).ToLower();
-                    if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" || extension == ".wiff" || extension == ".wiff2") {
+                    if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || 
+                        extension == ".ibf" || extension == ".wiff" || extension == ".wiff2" ||
+                        extension == ".raw" || extension == ".d") {
                         if (!extensions.Contains(extension)) {
                             extensions.Add(extension);
                         }
@@ -64,7 +66,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
             foreach (var file in filepathes) {
                 var extension = System.IO.Path.GetExtension(file).ToLower();
-                if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" || extension == ".wiff" || extension == ".wiff2")
+                if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" 
+                    || extension == ".wiff" || extension == ".wiff2"
+                    || extension == ".raw" || extension == ".d")
                     importableFiles.Add(file);
             }
 

@@ -25,6 +25,12 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             var iniLipidPath = System.AppDomain.CurrentDomain.BaseDirectory + "LipidQueries.INI";
             if (!System.IO.File.Exists(iniLipidPath)) { WriteLipidINI(param); }
 
+            //using (var fs = new FileStream(iniPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+            //    using (var sr = new StreamReader(fs, Encoding.ASCII)) {
+
+            //    }
+            //}
+
             using (var sr = new StreamReader(iniPath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     var line = sr.ReadLine();
