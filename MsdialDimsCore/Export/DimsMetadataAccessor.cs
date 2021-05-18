@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -68,7 +69,12 @@ namespace CompMs.MsdialDimsCore.Export
 
     public class DimsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter)
+            : this(refer, parameter, parameter.ExportSpectraType) {
+        }
+
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type)
+            : base(refer, parameter, type) {
         }
 
         protected override string[] GetHeadersCore() {

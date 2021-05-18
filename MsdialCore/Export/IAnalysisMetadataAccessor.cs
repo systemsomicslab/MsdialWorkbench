@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -21,13 +22,15 @@ namespace CompMs.MsdialCore.Export
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
     {
-        public BaseAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) {
+        public BaseAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type) {
             this.refer = refer;
             this.parameter = parameter;
+            this.type = type;
         }
 
         protected readonly ParameterBase parameter;
         protected readonly IMatchResultRefer refer;
+        private readonly ExportspectraType type;
 
         public string[] GetHeaders() => GetHeadersCore();
 

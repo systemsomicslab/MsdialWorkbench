@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System.Collections.Generic;
@@ -22,8 +21,8 @@ namespace CompMs.MsdialCore.DataObj
 
         private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
 
-        public void Restore(ParameterBase param) {
-            keyToRefer = InnerKeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Restore(param));
+        public void Restore(IRestorationVisitor visitor) {
+            keyToRefer = InnerKeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Accept(visitor));
         }
 
         [Key(0)]

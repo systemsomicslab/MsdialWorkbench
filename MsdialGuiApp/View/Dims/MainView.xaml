@@ -142,10 +142,6 @@
                 </MenuItem>
             </ContextMenu>
             -->
-            <manager:ContinuousAxisManager x:Key="MassAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -383,7 +379,7 @@
             </Grid>
         </Grid>
         <local:Footer DataContext="{Binding AnalysisVM}"
-                      MassAxis="{StaticResource MassAxis}"
+                      IsEnabled="False"
                       Grid.Row="2" Grid.Column="1"/>
 
         <GridSplitter Margin="0,0,0,0" 

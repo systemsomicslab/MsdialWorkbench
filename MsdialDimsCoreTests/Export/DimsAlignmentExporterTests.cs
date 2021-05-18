@@ -157,7 +157,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
         private List<MoleculeMsReference> db;
 
-        public IMatchResultRefer Restore(ParameterBase parameter) {
+        public IMatchResultRefer Accept(IRestorationVisitor visitor) {
             return new DataBaseRefer(db);
         }
     }

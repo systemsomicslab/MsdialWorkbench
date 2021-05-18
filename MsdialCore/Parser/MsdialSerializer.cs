@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.Parser
         }
 
         protected virtual void LoadDataBaseMapper(MsdialDataStorage storage) {
-            storage.DataBaseMapper?.Restore(storage.ParameterBase);
+            storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase));
         }
     }
 }

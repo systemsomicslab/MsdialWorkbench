@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.CommonMVVM.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -177,7 +178,7 @@ namespace Rfx.Riken.OsakaUniv
 
 namespace CompMs.CommonMVVM
 {
-    public class ViewModelBase : ValidatableBase
+    public class ViewModelBase : ValidatableBase, IDisposable
     {
         [Obsolete("Please use HasErrors property of INotifyDataErrorInfo")]
         public bool HasViewError {
@@ -185,5 +186,23 @@ namespace CompMs.CommonMVVM
             set => SetProperty(ref hasViewError, value);
         }
         private bool hasViewError;
+
+        protected DisposableCollection Disposables { get; } = new DisposableCollection();
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    Disposables.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
