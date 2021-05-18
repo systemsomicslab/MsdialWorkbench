@@ -227,6 +227,9 @@
     <Compile Include="View\MsSpectrumView.xaml.cs">
       <DependentUpon>MsSpectrumView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Normalize\SplashSetView.xaml.cs">
+      <DependentUpon>SplashSetView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
@@ -519,6 +522,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MsSpectrumView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Normalize\SplashSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -76,6 +76,34 @@
         <Setter Property="IsReadOnly" Value="True" />
     </Style>
 
+    <!-- ui:LabeledContent -->
+    <Style TargetType="ui:LabeledContent">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:LabeledContent">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="{TemplateBinding PrependLabel}"
+                               VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                               Margin="0,0,8,0"
+                               Grid.Column="0"/>
+                        <ContentPresenter VerticalAlignment="Stretch"
+                                          Grid.Column="1"/>
+                        <Label Content="{TemplateBinding AppendLabel}"
+                               VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                               Margin="8,0,0,0"
+                               Grid.Column="2"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="AlignedContent" TargetType="ui:LabeledContent">
         <Setter Property="Template">
             <Setter.Value>
