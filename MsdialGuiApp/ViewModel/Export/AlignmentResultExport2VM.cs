@@ -116,7 +116,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
                         msdecResults,
                         files,
                         exportType.MetadataAccessor,
-                        exportType.QuantValueAccessor);
+                        exportType.QuantValueAccessor,
+                        exportType.Stats);
                 }
             }
         }
@@ -146,6 +147,15 @@ namespace CompMs.App.Msdial.ViewModel.Export
             IsSelected = isSelected;
         }
 
+        public ExportType2(string label, IMetadataAccessor metadataAccessor, IQuantValueAccessor quantValueAccessor, string filePrefix, List<StatsValue> stats, bool isSelected = false) {
+            Label = label;
+            MetadataAccessor = metadataAccessor;
+            QuantValueAccessor = quantValueAccessor;
+            FilePrefix = filePrefix;
+            IsSelected = isSelected;
+            Stats = stats;
+        }
+
         public string Label { get; }
 
         public IMetadataAccessor MetadataAccessor { get; }
@@ -157,6 +167,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
         }
         private bool isSelected = false;
         public string FilePrefix { get; }
+
+        public List<StatsValue> Stats { get; } = new List<StatsValue>();
     }
 
     public class ExportFormat2 : ViewModelBase

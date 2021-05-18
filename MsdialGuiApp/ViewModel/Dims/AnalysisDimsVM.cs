@@ -40,6 +40,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(Model.Target)) {
+                if (Model.Target == null) {
+                    PlotViewModel.GraphTitle = string.Empty;
+                    EicViewModel.GraphTitle = string.Empty;
+                }
                 var peak = Model.Target.InnerModel;
                 PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
                 EicViewModel.GraphTitle = $"{peak.Mass:N4}[Da]  Max intensity: {EicViewModel.EicMaxIntensity:F0}";

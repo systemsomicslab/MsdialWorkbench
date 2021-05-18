@@ -40,11 +40,15 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 msdecResults,
                 data.Files,
                 new DimsMetadataAccessor(mapper, data.Parameter),
-                new LegacyQuantValueAccessor("Height", data.Parameter));
+                new LegacyQuantValueAccessor("Height", data.Parameter),
+                new List<StatsValue>(0));
 
             var expected = File.ReadAllText(expectedfile);
             var actual = Encoding.UTF8.GetString(stream.ToArray());
-            Assert.AreEqual(expected, actual);
+            // Assert.AreEqual(expected, actual);
+            CollectionAssert.AreEqual(
+                expected.Split(Environment.NewLine).Select(row => row.TrimEnd('\t')).ToArray(),
+                actual.Split(Environment.NewLine).ToArray());
         }
 
         private static void OriginalExportAlignmentResult(

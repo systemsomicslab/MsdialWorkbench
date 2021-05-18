@@ -84,6 +84,17 @@ namespace CompMs.Common.Mathematics.Basic {
             return sum;
         }
 
+        public static double Mean(IReadOnlyList<double> array)
+        {
+            if (array == null || array.Count == 0) return 0;
+
+            double sum = 0;
+            int size = array.Count;
+            for (int i = 0; i < size; i++)
+                sum += array[i];
+            return sum / size;
+        }
+
         public static double Mean(double[] array)
         {
             if (array == null || array.Length == 0) return 0;
@@ -202,6 +213,17 @@ namespace CompMs.Common.Mathematics.Basic {
                 sortArray[i] = list[i][index];
             Array.Sort(sortArray);
             return sortArray[midArrayNumber];
+        }
+
+        public static double Stdev(IReadOnlyList<double> array)
+        {
+            var mean = Mean(array);
+
+            double sum = 0;
+            int size = array.Count;
+            for (int i = 0; i < size; i++)
+                sum += Math.Pow(array[i] - mean, 2);
+            return Math.Sqrt(sum / (size - 1));
         }
 
         public static double Stdev(double[] array)
