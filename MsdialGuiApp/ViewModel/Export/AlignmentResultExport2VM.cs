@@ -118,6 +118,9 @@ namespace CompMs.App.Msdial.ViewModel.Export
                         exportType.MetadataAccessor,
                         exportType.QuantValueAccessor);
                 }
+                ////add MT __under construction
+                MztabFormatExport.MztabFormatExporterCore(outfile, resultContainer.AlignmentSpotProperties, msdecResults, files, exportType.MetadataAccessor, exportType.QuantValueAccessor);
+
             }
         }
 
