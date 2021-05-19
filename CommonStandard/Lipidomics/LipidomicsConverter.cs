@@ -3542,15 +3542,15 @@ namespace CompMs.Common.Lipidomics {
             }
         }
 
-        //public static List<string> GetLipidClasses() {
-        //    var names = new List<string>();
-        //    foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>()) {
-        //        var cName = ConvertLbmClassEnumToMsdialClassDefinitionVS2(lipid);
-        //        if (cName != "Undefined" && !names.Contains(cName))
-        //            names.Add(cName);
-        //    }
-        //    return names;
-        //}
+        public static List<string> GetLipidClasses() {
+            var names = new List<string>();
+            foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>()) {
+                var cName = ConvertLbmClassEnumToMsdialClassDefinitionVS2(lipid);
+                if (cName != "Undefined" && !names.Contains(cName))
+                    names.Add(cName);
+            }
+            return names;
+        }
 
         //public static string ConvertLbmClassEnumToMsdialClassDefinition(LbmClass lipidclass) {
         //    switch (lipidclass) {
