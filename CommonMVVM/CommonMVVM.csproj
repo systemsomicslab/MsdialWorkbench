@@ -62,7 +62,7 @@
     <Compile Include="Common\DataGridWithCheckBox.cs" />
     <Compile Include="Common\DynamicViewModelBase.cs" />
     <Compile Include="Common\MappedReadOnlyObservableCollection.cs" />
-    <Compile Include="Common\PropertyChangedNotifir.cs" />
+    <Compile Include="Common\PropertyChangedNotifier.cs" />
     <Compile Include="Common\ValidatableBase.cs" />
     <Compile Include="Converter\BooleanToEnumConverter.cs" />
     <Compile Include="Converter\BoolToYesNoConverter.cs" />

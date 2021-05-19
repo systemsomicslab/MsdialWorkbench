@@ -4,14 +4,14 @@ using System.ComponentModel;
 
 namespace CompMs.CommonMVVM.Common
 {
-    public class PropertyChangedNotifir : IDisposable
+    public class PropertyChangedNotifier : IDisposable
     {
-        public PropertyChangedNotifir(INotifyPropertyChanged source) {
+        public PropertyChangedNotifier(INotifyPropertyChanged source) {
             this.source = source;
             this.source.PropertyChanged += OnPropertyChanged;
         }
 
-        public PropertyChangedNotifir SubscribeTo(string name, Action handler) {
+        public PropertyChangedNotifier SubscribeTo(string name, Action handler) {
             if (!disposedValue) {
                 if (!actionMap.ContainsKey(name)) {
                     actionMap[name] = new List<Action>();
