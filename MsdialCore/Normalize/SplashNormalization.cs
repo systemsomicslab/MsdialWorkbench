@@ -16,102 +16,89 @@ namespace CompMs.MsdialCore.Normalize
             IReadOnlyList<StandardCompound> splashLipids,
             IonAbundanceUnit unit) {
 
-            var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
 
             // initialize
-            initializeNormalizationProcess(globalSpots);
+            InitializeNormalizationProcess(globalSpots);
             
             //normalization to 1 for IS spot
-            foreach (var compound in splashLipids) { // first try to normalize IS peaks
-                var baseSpot = globalSpots[compound.PeakID];
-                baseSpot.IonAbundanceUnit = unit;
-                baseSpot.InternalStandardAlignmentID = compound.PeakID;
-                var baseProps = baseSpot.AlignedPeakProperties;
-                foreach (var prop in baseProps) {
-                    prop.NormalizedPeakHeight = compound.Concentration;
-                    prop.NormalizedPeakAreaAboveBaseline = compound.Concentration;
-                    prop.NormalizedPeakAreaAboveZero = compound.Concentration;
-                }
+
+            // first try to normalize IS peaks
+            foreach (var compound in splashLipids) {
+                NormalizeInternalStandard(globalSpots[compound.PeakID], compound, unit);
             }
 
-            foreach (var compound in splashLipids.Where(lipid => lipid.TargetClass != "Any others")) { // first try to normalize except for "any others" property
-                foreach (var spot in globalSpots) {
-                    var lipidclass = string.Empty;
-                    lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses);
-                    var targetProps = spot.AlignedPeakProperties;
-                    if (targetProps[0].NormalizedPeakHeight >= 0)
-                        continue;
-
-                    if (compound.TargetClass == lipidclass) {
-                        var baseSpot = globalSpots[compound.PeakID];
-                        var baseProps = baseSpot.AlignedPeakProperties;
-                        spot.InternalStandardAlignmentID = compound.PeakID;
-                        spot.IonAbundanceUnit = unit;
-
-                        for (int i = 0; i < baseProps.Count; i++) {
-
-                            var baseIntensity = baseProps[i].PeakHeightTop > 0 ? baseProps[i].PeakHeightTop : 1.0;
-                            var targetIntensity = targetProps[i].PeakHeightTop;
-                            targetProps[i].NormalizedPeakHeight = compound.Concentration *  targetIntensity / baseIntensity;
-                            var baseArea = baseProps[i].PeakAreaAboveBaseline > 0 ? baseProps[i].PeakAreaAboveBaseline : 1.0;
-                            var targetArea = targetProps[i].PeakAreaAboveBaseline;
-                            targetProps[i].NormalizedPeakAreaAboveBaseline = compound.Concentration *  targetArea / baseArea;
-                            var baseAreaZero = baseProps[i].PeakAreaAboveZero > 0 ? baseProps[i].PeakAreaAboveZero : 1.0;
-                            var targetAreaZero = targetProps[i].PeakAreaAboveZero;
-                            targetProps[i].NormalizedPeakAreaAboveZero = compound.Concentration *  targetAreaZero / baseAreaZero;
-                        }
-                    }
-                    else {
-                        continue;
-                    }
-                }
-            }
-
-            foreach (var compound in splashLipids.Where(lipid => lipid.TargetClass == "Any others")) { // second, normalized by any other tagged compounds
-                foreach (var spot in globalSpots) {
-                    var lipidclass = string.Empty;
-                    lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses);
-                    var targetProps = spot.AlignedPeakProperties;
-                    if (targetProps[0].NormalizedPeakHeight >= 0)
-                        continue;
-
-                    var baseSpot = globalSpots[compound.PeakID];
-                    var baseProps = baseSpot.AlignedPeakProperties;
-                    spot.InternalStandardAlignmentID = compound.PeakID;
-                    spot.IonAbundanceUnit = unit;
-
-                    for (int i = 0; i < baseProps.Count; i++) {
-
-                        var baseIntensity = baseProps[i].PeakHeightTop > 0 ? baseProps[i].PeakHeightTop : 1.0;
-                        var targetIntensity = targetProps[i].PeakHeightTop;
-                        targetProps[i].NormalizedPeakHeight = compound.Concentration * targetIntensity / baseIntensity;
-                        var baseArea = baseProps[i].PeakAreaAboveBaseline > 0 ? baseProps[i].PeakAreaAboveBaseline : 1.0;
-                        var targetArea = targetProps[i].PeakAreaAboveBaseline;
-                        targetProps[i].NormalizedPeakAreaAboveBaseline = compound.Concentration *  targetArea / baseArea;
-                        var baseAreaZero = baseProps[i].PeakAreaAboveZero > 0 ? baseProps[i].PeakAreaAboveZero : 1.0;
-                        var targetAreaZero = targetProps[i].PeakAreaAboveZero;
-                        targetProps[i].NormalizedPeakAreaAboveZero = compound.Concentration *  targetAreaZero / baseAreaZero;
-                    }
-                }
-            }
-
-            // finalization
+            var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
+            var stdCompoundsTable = splashLipids.Where(lipid => lipid.TargetClass != "Any others").ToLookup(compound => compound.TargetClass);
+            var otherCompound = splashLipids.FirstOrDefault(lipid => lipid.TargetClass == "Any others");
             foreach (var spot in globalSpots) {
 
-                var targetProps = spot.AlignedPeakProperties;
-                if (targetProps[0].NormalizedPeakHeight >= 0)
+                // first try to normalize except for "any others" property
+                if (IsNormalized(spot)) {
                     continue;
-                spot.IonAbundanceUnit = IonAbundanceUnit.Height;
-
-                for (int i = 0; i < targetProps.Count; i++) {
-                    targetProps[i].NormalizedPeakHeight = targetProps[i].PeakHeightTop;
-                    targetProps[i].NormalizedPeakAreaAboveBaseline = targetProps[i].PeakAreaAboveBaseline;
-                    targetProps[i].NormalizedPeakAreaAboveZero = targetProps[i].PeakAreaAboveZero;
                 }
+                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses);
+                var stdCompound = stdCompoundsTable[lipidclass].FirstOrDefault();
+                if (stdCompound != null) {
+                    NormalizeByInternalStandard(spot, globalSpots[stdCompound.PeakID], stdCompound, unit);
+                    continue;
+                }
+
+                // second, normalized by any other tagged compounds
+                if (otherCompound != null) {
+                    NormalizeByInternalStandard(spot, globalSpots[otherCompound.PeakID], otherCompound, unit);
+                    continue;
+                }
+
+                // finalization
+                SetRawHeightData(spot);
             }
         }
 
-        private static void initializeNormalizationProcess(IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static void SetRawHeightData(AlignmentSpotProperty spot) {
+            spot.IonAbundanceUnit = IonAbundanceUnit.Height;
+            foreach (var targetProp in spot.AlignedPeakProperties) {
+                targetProp.NormalizedPeakHeight = targetProp.PeakHeightTop;
+                targetProp.NormalizedPeakAreaAboveBaseline = targetProp.PeakAreaAboveBaseline;
+                targetProp.NormalizedPeakAreaAboveZero = targetProp.PeakAreaAboveZero;
+            }
+        }
+
+        private static void NormalizeInternalStandard(AlignmentSpotProperty spot, StandardCompound compound, IonAbundanceUnit unit) {
+            spot.IonAbundanceUnit = unit;
+            spot.InternalStandardAlignmentID = compound.PeakID;
+            foreach (var prop in spot.AlignedPeakProperties) {
+                prop.NormalizedPeakHeight = compound.Concentration;
+                prop.NormalizedPeakAreaAboveBaseline = compound.Concentration;
+                prop.NormalizedPeakAreaAboveZero = compound.Concentration;
+            }
+        }
+
+        private static bool IsNormalized(AlignmentSpotProperty spot) {
+            return spot.InternalStandardAlignmentID >= 0;
+        }
+
+        private static void NormalizeByInternalStandard(AlignmentSpotProperty spot, AlignmentSpotProperty isSpot, StandardCompound compound, IonAbundanceUnit unit) {
+            spot.InternalStandardAlignmentID = compound.PeakID;
+            spot.IonAbundanceUnit = unit;
+            var targetProps = spot.AlignedPeakProperties;
+            var isProps = isSpot.AlignedPeakProperties;
+            for (int i = 0; i < isProps.Count; i++) {
+                var isProp = isProps[i];
+                var targetProp = targetProps[i];
+
+                var baseIntensity = isProp.PeakHeightTop > 0 ? isProp.PeakHeightTop : 1.0;
+                var targetIntensity = targetProp.PeakHeightTop;
+                targetProp.NormalizedPeakHeight = compound.Concentration *  targetIntensity / baseIntensity;
+                var baseArea = isProp.PeakAreaAboveBaseline > 0 ? isProp.PeakAreaAboveBaseline : 1.0;
+                var targetArea = targetProp.PeakAreaAboveBaseline;
+                targetProp.NormalizedPeakAreaAboveBaseline = compound.Concentration *  targetArea / baseArea;
+                var baseAreaZero = isProp.PeakAreaAboveZero > 0 ? isProp.PeakAreaAboveZero : 1.0;
+                var targetAreaZero = targetProp.PeakAreaAboveZero;
+                targetProp.NormalizedPeakAreaAboveZero = compound.Concentration *  targetAreaZero / baseAreaZero;
+            }
+        }
+
+        private static void InitializeNormalizationProcess(IReadOnlyList<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
                 spot.InternalStandardAlignmentID = -1;
                 foreach (var prop in spot.AlignedPeakProperties) {

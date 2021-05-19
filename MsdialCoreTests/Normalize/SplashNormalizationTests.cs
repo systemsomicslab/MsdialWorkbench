@@ -142,8 +142,8 @@ namespace CompMs.MsdialCore.Normalize.Tests
 
         [TestMethod()]
         public void NormalizeTest2() {
-            var spots = new AlignmentSpotProperty[7];
-            for (int i = 0; i < 7; i++) {
+            var spots = new AlignmentSpotProperty[8];
+            for (int i = 0; i < 8; i++) {
                 spots[i] = new AlignmentSpotProperty
                 {
                     MasterAlignmentID = i,
@@ -184,6 +184,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
             {
                 new StandardCompound { Concentration = 10, TargetClass = "PC", PeakID = 5 },
                 new StandardCompound { Concentration = 5, TargetClass = "Any others", PeakID = 6 },
+                new StandardCompound { Concentration = 3, TargetClass = "Any others", PeakID = 7 },
             };
 
             SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma);
@@ -252,6 +253,15 @@ namespace CompMs.MsdialCore.Normalize.Tests
             Assert.AreEqual(lipids[1].Concentration, spots[6].AlignedPeakProperties[1].NormalizedPeakAreaAboveBaseline);
             Assert.AreEqual(lipids[1].Concentration, spots[6].AlignedPeakProperties[0].NormalizedPeakAreaAboveZero);
             Assert.AreEqual(lipids[1].Concentration, spots[6].AlignedPeakProperties[1].NormalizedPeakAreaAboveZero);
+
+            Assert.AreEqual(lipids[2].PeakID, spots[7].InternalStandardAlignmentID);
+            Assert.AreEqual(IonAbundanceUnit.nmol_per_microL_plasma, spots[7].IonAbundanceUnit);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[0].NormalizedPeakHeight);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[1].NormalizedPeakHeight);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[0].NormalizedPeakAreaAboveBaseline);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[1].NormalizedPeakAreaAboveBaseline);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[0].NormalizedPeakAreaAboveZero);
+            Assert.AreEqual(lipids[2].Concentration, spots[7].AlignedPeakProperties[1].NormalizedPeakAreaAboveZero);
         }
     }
 
