@@ -140,6 +140,7 @@
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
+    <Compile Include="Model\Normalize\SplashSetModel.cs" />
     <Compile Include="Model\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\MsSpectrumModel.cs" />
     <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
     <Compile Include="ViewModel\RawDecSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\MsSpectrumViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">

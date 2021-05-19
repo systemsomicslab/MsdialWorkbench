@@ -23,5 +23,13 @@ namespace CompMs.App.Msdial.View.Normalize
         public SplashSetView() {
             InitializeComponent();
         }
+
+        public void CloseCommand_Execute(object sender, ExecutedRoutedEventArgs e) {
+            Window.GetWindow(this).Close();
+        }
+
+        public void CloseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = true;
+        }
     }
 }

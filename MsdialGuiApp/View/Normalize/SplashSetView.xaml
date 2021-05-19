@@ -4,8 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Normalize"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Normalize"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:SplashSetViewModel}}"
              d:DesignHeight="600" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -14,8 +17,15 @@
     </d:DesignerProperties.DesignStyle>
 
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="Close" Executed="CloseCommand_Execute" CanExecute="CloseCommand_CanExecute"/>
+    </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -27,34 +37,72 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="120"/>
             </Grid.ColumnDefinitions>
             <ui:LabeledContent PrependLabel="SPLASH products:"
                                AppendLabel=""
                                Grid.Column="0">
-                <ComboBox Width="160"
+                <ComboBox ItemsSource="{Binding SplashProducts}"
+                          SelectedValue="{Binding SplashProduct}"
+                          Width="160"
                           HorizontalAlignment="Left"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Concentration unit:"
                                AppendLabel=""
                                Grid.Column="1">
-                <ComboBox Width="160"
+                <ComboBox ItemsSource="{Binding OutputUnits}"
+                          SelectedValue="{Binding OutputUnit}"
+                          Width="160"
                           HorizontalAlignment="Left"/>
             </ui:LabeledContent>
-            <Button Content="Find" Grid.Column="2"/>
+            <Button Content="Find compounds"
+                    Command="{Binding FindCommand}"
+                    Grid.Column="2"/>
         </Grid>
 
         <DataGrid Margin="8,0"
-                  Grid.Row="1"/>
+                  ItemsSource="{Binding Path=StandardCompounds}"
+                  AutoGenerateColumns="False"
+                  CanUserReorderColumns="False" ClipboardCopyMode="ExcludeHeader"
+                  behavior:DataGridPasteBehavior.Enable="True"
+                  Grid.Row="1">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Metabolite name"
+                                    Binding="{Binding Path=StandardName}"
+                                    Width="*"/>
+                <DataGridTextColumn Header="Concentaration"
+                                    Binding="{Binding Path=Concentration}"
+                                    Width="*"/>
+                <DataGridComboBoxColumn Header="Target class"
+                                        ItemsSource="{Binding }"
+                                        Width="*"/>
+                <DataGridTextColumn Header="Alignment ID"
+                                    Binding="{Binding Path=PeakID}"
+                                    Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="8,4"
                     Grid.Row="2">
-            <Button Content="Finish"
+            <Button Content="Normalize"
+                    Command="{Binding NormalizeCommand}"
                     Width="80"
                     Margin="8,0"/>
             <Button Content="Cancel"
+                    Command="Close"
                     Width="80"/>
         </StackPanel>
     </Grid>
