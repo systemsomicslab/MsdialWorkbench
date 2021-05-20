@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Normalize
@@ -47,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Normalize
         private readonly IMatchResultRefer refer;
         private readonly ParameterBase parameter;
 
-        public ObservableCollection<StandardCompound> StandardCompounds { get; set; }
+        public ObservableCollection<StandardCompound> StandardCompounds => SplashProduct.Lipids;
 
         public ObservableCollection<SplashProduct> SplashProducts { get; }
 
@@ -83,6 +84,10 @@ namespace CompMs.App.Msdial.Model.Normalize
         public void Normalize() {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
             var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
+            if (compounds.Count == 0) {
+                MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             parameter.StandardCompounds = compounds;
             var unit = OutputUnit.Unit;
             SplashNormalization.Normalize(spots, refer, compounds, unit);
@@ -107,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Normalize
 
         private static List<SplashProduct> GetSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("CompMs.Main.App.Resources.SplashLipids.xml")) {
+            using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
                 var data = XElement.Load(stream);
                 return data.Elements("Product").Select(ToProduct).ToList();
             }
@@ -117,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             return new SplashProduct
             {
                 Label = element.Element("Label").Value,
-                Lipids = new ObservableCollection<StandardCompound>(element.Elements("Lipids").Select(ToCompound)),
+                Lipids = new ObservableCollection<StandardCompound>(element.Element("Lipids").Elements("Lipid").Select(ToCompound)),
             };
         }
 

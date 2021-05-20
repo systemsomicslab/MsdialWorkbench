@@ -13,6 +13,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public StandardCompoundViewModel(StandardCompound compound) {
             this.Compound = compound;
+            Refresh();
         }
 
         public StandardCompound Compound { get; }

@@ -1,0 +1,55 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Normalize.NormalizationSetView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Normalize"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Normalize"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:NormalizationSetViewModel}}"
+        Width="800" Height="540"
+        Title="Normalization setting">
+    <Window.Resources>
+        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="240"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Options" FontStyle="Italic"
+                       Margin="8"/>
+            <Border CornerRadius="5" BorderThickness="1" BorderBrush="LightGray"
+                    Margin="4" Padding="8">
+                <StackPanel DataContext="{Binding Parameter, Mode=OneTime}">
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Margin" Value="0,4"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <RadioButton Content="None" IsChecked="{Binding IsNormalizeNone, Mode=TwoWay}" IsEnabled="False"/>
+                    <RadioButton Content="Internal standard" IsChecked="{Binding IsNormalizeIS, Mode=TwoWay}" IsEnabled="False"/>
+                    <RadioButton Content="LOWLESS" IsChecked="{Binding IsNormalizeLowess, Mode=TwoWay}" IsEnabled="False"/>
+                    <RadioButton Content="Internal standard + LOWESS" IsChecked="{Binding IsNormalizeIsLowess, Mode=TwoWay}" IsEnabled="False"/>
+                    <RadioButton Content="SPLASH lipidomix" IsChecked="{Binding IsNormalizeSplash, Mode=TwoWay}"/>
+                    <RadioButton Content="Total ion chromatogram (TIC)" IsChecked="{Binding IsNormalizeTic, Mode=TwoWay}" IsEnabled="False"/>
+                    <RadioButton Content="mTIC: TIC of identified metabolites" IsChecked="{Binding IsNormalizeMTic, Mode=TwoWay}" IsEnabled="False"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <local:SplashSetView DataContext="{Binding SplashVM, Mode=OneTime}"
+                             Visibility="{Binding DataContext.Parameter.IsNormalizeSplash, Converter={StaticResource boolean2visibility}, RelativeSource={RelativeSource AncestorType=Grid}}"
+                             Margin="8" Grid.Row="1"/>
+        <!--
+        <Button Content="Done"
+                Command="{x:Static local:NormalizationSetView.DoneCommand}"
+                IsEnabled="{Binding CanExecute, Mode=OneWay}"
+                HorizontalAlignment="Right"
+                Width="80" Height="24"
+                Margin="8"/>
+                -->
+    </Grid>
+</Window>

@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Dims;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;

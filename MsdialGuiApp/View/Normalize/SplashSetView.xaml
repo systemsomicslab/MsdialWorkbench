@@ -43,7 +43,10 @@
                                AppendLabel=""
                                Grid.Column="0">
                 <ComboBox ItemsSource="{Binding SplashProducts}"
-                          SelectedValue="{Binding SplashProduct}"
+                          SelectedValue="{Binding SplashProduct, Mode=TwoWay}"
+                          DisplayMemberPath="Label"
+                          IsSynchronizedWithCurrentItem="True"
+                          VerticalContentAlignment="Center"
                           Width="160"
                           HorizontalAlignment="Left"/>
             </ui:LabeledContent>
@@ -51,7 +54,9 @@
                                AppendLabel=""
                                Grid.Column="1">
                 <ComboBox ItemsSource="{Binding OutputUnits}"
-                          SelectedValue="{Binding OutputUnit}"
+                          SelectedValue="{Binding OutputUnit, Mode=TwoWay}"
+                          DisplayMemberPath="Label"
+                          VerticalContentAlignment="Center"
                           Width="160"
                           HorizontalAlignment="Left"/>
             </ui:LabeledContent>
@@ -61,8 +66,9 @@
         </Grid>
 
         <DataGrid Margin="8,0"
-                  ItemsSource="{Binding Path=StandardCompounds}"
+                  ItemsSource="{Binding Path=SplashProducts/Lipids}"
                   AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   CanUserReorderColumns="False" ClipboardCopyMode="ExcludeHeader"
                   behavior:DataGridPasteBehavior.Enable="True"
                   Grid.Row="1">

@@ -16,10 +16,6 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer refer, ParameterBase parameter) {
             Model = new SplashSetModel(container, refer, parameter);
 
-            var standardCompounds = Model.StandardCompounds.ToMappedObservableCollection(model => new StandardCompoundViewModel(model), vm => vm.Compound);
-            StandardCompounds = standardCompounds;
-            Disposables.Add(standardCompounds);
-
             TargetMetabolites = Model.TargetMetabolites;
 
             var splashProducts = Model.SplashProducts.ToMappedReadOnlyObservableCollection(product => new SplashProductViewModel(product));
@@ -35,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
 
         public ReadOnlyCollection<string> TargetMetabolites { get; }
 
-        public ObservableCollection<StandardCompoundViewModel> StandardCompounds { get; }
+        public ObservableCollection<StandardCompoundViewModel> StandardCompounds => SplashProduct.Lipids;
 
         public ReadOnlyObservableCollection<SplashProductViewModel> SplashProducts { get; }
 
@@ -82,7 +78,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
             }
         }
 
-        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(Model.Normalize, Model.CanNormalize));
+        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(Model.Normalize));//, Model.CanNormalize));
 
         private DelegateCommand normalizeCommand;
     }
