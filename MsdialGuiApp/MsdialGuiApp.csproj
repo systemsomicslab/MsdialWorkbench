@@ -148,6 +148,7 @@
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -755,6 +756,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\SplashLipids.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -837,6 +839,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Imms\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

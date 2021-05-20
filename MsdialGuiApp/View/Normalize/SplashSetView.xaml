@@ -84,9 +84,15 @@
                 <DataGridTextColumn Header="Concentaration"
                                     Binding="{Binding Path=Concentration}"
                                     Width="*"/>
-                <DataGridComboBoxColumn Header="Target class"
-                                        ItemsSource="{Binding }"
-                                        Width="*"/>
+                <DataGridTemplateColumn Header="Target class" IsReadOnly="True"
+                                        Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Path=DataContext.TargetMetabolites, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGrid}}, Mode=OneWay}"
+                                      SelectedValue="{Binding TargetClass}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Alignment ID"
                                     Binding="{Binding Path=PeakID}"
                                     Width="*"/>

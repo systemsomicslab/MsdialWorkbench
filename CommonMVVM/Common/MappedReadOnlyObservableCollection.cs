@@ -81,6 +81,11 @@ namespace CompMs.CommonMVVM.Common
 
         public void Dispose() {
             source.CollectionChanged -= source_CollectionChanged;
+            if (typeof(U).GetInterfaces().Contains(typeof(IDisposable))) {
+                foreach (IDisposable item in this) {
+                    item.Dispose();
+                }
+            }
         }
     }
 

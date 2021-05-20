@@ -1,54 +1,62 @@
 ﻿using CompMs.App.Msdial.Model.Normalize;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Normalize
 {
-    public class SplashSetViewModel : ViewModelBase
+    class SplashSetViewModel : ViewModelBase
     {
-        public SplashSetViewModel() {
-            Model = new SplashSetModel();
+        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer refer, ParameterBase parameter) {
+            Model = new SplashSetModel(container, refer, parameter);
 
-            SplashProducts = new ReadOnlyObservableCollection<string>(Model.SplashProducts);
-            SplashProduct = Model.SplashProduct;
-            OutputUnits = new ReadOnlyObservableCollection<string>(Model.OutputUnits);
-            outputUnit = Model.OutputUnit;
+            var standardCompounds = Model.StandardCompounds.ToMappedObservableCollection(model => new StandardCompoundViewModel(model), vm => vm.Compound);
+            StandardCompounds = standardCompounds;
+            Disposables.Add(standardCompounds);
 
-            var notifier = new PropertyChangedNotifier(Model);
-            Disposables.Add(notifier);
-            notifier
-                .SubscribeTo(nameof(Model.StandardCompounds), () => OnPropertyChanged(nameof(StandardCompounds)))
-                .SubscribeTo(nameof(Model.SplashProduct), () => SplashProduct = Model.SplashProduct)
-                .SubscribeTo(nameof(Model.OutputUnit), () => OutputUnit = Model.OutputUnit);
+            TargetMetabolites = Model.TargetMetabolites;
+
+            var splashProducts = Model.SplashProducts.ToMappedReadOnlyObservableCollection(product => new SplashProductViewModel(product));
+            SplashProducts = splashProducts;
+            Disposables.Add(splashProducts);
+            SplashProduct = SplashProducts.FirstOrDefault();
+
+            OutputUnits = new ReadOnlyObservableCollection<IonAbundance>(Model.OutputUnits);
+            outputUnit = OutputUnits.FirstOrDefault();
         }
 
         public SplashSetModel Model { get; }
 
-        public ObservableCollection<StandardCompound> StandardCompounds => Model.StandardCompounds;
+        public ReadOnlyCollection<string> TargetMetabolites { get; }
 
-        public ReadOnlyObservableCollection<string> SplashProducts { get; }
+        public ObservableCollection<StandardCompoundViewModel> StandardCompounds { get; }
 
-        public string SplashProduct {
+        public ReadOnlyObservableCollection<SplashProductViewModel> SplashProducts { get; }
+
+        public SplashProductViewModel SplashProduct {
             get {
                 return splashProduct;
             }
             set {
                 if (SetProperty(ref splashProduct, value)) {
                     if (!ContainsError(nameof(SplashProduct))) {
-                        Model.SplashProduct = splashProduct;
+                        Model.SplashProduct = splashProduct.Model;
                     }
                 }
             }
         }
 
-        private string splashProduct;
+        private SplashProductViewModel splashProduct;
 
-        public ReadOnlyObservableCollection<string> OutputUnits { get; }
+        public ReadOnlyObservableCollection<IonAbundance> OutputUnits { get; }
 
-        public string OutputUnit {
+        public IonAbundance OutputUnit {
             get {
                 return outputUnit;
             }
@@ -61,14 +69,38 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
             }
         }
 
-        private string outputUnit;
+        private IonAbundance outputUnit;
 
-        public DelegateCommand FindCommand => findCommand ?? (findCommand = new DelegateCommand(() => { }));
+        public DelegateCommand FindCommand => findCommand ?? (findCommand = new DelegateCommand(Find));
 
         private DelegateCommand findCommand;
 
-        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(() => { }));
+        private void Find() {
+            Model.Find();
+            foreach (var compound in StandardCompounds) {
+                compound.Refresh();
+            }
+        }
+
+        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(Model.Normalize, Model.CanNormalize));
 
         private DelegateCommand normalizeCommand;
+    }
+
+    class SplashProductViewModel : ViewModelBase {
+        public SplashProductViewModel(SplashProduct product) {
+            Model = product;
+            var lipids = Model.Lipids.ToMappedObservableCollection(
+                lipid => new StandardCompoundViewModel(lipid),
+                lipidvm => lipidvm.Compound);
+            Disposables.Add(lipids);
+            Lipids = lipids;
+        }
+
+        public SplashProduct Model { get; }
+
+        public string Label => Model.Label;
+
+        public ObservableCollection<StandardCompoundViewModel> Lipids { get; }
     }
 }

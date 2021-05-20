@@ -1,54 +1,153 @@
-﻿using CompMs.Common.Lipidomics;
+﻿using CompMs.Common.Enum;
+using CompMs.Common.Lipidomics;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Normalize;
+using CompMs.MsdialCore.Parameter;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Normalize
 {
-    public class SplashSetModel : BindableBase
+    class SplashSetModel : BindableBase
     {
-        public SplashSetModel() {
+        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer refer, ParameterBase parameter) {
+            this.container = container;
+            this.spots = container.AlignmentSpotProperties;
+            this.refer = refer;
+            this.parameter = parameter;
+
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
             targetMetabolites.Add("Any others");
+            TargetMetabolites = targetMetabolites.AsReadOnly();
 
-            SplashProducts = new ObservableCollection<string>() { "EquiSPLASH", "SPLASH LIPIDOMIX", "SPLASH II LIPIDOMIX" };
+            SplashProducts = new ObservableCollection<SplashProduct>(GetSplashResource());
             SplashProduct = SplashProducts.FirstOrDefault();
 
-            OutputUnits = new ObservableCollection<string>() {
-                "nmol/μL plasma", "pmol/μL plasma", "fmol/μL plasma",
-                "nmol/mg tissue", "pmol/mg tissue", "fmol/mg tissue",
-                "nmol/10^6 cells", "pmol/10^6 cells", "fmol/10^6 cells" };
+            OutputUnits = new ObservableCollection<IonAbundance>() {
+                new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma, "nmol/μL plasma"),
+                new IonAbundance(IonAbundanceUnit.pmol_per_microL_plasma, "pmol/μL plasma"),
+                new IonAbundance(IonAbundanceUnit.fmol_per_microL_plasma, "fmol/μL plasma"),
+                new IonAbundance(IonAbundanceUnit.nmol_per_mg_tissue, "nmol/mg tissue"),
+                new IonAbundance(IonAbundanceUnit.pmol_per_mg_tissue, "pmol/mg tissue"),
+                new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue, "fmol/mg tissue"),
+                new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells, "nmol/10^6 cells"),
+                new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells, "pmol/10^6 cells"),
+                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells, "fmol/10^6 cells") };
             OutputUnit = OutputUnits.FirstOrDefault();
         }
 
+        private readonly AlignmentResultContainer container;
+        private readonly IReadOnlyList<AlignmentSpotProperty> spots;
+        private readonly IMatchResultRefer refer;
+        private readonly ParameterBase parameter;
+
         public ObservableCollection<StandardCompound> StandardCompounds { get; set; }
 
-        public ObservableCollection<string> SplashProducts { get; }
+        public ObservableCollection<SplashProduct> SplashProducts { get; }
 
-        public string SplashProduct {
+        public SplashProduct SplashProduct {
             get => splashProduct;
             set => SetProperty(ref splashProduct, value);
         }
 
-        private string splashProduct;
+        private SplashProduct splashProduct;
 
-        public ObservableCollection<string> OutputUnits { get; }
+        public ObservableCollection<IonAbundance> OutputUnits { get; }
 
-        public string OutputUnit {
+        public IonAbundance OutputUnit {
             get => outputUnit;
             set => SetProperty(ref outputUnit, value);
         }
 
-        private string outputUnit;
+        private IonAbundance outputUnit;
+
+        public ReadOnlyCollection<string> TargetMetabolites { get; }
 
         public void Find() {
-
+            foreach (var compound in StandardCompounds) {
+                foreach (var spot in spots) {
+                    if (!string.IsNullOrEmpty(spot?.Name) && spot.Name.Contains(compound.StandardName)) {
+                        compound.PeakID = spot.MasterAlignmentID;
+                        break;
+                    }
+                }
+            }
         }
 
-        public void Execute() {
-
+        public void Normalize() {
+            // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
+            var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
+            parameter.StandardCompounds = compounds;
+            var unit = OutputUnit.Unit;
+            SplashNormalization.Normalize(spots, refer, compounds, unit);
+            container.IsNormalized = true;
         }
+
+        public bool CanNormalize() {
+            foreach (var compound in StandardCompounds) {
+                if (IsRequiredFieldFilled(compound)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsRequiredFieldFilled(StandardCompound compound) {
+            if (compound.Concentration <= 0) return false;
+            if (string.IsNullOrEmpty(compound.TargetClass)) return false;
+            if (compound.PeakID < 0 || compound.PeakID >= spots.Count) return false;
+            return true;
+        }
+
+        private static List<SplashProduct> GetSplashResource() {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("CompMs.Main.App.Resources.SplashLipids.xml")) {
+                var data = XElement.Load(stream);
+                return data.Elements("Product").Select(ToProduct).ToList();
+            }
+        }
+
+        private static SplashProduct ToProduct(XElement element) {
+            return new SplashProduct
+            {
+                Label = element.Element("Label").Value,
+                Lipids = new ObservableCollection<StandardCompound>(element.Elements("Lipids").Select(ToCompound)),
+            };
+        }
+
+        private static StandardCompound ToCompound(XElement element) {
+            return new StandardCompound
+            {
+                StandardName = element.Element("StandardName").Value,
+                Concentration = double.TryParse(element.Element("Concentration").Value, out var conc) ? conc : 0d,
+				DilutionRate = double.TryParse(element.Element("DilutionRate").Value, out var rate) ? rate : 0d,
+				MolecularWeight = double.TryParse(element.Element("MolecularWeight").Value, out var weight) ? weight : 0d,
+				PeakID = int.TryParse(element.Element("PeakID").Value, out var id) ? id : -1,
+				TargetClass = element.Element("TargetClass").Value,
+            };
+        }
+    }
+
+    class IonAbundance
+    {
+        public IonAbundance(IonAbundanceUnit unit, string label) {
+            Unit = unit;
+            Label = label;
+        }
+
+        public IonAbundanceUnit Unit { get; set; }
+        public string Label { get; set; }
+    }
+
+    class SplashProduct
+    {
+        public string Label { get; set; }
+        public ObservableCollection<StandardCompound> Lipids { get; set; }
     }
 }

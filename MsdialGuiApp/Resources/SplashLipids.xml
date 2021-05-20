@@ -1,0 +1,433 @@
+<data>
+	<Product>
+		<Label>EquiSPLASH</Label>
+		<Lipids>
+			<Lipid>
+				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<Concentration>33.19585</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>753.106</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<Concentration>35.1605</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>711.025</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<Concentration>33.19585</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>753.106</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<Concentration>35.1605</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>711.025</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<Concentration>31.263575</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>777.02</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PS</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<Concentration>31.779725</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>764.02</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<Concentration>28.91795</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>847.13</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PI</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>47.284175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>47.284175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>51.372975</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>51.372975</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>CE 18:1(d7)</StandardName>
+				<Concentration>37.98468</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>658.16</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>CE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>MG 18:1(d7)</StandardName>
+				<Concentration>68.758775</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>363.59</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>MG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<Concentration>42.5186</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>587.978</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>DG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<Concentration>30.7743</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>812.366</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>TG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<Concentration>33.8691</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>738.136</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>SM</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<Concentration>47.087175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>530.93</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>Cer-NS</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>47.284175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>FA</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>47.284175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>FAHFA</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>47.284175</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>Any others</TargetClass>
+			</Lipid>
+		</Lipids>
+	</Product>
+	<Product>
+		<Label>SPLASH LIPIDOMIX</Label>
+		<Lipids>
+			<Lipid>
+				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<Concentration>106.224</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>753.106</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<Concentration>3.52</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>711.025</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<Concentration>106.224</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>753.106</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<Concentration>3.52</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>711.025</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<Concentration>3.216</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>755.034</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PS</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<Concentration>19.632</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>742.035</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<Concentration>5.904</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>830.097</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PI</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PA 15:0_18:1(d7)</StandardName>
+				<Concentration>5.072</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>667.956</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PA</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>23.648</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>5.136</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>23.648</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>5.136</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>CE 18:1(d7)</StandardName>
+				<Concentration>265.904</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>658.16</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>CE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>MG 18:1(d7)</StandardName>
+				<Concentration>2.752</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>363.59</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>MG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<Concentration>8.496</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>587.978</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>DG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<Concentration>33.856</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>812.366</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>TG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<Concentration>20.32</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>738.136</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>SM</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>Cholesterol(d7)</StandardName>
+				<Concentration>127.008</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>393.707</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>Cholesterol</TargetClass>
+			</Lipid>
+		</Lipids>
+	</Product>
+	<Product>
+		<Label>SPLASH II LIPIDOMIX</Label>
+		<Lipids>
+			<Lipid>
+				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<Concentration>106.224</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>753.106</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<Concentration>3.52</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>711.025</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<Concentration>5.1456</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>755.034</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PS</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<Concentration>4.7232</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>830.097</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>PI</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>23.648</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>0.5136</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>LPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPC 18:1(d7)</StandardName>
+				<Concentration>23.648</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>528.718</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>LPE 18:1(d7)</StandardName>
+				<Concentration>0.5136</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>486.637</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherLPE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>CE 18:1(d7)</StandardName>
+				<Concentration>265.904</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>658.16</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>CE</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PC O-18:1_18:1(d7)</StandardName>
+				<Concentration>5.1203</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>781.201</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPC</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<Concentration>10.1952</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>587.978</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>DG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<Concentration>33.856</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>812.366</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>TG</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<Concentration>20.32</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>738.136</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>SM</TargetClass>
+			</Lipid>
+			<Lipid>
+				<StandardName>PE P-18:0_18:1(d9)</StandardName>
+				<Concentration>0.04735</Concentration>
+				<DilutionRate>0.015625</DilutionRate>
+				<MolecularWeight>739.12</MolecularWeight>
+				<PeakID>-1</PeakID>
+				<TargetClass>EtherPE</TargetClass>
+			</Lipid>
+		</Lipids>
+	</Product>
+</data>
