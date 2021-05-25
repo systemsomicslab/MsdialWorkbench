@@ -145,10 +145,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210122_Matsuzawa-san_DIMS\LPE_Check\";
-            var testFilename = @"\LPE_18_1_pos.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210525_LCMS_QualityCheck\annotation_check\";
+            var testFilename = @"\pos_CerP36_2.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"\Library.txt";
+            var reffile = testFolder + @"\CerP_H_Pos.msp.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
