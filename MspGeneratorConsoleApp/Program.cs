@@ -134,7 +134,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210412_lipidLibraryChk\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210525_LCMS_QualityCheck\annotation_check\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";

@@ -6439,12 +6439,13 @@ AdductIon adduct)
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = diagnosticMz, Intensity = 5 },
                                 new SpectrumPeak() { Mass = sph2, Intensity = 10 },
                             };
                             var foundCountMust = 0;
                             var averageIntensityMust = 0.0;
                             countFragmentExistence(spectrum, queryMust, ms2Tolerance, out foundCountMust, out averageIntensityMust);
-                            if (foundCountMust == 1)
+                            if (foundCountMust == 2)
                             {
                                 var molecule = getCeramideMoleculeObjAsLevel2("CerP", LbmClass.CerP, "d", sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensityMust);
