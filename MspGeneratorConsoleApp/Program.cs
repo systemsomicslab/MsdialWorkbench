@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace CompMs.MspGenerator
@@ -101,17 +102,19 @@ namespace CompMs.MspGenerator
 
             ////// mtb-info上で最終的なmspを出力
             //// 指定のフォルダの中にある.mspファイルを結合します。
-            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
 
-            //Common.jointMspFiles(mspFolder, exportFileName);
-            ////////結合したファイルを下記フォルダに移動
-            //workingDirectry = mspFolder + @"\LBM\";
-            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            //////
+            ////Common.jointMspFiles(mspFolder, exportFileName);
+            //////////結合したファイルを下記フォルダに移動
+            workingDirectry = mspFolder + @"\LBM\";
+            ////System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+            ////////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
             //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
+            //////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
+            //////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
 
             ///mspファイル生成ツール
@@ -131,7 +134,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210412_lipidLibraryChk\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210525_LCMS_QualityCheck\annotation_check\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -167,15 +170,15 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(sphingoChains, acylChains, "Cer_NP", outputFolder);
 
 
-            sphingoChains = Common.GenerateSphingoChains(16, 0, 22, 3);
-            acylChains = Common.GenerateAcylChains(12, 0, 38, 6);
-            Common.switchingLipid(sphingoChains, acylChains, "HexCer_AP", outputFolder);
+            //sphingoChains = Common.GenerateSphingoChains(16, 0, 22, 3);
+            //acylChains = Common.GenerateAcylChains(12, 0, 38, 6);
+            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_AP", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "HexCer_NS", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "HexCer_NDS", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "Hex2Cer", outputFolder);
             //Common.switchingLipid(sphingoChains, acylChains, "Hex3Cer", outputFolder);
-            Common.switchingLipid(sphingoChains, acylChains, "HexCer_HS", outputFolder);
-            Common.switchingLipid(sphingoChains, acylChains, "HexCer_HDS", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_HS", outputFolder);
+            //Common.switchingLipid(sphingoChains, acylChains, "HexCer_HDS", outputFolder);
 
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 28, 3);
             //acylChains = Common.GenerateAcylChains(12, 0, 28, 6);
@@ -583,43 +586,55 @@ namespace CompMs.MspGenerator
                 //// 2. 目的変数の列より右にDescriptorを入力したタブ区切りテキストを用意する。（目的変数より列番号の小さい列は予測に使用されない）
                 ///
                 ////すでにチューニング済みのパラメータを使用する場合
-                var parameters = new RtCcsPredictOnDotNet.TuningParameter()
-                {
-                    nEstimators = 1000, //nrounds int
-                    maxDepth = 5, //int
-                    learningRate = 0.02F, //eta float
-                    gamma = 1F, //float
-                    colSampleByTree = 0.5F, //float
-                    minChildWeight = 10,//int
-                    subsample = 0.5F, //float
-                };
+                //var parameters = new RtCcsPredictOnDotNet.TuningParameter()
+                //{
+                //    nEstimators = 1000, //nrounds int
+                //    maxDepth = 5, //int
+                //    learningRate = 0.02F, //eta float
+                //    gamma = 1F, //float
+                //    colSampleByTree = 0.5F, //float
+                //    minChildWeight = 10,//int
+                //    subsample = 0.5F, //float
+                //};
                 //var workingFolder =
-                //    @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20201224_onDotNet\";
-                //var trainFile = workingFolder + @"masterRT_NCDK_excludeFingerPrint.tsv";
-                //var output = workingFolder + @"\masterRT_NCDK_check_20201224_.model";
+                //    @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc";
+                //var trainFile = workingFolder + @"\masterRT_NCDK_20210104113720.txt";
+                //var output = workingFolder + @"\masterRT_NCDK_20210104113720.model";
                 //RtCcsPredictOnDotNet.GeneratePredictionModel("RT", trainFile, output, parameters);
                 //RtCcsPredictOnDotNet.GeneratePredictionModel("CCS", trainFile, output, parameters);
 
                 ////tuningして最善解でモデルファイルを作成（指標はRMSE）
                 ////tuningするパラメーターはコード内を参照 
                 //var workingFolder =
-                // @"D:\takahashi\desktop\Tsugawa-san_work\20201021_RtCcsPredictionOnDotNet\20210104_calc\";
-                //var trainFile = workingFolder + @"\masterCCS_NCDK_20210104135202.txt";
-                //var output = workingFolder + @"\masterCCS_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
-                //RtCcsPredictOnDotNet.GeneratePredictionModelVS2("CCS", trainFile, output);
+                // @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
+                //var trainFile = workingFolder + @"\master\masterRT_NCDK_20210430.txt";
+                //var output = workingFolder + @"\model\masterRT_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
+                //RtCcsPredictOnDotNet.GeneratePredictionModelVS2("RT", trainFile, output);
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
-                //var workingFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\prediction1\";
-                //var rtTrainModel = workingFolder + @"\test\masterRT_NCDK_202101081033.model";
-                //var rtTestFile = workingFolder + @"\finished0409_calced_015_.txt";
-                //var ccsTrainModel = workingFolder + @"\test\masterCCS_NCDK_202101081945.model";
+                //var workingFolder1 = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\calculated\all\";
+                //var workingFolder2 = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
+                //var rtTrainModel = workingFolder2 + @"\model\masterRT_NCDK_202104301650.model";
+                //var rtTestFile = workingFolder1 + @"\finished_All_calculated.txt";
+                //var ccsTrainModel = workingFolder1 + @"\test\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
                 //var resultFile = rtTestFile + @"_predicted.txt";
 
                 //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
-                predictedFilesDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\prediction1\NCDKpredicted\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-                dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20210409.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+
+                //フォルダ内実行
+                //var files = Directory.GetFiles(workingFolder1, "*.txt");
+                //foreach (var file in files)
+                //{
+                //    resultFile = Path.GetDirectoryName(file) + "\\" + Path.GetFileNameWithoutExtension(file) + @"_predicted.txt";
+                //    RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, file, ccsTrainModel, file);
+                //}
+
+
+
+                //predictedFilesDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\predicted(masterRT_NCDK_202104301527)\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+                //dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20210430_masterRT_NCDK_202104301527.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
                 //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 

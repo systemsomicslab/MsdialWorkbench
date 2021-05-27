@@ -1,51 +1,54 @@
 ﻿using CompMs.App.Msdial.Dims;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
-using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.Algorithm.Alignment;
-using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
-using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialDimsCore;
-using CompMs.MsdialDimsCore.Algorithm.Alignment;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
     public class DimsMethodVM : MethodVM {
+        static DimsMethodVM() {
+            serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
+        }
+
+        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
+            : base(serializer) {
+
+            Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
+
+            AnalysisFiles = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
+            AnalysisFiles.MoveCurrentToFirst();
+
+            AlignmentFiles = CollectionViewSource.GetDefaultView(Model.AlignmentFiles);
+            AlignmentFiles.MoveCurrentToFirst();
+
+            PropertyChanged += OnDisplayFiltersChanged;
+        }
+
+        internal DimsMethodModel Model { get; }
+
         public AnalysisDimsVM AnalysisVM {
             get => analysisVM;
             set => SetProperty(ref analysisVM, value);
         }
         private AnalysisDimsVM analysisVM;
-
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
-            get => analysisFiles;
-            set {
-                if (SetProperty(ref analysisFiles, value)) {
-                    _analysisFiles = CollectionViewSource.GetDefaultView(analysisFiles);
-                }
-            }
-        }
-        private ObservableCollection<AnalysisFileBean> analysisFiles;
-        private ICollectionView _analysisFiles;
 
         public AlignmentDimsVM AlignmentVM {
             get => alignmentVM;
@@ -53,22 +56,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private AlignmentDimsVM alignmentVM;
 
-        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
-            get => alignmentFiles;
-            set {
-                if (SetProperty(ref alignmentFiles, value)) {
-                    _alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
-                }
-            }
-        }
-        private ObservableCollection<AlignmentFileBean> alignmentFiles;
-        private ICollectionView _alignmentFiles;
-
-        public MsdialDataStorage Storage {
-            get => storage;
-            set => SetProperty(ref storage, value);
-        }
-        private MsdialDataStorage storage;
+        public ICollectionView AnalysisFiles { get; }
+        public ICollectionView AlignmentFiles { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -113,78 +102,42 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        private AlignmentFileBean alignmentFile;
-        private AnalysisFileBean analysisFile;
-        private IAnnotator<IMSProperty, MSDecResult> mspAnnotator;
-
         private static readonly MsdialSerializer serializer;
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-
-        static DimsMethodVM() {
-            serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Mz);
-        }
-
-        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
-            : base(serializer) {
-            Storage = storage;
-            mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
-            _analysisFiles.MoveCurrentToFirst();
-
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
-            _alignmentFiles.MoveCurrentToFirst();
-
-            PropertyChanged += OnDisplayFiltersChanged;
-        }
 
         public override int InitializeNewProject(Window window) {
             // Set analysis param
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
+            var processOption = Model.Storage.ParameterBase.ProcessOption;
             // Run Identification
-            if (!ProcessAnnotaion(window, Storage))
-                return -1;
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                if (!ProcessAnnotaion(window, Model.Storage))
+                    return -1;
+            }
 
             // Run Alignment
-            if (!ProcessAlignment(window, Storage))
-                return -1;
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                if (!ProcessAlignment(window, Model.Storage))
+                    return -1;
+            }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
-
+            LoadAnalysisFile(Model.Storage.AnalysisFiles.FirstOrDefault());
             return 0;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Storage.ParameterBase, Storage.AnalysisFiles);
+            var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Model.Storage.ParameterBase, Model.AnalysisFiles);
             var apsw = new AnalysisParamSetForDimsWindow
             {
                 DataContext = analysisParamSetVM,
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
-            var apsw_result = apsw.ShowDialog();
-            if (apsw_result != true) return false;
+            if (apsw.ShowDialog() != true)
+                return false;
 
-            if (AlignmentFiles == null)
-                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
-            var filename = analysisParamSetVM.AlignmentResultFileName;
-            AlignmentFiles.Add(
-                new AlignmentFileBean
-                {
-                    FileID = AlignmentFiles.Count,
-                    FileName = filename,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
-                }
-            );
-            Storage.AlignmentFiles = AlignmentFiles.ToList();
-            Storage.MspDB = analysisParamSetVM.MspDB;
-            mspAnnotator = new DimsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics);
-            Storage.TextDB = analysisParamSetVM.TextDB;
+            Model.SetStorageContent(analysisParamSetVM.AlignmentResultFileName, analysisParamSetVM.MspDB, analysisParamSetVM.TextDB);
             return true;
         }
 
@@ -205,23 +158,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var numThreads = Math.Min(Math.Min(storage.ParameterBase.NumThreads, storage.AnalysisFiles.Count), Environment.ProcessorCount);
-                var semaphore = new SemaphoreSlim(0, numThreads);
-                var tasks = new Task[storage.AnalysisFiles.Count];
-                var counter = 0;
                 foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs).WithIndex()) {
-                    tasks[idx] = Task.Run(async () => {
-                        await semaphore.WaitAsync();
-                        ProcessFile.Run(analysisfile, storage, mspAnnotator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
-                        Interlocked.Increment(ref counter);
-                        vm.CurrentValue = counter;
-                        semaphore.Release();
-                    });
+                    await Model.RunAnnotationProcessAsync(analysisfile, v => pbvm.CurrentValue = v);
+                    vm.CurrentValue++;
                 }
-                semaphore.Release(numThreads);
-
-                await Task.WhenAll(tasks);
-
                 pbmcw.Close();
             };
 
@@ -230,10 +170,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return true;
         }
 
-        private static bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
-            AlignmentProcessFactory factory = new DimsAlignmentProcessFactory(storage.ParameterBase as MsdialDimsParameter, storage.IupacDatabase);
-            var alignmentFile = storage.AlignmentFiles.Last();
-            var aligner = factory.CreatePeakAligner();
+        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,
@@ -246,39 +183,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             pbw.Loaded += async (s, e) => {
-                var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer));
-                MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+                await Task.Run(() => Model.RunAlignmentProcess());
                 pbw.Close();
             };
             pbw.ShowDialog();
             return true;
-        }
-
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
-            var files = storage.AnalysisFiles;
-
-            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-            foreach (var file in files) {
-                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-                pointerss.Add((version, pointers, isAnnotationInfo));
-            }
-
-            var streams = new List<System.IO.FileStream>();
-            try {
-                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
-                foreach (var spot in spots) {
-                    var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
-                    var decResult = MsdecResultsReader.ReadMSDecResult(
-                        streams[repID], pointerss[repID].pointers[peakID],
-                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                    yield return decResult;
-                }
-            }
-            finally {
-                streams.ForEach(stream => stream.Close());
-            }
         }
 
         public override void LoadProject() {
@@ -291,7 +200,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand loadAnalysisFileCommand;
 
         private void LoadSelectedAnalysisFile() {
-            if (_analysisFiles.CurrentItem is AnalysisFileBean analysis) {
+            if (AnalysisFiles.CurrentItem is AnalysisFileBean analysis) {
                 LoadAnalysisFile(analysis);
             }
         }
@@ -301,34 +210,91 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DelegateCommand loadAlignmentFileCommand;
         private void LoadSelectedAlignmentFile() {
-            if (_alignmentFiles.CurrentItem is AlignmentFileBean alignment) {
+            if (AlignmentFiles.CurrentItem is AlignmentFileBean alignment) {
                 LoadAlignmentFile(alignment);
             }
         }
 
+        private AnalysisFileBean cacheAnalysisFile;
         private void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (analysisFile == analysis) return;
+            if (cacheAnalysisFile == analysis || analysis == null) {
+                return;
+            }
 
-            analysisFile = analysis;
-            AnalysisVM =  new AnalysisDimsVM(analysis, Storage.ParameterBase, mspAnnotator) { DisplayFilters = displayFilters };
+            cacheAnalysisFile = analysis;
+            Model.AnalysisFile = analysis;
+            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel) { DisplayFilters = displayFilters };
         }
 
+        private AlignmentFileBean cacheAlignmentFile;
         private void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (alignmentFile == alignment) return;
+            if (cacheAlignmentFile == alignment || alignment == null) {
+                return;
+            }
 
-            alignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(alignment, Storage.ParameterBase, mspAnnotator) { DisplayFilters = displayFilters };
+            cacheAlignmentFile = alignment;
+            Model.AlignmentFile = alignment;
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {
-            AlignmentVM?.SaveProject();
+            Model.SaveProject();
+        }
+
+        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
+        private DelegateCommand<Window> exportAnalysisResultCommand;
+
+        private void ExportAnalysis(Window owner) {
+            var container = Model.Storage;
+            var spectraTypes = new List<Model.Export.SpectraType>
+            {
+                new Model.Export.SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
+                new Model.Export.SpectraType(
+                    ExportspectraType.centroid,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
+                new Model.Export.SpectraType(
+                    ExportspectraType.profile,
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+            };
+            var spectraFormats = new List<Model.Export.SpectraFormat>
+            {
+                new Model.Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+            };
+
+            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, Model.ProviderFactory)) {
+
+                var dialog = new AnalysisResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+
+                dialog.ShowDialog();
+            }
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(alignmentFile, Storage.AlignmentFiles, Storage);
+            var container = Model.Storage;
+            var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.ParameterBase);
+            var vm = new AlignmentResultExport2VM(Model.AlignmentFile, Model.AlignmentFiles, container);
+            vm.ExportTypes.AddRange(
+                new List<ExportType2>
+                {
+                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.ParameterBase), "Height", true),
+                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.ParameterBase), "Area"),
+                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.ParameterBase), "NormalizedHeight"),
+                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.ParameterBase), "NormalizedArea"),
+                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.ParameterBase), "PeakID"),
+                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.ParameterBase), "Mz"),
+                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.ParameterBase), "SN"),
+                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.ParameterBase), "MsmsIncluded"),
+                });
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,

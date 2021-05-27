@@ -9,7 +9,6 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              Name="RawPurePlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"

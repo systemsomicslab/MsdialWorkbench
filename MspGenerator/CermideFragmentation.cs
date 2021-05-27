@@ -1479,7 +1479,7 @@ namespace CompMs.MspGenerator
                 var fra04int = 200;
                 var fra04comment = "[M+H]+ (-H3PO4) (-97.9769)";
 
-                var fra06mass = fra04mass - acylMass - MassDictionary.OxygenMass;
+                var fra06mass = fra04mass - acylMass - MassDictionary.OxygenMass - MassDictionary.HydrogenMass * 2;
                 var fra06int = adduct == "[M+Na]+" ? 50 : 300;
                 var fra06comment = "[M+H]+ (-H3PO4) -acyl-O ";
                 fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);

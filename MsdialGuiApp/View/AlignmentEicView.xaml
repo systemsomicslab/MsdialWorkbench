@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.AlignmentEicView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             mc:Ignorable="d" 
+             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+             Name="AlignedEicView"
+             d:DataContext="{d:DesignInstance Type=vm:AlignmentEicViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <AlternationConverter x:Key="LinePenConverter">
+                <Pen Brush="Blue" Thickness="2" PresentationOptions:Freeze="True"/>
+                <!--<Pen Brush="Red" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Green" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Black" Thickness="2" PresentationOptions:Freeze="True"/>-->
+            </AlternationConverter>
+            <AlternationConverter x:Key="AreaBrushConverter">
+                <SolidColorBrush Color="Blue" Opacity="0.25" PresentationOptions:Freeze="True"/>
+                <!--<SolidColorBrush Color="Red" Opacity="0.25" PresentationOptions:Freeze="True"/>
+                <SolidColorBrush Color="Green" Opacity="0.25" PresentationOptions:Freeze="True"/>
+                <SolidColorBrush Color="Black" Opacity="0.25" PresentationOptions:Freeze="True"/>-->
+            </AlternationConverter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <chart:MultiChart GraphTitle="TIC, EIC, or BPC chromatograms"
+                          HorizontalTitle="m/z"
+                          VerticalTitle="Abundance"
+                          HorizontalAxis="{Binding HorizontalAxis}"
+                          VerticalAxis="{Binding VerticalAxis}"
+                          AlternationCount="1"
+                          ItemsSource="{Binding EicChromatograms}"
+                          Style="{StaticResource OverlapChart}">
+            <chart:MultiChart.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <line:LineChartControl ItemsSource="{Binding Peaks}"
+                                               LinePen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                 RelativeSource={RelativeSource Mode=TemplatedParent},
+                                                                 Converter={StaticResource LinePenConverter}}"
+                                               HorizontalPropertyName="Time"
+                                               VerticalPropertyName="Intensity">
+                            <line:LineChartControl.ToolTip>
+                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Class: "/>
+                                        <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </line:LineChartControl.ToolTip>
+                        </line:LineChartControl>
+                        <area:AreaChartControl ItemsSource="{Binding PeakArea}"
+                                               AreaBrush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                   RelativeSource={RelativeSource Mode=TemplatedParent},
+                                                                   Converter={StaticResource AreaBrushConverter}}"
+                                               HorizontalPropertyName="Time"
+                                               VerticalPropertyName="Intensity"
+                                               IsHitTestVisible="False"/>
+                    </Grid>
+                </DataTemplate>
+            </chart:MultiChart.ItemTemplate>
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

@@ -93,6 +93,7 @@
                            VerticalAlignment="Center"
                            Margin="8,0,0,0"/>
                 <ComboBox ItemsSource="{Binding Formats, Mode=OneTime}"
+                          DisplayMemberPath="Label"
                           SelectedValue="{Binding Format, Mode=OneWayToSource}"
                           SelectedIndex="0"
                           VerticalContentAlignment="Center"

@@ -76,7 +76,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                         result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
                     }
                     if (result != null && (result.IsSpectrumMatch || result.IsPrecursorMzMatch)) {
-                        result.Priority = DataBasePriority.MspDB;
+                        result.Source = SourceType.MspDB;
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);
                     }
@@ -104,7 +104,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
                     var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
-                    result.Priority = DataBasePriority.TextDB;
+                    result.Source = SourceType.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
                         candidates.Add(result);

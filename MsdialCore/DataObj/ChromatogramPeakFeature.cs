@@ -279,7 +279,7 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsManuallyModifiedForAnnotation {
             get {
                 if (MatchResults?.Representative is MsScanMatchResult result) {
-                    return (result.Priority & DataBasePriority.Manual) != DataBasePriority.None;
+                    return (result.Source & SourceType.Manual) != SourceType.None;
                 }
                 return false;
             }

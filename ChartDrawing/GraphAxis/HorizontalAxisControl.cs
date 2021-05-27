@@ -14,6 +14,7 @@ namespace CompMs.Graphics.GraphAxis
     public class HorizontalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
+        [Obsolete]
         public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
             nameof(LabelTicks), typeof(List<LabelTickData>), typeof(HorizontalAxisControl),
             new PropertyMetadata(null)
@@ -51,6 +52,7 @@ namespace CompMs.Graphics.GraphAxis
         #endregion
 
         #region Property
+        [Obsolete]
         public List<LabelTickData> LabelTicks
         {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
@@ -125,7 +127,10 @@ namespace CompMs.Graphics.GraphAxis
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             double basePoint = HorizontalAxis.TranslateToRenderPoint(0d, FlippedX);
 
-            var labelTicks = LabelTicks.Where(data => RangeX.Minimum <= data.Center && data.Center <= RangeX.Maximum).ToList();
+            var labelTicks = HorizontalAxis
+                .GetLabelTicks()
+                .Where(data => RangeX.Minimum <= data.Center && data.Center <= RangeX.Maximum)
+                .ToList();
             if (labelTicks.Count > 100)
                 labelTicks = labelTicks.Where(data => data.TickType == TickType.LongTick).ToList();
             if (labelTicks.Count > 100)

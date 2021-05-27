@@ -6,13 +6,11 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
              xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
              Name="PeakPairPlot"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisImmsVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisPeakPlotVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -24,68 +22,58 @@
     </UserControl.Resources>
 
     <Grid>
-        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis, ElementName=PeakPairPlot}"
-                                  VerticalAxis="{Binding VerticalAxis, ElementName=PeakPairPlot}"
-                                  HorizontalTitle="{Binding HorizontalTitle, ElementName=PeakPairPlot}"
-                                  VerticalTitle="{Binding VerticalTitle, ElementName=PeakPairPlot}"
-                                  GraphTitle="{Binding GraphTitle, ElementName=PeakPairPlot}"
-                                  Background="WhiteSmoke" BorderBrush="Black"
-                                  Style="{StaticResource BasicChart}">
-            <Grid>
-                <scatter:ScatterControl x:Name="scatter"
-                                        ItemsSource="{Binding Ms1Peaks}"
-                                        HorizontalPropertyName="{Binding HorizontalProperty, ElementName=PeakPairPlot}"
-                                        VerticalPropertyName="{Binding VerticalProperty, ElementName=PeakPairPlot}"
-                                        EachPlotBrushName="SpotColor"
-                                        Radius="5.5"
-                                        SelectedItem="{Binding Target, Mode=TwoWay}"
-                                        behavior:ZoomByDragBehavior.IsEnabled="False"
-                                        behavior:ZoomByWheelBehavior.IsEnabled="False"
-                                        behavior:MoveByDragBehavior.IsEnabled="False"
-                                        behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"
-                                        behavior:ScatterFocusBehavior.EnableOuter="True"
-                                        behavior:ScatterFocusBehavior.OuterScale="1.3"
-                                        behavior:ScatterFocusBehavior.InnerScale="1.2"
-                                        behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
-                                        behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
-                                        behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
-                                        behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}"
-                                        behavior:ScatterFocusBehavior.LabelTemplate="{Binding LabelTemplate, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                <chart:Annotator ItemsSource="{Binding Ms1Peaks}"
-                                 HorizontalPropertyName="{Binding HorizontalProperty, ElementName=PeakPairPlot}"
-                                 VerticalPropertyName="{Binding VerticalProperty, ElementName=PeakPairPlot}"
-                                 LabelPropertyName="{Binding DisplayLabel, Mode=OneWay}"
-                                 behavior:ZoomByDragBehavior.IsEnabled="False"
-                                 behavior:ZoomByWheelBehavior.IsEnabled="False"
-                                 behavior:MoveByDragBehavior.IsEnabled="False"
-                                 behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
-                <ContentControl Content="{Binding SelectedPoint, ElementName=scatter}"
-                                ContentTemplate="{DynamicResource FocusCross}"
-                                IsHitTestVisible="False">
-                    <ContentControl.Resources>
-                        <DataTemplate x:Key="FocusCross">
-                            <Canvas ClipToBounds="True">
-                                <Canvas.Resources>
-                                    <Style TargetType="Rectangle">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedPoint, ElementName=scatter}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Hidden"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Canvas.Resources>
-                                <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
-                                           Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                                           Canvas.Left="{Binding X}"/>
-                                <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
-                                           Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                                           Canvas.Top="{Binding Y}"/>
-                            </Canvas>
-                        </DataTemplate>
-                    </ContentControl.Resources>
-                </ContentControl>
-            </Grid>
-        </chart:SimpleChartControl>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis, Mode=OneWay}"
+                          VerticalAxis="{Binding VerticalAxis, Mode=OneWay}"
+                          HorizontalTitle="{Binding HorizontalTitle, Mode=OneWay}"
+                          VerticalTitle="{Binding VerticalTitle, Mode=OneWay}"
+                          GraphTitle="{Binding GraphTitle, Mode=OneWay}"
+                          Background="WhiteSmoke" BorderBrush="Black"
+                          Style="{StaticResource OverlapChart}">
+            <scatter:ScatterControl x:Name="analysisScatter"
+                                    ItemsSource="{Binding Spots, Mode=OneWay}"
+                                    HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
+                                    VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
+                                    EachPlotBrushName="SpotColor"
+                                    Radius="5.5"
+                                    SelectedItem="{Binding Target, Mode=TwoWay}"
+                                    behavior:ScatterFocusBehavior.EnableOuter="True"
+                                    behavior:ScatterFocusBehavior.OuterScale="1.3"
+                                    behavior:ScatterFocusBehavior.InnerScale="1.2"
+                                    behavior:ScatterFocusBehavior.LabelDataContext="{Binding FocusedItem, RelativeSource={RelativeSource Self}}"
+                                    behavior:ScatterFocusBehavior.LabelAlignment="TopCenter"
+                                    behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
+                                    behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}"
+                                    behavior:ScatterFocusBehavior.LabelTemplate="{Binding LabelTemplate, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <chart:Annotator ItemsSource="{Binding Spots}"
+                             HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneWay}"
+                             VerticalPropertyName="{Binding VerticalProperty, Mode=OneWay}"
+                             LabelPropertyName="{Binding LabelProperty, Mode=OneWay}"/>
+            <ContentControl Content="{Binding SelectedPoint, ElementName=analysisScatter}"
+                            ContentTemplate="{DynamicResource FocusCross}"
+                            IsHitTestVisible="False">
+                <ContentControl.Resources>
+                    <DataTemplate x:Key="FocusCross">
+                        <Canvas ClipToBounds="True">
+                            <Canvas.Resources>
+                                <Style TargetType="Rectangle">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedPoint, ElementName=analysisScatter}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Canvas.Resources>
+                            <Rectangle Fill="Red" VerticalAlignment="Stretch" IsHitTestVisible="False"
+                                       Width="1" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                       Canvas.Left="{Binding X}"/>
+                            <Rectangle Fill="Red" HorizontalAlignment="Stretch" IsHitTestVisible="False"
+                                       Height="1" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                                       Canvas.Top="{Binding Y}"/>
+                        </Canvas>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </chart:MultiChart>
     </Grid>
 </UserControl>

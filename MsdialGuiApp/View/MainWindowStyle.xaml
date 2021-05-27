@@ -26,6 +26,15 @@
         </Style.Triggers>
     </Style>
 
+    <ControlTemplate x:Key="BasicErrorTemplate">
+        <StackPanel>
+            <Border BorderBrush="Red" BorderThickness="0,0,0,1">
+                <AdornedElementPlaceholder x:Name="adornedElem"/>
+            </Border>
+            <TextBlock Text="{Binding AdornedElement.(Validation.Errors)/ErrorContent, ElementName=adornedElem}" Foreground="Red"/>
+        </StackPanel>
+    </ControlTemplate>
+
     <Style TargetType="GridSplitter">
         <Setter Property="Background" Value="Gray" />
     </Style>

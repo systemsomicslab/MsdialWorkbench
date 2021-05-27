@@ -7,8 +7,31 @@ namespace CompMs.Graphics.Core.Base
     [TypeConverter(typeof(ChartMarginTypeConverter))]
     public class ChartMargin
     {
+        public ChartMargin() { }
+
+        public ChartMargin(double leftMargin, double rightMargin) {
+            Left = leftMargin;
+            Right = rightMargin;
+        }
+
+        public ChartMargin(double margin) {
+            Left = margin;
+            Right = margin;
+        }
+
         public double Left { get; set; }
         public double Right { get; set; }
+
+        public Range Add(Range range) {
+            var d = range.Delta;
+            return new Range(range.Minimum - d * Left, range.Maximum + d * Right);
+        }
+
+        public Range Remove(Range range) {
+            var d = range.Delta / (1 + Left + Right);
+            var x = range.Minimum + Left * d;
+            return new Range(x, x + d);
+        }
     }
 
     public class ChartMarginTypeConverter : TypeConverter

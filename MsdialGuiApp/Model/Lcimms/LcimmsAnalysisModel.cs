@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel;
-using CompMs.App.Msdial.ViewModel.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
@@ -43,8 +43,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             deconvolutionFile = analysisFile.DeconvolutionFilePath;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
-            ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
+            ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
             );
             Peaks = peaks;
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
@@ -61,8 +61,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AnalysisFileBean AnalysisFile => analysisFile;
         private readonly AnalysisFileBean analysisFile;
 
-        public ObservableCollection<ChromatogramPeakFeatureVM> Ms1Peaks => ms1Peaks;
-        private readonly ObservableCollection<ChromatogramPeakFeatureVM> ms1Peaks;
+        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks => ms1Peaks;
+        private readonly ObservableCollection<ChromatogramPeakFeatureModel> ms1Peaks;
 
         public IAnnotator<ChromatogramPeakFeature, MSDecResult> MspAnnotator => mspAnnotator;
         public IAnnotator<ChromatogramPeakFeature, MSDecResult> TextDBAnnotator => textDBAnnotator;
@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public List<ChromatogramPeakFeature> Peaks { get; } = new List<ChromatogramPeakFeature>();
 
-        public ChromatogramPeakFeatureVM Target {
+        public ChromatogramPeakFeatureModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value)) {
@@ -173,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
         }
-        private ChromatogramPeakFeatureVM target;
+        private ChromatogramPeakFeatureModel target;
 
         public string FileName {
             get => fileName;
@@ -210,7 +210,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private MSDecResult msdecResult = null;
 
         private CancellationTokenSource cts;
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target) {
+        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
             cts?.Cancel();
             var localCts = cts = new CancellationTokenSource();
 
@@ -227,7 +227,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
         }
 
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target != null) {
                 FocusID = target.InnerModel.MasterPeakID;
                 FocusDt = target.ChromXValue ?? 0;
@@ -243,7 +243,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ).ConfigureAwait(false);
         }
 
-        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms1Spectrum = new List<SpectrumPeak>();
             var ms1SplashKey = string.Empty;
 
@@ -262,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Ms1SplashKey = ms1SplashKey;
         }
 
-        async Task LoadEicAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var eic = new List<ChromatogramPeakWrapper>();
             var peakEic = new List<ChromatogramPeakWrapper>();
             var focusedEic = new List<ChromatogramPeakWrapper>();
@@ -301,7 +301,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             FocusedEic = focusedEic;
         }
 
-        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2Spectrum = new List<SpectrumPeak>(); 
             var rawSplashKey = string.Empty;
 
@@ -323,7 +323,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RawSplashKey = rawSplashKey;
         }
 
-        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2DecSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2DecSpectrum = new List<SpectrumPeak>();
             var deconvolutionSplashKey = string.Empty;
 
@@ -342,7 +342,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DeconvolutionSplashKey = deconvolutionSplashKey;
         }
 
-        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureVM target, CancellationToken token) {
+        async Task LoadMs2ReferenceAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();
 
             if (target != null) {
@@ -365,12 +365,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         MsScanMatchResult RetrieveMspMatchResult(ChromatogramPeakFeature prop) {
             if (prop.MatchResults?.Representative is MsScanMatchResult representative) {
-                if ((representative.Priority & (DataBasePriority.Unknown | DataBasePriority.Manual)) == (DataBasePriority.Unknown | DataBasePriority.Manual))
+                if ((representative.Source & (SourceType.Unknown | SourceType.Manual)) == (SourceType.Unknown | SourceType.Manual))
                     return null;
                 if (prop.MatchResults.TextDbBasedMatchResults.Contains(representative)) {
                     return null;
                 }
-                if ((representative.Priority & DataBasePriority.Unknown) == DataBasePriority.None) {
+                if ((representative.Source & SourceType.Unknown) == SourceType.None) {
                     return representative;
                 }
             }

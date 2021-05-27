@@ -234,6 +234,10 @@ namespace CompMs.Graphics.AxisManager
             Range = new Range(loval, hival);
         }
 
+        public void Focus(Range range) {
+            Range = range;
+        }
+
         public bool Contains(AxisValue val) {
             return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
         }

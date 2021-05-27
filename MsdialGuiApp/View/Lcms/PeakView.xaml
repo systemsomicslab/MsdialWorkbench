@@ -5,13 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
              mc:Ignorable="d" 
-             xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:special="clr-namespace:CompMs.Graphics.Specialized;assembly=MsdialGuiApi"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              Name="PeakPairPlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -57,7 +56,7 @@
                                         behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
                                         behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}">
                     <behavior:ScatterFocusBehavior.LabelTemplate>
-                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel.Resources>
                                     <Style TargetType="TextBlock">
@@ -136,7 +135,7 @@
             <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="12"/>
             <ContentControl Content="{Binding Target}">
                 <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureVM}">
+                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Spot ID: " FontSize="12" Margin="5,0,0,0"/>
                             <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime}" FontSize="12"/>

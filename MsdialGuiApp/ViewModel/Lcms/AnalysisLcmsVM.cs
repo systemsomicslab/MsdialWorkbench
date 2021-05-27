@@ -19,11 +19,11 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using NSSplash;
 using NSSplash.impl;
-using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.MSDec;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.App.Msdial.Model.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public List<ChromatogramPeakFeature> Peaks { get; }
 
-        public ChromatogramPeakFeatureVM Target {
+        public ChromatogramPeakFeatureModel Target {
             get => target;
             set {
                 if (SetProperty(ref target, value)) {
@@ -219,10 +219,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private ICollectionView ms1Peaks;
         private List<ChromatogramPeakWrapper> eic, peakEic, focusedEic;
         private List<SpectrumPeakWrapper> ms1Spectrum, ms2Spectrum, ms2ReferenceSpectrum, ms2DeconvolutionSpectrum;
-        private ChromatogramPeakFeatureVM target;
+        private ChromatogramPeakFeatureModel target;
         private ParameterBase param;
         private IReadOnlyList<MoleculeMsReference> msps;
-        private ObservableCollection<ChromatogramPeakFeatureVM> _ms1Peaks;
+        private ObservableCollection<ChromatogramPeakFeatureModel> _ms1Peaks;
         private string fileName, ms1SplashKey, rawSplashKey, deconvolutionSplashKey;
         private string displayLabel;
         private bool refMatchedChecked = false, suggestedChecked = false, unknownChecked = false, ccsChecked = false, msmsAcquiredChecked = false, molecularIonChecked = false;
@@ -239,8 +239,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             FileName = analysisFileBean.AnalysisFileName;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath);
-            _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureVM>(
-                peaks.Select(peak => new ChromatogramPeakFeatureVM(peak, param.TargetOmics == CompMs.Common.Enum.TargetOmics.Metabolomics ? false : true))
+            _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, param.TargetOmics == CompMs.Common.Enum.TargetOmics.Metabolomics ? false : true))
             );
             Peaks = peaks;
             AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
@@ -268,7 +268,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureVM peak) {
+            if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!MsmsAcquiredChecked || peak.IsMsmsContained)
@@ -277,7 +277,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return false;
         }
 
-        bool AnnotationFilter(ChromatogramPeakFeatureVM peak) {
+        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!(RefMatchedChecked || SuggestedChecked || UnknownChecked || CcsChecked)) return true;
             return RefMatchedChecked && peak.IsRefMatched
                 || SuggestedChecked && peak.IsSuggested
@@ -285,7 +285,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 || CcsChecked && peak.IsCcsMatch;
         }
 
-        bool AmplitudeFilter(ChromatogramPeakFeatureVM peak) {
+        bool AmplitudeFilter(ChromatogramPeakFeatureModel peak) {
             return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
         }
@@ -302,7 +302,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Ms1Peaks?.Refresh();
         }
 
-        void OnTargetChanged(ChromatogramPeakFeatureVM Target) {
+        void OnTargetChanged(ChromatogramPeakFeatureModel Target) {
             if (Target == null) {
                 Eic = new List<ChromatogramPeakWrapper>();
                 return;

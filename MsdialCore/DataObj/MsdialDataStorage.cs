@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.Parameter;
 using MessagePack;
+using System.Collections.Generic;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
     public class MsdialDataStorage {
         [Key(0)]
@@ -26,5 +22,7 @@ namespace CompMs.MsdialCore.DataObj {
         public IupacDatabase IupacDatabase { get; set; }
         [Key(6)]
         public ParameterBase ParameterBase { get; set; }
+        [Key(7)]
+        public DataBaseMapper DataBaseMapper { get; set; }
     }
 }

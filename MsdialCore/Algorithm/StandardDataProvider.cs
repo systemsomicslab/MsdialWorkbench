@@ -29,4 +29,24 @@ namespace CompMs.MsdialCore.Algorithm
             return spectrumCache = rawObj.SpectrumList.AsReadOnly();
         }
     }
+
+    public class StandardDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        public StandardDataProviderFactory(int retry = 5, bool isGuiProcess = false) {
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+        }
+        
+        private readonly bool isGuiProcess;
+        private readonly int retry = 5;
+
+        public IDataProvider Create(AnalysisFileBean file) {
+            return new StandardDataProvider(file, isGuiProcess, retry);
+        }
+
+        public IDataProvider Create(RawMeasurement rawMeasurement) {
+            return new StandardDataProvider(rawMeasurement);
+        }
+    }
 }

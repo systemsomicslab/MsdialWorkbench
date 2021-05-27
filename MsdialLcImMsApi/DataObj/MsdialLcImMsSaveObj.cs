@@ -1,53 +1,24 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Database;
-using CompMs.MsdialCore.DataObj;
+﻿using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CompMs.MsdialLcImMsApi.DataObj {
+namespace CompMs.MsdialLcImMsApi.DataObj
+{
     [MessagePack.MessagePackObject]
-    public class MsdialLcImMsSaveObj {
-        [Key(0)]
-        public List<AnalysisFileBean> AnalysisFiles { get; set; }
-        [Key(1)]
-        public List<AlignmentFileBean> AlignmentFiles { get; set; }
-        [Key(2)]
-        public List<MoleculeMsReference> MspDB { get; set; }
-        [Key(3)]
-        public List<MoleculeMsReference> TextDB { get; set; }
-        [Key(4)]
-        public List<MoleculeMsReference> IsotopeTextDB { get; set; }
-        [Key(5)]
-        public IupacDatabase IupacDatabase { get; set; }
+    public class MsdialLcImMsSaveObj : MsdialSaveObj {
         [Key(6)]
         public MsdialLcImMsParameter MsdialLcImMsParameter { get; set; }
 
-        public MsdialLcImMsSaveObj() { }
+        public MsdialLcImMsSaveObj() : base() { }
 
-        public MsdialLcImMsSaveObj(MsdialDataStorage container) {
-            AnalysisFiles = container.AnalysisFiles;
-            AlignmentFiles = container.AlignmentFiles;
-            MspDB = container.MspDB;
-            TextDB = container.TextDB;
-            IsotopeTextDB = container.IsotopeTextDB;
-            IupacDatabase = container.IupacDatabase;
+        public MsdialLcImMsSaveObj(MsdialDataStorage container) : base(container) {
             MsdialLcImMsParameter = (MsdialLcImMsParameter)container.ParameterBase;
         }
 
-        public MsdialDataStorage ConvertToMsdialDataStorage(MsdialLcImMsSaveObj obj) {
-            var saveObj = new MsdialDataStorage() {
-                AnalysisFiles = obj.AnalysisFiles,
-                AlignmentFiles = obj.AlignmentFiles,
-                MspDB = obj.MspDB,
-                TextDB = obj.TextDB,
-                IsotopeTextDB = obj.IsotopeTextDB,
-                IupacDatabase = obj.IupacDatabase,
-                ParameterBase = obj.MsdialLcImMsParameter
-            };
-            return saveObj;
+        public MsdialDataStorage ConvertToMsdialDataStorage() {
+            var storage = ConvertToMsdialDataStorageCore();
+            storage.ParameterBase = MsdialLcImMsParameter;
+            return storage;
         }
     }
 }
