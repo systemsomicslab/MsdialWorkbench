@@ -234,7 +234,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             var peaktopCheck = false;
             var peaktopCheckPoint = i;
             while (true) {
-                if (i + 1 == ssPeaklist.Count - 1) break;
+                if (i + 2 == ssPeaklist.Count - 1) break;
 
                 i++;
                 datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,

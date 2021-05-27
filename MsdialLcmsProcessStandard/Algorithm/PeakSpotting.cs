@@ -240,8 +240,6 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 else
                 {
                     var ms2datapointNumber = -1;
-                    var minDiff = double.MaxValue;
-                    var minID = -1;
                     for (int j = peak.Ms1LevelDatapointNumber; j < spectrumCollection.Count; j++)
                     {
                         var spec = spectrumCollection[j];

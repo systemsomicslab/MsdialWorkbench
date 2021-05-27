@@ -205,11 +205,24 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
                     var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
 
-                    if (specPrecMz - lowerOffset - ms2Tol < mass & mass < specPrecMz + upperOffset + ms2Tol) {
+                    var IsMassInWindow = specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol
+                           ? true : false;
+                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
+                        ? true : false; // used for diapasef
+
+                    if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd) { // meaning normal dia data
                         if (dtStart <= spec.DriftTime && spec.DriftTime <= dtEnd) {
-                            specs.Add(spec);
+                            IsDtInWindow = true;
                         }
                     }
+                    if (IsMassInWindow && IsMassInWindow) {
+                        specs.Add(spec);
+                    }
+                    //if (specPrecMz - lowerOffset - ms2Tol < mass & mass < specPrecMz + upperOffset + ms2Tol) {
+                    //    if (dtStart <= spec.DriftTime && spec.DriftTime <= dtEnd) {
+                    //        specs.Add(spec);
+                    //    }
+                    //}
                 }
             }
 

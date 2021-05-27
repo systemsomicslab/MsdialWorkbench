@@ -171,6 +171,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 driftFeature.MS1RawSpectrumIdLeft = peaklist[result.ScanNumAtLeftPeakEdge].ID;
                 driftFeature.MS1RawSpectrumIdRight = peaklist[result.ScanNumAtRightPeakEdge].ID;
 
+                var dt = driftFeature.ChromXs.Drift.Value;
                 var scanTop = driftFeature.MS1RawSpectrumIdTop;
                 var minDiff = int.MaxValue;
                 var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
@@ -186,7 +187,13 @@ namespace CompMs.MsdialCore.Algorithm {
                     var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
                     var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
 
-                    if (specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol) {
+                    var IsMassInWindow = specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol
+                           ? true : false;
+                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
+                        ? true : false; // used for diapasef
+                    if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd) IsDtInWindow = true; // normal dia
+
+                    if (IsMassInWindow && IsMassInWindow) {
                         var ce = spec.CollisionEnergy;
                         if (param.AcquisitionType == AcquisitionType.AIF) {
                             var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points

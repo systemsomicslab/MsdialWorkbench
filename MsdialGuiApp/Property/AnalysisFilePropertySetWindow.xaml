@@ -76,6 +76,7 @@
                   Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
                   AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
+                  DragOver="dg_DragOver" Drop="dg_Drop"
                   AllowDrop="True" Margin="20,40,20,5" >
             
             <DataGrid.ColumnHeaderStyle>
