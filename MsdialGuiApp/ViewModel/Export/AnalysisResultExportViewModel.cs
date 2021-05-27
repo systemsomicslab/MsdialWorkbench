@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             ExportSpectraTypes = new ReadOnlyObservableCollection<SpectraType>(Model.ExportSpectraTypes);
             ExportSpectraFileFormats = new ReadOnlyObservableCollection<SpectraFormat>(Model.ExportSpectraFileFormats);
 
-            var notifir = new PropertyChangedNotifir(Model);
+            var notifir = new PropertyChangedNotifier(Model);
             Disposables.Add(notifir);
             notifir
                 .SubscribeTo(nameof(Model.SelectedSpectraType), () => SelectedSpectraType = Model.SelectedSpectraType)

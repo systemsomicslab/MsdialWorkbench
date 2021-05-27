@@ -20,6 +20,7 @@ namespace CompMs.CommonMVVM
         protected virtual void OnErrorsChanged([CallerMemberName] string propertyname = "") => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyname));
 
         public IEnumerable GetErrors(string propertyName) {
+            if (propertyName is null) return null;
             if (errors.ContainsKey(propertyName)) {
                 return errors[propertyName];
             }

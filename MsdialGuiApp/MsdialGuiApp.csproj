@@ -140,6 +140,7 @@
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
+    <Compile Include="Model\Normalize\SplashSetModel.cs" />
     <Compile Include="Model\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\MsSpectrumModel.cs" />
     <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -156,6 +158,8 @@
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
+    <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
     <Compile Include="ViewModel\RawDecSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\MsSpectrumViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
@@ -226,6 +230,12 @@
     </Compile>
     <Compile Include="View\MsSpectrumView.xaml.cs">
       <DependentUpon>MsSpectrumView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
+      <DependentUpon>NormalizationSetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Normalize\SplashSetView.xaml.cs">
+      <DependentUpon>SplashSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
@@ -522,6 +532,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Normalize\NormalizationSetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Normalize\SplashSetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\PeakView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -746,6 +764,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\SplashLipids.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -828,6 +847,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Imms\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

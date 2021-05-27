@@ -43,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Dims
             eicFile = alignmentFileBean.EicFilePath;
 
             this.Parameter = param;
+            this.DataBaseRefer = refer;
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
@@ -113,6 +114,8 @@ namespace CompMs.App.Msdial.Model.Dims
         private MSDecResult msdecResult = null;
 
         public ParameterBase Parameter { get; }
+
+        public IMatchResultRefer DataBaseRefer { get; }
 
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;

@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.View.Normalize;
+using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
@@ -229,6 +231,23 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             window.Show();
+        }
+
+        public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
+
+        private DelegateCommand<Window> normalizeCommand;
+
+        private void Normalize(Window owner) {
+            var parameter = Model.Parameter;
+            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseRefer, parameter)) {
+                var view = new NormalizationSetView
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                view.ShowDialog();
+            }
         }
 
         private bool ReadDisplayFilters(DisplayFilter flags) {

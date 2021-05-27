@@ -15,7 +15,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files,
             IMetadataAccessor metaFormatter,
-            IQuantValueAccessor quantAccessor);
+            IQuantValueAccessor quantAccessor,
+            IReadOnlyList<StatsValue> stats);
     }
 
     public abstract class BaseAlignmentExporter : IAlignmentExporter
@@ -25,21 +26,24 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files,
-            IMetadataAccessor metaFormatter,
-            IQuantValueAccessor quantAccessor) {
+            IMetadataAccessor metaAccessor,
+            IQuantValueAccessor quantAccessor,
+            IReadOnlyList<StatsValue> stats) {
 
             using (var sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 1024, leaveOpen: true)) {
 
                 // Header
-                var headers = metaFormatter.GetHeaders();
-                WriteHeader(sw, files, headers);
+                var metaHeaders = metaAccessor.GetHeaders();
+                var quantHeaders = quantAccessor.GetQuantHeaders(files);
+                var classHeaders = quantAccessor.GetStatHeaders();
+                WriteHeader(sw, files, metaHeaders, quantHeaders, classHeaders, stats);
 
                 // Content
                 foreach (var spot in spots) {
-                    WriteContent(sw, spot, msdecResults[spot.MasterAlignmentID], headers, metaFormatter, quantAccessor);
+                    WriteContent(sw, spot, msdecResults[spot.MasterAlignmentID], metaHeaders, quantHeaders, classHeaders, metaAccessor, quantAccessor, stats);
 
                     foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>()) {
-                        WriteContent(sw, driftSpot, msdecResults[driftSpot.MasterAlignmentID], headers, metaFormatter, quantAccessor);
+                        WriteContent(sw, driftSpot, msdecResults[driftSpot.MasterAlignmentID], metaHeaders, quantHeaders, classHeaders, metaAccessor, quantAccessor, stats);
                     }
                 }
             }
@@ -48,14 +52,20 @@ namespace CompMs.MsdialCore.Export
         protected abstract void WriteHeader(
             StreamWriter sw,
             IReadOnlyList<AnalysisFileBean> files,
-            IReadOnlyList<string> headers);
+            IReadOnlyList<string> metaHeaders,
+            IReadOnlyList<string> quantHeaders,
+            IReadOnlyList<string> classHeaders,
+            IReadOnlyList<StatsValue> stats);
 
         protected abstract void WriteContent(
             StreamWriter sw,
             AlignmentSpotProperty spot,
             MSDecResult result,
-            IReadOnlyList<string> headers,
-            IMetadataAccessor metaFormatter,
-            IQuantValueAccessor quantAccessor);
+            IReadOnlyList<string> metaHeaders,
+            IReadOnlyList<string> quantHeaders,
+            IReadOnlyList<string> classHeaders,
+            IMetadataAccessor metaAccessor,
+            IQuantValueAccessor quantAccessor,
+            IReadOnlyList<StatsValue> stats);
     }
 }

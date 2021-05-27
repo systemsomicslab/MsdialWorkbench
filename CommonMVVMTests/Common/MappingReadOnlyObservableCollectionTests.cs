@@ -75,6 +75,7 @@ namespace CompMs.CommonMVVM.Common.Tests
             var mapCollection = new MappedReadOnlyObservableCollection<int, string>(source, x => x.ToString());
 
             source.Move(3, 1);
+            source.Move(0, 3);
             CollectionAssert.AreEqual(source.Select(item => item.ToString()).ToList(), mapCollection);
         }
     }

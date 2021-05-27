@@ -33,4 +33,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
     }
+
+    public interface IRestorableRefer : IMatchResultRefer
+    {
+        string DataBasePath { get; }
+    }
+
+    public class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
+    {
+        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string path) : base(db) {
+            DataBasePath = path;
+        }
+
+        public string DataBasePath { get; }
+    }
 }

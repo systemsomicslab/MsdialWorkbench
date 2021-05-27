@@ -30,7 +30,7 @@ namespace CompMs.MsdialCore.Parser
                     db = LibraryHandler.ReadLipidMsLibrary(dbpath, Parameter).OrderBy(msp => msp.PrecursorMz).ToList();
                 }
             }
-            return new DataBaseRefer(db);
+            return new RestorableDataBaseRefer(db, dbpath);
         }
 
         public virtual IMatchResultRefer Visit(TextDbRestorationKey key) {
@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Parser
             if (File.Exists(dbpath)) {
                 db = TextLibraryParser.TextLibraryReader(dbpath, out var _);
             }
-            return new DataBaseRefer(db);
+            return new RestorableDataBaseRefer(db, dbpath);
         }
     }
 }

@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Common\DisposableCollectionTests.cs" />
+    <Compile Include="Common\MappedObservableCollectionTests.cs" />
     <Compile Include="Common\MappingReadOnlyObservableCollectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
