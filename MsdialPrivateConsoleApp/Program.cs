@@ -9,6 +9,13 @@ namespace MsdialPrivateConsoleApp {
     class Program {
         static void Main(string[] args) {
 
+
+            LipidomicsResultCuration.Name2Smiles(@"E:\6_Projects\Collaboration\NCC\20210406\temp.txt", @"E:\6_Projects\Collaboration\NCC\20210406\temp_result.txt");
+
+
+
+
+
             //var mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp";
             //var inchikeytable = @"D:\9_Spectral library curations\Distributed MSPs\inchikey_classyfire_table.txt";
             //var new_mspfile = @"D:\9_Spectral library curations\Distributed MSPs\MSMS-RIKEN-Pos-VS15-For-Statistics.msp";

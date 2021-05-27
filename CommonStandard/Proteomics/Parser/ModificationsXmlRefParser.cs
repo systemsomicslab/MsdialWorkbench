@@ -150,6 +150,7 @@ namespace CompMs.Common.Proteomics.Parser {
         }
 
         private void parseDiagnosticCollection(ModificationSite modsite) {
+            if (this.xmlRdr.IsEmptyElement) return;
             XmlParserUtility.ParserCommonMethod(
                 this.xmlRdr, "diagnostic_collection",
                 null,
@@ -161,24 +162,19 @@ namespace CompMs.Common.Proteomics.Parser {
 
         private void parseDiagnostic(ModificationSite modsite) {
             var product = new ProductIon();
-            XmlParserUtility.ParserCommonMethod(
-                this.xmlRdr, "diagnostic",
-                new Dictionary<string, Action<string>>() {
-                    { "name", (v) => {
-                        product.Name = v;
-                    }},
-                    { "shortname", (v) => {
-                        product.ShortName = v;
-                    }},
-                    { "composition", (v) => {
-                        product.Formula =  FormulaStringParcer.MQComposition2FormulaObj(v);
-                    }},
-                },
-                null);
+
+            while (this.xmlRdr.MoveToNextAttribute()) {
+                if (this.xmlRdr.Name == "name") product.Name = this.xmlRdr.Value;
+                else if (this.xmlRdr.Name == "shortname") product.ShortName = this.xmlRdr.Value;
+                else if (this.xmlRdr.Name == "composition") product.Formula = FormulaStringParcer.MQComposition2FormulaObj(this.xmlRdr.Value);
+            }
+
             modsite.DiagnosticIons.Add(product);
         }
 
         private void parseNeutralLossCollection(ModificationSite modsite) {
+
+            if (this.xmlRdr.IsEmptyElement) return;
             XmlParserUtility.ParserCommonMethod(
                 this.xmlRdr, "neutralloss_collection",
                 null,
@@ -190,20 +186,13 @@ namespace CompMs.Common.Proteomics.Parser {
 
         private void parseNeutralLoss(ModificationSite modsite) {
             var neutralloss = new NeutralLoss();
-            XmlParserUtility.ParserCommonMethod(
-                this.xmlRdr, "neutralloss",
-                new Dictionary<string, Action<string>>() {
-                    { "name", (v) => {
-                        neutralloss.Name = v;
-                    }},
-                    { "shortname", (v) => {
-                        neutralloss.ShortName = v;
-                    }},
-                    { "composition", (v) => {
-                        neutralloss.Formula =  FormulaStringParcer.MQComposition2FormulaObj(v);
-                    }},
-                },
-                null);
+
+            while (this.xmlRdr.MoveToNextAttribute()) {
+                if (this.xmlRdr.Name == "name") neutralloss.Name = this.xmlRdr.Value;
+                else if (this.xmlRdr.Name == "shortname") neutralloss.ShortName = this.xmlRdr.Value;
+                else if (this.xmlRdr.Name == "composition") neutralloss.Formula = FormulaStringParcer.MQComposition2FormulaObj(this.xmlRdr.Value);
+            }
+
             modsite.DiagnosticNLs.Add(neutralloss);
         }
 

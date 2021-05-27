@@ -4,10 +4,32 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.Proteomics.DataObj {
-    public static class AminoAcidDictionary {
+    public static class AminoAcidObjUtility {
+
+
+        public static bool IsAAEqual(char letter1, char letter2) {
+            if (letter1 == 'J' && (letter2 == 'J' || letter2 == 'L' || letter2 == 'I')) return true;
+            if (letter2 == 'J' && (letter1 == 'J' || letter1 == 'L' || letter1 == 'I')) return true;
+            if (letter1 == letter2) return true;
+            return false;
+        }
+
+        public static bool IsAAEqual(string letter1, string letter2) {
+            if (letter1 == "J" && (letter2 == "J" || letter2 == "L" || letter2 == "I")) return true;
+            if (letter2 == "J" && (letter1 == "J" || letter1 == "L" || letter1 == "I")) return true;
+            if (letter1 == letter2) return true;
+            return false;
+        }
+
+        public static bool IsAAEqual(char letter1, string letter2) {
+            if (letter1 == 'J' && (letter2 == "J" || letter2 == "L" || letter2 == "I")) return true;
+            if (letter2 == "J" && (letter1 == 'J' || letter1 == 'L' || letter1 == 'I')) return true;
+            if (letter1.ToString() == letter2) return true;
+            return false;
+        }
 
         public static List<char> AminoAcidLetters = new List<char>() {
-            'A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'U', 'O'
+            'A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'U', 'O', 'J'
         };
 
         public static Dictionary<string, double> OneLetter2Mass = new Dictionary<string, double>
@@ -23,6 +45,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H", 137.058911875},
             {"I", 113.084064015},
             {"L", 113.084064015},
+            {"J", 113.084064015},
             {"K", 128.094963050},
             {"M", 131.040484645},
             {"F", 147.068413945},
@@ -49,6 +72,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H', 137.058911875},
             {'I', 113.084064015},
             {'L', 113.084064015},
+            {'J', 113.084064015},
             {'K', 128.094963050},
             {'M', 131.040484645},
             {'F', 147.068413945},
@@ -75,6 +99,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H","His"},
             {"I","Ile"},
             {"L","Leu"},
+            {"J","Xle"},
             {"K","Lys"},
             {"M","Met"},
             {"F","Phe"},
@@ -101,6 +126,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',"His"},
             {'I',"Ile"},
             {'L',"Leu"},
+            {'J',"Xle"},
             {'K',"Lys"},
             {'M',"Met"},
             {'F',"Phe"},
@@ -127,6 +153,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"His","H"},
             {"Ile","I"},
             {"Leu","L"},
+            {"Xle","J"},
             {"Lys","K"},
             {"Met","M"},
             {"Phe","F"},
@@ -138,6 +165,33 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"Val","V"},
             {"Pyl","O"},
             {"Sec","U"},
+        };
+
+        public static Dictionary<string, char> ThreeLetter2OneChar = new Dictionary<string, char>
+        {
+            {"Ala",'A'},
+            {"Arg",'R'},
+            {"Asn",'N'},
+            {"Asp",'D'},
+            {"Cys",'C'},
+            {"Glu",'E'},
+            {"Gln",'Q'},
+            {"Gly",'G'},
+            {"His",'H'},
+            {"Ile",'I'},
+            {"Leu",'L'},
+            {"Xle",'J'},
+            {"Lys",'K'},
+            {"Met",'M'},
+            {"Phe",'F'},
+            {"Pro",'P'},
+            {"Ser",'S'},
+            {"Thr",'T'},
+            {"Trp",'W'},
+            {"Tyr",'Y'},
+            {"Val",'V'},
+            {"Pyl",'O'},
+            {"Sec",'U'},
         };
 
 
@@ -154,6 +208,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H","C6H7ON3"},
             {"I","C6H11ON"},
             {"L","C6H11ON"},
+            {"J","C6H11ON"},
             {"K","C6H12ON2"},
             {"M","C5H9ONS"},
             {"F","C9H9ON"},
@@ -180,6 +235,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',"C6H7ON3"},
             {'I',"C6H11ON"},
             {'L',"C6H11ON"},
+            {'J',"C6H11ON"},
             {'K',"C6H12ON2"},
             {'M',"C5H9ONS"},
             {'F',"C9H9ON"},
@@ -206,6 +262,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H', new Formula("C6H7ON3")},
             {'I', new Formula("C6H11ON")},
             {'L', new Formula("C6H11ON")},
+            {'J', new Formula("C6H11ON")},
             {'K', new Formula("C6H12ON2")},
             {'M', new Formula("C5H9ONS")},
             {'F', new Formula("C9H9ON")},
@@ -233,6 +290,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H",6},
             {"I",6},
             {"L",6},
+            {"J",6},
             {"K",6},
             {"M",5},
             {"F",9},
@@ -259,6 +317,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',6},
             {'I',6},
             {'L',6},
+            {'J',6},
             {'K',6},
             {'M',5},
             {'F',9},
@@ -285,6 +344,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H",3},
             {"I",1},
             {"L",1},
+            {"J",1},
             {"K",2},
             {"M",1},
             {"F",1},
@@ -312,6 +372,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',3},
             {'I',1},
             {'L',1},
+            {'J',1},
             {'K',2},
             {'M',1},
             {'F',1},
@@ -338,6 +399,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H",7},
             {"I",11},
             {"L",11},
+            {"J",11},
             {"K",12},
             {"M",9},
             {"F",9},
@@ -364,6 +426,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',7},
             {'I',11},
             {'L',11},
+            {'J',11},
             {'K',12},
             {'M',9},
             {'F',9},
@@ -390,6 +453,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H",1},
             {"I",1},
             {"L",1},
+            {"J",1},
             {"K",1},
             {"M",1},
             {"F",1},
@@ -416,6 +480,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',1},
             {'I',1},
             {'L',1},
+            {'J',1},
             {'K',1},
             {'M',1},
             {'F',1},
@@ -442,6 +507,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"H",0},
             {"I",0},
             {"L",0},
+            {"J",0},
             {"K",0},
             {"M",1},
             {"F",0},
@@ -468,6 +534,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {'H',0},
             {'I',0},
             {'L',0},
+            {'J',0},
             {'K',0},
             {'M',1},
             {'F',0},
@@ -496,6 +563,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             {"His","C6H7ON3"},
             {"Ile","C6H11ON"},
             {"Leu","C6H11ON"},
+            {"Xle","C6H11ON"},
             {"Lys","C6H12ON2"},
             {"Met","C5H9ONS"},
             {"Phe","C9H9ON"},

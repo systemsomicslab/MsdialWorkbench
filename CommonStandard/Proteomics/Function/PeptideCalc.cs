@@ -18,7 +18,7 @@ namespace CompMs.Common.Proteomics.Function {
         // N -> C, just return exactmass using default setting
         public static double Sequence2Mass(string sequence) {
             var mass = 0.0;
-            var char2mass = AminoAcidDictionary.OneChar2Mass;
+            var char2mass = AminoAcidObjUtility.OneChar2Mass;
             var offsetMass = OH + H2O * (sequence.Length - 2) + H; // N-terminal, internal amino acids, C-terminal
             for (int i = 0; i < sequence.Length; i++) {
                 var aaChar = sequence[i];
@@ -180,7 +180,7 @@ namespace CompMs.Common.Proteomics.Function {
             var oxygen = 0;
             var sulfur = 0;
 
-            var char2formula = AminoAcidDictionary.OneChar2Formula;
+            var char2formula = AminoAcidObjUtility.OneChar2Formula;
             var offsetHydrogen = (sequence.Length - 1) * 2;
             var offsetOxygen = sequence.Length - 1;
 

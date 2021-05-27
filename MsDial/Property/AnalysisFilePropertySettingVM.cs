@@ -174,7 +174,8 @@ namespace Rfx.Riken.OsakaUniv
             var rdamProperty = new RdamPropertyBean();
             var analysisFiles = new List<AnalysisFilePropertyBean>();
             var errorMessage = string.Empty;
-
+            if (filepathes == null || filepathes.Length == 0) return;
+            filepathes = filepathes.OrderBy(n => n).ToArray();
             for (int i = 0; i < filepathes.Length; i++) {
 
                 var filepath = filepathes[i];
