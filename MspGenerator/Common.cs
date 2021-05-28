@@ -177,6 +177,14 @@ namespace CompMs.MspGenerator
                 case "HexCer_HDS":
                 case "CerP":
                 case "GM3":
+                case "GD1a":
+                case "GD1b":
+                case "GD2":
+                case "GD3":
+                case "GM1":
+                case "GT1b":
+                case "GQ1b":
+                case "NGcGM3":
                 case "MIPC":
                     CeramideMspGenerator.twoChainsCeramideGenerator(chain1, chain2, lipidClass, output);
                     break;
@@ -439,6 +447,11 @@ namespace CompMs.MspGenerator
                 case "CoQ":
                     OtherLipidMspGenerator.coenzymeQGenerator(lipidClass, output);
                     break;
+
+                case "ST":
+                    OtherLipidMspGenerator.sterolsGenerator(lipidClass, output);
+                    break;
+
 
                 default:
                     Console.WriteLine("Error in lipidClass switch. Please check settings...");

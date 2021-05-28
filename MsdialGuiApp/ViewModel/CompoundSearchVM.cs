@@ -121,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel
         }
 
         public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search, CanSearch));
-        private DelegateCommand searchCommand;
+        private DelegateCommand searchCommand; 
 
         private bool canSearch = false;
         private static readonly double EPS = 1e-10;

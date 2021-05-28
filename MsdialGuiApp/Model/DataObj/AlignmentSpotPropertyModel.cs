@@ -69,11 +69,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string AdductIonName => innerModel.AdductType.AdductIonName;
-
         public string Comment {
             get => innerModel.Comment;
-            set {
-                if (innerModel.Comment != value) {
+            set
+            {
+                if (innerModel.Comment != value)
+                {
                     innerModel.Comment = value;
                     OnPropertyChanged(nameof(Comment));
                 }

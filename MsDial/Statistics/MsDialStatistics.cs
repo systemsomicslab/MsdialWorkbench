@@ -450,6 +450,12 @@ namespace Rfx.Riken.OsakaUniv
                 case "nmol/10^6 cells": return IonAbundanceUnit.nmol_per_10E6_cells;
                 case "pmol/10^6 cells": return IonAbundanceUnit.pmol_per_10E6_cells;
                 case "fmol/10^6 cells": return IonAbundanceUnit.fmol_per_10E6_cells;
+                case "nmol/individual": return IonAbundanceUnit.nmol_per_individual;
+                case "pmol/individual": return IonAbundanceUnit.pmol_per_individual;
+                case "fmol/individual": return IonAbundanceUnit.fmol_per_individual;
+                case "nmol/μg protein": return IonAbundanceUnit.nmol_per_microG_protein;
+                case "pmol/μg protein": return IonAbundanceUnit.pmol_per_microG_protein;
+                case "fmol/μg protein": return IonAbundanceUnit.fmol_per_microG_protein;
                 default: return IonAbundanceUnit.pmol_per_microL_plasma;
             }
         }
@@ -466,6 +472,12 @@ namespace Rfx.Riken.OsakaUniv
                 case IonAbundanceUnit.nmol_per_10E6_cells: return "nmol/10^6 cells";
                 case IonAbundanceUnit.pmol_per_10E6_cells: return "pmol/10^6 cells";
                 case IonAbundanceUnit.fmol_per_10E6_cells: return "fmol/10^6 cells";
+                case IonAbundanceUnit.nmol_per_individual: return "nmol/individual";
+                case IonAbundanceUnit.pmol_per_individual: return "pmol/individual";
+                case IonAbundanceUnit.fmol_per_individual: return "fmol/individual";
+                case IonAbundanceUnit.nmol_per_microG_protein: return "nmol/μg protein";
+                case IonAbundanceUnit.pmol_per_microG_protein: return "pmol/μg protein";
+                case IonAbundanceUnit.fmol_per_microG_protein: return "fmol/μg protein";
                 case IonAbundanceUnit.NormalizedByInternalStandardPeakHeight: return "Peak height/IS peak";
                 case IonAbundanceUnit.NormalizedByQcPeakHeight: return "Peak height/QC peak";
                 case IonAbundanceUnit.NormalizedByTIC: return "Peak height/TIC";

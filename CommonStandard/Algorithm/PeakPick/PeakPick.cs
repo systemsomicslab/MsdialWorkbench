@@ -89,7 +89,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
                         firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
-                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise);
+                    i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
                     var isBreak = false;
                     i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out isBreak);
                     if (isBreak) break;
@@ -230,28 +230,69 @@ namespace CompMs.Common.Algorithm.PeakPick {
         }
         private static int searchRightEdgeCandidate(int i, List<double[]> datapoints,
             List<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist,
-            double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise) {
+            double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise, double minimumDatapointCriteria) {
             var peaktopCheck = false;
             var peaktopCheckPoint = i;
             while (true) {
-                if (i + 1 == ssPeaklist.Count - 1) break;
+                if (i + 2 == ssPeaklist.Count - 1) break;
 
                 i++;
                 datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
                             firstDiffPeaklist[i], secondDiffPeaklist[i] });
+
+                // peak top check
                 if (peaktopCheck == false &&
                     (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i] < 0) || (firstDiffPeaklist[i - 1] > 0 && firstDiffPeaklist[i + 1] < 0) &&
                     secondDiffPeaklist[i] < -1 * peaktopNoise) {
                     peaktopCheck = true; peaktopCheckPoint = i;
                 }
-                if (peaktopCheck == true && peaktopCheckPoint + 3 <= i - 1) {
+
+                if (peaktopCheck == false &&
+                   (ssPeaklist[i - 2].Intensity <= ssPeaklist[i - 1].Intensity) &&
+                   (ssPeaklist[i - 1].Intensity <= ssPeaklist[i].Intensity) &&
+                   (ssPeaklist[i].Intensity >= ssPeaklist[i + 1].Intensity) &&
+                   (ssPeaklist[i + 1].Intensity >= ssPeaklist[i + 2].Intensity)) {
+                    peaktopCheck = true; peaktopCheckPoint = i;
+                }
+
+                // peak top check force
+                if (peaktopCheck == false && minimumDatapointCriteria < 1.5 &&
+                    ((ssPeaklist[i - 2].Intensity <= ssPeaklist[i - 1].Intensity) &&
+                    (ssPeaklist[i - 1].Intensity <= ssPeaklist[i].Intensity) &&
+                    (ssPeaklist[i].Intensity >= ssPeaklist[i + 1].Intensity)) ||
+                    ((ssPeaklist[i - 1].Intensity <= ssPeaklist[i].Intensity) &&
+                    (ssPeaklist[i].Intensity >= ssPeaklist[i + 1].Intensity) &&
+                    (ssPeaklist[i + 1].Intensity >= ssPeaklist[i + 2].Intensity))) {
+                    peaktopCheck = true; peaktopCheckPoint = i;
+                }
+
+
+                var minimumPointFromTop = minimumDatapointCriteria <= 3 ? 1 : minimumDatapointCriteria * 0.5;
+                if (peaktopCheck == true && peaktopCheckPoint + minimumPointFromTop <= i - 1) {
                     if (firstDiffPeaklist[i] > -1 * slopeNoise * slopeNoiseFoldCriteria) break;
                     if (Math.Abs(ssPeaklist[i - 2].Intensity - ssPeaklist[i - 1].Intensity) < amplitudeNoise &&
                           Math.Abs(ssPeaklist[i - 1].Intensity - ssPeaklist[i].Intensity) < amplitudeNoise) break;
+
+                    if ((ssPeaklist[i - 2].Intensity >= ssPeaklist[i - 1].Intensity) &&
+                        (ssPeaklist[i - 1].Intensity >= ssPeaklist[i].Intensity) &&
+                        (ssPeaklist[i].Intensity <= ssPeaklist[i + 1].Intensity) &&
+                        (ssPeaklist[i + 1].Intensity <= ssPeaklist[i + 2].Intensity)) break;
+
+                    // peak right check force
+                    if (minimumDatapointCriteria < 1.5 &&
+                        ((ssPeaklist[i - 2].Intensity >= ssPeaklist[i - 1].Intensity) &&
+                        (ssPeaklist[i - 1].Intensity >= ssPeaklist[i].Intensity) &&
+                        (ssPeaklist[i].Intensity <= ssPeaklist[i + 1].Intensity)) ||
+                        ((ssPeaklist[i - 1].Intensity >= ssPeaklist[i].Intensity) &&
+                        (ssPeaklist[i].Intensity <= ssPeaklist[i + 1].Intensity) &&
+                        (ssPeaklist[i + 1].Intensity <= ssPeaklist[i + 2].Intensity))) {
+                        peaktopCheck = true; peaktopCheckPoint = i;
+                    }
                 }
             }
             return i;
         }
+
         private static void searchRealLeftEdge(int i, List<double[]> datapoints, 
             List<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist) {
             //search real left edge within 5 data points

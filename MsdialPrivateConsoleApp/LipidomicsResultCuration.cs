@@ -85,6 +85,41 @@ namespace MsdialPrivateConsoleApp {
     public sealed class LipidomicsResultCuration {
         private LipidomicsResultCuration() { }
 
+        public static void Name2Smiles(string input, string output) {
+
+            var lipidnames = new List<string>();
+            using (var sr = new StreamReader(input, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    if (line.Contains("|")) {
+                        line = line.Split('|')[1];
+                    }
+                    lipidnames.Add(line.Trim());
+                }
+            }
+
+            var mspDB = LipidomicsConverter.SerializedObjectToMspQeries(@"E:\0_SourceCode\msdialworkbench\MsDial\bin\Debug\Msp20210426080355_converted.lbm2");
+            var molecules = new List<LipidMolecule>();
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                foreach (var lipid in lipidnames) {
+                    var flag = false;
+                    var lipidclass = lipid.Split(' ')[0];
+                    foreach (var query in mspDB.Where(n => n.IonMode == IonMode.Negative && n.CompoundClass == lipidclass)) {
+                        var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(query);
+                        if (lipid == molecule.LipidName) {
+                            flag = true;
+                            sw.WriteLine(query.InchiKey + "\t" + query.Smiles);
+                            break;
+                        }
+                        if (flag) break;
+                    }
+                    if (flag == false) {
+                        sw.WriteLine("null" + "\t" + "null");
+                    }
+                }
+            }
+        }
+
         public static void ExtractSuspectOrigins(string lipidfile, string inputfolder, string output) {
             var checkedlipids = new List<string>();
             using (var sr = new StreamReader(lipidfile, Encoding.ASCII)) {

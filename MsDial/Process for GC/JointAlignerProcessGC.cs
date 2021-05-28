@@ -42,10 +42,11 @@ namespace Rfx.Riken.OsakaUniv
             var analysisFiles = mainWindow.AnalysisFiles;
             var param = mainWindow.AnalysisParamForGC;
             var alignmentResultBean = new AlignmentResultBean();
+            var project = mainWindow.ProjectProperty;
 
             await Task.Run(() =>
             {
-                PeakAlignment.JointAligner(analysisFiles, param, alignmentResultBean, mainWindow.MspDB, progress => ReportProgress(progress));
+                PeakAlignment.JointAligner(project, analysisFiles, param, alignmentResultBean, mainWindow.MspDB, progress => ReportProgress(progress));
             });
             return alignmentResultBean;
         }

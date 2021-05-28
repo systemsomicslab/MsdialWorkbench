@@ -245,7 +245,7 @@ namespace Rfx.Riken.OsakaUniv
 
             //alignment filtering
             OnPropertyChanged("PeakCountFilter");
-            OnPropertyChanged("QcAtLeastFilter");
+            OnPropertyChanged("QcAtLeastFilter"); OnPropertyChanged("NPercentDetectedInOneGroup");
             OnPropertyChanged("IsRemoveFeatureBasedOnPeakHeightFoldChange"); OnPropertyChanged("SampleMaxOverBlankAverage"); OnPropertyChanged("SampleAverageOverBlankAverage");
             OnPropertyChanged("IsKeepRemovableFeaturesAndAssignedTagForChecking"); OnPropertyChanged("IsKeepIdentifiedMetaboliteFeatures"); OnPropertyChanged("IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples");
             OnPropertyChanged("BlankFiltering"); OnPropertyChanged("IsKeepAnnotatedMetaboliteFeatures"); OnPropertyChanged("FoldChangeForBlankFiltering");
@@ -538,6 +538,10 @@ namespace Rfx.Riken.OsakaUniv
         public bool QcAtLeastFilter {
             get { return this.param.QcAtLeastFilter; }
             set { if (this.param.QcAtLeastFilter == value) return; this.param.QcAtLeastFilter = value; OnPropertyChanged("QcAtLeastFilter"); }
+        }
+        public float NPercentDetectedInOneGroup {
+            get { return Param.NPercentDetectedInOneGroup; }
+            set { if (Param.NPercentDetectedInOneGroup == value) return; Param.NPercentDetectedInOneGroup = value; OnPropertyChanged("NPercentDetectedInOneGroup"); }
         }
 
         public bool IsRemoveFeatureBasedOnPeakHeightFoldChange {

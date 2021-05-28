@@ -40,6 +40,7 @@ namespace CompMs.App.Msdial.Property
         }
 
         #region Command
+       
         public DelegateCommand AnalysisFilesSelectCommand {
             get => analysisFilesSelectCommand ?? (analysisFilesSelectCommand = new DelegateCommand(AnalysisFilesSelect));
         }
@@ -57,7 +58,7 @@ namespace CompMs.App.Msdial.Property
                 ofd.Filter = "IBF file(*.ibf)|*.ibf";
             }
             else {
-                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf";
+                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw";
             }
 
             if (ofd.ShowDialog() == true) {
@@ -75,7 +76,7 @@ namespace CompMs.App.Msdial.Property
 
         private ObservableCollection<AnalysisFileBean> ReadImportedFiles(string[] filenames) {
             var dt = DateTime.Now;
-            var analysisfiles = filenames.Select((filename, i) =>
+            var analysisfiles = filenames.OrderBy(n => n).Select((filename, i) =>
                 new AnalysisFileBean
                 {
                     AnalysisFileAnalyticalOrder = i + 1,
@@ -133,6 +134,48 @@ namespace CompMs.App.Msdial.Property
         private void OnAnalysisFileChanged(object sender, PropertyChangedEventArgs e) {
             ContinueProcessCommand.RaiseCanExecuteChanged();
         }
+
+        public void Drop(string[] files) {
+            string lastfile = "";
+            var includedFiles = new List<string>();
+            var excludedFiles = new List<string>();
+
+            // Set BaseFileList Clone
+            for (int i = 0; i < files.Length; i++) {
+                if (IsAccepted(files[i])) {
+                    includedFiles.Add(files[i]);
+                }
+                else {
+                    excludedFiles.Add(System.IO.Path.GetFileName(files[i]));
+                }
+            }
+
+            if (0 < excludedFiles.Count) {
+                System.Windows.MessageBox.Show("The following file(s) cannot be converted because they are not acceptable raw files\n" +
+                    String.Join("\n", excludedFiles.ToArray()),
+                    "Unacceptable Files",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+
+            if (includedFiles.Count > 0) {
+                Mouse.OverrideCursor = Cursors.Wait;
+                AnalysisFilePropertyCollection = ReadImportedFiles(includedFiles.ToArray());
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        private bool IsAccepted(string file) {
+            var extension = System.IO.Path.GetExtension(file).ToLower();
+            if (extension != ".abf" && extension != ".mzml" &&
+                extension != ".cdf" && extension != ".raw" &&
+                extension != ".d" && extension != ".iabf" && extension != ".ibf" &&
+                extension != ".wiff" && extension != ".wiff2")
+                return false;
+            else
+                return true;
+        }
+
         #endregion
 
     }

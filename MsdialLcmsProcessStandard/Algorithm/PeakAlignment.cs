@@ -307,6 +307,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                     peakCount++;
                     var fileId = alignedPeak.FileID;
                     var classID = project.FileID_ClassName[fileId];
+                    var filetype = project.FileID_AnalysisFileType[fileId];
+                    //if (filetype == AnalysisFileType.Sample)
                     localGroupCountDict[classID]++;
                 }
 
@@ -998,6 +1000,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             //Debug.WriteLine(centralRT + "\t" + centralMZ + "\t" + peaklist.Count);
             if (sPeaklist == null || sPeaklist.Count == 0) return;
+            if (isForceInsert == false) return;
 
             //finding local maximum list
             var candidates = new List<PeakAreaBean>();
@@ -2718,6 +2721,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         peakCount++;
                         var fileId = alignedPeak.FileID;
                         var classID = project.FileID_ClassName[fileId];
+                        var filetype = project.FileID_AnalysisFileType[fileId];
+                        //if (filetype == AnalysisFileType.Sample)
                         localGroupCountDict[classID]++;
                     }
 
@@ -2904,7 +2909,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             //Debug.WriteLine(centralRT + "\t" + centralMZ + "\t" + peaklist.Count);
             if (sPeaklist == null || sPeaklist.Count == 0) return;
-
+            if (isForceInsert == false) return;
             //finding local maximum list
             var candidates = new List<DriftSpotBean>();
             var minRtId = -1;

@@ -175,6 +175,8 @@ namespace CompMs.Common.DataObj {
         public DissociationMethods Dissociationmethod { get; set; }
         public double CollisionEnergy { get; set; }
         public Units CollisionEnergyUnit { get; set; }
+        public double TimeBegin { get; set; } = 0; // use for diapasef
+        public double TimeEnd { get; set; } = 0; // use for diapasef
 
         public RawPrecursorIon()
         {

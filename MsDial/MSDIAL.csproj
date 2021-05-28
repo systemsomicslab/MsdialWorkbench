@@ -38,6 +38,9 @@
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
+  <PropertyGroup>
+    <HighEntropyVA>false</HighEntropyVA>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -1080,7 +1083,11 @@
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\System.Data.SQLite.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\MassLynxRaw.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\baf2sql_c.dll" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

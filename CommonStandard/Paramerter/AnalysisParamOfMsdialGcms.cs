@@ -45,232 +45,304 @@ namespace Rfx.Riken.OsakaUniv
     [MessagePackObject]
     public class AnalysisParamOfMsdialGcms
     {
+        [Key(102)]
         private string msdialVersionNumber;
-
-        //Process option
+        [Key(103)]
         private ProcessOption processOption;
-
-        //Data type
+        [Key(104)]
         [DataMember]
         private DataType dataType;
+        [Key(105)]
         [DataMember]
         private IonMode ionMode;
+        [Key(106)]
         [DataMember]
         private AccuracyType accuracyType;
-
-        //Data collection
+        [Key(107)]
         [DataMember]
         private float retentionTimeBegin;
+        [Key(108)]
         [DataMember]
         private float retentionTimeEnd;
+        [Key(109)]
         [DataMember]
         private float massRangeBegin;
+        [Key(110)]
         [DataMember]
         private float massRangeEnd;
+        [Key(111)]
         [DataMember]
         private int numThreads;
-
-        //Accuracy
+        [Key(112)]
         [DataMember]
         private float massAccuracy;
-
-        //Peak detection
+        [Key(113)]
         [DataMember]
         private SmoothingMethod smoothingMethod;
+        [Key(114)]
         [DataMember]
         private int smoothingLevel;
+        [Key(115)]
         [DataMember]
         private double amplitudeNoiseFactor;
+        [Key(116)]
         [DataMember]
         private double slopeNoiseFactor;
+        [Key(117)]
         [DataMember]
         private double peaktopNoiseFactor;
+        [Key(118)]
         [DataMember]
         private double minimumDatapoints;
+        [Key(119)]
         [DataMember]
         private double minimumAmplitude;
+        [Key(120)]
         [DataMember]
         private int averagePeakWidth;
+        [Key(121)]
         [DataMember]
         private float massSliceWidth;
+        [Key(122)]
         [DataMember]
         private bool backgroundSubtraction;
+        [Key(123)]
         private List<ExcludeMassBean> excludedMassList;
-
-        //Deconvolution
+        [Key(124)]
         [DataMember]
         private float amplitudeCutoff;
+        [Key(125)]
         [DataMember]
         private float sigmaWindowValue;
+        [Key(126)]
         [DataMember]
         private bool isReplaceQuantmassByUserDefinedValue;
-
-        //Peak identification
+        [Key(127)]
         [DataMember]
         private string mspFilePath;
+        [Key(128)]
         [DataMember]
         private string riDictionaryFilePath;
+        [Key(129)]
         [DataMember]
         private RetentionType retentionType;
+        [Key(130)]
         [DataMember]
         private RiCompoundType riCompoundType;
+        [Key(131)]
         [DataMember]
         private Dictionary<int, float> riDictionary;
+        [Key(132)]
         [DataMember]
         private Dictionary<int, RiDictionaryInfo> fileIdRiInfoDictionary;
+        [Key(133)]
         [DataMember]
         private float retentionTimeLibrarySearchTolerance;
+        [Key(134)]
         [DataMember]
         private float retentionIndexLibrarySearchTolerance;
+        [Key(135)]
         [DataMember]
         private float eiSimilarityLibrarySearchCutOff;
+        [Key(136)]
         [DataMember]
         private float identificationScoreCutOff;
+        [Key(137)]
         [DataMember]
         private float mzLibrarySearchTolerance;
+        [Key(138)]
         [DataMember]
         private int maxMspDisplayNumber;
+        [Key(139)]
         [DataMember]
         private bool isIdentificationOnlyPerformedForAlignmentFile;
+        [Key(140)]
         [DataMember]
         private bool isUseRetentionInfoForIdentificationScoring;
+        [Key(141)]
         private bool isUseRetentionInfoForIdentificationFiltering;
+        [Key(142)]
         private bool isOnlyTopHitReport;
-
-        //Alignment parameters
+        [Key(143)]
         [DataMember]
         private AlignmentIndexType alignmentIndexType;
+        [Key(144)]
         [DataMember]
         private int alignmentReferenceFileID;
+        [Key(145)]
         [DataMember]
         private float retentionTimeAlignmentFactor;
+        [Key(146)]
         [DataMember]
         private float retentionTimeAlignmentTolerance;
+        [Key(147)]
         [DataMember]
         private float eiSimilarityAlignmentCutOff;
+        [Key(148)]
         [DataMember]
         private float eiSimilarityAlignmentFactor;
+        [Key(149)]
         [DataMember]
         private float retentionIndexAlignmentTolerance;
+        [Key(150)]
         [DataMember]
         private float alignmentScoreCutOff;
+        [Key(151)]
         [DataMember]
         private bool togetherWithAlignment;
+        [Key(152)]
         [DataMember]
         private bool isForceInsertForGapFilling;
+        [Key(153)]
         private bool isRepresentativeQuantMassBasedOnBasePeakMz;
-
-        //filtering for alignment results
+        [Key(154)]
         [DataMember]
         private float peakCountFilter;
+        [Key(155)]
         [DataMember]
         private bool qcAtLeastFilter;
+        [Key(156)]
         [DataMember]
         private bool gapFillingOption;
+        [Key(157)]
         [DataMember]
         private bool isRemoveFeatureBasedOnPeakHeightFoldChange;
+        [Key(158)]
         [DataMember]
         private float sampleMaxOverBlankAverage;
+        [Key(159)]
         [DataMember]
         private float sampleAverageOverBlankAverage;
+        [Key(160)]
         [DataMember]
         private float foldChangeForBlankFiltering;
+        [Key(161)]
         [DataMember]
         private bool isKeepRemovableFeaturesAndAssignedTagForChecking;
+        [Key(162)]
         [DataMember]
         private bool isKeepIdentifiedMetaboliteFeatures;
+        [Key(163)]
         [DataMember]
         private bool isReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples;
+        [Key(164)]
         [DataMember]
         private bool isKeepAnnotatedMetaboliteFeatures;
+        [Key(165)]
         [DataMember]
         private BlankFiltering blankFiltering;
-
-        //Normalization
+        [Key(166)]
+        private float nPercentDetectedInOneGroup;
+        [Key(167)]
         [DataMember]
         private bool isNormalizeNone;
+        [Key(168)]
         [DataMember]
         private bool isNormalizeIS;
+        [Key(169)]
         [DataMember]
         private bool isNormalizeLowess;
+        [Key(170)]
         [DataMember]
         private bool isNormalizeIsLowess;
+        [Key(171)]
         [DataMember]
         private bool isNormalizeTic;
+        [Key(172)]
         [DataMember]
         private bool isNormalizeMTic;
+        [Key(173)]
         [DataMember]
         private bool isBlankSubtract;
+        [Key(174)]
         private bool isNormalizeSplash;
+        [Key(175)]
         [DataMember]
         private double lowessSpan;
+        [Key(176)]
         private List<StandardCompound> standardCompounds;
-
-        //Statistics, PCA
+        [Key(177)]
         [DataMember]
         private TransformMethod transform;
+        [Key(178)]
         [DataMember]
         private ScaleMethod scale;
+        [Key(179)]
         [DataMember]
         private int maxComponent;
-
-        //Statistics, PLS
+        [Key(180)]
         [DataMember]
         private TransformMethod transformPls;
+        [Key(181)]
         [DataMember]
         private ScaleMethod scalePls;
+        [Key(182)]
         [DataMember]
         private bool isAutoFitPls;
+        [Key(183)]
         [DataMember]
         private int componentPls;
+        [Key(184)]
         [DataMember]
         private MultivariateAnalysisOption multivariateAnalysisOption;
-
+        [Key(185)]
         [DataMember]
         private bool isIdentifiedImportedInStatistics;
+        [Key(186)]
         [DataMember]
         private bool isAnnotatedImportedInStatistics;
+        [Key(187)]
         [DataMember]
         private bool isUnknownImportedInStatistics;
-
-
-        //Output for MRMPROBS
+        [Key(188)]
         [DataMember]
         private float mpMs1Tolerance;
+        [Key(189)]
         [DataMember]
         private float mpMs2Tolerance;
+        [Key(190)]
         [DataMember]
         private float mpRtTolerance;
+        [Key(191)]
         [DataMember]
         private int mpTopN;
+        [Key(192)]
         [DataMember]
         private bool mpIsIncludeMsLevel1;
+        [Key(193)]
         [DataMember]
         private bool mpIsUseMs1LevelForQuant;
+        [Key(194)]
         [DataMember]
         private bool mpIsFocusedSpotOutput;
+        [Key(195)]
         [DataMember]
         private bool mpIsReferenceBaseOutput;
+        [Key(196)]
         [DataMember]
         private bool mpIsExportOtherCandidates;
+        [Key(197)]
         [DataMember]
         private float mpIdentificationScoreCutOff;
-
-        //viewer
+        [Key(198)]
         [DataMember]
         private List<ExtractedIonChromatogramDisplaySettingBean> eicDisplayQueries;
-
-        // molecular networking
+        [Key(199)]
         [DataMember]
         private bool mnIsExportIonCorrelation;
+        [Key(200)]
         [DataMember]
         private double mnMassTolerance;
+        [Key(201)]
         [DataMember]
         private double mnRelativeAbundanceCutOff;
+        [Key(202)]
         [DataMember]
         private double mnSpectrumSimilarityCutOff;
+        [Key(203)]
         [DataMember]
         private double mnIonCorrelationSimilarityCutOff;
+        [Key(204)]
         [DataMember]
         private double mnRtTolerance;
 
@@ -350,6 +422,7 @@ namespace Rfx.Riken.OsakaUniv
             IsKeepAnnotatedMetaboliteFeatures = false;
             BlankFiltering = BlankFiltering.SampleMaxOverBlankAve;
             IsForceInsertForGapFilling = true;
+            NPercentDetectedInOneGroup = 0;
 
             //Normalization and Statistics
             IsNormalizeNone = true;
@@ -1247,6 +1320,17 @@ namespace Rfx.Riken.OsakaUniv
 
             set {
                 excludedMassList = value;
+            }
+        }
+
+        [Key(102)]
+        public float NPercentDetectedInOneGroup {
+            get {
+                return nPercentDetectedInOneGroup;
+            }
+
+            set {
+                nPercentDetectedInOneGroup = value;
             }
         }
 

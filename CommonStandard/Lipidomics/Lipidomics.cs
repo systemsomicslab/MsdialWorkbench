@@ -590,6 +590,60 @@ namespace CompMs.Common.Lipidomics {
                         totalCarbon, totalDbBond, adduct);
                         break;
 
+                    //add 190528
+                    case LbmClass.Cer_HS:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideo(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.Cer_HDS:
+                        result = LipidMsmsCharacterization.JudgeIfCeramideo(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.Cer_NDOS:
+                        result = LipidMsmsCharacterization.JudgeIfCeramidedos(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.HexCer_HS:
+                        result = LipidMsmsCharacterization.JudgeIfHexceramideo(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    case LbmClass.HexCer_HDS:
+                        result = LipidMsmsCharacterization.JudgeIfHexceramideo(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+                    //190801
+                    case LbmClass.SHex:
+                        result = LipidMsmsCharacterization.JudgeIfSterolHexoside(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.BAHex:
+                        result = LipidMsmsCharacterization.JudgeIfSterolHexoside(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.SSulfate:
+                        result = LipidMsmsCharacterization.JudgeIfSterolSulfate(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+                    case LbmClass.BASulfate:
+                        result = LipidMsmsCharacterization.JudgeIfSterolSulfate(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, adduct);
+                        break;
+
+                    // added 190811
+                    case LbmClass.CerP:
+                        result = LipidMsmsCharacterization.JudgeIfCeramidePhosphate(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
                     ///2019/11/25 add
                     case LbmClass.SMGDG:
                         result = LipidMsmsCharacterization.JudgeIfSmgdg(msScanProp, ms2tol, refMz,
@@ -655,18 +709,61 @@ namespace CompMs.Common.Lipidomics {
                         break;
                     //add 20200923
                     case LbmClass.DSMSE:
-                        return LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfDesmosterolSpecies(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                        break;
                     //add20210216
                     case LbmClass.GPNAE:
-                        return LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfGpnae(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                        break;
                     case LbmClass.MGMG:
-                        return LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfMgmg(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+                        break;
                     case LbmClass.DGMG:
-                        return LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
+                        result = LipidMsmsCharacterization.JudgeIfDgmg(msScanProp, ms2tol, refMz,
                              totalCarbon, totalDbBond, adduct);
+
+                        //add 20210315
+                        break;
+                    case LbmClass.GD1a:
+                        result = LipidMsmsCharacterization.JudgeIfGD1a(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GD1b:
+                        result = LipidMsmsCharacterization.JudgeIfGD1b(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GD2:
+                        result = LipidMsmsCharacterization.JudgeIfGD2(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GD3:
+                        result = LipidMsmsCharacterization.JudgeIfGD3(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GM1:
+                        result = LipidMsmsCharacterization.JudgeIfGM1(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GQ1b:
+                        result = LipidMsmsCharacterization.JudgeIfGQ1b(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.GT1b:
+                        result = LipidMsmsCharacterization.JudgeIfGT1b(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.NGcGM3:
+                        result = LipidMsmsCharacterization.JudgeIfNGcGM3(msScanProp, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+                    case LbmClass.ST:
+                        result = LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                        break;
+
                     default:
                         return null;
 

@@ -21,6 +21,9 @@ namespace CompMs.MspGenerator
             { "[M+CH3COO]-",new AdductIon(){ AdductIonName= "[M+CH3COO]-", AdductIonMass = MassDictionary.CH3COOadduct ,AdductSurfix ="Hac", IonMode ="Negative"} },
             { "[M-2H]2-",new AdductIon(){ AdductIonName= "[M-2H]2-", AdductIonMass = -MassDictionary.Proton*2 ,AdductSurfix ="2H-", IonMode ="Negative"} },
             { "[M+H-H2O]+",new AdductIon(){ AdductIonName= "[M+H-H2O]+", AdductIonMass = MassDictionary.Proton-MassDictionary.H2OMass ,AdductSurfix ="H-H2O", IonMode ="Positive"} },
+            { "[M+2H]2+",new AdductIon(){ AdductIonName= "[M+2H]2+", AdductIonMass = MassDictionary.Proton*2 ,AdductSurfix ="2H+", IonMode ="Positive"} },
+            { "[M+2NH4]2+",new AdductIon(){ AdductIonName= "[M+2NH4]2+", AdductIonMass = MassDictionary.NH4Adduct*2 ,AdductSurfix ="2NH4", IonMode ="Positive"} },
+
         };
 
         public static Dictionary<string, string>
@@ -35,6 +38,8 @@ namespace CompMs.MspGenerator
                     { "Hac_Neg","[M+CH3COO]-"},
                     { "2H-_Neg","[M-2H]2-"},
                     { "H-H2O_Pos","[M+H-H2O]+"},
+                    { "2H+_Pos","[M+2H]2+"},
+                    { "2NH4_Pos","[M+2NH4]2+" },
         };
 
 
@@ -144,7 +149,15 @@ namespace CompMs.MspGenerator
                 {   "HexCer_NS" ,    new List<string>(){ "[M+HCOO]-", "[M-H]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+" }    },
                 {   "HexCer_HS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
                 {   "HexCer_HDS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+", "[M+H-H2O]+", "[M-H]-" }    },
-                {   "GM3" ,    new List<string>(){ "[M+NH4]+", "[M-H]-"   }    },
+                {   "GM3" ,    new List<string>(){ "[M+NH4]+", "[M-H]-", "[M-2H]2-" }    },
+                {   "GD1a" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+", "[M+2H]2+" }    },
+                {   "GD1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+", "[M+2H]2+" }    },
+                {   "GD2" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "GD3" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" }    },
+                {   "GM1" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" , "[M+NH4]+", "[M+2NH4]2+", "[M+2H]2+" }    },
+                {   "GT1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+", "[M+2H]2+" }    },
+                {   "GQ1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+" }    },
+                {   "NGcGM3" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+NH4]+" }    },
                 {   "CerP" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
                 {   "Hex2Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "Hex3Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
@@ -256,6 +269,8 @@ namespace CompMs.MspGenerator
                 {"EGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
                 {"DEGSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
                 {"DSMSE",  new List<string>(){ "[M+H]+", "[M+NH4]+","[M+Na]+" } },
+
+                {"ST",  new List<string>(){ "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M+H-H2O]+" } },
 
     };
 

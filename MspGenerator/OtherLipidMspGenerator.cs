@@ -140,7 +140,7 @@ namespace CompMs.MspGenerator
                         var name = shortName;
 
                         if (AcylChainDic.OxFaChainDictionary.ContainsKey(chainArray[0]) == false) { continue; }
-                        var fa1Smiles = new List<string>(AcylChainDic.OxFaChainDictionary[chainArray[0]])[3]; 
+                        var fa1Smiles = new List<string>(AcylChainDic.OxFaChainDictionary[chainArray[0]])[3];
                         var rawSmiles = headerSmiles + fa1Smiles + "%10";
                         var meta = Common.getMetaProperty(rawSmiles);
 
@@ -214,7 +214,7 @@ namespace CompMs.MspGenerator
                         var name = shortName;
 
                         if (AcylChainDic.AlphaHydroxyFaChainDictionary.ContainsKey(chainArray[0]) == false) { continue; }
-                        var fa1Smiles = new List<string>(AcylChainDic.AlphaHydroxyFaChainDictionary[chainArray[0]])[3].Replace("%10","");
+                        var fa1Smiles = new List<string>(AcylChainDic.AlphaHydroxyFaChainDictionary[chainArray[0]])[3].Replace("%10", "");
                         var rawSmiles = headerSmiles + fa1Smiles + "%10";
                         var meta = Common.getMetaProperty(rawSmiles);
 
@@ -222,7 +222,7 @@ namespace CompMs.MspGenerator
                         var fragmentList = new List<string>();
 
                         OtherLipidFragmentation.alphaOxFAFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
-                            name = "FA" + " " + chain1Carbon + ":" + chain1Double + ";" + "(2OH)";
+                        name = "FA" + " " + chain1Carbon + ":" + chain1Double + ";" + "(2OH)";
                         var exportLipidClass = "OxFA";
 
                         //
@@ -308,7 +308,7 @@ namespace CompMs.MspGenerator
                         if (AcylChainDic.HydroxyFaChainDictionary.ContainsKey(chain1String) == false) { continue; }
 
                         var chain1Smiles = new List<string>(AcylChainDic.HydroxyFaChainDictionary[chain1String])[3];
-                        if(lipidClass=="AAHFA")
+                        if (lipidClass == "AAHFA")
                         {
                             chain1Smiles = new List<string>(AcylChainDic.AlphaHydroxyFaChainDictionary[chain1String])[3];
                         }
@@ -329,7 +329,7 @@ namespace CompMs.MspGenerator
                         switch (lipidClass)
                         {
                             case "FAHFA":
-                                OtherLipidFragmentation.fahfaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon,chain1Double, chain2Carbon, chain2Double);
+                                OtherLipidFragmentation.fahfaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = lipidClass + " " + chain2String + "/" + chain1String + ";O";
                                 break;
                             case "NAGlySer_FAHFA":
@@ -423,7 +423,7 @@ namespace CompMs.MspGenerator
 
                         var exportLipidClassName = lipidClass;
                         var rawSmiles = headerSmiles + chain1Smiles + "%10";
-                        if (lipidClass.Contains("NA")&& lipidClass != "NAE")
+                        if (lipidClass.Contains("NA") && lipidClass != "NAE")
                         {
 
                             if (AcylChainDic.AcylChainBetaOxDictionary.ContainsKey(chain1String))
@@ -750,7 +750,7 @@ namespace CompMs.MspGenerator
                                 name = LPHex[lipidClass] + chain1String;
                                 rawSmiles = headerSmiles + chain1Smiles + "%10";
                                 meta = Common.getMetaProperty(rawSmiles);
-                                OtherLipidFragmentation.steroidWithLpaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass,  chain1Carbon, chain1Double);
+                                OtherLipidFragmentation.steroidWithLpaFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
                                 break;
                             case "CSPHex":
                             case "BRSPHex":
@@ -847,9 +847,9 @@ namespace CompMs.MspGenerator
                         {
                             case "BAHex":
                                 name = lipid.Value + ";Hex";
-                                if(name.Contains("ST") )
+                                if (name.Contains("ST"))
                                 {
-                                    name=name.Replace("ST","SG");
+                                    name = name.Replace("ST", "SG");
                                 }
                                 headerSmiles = smilesHeaderDict[lipid.Key];
                                 rawSmiles = headerSmiles + "C1OC(CO)C(O)C(O)C1O";
@@ -1046,6 +1046,54 @@ namespace CompMs.MspGenerator
                 }
             }
         }
+
+        public static void sterolsGenerator(string lipidClass, string output)
+        {
+            var smileslist = new List<string>();
+            var adducts = adductDic.lipidClassAdductDic[lipidClass];
+            var classDic = new Dictionary<string, string>()
+                                {{"CE","27:1" },{"BRSE","28:2" },{"CASE","28:1" },{"SISE","29:1"},{"STSE","29:2"} ,{ "Cholestan","27:0"} ,
+                                   {"EGSE","28:3" },{"DEGSE","28:4" },{"DSMSE","27:2" } };
+
+            foreach (var adductIon in adducts)
+            {
+                var adduct = adductDic.adductIonDic[adductIon];
+                var ionmode = adduct.IonMode;
+                var fileSurfix = adduct.AdductSurfix + "_" + ionmode.Substring(0, 3);
+
+                using (var sw = new StreamWriter(output + "\\" + lipidClass + "_" + fileSurfix + ".msp", false, Encoding.ASCII))
+                {
+                    foreach (var item in classDic)
+                    {
+                        var name = "ST "+ item.Value+";O";
+
+                        var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
+                        var headerSmiles = smilesHeaderDict[item.Key];
+                        var rawSmiles = headerSmiles.Replace("%10","");
+
+                        var fragmentList = new List<string>();
+                        var exportLipidClassName = lipidClass;
+                        var meta = Common.getMetaProperty(rawSmiles);
+
+                        OtherLipidFragmentation.sterolsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass);
+                        //
+                        var precursorMZ = Math.Round(meta.ExactMass + adduct.AdductIonMass, 4);
+                        ExportMSP.exportMspFile(sw, precursorMZ, meta.Formula, name, meta.Smiles, meta.inChIKey, adduct.AdductIonName, ionmode, exportLipidClassName, fragmentList);
+
+                        smileslist.Add(meta.inChIKey + "\t" + meta.Smiles);
+                    }
+                }
+                var smilesOutputFile = output + "\\" + lipidClass + "_InChIKey-smiles.txt";
+                smileslist = smileslist.Distinct().ToList();
+                using (var sw = new StreamWriter(smilesOutputFile, false, Encoding.ASCII))
+                {
+                    sw.WriteLine("InChIKey\tSMILES");
+                    foreach (var smiles in smileslist)
+                        sw.WriteLine(smiles);
+                }
+            }
+        }
+
 
         public static void lipidAGenerator(List<string> chains, string lipidClass, string output)
         {

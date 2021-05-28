@@ -387,13 +387,15 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             {
                 var useSnapshot = true;
                 var centroidSpectrum = new List<double[]>();
-
+                var ms2obj = spectrumCollection[driftSpot.Ms2LevelDatapointNumber];
+                var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
+                
                 if (useSnapshot)
                 {
                     // MS2 data
                     peakSpot.Ms2LevelDatapointNumber = 1;
                     var spectrum = new List<double[]>();
-                    foreach (var peak in spectrumCollection[driftSpot.Ms2LevelDatapointNumber].Spectrum)
+                    foreach (var peak in ms2obj.Spectrum)
                     {
                         spectrum.Add(new double[] { peak.Mz, peak.Intensity });
                     }
@@ -426,6 +428,13 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 {
                     ms2DecResult.MassSpectra = new List<double[]>();
                     ms2DecResult.PeaklistList.Add(new List<double[]>());
+                    return ms2DecResult;
+                }
+
+                if (isDiaPasef) {
+                    ms2DecResult = getMS2DecResultByRawSpectrum(driftSpot, curatedSpectra);
+                    if (ms2DecResult.MassSpectra.Count == 0) ms2DecResult = getMS2DecResultByOnlyMs1Information(driftSpot);
+                    setDriftPropertyToMs2DecResult(ms2DecResult, driftSpot);
                     return ms2DecResult;
                 }
                 

@@ -236,16 +236,21 @@ namespace Rfx.Riken.OsakaUniv
 			get {
 				return exportPeakList ?? (exportPeakList = new DelegateCommand(winobj => {
 					PeaklistExportWin view = (PeaklistExportWin)winobj;
-                    if (projectPropertyBean.Ionization == Ionization.ESI) {
+					if (projectPropertyBean.Ionization == Ionization.ESI) {
 
-                        DataExportLcUtility.PeaklistExport((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection,
-                            SelectedFileFormat, SelectedSpectraType, isotopeExportMax);
+						DataExportLcUtility.PeaklistExport((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection,
+							SelectedFileFormat, SelectedSpectraType, isotopeExportMax);
 
-                        //DataExportLcUtility.PeaklistExportPrivate((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection,
-                        //    SelectedFileFormat, SelectedSpectraType, isotopeExportMax);
-                    }
-                    else
-                        DataExportGcUtility.PeaklistExport((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection, SelectedFileFormat);
+						//DataExportLcUtility.PeaklistExportPrivate((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection,
+						//    SelectedFileFormat, SelectedSpectraType, isotopeExportMax);
+					}
+					else {
+						if (SelectedFileFormat == ExportSpectraFileFormat.ms) {
+							MessageBox.Show("SIRIUS ms format is not supported for GC-MS project", "Error", MessageBoxButton.OK);
+							return;
+						}
+						DataExportGcUtility.PeaklistExport((MainWindow)view.Owner, exportFolderPath, selectedAnalysisFileBeanCollection, SelectedFileFormat);
+					}
 
 					view.Close();
 				}, CanExportPeaklist));

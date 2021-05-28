@@ -888,4 +888,15 @@
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\SQLite.Interop.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\System.Data.SQLite.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\MassLynxRaw.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Assemblies\baf2sql_c.dll" "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

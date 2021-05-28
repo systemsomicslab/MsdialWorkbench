@@ -74,6 +74,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 return MSDecObjectHandler.GetMSDecResultByRawSpectrum(dtChromPeak, curatedSpectra);
             }
 
+            var ms2obj = spectrumList[dtChromPeak.MS2RawSpectrumID];
+            var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
+
+            if (isDiaPasef) {
+                return MSDecObjectHandler.GetMSDecResultByRawSpectrum(dtChromPeak, curatedSpectra);
+            }
+
             //check the DT range to be considered for chromatogram deconvolution
             var peakWidth = dtChromPeak.PeakWidth();
             if (peakWidth >= summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3) peakWidth = summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3; // width should be less than mean + 3*sigma for excluding redundant peak feature

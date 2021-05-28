@@ -7,7 +7,8 @@ using MessagePack;
 
 namespace Rfx.Riken.OsakaUniv
 {
-    public enum LbmClass {
+    public enum LbmClass
+    {
         // old version
         Cer, CerP, G1Cer, SM,
         CE, FA,
@@ -38,7 +39,9 @@ namespace Rfx.Riken.OsakaUniv
         LCAE, KLCAE, KDCAE,
         MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
         OxTG, TG_EST,
-        GPNAE, DGMG, MGMG
+        GPNAE, DGMG, MGMG,
+        GD1a, GD1b, GD2, GD3, GM1, GT1b, GQ1b, NGcGM3,
+        ST
 
 
         // new version

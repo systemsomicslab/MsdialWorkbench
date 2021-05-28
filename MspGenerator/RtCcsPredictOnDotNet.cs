@@ -256,25 +256,25 @@ namespace CompMs.MspGenerator
                     }
                     sw.WriteLine(string.Join("\t", writeLineItem));
                 }
-                //// to test --print ccs only item
-                foreach (var ccsItem in ccsResultDic)
-                {
-                    var writeLineItem = new List<string>();
-                    writeLineItem.Add(ccsItem.Key);
+                //////// to test --print ccs only item
+                ////foreach (var ccsItem in ccsResultDic)
+                ////{
+                ////    var writeLineItem = new List<string>();
+                ////    writeLineItem.Add(ccsItem.Key);
 
-                    // add CCS result 
-                    if (ccsResultDic.ContainsKey(ccsItem.Key))
-                    {
+                ////    // add CCS result 
+                ////    if (ccsResultDic.ContainsKey(ccsItem.Key))
+                ////    {
 
-                        var ccsResultValueList = new List<string>();
-                        var ccsResult = ccsResultDic[ccsItem.Key];
-                        foreach (var adduct in ccsAdductHeaderList)
-                        {
-                            writeLineItem.Add(ccsResult[adduct].ToString());
-                        }
-                    }
-                    sw.WriteLine(string.Join("\t", writeLineItem));
-                }
+                ////        var ccsResultValueList = new List<string>();
+                ////        var ccsResult = ccsResultDic[ccsItem.Key];
+                ////        foreach (var adduct in ccsAdductHeaderList)
+                ////        {
+                ////            writeLineItem.Add(ccsResult[adduct].ToString());
+                ////        }
+                ////    }
+                ////    sw.WriteLine(string.Join("\t", writeLineItem));
+                ////}
 
             }
 
@@ -291,6 +291,7 @@ namespace CompMs.MspGenerator
             using (var sr = new StreamReader(testFile, true))
             {
                 var headerLine = sr.ReadLine();
+                headerLine = headerLine.Replace(",", "\t");
                 headerLine = headerLine.Replace("-", "_");
                 headerLine = headerLine.Replace(".", "_");
                 headerLine = headerLine.Replace("*", "_asterisk");
@@ -306,6 +307,7 @@ namespace CompMs.MspGenerator
                 var line = "";
                 while ((line = sr.ReadLine()) != null)
                 {
+                    line = line.Replace(",", "\t");
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
@@ -367,6 +369,7 @@ namespace CompMs.MspGenerator
             using (var sr = new StreamReader(ccsTestFile, true))
             {
                 var headerLine = sr.ReadLine();
+                headerLine = headerLine.Replace(",", "\t");
                 headerLine = headerLine.Replace("-", "_");
                 headerLine = headerLine.Replace(".", "_");
                 headerLine = headerLine.Replace("*", "_asterisk");
@@ -381,6 +384,7 @@ namespace CompMs.MspGenerator
                 var line = "";
                 while ((line = sr.ReadLine()) != null)
                 {
+                    line = line.Replace(",", "\t");
                     var lineArray = line.Split('\t');
                     var itemlist = new List<float>();
                     var target = 0.0f;
@@ -1368,13 +1372,24 @@ namespace CompMs.MspGenerator
 
             }
 
-            var nEstimatorsTune = new List<int>() { 800, 900, 1000 };
-            var maxDepthTune = new List<int>() { 8, 9, 10 };
-            var learningRateTune = new List<float>() { 0.1F,0.05F };
-            var gammaTune = new List<float>() { 0 };
-            var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
-            var minChildWeightTune = new List<int>() { 0, 1 };
-            var subsampleTune = new List<float>() { 0.5F, 1 };
+            ////case1
+            //var nEstimatorsTune = new List<int>() { 800, 900, 1000 };
+            //var maxDepthTune = new List<int>() { 8, 9, 10 };
+            //var learningRateTune = new List<float>() { 0.1F,0.05F };
+            //var gammaTune = new List<float>() { 0 };
+            //var colSampleByTreeTune = new List<float>() { 0.75F, 1 };
+            //var minChildWeightTune = new List<int>() { 0, 1 };
+            //var subsampleTune = new List<float>() { 0.5F, 1 };
+
+            ////case2 RT
+            var nEstimatorsTune = new List<int>() { 1000 };
+            var maxDepthTune = new List<int>() { 5,6,7,8,9 };
+            var learningRateTune = new List<float>() { 0.3F, 0.1F, 0.05F, 0.02F};
+            var gammaTune = new List<float>() { 0F ,1F};
+            var colSampleByTreeTune = new List<float>() { 0.75F };
+            var minChildWeightTune = new List<int>() { 10 };
+            var subsampleTune = new List<float>() { 0.5F};
+
 
             ////full set
             //var nEstimatorsTune = new List<int>() { 500, 600, 700, 800, 900, 1000 };
@@ -1674,7 +1689,9 @@ namespace CompMs.MspGenerator
                 { "[M+HCOO]-",44.99820285f},
                 {"[M+CH3COO]-" ,59.01385292f},
                 {"[M+H-H2O]+" ,-17.00328358f},
-                {"[M-2H]2-" ,-1.00727642f}
+                {"[M-2H]2-" ,-1.00727642f},
+                { "[M+2H]2+",1.00727642f},
+                { "[M+2NH4]2+",18.03382555f}
             };
         public class XGVector<T>
         {

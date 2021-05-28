@@ -30,20 +30,20 @@ namespace Rfx.Riken.OsakaUniv
         {
             //this.ComboBox_ExportFormat.ItemsSource = Enum.GetValues(typeof(ExportSpectraFileFormat));
             this.ComboBox_ExportFormat.ItemsSource = new string[] { "mgf", "msp" };
-            this.ComboBox_MassSpecType.ItemsSource = Enum.GetValues(typeof(ExportspectraType));
+            //this.ComboBox_MassSpecType.ItemsSource = Enum.GetValues(typeof(ExportspectraType));
 
           //  this.DataContext = new AlignmentResultExportVM(this.mainWindow, this) { RawDatamatrix = true };
             this.DataContext = new AlignmentResultExportVM(this.mainWindow, this);
 
             this.ComboBox_ExportFormat.SelectedIndex = 1;
-            if (this.mainWindow.ProjectProperty.MethodType == MethodType.diMSMS)
-                this.ComboBox_MassSpecType.SelectedIndex = 2;
-            else
-                this.ComboBox_MassSpecType.SelectedIndex = 1;
+            //if (this.mainWindow.ProjectProperty.MethodType == MethodType.diMSMS)
+            //    this.ComboBox_MassSpecType.SelectedIndex = 2;
+            //else
+            //    this.ComboBox_MassSpecType.SelectedIndex = 1;
 
             if (this.mainWindow.ProjectProperty.Ionization == Ionization.EI)
             {
-                this.ComboBox_MassSpecType.SelectedIndex = 2;
+                //this.ComboBox_MassSpecType.SelectedIndex = 2;
                 this.Checbox_MsmsIncludedMatrix.IsEnabled = false;
                 this.Checbox_FilteringForIsotopeTrackResult.IsEnabled = false;
                 this.Checbox_GnpsExport.IsEnabled = false;
@@ -72,21 +72,21 @@ namespace Rfx.Riken.OsakaUniv
             ((AlignmentResultExportVM)this.DataContext).ExportSpectraFileFormat = (ExportSpectraFileFormat)((ComboBox)sender).SelectedIndex;
         }
 
-        private void ComboBox_MassSpecType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.DataContext == null) return;
-            if (this.mainWindow.ProjectProperty.Ionization == Ionization.ESI) {
-                if (this.mainWindow.ProjectProperty.MethodType == MethodType.ddMSMS && ((ComboBox)sender).SelectedIndex == 2) {
-                    MessageBox.Show("In data dependent  mode, you cannot choose the deconvolution output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
-                if (this.mainWindow.ProjectProperty.MethodType == MethodType.diMSMS && ((ComboBox)sender).SelectedIndex == 1) {
-                    MessageBox.Show("In data indepeondent mode, you cannot choose the centroid output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
-            }
-            ((AlignmentResultExportVM)this.DataContext).ExportSpectraType = (ExportspectraType)((ComboBox)sender).SelectedIndex;
-        }
+        //private void ComboBox_MassSpecType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (this.DataContext == null) return;
+        //    if (this.mainWindow.ProjectProperty.Ionization == Ionization.ESI) {
+        //        if (this.mainWindow.ProjectProperty.MethodType == MethodType.ddMSMS && ((ComboBox)sender).SelectedIndex == 2) {
+        //            MessageBox.Show("In data dependent  mode, you cannot choose the deconvolution output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
+        //            return;
+        //        }
+        //        if (this.mainWindow.ProjectProperty.MethodType == MethodType.diMSMS && ((ComboBox)sender).SelectedIndex == 1) {
+        //            MessageBox.Show("In data indepeondent mode, you cannot choose the centroid output.", "Attention", MessageBoxButton.OK, MessageBoxImage.Information);
+        //            return;
+        //        }
+        //    }
+        //    ((AlignmentResultExportVM)this.DataContext).ExportSpectraType = (ExportspectraType)((ComboBox)sender).SelectedIndex;
+        //}
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {

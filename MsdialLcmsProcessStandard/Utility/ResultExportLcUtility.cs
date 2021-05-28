@@ -3518,25 +3518,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             var isotopes = getIsotopicIonSpectra(ms1Spectra, peakAreaBean.AccurateMass, isotopeExportMax);
             var msmsSpectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, peakAreaBean.Ms2LevelDatapointNumber);
 
-            var titleString = "Unknown"; if (peakAreaBean.MetaboliteName != string.Empty) titleString = peakAreaBean.MetaboliteName;
-            titleString += "; Ms1ScanNumber: " + peakAreaBean.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + peakAreaBean.Ms2LevelDatapointNumber;
-
-            var adductString = peakAreaBean.AdductIonName;
-            var adduct = AdductIonParcer.GetAdductIonBean(adductString);
-
-            sw.WriteLine("NAME: " + titleString);
-            sw.WriteLine("SCANNUMBER: " + peakAreaBean.PeakID);
-            sw.WriteLine("RETENTIONTIME: " + peakAreaBean.RtAtPeakTop);
-            sw.WriteLine("PRECURSORMZ: " + peakAreaBean.AccurateMass);
-            sw.WriteLine("PRECURSORTYPE: " + adductString);
-            sw.WriteLine("IONMODE: " + adduct.IonMode);
-            sw.WriteLine("SPECTRUMTYPE: Profile");
-            sw.WriteLine("INTENSITY: " + peakAreaBean.IntensityAtPeakTop);
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(peakAreaBean.LibraryID, mspDB));
-
+            WriteMspMetadata(sw, peakAreaBean, null, mspDB);
 
             sw.WriteLine("MSTYPE: MS1");
             sw.WriteLine("Num Peaks: " + isotopes.Count);
@@ -3560,27 +3542,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             var isotopes = getIsotopicIonSpectra(ms1Spectra, driftSpot.AccurateMass, isotopeExportMax);
             var msmsSpectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, driftSpot.Ms2LevelDatapointNumber);
 
-            var titleString = "Unknown"; if (driftSpot.MetaboliteName != string.Empty) titleString = driftSpot.MetaboliteName;
-            titleString += "; Ms1ScanNumber: " + driftSpot.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + driftSpot.Ms2LevelDatapointNumber;
-
-            var adductString = driftSpot.AdductIonName;
-            var adduct = AdductIonParcer.GetAdductIonBean(adductString);
-
-            sw.WriteLine("NAME: " + titleString);
-            sw.WriteLine("SCANNUMBER: " + driftSpot.MasterPeakID);
-            sw.WriteLine("RETENTIONTIME: " + peakSpot.RtAtPeakTop);
-            sw.WriteLine("MOBILITY: " + driftSpot.DriftTimeAtPeakTop);
-            sw.WriteLine("CCS: " + driftSpot.Ccs);
-            sw.WriteLine("PRECURSORMZ: " + peakSpot.AccurateMass);
-            sw.WriteLine("PRECURSORTYPE: " + adductString);
-            sw.WriteLine("IONMODE: " + adduct.IonMode);
-            sw.WriteLine("SPECTRUMTYPE: Profile");
-            sw.WriteLine("INTENSITY: " + driftSpot.IntensityAtPeakTop);
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(driftSpot.LibraryID, mspDB));
-
+            WriteMspMetadata(sw, peakSpot, driftSpot, mspDB);
 
             sw.WriteLine("MSTYPE: MS1");
             sw.WriteLine("Num Peaks: " + isotopes.Count);
@@ -3608,26 +3570,8 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             var isotopes = getIsotopicIonSpectra(ms1Spectra, peakAreaBean.AccurateMass, isotopeExportMax);
             var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peakAreaBean.PeakID);
             var msmsSpectra = ms2DecResult.MassSpectra;
-
-            var titleString = "Unknown"; if (peakAreaBean.MetaboliteName != string.Empty) titleString = peakAreaBean.MetaboliteName;
-            titleString += "; Ms1ScanNumber: " + peakAreaBean.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + peakAreaBean.Ms2LevelDatapointNumber;
-
-            var adductString = peakAreaBean.AdductIonName;
-            var adduct = AdductIonParcer.GetAdductIonBean(adductString);
-
-            sw.WriteLine("NAME: " + titleString);
-            sw.WriteLine("SCANNUMBER: " + peakAreaBean.PeakID);
-            sw.WriteLine("RETENTIONTIME: " + peakAreaBean.RtAtPeakTop);
-            sw.WriteLine("PRECURSORMZ: " + peakAreaBean.AccurateMass);
-            sw.WriteLine("PRECURSORTYPE: " + adductString);
-            sw.WriteLine("IONMODE: " + adduct.IonMode);
-            sw.WriteLine("SPECTRUMTYPE: Profile");
-            sw.WriteLine("INTENSITY: " + peakAreaBean.IntensityAtPeakTop);
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(peakAreaBean.LibraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(peakAreaBean.LibraryID, mspDB));
-
+            
+            WriteMspMetadata(sw, peakAreaBean, null, mspDB);
 
             sw.WriteLine("MSTYPE: MS1");
             sw.WriteLine("Num Peaks: " + isotopes.Count);
@@ -3656,27 +3600,7 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, driftSpot.MasterPeakID);
             var msmsSpectra = ms2DecResult.MassSpectra;
 
-            var titleString = "Unknown"; if (driftSpot.MetaboliteName != string.Empty) titleString = driftSpot.MetaboliteName;
-            titleString += "; Ms1ScanNumber: " + driftSpot.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + driftSpot.Ms2LevelDatapointNumber;
-
-            var adductString = driftSpot.AdductIonName;
-            var adduct = AdductIonParcer.GetAdductIonBean(adductString);
-
-            sw.WriteLine("NAME: " + titleString);
-            sw.WriteLine("SCANNUMBER: " + driftSpot.MasterPeakID);
-            sw.WriteLine("RETENTIONTIME: " + peakSpot.RtAtPeakTop);
-            sw.WriteLine("MOBILITY: " + driftSpot.DriftTimeAtPeakTop);
-            sw.WriteLine("CCS: " + driftSpot.Ccs);
-            sw.WriteLine("PRECURSORMZ: " + peakSpot.AccurateMass);
-            sw.WriteLine("PRECURSORTYPE: " + adductString);
-            sw.WriteLine("IONMODE: " + adduct.IonMode);
-            sw.WriteLine("SPECTRUMTYPE: Profile");
-            sw.WriteLine("INTENSITY: " + driftSpot.IntensityAtPeakTop);
-            sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(driftSpot.LibraryID, mspDB));
-            sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(driftSpot.LibraryID, mspDB));
-
+            WriteMspMetadata(sw, peakSpot, driftSpot, mspDB);
 
             sw.WriteLine("MSTYPE: MS1");
             sw.WriteLine("Num Peaks: " + isotopes.Count);
@@ -3694,6 +3618,182 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             sw.WriteLine();
         }
 
+        public static void WriteProfileAsSiriusMs(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
+            PeakAreaBean peakAreaBean, List<MspFormatCompoundInformationBean> mspDB, float isotopeExportMax) {
+            var ms1Spectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, peakAreaBean.Ms1LevelDatapointNumber);
+            var isotopes = getIsotopicIonSpectra(ms1Spectra, peakAreaBean.AccurateMass, isotopeExportMax);
+            var msmsSpectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, peakAreaBean.Ms2LevelDatapointNumber);
+
+            WriteSiriusMsMetadata(sw, peakAreaBean, null, mspDB);
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms1");
+            foreach (var ion in isotopes) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms2");
+            foreach (var ion in msmsSpectra) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+        }
+
+        public static void WriteProfileAsSiriusMs(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
+           PeakAreaBean peakSpot, DriftSpotBean driftSpot, List<MspFormatCompoundInformationBean> mspDB, float isotopeExportMax) {
+            var ms1Spectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, driftSpot.Ms1LevelDatapointNumber);
+            var isotopes = getIsotopicIonSpectra(ms1Spectra, driftSpot.AccurateMass, isotopeExportMax);
+            var msmsSpectra = DataAccessLcUtility.GetProfileMassSpectra(spectrumCollection, driftSpot.Ms2LevelDatapointNumber);
+
+            WriteSiriusMsMetadata(sw, peakSpot, driftSpot, mspDB);
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms1");
+            foreach (var ion in isotopes) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms2");
+            foreach (var ion in msmsSpectra) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+        }
+
+        public static void WriteMs2DecAsSiriusMs(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
+            FileStream fs, List<long> seekpointList, PeakAreaBean peakAreaBean,
+            List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param,
+            ProjectPropertyBean projectProperty, float isotopeExportMax) {
+
+            var ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataType,
+                peakAreaBean.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, true);
+            var isotopes = getIsotopicIonSpectra(ms1Spectra, peakAreaBean.AccurateMass, isotopeExportMax);
+            var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peakAreaBean.PeakID);
+            var msmsSpectra = ms2DecResult.MassSpectra;
+
+            WriteSiriusMsMetadata(sw, peakAreaBean, null, mspDB);
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms1");
+            foreach (var ion in isotopes) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms2");
+            foreach (var ion in msmsSpectra) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+        }
+
+        public static void WriteMs2DecAsSiriusMs(StreamWriter sw, ObservableCollection<RawSpectrum> spectrumCollection,
+          FileStream fs, List<long> seekpointList, PeakAreaBean peakSpot, DriftSpotBean driftSpot,
+          List<MspFormatCompoundInformationBean> mspDB, AnalysisParametersBean param,
+          ProjectPropertyBean projectProperty, float isotopeExportMax) {
+
+            var ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataType,
+                driftSpot.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, true);
+            var isotopes = getIsotopicIonSpectra(ms1Spectra, driftSpot.AccurateMass, isotopeExportMax);
+            var ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, driftSpot.MasterPeakID);
+            var msmsSpectra = ms2DecResult.MassSpectra;
+
+            WriteSiriusMsMetadata(sw, peakSpot, driftSpot, mspDB);
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms1");
+            foreach (var ion in isotopes) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+
+            sw.WriteLine();
+
+            sw.WriteLine(">ms2");
+            foreach (var ion in msmsSpectra) {
+                sw.WriteLine(Math.Round(ion[0], 5) + " " + Math.Round(ion[1], 0));
+            }
+        }
+
+
+        private static void WriteSiriusMsMetadata(StreamWriter sw, PeakAreaBean peakSpot, DriftSpotBean driftSpot, List<MspFormatCompoundInformationBean> mspDB) {
+            if (driftSpot == null) {
+                var titleString = "Unknown"; if (peakSpot.MetaboliteName != string.Empty) titleString = peakSpot.MetaboliteName;
+                titleString += "_" + peakSpot.PeakID;
+
+                var adductString = peakSpot.AdductIonName;
+                var adduct = AdductIonParcer.GetAdductIonBean(adductString);
+
+                sw.WriteLine(">compound " + titleString);
+                sw.WriteLine(">parentmass " + peakSpot.AccurateMass);
+                sw.WriteLine(">formula " + MspDataRetrieve.GetFormula(peakSpot.LibraryID, mspDB));
+                sw.WriteLine(">ionization " + adductString);
+            }
+            else {
+                var titleString = "Unknown"; if (driftSpot.MetaboliteName != string.Empty) titleString = driftSpot.MetaboliteName;
+                titleString += "_" + driftSpot.MasterPeakID;
+
+                var adductString = driftSpot.AdductIonName;
+                var adduct = AdductIonParcer.GetAdductIonBean(adductString);
+
+                sw.WriteLine(">compound " + titleString);
+                sw.WriteLine(">parentmass " + peakSpot.AccurateMass);
+                sw.WriteLine(">ionization " + adductString);
+                sw.WriteLine(">formula " + MspDataRetrieve.GetFormula(driftSpot.LibraryID, mspDB));
+            }
+        }
+
+
+
+        private static void WriteMspMetadata(StreamWriter sw, PeakAreaBean peakSpot, DriftSpotBean driftSpot, List<MspFormatCompoundInformationBean> mspDB) {
+            if (driftSpot == null) {
+                var titleString = "Unknown"; if (peakSpot.MetaboliteName != string.Empty) titleString = peakSpot.MetaboliteName;
+                titleString += "; Ms1ScanNumber: " + peakSpot.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + peakSpot.Ms2LevelDatapointNumber;
+
+                var adductString = peakSpot.AdductIonName;
+                var adduct = AdductIonParcer.GetAdductIonBean(adductString);
+
+                sw.WriteLine("NAME: " + titleString);
+                sw.WriteLine("SCANNUMBER: " + peakSpot.PeakID);
+                sw.WriteLine("RETENTIONTIME: " + peakSpot.RtAtPeakTop);
+                sw.WriteLine("PRECURSORMZ: " + peakSpot.AccurateMass);
+                sw.WriteLine("PRECURSORTYPE: " + adductString);
+                sw.WriteLine("IONMODE: " + adduct.IonMode);
+                sw.WriteLine("SPECTRUMTYPE: Profile");
+                sw.WriteLine("INTENSITY: " + peakSpot.IntensityAtPeakTop);
+                sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(peakSpot.LibraryID, mspDB));
+                sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(peakSpot.LibraryID, mspDB));
+                sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(peakSpot.LibraryID, mspDB));
+                sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(peakSpot.LibraryID, mspDB));
+            }
+            else {
+                var titleString = "Unknown"; if (driftSpot.MetaboliteName != string.Empty) titleString = driftSpot.MetaboliteName;
+                titleString += "; Ms1ScanNumber: " + driftSpot.Ms1LevelDatapointNumber + "; Ms2ScanNumber: " + driftSpot.Ms2LevelDatapointNumber;
+
+                var adductString = driftSpot.AdductIonName;
+                var adduct = AdductIonParcer.GetAdductIonBean(adductString);
+
+                sw.WriteLine("NAME: " + titleString);
+                sw.WriteLine("SCANNUMBER: " + driftSpot.MasterPeakID);
+                sw.WriteLine("RETENTIONTIME: " + peakSpot.RtAtPeakTop);
+                sw.WriteLine("MOBILITY: " + driftSpot.DriftTimeAtPeakTop);
+                sw.WriteLine("CCS: " + driftSpot.Ccs);
+                sw.WriteLine("PRECURSORMZ: " + peakSpot.AccurateMass);
+                sw.WriteLine("PRECURSORTYPE: " + adductString);
+                sw.WriteLine("IONMODE: " + adduct.IonMode);
+                sw.WriteLine("SPECTRUMTYPE: Profile");
+                sw.WriteLine("INTENSITY: " + driftSpot.IntensityAtPeakTop);
+                sw.WriteLine("FORMULA: " + MspDataRetrieve.GetFormula(driftSpot.LibraryID, mspDB));
+                sw.WriteLine("ONTOLOGY: " + MspDataRetrieve.GetOntology(driftSpot.LibraryID, mspDB));
+                sw.WriteLine("INCHIKEY: " + MspDataRetrieve.GetInChIKey(driftSpot.LibraryID, mspDB));
+                sw.WriteLine("SMILES: " + MspDataRetrieve.GetSMILES(driftSpot.LibraryID, mspDB));
+            }
+        }
 
         #endregion
 

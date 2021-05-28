@@ -50,6 +50,8 @@ namespace Rfx.Riken.OsakaUniv
                 peaklistMspExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType);
             else if (exportSpectraFileFormat == ExportSpectraFileFormat.mat)
                 peaklistMatExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
+            else if (exportSpectraFileFormat == ExportSpectraFileFormat.ms)
+                peaklistSriusMsExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
             else if (exportSpectraFileFormat == ExportSpectraFileFormat.txt)
                 peaklistTxtExport(mainWindow, exportFolderPath, files, mainWindow.ProjectProperty.MethodType, exportSpectraType, isotopeExportMax);
 
@@ -127,11 +129,6 @@ namespace Rfx.Riken.OsakaUniv
             var exportSpectraFileFormat = projectProp.ExportSpectraFileFormat;
             var isExportedAsMzTabM = projectProp.IsExportedAsMzTabM;
 
-            if (isNormalizedData == true && alignmentResult.Normalized == false)
-            {
-                MessageBox.Show("Data is not normalized yet. If you want to export the normalized data matrix, please at first perform data normalization methods from statistical analysis procedure.", "Error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-                isNormalizedData = false;
-            }
 
             mainWindow.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
@@ -166,6 +163,12 @@ namespace Rfx.Riken.OsakaUniv
             string heightMztabFile = exportFolderPath + "\\" + "Height_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
             string normalizedMztabFile = exportFolderPath + "\\" + "Normalized_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
             string areaMztabFile = exportFolderPath + "\\" + "Area_" + alignmentID + "_" + dt.Year + dt.Month + dt.Day + dt.Hour + dt.Minute + ".mzTab.txt";
+
+            if (isNormalizedData == true && alignmentResult.Normalized == false)
+            {
+                MessageBox.Show("Data is not normalized yet. If you want to export the normalized data matrix, please at first perform data normalization methods from statistical analysis procedure.", "Error", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                isNormalizedData = false;
+            }
 
             if (isRawData == true)
             {
@@ -2905,6 +2908,99 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        private static void peaklistSriusMsExport(MainWindow mainWindow, string folderpath,
+            ObservableCollection<AnalysisFileBean> files,
+            MethodType methodType, ExportspectraType exportSpectraType, float isotopeExportMax)
+        {
+
+            var rdamProp = mainWindow.RdamProperty;
+            var rdamFileToID = rdamProp.RdamFilePath_RdamFileID;
+            var rdamFileCollection = rdamProp.RdamFileContentBeanCollection;
+            var param = mainWindow.AnalysisParamForLC;
+            var project = mainWindow.ProjectProperty;
+            var dt = DateTime.Now;
+            var timeString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            for (int i = 0; i < files.Count; i++)
+            {
+                var fileProp = files[i].AnalysisFilePropertyBean;
+                var output_dir = System.IO.Path.Combine(folderpath, fileProp.AnalysisFileName);
+                if (!Directory.Exists(output_dir))
+                {
+                    Directory.CreateDirectory(output_dir);
+                }
+
+                var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
+                var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                { // open rdam stream
+                    using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
+                    { // open dcl stream
+
+                        //set seekpoint to retrieve MS2DecResult
+                        var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+
+                        //set List<PeakAreaBean> on AnalysisFileBean
+                        DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+
+                        //set raw spectra collection to spectrumCollection
+                        var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                        var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                        var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
+
+                        foreach (var peakspot in files[i].PeakAreaBeanCollection)
+                        {
+                            if (param.IsIonMobility)
+                            {
+                                foreach (var driftspot in peakspot.DriftSpots)
+                                {
+
+                                    var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(driftspot.DriftTimeAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.ms;
+                                    var filePath = System.IO.Path.Combine(output_dir, filename);
+
+                                    using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
+                                    {
+                                        if (exportSpectraType == ExportspectraType.profile)
+                                        {
+                                            ResultExportLcUtility.WriteProfileAsSiriusMs(sw, spectrumCollection, peakspot, driftspot, mainWindow.MspDB, isotopeExportMax);
+                                        }
+                                        else
+                                        {
+                                            ResultExportLcUtility.WriteMs2DecAsSiriusMs(sw, spectrumCollection, fs, seekpointList,
+                                               peakspot, driftspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                    + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.ms;
+                                var filePath = System.IO.Path.Combine(output_dir, filename);
+                                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
+                                {
+                                    if (exportSpectraType == ExportspectraType.profile)
+                                    {
+                                        ResultExportLcUtility.WriteProfileAsSiriusMs(sw, spectrumCollection, peakspot, mainWindow.MspDB, isotopeExportMax);
+                                    }
+                                    else
+                                    {
+                                        ResultExportLcUtility.WriteMs2DecAsSiriusMs(sw, spectrumCollection, fs, seekpointList,
+                                           peakspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                                    }
+                                }
+                            }
+                        }
+
+                        //refresh
+                        DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
+                    }
+                }
+            }
+        }
+
         private static void peaklistMatExport(MainWindow mainWindow, string folderpath,
             ObservableCollection<AnalysisFileBean> files,
             MethodType methodType, ExportspectraType exportSpectraType, float isotopeExportMax)
@@ -2914,41 +3010,51 @@ namespace Rfx.Riken.OsakaUniv
             var rdamFileCollection = rdamProp.RdamFileContentBeanCollection;
             var param = mainWindow.AnalysisParamForLC;
             var project = mainWindow.ProjectProperty;
-
+            var dt = DateTime.Now;
+            var timeString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
             for (int i = 0; i < files.Count; i++)
             {
-
                 var fileProp = files[i].AnalysisFilePropertyBean;
-                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mat;
-                var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
+                //var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mat;
 
-                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
+                var output_dir = System.IO.Path.Combine(folderpath, fileProp.AnalysisFileName);
+                if (!Directory.Exists(output_dir))
                 {
-                    var fileID = rdamFileToID[fileProp.AnalysisFilePath];
-                    var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                    Directory.CreateDirectory(output_dir);
+                }
 
-                    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
-                    { // open rdam stream
+                var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
+                var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                { // open rdam stream
+                    using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
+                    { // open dcl stream
 
-                        using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
-                        { // open dcl stream
+                        //set seekpoint to retrieve MS2DecResult
+                        var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
 
-                            //set seekpoint to retrieve MS2DecResult
-                            var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+                        //set List<PeakAreaBean> on AnalysisFileBean
+                        DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
 
-                            //set List<PeakAreaBean> on AnalysisFileBean
-                            DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+                        //set raw spectra collection to spectrumCollection
+                        var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                        var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                        var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
 
-                            //set raw spectra collection to spectrumCollection
-                            var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
-                            var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
-                            var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
-
-                            foreach (var peakspot in files[i].PeakAreaBeanCollection)
+                        foreach (var peakspot in files[i].PeakAreaBeanCollection)
+                        {
+                            if (param.IsIonMobility)
                             {
-                                if (param.IsIonMobility)
+                                foreach (var driftspot in peakspot.DriftSpots)
                                 {
-                                    foreach (var driftspot in peakspot.DriftSpots)
+
+                                    var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(driftspot.DriftTimeAtPeakTop, 2).ToString() + "_"
+                                        + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.mat;
+                                    var filePath = System.IO.Path.Combine(output_dir, filename);
+
+                                    using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
                                     {
                                         if (exportSpectraType == ExportspectraType.profile)
                                         {
@@ -2961,7 +3067,13 @@ namespace Rfx.Riken.OsakaUniv
                                         }
                                     }
                                 }
-                                else
+                            }
+                            else
+                            {
+                                var filename = "fID_" + fileID + "_pID_" + peakspot.PeakID + "_" + Math.Round(peakspot.RtAtPeakTop, 2).ToString() + "_"
+                                    + Math.Round(peakspot.AccurateMass, 4).ToString() + "_" + timeString + "." + SaveFileFormat.mat;
+                                var filePath = System.IO.Path.Combine(output_dir, filename);
+                                using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
                                 {
                                     if (exportSpectraType == ExportspectraType.profile)
                                     {
@@ -2974,12 +3086,76 @@ namespace Rfx.Riken.OsakaUniv
                                     }
                                 }
                             }
-
-                            //refresh
-                            DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
                         }
+
+                        //refresh
+                        DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
                     }
                 }
+
+
+
+
+
+
+                //using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))
+                //{
+                //    var fileID = rdamFileToID[fileProp.AnalysisFilePath];
+                //    var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
+
+                //    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                //    { // open rdam stream
+
+                //        using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
+                //        { // open dcl stream
+
+                //            //set seekpoint to retrieve MS2DecResult
+                //            var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+
+                //            //set List<PeakAreaBean> on AnalysisFileBean
+                //            DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
+
+                //            //set raw spectra collection to spectrumCollection
+                //            var mes = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
+                //            var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(mes);
+                //            var accumulatedSpectra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(mes);
+
+                //            foreach (var peakspot in files[i].PeakAreaBeanCollection)
+                //            {
+                //                if (param.IsIonMobility)
+                //                {
+                //                    foreach (var driftspot in peakspot.DriftSpots)
+                //                    {
+                //                        if (exportSpectraType == ExportspectraType.profile)
+                //                        {
+                //                            ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, driftspot, mainWindow.MspDB, isotopeExportMax);
+                //                        }
+                //                        else
+                //                        {
+                //                            ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
+                //                               peakspot, driftspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                //                        }
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    if (exportSpectraType == ExportspectraType.profile)
+                //                    {
+                //                        ResultExportLcUtility.WriteProfileAsMat(sw, spectrumCollection, peakspot, mainWindow.MspDB, isotopeExportMax);
+                //                    }
+                //                    else
+                //                    {
+                //                        ResultExportLcUtility.WriteMs2DecAsMat(sw, spectrumCollection, fs, seekpointList,
+                //                           peakspot, mainWindow.MspDB, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, isotopeExportMax);
+                //                    }
+                //                }
+                //            }
+
+                //            //refresh
+                //            DataRefreshLcUtility.PeakInformationCollectionMemoryRefresh(files[i]);
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -4701,7 +4877,7 @@ namespace Rfx.Riken.OsakaUniv
 
             var massSpec = ms2DecResult.MassSpectra.OrderByDescending(n => n[1]).ToList();
             var baseIntensity = 0.0;
-            
+
             if (isUseMs1LevelForQuant) baseIntensity = ms2DecResult.Ms1PeakHeight;
             else baseIntensity = massSpec[0][1];
 
@@ -5025,23 +5201,23 @@ namespace Rfx.Riken.OsakaUniv
         {
             var analysisParamForLC = mainWindow.AnalysisParamForLC;
             var fileCount = 1;
-            if (exportType == "Normalized" && analysisParamForLC.IsNormalizeSplash)  
+            if (exportType == "Normalized" && analysisParamForLC.IsNormalizeSplash)
             {
                 fileCount = 2;
             }
-            for (int splashQuant = 0; splashQuant < fileCount; splashQuant++) 
+            for (int splashQuant = 0; splashQuant < fileCount; splashQuant++)
             {
                 var ionAbundanceUnit = new List<string>(alignmentResultBean.AlignmentPropertyBeanCollection.Select(n => n.IonAbundanceUnit.ToString())).Distinct();
                 if (ionAbundanceUnit.Count() == 1)
                 {
-                        splashQuant = 1;
+                    splashQuant = 1;
                 }
-                if (exportType == "Normalized" && analysisParamForLC.IsNormalizeSplash && splashQuant == 1) 
+                if (exportType == "Normalized" && analysisParamForLC.IsNormalizeSplash && splashQuant == 1)
                 {
                     outputfile = outputfile.Replace(".mzTab", "-SPLASHquant.mzTab");
                 }
-                
-                
+
+
                 using (StreamWriter sw = new StreamWriter(outputfile, false, Encoding.ASCII))
                 {
                     //Meta data section 
@@ -5049,7 +5225,7 @@ namespace Rfx.Riken.OsakaUniv
                     var commentPrefix = "COM";
                     var mztabVersion = "2.0.0-M"; //Fixed
 
-                    var mzTabExporterVerNo = "1.05";
+                    var mzTabExporterVerNo = "1.07";
                     var mzTabExporterName = "MS-DIAL mzTab exporter";
                     var mztabExporter = "[,, " + mzTabExporterName + ", " + mzTabExporterVerNo + "]";
 
@@ -5065,15 +5241,6 @@ namespace Rfx.Riken.OsakaUniv
                     var software = "[MS, MS:1003082, MS-DIAL, " + softwareVerNumber + "]";  //Fixed
                     var quantificationMethod = "[MS, MS:1002019, Label-free raw feature quantitation, ]";  // 
 
-                    var msRunFormat = "[,, ABF(Analysis Base File) file, ]"; // need to consider
-                    var msRunIDFormat = "[,, ABF file Datapoint Number, ]"; // need to consider
-
-                    if (ionMobility == true)
-                    {
-                        msRunFormat = "[,, IBF file, ]"; // need to consider
-                        msRunIDFormat = "[,, IBF file Datapoint Number, ]"; // need to consider
-                    }
-
                     var cvList = new List<List<string>>(); // cv list
                     var cvItem1 = new List<string>() { "MS", "PSI-MS controlled vocabulary", "20-06-2018", "https://www.ebi.ac.uk/ols/ontologies/ms" };
                     cvList.Add(cvItem1);
@@ -5084,11 +5251,69 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1)
                     {
-                        if (ionAbundanceUnit.Contains("pmol")|| ionAbundanceUnit.Contains("fmol") || ionAbundanceUnit.Contains("pg")|| ionAbundanceUnit.Contains("ng"))
+                        if (ionAbundanceUnit.Contains("pmol") || ionAbundanceUnit.Contains("fmol") || ionAbundanceUnit.Contains("pg") || ionAbundanceUnit.Contains("ng"))
                         {
                             cvList.Add(cvItem2);
                         }
                     }
+
+                    //var msRunFormat = "[,, ABF(Analysis Base File) file, ]"; // need to consider
+                    //var msRunIDFormat = "[,, ABF file Datapoint Number, ]"; // need to consider
+
+                    //if (ionMobility == true)
+                    //{
+                    //    msRunFormat = "[,, IBF file, ]"; // need to consider
+                    //    msRunIDFormat = "[,, IBF file Datapoint Number, ]"; // need to consider
+                    //}
+                    var msRunFormat = "";
+                    var msRunIDFormat = "";
+                    var analysisFilePath = analysisFiles[0].AnalysisFilePropertyBean.AnalysisFilePath;
+                    var analysisFileExtention = Path.GetExtension(analysisFilePath).ToUpper();
+
+                    switch (analysisFileExtention)
+                    {
+                        case (".ABF"):
+                            msRunFormat = "[,, ABF(Analysis Base File) file, ]";
+                            msRunIDFormat = "[,, ABF file Datapoint Number, ]";
+                            break;
+                        case (".IBF"):
+                            msRunFormat = "[,, IBF file, ]";
+                            msRunIDFormat = "[,, IBF file Datapoint Number, ]";
+                            break;
+                        case (".WIFF"):
+                        case (".WIFF2"):
+                            msRunFormat = "[MS, MS:1000562, ABI WIFF format, ]";
+                            msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
+                            break;
+                        case (".D"):
+                            msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
+                            msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
+                            break;
+                        case (".RAW"):
+                            var isDirectory = File.GetAttributes(analysisFilePath).HasFlag(FileAttributes.Directory);
+                            if (isDirectory)
+                            {
+                                msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
+                                msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
+                            }
+                            else
+                            {
+                                msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
+                                msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
+                            }
+                            break;
+                        case (".CDF"):
+                            msRunFormat = "[EDAM, format:3650, netCDF, ]";
+                            msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
+                            var cvItem3 = new List<string>() { "EDAM", "Bioscientific data analysis ontology", "20-06-2020", "http://edamontology.org/" };
+                            cvList.Add(cvItem3);
+
+                            break;
+                        case (".MZML"):
+                            msRunFormat = "[MS, MS:1000584, mzML format, ]";
+                            msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
+                            break;
+                    };
 
                     var database = new List<List<string>>();
                     var defaultDatabase = new List<string>();
@@ -5101,7 +5326,8 @@ namespace Rfx.Riken.OsakaUniv
                     }
                     else if (libraryFileExtension == ".lbm" || libraryFileExtension == ".LBM" || libraryFileExtension == ".lbm2" || libraryFileExtension == ".LBM2")
                     {
-                        var lbmVer = libraryFileName.Substring(libraryFileName.IndexOf("-") + 1, libraryFileName.LastIndexOf("-") - libraryFileName.IndexOf("-") - 1);
+                        var lbmVer = libraryFileName;
+                        //var lbmVer = libraryFileName.Substring(libraryFileName.IndexOf("-") + 1, libraryFileName.LastIndexOf("-") - libraryFileName.IndexOf("-") - 1);
                         defaultDatabase = new List<string>() { "[,, MS-DIAL LipidsMsMs database, ]", "lbm", lbmVer, "file://" + projectProp.LibraryFilePath.Replace("\\", "/").Replace(" ", "%20") }; // 
                     }
                     else
@@ -5395,22 +5621,22 @@ namespace Rfx.Riken.OsakaUniv
                             //if (alignedSpots[i].MetaboliteName == "") continue;
                             //if (analysisParamForLC.IsNormalizeSplash && splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1){ continue; }
                             //else if (analysisParamForLC.IsNormalizeSplash && splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) { continue; }
-                            if(analysisParamForLC.IsNormalizeSplash)
+                            if (analysisParamForLC.IsNormalizeSplash)
                             {
-                                if(splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1)
-                                { 
-                                    continue; 
-                                }
-                                else if (splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1) 
+                                if (splashQuant == 0 && alignedSpots[i].InternalStandardAlignmentID != -1)
                                 {
-                                    continue; 
+                                    continue;
+                                }
+                                else if (splashQuant == 1 && alignedSpots[i].InternalStandardAlignmentID == -1)
+                                {
+                                    continue;
                                 }
                             }
 
 
                             if (ionMobility == true)
                             {
-                                var masterIdDic = new Dictionary<int,string>();
+                                var masterIdDic = new Dictionary<int, string>();
                                 for (int j = 0; j < alignedSpots.Count; j++)
                                 {
                                     var alignedDriftSpots = alignedSpots[j].AlignedDriftSpots;
@@ -5446,7 +5672,7 @@ namespace Rfx.Riken.OsakaUniv
                                         {
                                             int isId = alignedSpots[i].InternalStandardAlignmentID;
                                             isIdString = isId.ToString();
-                                            if(masterIdDic[isId] != "")
+                                            if (masterIdDic[isId] != "")
                                             {
                                                 isName = masterIdDic[isId];
                                             }
@@ -5787,7 +6013,7 @@ namespace Rfx.Riken.OsakaUniv
 
                             if (ionMobility == true)
                             {
-                                 var driftSpots = alignedSpots[i].AlignedDriftSpots;
+                                var driftSpots = alignedSpots[i].AlignedDriftSpots;
                                 for (int j = 0; j < driftSpots.Count; j++)
                                 {
                                     if (blankFilter && driftSpots[j].IsBlankFiltered) continue;

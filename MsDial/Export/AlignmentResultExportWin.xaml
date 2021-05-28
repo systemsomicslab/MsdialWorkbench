@@ -176,10 +176,10 @@
         </TextBox>-->
 
         <Label Content="Export format:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <ComboBox Name="ComboBox_ExportFormat" Grid.Row="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_ExportFormat_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="90" Margin="90, 0, 0, 0" />
+        <ComboBox Name="ComboBox_ExportFormat" Grid.Row="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_ExportFormat_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="130" Margin="90, 0, 0, 0" />
 
-        <Label Content="Spectra type:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="200,0,0,0" />
-        <ComboBox Name = "ComboBox_MassSpecType" Grid.Row ="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_MassSpecType_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="90"  Margin="290,0,0,0" />
+        <!--<Label Content="Spectra type:" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="200,0,0,0" />
+        <ComboBox Name = "ComboBox_MassSpecType" Grid.Row ="5" ItemsSource="{Binding}" SelectionChanged="ComboBox_MassSpecType_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="90"  Margin="290,0,0,0" />-->
 
         <Button Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="6" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
         <Button Name="Button_Export" Content="Export" Command="{Binding Path=OkCommand}" Grid.Row="6" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,85,5" />

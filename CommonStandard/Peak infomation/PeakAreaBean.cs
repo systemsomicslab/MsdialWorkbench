@@ -13,7 +13,9 @@ namespace Rfx.Riken.OsakaUniv
         nmol_per_microL_plasma, pmol_per_microL_plasma, fmol_per_microL_plasma,
         nmol_per_mg_tissue, pmol_per_mg_tissue, fmol_per_mg_tissue,
         nmol_per_10E6_cells, pmol_per_10E6_cells, fmol_per_10E6_cells, 
-        NormalizedByInternalStandardPeakHeight, NormalizedByQcPeakHeight, NormalizedByTIC, NormalizedByMTIC
+        NormalizedByInternalStandardPeakHeight, NormalizedByQcPeakHeight, NormalizedByTIC, NormalizedByMTIC,
+        nmol_per_individual, pmol_per_individual, fmol_per_individual,
+        nmol_per_microG_protein, pmol_per_microG_protein, fmol_per_microG_protein,
     }
 
     public enum PeakLinkFeatureEnum {

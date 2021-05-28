@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-
 namespace Msdial.Lcms.Dataprocess.Algorithm
 {
     public sealed class PeakSpotting
@@ -247,7 +246,16 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                         if (spec.MsLevel <= 1) continue;
                         if (spec.ScanStartTime > peakrightRt) break;
-                        if (spec.DriftTime == drifttopRt)
+
+                        //Console.WriteLine(spec.DriftTime + "\t" + drifttopRt);
+
+                        var IsMassInWindow = spec.Precursor.SelectedIonMz - spec.Precursor.IsolationWindowLowerOffset <= peak.AccurateMass && peak.AccurateMass < spec.Precursor.SelectedIonMz + spec.Precursor.IsolationWindowUpperOffset
+                            ? true : false;
+                        var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= drifttopRt && drifttopRt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
+                            ? true : false; // used for diapasef
+                        if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd && spec.DriftTime == drifttopRt) IsDtInWindow = true; // normal dia
+
+                        if (IsMassInWindow && IsDtInWindow)
                         {
                             //if(Math.Abs(spec.ScanStartTime - peaktopRt) > 0.1)
                             //{
@@ -391,7 +399,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                         );
                 }
 
-
+                if (peaklist == null || peaklist.Count <= 5) continue;
                 //if (Math.Abs(spot.RtAtPeakTop - 18.503) < 0.1 && Math.Abs(spot.AccurateMass - 279.1598) < 0.01) {
                 //    Console.WriteLine();
                 //}

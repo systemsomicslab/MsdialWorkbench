@@ -81,7 +81,14 @@ namespace CompMs.MsdialDimsCore {
                     .Argmax(spec => spec.Spectrum.Length);
                 var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                 var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+
+                //foreach (var peak in sChromPeaks) {
+                //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
+                //}
+
+
                 var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
+                if (peakPickResults.IsEmptyOrNull()) return;
                 var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
 
                 if (peakFeatures.Count == 0) return;

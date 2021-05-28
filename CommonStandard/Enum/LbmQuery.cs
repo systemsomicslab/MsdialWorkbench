@@ -6,8 +6,10 @@ using System.Text;
 using CompMs.Common.DataObj.Property;
 using MessagePack;
 
-namespace CompMs.Common.Enum {
-    public enum LbmClass {
+namespace CompMs.Common.Enum
+{
+    public enum LbmClass
+    {
         Undefined, Others, Unknown, SPLASH,
 
         FA, FAHFA, OxFA, CAR, NAE, NAGly, NAGlySer, NAOrn,
@@ -33,17 +35,17 @@ namespace CompMs.Common.Enum {
 
         Vitamin_E, Vitamin_D, CoQ,
 
-        CE, DCAE, GDCAE, GLCAE, TDCAE, TLCAE,  BileAcid,
+        CE, DCAE, GDCAE, GLCAE, TDCAE, TLCAE, BileAcid,
         VAE, BRSE, CASE, SISE, STSE, AHexBRS, AHexCAS, AHexCS, AHexSIS, AHexSTS,
         SPE, SHex, SPEHex, SPGHex, CSLPHex, BRSLPHex, CASLPHex, SISLPHex, STSLPHex,
-        CSPHex, BRSPHex, CASPHex, SISPHex, STSPHex, 
+        CSPHex, BRSPHex, CASPHex, SISPHex, STSPHex,
         SSulfate, BAHex, BASulfate,
         LCAE, KLCAE, KDCAE,
-        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE, 
+        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
         OxTG, TG_EST,
-        GPNAE, DGMG, MGMG
-
-
+        GPNAE, DGMG, MGMG,
+        GD1a, GD1b, GD2, GD3, GM1, GQ1b, GT1b, NGcGM3,
+        ST
     }
 
     /// <summary>

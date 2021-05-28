@@ -859,7 +859,7 @@
                                     <CheckBox Name="CheckBox_IsIdentificationOnlyPerformedForAlignmentFile" Grid.Row="2" 
                                           HorizontalAlignment="Left" 
                                           VerticalAlignment="Center" 
-                                          IsChecked="{Binding Path=IsIdentificationOnlyPerformedForAlignmentFile}" Margin="5,8.2,0,0">
+                                          IsChecked="{Binding Path=IsIdentificationOnlyPerformedForAlignmentFile}" Margin="5,6,0,0">
                                         <ToolTipService.ToolTip>
                                             <ToolTip Content="Identification is not performed for each file. Instead, the process will be applied for the spectra assigned to each alignment spot." />
                                         </ToolTipService.ToolTip>
@@ -930,6 +930,7 @@
                         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="3" Margin="20,0,0,0">
 
                             <Label Content="Peak count filter:" Height="30" VerticalContentAlignment="Center"/>
+                            <Label Content="N% detected in at least one group:" Height="30" VerticalContentAlignment="Center"/>
                             <!--<Label Content="Detected in all QCs" Grid.Row="2" Grid.ColumnSpan="3" Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
                             <!--<Label Content="Replace zero with 1/2 of minimum peak height: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />-->
                             <Label Content="Remove features based on blank information: " Height="30" HorizontalAlignment="Left" VerticalContentAlignment="Center" />
@@ -966,6 +967,27 @@
                                 </ToolTipService.ToolTip>
                             </TextBox>
 
+                            <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
+                                            Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                                            HorizontalAlignment="Stretch" 
+                                            HorizontalContentAlignment="Right" 
+                                            Height="25" 
+                                            Margin="5,2,5,2.5">
+                                <TextBox.Text>
+                                    <Binding Path="NPercentDetectedInOneGroup" 
+                                             ValidatesOnDataErrors="True" 
+                                             UpdateSourceTrigger="LostFocus" 
+                                             NotifyOnSourceUpdated="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Present in at least n% of samples in at least one sample group." />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
                             <!--<CheckBox Name="CheckBox_QcAtLeastFilter" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                           IsChecked="{Binding Path=QcAtLeastFilter}" Margin="5,8,0,0">
                                 <ToolTipService.ToolTip>
@@ -980,7 +1002,7 @@
 
                             <CheckBox Name="CheckBox_IsRemoveFeatureBasedOnPeakHeightFoldChange" 
                                               Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                              IsChecked="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}" Margin="5,9,0,0">
+                                              IsChecked="{Binding Path=IsRemoveFeatureBasedOnPeakHeightFoldChange}" Margin="5,7,0,0">
                             </CheckBox>
 
                             <TextBox Name="TextBox_FoldChangeForBlankFiltering" 
@@ -1097,6 +1119,7 @@
 
                         <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="3" Margin="0,0,0,0" Grid.ColumnSpan="2">
 
+                            <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
                             <Label Content="%" Height="30" VerticalContentAlignment="Center"/>
                             <Label Content="" Height="30" VerticalContentAlignment="Center"/>
                             <Label Content="fold change" Height="30" VerticalContentAlignment="Center"/>

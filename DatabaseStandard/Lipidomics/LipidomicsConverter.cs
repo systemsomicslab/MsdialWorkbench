@@ -2766,17 +2766,8 @@ namespace Riken.Metabolomics.Lipidomics {
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount;
 
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
-            //add MT
-            if (lipidname.Substring(0, 2)=="O-") 
-            {
-                totalChain = "O-" + totalChain;
-            }
-            else if (lipidname.Substring(0, 2)=="P-")
-            {
-                totalChain = "P-" + totalChain;
-            }
-
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 2);
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -2795,20 +2786,34 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn2Oxidizedount = sn2OxidizedCount;
         }
 
-        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass) {
+        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount) {
             var rdbString = rdb.ToString();
-            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.Cer_EBDS || lipidclass == LbmClass.HexCer_EOS || lipidclass == LbmClass.ASM
+
+            if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
+                || lipidclass == LbmClass.ASM
                 || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
                 || lipidclass == LbmClass.TG_EST) {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
             }
-           var oxString = oxidized == 0 
-                ? string.Empty 
-                : oxidized == 1 
-                    ? ";O" 
-                    : ";" + oxidized + "O";
-           return carbon + ":" + rdbString + oxString;
+
+            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS) {
+                if (acylChainCount != 2) {
+                    rdbString = (rdb + 1).ToString();
+                    oxidized = oxidized + 1;
+                }
+            }
+
+
+            if (chainPrefix == "P-") {
+                rdbString = (rdb - 1).ToString();
+            }
+            var oxString = oxidized == 0
+                 ? string.Empty
+                 : oxidized == 1
+                     ? ";O"
+                     : ";" + oxidized + "O";
+           return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
         public static void setDoubleAcylChainsLipidAnnotation(LipidMolecule molecule,
@@ -2950,12 +2955,13 @@ namespace Riken.Metabolomics.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount;
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
-            //add MT
-            if (lipidname.Substring(0, 2)=="O-")
-            {
-                totalChain = "O-" + totalChain;
-            }
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 3);
+            ////add MT
+            //if (lipidname.Substring(0, 2)=="O-")
+            //{
+            //    totalChain = "O-" + totalChain;
+            //}
 
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
@@ -3005,7 +3011,8 @@ namespace Riken.Metabolomics.Lipidomics {
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount + sn4CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond + sn4DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount + sn2OxidizedCount + sn3OxidizedCount + sn4OxidizedCount;
-            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass);
+            var chainPrefix = sn1AcylChainString.StartsWith("O-") ? "O-" : sn1AcylChainString.StartsWith("P-") ? "P-" : string.Empty;
+            var totalChain = getTotalChainString(totalCarbonCount, totalDoubleBond, totalOxidizedCount, lipidclass, chainPrefix, 4);
             var sublevelLipidName = lipidHeader + " " + totalChain;
 
             molecule.SublevelLipidName = sublevelLipidName;
@@ -3683,6 +3690,15 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GPNAE: return "GPNAE";
                 case LbmClass.MGMG: return "MGMG";
                 case LbmClass.DGMG: return "DGMG";
+                case LbmClass.GD1a: return "GD1a";
+                case LbmClass.GD1b: return "GD1b";
+                case LbmClass.GD2: return "GD2";
+                case LbmClass.GD3: return "GD3";
+                case LbmClass.GM1: return "GM1";
+                case LbmClass.ST: return "ST";
+                case LbmClass.GT1b: return "GT1b";
+                case LbmClass.GQ1b: return "GQ1b";
+                case LbmClass.NGcGM3: return "NGcGM3";
 
                 default: return "Undefined";
             }
@@ -3834,6 +3850,17 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GPNAE: return "GPNAE";
                 case LbmClass.MGMG: return "MGMG";
                 case LbmClass.DGMG: return "DGMG";
+
+                case LbmClass.GD1a: return "GD1a";
+                case LbmClass.GD1b: return "GD1b";
+                case LbmClass.GD2: return "GD2";
+                case LbmClass.GD3: return "GD3";
+                case LbmClass.GM1: return "GM1";
+                case LbmClass.ST: return "ST";
+                case LbmClass.GT1b: return "GT1b";
+                case LbmClass.GQ1b: return "GQ1b";
+                case LbmClass.NGcGM3: return "NGcGM3";
+
 
                 default: return "Undefined";
             }
@@ -4038,6 +4065,17 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "GPNAE": return LbmClass.GPNAE;
                 case "MGMG": return LbmClass.MGMG;
                 case "DGMG": return LbmClass.DGMG;
+
+                case "GD1a": return LbmClass.GD1a;
+                case "GD1b": return LbmClass.GD1b;
+                case "GD2": return LbmClass.GD2;
+                case "GD3": return LbmClass.GD3;
+                case "GM1": return LbmClass.GM1;
+                case "GT1b": return LbmClass.GT1b;
+                case "GQ1b": return LbmClass.GQ1b;
+                case "NGcGM3": return LbmClass.NGcGM3;
+
+                case "ST": return LbmClass.ST;
 
                 default: return LbmClass.Undefined;
             }
@@ -4266,6 +4304,17 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "MGMG": return LbmClass.MGMG;
                 case "DGMG": return LbmClass.DGMG;
 
+                case "GD1a": return LbmClass.GD1a;
+                case "GD1b": return LbmClass.GD1b;
+                case "GD2": return LbmClass.GD2;
+                case "GD3": return LbmClass.GD3;
+                case "GM1": return LbmClass.GM1;
+                case "GT1b": return LbmClass.GT1b;
+                case "GQ1b": return LbmClass.GQ1b;
+                case "NGcGM3": return LbmClass.NGcGM3;
+
+                case "ST": return LbmClass.ST;
+
                 default: return LbmClass.Undefined;
             }
         }
@@ -4353,6 +4402,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "SSulfate": return "Sterol sulfate";
                 case "BAHex": return "Sterol hexoside";
                 case "BASulfate": return "Sterol sulfate";
+
+                case "ST": return "Sterol";
 
                 case "BRSE": return "Steryl ester";
                 case "CASE": return "Steryl ester";
@@ -4449,6 +4500,14 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "MGMG": return "Glycerolipid";
                 case "DGMG": return "Glycerolipid";
 
+                case "GD1a": return "Ganglioside";
+                case "GD1b": return "Ganglioside";
+                case "GD2": return "Ganglioside";
+                case "GD3": return "Ganglioside";
+                case "GM1": return "Ganglioside";
+                case "GT1b": return "Ganglioside";
+                case "GQ1b": return "Ganglioside";
+                case "NGcGM3": return "Ganglioside";
 
                 default: return "Unassigned lipid";
             }
@@ -4596,6 +4655,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "AHexSIS": return "SterolLipids";
                 case "AHexSTS": return "SterolLipids";
 
+                case "ST": return "SterolLipids";
+
                 case "DCAE": return "SterolLipids";
                 case "GDCAE": return "SterolLipids";
                 case "GLCAE": return "SterolLipids";
@@ -4690,6 +4751,14 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "MGMG": return "Glycerolipids";
                 case "DGMG": return "Glycerolipids";
 
+                case "GD1a": return "Sphingolipids";
+                case "GD1b": return "Sphingolipids";
+                case "GD2": return "Sphingolipids";
+                case "GD3": return "Sphingolipids";
+                case "GM1": return "Sphingolipids";
+                case "GT1b": return "Sphingolipids";
+                case "GQ1b": return "Sphingolipids";
+                case "NGcGM3": return "Sphingolipids";
 
                 default: return "Unassigned lipid";
             }
