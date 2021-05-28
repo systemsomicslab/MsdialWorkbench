@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.View.Export;
+﻿using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.Common.Extension;
@@ -28,7 +29,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    public class ImmsMethodVM : MethodVM
+    class ImmsMethodVM : MethodVM
     {
         static ImmsMethodVM() {
             serializer = new MsdialImmsCore.Parser.MsdialImmsSerializer();
@@ -305,9 +306,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (cacheAnalysisFile == analysis) return;
 
             cacheAnalysisFile = analysis;
+            var provider = new ImmsAverageDataProvider(analysis);
             AnalysisVM = new AnalysisImmsVM(
+                new ImmsAnalysisModel(
+                    analysis,
+                    provider,
+                    Storage.ParameterBase,
+                    mspChromatogramAnnotator,
+                    textDBChromatogramAnnotator),
                 analysis,
-                new ImmsAverageDataProvider(analysis),
+                provider,
                 Storage.ParameterBase,
                 mspChromatogramAnnotator,
                 textDBChromatogramAnnotator)

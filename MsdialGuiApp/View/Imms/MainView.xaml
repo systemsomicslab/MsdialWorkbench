@@ -7,6 +7,7 @@
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
@@ -211,8 +212,8 @@
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}">
-                            <commonview:PeakView DataContext="{Binding PlotViewModel}">
-                                <commonview:PeakView.LabelTemplate>
+                            <chart:PeakView DataContext="{Binding PlotViewModel}">
+                                <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
@@ -227,8 +228,8 @@
                                             <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
-                                </commonview:PeakView.LabelTemplate>
-                            </commonview:PeakView>
+                                </chart:PeakView.LabelTemplate>
+                            </chart:PeakView>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
@@ -266,9 +267,7 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
-                            <commonview:EicView DataContext="{Binding AnalysisVM}"
-                                                ChromAxis="{StaticResource ChromAxis}"
-                                                ChromTitle="Drift time [1/k0]"/>
+                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 

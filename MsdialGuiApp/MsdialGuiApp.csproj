@@ -143,6 +143,11 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
+    <Compile Include="Model\Chart\EicModel.cs" />
+    <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
+    <Compile Include="ViewModel\Chart\EicViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\IBarItemsLoader.cs" />
     <Compile Include="Model\AlignmentEicModel.cs" />
@@ -155,6 +160,7 @@
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\EicModel.cs" />
+    <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
     <Compile Include="Model\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
@@ -171,7 +177,6 @@
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
-    <Compile Include="ViewModel\Export\LecacyQuantValueAccessor.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
@@ -201,6 +206,12 @@
     </Compile>
     <Compile Include="View\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\EicView.xaml.cs">
+      <DependentUpon>EicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -484,6 +495,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ChartStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\EicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\PeakView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -864,9 +883,7 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Imms\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
