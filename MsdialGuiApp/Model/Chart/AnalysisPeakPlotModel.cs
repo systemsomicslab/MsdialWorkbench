@@ -14,10 +14,14 @@ namespace CompMs.App.Msdial.Model.Chart
             IEnumerable<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
             Func<ChromatogramPeakFeatureModel, double> verticalSelector) {
+            if (spots is null) {
+                throw new ArgumentNullException(nameof(spots));
+            }
+
             Spots = new ObservableCollection<ChromatogramPeakFeatureModel>(spots);
             Target = null;
-            HorizontalSelector = horizontalSelector;
-            VerticalSelector = verticalSelector;
+            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
+            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;

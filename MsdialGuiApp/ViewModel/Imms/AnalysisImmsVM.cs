@@ -1,10 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -15,11 +15,9 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using NSSplash;
 using NSSplash.impl;
-using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -29,8 +27,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class AnalysisImmsVM : AnalysisFileVM
-    {
+    class AnalysisImmsVM : AnalysisFileVM {
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
@@ -40,11 +37,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             this.model = model;
 
-            EicViewModel = new Chart.EicViewModel(model.EicModel);
+            var hAxis = model.PlotModel
+                .ObserveProperty(m => m.HorizontalRange)
+                .ToReactiveAxisManager<double>()
+                .AddTo(Disposables);
+
+            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, horizontalAxis: hAxis);
+            Disposables.Add(PlotViewModel);
+
+            EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis);
             Disposables.Add(EicViewModel);
 
-            PlotViewModel = new Chart.AnalysisPeakPlotViewModel(model.PlotModel);
-            Disposables.Add(PlotViewModel);
+            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel);
+            Disposables.Add(RawDecSpectrumsViewModel);
 
             this.analysisFile = analysisFile;
             this.provider = provider;
@@ -53,7 +58,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.textDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
-            peakAreaFile = analysisFile.PeakAreaBeanInformationFilePath;
             deconvolutionFile = analysisFile.DeconvolutionFilePath;
 
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);
@@ -69,11 +73,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly AnalysisFileBean analysisFile;
         private readonly ParameterBase parameter;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
-        private readonly string peakAreaFile;
         private readonly string deconvolutionFile;
         private readonly List<long> seekPointers;
         private readonly IDataProvider provider;
-        
+
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
             set {
@@ -86,7 +89,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ICollectionView ms1Peaks;
 
-        public Chart.AnalysisPeakPlotViewModel PlotViewModel {
+        public AnalysisPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
             set => SetProperty(ref plotViewModel, value);
         }
@@ -97,6 +100,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref eicViewModel, value);
         }
         private Chart.EicViewModel eicViewModel;
+
+        public Chart.RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
+            get => ms2ViewModel;
+            set => SetProperty(ref ms2ViewModel, value);
+        }
+        private Chart.RawDecSpectrumsViewModel ms2ViewModel;
 
         public List<SpectrumPeakWrapper> Ms1Spectrum
         {

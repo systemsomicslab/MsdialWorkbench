@@ -13,11 +13,22 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public AnalysisPeakPlotViewModel(
             AnalysisPeakPlotModel model,
-            IAxisManager<double> horizontalAxis,
-            IAxisManager<double> verticalAxis) {
+            IAxisManager<double> horizontalAxis = null,
+            IAxisManager<double> verticalAxis = null) {
             Spots = model.Spots;
 
+            if (horizontalAxis == null) {
+                var hRange = model.ObserveProperty(m => m.HorizontalRange)
+                    .ToReadOnlyReactivePropertySlim();
+                horizontalAxis = new ReactiveAxisManager<double>(hRange);
+            }
             HorizontalAxis = horizontalAxis;
+
+            if (verticalAxis == null) {
+                var vRange = model.ObserveProperty(m => m.VerticalRange)
+                    .ToReadOnlyReactivePropertySlim();
+                verticalAxis = new ReactiveAxisManager<double>(vRange);
+            }
             VerticalAxis = verticalAxis;
 
             Target = model.ToReactivePropertyAsSynchronized(m => m.Target)
@@ -42,46 +53,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-        }
-
-        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model) {
-            Spots = model.Spots;
-
-            Target = model.ToReactivePropertyAsSynchronized(m => m.Target)
-                .AddTo(Disposables);
-
-            GraphTitle = model.ObserveProperty(m => m.GraphTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalProperty = model.ObserveProperty(m => m.HorizontalProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            LabelProperty = model.ObserveProperty(m => m.LabelProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            var hRange = model.ObserveProperty(m => m.HorizontalRange)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            HorizontalAxis = new ReactiveAxisManager<double>(hRange);
-            var vRange = model.ObserveProperty(m => m.VerticalRange)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            VerticalAxis = new ReactiveAxisManager<double>(vRange);
         }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Spots { get; }

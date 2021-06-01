@@ -359,16 +359,13 @@
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}"
                                  Height="25">
-                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
-                                <commonview:ExpRefView.ContextMenu>
+                            <chart:ExpRefView>
+                                <chart:ExpRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:ExpRefView.ContextMenu>
-                            </commonview:ExpRefView>
+                                </chart:ExpRefView.ContextMenu>
+                            </chart:ExpRefView>
                         </TabItem>
 
                         <TabItem Header="MS2 Chrom." 

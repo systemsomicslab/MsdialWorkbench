@@ -311,6 +311,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 new ImmsAnalysisModel(
                     analysis,
                     provider,
+                    storage.DataBaseMapper,
                     Storage.ParameterBase,
                     mspChromatogramAnnotator,
                     textDBChromatogramAnnotator),

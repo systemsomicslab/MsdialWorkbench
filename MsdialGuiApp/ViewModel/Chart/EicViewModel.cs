@@ -11,7 +11,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     class EicViewModel : ViewModelBase
     {
-        public EicViewModel(EicModel model, IAxisManager<double> horizontalAxis, IAxisManager<double> verticalAxis) {
+        public EicViewModel(
+            EicModel model,
+            IAxisManager<double> horizontalAxis = null,
+            IAxisManager<double> verticalAxis = null) {
+
             Eic = model.ObserveProperty(m => m.Eic)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -22,44 +26,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            if (horizontalAxis == null) {
+                var chromRange = model.ObserveProperty(m => m.ChromRange);
+                horizontalAxis = new ReactiveAxisManager<double>(chromRange).AddTo(Disposables);
+            }
             HorizontalAxis = horizontalAxis;
+
+            if (verticalAxis == null) {
+                var abundanceRange = model.ObserveProperty(m => m.AbundanceRange);
+                verticalAxis = new ReactiveAxisManager<double>(abundanceRange).AddTo(Disposables);
+            }
             VerticalAxis = verticalAxis;
-
-            GraphTitle = model.ObserveProperty(m => m.GraphTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            HorizontalProperty = model.ObserveProperty(m => m.HorizontalProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-        }
-
-        public EicViewModel(EicModel model) {
-            Eic = model.ObserveProperty(m => m.Eic)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            EicPeak = model.ObserveProperty(m => m.EicPeak)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            EicFocused = model.ObserveProperty(m => m.EicFocused)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            var chromRange = model.ObserveProperty(m => m.ChromRange);
-            HorizontalAxis = new ReactiveAxisManager<double>(chromRange)
-                .AddTo(Disposables);
-            var abundanceRange = model.ObserveProperty(m => m.AbundanceRange);
-            VerticalAxis = new ReactiveAxisManager<double>(abundanceRange)
-                .AddTo(Disposables);
 
             GraphTitle = model.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()

@@ -11,6 +11,18 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
+
+        }
+
+        public ContinuousAxisManager(Range range, ChartMargin margin) : base(range, margin) {
+
+        }
+
+        public ContinuousAxisManager(Range range, ChartMargin margin, Range bounds) : base(range, margin, bounds) {
+
+        }
+
         public ContinuousAxisManager(T low, T high)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high))) {
 
@@ -30,9 +42,6 @@ namespace CompMs.Graphics.AxisManager.Generic
         public ContinuousAxisManager(T low, T high, Range bounds)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), bounds) {
 
-        }
-
-        public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
         }
 
         public ContinuousAxisManager(ICollection<T> source) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max()) {
