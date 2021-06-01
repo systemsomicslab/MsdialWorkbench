@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsMethodModel : ViewModelBase
+    class DimsMethodModel : BindableBase, IDisposable
     {
         static DimsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -89,13 +89,23 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsAnalysisModel AnalysisModel {
             get => analysisModel;
-            private set => SetProperty(ref analysisModel, value);
+            private set {
+                var old = analysisModel;
+                if (SetProperty(ref analysisModel, value)) {
+                    old?.Dispose();
+                }
+            }
         }
         private DimsAnalysisModel analysisModel;
 
         public DimsAlignmentModel AlignmentModel {
             get => alignmentModel;
-            private set => SetProperty(ref alignmentModel, value);
+            private set {
+                var old = alignmentModel;
+                if (SetProperty(ref alignmentModel, value)) {
+                    old?.Dispose();
+                }
+            }
         }
         private DimsAlignmentModel alignmentModel;
 
@@ -103,6 +113,7 @@ namespace CompMs.App.Msdial.Model.Dims
             get => serializer ?? (serializer = new MsdialDimsSerializer());
         }
         private MsdialDimsSerializer serializer;
+        private bool disposedValue;
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
@@ -198,6 +209,23 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.ParameterBase,
                 mspAlignmentAnnotator,
                 textDBAlignmentAnnotator);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    AnalysisModel?.Dispose();
+                    AlignmentModel?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

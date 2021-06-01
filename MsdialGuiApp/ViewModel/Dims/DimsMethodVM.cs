@@ -34,6 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             : base(serializer) {
 
             Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
+            Disposables.Add(Model);
 
             AnalysisFiles = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
             AnalysisFiles.MoveCurrentToFirst();

@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.DataObj
 
 
         public void Add(string SourceKey, IReferRestorationKey restorationKey) {
-            InnerKeyToRestorationKey.Add(SourceKey, restorationKey);
+            InnerKeyToRestorationKey[SourceKey] = restorationKey;
         }
 
         public void Remove(string sourceKey) {

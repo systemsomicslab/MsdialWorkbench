@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Parser {
 		}
 
 		public static void GetSeekPointers(string file, out int DCL_VERSION, out List<long> seekPoints, out bool isAnnotationInfoIncluded) {
-			using (var fs = File.Open(file, FileMode.Open, FileAccess.Read)) {
+			using (var fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
 				var buffer = new byte[7];
 				fs.Seek(0, SeekOrigin.Begin);
 				fs.Read(buffer, 0, 7);

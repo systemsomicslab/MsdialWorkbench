@@ -74,9 +74,16 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> runProcessAllCommand;
 
         private void RunProcessAll(Window window, MsdialDataStorage storage) {
+            MethodVM?.Dispose();
+
             var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-            if (method.InitializeNewProject(window) != 0)
+            if (method.InitializeNewProject(window) != 0) {
+
+                method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+                method.LoadProject();
+                MethodVM = method;
                 return;
+            }
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", storage.ParameterBase.ParametersAsText()));

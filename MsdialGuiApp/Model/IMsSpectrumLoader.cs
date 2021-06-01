@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,7 +64,7 @@ namespace CompMs.App.Msdial.Model
         }
     }
 
-    class MsDecSpectrumLoader : IMsSpectrumLoader<object>
+    class MsDecSpectrumLoader : IMsSpectrumLoader<object>, IDisposable
     {
         public MsDecSpectrumLoader(
             string deconvolutionFile,
@@ -79,6 +80,7 @@ namespace CompMs.App.Msdial.Model
         private readonly int version;
         private readonly List<long> seekPointers;
         private readonly bool isAnnotationInfoIncluded;
+        private bool disposedValue;
 
         public List<SpectrumPeak> LoadSpectrum(object target) {
             if (target == null) {
@@ -100,6 +102,21 @@ namespace CompMs.App.Msdial.Model
             var idx = ms1Peaks.IndexOf(target);
             var msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
             return msdecResult.Spectrum;
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    deconvolutionStream.Close();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 
