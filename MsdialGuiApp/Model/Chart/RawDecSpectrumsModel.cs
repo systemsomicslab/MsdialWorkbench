@@ -97,6 +97,28 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private string verticalProperty;
 
+        public string LabelProperty {
+            get => labelProperty;
+            set {
+                if (SetProperty(ref labelProperty, value)) {
+                    RawRefSpectrumModels.LabelProperty = value;
+                    DecRefSpectrumModels.LabelProperty = value;
+                }
+            }
+        }
+        private string labelProperty;
+
+        public string OrderingProperty {
+            get => orderingProperty;
+            set {
+                if (SetProperty(ref orderingProperty, value)) {
+                    RawRefSpectrumModels.OrderingProperty = value;
+                    DecRefSpectrumModels.OrderingProperty = value;
+                }
+            }
+        }
+        private string orderingProperty;
+
         public async Task LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var spectrums = await Task.WhenAll(
                 RawLoader.LoadSpectrumAsync(target, token),

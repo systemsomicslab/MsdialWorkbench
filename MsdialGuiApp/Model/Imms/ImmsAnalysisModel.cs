@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -62,6 +61,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "Aubndance",
                 HorizontaProperty = nameof(SpectrumPeak.Mass),
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
 
             EicModel = new Chart.EicModel(

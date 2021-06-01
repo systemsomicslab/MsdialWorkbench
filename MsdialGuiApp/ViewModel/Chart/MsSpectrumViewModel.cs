@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             if (lowerVerticalAxis is null) {
                 var lvRange = this.model.ObserveProperty(m => m.LowerVerticalRange)
                     .ToReadOnlyReactivePropertySlim();
-                lowerVerticalAxis = lvRange.ToReactiveAxisManager<double>(new Range(0d, 0d));
+                lowerVerticalAxis = lvRange.ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d));
             }
             LowerVerticalAxis = lowerVerticalAxis;
 
