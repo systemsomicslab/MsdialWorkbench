@@ -238,8 +238,8 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}">
 
-                            <commonview:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
-                                <commonview:AlignmentPeakPlotView.LabelTemplate>
+                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                <chart:AlignmentPeakPlotView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
@@ -248,13 +248,13 @@
                                                     <Setter Property="Foreground" Value="Gray"/>
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
+                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
-                                </commonview:AlignmentPeakPlotView.LabelTemplate>
-                            </commonview:AlignmentPeakPlotView>
+                                </chart:AlignmentPeakPlotView.LabelTemplate>
+                            </chart:AlignmentPeakPlotView>
                         </TabItem>
 
                     </TabControl>
@@ -392,15 +392,13 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}" 
                                  Height="25">
-                            <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
-                                <commonview:RepRefView.ContextMenu>
+                            <chart:RepRefView>
+                                <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:RepRefView.ContextMenu>
-                            </commonview:RepRefView>
+                                </chart:RepRefView.ContextMenu>
+                            </chart:RepRefView>
                         </TabItem>
 
                     </TabControl>

@@ -308,7 +308,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             cacheAnalysisFile = analysis;
             var provider = new ImmsAverageDataProvider(analysis);
             AnalysisVM = new AnalysisImmsVM(
-                new ImmsAnalysisModel(
+                new ImmsAnalysisModel( // should dispose.
                     analysis,
                     provider,
                     storage.DataBaseMapper,
@@ -331,7 +331,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (cacheAlignmentFile == alignment) return;
 
             cacheAlignmentFile = alignment;
-            AlignmentVM = new AlignmentImmsVM(alignment, Storage.ParameterBase, mspAlignmentAnnotator, textDBAlignmentAnnotator) { DisplayFilters = displayFilters };
+            AlignmentVM = new AlignmentImmsVM(
+                new ImmsAlignmentModel( // should dispose
+                    alignment,
+                    Storage.ParameterBase,
+                    Storage.DataBaseMapper,
+                    mspAlignmentAnnotator,
+                    textDBAlignmentAnnotator),
+                alignment,
+                Storage.ParameterBase,
+                mspAlignmentAnnotator,
+                textDBAlignmentAnnotator)
+            {
+                DisplayFilters = displayFilters
+            };
         }
 
         private AlignmentFileBean cacheAlignmentFile;

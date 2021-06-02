@@ -20,8 +20,8 @@ namespace CompMs.App.Msdial.Model.Chart
             DecLoader = decLoader;
             RefLoader = refLoader;
 
-            RawRefSpectrumModels = new MsSpectrumModel<ChromatogramPeakFeatureModel>(horizontalSelector, verticalSelector);
-            DecRefSpectrumModels = new MsSpectrumModel<ChromatogramPeakFeatureModel>(horizontalSelector, verticalSelector);
+            RawRefSpectrumModels = new MsSpectrumModel(horizontalSelector, verticalSelector);
+            DecRefSpectrumModels = new MsSpectrumModel(horizontalSelector, verticalSelector);
         }
 
         public IMsSpectrumLoader<ChromatogramPeakFeatureModel> RawLoader { get; }
@@ -30,17 +30,17 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IMsSpectrumLoader<ChromatogramPeakFeatureModel> RefLoader { get; }
 
-        public MsSpectrumModel<ChromatogramPeakFeatureModel> RawRefSpectrumModels {
+        public MsSpectrumModel RawRefSpectrumModels {
             get => rawRefSpectrumModels;
             set => SetProperty(ref rawRefSpectrumModels, value);
         }
-        private MsSpectrumModel<ChromatogramPeakFeatureModel> rawRefSpectrumModels;
+        private MsSpectrumModel rawRefSpectrumModels;
 
-        public MsSpectrumModel<ChromatogramPeakFeatureModel> DecRefSpectrumModels {
+        public MsSpectrumModel DecRefSpectrumModels {
             get => decRefSpectrumModels;
             set => SetProperty(ref decRefSpectrumModels, value);
         }
-        private MsSpectrumModel<ChromatogramPeakFeatureModel> decRefSpectrumModels;
+        private MsSpectrumModel decRefSpectrumModels;
 
         public string GraphTitle {
             get => graphTitle;

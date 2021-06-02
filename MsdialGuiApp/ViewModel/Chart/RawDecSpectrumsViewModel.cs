@@ -15,13 +15,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IAxisManager<double> lowerVerticalAxis = null) {
 
             this.model = model;
-            RawRefSpectrumViewModels = new MsSpectrumViewModel<ChromatogramPeakFeatureModel>(
+            RawRefSpectrumViewModels = new MsSpectrumViewModel(
                 model.RawRefSpectrumModels,
                 horizontalAxis,
                 upperVerticalAxis,
                 lowerVerticalAxis);
 
-            DecRefSpectrumViewModels = new MsSpectrumViewModel<ChromatogramPeakFeatureModel>(
+            DecRefSpectrumViewModels = new MsSpectrumViewModel(
                 model.DecRefSpectrumModels,
                 horizontalAxis,
                 upperVerticalAxis,
@@ -30,9 +30,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         private readonly RawDecSpectrumsModel model;
 
-        public MsSpectrumViewModel<ChromatogramPeakFeatureModel> RawRefSpectrumViewModels { get; }
+        public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
 
-        public MsSpectrumViewModel<ChromatogramPeakFeatureModel> DecRefSpectrumViewModels { get; }
+        public MsSpectrumViewModel DecRefSpectrumViewModels { get; }
 
     }
 }

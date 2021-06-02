@@ -9,10 +9,10 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class MsSpectrumViewModel<T> : ViewModelBase
+    class MsSpectrumViewModel : ViewModelBase
     {
         public MsSpectrumViewModel(
-            MsSpectrumModel<T> model,
+            MsSpectrumModel model,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> upperVerticalAxis = null,
             IAxisManager<double> lowerVerticalAxis = null) {
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        private readonly MsSpectrumModel<T> model;
+        private readonly MsSpectrumModel model;
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
 

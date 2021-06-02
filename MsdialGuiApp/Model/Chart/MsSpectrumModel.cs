@@ -4,17 +4,30 @@ using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class MsSpectrumModel<T> : BindableBase
-    {
+    class MsSpectrumModel : BindableBase {
         public MsSpectrumModel(
             Func<SpectrumPeak, double> horizontalSelector,
             Func<SpectrumPeak, double> verticalSelector) {
 
             UpperSpectrum = new List<SpectrumPeak>(0);
             LowerSpectrum = new List<SpectrumPeak>(0);
+
+            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
+            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
+        }
+
+        public MsSpectrumModel(
+            IObservable<List<SpectrumPeak>> upperSpectrum,
+            IObservable<List<SpectrumPeak>> lowerSpectrum,
+            Func<SpectrumPeak, double> horizontalSelector,
+            Func<SpectrumPeak, double> verticalSelector) {
+
+            upperSpectrum.Subscribe(spectrum => UpperSpectrum = spectrum);
+            lowerSpectrum.Subscribe(spectrum => LowerSpectrum = spectrum);
 
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
@@ -58,7 +71,7 @@ namespace CompMs.App.Msdial.Model.Chart
             get => verticalTitle;
             set => SetProperty(ref verticalTitle, value);
         }
-        private string verticalTitle; 
+        private string verticalTitle;
 
         public string HorizontalProperty {
             get => horizontalProperty;
@@ -118,6 +131,29 @@ namespace CompMs.App.Msdial.Model.Chart
                 }
                 return new Range(0, 1);
             }
+        }
+
+        public static MsSpectrumModel Create<T, U, V>(
+            IObservable<T> source,
+            IMsSpectrumLoader<U> upperLoader,
+            IMsSpectrumLoader<V> lowerLoader,
+            Func<SpectrumPeak, double> horizontalSelector,
+            Func<SpectrumPeak, double> verticalSelector)
+            where T: U, V {
+
+            return new MsSpectrumModel(
+                source.SelectMany(src =>
+                    Observable.DeferAsync(async token => {
+                        var result = await upperLoader.LoadSpectrumAsync(src, token);
+                        return Observable.Return(result);
+                    })),
+                source.SelectMany(src =>
+                    Observable.DeferAsync(async token => {
+                        var result = await lowerLoader.LoadSpectrumAsync(src, token);
+                        return Observable.Return(result);
+                    })),
+                horizontalSelector, verticalSelector
+            );
         }
     }
 }

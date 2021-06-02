@@ -9,25 +9,24 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class AnalysisPeakPlotViewModel : ViewModelBase
+    class AlignmentPeakPlotViewModel : ViewModelBase
     {
-        public AnalysisPeakPlotViewModel(
-            AnalysisPeakPlotModel model,
+        public AlignmentPeakPlotViewModel(
+            AlignmentPeakPlotModel model,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> verticalAxis = null) {
+
             Spots = model.Spots;
 
             if (horizontalAxis == null) {
-                var hRange = model.ObserveProperty(m => m.HorizontalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                horizontalAxis = new ReactiveAxisManager<double>(hRange);
+                horizontalAxis = model.ObserveProperty(m => m.HorizontalRange)
+                    .ToReactiveAxisManager<double>(new ChartMargin(0.05));
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis == null) {
-                var vRange = model.ObserveProperty(m => m.VerticalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                verticalAxis = new ReactiveAxisManager<double>(vRange);
+                verticalAxis = model.ObserveProperty(m => m.VerticalRange)
+                    .ToReactiveAxisManager<double>(new ChartMargin(0.05));
             }
             VerticalAxis = verticalAxis;
 
@@ -38,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle)
+            HorizontalTitle = model.ObserveProperty(m => m.HorizontalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -53,19 +52,15 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-
-            LabelProperty = model.ObserveProperty(m => m.LabelProperty)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
         }
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Spots { get; }
+        public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
-        public IAxisManager<double> VerticalAxis { get; } 
+        public IAxisManager<double> VerticalAxis { get; }
 
-        public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 
@@ -76,7 +71,5 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
-
-        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
     }
 }

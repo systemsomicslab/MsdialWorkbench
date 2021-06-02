@@ -1,6 +1,8 @@
 ﻿using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using System;
+using System.Reactive.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -9,14 +11,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveAxisManager(
             IObservable<Range> rangeSource,
             Range bounds = null) : base(new Range(0, 1), bounds) {
-            rangeUnSubscriber = rangeSource.Subscribe(UpdateRange);
+            rangeUnSubscriber = rangeSource.ObserveOnDispatcher().Subscribe(UpdateRange);
         }
 
         public ReactiveAxisManager(
             IObservable<Range> rangeSource,
             ChartMargin margin,
             Range bounds = null) : base(new Range(0, 1), margin, bounds) {
-            rangeUnSubscriber = rangeSource.Subscribe(UpdateRange);
+            rangeUnSubscriber = rangeSource.ObserveOnDispatcher().Subscribe(UpdateRange);
         }
 
         private void UpdateRange(Range initial) {

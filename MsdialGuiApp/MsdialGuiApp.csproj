@@ -143,10 +143,13 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Chart\EicModel.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
+    <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
@@ -210,6 +213,9 @@
     </Compile>
     <Compile Include="View\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\AlignmentPeakPlotView.xaml.cs">
+      <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
@@ -510,6 +516,10 @@
     <Page Include="View\ChartStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\AlignmentPeakPlotView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Chart\EicView.xaml">
       <SubType>Designer</SubType>
