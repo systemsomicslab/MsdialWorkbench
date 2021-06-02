@@ -57,6 +57,8 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         protected Range InitialRangeCore { get; set; }
 
+        public Range InitialValueRange => InitialRangeCore;
+
         public Range InitialRange {
             get => ChartMargin.Add(CoerceRange(InitialRangeCore, Bounds));
         }

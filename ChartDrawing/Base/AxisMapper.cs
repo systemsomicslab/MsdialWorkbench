@@ -13,6 +13,8 @@ namespace CompMs.Graphics.Base
         public AxisValue InitialMin => manager.InitialRange.Minimum;
         public AxisValue InitialMax => manager.InitialRange.Maximum;
 
+        public Range InitialValueRange => manager.InitialValueRange;
+
         public AxisValue Min => manager.Min;
         public AxisValue Max => manager.Max;
         public Range Range {

@@ -41,6 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel).AddTo(Disposables);
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
 
             alignmentFile = alignmentFileBean;
             resultFile = alignmentFileBean.FilePath;
@@ -74,6 +75,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private Chart.MsSpectrumViewModel ms2SpectrumViewModel;
 
+        public Chart.BarChartViewModel BarChartViewModel {
+            get => barChartViewModel;
+            set => SetProperty(ref barChartViewModel, value);
+        }
+        private Chart.BarChartViewModel barChartViewModel;
+
         public ICollectionView Ms1Spots {
             get => ms1Spots;
             set {
@@ -102,12 +109,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         private double massLower, massUpper;
-
-        public List<BarItem> BarItems {
-            get => barItems;
-            set => SetProperty(ref barItems, value);
-        }
-        private List<BarItem> barItems = new List<BarItem>();
 
         public AlignmentResultContainer Container {
             get => container;
@@ -182,22 +183,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private async Task OnTargetChanged(AlignmentSpotPropertyModel target) {
             await Task.WhenAll(
-                LoadBarItemsAsync(target),
                 LoadEicAsync(target)
            ).ConfigureAwait(false);
-        }
-
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target) {
-            BarItems = new List<BarItem>();
-            if (target == null)
-                return;
-
-            // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
-            BarItems = await Task.Run(() => 
-                target.AlignedPeakProperties
-                .GroupBy(peak => param.FileID_ClassName[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-                .ToList() ).ConfigureAwait(false);
         }
 
         async Task LoadEicAsync(AlignmentSpotPropertyModel target) {

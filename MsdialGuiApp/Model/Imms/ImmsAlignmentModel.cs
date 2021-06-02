@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            ParameterBase param,
+            ParameterBase parameter,
             IMatchResultRefer refer,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
 
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
-                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
+                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
 
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter)
             {
@@ -42,7 +42,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
             };
-
 
             Target = PlotModel
                 .ObserveProperty(m => m.Target)
@@ -62,11 +61,23 @@ namespace CompMs.App.Msdial.Model.Imms
             Ms2SpectrumModel.VerticalTitle = "Abundance";
             Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
             Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
+
+            var barLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            BarChartModel = Chart.BarChartModel.Create(
+                Target, barLoader,
+                item => item.Class,
+                item => item.Height);
+            BarChartModel.Elements.HorizontalTitle = "Class";
+            BarChartModel.Elements.VerticalTitle = "Height";
+            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
+            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
         }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
         public Chart.MsSpectrumModel Ms2SpectrumModel { get; }
+
+        public Chart.BarChartModel BarChartModel { get; }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 

@@ -132,7 +132,7 @@ namespace CompMs.Graphics.Bar
 
             var brush = BarBrush;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double barwidth = BarWidth * actualWidth / visualChildren.Count;
+            double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
 
             double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * actualHeight;
             foreach(var visual in visualChildren)
@@ -142,12 +142,14 @@ namespace CompMs.Graphics.Bar
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
+                var haxv = HorizontalAxis.TranslateToAxisValue(x);
+                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX) * actualWidth;
+                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX) * actualWidth;
                 double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
-                dv.Center = new Point(xx, yy);
+                dv.Center = new Point((xxl + xxr) / 2, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    dc.DrawRectangle(brush, null, new Rect(new Point(xx - barwidth / 2, yy), new Point(xx + barwidth / 2, yorigin)));
+                    dc.DrawRectangle(brush, null, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
                 }
             }
         }
