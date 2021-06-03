@@ -151,6 +151,8 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
+    <Compile Include="Model\Chart\AlignmentEicModel.cs" />
+    <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
@@ -217,6 +219,9 @@
     </Compile>
     <Compile Include="View\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentPeakPlotView.xaml.cs">
       <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
@@ -521,6 +526,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ChartStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

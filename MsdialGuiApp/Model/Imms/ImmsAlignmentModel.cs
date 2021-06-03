@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
@@ -6,6 +7,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -13,27 +15,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
     class ImmsAlignmentModel : BindableBase, IDisposable {
-        private bool disposedValue;
-
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             IMatchResultRefer refer,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
+            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+
+            resultFile = alignmentFileBean.FilePath;
+            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
+                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
 
             var fileName = alignmentFileBean.FileName;
-            var resultFile = alignmentFileBean.FilePath;
-
-            var Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
-
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
-                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
-
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter)
             {
                 GraphTitle = fileName,
@@ -47,8 +45,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 .ObserveProperty(m => m.Target)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
-            Target
-                .Subscribe(async t => await OnTargetChangedAsync(t));
 
             var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, Ms1Spots).AddTo(disposables);
             var refLoader = new MsRefSpectrumLoader(refer);
@@ -71,24 +67,47 @@ namespace CompMs.App.Msdial.Model.Imms
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
+
+            var eicFile = alignmentFileBean.EicFilePath;
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
+            AlignmentEicModel = Chart.AlignmentEicModel.Create(
+                Target, eicLoader,
+                peak => peak.Time,
+                peak => peak.Intensity);
+            AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
+            AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
+            AlignmentEicModel.Elements.VerticalTitle = "Abundance";
+            AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
+            AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+        }
+
+        static ImmsAlignmentModel() {
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
-
-        public Chart.MsSpectrumModel Ms2SpectrumModel { get; }
-
-        public Chart.BarChartModel BarChartModel { get; }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target) {
-            await Task.WhenAll(
-                ).ConfigureAwait(false);
+        public Chart.MsSpectrumModel Ms2SpectrumModel { get; }
+
+        public Chart.BarChartModel BarChartModel { get; }
+
+        public Chart.AlignmentEicModel AlignmentEicModel { get; }
+
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly AlignmentResultContainer container;
+        private readonly string resultFile;
+
+        public void SaveProject() {
+            MessagePackHandler.SaveToFile(container, resultFile);
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
+
+        private bool disposedValue;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {

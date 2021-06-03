@@ -277,10 +277,10 @@
                             <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
                         </TabItem>
 
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
-                        <!--
-                            <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
-                            -->
+                        <TabItem Name="TabItem_AlignedEic"
+                                 Header="EIC of aligned spot"
+                                 Background="{StaticResource LightThemeColor}">
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>

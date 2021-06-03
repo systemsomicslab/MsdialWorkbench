@@ -338,8 +338,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                     Storage.DataBaseMapper,
                     mspAlignmentAnnotator,
                     textDBAlignmentAnnotator),
-                alignment,
-                Storage.ParameterBase,
                 mspAlignmentAnnotator,
                 textDBAlignmentAnnotator)
             {

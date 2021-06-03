@@ -1,24 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
-using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using Reactive.Bindings.Extensions;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 
 
@@ -26,14 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 {
     class AlignmentImmsVM : AlignmentFileVM
     {
-        static AlignmentImmsVM() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
-        }
-
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
-            AlignmentFileBean alignmentFileBean,
-            ParameterBase param,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
 
@@ -42,23 +23,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel).AddTo(Disposables);
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
+            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
 
-            alignmentFile = alignmentFileBean;
-            resultFile = alignmentFileBean.FilePath;
-            eicFile = alignmentFileBean.EicFilePath;
-            spectraFile = alignmentFileBean.SpectraFilePath;
-
-            this.param = param;
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
-
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
             MassLower = model.Ms1Spots.Min(spot => spot.MassCenter);
             MassUpper = model.Ms1Spots.Max(spot => spot.MassCenter);
             Ms1Spots = CollectionViewSource.GetDefaultView(model.PlotModel.Spots);
-
-            PropertyChanged += OnTargetChanged;
         }
 
         private readonly ImmsAlignmentModel model;
@@ -80,6 +52,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref barChartViewModel, value);
         }
         private Chart.BarChartViewModel barChartViewModel;
+
+        public Chart.AlignmentEicViewModel AlignmentEicViewModel {
+            get => alignmentEicViewModel;
+            set => SetProperty(ref alignmentEicViewModel, value);
+        }
+        private Chart.AlignmentEicViewModel alignmentEicViewModel;
 
         public ICollectionView Ms1Spots {
             get => ms1Spots;
@@ -110,12 +88,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private double massLower, massUpper;
 
-        public AlignmentResultContainer Container {
-            get => container;
-            set => SetProperty(ref container, value);
-        }
-        private AlignmentResultContainer container;
-
         public AlignmentSpotPropertyModel Target {
             get => target;
             set {
@@ -124,24 +96,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         private AlignmentSpotPropertyModel target;
-
-        public List<Chromatogram> EicChromatograms {
-            get => eicChromatograms;
-            set {
-                if (SetProperty(ref eicChromatograms, value)) {
-                    OnPropertyChanged(nameof(EicMax));
-                    OnPropertyChanged(nameof(EicMin));
-                    OnPropertyChanged(nameof(IntensityMax));
-                    OnPropertyChanged(nameof(IntensityMin));
-                }
-            }
-        }
-        private List<Chromatogram> eicChromatograms;
-
-        public double EicMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Time) ?? 0;
-        public double EicMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Time) ?? 0;
-        public double IntensityMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0;
-        public double IntensityMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0;
 
         public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
         public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
@@ -162,53 +116,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private DisplayFilter displayFilters = 0;
 
-        private readonly AlignmentFileBean alignmentFile;
-        private readonly List<long> seekPointers = new List<long>();
-        private readonly ParameterBase param = null;
-        private readonly string resultFile = string.Empty;
-        private readonly string eicFile = string.Empty;
-        private readonly string spectraFile = string.Empty;
         private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
-
-        private MSDecResult msdecResult = null;
-
-        
-        private static ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-
-        private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Target)) {
-                await OnTargetChanged(Target).ConfigureAwait(false);
-            }
-        }
-
-        private async Task OnTargetChanged(AlignmentSpotPropertyModel target) {
-            await Task.WhenAll(
-                LoadEicAsync(target)
-           ).ConfigureAwait(false);
-        }
-
-        async Task LoadEicAsync(AlignmentSpotPropertyModel target) {
-            EicChromatograms = new List<Chromatogram>();
-            if (target == null)
-                return;
-
-            // maybe using file pointer is better
-            EicChromatograms = await Task.Run(() => {
-                var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                foreach (var peakinfo in spotinfo.PeakInfos) {
-                    var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
-                    var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                    chroms.Add(new Chromatogram
-                    {
-                        Class = param.FileID_ClassName[peakinfo.FileID],
-                        Peaks = items,
-                        PeakArea = peakitems,
-                    });
-                }
-                return chroms;
-            }).ConfigureAwait(false);
-        }
 
         bool PeakFilter(object obj) {
             if (obj is AlignmentSpotPropertyModel spot) {
@@ -278,7 +186,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         */
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile<AlignmentResultContainer>(Container, resultFile);
+            model.SaveProject();
         }
 
         private bool ReadDisplayFilters(DisplayFilter flags) {
