@@ -75,6 +75,8 @@ namespace CompMs.App.Msdial.Model
             MsdecResultsReader.GetSeekPointers(deconvolutionStream, out version, out seekPointers, out isAnnotationInfoIncluded);
         }
 
+        public MsdialCore.MSDec.MSDecResult Result { get; private set; }
+
         private readonly Stream deconvolutionStream;
         private readonly IReadOnlyList<object> ms1Peaks;
         private readonly int version;
@@ -101,6 +103,7 @@ namespace CompMs.App.Msdial.Model
         private List<SpectrumPeak> LoadSpectrumCore(object target) {
             var idx = ms1Peaks.IndexOf(target);
             var msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
+            Result = msdecResult;
             return msdecResult.Spectrum;
         }
 

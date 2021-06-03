@@ -174,7 +174,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            if (Model.Target?.innerModel == null)
+            if (Model.Target?.innerModel == null || Model.MsdecResult == null)
                 return;
 
             var vm = new CompoundSearchVM<AlignmentSpotProperty>(Model.AlignmentFile, Model.Target.innerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        private bool CanSearchCompound(Window owner) => (Model.Target?.innerModel) != null;
+        private bool CanSearchCompound(Window owner) => (Model.Target?.innerModel) != null && Model.MsdecResult != null;
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;

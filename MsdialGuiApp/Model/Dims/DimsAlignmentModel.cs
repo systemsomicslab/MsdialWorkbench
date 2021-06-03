@@ -69,6 +69,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var repIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
             var refIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
             var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, ms1Spots).AddTo(disposables);
+            msdecLoader = decLoader;
             var refLoader = new MsRefSpectrumLoader(refer);
             Ms2SpectrumModel = new MsSpectrumModel<AlignmentSpotPropertyModel>(
                 ms2MzAxis,
@@ -99,6 +100,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
+        private readonly MsDecSpectrumLoader msdecLoader;
+
         public AlignmentResultContainer Container {
             get => container;
             set => SetProperty(ref container, value);
@@ -114,8 +117,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public AlignmentFileBean AlignmentFile => alignmentFile;
         private readonly AlignmentFileBean alignmentFile;
 
-        public MSDecResult MsdecResult => msdecResult;
-        private MSDecResult msdecResult = null;
+        public MSDecResult MsdecResult => msdecLoader.Result;
 
         public ParameterBase Parameter { get; }
 
@@ -207,11 +209,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
                 Target.innerModel,
-                msdecResult,
+                MsdecResult,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.innerModel != null && msdecResult != null;
+        public bool CanSaveSpectra() => Target.innerModel != null && MsdecResult != null;
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, resultFile);
