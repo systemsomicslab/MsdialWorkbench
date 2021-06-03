@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             var hAxis = model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>()
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
             PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, horizontalAxis: hAxis);
