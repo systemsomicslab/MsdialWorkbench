@@ -334,14 +334,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target.Value}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target.Value}"/>
                             </TabItem>
                          
                         </TabControl>

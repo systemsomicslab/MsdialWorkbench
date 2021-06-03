@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
@@ -14,6 +13,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using NSSplash;
 using NSSplash.impl;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel);
             Disposables.Add(RawDecSpectrumsViewModel);
+
+            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
             this.analysisFile = analysisFile;
             this.provider = provider;
@@ -121,15 +124,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
-        public ChromatogramPeakFeatureModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value)) {
-                    _ = OnTargetChangedAsync(value);
-                }
-            }
-        }
-        private ChromatogramPeakFeatureModel target;
+        public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
         public string FileName {
             get => fileName;
@@ -305,7 +300,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.InnerModel, msdecResult, null, mspAnnotator);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.Value.InnerModel, msdecResult, null, mspAnnotator);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,

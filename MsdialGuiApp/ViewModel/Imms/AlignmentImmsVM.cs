@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             MassLower = model.Ms1Spots.Min(spot => spot.MassCenter);
             MassUpper = model.Ms1Spots.Max(spot => spot.MassCenter);
             Ms1Spots = CollectionViewSource.GetDefaultView(model.PlotModel.Spots);
+
+            Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         private readonly ImmsAlignmentModel model;
@@ -88,14 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private double massLower, massUpper;
 
-        public AlignmentSpotPropertyModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value))
-                    ;// SearchCompoundCommand.RaiseCanExecuteChanged();
-            }
-        }
-        private AlignmentSpotPropertyModel target;
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
         public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
         public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
