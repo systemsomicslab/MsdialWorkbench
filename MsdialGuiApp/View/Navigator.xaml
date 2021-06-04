@@ -22,7 +22,7 @@
                Height="28" Grid.Row="0" />
 
         <ListBox Name="ListBox_FileName"
-                 ItemsSource="{Binding AnalysisFiles}"
+                 ItemsSource="{Binding AnalysisFilesView}"
                  DisplayMemberPath="AnalysisFileName"
                  IsSynchronizedWithCurrentItem="True"
                  BorderThickness="0"
@@ -45,7 +45,7 @@
                Height="28" Grid.Row="1"/>
 
         <ListBox Name="ListBox_AlignedFiles"
-                 ItemsSource="{Binding AlignmentFiles}" 
+                 ItemsSource="{Binding AlignmentFilesView}" 
                  IsSynchronizedWithCurrentItem="True"
                  DisplayMemberPath="FileName"
                  BorderThickness="0"

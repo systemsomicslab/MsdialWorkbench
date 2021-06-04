@@ -47,11 +47,14 @@ namespace CompMs.MsdialCore.Parser
         public override IEnumerable<T> DeserializeEach(Stream stream, IEnumerable<int> indices) {
             var pointers = ReadHeader(stream);
             foreach (var index in indices) {
-                if (index < 0 || index >= pointers.Length)
-                    yield return default;
-
-                stream.Seek(pointers[index], SeekOrigin.Begin);
-                yield return Serializer.Deserialize(stream);
+                if (index < 0 || index >= pointers.Length) {
+                    // yield return default;
+                    throw new ArgumentException(nameof(indices));
+                }
+                else {
+                    stream.Seek(pointers[index], SeekOrigin.Begin);
+                    yield return Serializer.Deserialize(stream);
+                }
             }
         }
 

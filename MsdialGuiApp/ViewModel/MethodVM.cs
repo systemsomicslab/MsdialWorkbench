@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parser;
+using System.ComponentModel;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel

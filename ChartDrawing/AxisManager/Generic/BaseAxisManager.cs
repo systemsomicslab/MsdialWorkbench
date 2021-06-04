@@ -8,17 +8,33 @@ namespace CompMs.Graphics.AxisManager.Generic
     public abstract class BaseAxisManager<T> : IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
+            InitialRangeCore = range;
             Bounds = bounds;
-            Range = InitialRange = range.Union(bounds);
+            Range = InitialRange;
+        }
+
+        public BaseAxisManager(Range range, ChartMargin margin) {
+            InitialRangeCore = range;
+            ChartMargin = margin;
+            Range = InitialRange;
+        }
+
+        public BaseAxisManager(Range range, ChartMargin margin, Range bounds) {
+            InitialRangeCore = range;
+            Bounds = bounds;
+            ChartMargin = margin;
+            Range = InitialRange;
         }
 
         public BaseAxisManager(Range range) {
-            Range = InitialRange = range;
+            InitialRangeCore = range;
+            Range = InitialRange;
         }
 
         public BaseAxisManager(BaseAxisManager<T> source) {
+            InitialRangeCore = source.InitialRangeCore;
             Bounds = source.Bounds;
-            Range = InitialRange = source.InitialRange.Union(Bounds);
+            Range = InitialRange;
         }
 
         public AxisValue Min => Range.Minimum;
@@ -27,10 +43,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public Range Range {
             get {
-                return ChartMargin.Add(range);
+                return range;
             }
             set {
-                var r = ChartMargin.Remove(value).Union(Bounds);
+                var r = CoerceRange(value, Bounds);
                 if (InitialRange.Contains(r)) {
                     range = r;
                     OnRangeChanged();
@@ -39,7 +55,21 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
         private Range range;
 
-        public Range InitialRange { get; protected set; }
+        protected Range InitialRangeCore { get; set; }
+
+        public Range InitialValueRange => InitialRangeCore;
+
+        public Range InitialRange {
+            get => ChartMargin.Add(CoerceRange(InitialRangeCore, Bounds));
+        }
+
+        private static Range CoerceRange(Range r, Range bound) {
+            var range = r.Union(bound);
+            if (range.Delta <= 1e-10) {
+                range = new Range(range.Minimum - 1, range.Maximum + 1);
+            }
+            return range;
+        }
 
         public Range Bounds { get; protected set; }
 
@@ -60,7 +90,8 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void UpdateInitialRange(Range range) {
-            InitialRange = range.Union(Bounds);
+            InitialRangeCore = range;
+            Range = InitialRange;
         }
 
         public bool Contains(AxisValue value) {

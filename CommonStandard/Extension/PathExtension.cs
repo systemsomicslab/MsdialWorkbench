@@ -12,7 +12,7 @@ namespace CompMs.Common.Extension
 
             var uri = new Uri(relativeTo);
             var relativeUri = uri.MakeRelativeUri(new Uri(path));
-            var relativePath = relativeUri.ToString();
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
             return relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
     }

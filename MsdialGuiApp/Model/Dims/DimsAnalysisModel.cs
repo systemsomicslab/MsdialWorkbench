@@ -12,18 +12,20 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    public class DimsAnalysisModel : ValidatableBase
+    public class DimsAnalysisModel : BindableBase, IDisposable
     {
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
@@ -68,19 +70,22 @@ namespace CompMs.App.Msdial.Model.Dims
                 new ContinuousAxisManager<double>(0, 1, 0, 0),
                 "Intensity",
                 "Abundance");
+            var decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks).AddTo(disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 horizontalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z"),
                 rawVerticalData: ms2MeasureIntensityAxis,
                 rawLoader: new MsRawSpectrumLoader(provider, Parameter),
                 decVerticalData: ms2MeasureIntensityAxis,
-                decLoader: new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks),
+                decLoader: decLoader,
                 refVerticalData: new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance"),
                 refLoader: new MsRefSpectrumLoader(refer),
                 graphTitle: "Measure vs. Reference");
+            
 
             EicModel.PropertyChanged += OnEicChanged;
         }
 
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly IDataProvider provider;
 
         public AnalysisFileBean AnalysisFile { get; }
@@ -206,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public MSDecResult MsdecResult => msdecResult;
         private MSDecResult msdecResult = null;
-
+        private bool disposedValue;
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {
             axis?.Focus(mz - MzTol, mz + MzTol);
@@ -228,5 +233,21 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public bool CanSaveSpectra() => Target.InnerModel != null && msdecResult != null;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    disposables.Dispose();                   
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

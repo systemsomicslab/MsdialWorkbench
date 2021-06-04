@@ -7,9 +7,12 @@
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             d:DataContext="{d:DesignInstance Type=vm:ImmsMethodVM}"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
@@ -196,12 +199,8 @@
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
                     -->
 
-                    <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
-                                               Spectrum="{Binding Ms1Spectrum}"
-                                               SplashKey="{Binding Ms1SplashKey}"
-                                               MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
-                                               MassAxis="{StaticResource MassAxis}"
-                                               Grid.Row="2" Grid.Column="0"/>
+                    <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
+                                          Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -211,8 +210,8 @@
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}">
-                            <commonview:PeakView DataContext="{Binding PlotViewModel}">
-                                <commonview:PeakView.LabelTemplate>
+                            <chart:PeakView DataContext="{Binding PlotViewModel}">
+                                <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
@@ -227,8 +226,8 @@
                                             <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
-                                </commonview:PeakView.LabelTemplate>
-                            </commonview:PeakView>
+                                </chart:PeakView.LabelTemplate>
+                            </chart:PeakView>
                         </TabItem>
 
                         <TabItem Header="Alignment spot viewer" 
@@ -237,8 +236,8 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}">
 
-                            <commonview:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
-                                <commonview:AlignmentPeakPlotView.LabelTemplate>
+                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                <chart:AlignmentPeakPlotView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
@@ -247,13 +246,13 @@
                                                     <Setter Property="Foreground" Value="Gray"/>
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
+                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
-                                </commonview:AlignmentPeakPlotView.LabelTemplate>
-                            </commonview:AlignmentPeakPlotView>
+                                </chart:AlignmentPeakPlotView.LabelTemplate>
+                            </chart:AlignmentPeakPlotView>
                         </TabItem>
 
                     </TabControl>
@@ -266,24 +265,20 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
-                            <commonview:EicView DataContext="{Binding AnalysisVM}"
-                                                ChromAxis="{StaticResource ChromAxis}"
-                                                ChromTitle="Drift time [1/k0]"/>
+                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource LightThemeColor}">
-                                 <!--
-                            <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
-                            -->
+                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
                         </TabItem>
 
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
-                        <!--
-                            <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
-                            -->
+                        <TabItem Name="TabItem_AlignedEic"
+                                 Header="EIC of aligned spot"
+                                 Background="{StaticResource LightThemeColor}">
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>
@@ -337,14 +332,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target.Value}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource LightThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target.Value}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -360,16 +355,13 @@
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource LightThemeColor}"
                                  Height="25">
-                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
-                                <commonview:ExpRefView.ContextMenu>
+                            <chart:ExpRefView>
+                                <chart:ExpRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:ExpRefView.ContextMenu>
-                            </commonview:ExpRefView>
+                                </chart:ExpRefView.ContextMenu>
+                            </chart:ExpRefView>
                         </TabItem>
 
                         <TabItem Header="MS2 Chrom." 
@@ -396,15 +388,13 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}" 
                                  Height="25">
-                            <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
-                                <commonview:RepRefView.ContextMenu>
+                            <chart:RepRefView>
+                                <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:RepRefView.ContextMenu>
-                            </commonview:RepRefView>
+                                </chart:RepRefView.ContextMenu>
+                            </chart:RepRefView>
                         </TabItem>
 
                     </TabControl>

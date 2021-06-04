@@ -18,6 +18,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="visconverter"/>
             <Style TargetType="RadioButton" x:Key="IconRadioButton">
@@ -108,30 +109,14 @@
 
         <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,10,0">
 
-            <local:MsSpectrumView DataContext="{Binding RawRefSpectrumViewModels}">
-                <local:MsSpectrumView.Style>
-                    <Style TargetType="local:MsSpectrumView">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowCentroid}" Value="False">
-                                <Setter Property="Visibility" Value="Hidden"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </local:MsSpectrumView.Style>
-            </local:MsSpectrumView>
-            <local:MsSpectrumView DataContext="{Binding DecRefSpectrumViewModels}">
-                <local:MsSpectrumView.Style>
-                    <Style TargetType="local:MsSpectrumView">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsChecked, ElementName=Button_ShowDeconvolution}" Value="False">
-                                <Setter Property="Visibility" Value="Hidden"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </local:MsSpectrumView.Style>
-            </local:MsSpectrumView>
+            <local:MsSpectrumView DataContext="{Binding RawRefSpectrumViewModels}"
+                                  Visibility="{Binding IsChecked,
+                                                       ElementName=Button_ShowCentroid,
+                                                       Converter={StaticResource boolean2visibility}}"/>
+            <local:MsSpectrumView DataContext="{Binding DecRefSpectrumViewModels}"
+                                  Visibility="{Binding IsChecked,
+                                                       ElementName=Button_ShowDeconvolution,
+                                                       Converter={StaticResource boolean2visibility}}"/>
         </Grid>
     </Grid>
 </UserControl>

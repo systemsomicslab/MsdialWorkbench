@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.EicView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
+             mc:Ignorable="d" 
+             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
+             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
+             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             Name="EicPlot"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:EicViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+                          VerticalAxis="{Binding VerticalAxis}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value}"
+                          VerticalTitle="{Binding VerticalTitle.Value}"
+                          GraphTitle="{Binding GraphTitle.Value}"
+                          Style="{StaticResource OverlapChart}"
+                          Background="WhiteSmoke"
+                          BorderBrush="Black">
+            <area:AreaChartControl x:Name="area"
+                                   ItemsSource="{Binding EicPeak.Value}"
+                                   HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                   VerticalPropertyName="{Binding VerticalProperty.Value}">
+                <area:AreaChartControl.AreaBrush>
+                    <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
+                </area:AreaChartControl.AreaBrush>
+            </area:AreaChartControl>
+            <line:LineChartControl x:Name="line"
+                                   ItemsSource="{Binding Eic.Value}"
+                                   HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                   VerticalPropertyName="{Binding VerticalProperty.Value}">
+                <line:LineChartControl.LinePen>
+                    <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
+                </line:LineChartControl.LinePen>
+            </line:LineChartControl>
+            <spectrum:LineSpectrumControl x:Name="spectrum"
+                                          ItemsSource="{Binding EicFocused.Value}"
+                                          HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                          VerticalPropertyName="{Binding VerticalProperty.Value}">
+                <spectrum:LineSpectrumControl.LinePen>
+                    <Pen Brush="Red" Thickness="1.5" LineJoin="Miter" PresentationOptions:Freeze="True"/>
+                </spectrum:LineSpectrumControl.LinePen>
+            </spectrum:LineSpectrumControl>
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

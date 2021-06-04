@@ -74,19 +74,38 @@
       <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveProperty, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.7.10.0\lib\netstandard2.0\ReactiveProperty.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveProperty.Core, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.Core.7.10.0\lib\netstandard2.0\ReactiveProperty.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveProperty.WPF, Version=7.10.0.0, Culture=neutral, PublicKeyToken=0239185f5eb3b356, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveProperty.WPF.7.10.0\lib\net461\ReactiveProperty.WPF.dll</HintPath>
     </Reference>
     <Reference Include="Splash, Version=1.0.6022.17289, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -124,6 +143,26 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
+    <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
+    <Compile Include="Model\Chart\BarChartModel.cs" />
+    <Compile Include="Model\Chart\EicModel.cs" />
+    <Compile Include="Model\Chart\GraphElements.cs" />
+    <Compile Include="Model\Chart\MsSpectrumModel.cs" />
+    <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
+    <Compile Include="Model\Chart\AlignmentEicModel.cs" />
+    <Compile Include="Model\Imms\ImmsMethodModel.cs" />
+    <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
+    <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
+    <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
+    <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
+    <Compile Include="ViewModel\Chart\EicViewModel.cs" />
+    <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Chart\RawDecSpectrumsViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\IBarItemsLoader.cs" />
     <Compile Include="Model\AlignmentEicModel.cs" />
@@ -136,6 +175,7 @@
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\EicModel.cs" />
+    <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
     <Compile Include="Model\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
@@ -148,11 +188,11 @@
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
-    <Compile Include="ViewModel\Export\LecacyQuantValueAccessor.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
@@ -182,6 +222,33 @@
     </Compile>
     <Compile Include="View\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
+      <DependentUpon>AlignmentEicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\AlignmentPeakPlotView.xaml.cs">
+      <DependentUpon>AlignmentPeakPlotView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\EicView.xaml.cs">
+      <DependentUpon>EicView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\ExpRefView.xaml.cs">
+      <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\MsSpectrumView.xaml.cs">
+      <DependentUpon>MsSpectrumView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\PeakView.xaml.cs">
+      <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\RepRefView.xaml.cs">
+      <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\SurveyScanView.xaml.cs">
+      <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -286,7 +353,7 @@
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
-    <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
       <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
     </Compile>
@@ -465,6 +532,42 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ChartStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\AlignmentEicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\AlignmentPeakPlotView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Chart\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\EicView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\ExpRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\MsSpectrumView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\PeakView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\RepRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -845,9 +948,7 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Imms\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>

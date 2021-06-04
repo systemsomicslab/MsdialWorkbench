@@ -45,9 +45,9 @@ namespace CompMs.Graphics.Scatter
 
             if (chart.cv != null) {
                 chart.cv.CurrentChanged -= chart.OnCurrentChanged;
-            }
-            if (e.OldValue is INotifyCollectionChanged collectionOld) {
-                collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
+                if (chart.cv is INotifyCollectionChanged collectionOld) {
+                    collectionOld.CollectionChanged -= chart.ItemsSourceCollectionChanged;
+                }
             }
 
             chart.cv = CollectionViewSource.GetDefaultView(e.NewValue);
@@ -68,7 +68,7 @@ namespace CompMs.Graphics.Scatter
             chart.dataType = cv.GetItemAt(0).GetType();
 
             chart.cv.CurrentChanged += chart.OnCurrentChanged;
-            if (e.NewValue is INotifyCollectionChanged collectionNew) {
+            if (chart.cv is INotifyCollectionChanged collectionNew) {
                 collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
             }
 

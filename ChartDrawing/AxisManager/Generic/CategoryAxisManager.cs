@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CompMs.Graphics.AxisManager.Generic
 {
-    public class CategoryAxisManager<T, U> : BaseAxisManager<T>
+    public class CategoryAxisManager<U, T> : BaseAxisManager<T>
     {
         public CategoryAxisManager(
             IReadOnlyCollection<T> collection,
@@ -37,12 +37,18 @@ namespace CompMs.Graphics.AxisManager.Generic
             return result;
         }
 
+        protected void UpdateCollection(IReadOnlyCollection<T> collection) {
+            this.collection = collection;
+            converter = ToDictionary(collection, toKey);
+            UpdateInitialRange(CountElement(collection, toKey));
+        }
+
         private static string ToString(T value) {
             return value.ToString();
         }
 
         private Dictionary<U, AxisValue> converter = new Dictionary<U, AxisValue>();
-        private readonly IReadOnlyCollection<T> collection;
+        private IReadOnlyCollection<T> collection;
         private readonly Func<T, U> toKey;
         private readonly Func<T, string> toLabel;
 

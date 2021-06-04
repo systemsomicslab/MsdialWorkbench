@@ -7,13 +7,13 @@ using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Microsoft.Win32;
 using System;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -21,6 +21,24 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial
 {
     class MainWindowVM : ViewModelBase {
+
+        public MainWindowVM(
+            IWindowService<StartUpWindowVM> startUpService,
+            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService) {
+            if (startUpService is null) {
+                throw new ArgumentNullException(nameof(startUpService));
+            }
+
+            if (analysisFilePropertySetService is null) {
+                throw new ArgumentNullException(nameof(analysisFilePropertySetService));
+            }
+
+            this.startUpService = startUpService;
+            this.analysisFilePropertySetService = analysisFilePropertySetService;
+        }
+
+        private readonly IWindowService<StartUpWindowVM> startUpService;
+        private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
 
         public MethodVM MethodVM {
             get => methodVM;
@@ -55,13 +73,13 @@ namespace CompMs.App.Msdial
             storage.IupacDatabase = iupacdb;
 
             // Set parameterbase
-            var parameter = ProcessStartUp(window);
+            var parameter = ProcessStartUp(startUpService);
             if (parameter == null)
                 return;
             storage.ParameterBase = parameter;
 
             // Set analysis file property
-            if (!ProcessSetAnalysisFile(window, storage))
+            if (!ProcessSetAnalysisFile(analysisFilePropertySetService, storage))
                 return;
 
             RunProcessAll(window, storage);
@@ -74,9 +92,16 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> runProcessAllCommand;
 
         private void RunProcessAll(Window window, MsdialDataStorage storage) {
+            MethodVM?.Dispose();
+
             var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-            if (method.InitializeNewProject(window) != 0)
+            if (method.InitializeNewProject(window) != 0) {
+
+                method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+                method.LoadProject();
+                MethodVM = method;
                 return;
+            }
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", storage.ParameterBase.ParametersAsText()));
@@ -99,7 +124,7 @@ namespace CompMs.App.Msdial
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IMMS:
-                    return new ViewModel.Imms.ImmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                    return new ViewModel.Imms.ImmsMethodVM(storage);
                 case MachineCategory.LCIMMS:
                     throw new NotImplementedException("Lcimms method is working now.");
                     
@@ -107,16 +132,10 @@ namespace CompMs.App.Msdial
             throw new NotImplementedException("This method is not implemented");
         }
 
-        private static ParameterBase ProcessStartUp(Window owner) {
+        private static ParameterBase ProcessStartUp(IWindowService<StartUpWindowVM> service) {
             var startUpWindowVM = new StartUpWindowVM();
-            var suw = new StartUpWindow()
-            {
-                DataContext = startUpWindowVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
 
-            var suw_result = suw.ShowDialog();
+            var suw_result = service.ShowDialog(startUpWindowVM);
             if (suw_result != true) return null;
 
             ParameterBase parameter = ParameterFactory.CreateParameter(startUpWindowVM.Ionization, startUpWindowVM.SeparationType);
@@ -126,20 +145,17 @@ namespace CompMs.App.Msdial
             return parameter;
         }
 
-        private static bool ProcessSetAnalysisFile(Window owner, MsdialDataStorage storage) {
+        private static bool ProcessSetAnalysisFile(
+            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            MsdialDataStorage storage) {
+
             var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
             {
                 ProjectFolderPath = storage.ParameterBase.ProjectFolderPath,
                 MachineCategory = storage.ParameterBase.MachineCategory,
             };
-            var afpsw = new AnalysisFilePropertySetWindow()
-            {
-                DataContext = analysisFilePropertySetWindowVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
 
-            var afpsw_result = afpsw.ShowDialog();
+            var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
             if (afpsw_result != true) return false;
 
             storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
@@ -307,15 +323,15 @@ namespace CompMs.App.Msdial
             }
         }
 
-        public DelegateCommand<Window> GoToTutorialCommand {
-            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand<Window>(GoToTutorial));
+        public DelegateCommand GoToTutorialCommand {
+            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand(GoToTutorial));
         }
 
-        private void GoToTutorial(Window obj) {
+        private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
         }
 
-        private DelegateCommand<Window> goToTutorialCommand;
+        private DelegateCommand goToTutorialCommand;
 
     }
 }

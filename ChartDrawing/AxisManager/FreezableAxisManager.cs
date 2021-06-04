@@ -112,6 +112,8 @@ namespace CompMs.Graphics.AxisManager
             return initial;
         }
 
+        public Range InitialValueRange => InitialRange;
+
         public static readonly DependencyProperty AxisMapperProperty =
             DependencyProperty.Register(
                 nameof(AxisMapper), typeof(IAxisManager), typeof(FreezableAxisManager),

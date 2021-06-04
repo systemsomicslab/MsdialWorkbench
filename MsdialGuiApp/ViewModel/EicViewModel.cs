@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.ViewModel
         private ICollectionView cacheEicPeak;
 
         public ICollectionView EicFocused {
-            get => cacheEicFocused ?? (cacheEicFocused = CollectionViewSource.GetDefaultView(cacheEicFocused));
+            get => cacheEicFocused ?? (cacheEicFocused = CollectionViewSource.GetDefaultView(model.EicFocused));
         }
         private ICollectionView cacheEicFocused;
 

@@ -11,6 +11,18 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
+
+        }
+
+        public ContinuousAxisManager(Range range, ChartMargin margin) : base(range, margin) {
+
+        }
+
+        public ContinuousAxisManager(Range range, ChartMargin margin, Range bounds) : base(range, margin, bounds) {
+
+        }
+
         public ContinuousAxisManager(T low, T high)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high))) {
 
@@ -30,9 +42,6 @@ namespace CompMs.Graphics.AxisManager.Generic
         public ContinuousAxisManager(T low, T high, Range bounds)
             : base(new Range(Convert.ToDouble(low), Convert.ToDouble(high)), bounds) {
 
-        }
-
-        public ContinuousAxisManager(Range range, Range bounds) : base(range, bounds) {
         }
 
         public ContinuousAxisManager(ICollection<T> source) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max()) {
@@ -79,7 +88,8 @@ namespace CompMs.Graphics.AxisManager.Generic
                                                      0.1);
 
             var exp = Math.Floor(Math.Log10(Max));
-            var LabelFormat = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
+            // var LabelFormat = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
+            var LabelFormat = TickInterval >= 1 ? "f0" : "f3";
             for(var i = Math.Ceiling((decimal)Min.Value / TickInterval); i * TickInterval <= (decimal)Max.Value; ++i)
             {
                 var item = new LabelTickData()

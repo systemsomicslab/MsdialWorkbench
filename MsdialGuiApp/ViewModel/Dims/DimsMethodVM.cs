@@ -34,12 +34,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             : base(serializer) {
 
             Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
+            Disposables.Add(Model);
 
-            AnalysisFiles = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
-            AnalysisFiles.MoveCurrentToFirst();
+            AnalysisFilesView = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
+            AnalysisFilesView.MoveCurrentToFirst();
 
-            AlignmentFiles = CollectionViewSource.GetDefaultView(Model.AlignmentFiles);
-            AlignmentFiles.MoveCurrentToFirst();
+            AlignmentFilesView = CollectionViewSource.GetDefaultView(Model.AlignmentFiles);
+            AlignmentFilesView.MoveCurrentToFirst();
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
@@ -58,8 +59,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private AlignmentDimsVM alignmentVM;
 
-        public ICollectionView AnalysisFiles { get; }
-        public ICollectionView AlignmentFiles { get; }
+        public ICollectionView AnalysisFilesView { get; }
+        public ICollectionView AlignmentFilesView { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -202,7 +203,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand loadAnalysisFileCommand;
 
         private void LoadSelectedAnalysisFile() {
-            if (AnalysisFiles.CurrentItem is AnalysisFileBean analysis) {
+            if (AnalysisFilesView.CurrentItem is AnalysisFileBean analysis) {
                 LoadAnalysisFile(analysis);
             }
         }
@@ -212,7 +213,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DelegateCommand loadAlignmentFileCommand;
         private void LoadSelectedAlignmentFile() {
-            if (AlignmentFiles.CurrentItem is AlignmentFileBean alignment) {
+            if (AlignmentFilesView.CurrentItem is AlignmentFileBean alignment) {
                 LoadAlignmentFile(alignment);
             }
         }

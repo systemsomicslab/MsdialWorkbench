@@ -20,10 +20,6 @@
         </i:PropertyChangedTrigger>
     </i:Interaction.Triggers>
 
-    <RibbonWindow.DataContext>
-        <local:MainWindowVM />
-    </RibbonWindow.DataContext>
-
     <RibbonWindow.Resources>
         <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
     </RibbonWindow.Resources>

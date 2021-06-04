@@ -22,6 +22,7 @@ namespace CompMs.Graphics.Core.Base
         AxisValue Max { get; }
         Range Range { get; set; }
         Range InitialRange { get; }
+        Range InitialValueRange { get; } // TODO: rename
         Range Bounds { get; }
 
         event EventHandler RangeChanged;

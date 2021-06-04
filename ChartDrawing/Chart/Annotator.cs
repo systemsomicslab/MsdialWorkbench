@@ -231,7 +231,10 @@ namespace CompMs.Graphics.Chart
             if (datas == null || !datas.Any())
                 return datas;
 
-            var prop = dataType?.GetProperty(OrderingPropertyName);
+            PropertyInfo prop = null;
+            if (!string.IsNullOrEmpty(OrderingPropertyName)) {
+                prop = dataType?.GetProperty(OrderingPropertyName);
+            }
             foreach ((var obj, var idx) in source.WithIndex()) {
                 var value = prop?.GetValue(obj);
                 if (value is double dvalue) {

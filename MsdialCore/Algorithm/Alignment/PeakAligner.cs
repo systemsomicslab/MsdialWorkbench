@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             spots = FilterAlignments(spots, Param);
 
             var chromPeakInfoSerializer = spotSerializer == null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-            var files = CollectPeakSpots(analysisFiles, alignmentFile, spots, chromPeakInfoSerializer);
+            (var files, var id2idx) = CollectPeakSpots(analysisFiles, spots, chromPeakInfoSerializer);
             (var refined, var ids) = Refiner.Refine(spots);
 
             var container = PackingSpots(refined);
@@ -64,7 +64,13 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
 
             if (chromPeakInfoSerializer != null)
-                SerializeSpotInfo(refined, ids, files, alignmentFile, spotSerializer, chromPeakInfoSerializer);
+                SerializeSpotInfo(
+                    refined,
+                    ids.Select(id => id2idx[id]).ToArray(),
+                    files,
+                    alignmentFile,
+                    spotSerializer,
+                    chromPeakInfoSerializer);
             foreach (var f in files)
                 if (File.Exists(f))
                     File.Delete(f);
@@ -87,8 +93,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return filter.Filter(result).ToList();
         }
 
-        private List<string> CollectPeakSpots(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
-            List<AlignmentSpotProperty> spots, ChromatogramSerializer<ChromatogramPeakInfo> chromPeakInfoSerializer) {
+        private Tuple<List<string>, Dictionary<int, int>> CollectPeakSpots(
+            IReadOnlyList<AnalysisFileBean> analysisFiles,
+            List<AlignmentSpotProperty> spots,
+            ChromatogramSerializer<ChromatogramPeakInfo> chromPeakInfoSerializer) {
 
             var files = new List<string>();
             foreach (var analysisFile in analysisFiles) {
@@ -100,8 +108,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
             foreach (var spot in spots)
                 PackingSpot(spot);
+            var id2idx = spots
+                .Select((spot, idx) => Tuple.Create(spot, idx))
+                .ToDictionary(pair => pair.Item1.MasterAlignmentID, pair => pair.Item2);
 
-            return files;
+            return Tuple.Create(files, id2idx);
         }
 
         protected virtual string CollectAlignmentPeaks(

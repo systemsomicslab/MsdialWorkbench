@@ -33,12 +33,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             get => analysisFiles;
             set {
                 if (SetProperty(ref analysisFiles, value)) {
-                    _analysisFiles = CollectionViewSource.GetDefaultView(analysisFiles);
+                    AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFiles);
                 }
             }
         }
         private ObservableCollection<AnalysisFileBean> analysisFiles;
-        private ICollectionView _analysisFiles;
+        public ICollectionView AnalysisFilesView { get; set; }
 
         public AlignmentLcmsVM AlignmentVM {
             get => alignmentVM;
@@ -50,12 +50,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             get => alignmentFiles;
             set {
                 if (SetProperty(ref alignmentFiles, value)) {
-                    _alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
+                    AlignmentFilesView = CollectionViewSource.GetDefaultView(alignmentFiles);
                 }
             }
         }
         private ObservableCollection<AlignmentFileBean> alignmentFiles;
-        private ICollectionView _alignmentFiles;
+        private ICollectionView AlignmentFilesView { get; set; }
 
         public MsdialDataStorage Storage {
             get => storage;
@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand loadAnalysisFileCommand;
 
         private void LoadSelectedAnalysisFile() {
-            if (_analysisFiles.CurrentItem is AnalysisFileBean analysis)
+            if (AnalysisFilesView.CurrentItem is AnalysisFileBean analysis)
                 AnalysisVM = LoadAnalysisFile(analysis);
         }
 
@@ -254,7 +254,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private DelegateCommand loadAlignmentFileCommand;
         private void LoadSelectedAlignmentFile() {
-            if (_alignmentFiles.CurrentItem is AlignmentFileBean alignment)
+            if (AlignmentFilesView.CurrentItem is AlignmentFileBean alignment)
                 AlignmentVM = LoadAlignmentFile(alignment);
         }
 

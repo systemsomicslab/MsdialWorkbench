@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,7 +64,7 @@ namespace CompMs.App.Msdial.Model
         }
     }
 
-    class MsDecSpectrumLoader : IMsSpectrumLoader<object>
+    class MsDecSpectrumLoader : IMsSpectrumLoader<object>, IDisposable
     {
         public MsDecSpectrumLoader(
             string deconvolutionFile,
@@ -74,11 +75,14 @@ namespace CompMs.App.Msdial.Model
             MsdecResultsReader.GetSeekPointers(deconvolutionStream, out version, out seekPointers, out isAnnotationInfoIncluded);
         }
 
+        public MsdialCore.MSDec.MSDecResult Result { get; private set; }
+
         private readonly Stream deconvolutionStream;
         private readonly IReadOnlyList<object> ms1Peaks;
         private readonly int version;
         private readonly List<long> seekPointers;
         private readonly bool isAnnotationInfoIncluded;
+        private bool disposedValue;
 
         public List<SpectrumPeak> LoadSpectrum(object target) {
             if (target == null) {
@@ -99,7 +103,23 @@ namespace CompMs.App.Msdial.Model
         private List<SpectrumPeak> LoadSpectrumCore(object target) {
             var idx = ms1Peaks.IndexOf(target);
             var msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
+            Result = msdecResult;
             return msdecResult.Spectrum;
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    deconvolutionStream.Close();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 

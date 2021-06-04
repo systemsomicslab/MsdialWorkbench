@@ -103,7 +103,7 @@ namespace CompMs.MsdialCore.Export
                 { "Matched peaks count", ValueOrNull(matchResult.MatchedPeaksCount, "F2") },
                 { "Matched peaks percentage", ValueOrNull(matchResult.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult.TotalScore, "F2") },
-                { "S/N average", spot.SignalToNoiseAve.ToString("F2") },
+                { "S/N average", spot.SignalToNoiseAve.ToString("0.00") },
                 { "Spectrum reference file name", spot.AlignedPeakProperties[spot.RepresentativeFileID].FileName },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },
                 { "MS/MS spectrum", GetSpectrumListContent(msdec) },
@@ -133,6 +133,7 @@ namespace CompMs.MsdialCore.Export
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
         protected static string ValueOrNull(float value, string format) => value != 0 ? value.ToString(format) : "null"; 
         protected static string ValueOrNull(double value, string format) => value != 0 ? value.ToString(format) : "null"; 
+        protected static string ValueOrNull(double? value, string format) => value != null && value != 0 ? value.Value.ToString(format) : "null"; 
     }
 
 }
