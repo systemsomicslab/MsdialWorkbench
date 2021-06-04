@@ -91,6 +91,19 @@ namespace CompMs.App.Msdial.Model.Imms
                 .Where(t => t == null)
                 .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
+
+            SurveyScanModel = new Chart.SurveyScanModel(
+                Target.SelectMany(t =>
+                    Observable.DeferAsync(async token => {
+                        var result = await LoadMs1SpectrumAsync(t, token);
+                        return Observable.Return(result);
+                    })),
+                spec => spec.Mass,
+                spec => spec.Intensity
+            ).AddTo(Disposables);
+            SurveyScanModel.Elements.VerticalTitle = "Abundance";
+            SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
+            SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
         }
 
         private readonly MsdialImmsParameter parameter;
@@ -110,24 +123,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public Chart.RawDecSpectrumsModel Ms2SpectrumModel { get; }
 
-        public List<SpectrumPeakWrapper> Ms1Spectrum
-        {
-            get => ms1Spectrum;
-            set {
-                if (SetProperty(ref ms1Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms1SpectrumMaxIntensity));
-                }
-            }
-        }
-        private List<SpectrumPeakWrapper> ms1Spectrum = new List<SpectrumPeakWrapper>();
-
-        public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-
-        public string Ms1SplashKey {
-            get => ms1SplashKey;
-            set => SetProperty(ref ms1SplashKey, value);
-        }
-        private string ms1SplashKey = string.Empty;
+        public Chart.SurveyScanModel SurveyScanModel { get; }
 
         public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
@@ -205,15 +201,13 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             await Task.WhenAll(
-                LoadMs1SpectrumAsync(target, token),
                 EicModel.LoadEicAsync(target, token),
                 Ms2SpectrumModel.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
         }
 
-        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        async Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms1Spectrum = new List<SpectrumPeakWrapper>();
-            var ms1SplashKey = string.Empty;
 
             if (target != null) {
                 await Task.Run(() => {
@@ -221,21 +215,11 @@ namespace CompMs.App.Msdial.Model.Imms
                         return;
                     }
                     var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                    token.ThrowIfCancellationRequested();
                     ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                    ms1SplashKey = CalculateSplashKey(spectra);
                 }, token);
             }
-
-            token.ThrowIfCancellationRequested();
-            Ms1Spectrum = ms1Spectrum;
-            Ms1SplashKey = ms1SplashKey;
-        }
-
-        static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
-            if (spectra.IsEmptyOrNull() || spectra.Count <= 2 && spectra.All(peak => peak.Intensity == 0))
-                return "N/A";
-            var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
-            return new Splash().splashIt(msspectrum);
+            return ms1Spectrum;
         }
     }
 }

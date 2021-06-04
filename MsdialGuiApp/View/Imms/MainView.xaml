@@ -8,9 +8,11 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             d:DataContext="{d:DesignInstance Type=vm:ImmsMethodVM}"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
@@ -197,12 +199,8 @@
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
                     -->
 
-                    <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
-                                               Spectrum="{Binding Ms1Spectrum}"
-                                               SplashKey="{Binding Ms1SplashKey}"
-                                               MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
-                                               MassAxis="{StaticResource MassAxis}"
-                                               Grid.Row="2" Grid.Column="0"/>
+                    <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
+                                          Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

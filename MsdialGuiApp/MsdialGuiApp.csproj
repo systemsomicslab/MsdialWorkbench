@@ -150,6 +150,7 @@
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
@@ -243,6 +245,9 @@
     </Compile>
     <Compile Include="View\Chart\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\SurveyScanView.xaml.cs">
+      <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeconvolutionView.xaml.cs">
       <DependentUpon>DeconvolutionView.xaml</DependentUpon>
@@ -347,7 +352,7 @@
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="ViewModel\ResultVM.cs" />
-    <Compile Include="ViewModel\SpectrumPeakWrapper.cs" />
+    <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
       <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
     </Compile>
@@ -558,6 +563,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\RepRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -40,15 +40,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ObserveProperty(m => m.HorizontalRange)
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
+            var vAxis = model.PlotModel
+                .ObserveProperty(m => m.VerticalRange)
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, horizontalAxis: hAxis);
-            Disposables.Add(PlotViewModel);
-
-            EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis);
-            Disposables.Add(EicViewModel);
-
-            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel);
-            Disposables.Add(RawDecSpectrumsViewModel);
+            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            SurveyScanViewModel = new Chart.SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
@@ -102,6 +102,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref ms2ViewModel, value);
         }
         private Chart.RawDecSpectrumsViewModel ms2ViewModel;
+
+        public Chart.SurveyScanViewModel SurveyScanViewModel {
+            get => surveyScanViewModel;
+            set => SetProperty(ref surveyScanViewModel, value);
+        }
+        private Chart.SurveyScanViewModel surveyScanViewModel;
 
         public List<SpectrumPeakWrapper> Ms1Spectrum
         {
