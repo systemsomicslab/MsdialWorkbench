@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
+using CompMs.Common.WindowService;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
@@ -13,7 +14,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Microsoft.Win32;
 using System;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -21,6 +21,17 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial
 {
     class MainWindowVM : ViewModelBase {
+
+        public MainWindowVM(
+            IWindowService<StartUpWindowVM> startUpService) {
+            if (startUpService is null) {
+                throw new ArgumentNullException(nameof(startUpService));
+            }
+
+            this.startUpService = startUpService;
+        }
+
+        private readonly IWindowService<StartUpWindowVM> startUpService;
 
         public MethodVM MethodVM {
             get => methodVM;
@@ -55,7 +66,7 @@ namespace CompMs.App.Msdial
             storage.IupacDatabase = iupacdb;
 
             // Set parameterbase
-            var parameter = ProcessStartUp(window);
+            var parameter = ProcessStartUp(startUpService);
             if (parameter == null)
                 return;
             storage.ParameterBase = parameter;
@@ -114,16 +125,10 @@ namespace CompMs.App.Msdial
             throw new NotImplementedException("This method is not implemented");
         }
 
-        private static ParameterBase ProcessStartUp(Window owner) {
+        private static ParameterBase ProcessStartUp(IWindowService<StartUpWindowVM> service) {
             var startUpWindowVM = new StartUpWindowVM();
-            var suw = new StartUpWindow()
-            {
-                DataContext = startUpWindowVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
 
-            var suw_result = suw.ShowDialog();
+            var suw_result = service.ShowDialog(startUpWindowVM);
             if (suw_result != true) return null;
 
             ParameterBase parameter = ParameterFactory.CreateParameter(startUpWindowVM.Ionization, startUpWindowVM.SeparationType);
