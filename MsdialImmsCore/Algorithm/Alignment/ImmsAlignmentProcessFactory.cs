@@ -18,7 +18,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         }
 
         public override DataAccessor CreateDataAccessor() {
-            return new ImmsDataAccessor();
+            return new ImmsDataAccessor(ImmsParameter.CentroidMs1Tolerance);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {

@@ -14,12 +14,26 @@ namespace CompMs.MsdialImmsCore.Algorithm
 {
     class ImmsDataAccessor : DataAccessor
     {
+        public ImmsDataAccessor(double massTolerance) {
+            this.massTolerance = massTolerance;
+        }
+
+        private readonly double massTolerance;
+
         public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum) {
-            var detected = spot.AlignedPeakProperties.Where(prop => prop.MasterPeakID >= 0);
+            var detected = spot.AlignedPeakProperties.Where(prop => prop.MasterPeakID >= 0).ToArray();
+            if (!detected.Any()) {
+                throw new ArgumentException(nameof(spot));
+            }
+            var chromMax = detected.Max(x => x.ChromXsRight.Drift.Value);
+            var chromMin = detected.Min(x => x.ChromXsLeft.Drift.Value);
+            var tolerance = detected.Average(x => x.PeakWidth(ChromXType.Drift)) * 1.5f;
             var peaklist = GetMs1Peaklist(
                 spectrum, (float)peak.Mass,
-                (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-                peak.IonMode);
+                massTolerance,
+                peak.IonMode,
+                chromMin - tolerance,
+                chromMax + tolerance);
             return new ChromatogramPeakInfo(
                 peak.FileID, peaklist,
                 peak.ChromXsTop.Drift, peak.ChromXsLeft.Drift, peak.ChromXsRight.Drift);
