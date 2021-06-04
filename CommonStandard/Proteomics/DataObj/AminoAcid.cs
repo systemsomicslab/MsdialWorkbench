@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Extension;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
 using System;
 using System.Collections.Generic;
@@ -10,13 +12,32 @@ namespace CompMs.Common.Proteomics.DataObj {
         public string ThreeLetters { get; set; }
         public Formula Formula { get; set; } // original formula information
 
-        //public string ModifiedLetters { get; set; }
-        //public string ModifiedNtermLetters { get; set; }
-        //public string ModifiedCtermLetters { get; set; }
-        //public bool IsResidueModified { get; set; }
-        //public bool IsNtermModified { get; set; }
-        //public bool IsCtermModified { get; set; }
-        //public Formula ModifiedFormula { get; set; } = null; // modified molecular formula info
+        public string ModifiedCode { get; set; }
+        public Formula ModifiedFormula { get; set; }
+        public Formula ModifiedComposition { get; set; }
+
+        public bool IsModified() {
+            return !ModifiedCode.IsEmptyOrNull();
+        }
+
+        public double ExactMass() {
+            if (IsModified()) return ModifiedFormula.Mass;
+            return Formula.Mass;
+        }
+
+        public string Code() {
+            if (IsModified()) return ModifiedCode;
+            return OneLetter.ToString();
+        }
+
+        public Formula GetFormula() {
+            if (IsModified()) return ModifiedFormula;
+            return Formula;
+        }
+
+        public AminoAcid() {
+
+        }
 
         public AminoAcid(char oneletter) {
             var char2formula = AminoAcidObjUtility.OneChar2FormulaString;
@@ -28,6 +49,18 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         public AminoAcid(char oneletter, string code, Formula formula) {
             OneLetter = oneletter; ThreeLetters = code; Formula = formula;
+        }
+
+        public AminoAcid(AminoAcid aa, string modifiedCode, Formula modifiedComposition) {
+            this.OneLetter = aa.OneLetter;
+            this.ThreeLetters = aa.ThreeLetters;
+            this.Formula = aa.Formula;
+
+            if (modifiedCode.IsEmptyOrNull()) return;
+
+            this.ModifiedCode = modifiedCode;
+            this.ModifiedComposition = modifiedComposition;
+            this.ModifiedFormula = MolecularFormulaUtility.SumFormulas(modifiedComposition, aa.Formula);
         }
     }
 }

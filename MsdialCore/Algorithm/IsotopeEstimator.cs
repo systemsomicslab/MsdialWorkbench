@@ -282,24 +282,27 @@ namespace CompMs.MsdialCore.Algorithm {
 
         /// <summary>
         /// peak list must be sorted by m/z (ordering)
-        /// peak should be initialized by new Peak() { Mz = spec[0], Intensity = spec[1], Charge = 1, IsotopeFrag = false, Comment = "NA" }
+        /// peak should be initialized by new Peak() { Mz = spec[0], Intensity = spec[1], Charge = 1, IsotopeFrag = false  }
         /// </summary>
-        public static void MsmsIsotopeRecognition(List<SpectrumPeak> peaks, 
-            int maxTraceNumber, int maxChargeNumber, double tolerance,
-            IupacDatabase iupac) {
+        public static void EstimateIsotopes(List<SpectrumPeak> peaks, ParameterBase param, IupacDatabase iupac, double mztolerance, int maxChargeNumber = 0) {
+
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
+            var br81_br79 = MassDiffDictionary.Br81_Br79; //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
+            var tolerance = mztolerance;
             for (int i = 0; i < peaks.Count; i++) {
                 var peak = peaks[i];
-                if (peak.Comment != "NA") continue;
-                peak.IsotopeFrag = false;
-                peak.Comment = i.ToString();
+                peak.PeakID = i;
+                if (peak.IsotopeWeightNumber >= 0) continue;
+
+                peak.IsotopeWeightNumber = 0;
+                peak.IsotopeParentPeakID = i;
 
                 // charge state checking at M + 1
                 var predChargeNumber = 1;
                 for (int j = i + 1; j < peaks.Count; j++) {
                     var isotopePeak = peaks[j];
                     if (isotopePeak.Mass > peak.Mass + c13_c12Diff + tolerance) break;
-                    if (isotopePeak.Comment != "NA") continue;
+                    if (isotopePeak.IsotopeWeightNumber >= 0) continue;
 
                     for (int k = maxChargeNumber; k >= 1; k--) {
                         var predIsotopeMass = (double)peak.Mass + (double)c13_c12Diff / (double)k;
@@ -339,82 +342,186 @@ namespace CompMs.MsdialCore.Algorithm {
                 peak.Charge = predChargeNumber;
 
                 // isotope grouping till M + 8
+                var maxTraceNumber = 15;
                 var isotopeTemps = new IsotopeTemp[maxTraceNumber + 1];
-                isotopeTemps[0] = new IsotopeTemp() { WeightNumber = 0, Mz = peak.Mass, Intensity = peak.Intensity, PeakID = i };
+                isotopeTemps[0] = new IsotopeTemp() { WeightNumber = 0, 
+                    Mz = peak.Mass, Intensity = peak.Intensity, PeakID = i, MzClBr = peak.Mass };
+
+                for (int j = 1; j < isotopeTemps.Length; j++) {
+                    isotopeTemps[j] = new IsotopeTemp() {
+                        WeightNumber = j, Mz = peak.Mass + (double)j * c13_c12Diff / (double)predChargeNumber,
+                        MzClBr = j % 2 == 0 ? peak.Mass + (double)j * c13_c12Diff / (double)predChargeNumber : peak.Mass + (double)j * br81_br79 * 0.5 / (double)predChargeNumber,
+                        Intensity = 0, PeakID = -1
+                    };
+                }
 
                 var reminderIndex = i + 1;
                 var isFinished = false;
+                var mzFocused = peak.Mass;
                 for (int j = 1; j <= maxTraceNumber; j++) {
-                    var predIsotopicMass = (double)peak.Mass + (double)j * c13_c12Diff / (double)predChargeNumber;
+                    var predIsotopicMass = mzFocused + (double)c13_c12Diff / (double)predChargeNumber;
+                    var predClBrIsotopicMass = mzFocused + (double)br81_br79 * 0.5 / (double)predChargeNumber;
 
                     for (int k = reminderIndex; k < peaks.Count; k++) {
                         var isotopePeak = peaks[k];
-                        if (isotopePeak.Comment != "NA") continue;
+                        if (isotopePeak.IsotopeWeightNumber >= 0) continue;
 
-                        if (predIsotopicMass - tolerance < isotopePeak.Mass && isotopePeak.Mass < predIsotopicMass + tolerance) {
-                            if (isotopeTemps[j] == null) {
+                        var isotopeMz = isotopePeak.Mass;
+                        var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
+                        var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
+
+                        if (diffMz < tolerance) {
+
+                            if (isotopeTemps[j].PeakID == -1) {
                                 isotopeTemps[j] = new IsotopeTemp() {
-                                    WeightNumber = j,
-                                    Mz = isotopePeak.Mass,
-                                    Intensity = isotopePeak.Intensity,
-                                    PeakID = k
+                                    WeightNumber = j, Mz = isotopeMz,
+                                    Intensity = isotopePeak.Intensity, PeakID = k
                                 };
-                            } else {
-                                if (Math.Abs(isotopeTemps[j].Mz - predIsotopicMass) > Math.Abs(isotopePeak.Mass - predIsotopicMass)) {
-                                    isotopeTemps[j].Mz = isotopePeak.Mass;
+                                mzFocused = isotopeMz;
+                            }
+                            else {
+                                if (Math.Abs(isotopeTemps[j].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                    isotopeTemps[j].Mz = isotopeMz;
                                     isotopeTemps[j].Intensity = isotopePeak.Intensity;
                                     isotopeTemps[j].PeakID = k;
+
+                                    mzFocused = isotopeMz;
+                                }
+                            }
+                        }
+                        else if (param.IsBrClConsideredForIsotopes && j % 2 == 0 && diffMzClBr < tolerance) {
+                            if (isotopeTemps[j].PeakID == -1) {
+                                isotopeTemps[j] = new IsotopeTemp() {
+                                    WeightNumber = j, Mz = isotopeMz, MzClBr = isotopeMz,
+                                    Intensity = isotopePeak.Intensity, PeakID = k
+                                };
+                                mzFocused = isotopeMz;
+                            }
+                            else {
+                                if (Math.Abs(isotopeTemps[j].Mz - predIsotopicMass) > Math.Abs(isotopeMz - predIsotopicMass)) {
+                                    isotopeTemps[j].Mz = isotopeMz;
+                                    isotopeTemps[j].MzClBr = isotopeMz;
+                                    isotopeTemps[j].Intensity = isotopePeak.Intensity;
+                                    isotopeTemps[j].PeakID = k;
+
+                                    mzFocused = isotopeMz;
                                 }
                             }
                         }
                         else if (isotopePeak.Mass >= predIsotopicMass + tolerance) {
+                            if (k == peaks.Count - 1) break;
                             reminderIndex = k;
-                            if (isotopeTemps[j] == null) isFinished = true;
+                            if (isotopeTemps[j - 1].PeakID == -1 && isotopeTemps[j].PeakID == -1) {
+                                isFinished = true;
+                            }
+                            else if (isotopeTemps[j].PeakID == -1) {
+                                mzFocused += (double)c13_c12Diff / (double)predChargeNumber;
+                            }
                             break;
                         }
+                        #region
+                        //if (predIsotopicMass - tolerance < isotopePeak.Mass && isotopePeak.Mass < predIsotopicMass + tolerance) {
+                        //    if (isotopeTemps[j] == null) {
+                        //        isotopeTemps[j] = new IsotopeTemp() {
+                        //            WeightNumber = j,
+                        //            Mz = isotopePeak.Mass,
+                        //            Intensity = isotopePeak.Intensity,
+                        //            PeakID = k
+                        //        };
+                        //    } else {
+                        //        if (Math.Abs(isotopeTemps[j].Mz - predIsotopicMass) > Math.Abs(isotopePeak.Mass - predIsotopicMass)) {
+                        //            isotopeTemps[j].Mz = isotopePeak.Mass;
+                        //            isotopeTemps[j].Intensity = isotopePeak.Intensity;
+                        //            isotopeTemps[j].PeakID = k;
+                        //        }
+                        //    }
+                        //}
+                        //else if (isotopePeak.Mass >= predIsotopicMass + tolerance) {
+                        //    reminderIndex = k;
+                        //    if (isotopeTemps[j] == null) isFinished = true;
+                        //    break;
+                        //}
+                        #endregion
                     }
                     if (isFinished)
                         break;
                 }
 
                 // finalize and store
-                var reminderIntensity = peak.Intensity;
                 var monoisotopicMass = (double)peak.Mass * (double)predChargeNumber;
                 var simulatedFormulaByAlkane = getSimulatedFormulaByAlkane(monoisotopicMass);
 
                 //from here, simple decreasing will be expected for <= 800 Da
                 //simulated profiles by alkane formula will be projected to the real abundances for the peaks of more than 800 Da
                 IsotopeProperty simulatedIsotopicPeaks = null;
+                var isIsotopeDetected = false;
                 if (monoisotopicMass > 800)
-                    simulatedIsotopicPeaks = IsotopeCalculator.GetNominalIsotopeProperty(simulatedFormulaByAlkane, 9, iupac);
+                    simulatedIsotopicPeaks = IsotopeCalculator.GetNominalIsotopeProperty(simulatedFormulaByAlkane, maxTraceNumber + 1, iupac);
 
                 for (int j = 1; j <= maxTraceNumber; j++) {
-                    if (isotopeTemps[j] == null) break;
-                    if (isotopeTemps[j].Intensity <= 0) break;
+                    if (isotopeTemps[j].PeakID == -1) continue;
+                    if (isotopeTemps[j - 1].PeakID == -1 && isotopeTemps[j].PeakID == -1) break;
 
                     if (monoisotopicMass <= 800) {
-                        if (isotopeTemps[j - 1].Intensity > isotopeTemps[j].Intensity) {
-                            peaks[isotopeTemps[j].PeakID].IsotopeFrag = true;
+                        if (isotopeTemps[j - 1].Intensity > isotopeTemps[j].Intensity && param.IsBrClConsideredForIsotopes == false) {
+                            peaks[isotopeTemps[j].PeakID].IsotopeParentPeakID = peak.PeakID;
+                            peaks[isotopeTemps[j].PeakID].IsotopeWeightNumber = j;
                             peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
-                            peaks[isotopeTemps[j].PeakID].Comment = i.ToString();
+                            isIsotopeDetected = true;
+                        }
+                        else if (param.IsBrClConsideredForIsotopes == true) {
+                            peaks[isotopeTemps[j].PeakID].IsotopeParentPeakID = peak.PeakID;
+                            peaks[isotopeTemps[j].PeakID].IsotopeWeightNumber = j;
+                            peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
+                            isIsotopeDetected = true;
                         }
                         else {
                             break;
                         }
                     }
                     else {
+                        if (isotopeTemps[j - 1].Intensity <= 0) break;
                         var expRatio = isotopeTemps[j].Intensity / isotopeTemps[j - 1].Intensity;
                         var simRatio = simulatedIsotopicPeaks.IsotopeProfile[j].RelativeAbundance / simulatedIsotopicPeaks.IsotopeProfile[j - 1].RelativeAbundance;
 
                         if (Math.Abs(expRatio - simRatio) < 5.0) {
-                            peaks[isotopeTemps[j].PeakID].IsotopeFrag = true;
+                            peaks[isotopeTemps[j].PeakID].IsotopeParentPeakID = peak.PeakID;
+                            peaks[isotopeTemps[j].PeakID].IsotopeWeightNumber = j;
                             peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
-                            peaks[isotopeTemps[j].PeakID].Comment = i.ToString();
+                            isIsotopeDetected = true;
                         }
                         else {
                             break;
                         }
                     }
+
+
+                    //if (monoisotopicMass <= 800) {
+                    //    if (isotopeTemps[j - 1].Intensity > isotopeTemps[j].Intensity) {
+                    //        peaks[isotopeTemps[j].PeakID].IsotopeFrag = true;
+                    //        peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
+                    //        peaks[isotopeTemps[j].PeakID].Comment = i.ToString();
+                    //    }
+                    //    else {
+                    //        break;
+                    //    }
+                    //}
+                    //else {
+                    //    var expRatio = isotopeTemps[j].Intensity / isotopeTemps[j - 1].Intensity;
+                    //    var simRatio = simulatedIsotopicPeaks.IsotopeProfile[j].RelativeAbundance / simulatedIsotopicPeaks.IsotopeProfile[j - 1].RelativeAbundance;
+
+                    //    if (Math.Abs(expRatio - simRatio) < 5.0) {
+                    //        peaks[isotopeTemps[j].PeakID].IsotopeFrag = true;
+                    //        peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
+                    //        peaks[isotopeTemps[j].PeakID].Comment = i.ToString();
+                    //    }
+                    //    else {
+                    //        break;
+                    //    }
+                    //}
+                }
+                if (!isIsotopeDetected) {
+                    peak.Charge = 1;
                 }
             }
         }

@@ -2,6 +2,7 @@
 using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -10,6 +11,7 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
@@ -1017,6 +1019,63 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             return massSpec;
+        }
+
+        /// <summary>
+        /// Give centroid spectrum
+        /// </summary>
+        /// <param name="spectrum"></param>
+        /// <param name="abscutoff"></param>
+        /// <param name="relcutoff"></param>
+        /// <returns></returns>
+        public static List<SpectrumPeak> GetAndromedaMS2Spectrum(List<SpectrumPeak> spectrum, ParameterBase param, IupacDatabase iupac, int precursorCharge) {
+            if (spectrum.IsEmptyOrNull()) return new List<SpectrumPeak>();
+            IsotopeEstimator.EstimateIsotopes(spectrum, param, iupac, param.CentroidMs2Tolerance, precursorCharge);
+            var peaks = new List<SpectrumPeak>();
+
+            // De isotoping
+            foreach (var peak in spectrum.OrderBy(n => n.IsotopeParentPeakID).ThenBy(n => n.IsotopeWeightNumber)) {
+                if (peak.IsotopeWeightNumber == 0) {
+                    peaks.Add(peak);
+                }
+                else {
+                    peaks[peaks.Count - 1].Intensity += peak.Intensity;
+                }
+            }
+
+            // collapse charge state
+            foreach (var peak in peaks) {
+                if (peak.Charge >= 2) {
+                    peak.Mass = peak.Mass * (double)peak.Charge;
+                }
+            }
+
+            return peaks.OrderBy(n => n.PeakID).ToList();
+        }
+
+        public static List<SpectrumPeak> GetAndromedaMS2Spectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
+
+            var peaks = new List<SpectrumPeak>();
+            var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
+
+            foreach (var peak in spectrum) {
+                var mass = peak.Mass;
+                var massframe = (int)(mass / delta);
+                if (range2Peaks.ContainsKey(massframe))
+                    range2Peaks[massframe].Add(peak);
+                else
+                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
+            }
+
+            foreach (var pair in range2Peaks) {
+                var counter = 1;
+                foreach (var peak in pair.Value.OrderByDescending(n => n.Intensity)) {
+                    if (counter > 12) break;
+                    peaks.Add(peak);
+                    counter++;
+                }
+            }
+            return peaks.OrderBy(n => n.PeakID).ToList();
         }
 
         // get properties
