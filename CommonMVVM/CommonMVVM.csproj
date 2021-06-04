@@ -86,6 +86,8 @@
     <Compile Include="Validator\ValidationBehavior.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
     <Compile Include="Common\Win32Wrapper.cs" />
+    <Compile Include="WindowService\DialogService.cs" />
+    <Compile Include="WindowService\IWindowService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
