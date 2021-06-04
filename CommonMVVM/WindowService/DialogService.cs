@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace CompMs.Common.WindowService
+namespace CompMs.CommonMVVM.WindowService
 {
     public class DialogService<TView, TViewModel> : IWindowService<TViewModel> where TView : Window, new()
     {

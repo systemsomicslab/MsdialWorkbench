@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CompMs.Common.WindowService
+namespace CompMs.CommonMVVM.WindowService
 {
     public interface IWindowService<TViewModel>
     {

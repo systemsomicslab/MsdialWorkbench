@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.StartUp;
-using CompMs.Common.WindowService;
+using CompMs.CommonMVVM.WindowService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
