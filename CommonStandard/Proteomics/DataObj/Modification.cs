@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.DataObj.Ion;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.Function;
+using CompMs.Common.Proteomics.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,25 +19,41 @@ namespace CompMs.Common.Proteomics.DataObj {
         public List<Modification> NotCtermMods { get; set; }
 
         public Dictionary<char, ModificationProtocol> AnywehereSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> NotCtermSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> AnyCtermSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> AnyNtermSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> ProteinCtermSite2Mod { get; set; }
+        public Dictionary<char, ModificationProtocol> ProteinNterm2Mod { get; set; }
+
+        public bool IsEmptyOrNull() {
+            return ProteinNtermMods.IsEmptyOrNull() && ProteinCtermMods.IsEmptyOrNull() &&
+                AnyNtermMods.IsEmptyOrNull() && AnyCtermMods.IsEmptyOrNull() &&
+                AnywhereMods.IsEmptyOrNull() && NotCtermMods.IsEmptyOrNull() &&
+                NotCtermSite2Mod.IsEmptyOrNull() && AnyCtermSite2Mod.IsEmptyOrNull() &&
+                AnyNtermSite2Mod.IsEmptyOrNull() && ProteinCtermSite2Mod.IsEmptyOrNull() && ProteinNterm2Mod.IsEmptyOrNull();
+        }
 
         public ModificationContainer(List<Modification> modifications) {
             ProteinNtermMods = modifications.Where(n => n.Position == "proteinNterm").ToList(); 
             ProteinCtermMods = modifications.Where(n => n.Position == "proteinCterm").ToList(); 
-            AnyCtermMods = modifications.Where(n => n.Position == "anyNterm").ToList(); 
+            AnyNtermMods = modifications.Where(n => n.Position == "anyNterm").ToList(); 
             AnyCtermMods = modifications.Where(n => n.Position == "anyCterm").ToList(); 
             AnywhereMods = modifications.Where(n => n.Position == "anywhere").ToList();
             NotCtermMods = modifications.Where(n => n.Position == "notCterm").ToList();
 
             AnywehereSite2Mod = GetModificationProtocolDict(AnywhereMods);
+            NotCtermSite2Mod = GetModificationProtocolDict(NotCtermMods);
+            AnyCtermSite2Mod = GetModificationProtocolDict(AnyCtermMods);
+            AnyNtermSite2Mod = GetModificationProtocolDict(AnyNtermMods);
+            ProteinCtermSite2Mod = GetModificationProtocolDict(ProteinCtermMods);
+            ProteinNterm2Mod = GetModificationProtocolDict(ProteinNtermMods);
         }
 
         public Dictionary<char, ModificationProtocol> GetModificationProtocolDict(List<Modification> modifications) {
             var dict = GetInitializeObject();
             foreach (var mod in modifications) {
                 foreach (var site in mod.ModificationSites) {
-
-
-
+                    dict[site.Site[0]].UpdateProtocol(site.Site[0], mod);
                 }
             }
             return dict;
@@ -54,9 +72,94 @@ namespace CompMs.Common.Proteomics.DataObj {
         }
     }
 
+    public sealed class ModificationUtility {
+        private ModificationUtility() { }
+
+        public static Formula GetModifiedComposition(List<Modification> modseqence) {
+            if (modseqence.IsEmptyOrNull()) return null;
+            var dict = new Dictionary<string, int>();
+            foreach (var mod in modseqence) {
+                var formula = mod.Composition;
+                foreach (var pair in formula.Element2Count) {
+                    if (dict.ContainsKey(pair.Key)) {
+                        dict[pair.Key] += pair.Value;
+                    }
+                    else {
+                        dict[pair.Key] = pair.Value;
+                    }
+                }
+            }
+            return new Formula(dict);
+        }
+
+        public static string GetModifiedAminoacidCode(string originalcode, List<Modification> modseqence) {
+            if (modseqence.IsEmptyOrNull()) return string.Empty;
+            var code = originalcode;
+            foreach (var mod in modseqence) {
+                code += ";" + mod.Title.Split('(')[0].Trim();
+            }
+            return code;
+        }
+
+        public static (string, Formula) GetModifiedCompositions(string originalcode, List<Modification> modseqence) {
+            if (modseqence.IsEmptyOrNull()) return (string.Empty, null);
+            var dict = new Dictionary<string, int>();
+            var code = originalcode;
+            var modCodes = new List<string>();
+            foreach (var mod in modseqence) {
+                modCodes.Add(mod.Title.Split('(')[0].Trim());
+
+                var formula = mod.Composition;
+                foreach (var pair in formula.Element2Count) {
+                    if (dict.ContainsKey(pair.Key)) {
+                        dict[pair.Key] += pair.Value;
+                    }
+                    else {
+                        dict[pair.Key] = pair.Value;
+                    }
+                }
+            }
+
+            if (!modCodes.IsEmptyOrNull()) {
+                code = code + "(" + String.Join(";", modCodes) + ")";
+            }
+
+            return (code, new Formula(dict));
+        }
+
+        public static ModificationContainer GetModificationContainer(List<string> selectedModifications) {
+            var mParser = new ModificationsXmlRefParser();
+            mParser.Read();
+
+            var modifications = mParser.Modifications;
+            return GetModificationContainer(modifications, selectedModifications);
+        }
+
+        public static ModificationContainer GetModificationContainer(List<Modification> modifications, List<string> selectedModifications) {
+            var sModifications = new List<Modification>();
+            foreach (var modString in selectedModifications) {
+                foreach (var modObj in modifications) {
+                    if (modString == modObj.Title) {
+                        sModifications.Add(modObj);
+                        break;
+                    }
+                }
+            }
+
+            return new ModificationContainer(sModifications);
+        }
+
+        public static List<Peptide> GetModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer) {
+            var mPeptides = new List<Peptide>();
+            foreach (var peptide in peptides) {
+                mPeptides.Add(PeptideCalc.Sequence2ModifiedPeptide(peptide, modContainer));
+            }
+            return mPeptides;
+        }
+    }
+
     public class ModificationProtocol {
         public AminoAcid OriginalAA { get; set; }
-
         public bool IsModified() { return !ModSequence.IsEmptyOrNull();  }
         public string ModifiedAACode { get; set; } //Tp, K(Acethyl)
         public AminoAcid ModifiedAA { get; set; }

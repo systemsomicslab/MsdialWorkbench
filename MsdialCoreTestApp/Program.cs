@@ -1,5 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
+using CompMs.App.MsdialConsole.ProteomicsTest;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.MsdialCore.Utility;
@@ -83,7 +84,9 @@ namespace CompMs.App.MsdialConsole {
 
             //new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
             //new EnzymesXmlRefParser().Read();
-            new ModificationsXmlRefParser().Read();
+            //new ModificationsXmlRefParser().Read();
+
+            new TestProteomicsProcess().ProcessTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");

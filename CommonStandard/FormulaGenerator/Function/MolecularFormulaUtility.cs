@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,6 +102,42 @@ namespace CompMs.Common.FormulaGenerator.Function {
             else {
                 return false;
             }
+        }
+
+        public static Formula SumFormulas(Formula formula1, Formula formula2) {
+            if (formula1 == null || formula2 == null) return null;
+            if (formula1.Element2Count.IsEmptyOrNull() || formula2.Element2Count.IsEmptyOrNull()) return null;
+            var dict = new Dictionary<string, int>();
+            foreach (var pair in formula1.Element2Count) {
+                dict[pair.Key] = pair.Value;
+            }
+            foreach (var pair in formula2.Element2Count) {
+                if (dict.ContainsKey(pair.Key))
+                    dict[pair.Key] += pair.Value;
+                else
+                    dict[pair.Key] = pair.Value;
+            }
+            return new Formula(dict);
+        }
+
+        public static Formula SumFormulas(List<Formula> formulas) {
+            if (formulas.IsEmptyOrNull()) return null;
+            if (formulas.Count() == 1) return formulas[0];
+            var dict = new Dictionary<string, int>();
+            foreach (var pair in formulas[0].Element2Count) {
+                dict[pair.Key] = pair.Value;
+            }
+
+            for (int i = 1; i < formulas.Count; i++) {
+                var formula = formulas[i];
+                foreach (var pair in formula.Element2Count) {
+                    if (dict.ContainsKey(pair.Key))
+                        dict[pair.Key] += pair.Value;
+                    else
+                        dict[pair.Key] = pair.Value;
+                }
+            }
+            return new Formula(dict);
         }
 
         public static Formula ConvertFormulaAdductPairToPrecursorAdduct(Formula formula, AdductIon adduct) {

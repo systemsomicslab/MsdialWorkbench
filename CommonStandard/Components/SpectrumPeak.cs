@@ -16,7 +16,6 @@ namespace CompMs.Common.Components
         public double Intensity { get; set; }
         [Key(2)]
         public string Comment { get; set; }
-
         [Key(3)]
         public double Resolution { get; set; }
         [Key(4)]
@@ -25,6 +24,12 @@ namespace CompMs.Common.Components
         public bool IsotopeFrag { get; set; }
         [Key(6)]
         public PeakQuality PeakQuality { get; set; }
+        [Key(7)]
+        public int PeakID { get; set; }
+        [Key(8)]
+        public int IsotopeParentPeakID { get; set; } = -1;
+        [Key(9)]
+        public int IsotopeWeightNumber { get; set; } = -1;
 
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, string comment = null) {

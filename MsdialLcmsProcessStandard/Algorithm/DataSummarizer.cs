@@ -33,7 +33,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             setBasicDataSummary(dataSummaryBean, spectrumCollection, analysisParametersBean);
             setPeakAreaBeanDataSummary(dataSummaryBean, peakAreaBeanList);
 
-            if (projectPropertyBean.MethodType == MethodType.diMSMS) setModelPeakDataSummary(dataSummaryBean, spectrumCollection, projectPropertyBean, peakAreaBeanCollection, analysisParametersBean);
+            if (projectPropertyBean.MethodType == MethodType.diMSMS && projectPropertyBean.SeparationType != SeparationType.IonMobility) 
+                setModelPeakDataSummary(dataSummaryBean, spectrumCollection, projectPropertyBean, peakAreaBeanCollection, analysisParametersBean);
         }
 
         private static void setBasicDataSummary(DataSummaryBean dataSummaryBean, ObservableCollection<RawSpectrum> spectrumCollection, AnalysisParametersBean param)

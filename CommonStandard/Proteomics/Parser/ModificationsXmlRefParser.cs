@@ -49,19 +49,19 @@ namespace CompMs.Common.Proteomics.Parser {
             using (var fs = assembly.GetManifestResourceStream(resourceName)) {
                 Read(fs);
             }
-            foreach (var mod in Modifications) {
-                Console.WriteLine("Title{0}, Description{1}, CreateDate{2}, LastModified{3}, User{4}, position{5}, type{6}, terminustype{7}",
-                    mod.Title, mod.Description, mod.CreateDate, mod.LastModifiedDate, mod.User, mod.Position, mod.Type, mod.TerminusType);
-                foreach (var site in mod.ModificationSites) {
-                    Console.WriteLine("Site{0}", site.Site);
-                    foreach (var nl in site.DiagnosticNLs) {
-                        Console.WriteLine("Name{0}, ShortName{1}, Formula{2}", nl.Name, nl.ShortName, nl.Formula.FormulaString);
-                    }
-                    foreach (var pl in site.DiagnosticIons) {
-                        Console.WriteLine("Name{0}, ShortName{1}, Formula{2}", pl.Name, pl.ShortName, pl.Formula.FormulaString);
-                    }
-                }
-            }
+            //foreach (var mod in Modifications) {
+            //    Console.WriteLine("Title{0}, Description{1}, CreateDate{2}, LastModified{3}, User{4}, position{5}, type{6}, terminustype{7}",
+            //        mod.Title, mod.Description, mod.CreateDate, mod.LastModifiedDate, mod.User, mod.Position, mod.Type, mod.TerminusType);
+            //    foreach (var site in mod.ModificationSites) {
+            //        Console.WriteLine("Site{0}", site.Site);
+            //        foreach (var nl in site.DiagnosticNLs) {
+            //            Console.WriteLine("Name{0}, ShortName{1}, Formula{2}", nl.Name, nl.ShortName, nl.Formula.FormulaString);
+            //        }
+            //        foreach (var pl in site.DiagnosticIons) {
+            //            Console.WriteLine("Name{0}, ShortName{1}, Formula{2}", pl.Name, pl.ShortName, pl.Formula.FormulaString);
+            //        }
+            //    }
+            //}
         }
 
         private void parseRun() {

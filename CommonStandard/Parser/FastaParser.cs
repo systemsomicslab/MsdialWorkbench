@@ -26,6 +26,12 @@ namespace CompMs.Common.Parser {
                             if (wkstr.StartsWith(">")) break;
                             fastaQuery.Sequence += wkstr.Trim();
                         }
+                        if (fastaQuery.Sequence.Contains("X") || fastaQuery.Sequence.Contains("*") || fastaQuery.Sequence.Contains("-")) {
+                            fastaQuery.IsValidated = false;
+                        }
+                        else {
+                            fastaQuery.IsValidated = true;
+                        }
                         queries.Add(fastaQuery);
                     }
                     else {
