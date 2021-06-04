@@ -26,15 +26,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public LcimmsMethodVM(LcimmsMethodModel model) : base(model.Serializer) {
             this.model = model;
-            analysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
-            alignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
+            AnalysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
+            AlignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
         private readonly LcimmsMethodModel model;
-        private readonly ICollectionView analysisFilesView;
-        private readonly ICollectionView alignmentFilesView;
+        public ICollectionView AnalysisFilesView { get; }
+        public ICollectionView AlignmentFilesView { get; }
 
         public AnalysisLcimmsVM AnalysisVM {
             get => analysisVM;
@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private AnalysisFileBean cacheAnalysisFile;
         private void LoadSelectedAnalysisFile() {
-            if (analysisFilesView.CurrentItem is AnalysisFileBean analysis) {
+            if (AnalysisFilesView.CurrentItem is AnalysisFileBean analysis) {
                 LoadAnalysisFile(analysis);
             }
         }
@@ -214,7 +214,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private AlignmentFileBean cacheAlignmentFile;
         private void LoadSelectedAlignmentFile() {
-            if (alignmentFilesView.CurrentItem is AlignmentFileBean alignment) {
+            if (AlignmentFilesView.CurrentItem is AlignmentFileBean alignment) {
                 LoadAlignmentFile(alignment);
             }
         }

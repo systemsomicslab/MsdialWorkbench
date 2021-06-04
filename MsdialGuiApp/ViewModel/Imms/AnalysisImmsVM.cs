@@ -1,26 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.Common.Components;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
-using NSSplash;
-using NSSplash.impl;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -30,9 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
-            IDataProvider provider,
-            ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
 
             this.model = model;
 
@@ -51,11 +40,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             SurveyScanViewModel = new Chart.SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Subscribe(async t => await OnTargetChangedAsync(t));
+            Target.Subscribe(t => OnTargetChanged(t));
 
             this.analysisFile = analysisFile;
-            this.provider = provider;
-            this.parameter = parameter;
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
             FileName = analysisFile.AnalysisFileName;
@@ -69,9 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
-        private readonly ParameterBase parameter;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
-        private readonly IDataProvider provider;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -108,27 +93,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref surveyScanViewModel, value);
         }
         private Chart.SurveyScanViewModel surveyScanViewModel;
-
-        public List<SpectrumPeakWrapper> Ms1Spectrum
-        {
-            get => ms1Spectrum;
-            set {
-                if (SetProperty(ref ms1Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms1SpectrumMaxIntensity));
-                }
-            }
-        }
-        private List<SpectrumPeakWrapper> ms1Spectrum = new List<SpectrumPeakWrapper>();
-
-        public double Ms1SpectrumMaxIntensity => Ms1Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty().Max();
-
-        public string Ms1SplashKey {
-            get => ms1SplashKey;
-            set => SetProperty(ref ms1SplashKey, value);
-        }
-        private string ms1SplashKey = string.Empty;
-
-        public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
@@ -228,61 +192,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Ms1Peaks?.Refresh();
         }
 
-        private CancellationTokenSource cts;
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
-            cts?.Cancel();
-            var localCts = cts = new CancellationTokenSource();
-
-            try {
-                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
-                    t => {
-                        localCts.Dispose();
-                        if (cts == localCts)
-                            cts = null;
-                    }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) {
-
-            }
-        }
-
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        void OnTargetChanged(ChromatogramPeakFeatureModel target) {
             if (target != null) {
                 FocusID = target.InnerModel.MasterPeakID;
                 FocusDt = target.ChromXValue ?? 0;
                 FocusMz = target.Mass;
             }
-
-            await Task.WhenAll(
-                LoadMs1SpectrumAsync(target, token)
-            ).ConfigureAwait(false);
-        }
-
-        async Task LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms1Spectrum = new List<SpectrumPeakWrapper>();
-            var ms1SplashKey = string.Empty;
-
-            if (target != null) {
-                await Task.Run(() => {
-                    if (target.MS1RawSpectrumIdTop < 0) {
-                        return;
-                    }
-                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
-                    ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                    ms1SplashKey = CalculateSplashKey(spectra);
-                }, token);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms1Spectrum = ms1Spectrum;
-            Ms1SplashKey = ms1SplashKey;
-        }
-
-        static string CalculateSplashKey(IReadOnlyCollection<SpectrumPeak> spectra) {
-            if (spectra.IsEmptyOrNull() || spectra.Count <= 2 && spectra.All(peak => peak.Intensity == 0))
-                return "N/A";
-            var msspectrum = new MSSpectrum(string.Join(" ", spectra.Select(peak => $"{peak.Mass}:{peak.Intensity}").ToArray()));
-            return new Splash().splashIt(msspectrum);
         }
 
         public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
