@@ -323,15 +323,15 @@ namespace CompMs.App.Msdial
             }
         }
 
-        public DelegateCommand<Window> GoToTutorialCommand {
-            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand<Window>(GoToTutorial));
+        public DelegateCommand GoToTutorialCommand {
+            get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand(GoToTutorial));
         }
 
-        private void GoToTutorial(Window obj) {
+        private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
         }
 
-        private DelegateCommand<Window> goToTutorialCommand;
+        private DelegateCommand goToTutorialCommand;
 
     }
 }
