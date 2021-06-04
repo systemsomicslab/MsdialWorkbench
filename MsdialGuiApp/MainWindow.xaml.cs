@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.StartUp;
+﻿using CompMs.App.Msdial.Property;
+using CompMs.App.Msdial.StartUp;
 using CompMs.CommonMVVM.WindowService;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace CompMs.App.Msdial
             InitializeComponent();
 
             var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
-            DataContext = new MainWindowVM(startUpService);
+            var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetWindowVM>(this);
+            DataContext = new MainWindowVM(startUpService, analysisFilePropertySetService);
         }
 
         public void CloseOwnedWindows() {

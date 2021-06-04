@@ -23,15 +23,22 @@ namespace CompMs.App.Msdial
     class MainWindowVM : ViewModelBase {
 
         public MainWindowVM(
-            IWindowService<StartUpWindowVM> startUpService) {
+            IWindowService<StartUpWindowVM> startUpService,
+            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
 
+            if (analysisFilePropertySetService is null) {
+                throw new ArgumentNullException(nameof(analysisFilePropertySetService));
+            }
+
             this.startUpService = startUpService;
+            this.analysisFilePropertySetService = analysisFilePropertySetService;
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
+        private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
 
         public MethodVM MethodVM {
             get => methodVM;
@@ -72,7 +79,7 @@ namespace CompMs.App.Msdial
             storage.ParameterBase = parameter;
 
             // Set analysis file property
-            if (!ProcessSetAnalysisFile(window, storage))
+            if (!ProcessSetAnalysisFile(analysisFilePropertySetService, storage))
                 return;
 
             RunProcessAll(window, storage);
@@ -138,20 +145,17 @@ namespace CompMs.App.Msdial
             return parameter;
         }
 
-        private static bool ProcessSetAnalysisFile(Window owner, MsdialDataStorage storage) {
+        private static bool ProcessSetAnalysisFile(
+            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            MsdialDataStorage storage) {
+
             var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
             {
                 ProjectFolderPath = storage.ParameterBase.ProjectFolderPath,
                 MachineCategory = storage.ParameterBase.MachineCategory,
             };
-            var afpsw = new AnalysisFilePropertySetWindow()
-            {
-                DataContext = analysisFilePropertySetWindowVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
 
-            var afpsw_result = afpsw.ShowDialog();
+            var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
             if (afpsw_result != true) return false;
 
             storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
