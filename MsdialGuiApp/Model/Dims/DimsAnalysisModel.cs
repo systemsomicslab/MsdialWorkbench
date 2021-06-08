@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 new ContinuousAxisManager<double>(0, 1, 0, 0),
                 "Intensity",
                 "Abundance");
-            var decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks).AddTo(disposables);
+            decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks).AddTo(disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 horizontalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z"),
                 rawVerticalData: ms2MeasureIntensityAxis,
@@ -87,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly IDataProvider provider;
+        private readonly MsDecSpectrumLoader decLoader;
 
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
@@ -209,8 +210,8 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string deconvolutionSplashKey = string.Empty;
 
-        public MSDecResult MsdecResult => msdecResult;
-        private MSDecResult msdecResult = null;
+        public MSDecResult MsdecResult => decLoader.Result;
+
         private bool disposedValue;
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {
@@ -228,11 +229,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
                 Target.InnerModel,
-                msdecResult,
+                MsdecResult,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.InnerModel != null && msdecResult != null;
+        public bool CanSaveSpectra() => Target.InnerModel != null && MsdecResult != null;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
