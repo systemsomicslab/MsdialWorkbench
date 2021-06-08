@@ -89,7 +89,7 @@ namespace CompMs.MsdialDimsCore {
 
                 var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
                 if (peakPickResults.IsEmptyOrNull()) return;
-                var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList);
+                var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType);
 
                 if (peakFeatures.Count == 0) return;
                 // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
@@ -134,7 +134,7 @@ namespace CompMs.MsdialDimsCore {
             throw new FileLoadException($"Loading {access.Filepath} failed.");
         }
 
-        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, List<RawSpectrum> allSpectra) {
+        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, List<RawSpectrum> allSpectra, AcquisitionType type) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
             var ms2SpecObjects = allSpectra
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
@@ -150,7 +150,17 @@ namespace CompMs.MsdialDimsCore {
                 peakFeature.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
-                peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDs(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                switch (type) {
+                    case AcquisitionType.AIF:
+                    case AcquisitionType.SWATH:
+                        peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDsDIA(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                        break;
+                    case AcquisitionType.DDA:
+                        peakFeature.MS2RawSpectrumID2CE = GetMS2RawSpectrumIDsDDA(peakFeature.PrecursorMz, ms2SpecObjects); // maybe, in msmsall, the id count is always one but for just in case
+                        break;
+                    default:
+                        throw new NotSupportedException(nameof(type));
+                }
                 peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
                 peakFeatures.Add(peakFeature);
 
@@ -171,21 +181,48 @@ namespace CompMs.MsdialDimsCore {
         /// <param name="ms2SpecObjects"></param>
         /// <param name="mzTolerance"></param>
         /// <returns></returns>
-        private static Dictionary<int, double> GetMS2RawSpectrumIDs(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
+        /// 
+        private static Dictionary<int, double> GetMS2RawSpectrumIDsDIA(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
             var ID2CE = new Dictionary<int, double>();
-            var startID = SearchCollection.LowerBound(
+            int startID = SearchCollection.LowerBound(
                 ms2SpecObjects,
                 new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
                 (x, y) => (x.Precursor.IsolationTargetMz + x.Precursor.IsolationWindowUpperOffset).CompareTo(y.Precursor.IsolationTargetMz + y.Precursor.IsolationWindowUpperOffset));
             
             for (int i = startID; i < ms2SpecObjects.Count; i++) {
                 var spec = ms2SpecObjects[i];
-                if (spec.Precursor.IsolationTargetMz + spec.Precursor.IsolationWindowUpperOffset < precursorMz - mzTolerance) continue;
-                if (spec.Precursor.IsolationTargetMz - spec.Precursor.IsolationWindowLowerOffset > precursorMz + mzTolerance) break;
+                if (spec.Precursor.IsolationTargetMz - precursorMz < - spec.Precursor.IsolationWindowUpperOffset - mzTolerance) continue;
+                if (spec.Precursor.IsolationTargetMz - precursorMz > spec.Precursor.IsolationWindowLowerOffset + mzTolerance) break;
 
                 ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
             }
             return ID2CE; /// maybe, in msmsall, the id count is always one but for just in case
+        }
+
+        /// <summary>
+        /// currently, the mass tolerance is based on ad hoc (maybe can be added to parameter obj.)
+        /// the mass tolerance is considered by the basic quadrupole mass resolution.
+        /// </summary>
+        /// <param name="precursorMz"></param>
+        /// <param name="ms2SpecObjects"></param>
+        /// <param name="mzTolerance"></param>
+        /// <returns></returns>
+        /// 
+        private static Dictionary<int, double> GetMS2RawSpectrumIDsDDA(double precursorMz, List<RawSpectrum> ms2SpecObjects, double mzTolerance = 0.25) {
+            var ID2CE = new Dictionary<int, double>();
+            int startID = SearchCollection.LowerBound(
+                ms2SpecObjects,
+                new RawSpectrum { Precursor = new RawPrecursorIon { IsolationTargetMz = precursorMz - mzTolerance, IsolationWindowUpperOffset = 0, } },
+                (x, y) => (x.Precursor.IsolationTargetMz).CompareTo(y.Precursor.IsolationTargetMz));
+            
+            for (int i = startID; i < ms2SpecObjects.Count; i++) {
+                var spec = ms2SpecObjects[i];
+                if (spec.Precursor.IsolationTargetMz - precursorMz < - mzTolerance) continue;
+                if (spec.Precursor.IsolationTargetMz - precursorMz > + mzTolerance) break;
+
+                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
+            }
+            return ID2CE;
         }
 
         private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {

@@ -203,11 +203,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             foreach (var spec in spectrumList) {
                 if (spec.Precursor != null && spec.ScanPolarity == scanPolarity) {
                     var specPrecMz = spec.Precursor.SelectedIonMz;
-                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
-                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
 
-                    var IsMassInWindow = specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol
-                           ? true : false;
+                    var IsMassInWindow = IsInMassWindow(mass, spec, ms2Tol, param.AcquisitionType);
                     var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
                         ? true : false; // used for diapasef
 
@@ -216,7 +213,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                             IsDtInWindow = true;
                         }
                     }
-                    if (IsMassInWindow && IsMassInWindow) {
+                    if (IsMassInWindow && IsDtInWindow) {
                         specs.Add(spec);
                     }
                     //if (specPrecMz - lowerOffset - ms2Tol < mass & mass < specPrecMz + upperOffset + ms2Tol) {
@@ -235,6 +232,21 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (representatives.Any()) {
                 feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
                 feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
+            }
+        }
+
+        private static bool IsInMassWindow(double mass, RawSpectrum spec, double massTol, AcquisitionType type) {
+            var specPrecMz = spec.Precursor.SelectedIonMz;
+            switch (type) {
+                case AcquisitionType.AIF:
+                case AcquisitionType.SWATH:
+                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
+                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
+                    return specPrecMz - lowerOffset - massTol < mass && mass < specPrecMz + upperOffset + massTol;
+                case AcquisitionType.DDA:
+                    return Math.Abs(specPrecMz - mass) < massTol;
+                default:
+                    throw new NotSupportedException(nameof(type));
             }
         }
 
