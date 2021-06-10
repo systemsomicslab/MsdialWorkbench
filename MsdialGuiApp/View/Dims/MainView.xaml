@@ -221,8 +221,8 @@
                                  Header="Alignment spot viewer" 
                                  DataContext="{Binding AlignmentVM}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
 
-                            <commonview:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
-                                <commonview:AlignmentPeakPlotView.LabelTemplate>
+                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                <chart:AlignmentPeakPlotView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel.Resources>
@@ -239,8 +239,8 @@
                                             <TextBlock Text=";"/>
                                         </StackPanel>
                                     </DataTemplate>
-                                </commonview:AlignmentPeakPlotView.LabelTemplate>
-                            </commonview:AlignmentPeakPlotView>
+                                </chart:AlignmentPeakPlotView.LabelTemplate>
+                            </chart:AlignmentPeakPlotView>
                         </TabItem>
 
                     </TabControl>
@@ -259,12 +259,12 @@
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource LightThemeColor}">
-                            <commonview:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
+                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
                         </TabItem>
 
 
                         <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
-                            <commonview:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>
@@ -352,13 +352,13 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource LightThemeColor}" 
                                  Height="25">
-                            <commonview:RepRef2View>
-                                <commonview:RepRef2View.ContextMenu>
+                            <chart:RepRefView>
+                                <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
-                                </commonview:RepRef2View.ContextMenu>
-                            </commonview:RepRef2View>
+                                </chart:RepRefView.ContextMenu>
+                            </chart:RepRefView>
                         </TabItem>
 
                     </TabControl>

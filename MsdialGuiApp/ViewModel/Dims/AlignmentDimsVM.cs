@@ -3,31 +3,36 @@ using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class AlignmentDimsVM : AlignmentFileVM
+    class AlignmentDimsVM : AlignmentFileVM
     {
         public AlignmentDimsVM(DimsAlignmentModel model) {
             Model = model;
             Ms1Spots = CollectionViewSource.GetDefaultView(model.Ms1Spots);
-            MassLower = model.MassMin;
-            MassUpper = model.MassMax;
+            MassLower = model.Ms1Spots.Min(spot => spot.MassCenter);
+            MassUpper = model.Ms1Spots.Max(spot => spot.MassCenter);
 
-            WeakEventManager<DimsAlignmentModel, PropertyChangedEventArgs>.AddHandler(model, "PropertyChanged", (s, e) => Application.Current.Dispatcher.Invoke(SearchCompoundCommand.RaiseCanExecuteChanged));
+            Brushes = Model.Brushes.AsReadOnly();
+            SelectedBrush = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
-            PlotViewModel = new AlignmentPeakPlotVM(Model.PlotModel, "MassCenter", "KMD", Model.FileName, "m/z", "Kendrick mass defect");
-            Ms2SpectrumViewModel = new MsSpectrumViewModel<AlignmentSpotPropertyModel>(model.Ms2SpectrumModel, "Mass", "Intensity");
-            AlignmentEicViewModel = new AlignmentEicViewModel(Model.AlignmentEicModel);
-            BarChartViewModel = new BarChartViewModel(Model.BarChartModel);
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(Model.PlotModel, brushSource: SelectedBrush).AddTo(Disposables);
+            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
+            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(Model.AlignmentEicModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(Model.BarChartModel).AddTo(Disposables);
         }
 
         public DimsAlignmentModel Model { get; }
@@ -44,29 +49,33 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private ICollectionView ms1Spots;
 
-        public AlignmentPeakPlotVM PlotViewModel {
+        public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
             private set => SetProperty(ref plotViewModel, value);
         }
-        private AlignmentPeakPlotVM plotViewModel;
+        private Chart.AlignmentPeakPlotViewModel plotViewModel;
 
-        public MsSpectrumViewModel<AlignmentSpotPropertyModel> Ms2SpectrumViewModel {
+        public Chart.MsSpectrumViewModel Ms2SpectrumViewModel {
             get => ms2SpectrumViewModel;
             private set => SetProperty(ref ms2SpectrumViewModel, value);
         }
-        private MsSpectrumViewModel<AlignmentSpotPropertyModel> ms2SpectrumViewModel;
+        private Chart.MsSpectrumViewModel ms2SpectrumViewModel;
 
-        public AlignmentEicViewModel AlignmentEicViewModel {
+        public Chart.AlignmentEicViewModel AlignmentEicViewModel {
             get => alignmentEicViewModel;
             private set => SetProperty(ref alignmentEicViewModel, value);
         }
-        private AlignmentEicViewModel alignmentEicViewModel;
+        private Chart.AlignmentEicViewModel alignmentEicViewModel;
 
-        public BarChartViewModel BarChartViewModel {
+        public Chart.BarChartViewModel BarChartViewModel {
             get => barChartViewModel;
             private set => SetProperty(ref barChartViewModel, value);
         }
-        private BarChartViewModel barChartViewModel;
+        private Chart.BarChartViewModel barChartViewModel;
+
+        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public double MassLower {
             get => massLower;
@@ -174,10 +183,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            if (Model.Target?.innerModel == null || Model.MsdecResult == null)
+            if (Model.Target.Value?.innerModel == null || Model.MsdecResult == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(Model.AlignmentFile, Model.Target.innerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(Model.AlignmentFile, Model.Target.Value.innerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
@@ -186,13 +195,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             if (window.ShowDialog() == true) {
-                Model.Target.RaisePropertyChanged();
-                _ = Model.OnTargetChangedAsync(Model.Target);
+                Model.Target.Value.RaisePropertyChanged();
                 Ms1Spots?.Refresh();
             }
         }
 
-        private bool CanSearchCompound(Window owner) => (Model.Target?.innerModel) != null && Model.MsdecResult != null;
+        private bool CanSearchCompound(Window owner) => (Model.Target.Value?.innerModel) != null && Model.MsdecResult != null;
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;

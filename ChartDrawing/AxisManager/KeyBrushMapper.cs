@@ -6,6 +6,48 @@ using System.Windows.Media;
 
 namespace CompMs.Graphics.AxisManager
 {
+    public class KeyBrushMapper<T, U> : BrushMapper<T>
+    {
+        public KeyBrushMapper(IReadOnlyDictionary<U, Brush> mapper, Func<T, U> func, Brush defaultValue) {
+            this.mapper = mapper;
+            this.func = func;
+            this.defaultValue = defaultValue;
+        }
+
+        public KeyBrushMapper(IReadOnlyDictionary<U, Brush> mapper, Func<T, U> func) : this(mapper, func, null) {
+
+        }
+
+        public KeyBrushMapper(IReadOnlyDictionary<U, Color> mapper, Func<T, U> func, Color defaultValue) {
+            this.mapper = mapper.ToDictionary(kvp => kvp.Key, kvp => (Brush)new SolidColorBrush(kvp.Value));
+            foreach (var value in this.mapper.Values) {
+                value.Freeze();
+            }
+            this.func = func;
+            this.defaultValue = new SolidColorBrush(defaultValue);
+        }
+
+        public KeyBrushMapper(IReadOnlyDictionary<U, Color> mapper, Func<T, U> func) {
+            this.mapper = mapper.ToDictionary(kvp => kvp.Key, kvp => (Brush)new SolidColorBrush(kvp.Value));
+            foreach (var value in this.mapper.Values) {
+                value.Freeze();
+            }
+            this.func = func;
+        }
+
+        private readonly Func<T, U> func;
+        private readonly IReadOnlyDictionary<U, Brush> mapper;
+        private readonly Brush defaultValue;
+
+        public override Brush Map(T key) {
+
+            if (mapper.TryGetValue(func(key), out var brush)) {
+                return brush;
+            }
+            return defaultValue ?? throw new ArgumentException($"Unknown key({key}) passed.");
+        }
+    }
+
     public class KeyBrushMapper<T> : BrushMapper<T>
     {
         public KeyBrushMapper(IReadOnlyDictionary<T, Brush> mapper) {

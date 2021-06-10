@@ -7,7 +7,7 @@ namespace CompMs.Graphics.Base
         Brush Map(object key);
     }
 
-    public interface IBrushMapper<T> : IBrushMapper {
+    public interface IBrushMapper<in T> : IBrushMapper {
         Brush Map(T key);
     }
 
