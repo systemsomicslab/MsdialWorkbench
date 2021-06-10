@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsTextDBAnnotator<T> : AnnotatorBase<T, MSDecResult>
+    public class ImmsTextDBAnnotator<T> : TextDbRestorableBase, IAnnotator<T, MSDecResult>
         where T : IMSProperty, IIonProperty
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
@@ -29,7 +29,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.ReferObject = new DataBaseRefer(this.db);
         }
 
-        public override MsScanMatchResult Annotate(
+        public MsScanMatchResult Annotate(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
@@ -38,7 +38,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return FindCandidatesCore(property, isotopes, parameter, db, Key).FirstOrDefault();
         }
 
-        public override List<MsScanMatchResult> FindCandidates(
+        public List<MsScanMatchResult> FindCandidates(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
@@ -67,7 +67,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
-        public override MsScanMatchResult CalculateScore(
+        public MsScanMatchResult CalculateScore(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
 
@@ -112,7 +112,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return ReferObject.Refer(result);
         }
 
-        public override List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
+        public List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
@@ -136,7 +136,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public override void Validate(
+        public void Validate(
             MsScanMatchResult result,
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
