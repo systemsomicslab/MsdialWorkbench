@@ -13,6 +13,9 @@ namespace CompMs.MsdialCore.DataObj
     public class DataBaseMapper : IMatchResultRefer
     {
         [IgnoreMember]
+        string IMatchResultRefer.Key { get; } = string.Empty;
+
+        [IgnoreMember]
         public ReadOnlyDictionary<string, IMatchResultRefer> KeyToRefer {
             get {
                 return new ReadOnlyDictionary<string, IMatchResultRefer>(keyToRefer);
@@ -23,6 +26,9 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Restore(IRestorationVisitor visitor) {
             keyToRefer = InnerKeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Accept(visitor));
+        }
+
+        public void Save() {
         }
 
         [Key(0)]

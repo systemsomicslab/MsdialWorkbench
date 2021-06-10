@@ -21,7 +21,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
         private readonly List<MoleculeMsReference> textDB;
-        private readonly string sourceKey;
+
+        public string Key { get; }
 
         public MsRefSearchParameterBase Parameter { get; }
 
@@ -29,7 +30,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             this.textDB = textDB.ToList();
             this.textDB.Sort(comparer);
             this.Parameter = parameter;
-            this.sourceKey = sourceKey;
+            this.Key = sourceKey;
             this.ReferObject = new DataBaseRefer(this.textDB);
         }
 
@@ -39,7 +40,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, isotopes, parameter, textDB, sourceKey).FirstOrDefault();
+            return FindCandidatesCore(property, isotopes, parameter, textDB, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(
@@ -49,7 +50,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(property, isotopes, parameter, textDB, sourceKey);
+            return FindCandidatesCore(property, isotopes, parameter, textDB, Key);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
@@ -77,7 +78,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, isotopes, reference, reference.IsotopicPeaks, parameter, sourceKey);
+            return CalculateScoreCore(property, isotopes, reference, reference.IsotopicPeaks, parameter, Key);
         }
 
         private static MsScanMatchResult CalculateScoreCore(

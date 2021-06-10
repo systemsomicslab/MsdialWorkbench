@@ -23,8 +23,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly List<MoleculeMsReference> db;
         private readonly TargetOmics omics;
         private readonly SourceType source;
-        private readonly string sourceKey;
 
+        public string Key { get; }
         public MsRefSearchParameterBase Parameter { get; }
 
         public MassAnnotator(IEnumerable<MoleculeMsReference> db, MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey) {
@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             this.Parameter = parameter;
             this.omics = omics;
             this.source = source;
-            this.sourceKey = sourceKey;
+            this.Key = sourceKey;
             ReferObject = new DataBaseRefer(this.db);
         }
 
@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, sourceKey).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(
@@ -52,7 +52,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, sourceKey);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, source, Key);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
@@ -78,7 +78,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, sourceKey);
+            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, Key);
         }
 
         private static MsScanMatchResult CalculateScoreCore(

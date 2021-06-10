@@ -23,7 +23,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         private readonly List<MoleculeMsReference> mspDB;
         private readonly TargetOmics omics;
-        private readonly string sourceKey;
+
+        public string Key { get; }
 
         public MsRefSearchParameterBase Parameter { get; }
 
@@ -31,21 +32,21 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             this.mspDB = mspDB.OrderBy(msp => msp.PrecursorMz).ToList();
             Parameter = parameter;
             this.omics = omics;
+            this.Key = sourceKey;
             ReferObject = new DataBaseRefer(this.mspDB);
-            this.sourceKey = sourceKey;
         }
 
         public MsScanMatchResult Annotate(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, mspDB, omics, sourceKey).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, mspDB, omics, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, mspDB, omics, sourceKey);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, mspDB, omics, Key);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, string sourceKey) {
@@ -64,7 +65,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public MsScanMatchResult CalculateScore(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), reference, parameter, sourceKey);
+            return CalculateScoreCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), reference, parameter, Key);
         }
 
         private static MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string sourceKey) {

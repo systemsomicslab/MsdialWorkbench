@@ -8,14 +8,19 @@ using System.Linq;
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IMatchResultRefer {
+        string Key { get; }
+
         MoleculeMsReference Refer(MsScanMatchResult result);
     }
 
     public abstract class BaseDataBaseRefer : IMatchResultRefer
     {
-        public BaseDataBaseRefer(IReadOnlyList<MoleculeMsReference> db) {
+        public BaseDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) {
             this.db = db;
+            Key = key;
         }
+
+        public string Key { get; }
 
         protected IReadOnlyList<MoleculeMsReference> db;
 
@@ -31,24 +36,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public class DataBaseRefer : BaseDataBaseRefer
     {
-        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db) : base(db) {
+        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db) : base(db, null) {
 
         }
     }
 
     public interface IRestorableRefer : IMatchResultRefer
     {
-        string Key { get; }
         IReferRestorationKey Save(Stream stream);
     }
 
     public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
     {
-        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db) {
-            Key = key;
-        }
+        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
 
-        public string Key { get; }
+        }
 
         public abstract IReferRestorationKey Save(Stream stream);
 
