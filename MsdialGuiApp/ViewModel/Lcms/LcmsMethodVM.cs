@@ -122,6 +122,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (!ProcessAlignment(window, Storage))
                 return -1;
 
+            var parameter = Storage.ParameterBase;
+            var dataMapper = Storage.DataBaseMapper;
+            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
+            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
+            dataMapper.Restore(new StandardRestorationVisitor(parameter));
+
             AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
 
             return 0;

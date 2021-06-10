@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
@@ -112,6 +113,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 if (!ProcessAlignment(window))
                     return -1;
             }
+
+            var parameter = model.Storage.ParameterBase;
+            var dataMapper = model.Storage.DataBaseMapper;
+            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
+            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
+            dataMapper.Restore(new StandardRestorationVisitor(parameter));
 
             LoadAnalysisFile(model.Storage.AnalysisFiles.FirstOrDefault());
             return 0;

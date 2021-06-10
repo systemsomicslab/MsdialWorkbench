@@ -125,6 +125,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     return -1;
             }
 
+            var parameter = Model.Storage.ParameterBase;
+            var dataMapper = Model.Storage.DataBaseMapper;
+            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
+            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
+            dataMapper.Restore(new StandardRestorationVisitor(parameter));
+
             LoadAnalysisFile(Model.Storage.AnalysisFiles.FirstOrDefault());
             return 0;
         }
