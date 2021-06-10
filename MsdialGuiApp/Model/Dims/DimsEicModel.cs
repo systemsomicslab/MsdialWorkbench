@@ -14,11 +14,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsEicLoader(
             IDataProvider provider,
             ParameterBase parameter,
-            ChromXType chromXType,
-            ChromXUnit chromXUnit,
             double rangeBegin,
             double rangeEnd)
-            : base(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd) {
+            : base(provider, parameter, ChromXType.Mz, ChromXUnit.Mz, rangeBegin, rangeEnd) {
 
         }
 

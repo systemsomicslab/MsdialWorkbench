@@ -12,6 +12,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     public class ChromatogramPeakFeatureModel : ViewModelBase, IAnnotatedObject
     {
         #region Property
+        public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
         public double? ChromXLeftValue => innerModel.ChromXsLeft.Value;
         public double? ChromXRightValue => innerModel.ChromXsRight.Value;

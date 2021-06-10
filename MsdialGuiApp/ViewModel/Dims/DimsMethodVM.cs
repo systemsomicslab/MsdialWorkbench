@@ -25,7 +25,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class DimsMethodVM : MethodVM {
+    class DimsMethodVM : MethodVM {
         static DimsMethodVM() {
             serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
         }
