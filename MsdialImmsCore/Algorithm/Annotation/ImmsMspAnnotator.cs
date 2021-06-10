@@ -18,42 +18,39 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsMspAnnotator<T> : IAnnotator<T, MSDecResult>
+    public class ImmsMspAnnotator<T> : AnnotatorBase<T, MSDecResult>
         where T : IMSProperty, IIonProperty
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
-        private readonly List<MoleculeMsReference> mspDB;
         private readonly TargetOmics omics;
-
-        public string Key { get; }
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public ImmsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
-            this.mspDB = mspDB.ToList();
-            this.mspDB.Sort(comparer);
+        public ImmsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
+            : base(mspDB, sourceKey){
+            this.db.Sort(comparer);
             this.Parameter = parameter;
             this.omics = omics;
-            this.ReferObject = new DataBaseRefer(this.mspDB);
+            this.ReferObject = new DataBaseRefer(this.db);
         }
 
-        public MsScanMatchResult Annotate(
+        public override MsScanMatchResult Annotate(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, mspDB, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, Key).FirstOrDefault();
         }
 
-        public List<MsScanMatchResult> FindCandidates(
+        public override List<MsScanMatchResult> FindCandidates(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, mspDB, omics, Key);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), isotopes, parameter, db, omics, Key);
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
@@ -74,7 +71,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return results.OrderByDescending(result => result.TotalScore).ToList();
         }
 
-        public MsScanMatchResult CalculateScore(
+        public override MsScanMatchResult CalculateScore(
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter = null) {
@@ -129,17 +126,17 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public IMatchResultRefer ReferObject { get; }
-        public MoleculeMsReference Refer(MsScanMatchResult result) {
+        public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
 
-        public List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
+        public override List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
                 parameter = Parameter;
 
-            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
-            return mspDB.GetRange(lo, hi - lo);
+            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
+            return db.GetRange(lo, hi - lo);
         }
 
         private static (int lo, int hi) SearchBoundIndex(T property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
@@ -159,7 +156,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public void Validate(
+        public override void Validate(
             MsScanMatchResult result,
             T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {

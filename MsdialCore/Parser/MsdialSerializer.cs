@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Parser
             container.MspDB = new List<MoleculeMsReference>();
 
             SaveMsdialDataStorageCore(file, container);
-
+            SaveDataBaseMapper(container);
             SaveMspDB(file, mspList);
             container.MspDB = mspList;
         }
@@ -56,6 +56,11 @@ namespace CompMs.MsdialCore.Parser
                 return MoleculeMsRefMethods.LoadMspFromFile(mspPath);
             }
             return new List<MoleculeMsReference>(0);
+        }
+
+        protected virtual void SaveDataBaseMapper(MsdialDataStorage storage) {
+            var mapper = storage.DataBaseMapper;
+            // save process for mapper
         }
 
         protected virtual void LoadDataBaseMapper(MsdialDataStorage storage) {

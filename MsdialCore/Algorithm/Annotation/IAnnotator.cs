@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IAnnotator<in T, in U>
-        : IMatchResultRefer
+        : IMatchResultRefer, IRestorableRefer
         where T : IMSProperty
         where U : IMSScanProperty
     {
