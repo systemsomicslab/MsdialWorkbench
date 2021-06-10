@@ -14,12 +14,12 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public abstract class DataBaseRestorationKey : IReferRestorationKey
     {
-        public DataBaseRestorationKey(string path) {
-            DataBasePath = path;
+        public DataBaseRestorationKey(string key) {
+            Key = key;
         }
 
         [MessagePack.Key(0)]
-        public string DataBasePath { get; set; }
+        public string Key { get; set; }
 
         public abstract IMatchResultRefer Accept(IRestorationVisitor visitor);
     }
@@ -27,7 +27,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class MspDbRestorationKey : DataBaseRestorationKey
     {
-        public MspDbRestorationKey(string path) : base(path) {
+        public MspDbRestorationKey(string key) : base(key) {
 
         }
 
@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class TextDbRestorationKey : DataBaseRestorationKey
     {
-        public TextDbRestorationKey(string path) : base(path) {
+        public TextDbRestorationKey(string key) : base(key) {
 
         }
 

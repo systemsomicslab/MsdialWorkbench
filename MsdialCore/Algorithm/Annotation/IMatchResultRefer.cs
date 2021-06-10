@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
@@ -36,15 +38,46 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public interface IRestorableRefer : IMatchResultRefer
     {
-        string DataBasePath { get; }
+        string Key { get; }
+        IReferRestorationKey Save(Stream stream);
     }
 
-    public class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
+    public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
     {
-        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string path) : base(db) {
-            DataBasePath = path;
+        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db) {
+            Key = key;
         }
 
-        public string DataBasePath { get; }
+        public string Key { get; }
+
+        public abstract IReferRestorationKey Save(Stream stream);
+
+        protected void SaveCore(Stream stream) {
+            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
+        }
+    }
+
+    public class MspDbRestorableDataBaseRefer : RestorableDataBaseRefer
+    {
+        public MspDbRestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
+
+        }
+
+        public override IReferRestorationKey Save(Stream stream) {
+            SaveCore(stream);
+            return new MspDbRestorationKey(Key);
+        }
+    }
+
+    public class TextDbRestorableDataBaseRefer : RestorableDataBaseRefer
+    {
+        public TextDbRestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
+
+        }
+
+        public override IReferRestorationKey Save(Stream stream) {
+            SaveCore(stream);
+            return new TextDbRestorationKey(Key);
+        }
     }
 }

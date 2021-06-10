@@ -46,7 +46,7 @@ namespace CompMs.Common.MessagePack {
             }
         }
 
-        public static void Serialize<T>(Stream stream, List<T> value, IFormatterResolver resolver = null)
+        public static void Serialize<T>(Stream stream, IReadOnlyList<T> value, IFormatterResolver resolver = null)
         {
             if (resolver == null) resolver = DefaultResolver;
             var bytes = GetBuffer();

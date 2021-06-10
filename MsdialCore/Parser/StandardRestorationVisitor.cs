@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Parser
         public ParameterBase Parameter { get; }
 
         public virtual IMatchResultRefer Visit(MspDbRestorationKey key) {
-            var dbpath = Path.GetFullPath(Path.Combine(Parameter.ProjectFolderPath, key.DataBasePath));
+            var dbpath = Path.GetFullPath(Path.Combine(Parameter.ProjectFolderPath, key.Key));
             var db = new List<MoleculeMsReference>();
             if (File.Exists(dbpath)) {
                 var ext = Path.GetExtension(dbpath);
@@ -30,16 +30,16 @@ namespace CompMs.MsdialCore.Parser
                     db = LibraryHandler.ReadLipidMsLibrary(dbpath, Parameter).OrderBy(msp => msp.PrecursorMz).ToList();
                 }
             }
-            return new RestorableDataBaseRefer(db, dbpath);
+            return new MspDbRestorableDataBaseRefer(db, key.Key);
         }
 
         public virtual IMatchResultRefer Visit(TextDbRestorationKey key) {
-            var dbpath = Path.GetFullPath(Path.Combine(Parameter.ProjectFolderPath, key.DataBasePath));
+            var dbpath = Path.GetFullPath(Path.Combine(Parameter.ProjectFolderPath, key.Key));
             var db = new List<MoleculeMsReference>();
             if (File.Exists(dbpath)) {
                 db = TextLibraryParser.TextLibraryReader(dbpath, out var _);
             }
-            return new RestorableDataBaseRefer(db, dbpath);
+            return new TextDbRestorableDataBaseRefer(db, key.Key);
         }
     }
 }
