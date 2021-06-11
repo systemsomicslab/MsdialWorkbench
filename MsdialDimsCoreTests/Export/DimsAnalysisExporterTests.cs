@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialDimsCore.Export.Tests
 {
@@ -28,9 +29,8 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var data = MessagePackHandler.LoadFromFile<DataStorageForTest>(datafile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
             var mapper = new DataBaseMapper();
-            mapper.Add("MspDB", new MockKey(data.MspDB));
-            mapper.Add("TextDB", new MockKey(data.TextDB));
-            mapper.Restore(null);
+            mapper.Add(new DataBaseRefer(data.MspDB, "MspDB"));
+            mapper.Add(new DataBaseRefer(data.TextDB, "TextDB"));
             var provider = new StandardDataProvider(data.Files[0], false, 5);
 
             var stream = new MemoryStream();

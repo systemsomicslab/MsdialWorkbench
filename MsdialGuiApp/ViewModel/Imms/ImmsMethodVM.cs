@@ -123,12 +123,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public override int InitializeNewProject(Window window) {
             model.InitializeNewProject(window);
 
-            var parameter = model.Storage.ParameterBase;
-            var dataMapper = model.Storage.DataBaseMapper;
-            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
-            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
-            dataMapper.Restore(new StandardRestorationVisitor(parameter));
-
             LoadAnalysisFile(model.AnalysisFiles.FirstOrDefault());
 
             return 0;

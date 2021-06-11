@@ -44,6 +44,10 @@ namespace CompMs.App.Msdial.Model.Dims
             var textDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
             textDBAlignmentAnnotator = textDBAnnotator;
             textDBChromatogramAnnotator = textDBAnnotator;
+
+            var dataMapper = Storage.DataBaseMapper;
+            dataMapper.Add(mspAnnotator);
+            dataMapper.Add(textDBAnnotator);
         }
 
         private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;

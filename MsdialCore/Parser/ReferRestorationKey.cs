@@ -1,4 +1,5 @@
 ﻿using CompMs.MsdialCore.Algorithm.Annotation;
+using System.IO;
 
 namespace CompMs.MsdialCore.Parser
 {
@@ -7,7 +8,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     public interface IReferRestorationKey
     {
-        IMatchResultRefer Accept(IRestorationVisitor visitor);
+        IMatchResultRefer Accept(IRestorationVisitor visitor, Stream stream);
 
     }
 
@@ -21,7 +22,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(0)]
         public string Key { get; set; }
 
-        public abstract IMatchResultRefer Accept(IRestorationVisitor visitor);
+        public abstract IMatchResultRefer Accept(IRestorationVisitor visitor, Stream stream);
     }
 
     [MessagePack.MessagePackObject]
@@ -31,8 +32,8 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IMatchResultRefer Accept(IRestorationVisitor visitor) {
-            return visitor.Visit(this);
+        public override IMatchResultRefer Accept(IRestorationVisitor visitor, Stream stream) {
+            return visitor.Visit(this, stream);
         }
     }
 
@@ -43,8 +44,8 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IMatchResultRefer Accept(IRestorationVisitor visitor) {
-            return visitor.Visit(this);
+        public override IMatchResultRefer Accept(IRestorationVisitor visitor, Stream stream) {
+            return visitor.Visit(this, stream);
         }
     }
 }

@@ -114,12 +114,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     return -1;
             }
 
-            var parameter = model.Storage.ParameterBase;
-            var dataMapper = model.Storage.DataBaseMapper;
-            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
-            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
-            dataMapper.Restore(new StandardRestorationVisitor(parameter));
-
             LoadAnalysisFile(model.Storage.AnalysisFiles.FirstOrDefault());
             return 0;
         }

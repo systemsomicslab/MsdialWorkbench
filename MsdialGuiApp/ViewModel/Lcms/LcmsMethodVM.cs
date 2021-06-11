@@ -4,6 +4,7 @@ using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
@@ -107,6 +108,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
+
+            var dataMapper = Storage.DataBaseMapper;
+            dataMapper.Add(new MspDbRestorableDataBaseRefer(Storage.MspDB, "MspDB"));
+            dataMapper.Add(new TextDbRestorableDataBaseRefer(Storage.TextDB, "TextDB"));
         }
 
         public override int InitializeNewProject(Window window) {
@@ -121,12 +126,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             // Run Alignment
             if (!ProcessAlignment(window, Storage))
                 return -1;
-
-            var parameter = Storage.ParameterBase;
-            var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add("MspDB", new MspDbRestorationKey(parameter.MspFilePath));
-            dataMapper.Add("TextDB", new TextDbRestorationKey(parameter.TextDBFilePath));
-            dataMapper.Restore(new StandardRestorationVisitor(parameter));
 
             AnalysisVM = LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
 

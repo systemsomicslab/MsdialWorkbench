@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public class DataBaseRefer : BaseDataBaseRefer
     {
-        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db) : base(db, null) {
+        public DataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key = null) : base(db, key) {
 
         }
     }

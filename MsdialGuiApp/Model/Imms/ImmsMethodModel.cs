@@ -45,6 +45,11 @@ namespace CompMs.App.Msdial.Model.Imms
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(storage.AnalysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(storage.AlignmentFiles);
+
+            var parameter = Storage.ParameterBase;
+            var dataMapper = Storage.DataBaseMapper;
+            dataMapper.Add(MspChromatogramAnnotator);
+            dataMapper.Add(TextDBChromatogramAnnotator);
         }
 
         public IAnnotator<ChromatogramPeakFeature, MSDecResult> MspChromatogramAnnotator { get; private set; }

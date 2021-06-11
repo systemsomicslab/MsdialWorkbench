@@ -5,6 +5,8 @@ using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
@@ -24,11 +26,28 @@ namespace CompMs.MsdialCore.DataObj
 
         private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
 
-        public void Restore(IRestorationVisitor visitor) {
-            keyToRefer = InnerKeyToRestorationKey.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Accept(visitor));
+        public void Restore(IRestorationVisitor visitor, Stream stream) {
+            keyToRefer.Clear();
+            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
+                foreach (var kvp in InnerKeyToRestorationKey) {
+                    var entry = archive.GetEntry(kvp.Key);
+                    using (var entry_stream = entry.Open()) {
+                        keyToRefer[kvp.Key] = kvp.Value.Accept(visitor, null);
+                    }
+                }
+            }
         }
 
-        public void Save() {
+        public void Save(Stream stream) {
+            KeyToRestorationKey.Clear();
+            using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
+                foreach (var refer in keyToRefer.Values.OfType<IRestorableRefer>()) {
+                    var entry = archive.CreateEntry(refer.Key, CompressionLevel.Optimal);
+                    using (var entry_stream = entry.Open()) {
+                        KeyToRestorationKey[refer.Key] = refer.Save(entry_stream);
+                    }
+                }
+            }
         }
 
         [Key(0)]
@@ -43,13 +62,12 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-
-        public void Add(string SourceKey, IReferRestorationKey restorationKey) {
-            InnerKeyToRestorationKey[SourceKey] = restorationKey;
+        public void Add(IMatchResultRefer refer) {
+            keyToRefer[refer.Key] = refer;
         }
 
         public void Remove(string sourceKey) {
-            InnerKeyToRestorationKey.Remove(sourceKey);
+            keyToRefer.Remove(sourceKey);
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
