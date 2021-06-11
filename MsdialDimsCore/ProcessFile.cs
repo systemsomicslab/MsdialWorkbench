@@ -10,7 +10,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialDimsCore.Algorithm;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Common;
 using CompMs.MsdialDimsCore.MsmsAll;
@@ -22,7 +21,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace CompMs.MsdialDimsCore {
+namespace CompMs.MsdialDimsCore
+{
 
     public enum ProcessType { MSMSALL }
     public class ProcessError {
@@ -51,16 +51,17 @@ namespace CompMs.MsdialDimsCore {
             Action<int> reportAction = null,
             CancellationToken token = default) {
             var mspAnnotator = new DimsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            Run(file, container, mspAnnotator, isGuiProcess, reportAction, token);
+            var textAnnotator = new MassAnnotator(container.TextDB, container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
+            Run(file, container, mspAnnotator, textAnnotator, isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
             MsdialDataStorage container,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textAnnotator,
             bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
+            Action<int> reportAction = null, CancellationToken token = default) {
 
             var param = (MsdialDimsParameter)container.ParameterBase;
             var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
@@ -108,7 +109,7 @@ namespace CompMs.MsdialDimsCore {
 
                 Console.WriteLine("Annotation started");
                 foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
-                    AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textDB, param.MspSearchParam, null, param.TargetOmics);
+                    AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textAnnotator, param.MspSearchParam, param.TextDbSearchParam, null);
                 }
 
                 new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
