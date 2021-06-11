@@ -110,8 +110,8 @@ namespace CompMs.App.Msdial
             MethodVM = method;
 
             var parameter = storage.ParameterBase;
-            storage.DataBaseMapper.Add("MspDB", new MspDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFolderPath, parameter.MspFilePath)));
-            storage.DataBaseMapper.Add("TextDB", new TextDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFolderPath, parameter.TextDBFilePath)));
+            storage.DataBaseMapper.Add("MspDB", new MspDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFilePath, parameter.MspFilePath)));
+            storage.DataBaseMapper.Add("TextDB", new TextDbRestorationKey(PathExtension.GetRelativePath(parameter.ProjectFilePath, parameter.TextDBFilePath)));
             storage.DataBaseMapper.Restore(new StandardRestorationVisitor(storage.ParameterBase));
 
             SaveProject(method, storage);
