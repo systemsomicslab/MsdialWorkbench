@@ -11,6 +11,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, brushSource: Observable.Return(model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
             EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
             RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new Chart.SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);

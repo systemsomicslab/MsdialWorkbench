@@ -2,6 +2,9 @@
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -19,6 +22,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -80,6 +84,24 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
+
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    Brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        peak => peak.Ontology,
+                        Color.FromArgb(180, 181, 181, 181));
+                    break;
+                case TargetOmics.Metabolomics:
+                    Brush = new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
+                        peak => Color.FromArgb(
+                            180,
+                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
+                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
+                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
+                        enableCache: true);
+                    break;
+            }
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -108,6 +130,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public Chart.EicModel EicModel2 { get; }
 
         public Chart.RawDecSpectrumsModel Ms2SpectrumModel2 { get; }
+
+        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {

@@ -37,6 +37,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(10)]
         public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; }
 
+        [IgnoreMember]
+        public bool IsMsmsAssigned => MS2RawSpectrumID2CE?.Any() ?? false;
+
         // basic property of IChromatogramPeakFeature
         [Key(11)]
         public int ChromScanIdLeft { get; set; }

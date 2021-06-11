@@ -1,8 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -11,10 +15,12 @@ using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -35,8 +41,8 @@ namespace CompMs.App.Msdial.Model.Imms
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter)
             {
                 GraphTitle = fileName,
-                HorizontalProperty = nameof(AlignmentSpotProperty.TimesCenter),
-                VerticalProperty = nameof(AlignmentSpotProperty.MassCenter),
+                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
             };
@@ -57,6 +63,8 @@ namespace CompMs.App.Msdial.Model.Imms
             Ms2SpectrumModel.VerticalTitle = "Abundance";
             Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
             Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
+            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
+            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             var barLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             BarChartModel = Chart.BarChartModel.Create(
@@ -79,6 +87,33 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
+            {
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        spot => spot.Ontology,
+                        Color.FromArgb(180, 181, 181, 181)),
+                    "Ontology"),
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
+                        spot => Color.FromArgb(
+                            180,
+                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
+                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
+                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
+                        enableCache: true),
+                    "Amplitude"),
+            };
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    SelectedBrush = Brushes[0].Mapper;
+                    break;
+                case TargetOmics.Metabolomics:
+                    SelectedBrush = Brushes[1].Mapper;
+                    break;
+            }
         }
 
         static ImmsAlignmentModel() {
@@ -96,6 +131,14 @@ namespace CompMs.App.Msdial.Model.Imms
         public Chart.BarChartModel BarChartModel { get; }
 
         public Chart.AlignmentEicModel AlignmentEicModel { get; }
+
+        public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+
+        public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {
+            get => selectedBrush;
+            set => SetProperty(ref selectedBrush, value);
+        }
+        private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly AlignmentResultContainer container;

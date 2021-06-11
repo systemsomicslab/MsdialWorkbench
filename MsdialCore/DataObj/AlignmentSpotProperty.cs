@@ -244,8 +244,8 @@ namespace CompMs.MsdialCore.DataObj {
         public float RelativeAmplitudeValue { get; set; }
         [Key(51)]
         public float MonoIsotopicPercentage { get; set; }
-        [Key(55)]
-        public bool IsMsmsAssigned { get; set; }
+        [IgnoreMember]
+        public bool IsMsmsAssigned => AlignedPeakProperties.Any(peak => peak.IsMsmsAssigned);
 
         [Key(52)]
         public List<AlignmentSpotVariableCorrelation> AlignmentSpotVariableCorrelations { get; set; } = new List<AlignmentSpotVariableCorrelation>();

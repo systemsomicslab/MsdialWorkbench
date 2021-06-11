@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -20,8 +22,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
 
             this.model = model;
+            Brushes = this.model.Brushes.AsReadOnly();
+            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel).AddTo(Disposables);
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
@@ -73,6 +77,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
         private ICollectionView ms1Spots;
+
+        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public double MassLower {
             get => massLower;
