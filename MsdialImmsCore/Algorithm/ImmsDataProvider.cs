@@ -12,8 +12,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
 {
     public abstract class ImmsBaseDataProvider : BaseDataProvider
     {
-        public ImmsBaseDataProvider(RawMeasurement rawObj) : base(rawObj) {
+        private Dictionary<int, ReadOnlyCollection<RawSpectrum>> msSpectrums;
 
+        public ImmsBaseDataProvider(RawMeasurement rawObj) : base(rawObj) {
+            msSpectrums = rawObj.SpectrumList
+                .GroupBy(spectrum => spectrum.MsLevel)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.OrderBy(spectrum => spectrum.DriftTime).ToList().AsReadOnly());
         }
 
         public ImmsBaseDataProvider(AnalysisFileBean file) : this(LoadMeasurement(file, false, 5)) {
@@ -25,10 +31,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            return new ReadOnlyCollection<RawSpectrum>(rawObj.SpectrumList
-                .Where(spectrum => spectrum.MsLevel == level)
-                .OrderBy(spectrum => spectrum.DriftTime)
-                .ToList());
+            return msSpectrums[level];
         }
     }
 
