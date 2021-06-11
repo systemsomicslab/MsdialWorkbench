@@ -1,6 +1,9 @@
 ﻿using CompMs.App.Msdial.Property;
 using CompMs.App.Msdial.StartUp;
+using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.ViewModel;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +32,8 @@ namespace CompMs.App.Msdial
 
             var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
             var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetWindowVM>(this);
-            DataContext = new MainWindowVM(startUpService, analysisFilePropertySetService);
+            var alignmentCompoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM<AlignmentSpotProperty>>(this);
+            DataContext = new MainWindowVM(startUpService, analysisFilePropertySetService, alignmentCompoundSearchService);
         }
 
         public void CloseOwnedWindows() {
