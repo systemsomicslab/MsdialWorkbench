@@ -29,9 +29,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
-            MassLower = model.Ms1Spots.Min(spot => spot.MassCenter);
-            MassUpper = model.Ms1Spots.Max(spot => spot.MassCenter);
-            Ms1Spots = CollectionViewSource.GetDefaultView(model.PlotModel.Spots);
+            MassLower = PlotViewModel.Spots.Min(spot => spot.MassCenter);
+            MassUpper = PlotViewModel.Spots.Max(spot => spot.MassCenter);
+            Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
 
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }

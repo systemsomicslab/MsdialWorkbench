@@ -20,7 +20,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AnalysisDimsVM(DimsAnalysisModel model) {
             Model = model;
-            Ms1Peaks = CollectionViewSource.GetDefaultView(model.Ms1Peaks);
 
             var hAxis = Model.PlotModel2
                 .ObserveProperty(m => m.HorizontalRange)
@@ -39,6 +38,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
             AmplitudeOrderMax = model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
+
+            Ms1Peaks = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
             PropertyChanged += OnFilterChanged;
         }
 

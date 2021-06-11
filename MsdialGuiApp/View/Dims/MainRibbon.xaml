@@ -226,9 +226,9 @@
                 <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
                 <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
                 <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
-                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}"/>
-                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
-                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
+                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
                 <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
             </RibbonGroup>
         </RibbonTab>

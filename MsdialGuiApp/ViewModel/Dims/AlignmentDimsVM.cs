@@ -22,10 +22,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AlignmentDimsVM(DimsAlignmentModel model) {
             Model = model;
-            Ms1Spots = CollectionViewSource.GetDefaultView(model.Ms1Spots);
-            MassLower = model.Ms1Spots.Min(spot => spot.MassCenter);
-            MassUpper = model.Ms1Spots.Max(spot => spot.MassCenter);
-
             Brushes = Model.Brushes.AsReadOnly();
             SelectedBrush = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
@@ -33,6 +29,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(Model.AlignmentEicModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(Model.BarChartModel).AddTo(Disposables);
+
+            MassLower = PlotViewModel.Spots.Min(spot => spot.MassCenter);
+            MassUpper = PlotViewModel.Spots.Max(spot => spot.MassCenter);
+            Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
         }
 
         public DimsAlignmentModel Model { get; }
