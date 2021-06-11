@@ -3,13 +3,13 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 using CompMs.Common.Extension;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace CompMs.Graphics.Chart
 {
@@ -334,6 +334,16 @@ namespace CompMs.Graphics.Chart
             set => SetValue(FontSizeProperty, value);
         }
 
+        public static readonly DependencyProperty OverlapProperty =
+            DependencyProperty.Register(
+                nameof(Overlap), typeof(IOverlapMethod), typeof(Annotator),
+                new PropertyMetadata(IgnoreOverlap.Method));
+
+        public IOverlapMethod Overlap {
+            get => (IOverlapMethod)GetValue(OverlapProperty);
+            set => SetValue(OverlapProperty, value);
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
@@ -375,6 +385,7 @@ namespace CompMs.Graphics.Chart
             var brush = Brush;
             var fontSize = FontSize;
             bool flippedX = FlippedX, flippedY = FlippedY;
+            var overlap = Overlap;
             foreach(var data in datas.OrderByDescending(d => d.order)) {
                 if (TopN.HasValue && texts.Count >= TopN)
                     break;
@@ -389,7 +400,7 @@ namespace CompMs.Graphics.Chart
                     };
                     var p = new Point(xx + dx, yy + dy);
 
-                    if (!texts.Any(other => IsContact(text, other.Item1, p, other.Item2))) {
+                    if (!texts.Any(other => overlap.IsOverlap(text, p, other.Item1, other.Item2))) {
                         texts.Add(Tuple.Create(text, p));
                     }
                 }
@@ -398,10 +409,6 @@ namespace CompMs.Graphics.Chart
             foreach ((var text, var point) in texts) {
                 drawingContext.DrawText(text, point);
             }
-        }
-
-        private static bool IsContact(FormattedText text1, FormattedText text2, Point p1, Point p2) {
-            return (text1.Width + text2.Width) / 2 > Math.Abs(p1.X - p2.X) && (text1.Height + text2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
         }
 
         #region field
@@ -442,6 +449,143 @@ namespace CompMs.Graphics.Chart
             internal string label;
             internal double order;
             internal Brush brush;
+        }
+    }
+
+    [TypeConverter(typeof(OverlapMethodTypeConverter))]
+    public interface IOverlapMethod
+    {
+        bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2);
+    }
+
+    class DirectOverlap : IOverlapMethod
+    {
+        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+            return (text1.Width + text2.Width) / 2 > Math.Abs(p1.X - p2.X)
+                && (text1.Height + text2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
+        }
+
+        public static DirectOverlap Method { get; } = new DirectOverlap();
+
+        public override string ToString() {
+            return "Direct";
+        }
+    }
+
+    class HorizontalOverlap : IOverlapMethod
+    {
+        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+            return text2.Width / 2 > Math.Abs(p1.X - p2.X);
+        }
+
+        public static HorizontalOverlap Method { get; } = new HorizontalOverlap();
+
+        public override string ToString() {
+            return "Horizontal";
+        }
+    }
+
+    class VerticalOverlap : IOverlapMethod
+    {
+        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+            return text2.Height / 2 > Math.Abs(p1.Y - p2.Y);
+        }
+
+        public static VerticalOverlap Method { get; } = new VerticalOverlap();
+
+        public override string ToString() {
+            return "Vertical";
+        }
+    }
+
+    class IgnoreOverlap : IOverlapMethod
+    {
+        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+            return false;
+        }
+
+        public static IgnoreOverlap Method { get; } = new IgnoreOverlap();
+
+        public override string ToString() {
+            return "Ignore";
+        }
+    }
+
+    class CompositeOverlap : IOverlapMethod
+    {
+        public CompositeOverlap(IEnumerable<IOverlapMethod> methods) {
+            this.methods = methods?.ToList();
+        }
+
+        public CompositeOverlap(params IOverlapMethod[] methods) {
+            this.methods = methods.ToList();
+        }
+
+        private readonly List<IOverlapMethod> methods;
+
+        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+            if (methods == null) {
+                return false;
+            }
+            return methods.Any(method => method.IsOverlap(text1, p1, text2, p2));
+        }
+
+        public override string ToString() {
+            return string.Join(",", methods.Select(method => method.ToString()));
+        }
+    }
+
+    public class OverlapMethodTypeConverter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
+            return sourceType == typeof(string);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
+            if (!(value is string text)) return null;
+
+            var values = text.Split(',');
+
+            if (values.Length == 1) {
+                return MapToMethod(values[0]);
+            }
+            if (values.All(IsValidMethod)) {
+                return new CompositeOverlap(values.Select(MapToMethod));
+            }
+            return null;
+        }
+
+        private static IOverlapMethod MapToMethod(string method) {
+            switch (method.Trim()) {
+                case "":
+                case "Ignore":
+                    return IgnoreOverlap.Method;
+                case "Direct":
+                    return DirectOverlap.Method;
+                case "Horizontal":
+                    return HorizontalOverlap.Method;
+                case "Vertical":
+                    return VerticalOverlap.Method;
+                default:
+                    throw new NotSupportedException(method);
+            }
+        }
+
+        private static readonly string[] valids = new[] { "", "Direct", "Horizontal", "Vertical", "Ignore" };
+        private static bool IsValidMethod(string method) {
+            method = method.Trim();
+            return valids.Contains(method);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
+            return destinationType == typeof(string);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+            if (value is IOverlapMethod) {
+                return value.ToString();
+            }
+            return null;
         }
     }
 }

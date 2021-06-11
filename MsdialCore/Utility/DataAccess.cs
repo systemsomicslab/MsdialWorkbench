@@ -367,10 +367,7 @@ namespace CompMs.MsdialCore.Utility {
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
-                    var specPreMz = spec.Precursor.IsolationTargetMz;
-                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
-                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
-                    if (specPreMz - lowerOffset <= precursorMz && precursorMz < specPreMz + upperOffset) {
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
                         RetrieveBinnedMzIntensity(spec.Spectrum, productMz, param.CentroidMs2Tolerance,
                             out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
@@ -380,6 +377,21 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             return chromPeaks;
+        }
+
+        private static bool IsInMassWindow(double mass, RawSpectrum spec, double msTol, AcquisitionType type) {
+            var specPreMz = spec.Precursor.IsolationTargetMz;
+            switch (type) {
+                case AcquisitionType.AIF:
+                case AcquisitionType.SWATH:
+                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
+                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
+                    return specPreMz - lowerOffset <= mass && mass < specPreMz + upperOffset;
+                case AcquisitionType.DDA:
+                    return Math.Abs(specPreMz - mass) <= msTol;
+                default:
+                    throw new NotSupportedException(nameof(type));
+            }
         }
 
         public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,

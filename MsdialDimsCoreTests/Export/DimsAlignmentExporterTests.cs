@@ -28,9 +28,8 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var data = MessagePackHandler.LoadFromFile<DataStorageForTest>(datafile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
             var mapper = new DataBaseMapper();
-            mapper.Add("MspDB", new MockKey(data.MspDB));
-            mapper.Add("TextDB", new MockKey(data.TextDB));
-            mapper.Restore(null);
+            mapper.Add(new DataBaseRefer(data.MspDB, "MspDB"));
+            mapper.Add(new DataBaseRefer(data.TextDB, "TextDB"));
 
             var exporter = new AlignmentCSVExporter();
             var stream = new MemoryStream();
@@ -151,18 +150,5 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         public List<MoleculeMsReference> TextDB { get; set; }
         [MessagePack.Key(6)]
         public List<ChromatogramPeakFeature> Features { get; set; }
-    }
-
-    class MockKey : IReferRestorationKey
-    {
-        public MockKey(List<MoleculeMsReference> db) {
-            this.db = db;
-        }
-
-        private List<MoleculeMsReference> db;
-
-        public IMatchResultRefer Accept(IRestorationVisitor visitor) {
-            return new DataBaseRefer(db);
-        }
     }
 }

@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis == null) {
                 var abundanceRange = model.ObserveProperty(m => m.AbundanceRange);
-                verticalAxis = new ReactiveAxisManager<double>(abundanceRange).AddTo(Disposables);
+                verticalAxis = new ReactiveAxisManager<double>(abundanceRange, new ChartMargin(0, 0.1), new Range(0d, 0d)).AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
 

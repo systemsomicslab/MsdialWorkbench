@@ -1,66 +1,77 @@
-﻿using CompMs.App.Msdial.Model;
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class AnalysisDimsVM : AnalysisFileVM
+    class AnalysisDimsVM : AnalysisFileVM
     {
         public AnalysisDimsVM(DimsAnalysisModel model) {
-            this.Model = model;
+            Model = model;
             Ms1Peaks = CollectionViewSource.GetDefaultView(model.Ms1Peaks);
+
+            var hAxis = Model.PlotModel2
+                .ObserveProperty(m => m.HorizontalRange)
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .AddTo(Disposables);
+            var vAxis = Model.PlotModel2
+                .ObserveProperty(m => m.VerticalRange)
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .AddTo(Disposables);
+
+            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel2, horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new Chart.EicViewModel(model.EicModel2, horizontalAxis: hAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel2).AddTo(Disposables);
+
+            Model.Target.Subscribe(UpdateGraphTitleOnTargetChanged).AddTo(Disposables);
 
             AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
             AmplitudeOrderMax = model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
             PropertyChanged += OnFilterChanged;
-
-            PlotViewModel = new AnalysisPeakPlotVM(model.PlotModel, "Mass", "KMD", string.Empty, "m/z", "Kendrick mass defect");
-            EicViewModel = new EicViewModel(model.EicModel);
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel);
-
-            WeakEventManager<AnalysisPeakPlotModel, PropertyChangedEventArgs>.AddHandler(model.PlotModel, "PropertyChanged", UpdateGraphTitleOnTargetChanged);
         }
 
         public DimsAnalysisModel Model { get; }
 
-        public AnalysisPeakPlotVM PlotViewModel {
-            get => plotViewModel;
-            set => SetProperty(ref plotViewModel, value);
+        public AnalysisPeakPlotViewModel PlotViewModel {
+            get => plotViewModel2;
+            set => SetProperty(ref plotViewModel2, value);
         }
-        private AnalysisPeakPlotVM plotViewModel;
+        private AnalysisPeakPlotViewModel plotViewModel2;
 
-        private void UpdateGraphTitleOnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Model.Target)) {
-                if (Model.Target == null) {
-                    PlotViewModel.GraphTitle = string.Empty;
-                    EicViewModel.GraphTitle = string.Empty;
-                }
-                var peak = Model.Target.InnerModel;
-                PlotViewModel.GraphTitle = $"Spot ID: {peak.MasterPeakID} Scan: {peak.MS1RawSpectrumIdTop} Mass m/z: {peak.Mass:N5}";
-                EicViewModel.GraphTitle = $"{peak.Mass:N4}[Da]  Max intensity: {EicViewModel.EicMaxIntensity:F0}";
+        private void UpdateGraphTitleOnTargetChanged(ChromatogramPeakFeatureModel t) {
+            if (t == null) {
+                Model.PlotModel2.GraphTitle = string.Empty;
+                Model.EicModel2.GraphTitle = string.Empty;
+            }
+            else {
+                Model.PlotModel2.GraphTitle = $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}";
+                Model.EicModel2.GraphTitle = $"{t.Mass:N4}[Da]  Max intensity: {Model.EicModel2.MaxIntensity:F0}";
             }
         }
 
-        public EicViewModel EicViewModel {
-            get => eicViewModel;
-            set => SetProperty(ref eicViewModel, value);
+        public Chart.EicViewModel EicViewModel {
+            get => eicViewModel2;
+            set => SetProperty(ref eicViewModel2, value);
         }
-        private EicViewModel eicViewModel;
+        private Chart.EicViewModel eicViewModel2;
 
-        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
+        public Chart.RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
             get => rawDecSpectrumsViewModel;
             set => SetProperty(ref rawDecSpectrumsViewModel, value);
         }
-        private RawDecSpectrumsViewModel rawDecSpectrumsViewModel;
+        private Chart.RawDecSpectrumsViewModel rawDecSpectrumsViewModel;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -94,7 +105,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             internal set => SetProperty(ref displayFilters, value);
         }
         private DisplayFilter displayFilters = 0;
-
 
         public double AmplitudeLowerValue {
             get => amplitudeLowerValue;
@@ -215,7 +225,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.InnerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,
@@ -224,8 +234,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             if (window.ShowDialog() == true) {
-                Model.Target.RaisePropertyChanged();
-                _ = Model.OnTargetChangedAsync(Model.Target);
+                Model.Target.Value.RaisePropertyChanged();
+                _ = Model.OnTargetChangedAsync(Model.Target.Value);
                 Ms1Peaks?.Refresh();
             }
         }

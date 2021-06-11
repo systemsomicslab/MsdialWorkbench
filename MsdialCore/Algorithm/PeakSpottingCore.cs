@@ -183,12 +183,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     var spec = spectrumList[i];
                     if (spec.MsLevel != 2 || scanPolarity != spec.ScanPolarity) continue;
 
-                    var specPrecMz = spec.Precursor.SelectedIonMz;
-                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
-                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
-
-                    var IsMassInWindow = specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol
-                           ? true : false;
+                    var IsMassInWindow = IsInMassWindow(mass, spec, ms2Tol, param.AcquisitionType);
                     var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
                         ? true : false; // used for diapasef
                     if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd) IsDtInWindow = true; // normal dia
@@ -337,11 +332,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var spec = spectrumList[i];
                 if (spec.MsLevel <= 1) continue;
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
-                    var specPrecMz = spec.Precursor.SelectedIonMz;
-                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
-                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
-
-                    if (specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol) {
+                    if (IsInMassWindow(mass, spec, ms2Tol, param.AcquisitionType)) {
                         var ce = spec.CollisionEnergy;
 
                         if (param.AcquisitionType == AcquisitionType.AIF) {
@@ -675,5 +666,20 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
         }
         #endregion
+
+        private static bool IsInMassWindow(double mass, RawSpectrum spec, double ms2Tol, AcquisitionType type) {
+            var specPrecMz = spec.Precursor.SelectedIonMz;
+            switch (type) {
+                case AcquisitionType.AIF:
+                case AcquisitionType.SWATH:
+                    var lowerOffset = spec.Precursor.IsolationWindowLowerOffset;
+                    var upperOffset = spec.Precursor.IsolationWindowUpperOffset;
+                    return specPrecMz - lowerOffset - ms2Tol < mass && mass < specPrecMz + upperOffset + ms2Tol;
+                case AcquisitionType.DDA:
+                    return Math.Abs(specPrecMz - mass) < ms2Tol;
+                default:
+                    throw new NotSupportedException(nameof(type));
+            }
+        }
     }
 }

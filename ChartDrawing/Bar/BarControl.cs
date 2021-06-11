@@ -104,6 +104,14 @@ namespace CompMs.Graphics.Bar
         }
         #endregion
 
+        public static readonly DependencyProperty BarPenProperty =
+            DependencyProperty.Register(nameof(BarPen), typeof(Pen), typeof(BarControl));
+
+        public  Pen BarPen {
+            get => (Pen)GetValue(BarPenProperty);
+            set => SetValue(BarPenProperty, value);
+        }
+
         #region field
         private CollectionView cv;
         private Type dataType;
@@ -114,6 +122,8 @@ namespace CompMs.Graphics.Bar
         public BarControl()
         {
             BarBrush.Freeze();
+            BarPen = new Pen(Brushes.Black, 1);
+            BarPen.Freeze();
             MouseLeftButtonDown += VisualSelectOnClick;
             MouseMove += VisualFocusOnMouseOver;
             ClipToBounds = true;
@@ -131,6 +141,7 @@ namespace CompMs.Graphics.Bar
                 return;
 
             var brush = BarBrush;
+            var pen = BarPen;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
 
@@ -149,7 +160,7 @@ namespace CompMs.Graphics.Bar
                 dv.Center = new Point((xxl + xxr) / 2, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    dc.DrawRectangle(brush, null, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
+                    dc.DrawRectangle(brush, pen, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
                 }
             }
         }

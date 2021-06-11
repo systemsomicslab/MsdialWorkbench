@@ -146,6 +146,7 @@
     <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Chart\BarChartModel.cs" />
+    <Compile Include="Model\Chart\BrushMapData.cs" />
     <Compile Include="Model\Chart\EicModel.cs" />
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />

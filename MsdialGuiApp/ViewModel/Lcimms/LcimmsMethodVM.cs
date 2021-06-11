@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;

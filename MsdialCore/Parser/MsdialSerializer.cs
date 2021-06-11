@@ -19,16 +19,17 @@ namespace CompMs.MsdialCore.Parser
             var mspList = container.MspDB;
             container.MspDB = new List<MoleculeMsReference>();
 
+            SaveMspDB(GetNewMspFileName(file), mspList);
+            SaveDataBaseMapper(GetNewZippedDatabaseFileName(file), container);
             SaveMsdialDataStorageCore(file, container);
 
-            SaveMspDB(file, mspList);
             container.MspDB = mspList;
         }
 
         public virtual MsdialDataStorage LoadMsdialDataStorageBase(string file) {
             var storage = LoadMsdialDataStorageCore(file);
-            LoadDataBaseMapper(storage);
-            storage.MspDB = LoadMspDB(file);
+            LoadDataBaseMapper(GetNewZippedDatabaseFileName(file), storage);
+            storage.MspDB = LoadMspDB(GetNewMspFileName(file));
             return storage;
         }
 
@@ -40,26 +41,37 @@ namespace CompMs.MsdialCore.Parser
             return MessagePackHandler.LoadFromFile<MsdialDataStorage>(file);
         } 
 
+        public static void SaveMspDB(string path, List<MoleculeMsReference> db) {
+            MoleculeMsRefMethods.SaveMspToFile(db, path);
+        }
+
+        public static List<MoleculeMsReference> LoadMspDB(string path) {
+            if (File.Exists(path)) {
+                return MoleculeMsRefMethods.LoadMspFromFile(path);
+            }
+            return new List<MoleculeMsReference>(0);
+        }
+
+        protected virtual void SaveDataBaseMapper(string path, MsdialDataStorage storage) {
+            using (var stream = File.Open(path, FileMode.Create)) {
+                storage.DataBaseMapper.Save(stream);
+            }
+        }
+
+        protected virtual void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
+            using (var stream = File.Open(path, FileMode.Open)) {
+                storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase), stream);
+            }
+        }
+
         public static string GetNewMspFileName(string path) {
             var fileName = Path.GetFileNameWithoutExtension(path);
             var folder = Path.GetDirectoryName(path);
             return Path.Combine(folder, fileName + "_Loaded.msp2");
         }
 
-        public static void SaveMspDB(string path, List<MoleculeMsReference> db) {
-            MoleculeMsRefMethods.SaveMspToFile(db, GetNewMspFileName(path));
-        }
-
-        public static List<MoleculeMsReference> LoadMspDB(string path) {
-            var mspPath = GetNewMspFileName(path);
-            if (File.Exists(mspPath)) {
-                return MoleculeMsRefMethods.LoadMspFromFile(mspPath);
-            }
-            return new List<MoleculeMsReference>(0);
-        }
-
-        protected virtual void LoadDataBaseMapper(MsdialDataStorage storage) {
-            storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase));
+        private static string GetNewZippedDatabaseFileName(string path) {
+            return GetNewMspFileName(path) + ".zip";
         }
     }
 }

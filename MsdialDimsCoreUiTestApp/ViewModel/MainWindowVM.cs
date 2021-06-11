@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -14,7 +13,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
@@ -341,7 +339,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialDimsParameter param, List<IsotopicPeak> isotopes)
         {
-            AnnotationProcess.Run(chromatogramPeakFeature, null, mspDB, textDB, param.MspSearchParam, param.TargetOmics, isotopes);
+            AnnotationProcess.Run(chromatogramPeakFeature, null, mspDB, textDB, param.MspSearchParam, param.TextDbSearchParam, param.TargetOmics, isotopes);
             Console.WriteLine("PeakID={0}, Annotation={1}", chromatogramPeakFeature.PeakID, chromatogramPeakFeature.Name);
             return;
         }

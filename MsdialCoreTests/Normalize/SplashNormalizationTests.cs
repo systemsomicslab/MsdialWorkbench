@@ -271,6 +271,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
             this.db = db;
         }
 
+        string IMatchResultRefer.Key { get; } = string.Empty;
         private List<MoleculeMsReference> db;
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {

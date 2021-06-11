@@ -16,6 +16,24 @@ namespace CompMs.Graphics.AxisManager
             this.enableCache = enableCache;
         }
 
+        public DelegateBrushMapper(Func<T, Color> func) {
+            this.func = ToBrush(func);
+        }
+
+        public DelegateBrushMapper(Func<T, Color> func, bool enableCache) {
+            this.func = ToBrush(func);
+            this.enableCache = enableCache;
+        }
+
+        private static Func<T, Brush> ToBrush(Func<T, Color> func) {
+            Brush innerFunc(T value) {
+                var brush = new SolidColorBrush(func(value));
+                brush.Freeze();
+                return brush;
+            }
+            return innerFunc;
+        }
+
         private readonly bool enableCache;
         private readonly Dictionary<T, Brush> cache = new Dictionary<T, Brush>();
         private readonly Func<T, Brush> func;

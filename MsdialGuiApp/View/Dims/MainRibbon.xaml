@@ -248,6 +248,17 @@
                     </RibbonTextBox.InputBindings>
                 </RibbonTextBox>
             </RibbonGroup>
+            <RibbonGroup Header="Peak color">
+                <RibbonComboBox Label="Alignment"
+                                SelectionBoxWidth="80"
+                                VerticalAlignment="Center">
+                    <RibbonGallery SelectedValue="{Binding AlignmentVM.SelectedBrush.Value}"
+                                   SelectedValuePath="Mapper">
+                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentVM.Brushes}"
+                                               DisplayMemberPath="Label"/>
+                    </RibbonGallery>
+                </RibbonComboBox>
+            </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"
                    KeyTip="H">

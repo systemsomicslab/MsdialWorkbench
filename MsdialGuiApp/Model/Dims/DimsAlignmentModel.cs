@@ -1,30 +1,31 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Core.Base;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    public class DimsAlignmentModel : BindableBase, IDisposable
+    class DimsAlignmentModel : BindableBase, IDisposable
     {
         static DimsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -51,51 +52,83 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
-            ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
-            var mzAxis = new ContinuousAxisManager<double>(MassMin, MassMax)
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD)
             {
-                ChartMargin = new Graphics.Core.Base.ChartMargin(0.05),
+                GraphTitle = FileName,
+                HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.KMD),
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Kendrick mass defect"
             };
 
-            var kmdAxis = new ContinuousAxisManager<double>(-0.5, 0.5)
-            {
-                ChartMargin = new Graphics.Core.Base.ChartMargin(0.05),
-            };
+            Target = PlotModel
+                .ToReactivePropertySlimAsSynchronized(m => m.Target)
+                .AddTo(disposables);
 
-            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, mzAxis, kmdAxis);
-
-            var ms2MzAxis = new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z");
-            var repIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
-            var refIntensityAxis = new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance");
-            var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, ms1Spots).AddTo(disposables);
+            var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, Ms1Spots).AddTo(disposables);
             msdecLoader = decLoader;
             var refLoader = new MsRefSpectrumLoader(refer);
-            Ms2SpectrumModel = new MsSpectrumModel<AlignmentSpotPropertyModel>(
-                ms2MzAxis,
-                repIntensityAxis, decLoader,
-                refIntensityAxis, refLoader,
-                "Representation vs. Reference");
+            Ms2SpectrumModel = MsSpectrumModel.Create(
+                Target, decLoader, refLoader,
+                spot => spot.Mass,
+                spot => spot.Intensity);
+            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
+            Ms2SpectrumModel.HorizontalTitle = "m/z";
+            Ms2SpectrumModel.VerticalTitle = "Abundance";
+            Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
+            Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
+            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
+            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
-            AlignmentEicModel = new AlignmentEicModel(
-                chromatogramSpotSerializer,
-                eicFile,
-                Parameter.FileID_ClassName,
-                "TIC, EIC, or BPC chromatograms",
-                "m/z");
+            var barLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
+            BarChartModel = Chart.BarChartModel.Create(
+                Target, barLoader,
+                item => item.Class,
+                item => item.Height);
+            BarChartModel.Elements.HorizontalTitle = "Class";
+            BarChartModel.Elements.VerticalTitle = "Height";
+            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
+            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
-            BarChartModel = new BarChartModel(
-                new AxisData(
-                    new CategoryAxisManager<string>(new List<string>()),
-                    "Class",
-                    "Class"),
-                new AxisData(
-                    new ContinuousAxisManager<double>(0, 1, 0, 0) {
-                        ChartMargin = new ChartMargin(0, 0.025)
-                    },
-                    "Height",
-                    "Height"),
-                new HeightBarItemsLoader(Parameter.FileID_ClassName));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.FileID_ClassName);
+            AlignmentEicModel = Chart.AlignmentEicModel.Create(
+                Target, eicLoader,
+                spot => spot.Time,
+                spot => spot.Intensity);
+            AlignmentEicModel.Elements.GraphTitle = "TIC, EIC or BPC chromatograms";
+            AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
+            AlignmentEicModel.Elements.VerticalTitle = "Abundance";
+            AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
+            AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
+            {
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        spot => spot.Ontology,
+                        Color.FromArgb(180, 181, 181, 181)),
+                    "Ontology"),
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
+                        spot => Color.FromArgb(
+                            180,
+                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
+                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
+                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
+                        enableCache: true),
+                    "Amplitude"),
+            };
+            switch (Parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    SelectedBrush = Brushes[0].Mapper;
+                    break;
+                case TargetOmics.Metabolomics:
+                    SelectedBrush = Brushes[1].Mapper;
+                    break;
+            }
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -130,90 +163,38 @@ namespace CompMs.App.Msdial.Model.Dims
         public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
         private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots => ms1Spots;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
+        public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
-        public double MassMin => ms1Spots.Min(spot => spot.MassCenter);
-        public double MassMax => ms1Spots.Max(spot => spot.MassCenter);
-
-        public AlignmentPeakPlotModel PlotModel {
-            get => plotModel;
-            private set {
-                var newValue = value;
-                var oldValue = plotModel;
-                if (SetProperty(ref plotModel, value)) {
-                    if (oldValue != null) {
-                        oldValue.PropertyChanged -= OnPlotModelTargetChanged;
-                    }
-                    if (newValue != null) {
-                        newValue.PropertyChanged += OnPlotModelTargetChanged;
-                    }
-                }
-            }
+        public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {
+            get => selectedBrush;
+            set => SetProperty(ref selectedBrush, value);
         }
-        private AlignmentPeakPlotModel plotModel;
+        private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
-        private void OnPlotModelTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(PlotModel.Target)) {
-                Target = PlotModel.Target;
-            }
-        }
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; } = new ObservableCollection<AlignmentSpotPropertyModel>();
 
-        public MsSpectrumModel<AlignmentSpotPropertyModel> Ms2SpectrumModel { get; }
+        public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
-        public AlignmentEicModel AlignmentEicModel { get; }
+        public MsSpectrumModel Ms2SpectrumModel { get; }
 
-        public BarChartModel BarChartModel { get; }
+        public Chart.AlignmentEicModel AlignmentEicModel { get; }
 
-        public AlignmentSpotPropertyModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value)) {
-                    _ = OnTargetChangedAsync(target);   
-                }
-            }
-        }
-        private AlignmentSpotPropertyModel target;
+        public Chart.BarChartModel BarChartModel { get; }
 
-        private CancellationTokenSource cts;
+        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+
         private bool disposedValue;
-
-        public async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target) {
-            cts?.Cancel();
-            var localCts = cts = new CancellationTokenSource();
-
-            try {
-                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
-                    t => {
-                        localCts.Dispose();
-                        if (cts == localCts) {
-                            cts = null;
-                        }
-                    }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) {
-
-            }
-        }
-
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target, CancellationToken token = default) {
-            await Task.WhenAll(
-                BarChartModel.LoadBarItemsAsync(target, token),
-                AlignmentEicModel.LoadEicAsync(target, token),
-                Ms2SpectrumModel.LoadSpectrumAsync(target, token)
-            ).ConfigureAwait(false);
-        }
 
         public void SaveSpectra(string filename) {
             SpectraExport.SaveSpectraTable(
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
-                Target.innerModel,
+                Target.Value.innerModel,
                 MsdecResult,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.innerModel != null && MsdecResult != null;
+        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult != null;
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, resultFile);

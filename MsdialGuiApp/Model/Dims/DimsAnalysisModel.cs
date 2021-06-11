@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -12,11 +10,10 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -25,16 +22,16 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    public class DimsAnalysisModel : BindableBase, IDisposable
+    class DimsAnalysisModel : BindableBase, IDisposable
     {
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultRefer refer,
             ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
 
-            this.provider = provider;
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
@@ -43,50 +40,50 @@ namespace CompMs.App.Msdial.Model.Dims
             Parameter = parameter;
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-            ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
+            Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
-            Peaks = peaks;
 
-            HorizontalAxis = new AxisData(new ContinuousAxisManager<double>(MassMin, MassMax), "Mass", "m/z");
-            VerticalAxis = new AxisData(new ContinuousAxisManager<double>(-0.5, 0.5), "KMD", "Kendrick mass defect");
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, HorizontalAxis.Axis, VerticalAxis.Axis);
+            PlotModel2 = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD)
+            {
+                VerticalTitle = "Kendrick mass defect",
+                VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
+                HorizontalTitle = "m/z",
+                HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
+            };
 
-            var abundanceAxis = new AxisData(new ContinuousAxisManager<double>(0, 1), "Intensity", "Abundance");
-            var massAxis = new AxisData(HorizontalAxis.Axis, "ChromXValue", "m/z");
-
-            EicModel = new EicModel(
-                massAxis,
-                abundanceAxis,
+            EicModel2 = new Chart.EicModel(
                 new DimsEicLoader(
-                    provider,
-                    Parameter,
-                    ChromXType.Mz,
-                    ChromXUnit.Mz,
-                    Parameter.MassRangeBegin,
-                    Parameter.MassRangeEnd)
-            );
+                    provider, parameter,
+                    parameter.MassRangeBegin, parameter.MassRangeEnd)
+            )
+            {
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Abundance"
+            };
 
-            var ms2MeasureIntensityAxis = new AxisData(
-                new ContinuousAxisManager<double>(0, 1, 0, 0),
-                "Intensity",
-                "Abundance");
-            var decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, ms1Peaks).AddTo(disposables);
-            Ms2SpectrumModel = new RawDecSpectrumsModel(
-                horizontalData: new AxisData(new ContinuousAxisManager<double>(0, 1), "Mass", "m/z"),
-                rawVerticalData: ms2MeasureIntensityAxis,
-                rawLoader: new MsRawSpectrumLoader(provider, Parameter),
-                decVerticalData: ms2MeasureIntensityAxis,
-                decLoader: decLoader,
-                refVerticalData: new AxisData(new ContinuousAxisManager<double>(0, 1, 0, 0), "Intensity", "Abundance"),
-                refLoader: new MsRefSpectrumLoader(refer),
-                graphTitle: "Measure vs. Reference");
-            
+            decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, Ms1Peaks).AddTo(disposables);
+            Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
+                new MsRawSpectrumLoader(provider, Parameter),
+                decLoader,
+                new MsRefSpectrumLoader(refer),
+                peak => peak.Mass,
+                peak => peak.Intensity)
+            {
+                GraphTitle = "Measure vs. Reference",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Abundance",
+                HorizontaProperty = nameof(SpectrumPeak.Mass),
+                VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
+            };
 
-            EicModel.PropertyChanged += OnEicChanged;
+            Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
+            Target.Subscribe(async t => await OnTargetChangedAsync(t));
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
-        private readonly IDataProvider provider;
+        private readonly MsDecSpectrumLoader decLoader;
 
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
@@ -102,74 +99,15 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string fileName;
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks => ms1Peaks;
-        private readonly ObservableCollection<ChromatogramPeakFeatureModel> ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>();
+        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak.Mass);
-        public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak.Mass);
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
-        public List<ChromatogramPeakFeature> Peaks { get; } = new List<ChromatogramPeakFeature>();
+        public Chart.AnalysisPeakPlotModel PlotModel2 { get; }
 
-        public ChromatogramPeakFeatureModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value)) {
-                    _ = OnTargetChangedAsync(target);
-                }
-            }
-        }
-        private ChromatogramPeakFeatureModel target;
+        public Chart.EicModel EicModel2 { get; }
 
-        public AxisData HorizontalAxis {
-            get => horizontalAxis;
-            set => SetProperty(ref horizontalAxis, value);
-        }
-        private AxisData horizontalAxis;
-
-        public AxisData VerticalAxis {
-            get => verticalAxis;
-            set => SetProperty(ref verticalAxis, value);
-        }
-        private AxisData verticalAxis;
-
-        public AnalysisPeakPlotModel PlotModel {
-            get => plotModel;
-            private set {
-                var newValue = value;
-                var oldValue = plotModel;
-                if (SetProperty(ref plotModel, value)) {
-                    if (oldValue != null) {
-                        oldValue.PropertyChanged -= OnPlotModelTargetChanged;
-                    }
-                    if (newValue != null) {
-                        newValue.PropertyChanged += OnPlotModelTargetChanged;
-                    }
-                }
-            }
-        }
-        private AnalysisPeakPlotModel plotModel;
-
-        private void OnPlotModelTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(PlotModel.Target)) {
-                Target = PlotModel.Target;
-            }
-        }
-
-        public EicModel EicModel { get; }
-
-        private void OnEicChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(EicModel.Eic)) {
-                var axis = EicModel.VerticalData;
-                var type = typeof(ChromatogramPeakWrapper);
-                var prop = type.GetProperty(axis.Property);
-                EicModel.VerticalData = new AxisData(
-                    ContinuousAxisManager<double>.Build(EicModel.Eic, peak => (double)prop.GetValue(peak), 0, 0),
-                    axis.Property,
-                    axis.Title);
-            }
-        }
-
-        public RawDecSpectrumsModel Ms2SpectrumModel { get; }
+        public Chart.RawDecSpectrumsModel Ms2SpectrumModel2 { get; }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
@@ -192,8 +130,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             await Task.WhenAll(
-                EicModel.LoadEicAsync(target, token),
-                Ms2SpectrumModel.LoadSpectrumAsync(target, token)
+                EicModel2?.LoadEicAsync(target, token),
+                Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
             ).ConfigureAwait(false);
         }
 
@@ -209,8 +147,8 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string deconvolutionSplashKey = string.Empty;
 
-        public MSDecResult MsdecResult => msdecResult;
-        private MSDecResult msdecResult = null;
+        public MSDecResult MsdecResult => decLoader.Result;
+
         private bool disposedValue;
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {
@@ -219,7 +157,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public void FocusById(IAxisManager mzAxis, int id) {
             var focus = Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == id);
-            Target = focus;
+            Target.Value = focus;
             FocusByMz(mzAxis, focus.Mass);
         }
 
@@ -227,12 +165,12 @@ namespace CompMs.App.Msdial.Model.Dims
             SpectraExport.SaveSpectraTable(
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
-                Target.InnerModel,
-                msdecResult,
+                Target.Value.InnerModel,
+                MsdecResult,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.InnerModel != null && msdecResult != null;
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult != null;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
