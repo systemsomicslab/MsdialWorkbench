@@ -19,9 +19,10 @@ namespace CompMs.MsdialCore.Parser
             var mspList = container.MspDB;
             container.MspDB = new List<MoleculeMsReference>();
 
-            SaveMsdialDataStorageCore(file, container);
             SaveMspDB(GetNewMspFileName(file), mspList);
             SaveDataBaseMapper(GetNewZippedDatabaseFileName(file), container);
+            SaveMsdialDataStorageCore(file, container);
+
             container.MspDB = mspList;
         }
 
@@ -58,7 +59,9 @@ namespace CompMs.MsdialCore.Parser
         }
 
         protected virtual void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
-            storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase), null);
+            using (var stream = File.Open(path, FileMode.Open)) {
+                storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase), stream);
+            }
         }
 
         public static string GetNewMspFileName(string path) {

@@ -32,19 +32,19 @@ namespace CompMs.MsdialCore.DataObj
                 foreach (var kvp in InnerKeyToRestorationKey) {
                     var entry = archive.GetEntry(kvp.Key);
                     using (var entry_stream = entry.Open()) {
-                        keyToRefer[kvp.Key] = kvp.Value.Accept(visitor, null);
+                        keyToRefer[kvp.Key] = kvp.Value.Accept(visitor, entry_stream);
                     }
                 }
             }
         }
 
         public void Save(Stream stream) {
-            KeyToRestorationKey.Clear();
+            InnerKeyToRestorationKey.Clear();
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
                 foreach (var refer in keyToRefer.Values.OfType<IRestorableRefer>()) {
                     var entry = archive.CreateEntry(refer.Key, CompressionLevel.Optimal);
                     using (var entry_stream = entry.Open()) {
-                        KeyToRestorationKey[refer.Key] = refer.Save(entry_stream);
+                        InnerKeyToRestorationKey[refer.Key] = refer.Save(entry_stream);
                     }
                 }
             }
