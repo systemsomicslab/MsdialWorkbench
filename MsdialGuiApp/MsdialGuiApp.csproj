@@ -155,6 +155,7 @@
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
+    <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -167,32 +168,22 @@
     <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\IBarItemsLoader.cs" />
-    <Compile Include="Model\AlignmentEicModel.cs" />
     <Compile Include="Model\AlignmentPeakPlotModel.cs" />
-    <Compile Include="Model\AnalysisPeakPlotModel.cs" />
-    <Compile Include="Model\BarChartModel.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />
     <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
-    <Compile Include="Model\EicModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
     <Compile Include="Model\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\Normalize\SplashSetModel.cs" />
-    <Compile Include="Model\RawDecSpectrumsModel.cs" />
-    <Compile Include="Model\MsSpectrumModel.cs" />
-    <Compile Include="ViewModel\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
-    <Compile Include="ViewModel\AnalysisPeakPlotVM.cs" />
-    <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
-    <Compile Include="ViewModel\EicViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
@@ -202,8 +193,6 @@
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
-    <Compile Include="ViewModel\RawDecSpectrumsViewModel.cs" />
-    <Compile Include="ViewModel\MsSpectrumViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
