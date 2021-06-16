@@ -28,13 +28,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis == null) {
                 var chromRange = model.ObserveProperty(m => m.ChromRange);
-                horizontalAxis = new ReactiveAxisManager<double>(chromRange).AddTo(Disposables);
+                horizontalAxis = chromRange
+                    .ToReactiveAxisManager<double>()
+                    .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis == null) {
                 var abundanceRange = model.ObserveProperty(m => m.AbundanceRange);
-                verticalAxis = new ReactiveAxisManager<double>(abundanceRange, new ChartMargin(0, 0.1), new Range(0d, 0d)).AddTo(Disposables);
+                verticalAxis = abundanceRange
+                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.1), new Range(0d, 0d))
+                    .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
 

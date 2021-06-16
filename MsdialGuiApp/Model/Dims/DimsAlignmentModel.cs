@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -21,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
@@ -67,11 +69,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 .ToReactivePropertySlimAsSynchronized(m => m.Target)
                 .AddTo(disposables);
 
-            var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, Ms1Spots).AddTo(disposables);
-            msdecLoader = decLoader;
+            var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(disposables);
+            var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(refer);
             Ms2SpectrumModel = MsSpectrumModel.Create(
-                Target, decLoader, refLoader,
+                Target, decSpecLoader, refLoader,
                 spot => spot.Mass,
                 spot => spot.Intensity);
             Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
@@ -98,10 +100,14 @@ namespace CompMs.App.Msdial.Model.Dims
                 spot => spot.Time,
                 spot => spot.Intensity);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC or BPC chromatograms";
-            AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
+            AlignmentEicModel.Elements.HorizontalTitle = "m/z";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            MsdecResult = Target.Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(disposables);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -133,8 +139,6 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        private readonly MsDecSpectrumLoader msdecLoader;
-
         public AlignmentResultContainer Container {
             get => container;
             set => SetProperty(ref container, value);
@@ -150,7 +154,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public AlignmentFileBean AlignmentFile => alignmentFile;
         private readonly AlignmentFileBean alignmentFile;
 
-        public MSDecResult MsdecResult => msdecLoader.Result;
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public ParameterBase Parameter { get; }
 
@@ -190,11 +194,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
                 Target.Value.innerModel,
-                MsdecResult,
+                MsdecResult.Value,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult != null;
+        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, resultFile);

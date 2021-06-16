@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -64,25 +65,20 @@ namespace CompMs.App.Msdial.Model
         }
     }
 
-    class MsDecSpectrumLoader : IMsSpectrumLoader<object>, IDisposable
+    class MsDecSpectrumLoader : IMsSpectrumLoader<object>
     {
         public MsDecSpectrumLoader(
-            string deconvolutionFile,
+            MSDecLoader loader,
             IReadOnlyList<object> ms1Peaks) {
 
             this.ms1Peaks = ms1Peaks;
-            deconvolutionStream = File.Open(deconvolutionFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-            MsdecResultsReader.GetSeekPointers(deconvolutionStream, out version, out seekPointers, out isAnnotationInfoIncluded);
+            this.loader = loader;
         }
 
         public MsdialCore.MSDec.MSDecResult Result { get; private set; }
 
-        private readonly Stream deconvolutionStream;
+        private readonly MSDecLoader loader;
         private readonly IReadOnlyList<object> ms1Peaks;
-        private readonly int version;
-        private readonly List<long> seekPointers;
-        private readonly bool isAnnotationInfoIncluded;
-        private bool disposedValue;
 
         public List<SpectrumPeak> LoadSpectrum(object target) {
             if (target == null) {
@@ -102,24 +98,9 @@ namespace CompMs.App.Msdial.Model
 
         private List<SpectrumPeak> LoadSpectrumCore(object target) {
             var idx = ms1Peaks.IndexOf(target);
-            var msdecResult = MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
+            var msdecResult = loader.LoadMSDecResult(idx);
             Result = msdecResult;
-            return msdecResult.Spectrum;
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    deconvolutionStream.Close();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
         }
     }
 

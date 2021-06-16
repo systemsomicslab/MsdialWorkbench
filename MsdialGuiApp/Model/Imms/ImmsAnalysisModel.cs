@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -50,9 +51,10 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
+            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
                 new MsRawSpectrumLoader(provider, parameter),
-                new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, Ms1Peaks),
+                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(refer),
                 peak => peak.Mass,
                 peak => peak.Intensity)

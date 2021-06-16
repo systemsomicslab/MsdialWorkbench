@@ -249,7 +249,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult.Value, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,

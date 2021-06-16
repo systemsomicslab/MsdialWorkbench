@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -52,7 +53,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
 
-            var decLoader = new MsDecSpectrumLoader(alignmentFileBean.SpectraFilePath, Ms1Spots).AddTo(disposables);
+            var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(refer);
             Ms2SpectrumModel = Chart.MsSpectrumModel.Create(
                 Target, decLoader, refLoader,

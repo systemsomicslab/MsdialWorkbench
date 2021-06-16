@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -20,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -65,7 +67,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Abundance"
             };
 
-            decLoader = new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, Ms1Peaks).AddTo(disposables);
+            var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(disposables);
+            var decLoader = new MsDecSpectrumLoader(loader, Ms1Peaks);
             Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
                 new MsRawSpectrumLoader(provider, Parameter),
                 decLoader,
@@ -84,6 +87,10 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
+
+            MsdecResult = Target.Select(t => loader.LoadMSDecResult(t.MasterPeakID))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -105,7 +112,6 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
-        private readonly MsDecSpectrumLoader decLoader;
 
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
@@ -171,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string deconvolutionSplashKey = string.Empty;
 
-        public MSDecResult MsdecResult => decLoader.Result;
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         private bool disposedValue;
         private static readonly double MzTol = 20;
@@ -190,11 +196,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                 filename,
                 Target.Value.InnerModel,
-                MsdecResult,
+                MsdecResult.Value,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult != null;
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
