@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -9,6 +10,7 @@ using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Data;
 
 
@@ -19,9 +21,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator,
+            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService) {
 
             this.model = model;
+            this.compoundSearchService = compoundSearchService;
+
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
@@ -38,9 +43,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
 
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            SearchCompoundCommand = model.Target
+                .Zip(model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+                .ToReactiveCommand()
+                .AddTo(Disposables);
+            SearchCompoundCommand.Subscribe(SearchCompound);
         }
 
         private readonly ImmsAlignmentModel model;
+        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService;
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
@@ -146,32 +158,22 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 && spot.MassCenter <= MassUpper;
         }
 
-        /*
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound, CanSearchCompound));
-        private DelegateCommand<Window> searchCompoundCommand;
+        public ReactiveCommand SearchCompoundCommand { get; }
 
-        private void SearchCompound(Window owner) {
-            if (Target?.innerModel == null)
+        private void SearchCompound() {
+            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(alignmentFile, Target.innerModel, msdecResult, null, mspAnnotator);
-            var window = new View.Imms.CompoundSearchWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            var vm = new CompoundSearchVM<AlignmentSpotProperty>(
+                model.AlignmentFile,
+                Target.Value.innerModel,
+                model.MsdecResult.Value,
+                null,
+                mspAnnotator,
+                model.Parameter.MspSearchParam);
 
-            window.ShowDialog();
+            compoundSearchService.ShowDialog(vm);
         }
-
-        private bool CanSearchCompound(Window owner) {
-            if (Target?.innerModel == null) {
-                return false;
-            }
-            return true;
-        }
-        */
 
         /*
         public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));

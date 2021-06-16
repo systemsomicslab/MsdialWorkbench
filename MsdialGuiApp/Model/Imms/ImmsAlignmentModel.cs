@@ -33,8 +33,10 @@ namespace CompMs.App.Msdial.Model.Imms
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
 
-            resultFile = alignmentFileBean.FilePath;
-            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
+            AlignmentFile = alignmentFileBean;
+            ResultFile = alignmentFileBean.FilePath;
+            Parameter = parameter;
+            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
 
@@ -90,6 +92,11 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
+            MsdecResult = Target.Where(t => t != null)
+                .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(disposables);
+
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
                 new BrushMapData<AlignmentSpotPropertyModel>(
@@ -122,6 +129,8 @@ namespace CompMs.App.Msdial.Model.Imms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
@@ -144,10 +153,15 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly AlignmentResultContainer container;
-        private readonly string resultFile;
+
+        public AlignmentFileBean AlignmentFile { get; }
+        
+        public string ResultFile { get; }
+
+        public ParameterBase Parameter { get; }
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(container, resultFile);
+            MessagePackHandler.SaveToFile(container, ResultFile);
         }
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();

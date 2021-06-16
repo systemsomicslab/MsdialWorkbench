@@ -105,7 +105,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            MsdecResult = Target.Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
+            MsdecResult = Target.Where(t => t != null)
+                .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
 

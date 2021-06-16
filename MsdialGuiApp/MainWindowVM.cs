@@ -126,7 +126,7 @@ namespace CompMs.App.Msdial
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, alignmentCompoundSearchService);
                 case MachineCategory.IMMS:
-                    return new ViewModel.Imms.ImmsMethodVM(storage);
+                    return new ViewModel.Imms.ImmsMethodVM(storage, alignmentCompoundSearchService);
                 case MachineCategory.LCIMMS:
                     throw new NotImplementedException("Lcimms method is working now.");
                     

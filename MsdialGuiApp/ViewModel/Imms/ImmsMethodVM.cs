@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
@@ -17,10 +18,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private static readonly MsdialSerializer serializer;
 
-        public ImmsMethodVM(MsdialDataStorage storage)
+        public ImmsMethodVM(
+            MsdialDataStorage storage,
+            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService)
             : base(serializer) {
 
             model = new ImmsMethodModel(storage).AddTo(Disposables);
+            this.compoundSearchService = compoundSearchService;
 
             AnalysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
             AlignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
@@ -29,6 +33,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private readonly ImmsMethodModel model;
+
+        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService;
 
         public ICollectionView AnalysisFilesView {
             get => analysisFilesView;
@@ -129,6 +135,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public override void LoadProject() {
+            model.LoadAnnotator();
+
             LoadSelectedAnalysisFile();
         }
 
@@ -181,7 +189,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AlignmentVM = new AlignmentImmsVM(
                 model.AlignmentModel,
                 model.MspAlignmentAnnotator,
-                model.TextDBAlignmentAnnotator)
+                model.TextDBAlignmentAnnotator,
+                compoundSearchService)
             {
                 DisplayFilters = displayFilters
             };

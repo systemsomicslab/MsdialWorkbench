@@ -106,6 +106,15 @@ namespace CompMs.App.Msdial.Model.Imms
             return 0;
         }
 
+        public void LoadAnnotator() {
+            MspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            MspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            Storage.DataBaseMapper.Add(MspChromatogramAnnotator);
+            TextDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            TextDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            Storage.DataBaseMapper.Add(TextDBChromatogramAnnotator);
+        }
+
         private bool ProcessSetAnalysisParameter(Window owner) {
             var analysisParamSetVM = new ImmsAnalysisParamSetVM((MsdialImmsParameter)Storage.ParameterBase, AnalysisFiles);
             var apsw = new AnalysisParamSetForImmsWindow
