@@ -15,8 +15,7 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsTextDBAnnotator<T> : TextDbRestorableBase, IAnnotator<T, MSDecResult>
-        where T : IMSProperty, IIonProperty
+    public class ImmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, MSDecResult>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
@@ -30,7 +29,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult Annotate(
-            T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -39,7 +38,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FindCandidates(
-            T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -49,7 +48,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         private static List<MsScanMatchResult> FindCandidatesCore(
-            T property, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string sourceKey) {
 
             (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
@@ -68,7 +67,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(
-            T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -77,7 +76,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         private static MsScanMatchResult CalculateScoreCore(
-            T property, IReadOnlyList<IsotopicPeak> scanIsotopes,
+            IMSIonProperty property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, string sourceKey) {
 
@@ -112,7 +111,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return ReferObject.Refer(result);
         }
 
-        public List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null) {
+        public List<MoleculeMsReference> Search(IMSIonProperty property, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
@@ -120,7 +119,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return db.GetRange(lo, hi - lo);
         }
 
-        private static (int lo, int hi) SearchBoundIndex(T property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance) {
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
             var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
             var lo = SearchCollection.LowerBound(textDB, dummy, comparer);
@@ -138,7 +137,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public void Validate(
             MsScanMatchResult result,
-            T property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter = null) {
 
@@ -147,11 +146,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             ValidateCore(result, property, reference, parameter);
         }
 
-        private static void ValidateCore(MsScanMatchResult result, T property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
+        private static void ValidateCore(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             ValidateBase(result, property, reference, parameter);
         }
 
-        private static void ValidateBase(MsScanMatchResult result, T property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
+        private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 

@@ -30,8 +30,8 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var mspAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            var textDBAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(container.TextDB, container.ParameterBase.TextDbSearchParam, "TextDB");
+            var mspAnnotator = new ImmsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
+            var textDBAnnotator = new ImmsTextDBAnnotator(container.TextDB, container.ParameterBase.TextDbSearchParam, "TextDB");
 
             Run(file, container, mspAnnotator, textDBAnnotator, isGuiProcess, reportAction, token);
         }

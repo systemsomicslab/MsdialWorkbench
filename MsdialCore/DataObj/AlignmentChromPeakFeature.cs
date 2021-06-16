@@ -13,7 +13,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty, IAnnotatedObject {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject {
 
         // ID metadata
         [Key(0)]

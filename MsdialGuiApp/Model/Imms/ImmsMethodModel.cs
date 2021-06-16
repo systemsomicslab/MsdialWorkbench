@@ -107,12 +107,12 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnnotator() {
-            MspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            MspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            Storage.DataBaseMapper.Add(MspChromatogramAnnotator);
-            TextDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            TextDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            Storage.DataBaseMapper.Add(TextDBChromatogramAnnotator);
+            var mspAnnotator = new ImmsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            MspChromatogramAnnotator = mspAnnotator;
+            MspAlignmentAnnotator = mspAnnotator;
+            var textAnnotator = new ImmsTextDBAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            TextDBChromatogramAnnotator = textAnnotator;
+            TextDBAlignmentAnnotator = textAnnotator;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
@@ -140,12 +140,14 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
-            MspChromatogramAnnotator = new ImmsMspAnnotator<ChromatogramPeakFeature>(analysisParamSetVM.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            MspAlignmentAnnotator = new ImmsMspAnnotator<AlignmentSpotProperty>(analysisParamSetVM.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            Storage.DataBaseMapper.Add(MspChromatogramAnnotator);
-            TextDBChromatogramAnnotator = new ImmsTextDBAnnotator<ChromatogramPeakFeature>(analysisParamSetVM.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            TextDBAlignmentAnnotator = new ImmsTextDBAnnotator<AlignmentSpotProperty>(analysisParamSetVM.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            Storage.DataBaseMapper.Add(TextDBChromatogramAnnotator);
+            var mspAnnotator = new ImmsMspAnnotator(analysisParamSetVM.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            MspChromatogramAnnotator = mspAnnotator;
+            MspAlignmentAnnotator = mspAnnotator;
+            Storage.DataBaseMapper.Add(mspAnnotator);
+            var textAnnotator = new ImmsTextDBAnnotator(analysisParamSetVM.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            TextDBChromatogramAnnotator = textAnnotator;
+            TextDBAlignmentAnnotator = textAnnotator;
+            Storage.DataBaseMapper.Add(textAnnotator);
             return true;
         }
 

@@ -9,28 +9,39 @@ using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MassAnnotator : MspDbRestorableBase, IAnnotator<IMSProperty, MSDecResult>
+    public class MassAnnotator : IAnnotator<IMSProperty, MSDecResult>
     {
         private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
 
+        private readonly List<MoleculeMsReference> db;
         private readonly TargetOmics omics;
         private readonly SourceType source;
+        private readonly string sourceKey;
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public MassAnnotator(IEnumerable<MoleculeMsReference> db, MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey)
-            : base(db, sourceKey) {
+        public MassAnnotator(
+            IEnumerable<MoleculeMsReference> db,
+            MsRefSearchParameterBase parameter,
+            TargetOmics omics,
+            SourceType source,
+            string sourceKey) {
+
+            this.db = db.ToList();
             this.db.Sort(comparer);
             this.Parameter = parameter;
             this.omics = omics;
             this.source = source;
+            this.sourceKey = sourceKey;
             ReferObject = new DataBaseRefer(this.db);
         }
 
@@ -119,7 +130,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public IMatchResultRefer ReferObject { get; }
-        public override MoleculeMsReference Refer(MsScanMatchResult result) {
+
+        public string Key => throw new NotImplementedException();
+
+        public MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
 
@@ -209,6 +223,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             else {
                 result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
             }
+        }
+
+        public IReferRestorationKey Save(Stream stream) {
+            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
+            switch (source) {
+                case SourceType.MspDB:
+                    return new MspDbRestorationKey(sourceKey);
+                case SourceType.TextDB:
+                    return new TextDbRestorationKey(sourceKey);
+            }
+            throw new NotSupportedException(source.ToString());
         }
     }
 }

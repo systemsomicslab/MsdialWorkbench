@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
     {
-        public ObservableCollection<CompoundResult> Compounds {
+        public IReadOnlyList<CompoundResult> Compounds {
             get => compounds;
             set {
                 var old = compounds;
@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.ViewModel
                 }
             }
         }
-        private ObservableCollection<CompoundResult> compounds = new ObservableCollection<CompoundResult>();
+        private IReadOnlyList<CompoundResult> compounds = new ObservableCollection<CompoundResult>();
         private ICollectionView compoundsView;
 
         public List<SpectrumPeakWrapper> Ms2DecSpectrum {
@@ -70,10 +70,10 @@ namespace CompMs.App.Msdial.ViewModel
         public string AdductName { get; }
         public string MetaboliteName { get; }
 
-        private readonly MSDecResult msdecResult;
-        private readonly T property;
-        private readonly IAnnotator<T, MSDecResult> Annotator;
-        private readonly IReadOnlyList<IsotopicPeak> isotopes;
+        protected readonly MSDecResult msdecResult;
+        protected readonly T property;
+        protected readonly IAnnotator<T, MSDecResult> Annotator;
+        protected readonly IReadOnlyList<IsotopicPeak> isotopes;
 
         public CompoundSearchVM(
             AnalysisFileBean analysisFile,
@@ -134,26 +134,6 @@ namespace CompMs.App.Msdial.ViewModel
 
         private CancellationTokenSource cts = null;
 
-        private void Search() {
-            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            canSearch = false;
-            if (cts != null) {
-                cts.Cancel();
-            }
-
-            var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
-            foreach (var candidate in candidates) {
-                candidate.IsManuallyModified = true;
-                candidate.Source |= SourceType.Manual;
-            }
-            Compounds = new ObservableCollection<CompoundResult>(
-                candidates.OrderByDescending(result => result.TotalScore)
-                    .Select(result => new CompoundResult(Annotator.Refer(result), result)));
-
-            canSearch = true;
-            System.Windows.Input.Mouse.OverrideCursor = null;
-        }
-
         private async void OnParameterChanged(object sender, PropertyChangedEventArgs e) {
             if (!CanSearch()) {
                 return;
@@ -174,27 +154,40 @@ namespace CompMs.App.Msdial.ViewModel
                 });
         }
 
+        private void Search() {
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            canSearch = false;
+            if (cts != null) {
+                cts.Cancel();
+            }
+
+            Compounds = SearchCore();
+
+            canSearch = true;
+
+            System.Windows.Input.Mouse.OverrideCursor = null;
+        }
+
         private async Task SearchAsync(CancellationToken token) {
             if (!canSearch)
                 return;
 
-            var compounds = await Task.Run(() => {
-                var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
-                foreach (var candidate in candidates) {
-                    candidate.IsManuallyModified = true;
-                    candidate.Source |= SourceType.Manual;
-                }
-                token.ThrowIfCancellationRequested();
-
-                return new ObservableCollection<CompoundResult>(
-                    candidates
-                        .OrderByDescending(result => result.TotalScore)
-                        .Select(result => new CompoundResult(Annotator.Refer(result), result)));
-            }, token);
+            var compounds = await Task.Run(SearchCore, token);
 
             token.ThrowIfCancellationRequested();
 
             Compounds = compounds;
+        }
+
+        protected virtual IReadOnlyList<CompoundResult> SearchCore() {
+            var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
+            foreach (var candidate in candidates) {
+                candidate.IsManuallyModified = true;
+                candidate.Source |= SourceType.Manual;
+            }
+            return new ObservableCollection<CompoundResult>(
+                candidates.OrderByDescending(result => result.TotalScore)
+                    .Select(result => new CompoundResult(Annotator.Refer(result), result)));
         }
 
         public DelegateCommand SetConfidenceCommand => setConfidenceCommand ?? (setConfidenceCommand = new DelegateCommand(SetConfidence, CanSetAnnotation));
@@ -295,6 +288,16 @@ namespace CompMs.App.Msdial.ViewModel
                 if (innerModel.Ms2Tolerance != value) {
                     innerModel.Ms2Tolerance = value;
                     OnPropertyChanged(nameof(Ms2Tolerance));
+                }
+            }
+        }
+
+        public float CcsTolerance {
+            get => innerModel.CcsTolerance;
+            set {
+                if (innerModel.CcsTolerance != value) {
+                    innerModel.CcsTolerance = value;
+                    OnPropertyChanged(nameof(CcsTolerance));
                 }
             }
         }

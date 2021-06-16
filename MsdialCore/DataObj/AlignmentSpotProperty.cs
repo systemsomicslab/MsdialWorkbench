@@ -13,7 +13,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentSpotProperty : IMSProperty, IIonProperty, IMoleculeProperty, IAnnotatedObject{
+    public class AlignmentSpotProperty : IMSIonProperty, IMoleculeProperty, IAnnotatedObject{
 
         // IDs to link properties
         [Key(0)]

@@ -9,24 +9,30 @@
         xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
         xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
         xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         mc:Ignorable="d"
         Name="CompoundSearch"
         Title="Compound search" Height="720" Width="1280">
     <Window.Resources>
-        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Mass"
-                                           ChartMargin="0.05"/>
-        <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.5" />
-        <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Compounds/Spectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.5"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
+                                               ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
+                                               ValuePropertyName="Mass"
+                                               ChartMargin="0.05"/>
+            <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
+                                               ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
+                                               ValuePropertyName="Intensity"
+                                               Bounds="0,0"
+                                               ChartMargin="0,0.5" />
+            <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
+                                               ItemsSource="{Binding DataContext.Compounds/Spectrum, Source={x:Reference Name=CompoundSearch}}"
+                                               ValuePropertyName="Intensity"
+                                               Bounds="0,0"
+                                               ChartMargin="0,0.5"/>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
@@ -90,6 +96,13 @@
                        Margin="10,0,0,0"/>
                 <TextBox Name="TextBox_Ms2Tolerance"
                          Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                         Width="70" Height="25" />
+                <Label Content="Ccs tol.:"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="10,0,0,0"/>
+                <TextBox Name="TextBox_CcsTolerance"
+                         Text="{Binding ParameterVM.CcsTolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
 
@@ -234,6 +247,9 @@
                         <Setter Property="IsReadOnly" Value="True" />
                     </Style>
                 </StackPanel.Resources>
+                <ui:LabeledContent PrependLabel="Name:"
+                                   Content="{Binding Compounds/Name, Mode=OneWay}"
+                                   Style="{StaticResource AlignedContent}"/>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Name:"/>
                     <TextBox Name="Label_PeakInformation_AnnotatedMetabolite" Text="{Binding Compounds/Name, Mode=OneWay}" />

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IMoleculeMsProperty, IAnnotatedObject
+    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
     {
 
         // basic property of IChromatogramPeakFeature
