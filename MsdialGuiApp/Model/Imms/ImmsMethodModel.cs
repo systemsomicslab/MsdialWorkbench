@@ -143,10 +143,12 @@ namespace CompMs.App.Msdial.Model.Imms
             var mspAnnotator = new ImmsMspAnnotator(analysisParamSetVM.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             MspChromatogramAnnotator = mspAnnotator;
             MspAlignmentAnnotator = mspAnnotator;
+            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB"));
             Storage.DataBaseMapper.Add(mspAnnotator);
             var textAnnotator = new ImmsTextDBAnnotator(analysisParamSetVM.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
             TextDBChromatogramAnnotator = textAnnotator;
             TextDBAlignmentAnnotator = textAnnotator;
+            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB"));
             Storage.DataBaseMapper.Add(textAnnotator);
             return true;
         }

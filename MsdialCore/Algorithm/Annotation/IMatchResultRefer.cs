@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public interface IRestorableRefer : IMatchResultRefer
     {
-        IReferRestorationKey Save(Stream stream);
+        IReferRestorationKey Save();
     }
 
     public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
@@ -52,11 +52,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
 
-        public abstract IReferRestorationKey Save(Stream stream);
-
-        protected void SaveCore(Stream stream) {
-            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
-        }
+        public abstract IReferRestorationKey Save();
     }
 
     public class MspDbRestorableDataBaseRefer : RestorableDataBaseRefer
@@ -65,8 +61,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
 
-        public override IReferRestorationKey Save(Stream stream) {
-            SaveCore(stream);
+        public override IReferRestorationKey Save() {
             return new MspDbRestorationKey(Key);
         }
     }
@@ -77,8 +72,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
 
-        public override IReferRestorationKey Save(Stream stream) {
-            SaveCore(stream);
+        public override IReferRestorationKey Save() {
             return new TextDbRestorationKey(Key);
         }
     }

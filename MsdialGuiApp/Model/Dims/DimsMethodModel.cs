@@ -129,11 +129,13 @@ namespace CompMs.App.Msdial.Model.Dims
             var mspAnnotator = new DimsMspAnnotator(MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             mspChromatogramAnnotator = mspAnnotator;
             mspAlignmentAnnotator = mspAnnotator;
+            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(MspDB, "MspDB"));
             Storage.DataBaseMapper.Add(mspAnnotator);
 
             var textAnnotator = new MassAnnotator(TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
             textDBChromatogramAnnotator = textAnnotator;
             textDBAlignmentAnnotator = textAnnotator;
+            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(TextDB, "TextDB"));
             Storage.DataBaseMapper.Add(textAnnotator);
         }
 

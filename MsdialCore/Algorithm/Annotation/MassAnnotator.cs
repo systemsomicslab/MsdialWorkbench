@@ -131,7 +131,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public IMatchResultRefer ReferObject { get; }
 
-        public string Key => throw new NotImplementedException();
+        public string Key => sourceKey;
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
@@ -225,8 +225,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
         }
 
-        public IReferRestorationKey Save(Stream stream) {
-            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
+        public IReferRestorationKey Save() {
             switch (source) {
                 case SourceType.MspDB:
                     return new MspDbRestorationKey(sourceKey);

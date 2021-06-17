@@ -18,8 +18,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         protected readonly List<MoleculeMsReference> db;
         public string Key { get; }
 
-        public IReferRestorationKey Save(Stream stream) {
-            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
+        public IReferRestorationKey Save() {
             return new MspDbRestorationKey(Key);
         }
 
@@ -33,12 +32,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Key = sourceKey;
         }
 
-
         protected readonly List<MoleculeMsReference> db;
         public string Key { get; }
 
-        public IReferRestorationKey Save(Stream stream) {
-            Common.MessagePack.LargeListMessagePack.Serialize(stream, db);
+        public IReferRestorationKey Save() {
             return new TextDbRestorationKey(Key);
         }
 

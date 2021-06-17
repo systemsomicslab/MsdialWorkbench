@@ -88,7 +88,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
-            MsdecResult = Target.Select(t => loader.LoadMSDecResult(t.MasterPeakID))
+            MsdecResult = Target.Where(t => t != null)
+                .Select(t => loader.LoadMSDecResult(t.MasterPeakID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
 
