@@ -3,6 +3,7 @@ using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
@@ -107,10 +108,10 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnnotator() {
-            var mspAnnotator = new ImmsMspAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            var mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
             MspChromatogramAnnotator = mspAnnotator;
             MspAlignmentAnnotator = mspAnnotator;
-            var textAnnotator = new ImmsTextDBAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            var textAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
             TextDBChromatogramAnnotator = textAnnotator;
             TextDBAlignmentAnnotator = textAnnotator;
         }

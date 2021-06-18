@@ -6,7 +6,8 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AnalysisFileBean {
+    public class AnalysisFileBean : IFileBean
+    {
         [Key(0)]
         public string AnalysisFilePath { get; set; } = string.Empty;
         [Key(1)]
@@ -41,5 +42,9 @@ namespace CompMs.MsdialCore.DataObj {
         public RetentionTimeCorrectionBean RetentionTimeCorrectionBean { get; set; } = new RetentionTimeCorrectionBean();
         [Key(16)]
         public ChromatogramPeaksDataSummary ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummary();
+
+        int IFileBean.FileID => AnalysisFileId;
+        string IFileBean.FileName => AnalysisFileName;
+        string IFileBean.FilePath => AnalysisFilePath;
     }
 }

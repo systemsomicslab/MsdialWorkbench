@@ -20,21 +20,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             this.model = model ?? throw new ArgumentNullException(nameof(model));
 
             if (horizontalAxis is null) {
-                horizontalAxis = this.model.ObserveProperty(m => m.HorizontalRange)
+                horizontalAxis = this.model.HorizontalRangeSource
                     .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (upperVerticalAxis is null) {
-                upperVerticalAxis = this.model.ObserveProperty(m => m.UpperVerticalRange)
+                upperVerticalAxis = this.model.UpperVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d))
                     .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
-                lowerVerticalAxis = this.model.ObserveProperty(m => m.LowerVerticalRange)
+                lowerVerticalAxis = this.model.LowerVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d))
                     .AddTo(Disposables);
             }

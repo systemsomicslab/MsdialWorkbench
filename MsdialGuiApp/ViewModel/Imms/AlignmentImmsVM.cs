@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -170,7 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 model.MsdecResult.Value,
                 null,
                 mspAnnotator,
-                model.Parameter.MspSearchParam);
+                new MsRefSearchParameterBase(model.Parameter.MspSearchParam));
 
             compoundSearchService.ShowDialog(vm);
         }

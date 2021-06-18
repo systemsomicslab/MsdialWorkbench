@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentFileBean {
+    public class AlignmentFileBean : IFileBean {
         [Key(0)]
         public int FileID { get; set; }
         [Key(1)]

@@ -11,13 +11,11 @@ namespace CompMs.App.Msdial.Model.Chart
     class MsSpectrumModel : BindableBase {
         public MsSpectrumModel(
             Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector) {
+            Func<SpectrumPeak, double> verticalSelector)
+            : this(Observable.Return(new List<SpectrumPeak>(0)),
+                  Observable.Return(new List<SpectrumPeak>(0)),
+                  horizontalSelector, verticalSelector) {
 
-            UpperSpectrum = new List<SpectrumPeak>(0);
-            LowerSpectrum = new List<SpectrumPeak>(0);
-
-            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
-            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
         }
 
         public MsSpectrumModel(
@@ -25,13 +23,41 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<List<SpectrumPeak>> lowerSpectrum,
             Func<SpectrumPeak, double> horizontalSelector,
             Func<SpectrumPeak, double> verticalSelector) {
+            if (upperSpectrum is null) {
+                throw new ArgumentNullException(nameof(upperSpectrum));
+            }
 
-            upperSpectrum.Subscribe(spectrum => UpperSpectrum = spectrum);
-            lowerSpectrum.Subscribe(spectrum => LowerSpectrum = spectrum);
+            if (lowerSpectrum is null) {
+                throw new ArgumentNullException(nameof(lowerSpectrum));
+            }
 
+            UpperSpectrumSource = upperSpectrum;
+            LowerSpectrumSource = lowerSpectrum;
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
+
+            var upperEmpty = upperSpectrum.Where(spec => spec is null || !spec.Any());
+            var upperAny = upperSpectrum.Where(spec => spec?.Any() ?? false);
+            UpperVerticalRangeSource = upperAny
+                .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)))
+                .Merge(upperEmpty.Select(_ => new Range(0, 1)));
+            var lowerEmpty = lowerSpectrum.Where(spec => spec is null || !spec.Any());
+            var lowerAny = lowerSpectrum.Where(spec => spec?.Any() ?? false);
+            LowerVerticalRangeSource = lowerAny
+                .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)))
+                .Merge(lowerEmpty.Select(_ => new Range(0, 1)));
+
+            HorizontalRangeSource = upperAny.CombineLatest(lowerAny, (upper, lower) => upper.Concat(lower))
+                .Where(spec => spec.Any())
+                .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
+
+            UpperSpectrumSource.Subscribe(spectrum => UpperSpectrum = spectrum);
+            LowerSpectrumSource.Subscribe(spectrum => LowerSpectrum = spectrum);
         }
+
+        public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
+
+        public IObservable<List<SpectrumPeak>> LowerSpectrumSource { get; }
 
         public List<SpectrumPeak> UpperSpectrum {
             get => upperSpectrum;
@@ -99,6 +125,12 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public Func<SpectrumPeak, double> HorizontalSelector { get; }
         public Func<SpectrumPeak, double> VerticalSelector { get; }
+
+        public IObservable<Range> HorizontalRangeSource { get; }
+
+        public IObservable<Range> UpperVerticalRangeSource { get; }
+
+        public IObservable<Range> LowerVerticalRangeSource { get; }
 
         public Range HorizontalRange {
             get {
