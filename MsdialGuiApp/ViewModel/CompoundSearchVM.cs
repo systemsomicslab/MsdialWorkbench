@@ -52,15 +52,12 @@ namespace CompMs.App.Msdial.ViewModel
             {
                 ms1Tol.Select(tol => tol >= MassEPS),
                 ms2Tol.Select(tol => tol >= MassEPS),
-            }.CombineLatestValuesAreAllTrue()
-            .Merge(Observable.Return(true));
+            }.CombineLatestValuesAreAllTrue();
             SearchCommand = IsBusy.Inverse()
                 .CombineLatest(condition, (a, b) => a && b)
                 .ToReactiveCommand().AddTo(Disposables);
 
             searchUnsubscriber = new[] {
-                ms1Tol.ToUnit(),
-                ms2Tol.ToUnit(),
                 SearchCommand.ToUnit()
             }.Merge()
             .CombineLatest(condition, (_, c) => c)
