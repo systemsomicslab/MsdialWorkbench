@@ -1033,6 +1033,13 @@ namespace CompMs.MsdialCore.Utility {
             return massSpec;
         }
 
+        public static List<SpectrumPeak> GetAndromedaMS2Spectrum(List<SpectrumPeak> spectrum, ParameterBase param, IupacDatabase iupac, int precursorCharge) {
+            if (spectrum.IsEmptyOrNull()) return new List<SpectrumPeak>();
+            var peaks = ConvertToDeisotopeAndSingleChargeStateMS2Spectrum(spectrum, param, iupac, precursorCharge);
+            if (peaks.IsEmptyOrNull()) return spectrum;
+            return GetBinnedMS2Spectrum(peaks, param.AndromedaDelta, param.AndromedaMaxPeaks);
+        }
+
         /// <summary>
         /// Give centroid spectrum
         /// </summary>
@@ -1040,7 +1047,7 @@ namespace CompMs.MsdialCore.Utility {
         /// <param name="abscutoff"></param>
         /// <param name="relcutoff"></param>
         /// <returns></returns>
-        public static List<SpectrumPeak> GetAndromedaMS2Spectrum(List<SpectrumPeak> spectrum, ParameterBase param, IupacDatabase iupac, int precursorCharge) {
+        public static List<SpectrumPeak> ConvertToDeisotopeAndSingleChargeStateMS2Spectrum(List<SpectrumPeak> spectrum, ParameterBase param, IupacDatabase iupac, int precursorCharge) {
             if (spectrum.IsEmptyOrNull()) return new List<SpectrumPeak>();
             IsotopeEstimator.EstimateIsotopes(spectrum, param, iupac, param.CentroidMs2Tolerance, precursorCharge);
             var peaks = new List<SpectrumPeak>();
@@ -1065,7 +1072,8 @@ namespace CompMs.MsdialCore.Utility {
             return peaks.OrderBy(n => n.PeakID).ToList();
         }
 
-        public static List<SpectrumPeak> GetAndromedaMS2Spectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
+      
+        public static List<SpectrumPeak> GetBinnedMS2Spectrum(List<SpectrumPeak> spectrum, double delta = 100, int maxPeaks = 12) {
 
             var peaks = new List<SpectrumPeak>();
             var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
@@ -1082,7 +1090,7 @@ namespace CompMs.MsdialCore.Utility {
             foreach (var pair in range2Peaks) {
                 var counter = 1;
                 foreach (var peak in pair.Value.OrderByDescending(n => n.Intensity)) {
-                    if (counter > 12) break;
+                    if (counter > maxPeaks) break;
                     peaks.Add(peak);
                     counter++;
                 }

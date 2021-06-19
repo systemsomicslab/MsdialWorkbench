@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +53,20 @@ namespace CompMs.MsdialCore.MSDec {
             result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
             result.Spectrum = spectra;
             result.IonMode = chromPeakFeature.IonMode;
+            return result;
+        }
+
+        public static MSDecResult GetAndromedaSpectrum(ChromatogramPeakFeature chromPeakFeature, List<SpectrumPeak> spectra,
+            ParameterBase param, IupacDatabase iupac, int precursorCharge) {
+
+            var result = new MSDecResult();
+            result.ChromXs = chromPeakFeature.ChromXs;
+            result.RawSpectrumID = chromPeakFeature.MS2RawSpectrumID;
+            result.PrecursorMz = chromPeakFeature.Mass;
+            result.ModelPeakMz = (float)chromPeakFeature.Mass;
+            result.ModelPeakHeight = (float)chromPeakFeature.PeakHeightTop;
+            result.IonMode = chromPeakFeature.IonMode;
+            result.Spectrum = DataAccess.GetAndromedaMS2Spectrum(spectra, param, iupac, precursorCharge);
             return result;
         }
     }

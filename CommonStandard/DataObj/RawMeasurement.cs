@@ -28,6 +28,37 @@ namespace CompMs.Common.DataObj {
         GCMS, DDA, SWATH, ALLIONS, IONMOBILITY, IM_DDA, IM_ALLIONS, IM_SWATH 
     }
 
+    public class MaldiFrameLaserInfo {
+        public int Id { get; set; }
+        public string LaserApplicationName { get; set; }
+        public string LaserParameterName { get; set; }
+        public double LaserBoost { get; set; }
+        public double LaserFocus { get; set; }
+        public int BeamScan { get; set; }
+        public double BeamScanSizeX { get; set; }
+        public double BeamScanSizeY { get; set; }
+        public int WalkOnSpotMode { get; set; }
+        public int WalkOnSpotShots { get; set; }
+        public double SpotSize { get; set; }
+
+    }
+
+    public class MaldiFrameInfo {
+        public long Frame { get; set; }
+        public int Chip { get; set; }
+        public string SpotName { get; set; }
+        public int RegionNumber { get; set; }
+        public int XIndexPos { get; set; } // index
+        public int YIndexPos { get; set; } // index
+        public float LaserPower { get; set; }
+        public int NumLaserShots { get; set; }
+        public float LaserRepRate { get; set; }
+        public float MotorPositionX { get; set; } //  um
+        public float MotorPositionY { get; set; } // um
+        public float MotorPositionZ { get; set; } // um
+        public int LaserInfo { get; set; } 
+    }
+
     public class RawMeasurement {
         public RawSourceFileInfo SourceFileInfo { get; set; }
         public RawSample Sample { get; set; }
@@ -37,6 +68,7 @@ namespace CompMs.Common.DataObj {
         public List<RawSpectrum> SpectrumList { get; set; }
         public List<RawSpectrum> AccumulatedSpectrumList { get; set; }
         public List<double> CollisionEnergyTargets { get; set; }
+        public MaldiFrameLaserInfo MaldiFrameLaserInfo { get; set; }
 
         public RawMeasurement()
         {
@@ -47,6 +79,7 @@ namespace CompMs.Common.DataObj {
             ChromatogramList = new List<RawChromatogram>();
             SpectrumList = new List<RawSpectrum>();
             AccumulatedSpectrumList = new List<RawSpectrum>();
+            MaldiFrameLaserInfo = new MaldiFrameLaserInfo();
         }
     }
 
@@ -136,6 +169,8 @@ namespace CompMs.Common.DataObj {
         public RawPrecursorIon Precursor { get; set; }
         public RawProductIon Product { get; set; }
 
+        public MaldiFrameInfo MaldiFrameInfo { get; set; }
+
         public RawPeakElement[] Spectrum { get; set; }
 
         public RawSpectrum()
@@ -162,6 +197,7 @@ namespace CompMs.Common.DataObj {
             this.ScanWindowUpperLimit = 0;
             this.Precursor = null;
             this.Product = null;
+            this.MaldiFrameInfo = null;
             this.Spectrum = new RawPeakElement[] { };
         }
     }

@@ -66,13 +66,13 @@ namespace CompMs.MsdialLcMsApi.Process {
                         var max_msdec_aif = max_msdec / ceList.Count;
                         var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                         targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                            spectrumList, chromPeakFeatures, param, summary, reportAction, token, targetCE);
+                            spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token, targetCE);
                     }
                 }
                 else {
                     var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                           spectrumList, chromPeakFeatures, param, summary, reportAction, token);
+                           spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token);
                 }
 
                 // annotations

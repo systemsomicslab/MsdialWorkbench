@@ -9,6 +9,7 @@ namespace CompMs.Common.Components {
     public enum Digestion { Trypsin, TrypsinP, Chymotrypsin, GluC, AspN, ArgN }
 
     public class FastaProperty : IFastaProperty {
+        public int Index { get; set; }
         public string Header { get; set; }
         public string Sequence { get; set; }
 
