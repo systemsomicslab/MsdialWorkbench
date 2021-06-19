@@ -13,7 +13,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSProperty, IIonProperty, IAnnotatedObject {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject {
 
         // ID metadata
         [Key(0)]
@@ -36,6 +36,9 @@ namespace CompMs.MsdialCore.DataObj {
         public int MS2RawSpectrumID { get; set; } // representative ID
         [Key(10)]
         public Dictionary<int, double> MS2RawSpectrumID2CE { get; set; }
+
+        [IgnoreMember]
+        public bool IsMsmsAssigned => MS2RawSpectrumID2CE?.Any() ?? false;
 
         // basic property of IChromatogramPeakFeature
         [Key(11)]

@@ -7,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -30,8 +31,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
         }
 
-        public DimsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
+        public DimsMethodVM(
+            MsdialDataStorage storage,
+            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService)
             : base(serializer) {
+            if (alignmentCompoundSearchService is null) {
+                throw new ArgumentNullException(nameof(alignmentCompoundSearchService));
+            }
+
+            this.alignmentCompoundSearchService = alignmentCompoundSearchService;
+
+            var analysisFiles = storage.AnalysisFiles;
+            var alignmentFiles = storage.AlignmentFiles;
 
             Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
             Disposables.Add(Model);
@@ -44,6 +55,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
+
+        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService;
 
         internal DimsMethodModel Model { get; }
 
@@ -237,7 +250,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             cacheAlignmentFile = alignment;
             Model.AlignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel) { DisplayFilters = displayFilters };
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, null) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {

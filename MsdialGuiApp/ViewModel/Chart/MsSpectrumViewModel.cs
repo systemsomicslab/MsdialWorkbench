@@ -20,23 +20,23 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             this.model = model ?? throw new ArgumentNullException(nameof(model));
 
             if (horizontalAxis is null) {
-                var hRange = this.model.ObserveProperty(m => m.HorizontalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                horizontalAxis = hRange.ToReactiveAxisManager<double>(new ChartMargin(0.05));
+                horizontalAxis = this.model.HorizontalRangeSource
+                    .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                    .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (upperVerticalAxis is null) {
-                var uvRange = this.model.ObserveProperty(m => m.UpperVerticalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                upperVerticalAxis = uvRange.ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d));
+                upperVerticalAxis = this.model.UpperVerticalRangeSource
+                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d))
+                    .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
-                var lvRange = this.model.ObserveProperty(m => m.LowerVerticalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                lowerVerticalAxis = lvRange.ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d));
+                lowerVerticalAxis = this.model.LowerVerticalRangeSource
+                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d))
+                    .AddTo(Disposables);
             }
             LowerVerticalAxis = lowerVerticalAxis;
 

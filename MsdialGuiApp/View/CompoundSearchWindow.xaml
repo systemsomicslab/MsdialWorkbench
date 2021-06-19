@@ -6,27 +6,17 @@
         xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View"
-        xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-        xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-        xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+        xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+        xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
         mc:Ignorable="d"
         Name="CompoundSearch"
         Title="Compound search" Height="720" Width="1280">
     <Window.Resources>
-        <manager:AutoContinuousAxisManager x:Key="MassAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Mass"
-                                           ChartMargin="0.05"/>
-        <manager:AutoContinuousAxisManager x:Key="MeasureIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Ms2DecSpectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.5" />
-        <manager:AutoContinuousAxisManager x:Key="ReferenceIntensityAxisManager"
-                                           ItemsSource="{Binding DataContext.Compounds/Spectrum, Source={x:Reference Name=CompoundSearch}}"
-                                           ValuePropertyName="Intensity"
-                                           Bounds="0,0"
-                                           ChartMargin="0,0.5"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
@@ -92,6 +82,13 @@
                          Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left" VerticalAlignment="Center"
                          Width="70" Height="25" />
+                <Label Content="Ccs tol.:"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="10,0,0,0"/>
+                <TextBox Name="TextBox_CcsTolerance"
+                         Text="{Binding ParameterVM.CcsTolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                         Width="70" Height="25" />
 
                 <Button Name="Button_ReAnalysis"
                         Content="Search"
@@ -129,11 +126,11 @@
 
                     <StackPanel Orientation="Horizontal">
                         <Label Content="File ID:"/>
-                        <TextBox Text="{Binding FileID, Mode=OneWay}"/>
+                        <TextBox Text="{Binding FileID, Mode=OneTime}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="File name:"/>
-                        <TextBox Text="{Binding FileName, Mode=OneWay}"/>
+                        <TextBox Text="{Binding FileName, Mode=OneTime}"/>
                     </StackPanel>
                 </StackPanel>
 
@@ -144,18 +141,18 @@
 
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Accurate mass:"/>
-                        <TextBox Text="{Binding AccurateMass, Mode=OneWay}"/>
+                        <TextBox Text="{Binding AccurateMass, Mode=OneTime}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="MolecularSpecies:"/>
-                        <TextBox Text="{Binding AdductName, Mode=OneWay}"/>
+                        <TextBox Text="{Binding AdductName, Mode=OneTime}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Identified:"/>
                         <TextBox>
                             <TextBox.Style>
                                 <Style TargetType="TextBox">
-                                    <Setter Property="Text" Value="{Binding MetaboliteName, Mode=OneWay}"/>
+                                    <Setter Property="Text" Value="{Binding MetaboliteName, Mode=OneTime}"/>
                                     <Setter Property="Height" Value="25"/>
                                     <Setter Property="Background" Value="Transparent" />
                                     <Setter Property="Foreground" Value="Black" />
@@ -164,7 +161,7 @@
                                     <Setter Property="IsReadOnly" Value="True" />
                                     <Setter Property="Margin" Value="0,2,0,0"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding MetaboliteName, TargetNullValue='', Mode=OneWay}" Value="">
+                                        <DataTrigger Binding="{Binding MetaboliteName, TargetNullValue='', Mode=OneTime}" Value="">
                                             <Setter Property="Text" Value="Unknown"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -186,6 +183,7 @@
                        Grid.Row="0"/>
                 <DataGrid Name="DataGrid_LibraryInformation"
                           ItemsSource="{Binding Path=Compounds, IsAsync=True}"
+                          SelectedItem="{Binding SelectedCompound.Value, Mode=OneWayToSource}"
                           IsSynchronizedWithCurrentItem="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
                           CanUserReorderColumns="False" CanUserSortColumns="True"
@@ -221,11 +219,7 @@
 
             <StackPanel Margin="5,10" Grid.Row="0">
                 <StackPanel.Resources>
-                    <Style TargetType="Label">
-                        <Setter Property="Width" Value="210"/>
-                        <Setter Property="Height" Value="25"/>
-                    </Style>
-                    <Style TargetType="TextBox">
+                    <Style TargetType="TextBox" x:Key="ReadOnlyTextBox">
                         <Setter Property="Height" Value="25"/>
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="Foreground" Value="Black" />
@@ -233,140 +227,33 @@
                         <Setter Property="VerticalContentAlignment" Value="Center" />
                         <Setter Property="IsReadOnly" Value="True" />
                     </Style>
+                    <Style TargetType="{x:Type ui:LabeledContent}"
+                           BasedOn="{StaticResource AlignedContent}">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                             Style="{StaticResource ReadOnlyTextBox}"/>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </StackPanel.Resources>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Name:"/>
-                    <TextBox Name="Label_PeakInformation_AnnotatedMetabolite" Text="{Binding Compounds/Name, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Accurate mass similarity score: "/>
-                    <TextBox Name="Label_PeakInformation_Ms1Similarity" Text="{Binding Compounds/MassSimilarity, Mode=OneWay}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Weighted dot product similarity score: " />
-                    <TextBox Name="Label_PeakInformation_WeightedDotProduct" Text="{Binding Compounds/WeightedDotProduct, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Dot product similarity score: " />
-                    <TextBox Name="Label_PeakInformation_DotProduct" Text="{Binding Compounds/SimpleDotProduct, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Reverse dot product similarity score: " />
-                    <TextBox Name="Label_PeakInformation_ReverseDotProduct" Text="{Binding Compounds/ReverseDotProduct, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Total score: "/>
-                    <TextBox Name="Label_PeakInformation_TotalScore" Text="{Binding Compounds/TotalScore, Mode=OneWay}"/>
-                </StackPanel>
+                <ui:LabeledContent PrependLabel="Name:"
+                                   Content="{Binding Compounds/Name, Mode=OneWay}"/>
+                <ui:LabeledContent PrependLabel="Accurate mass similarity score:"
+                                   Content="{Binding Compounds/MassSimilarity, Mode=OneWay}"/>
+                <ui:LabeledContent PrependLabel="Weighted dot product similarity score:"
+                                   Content="{Binding Compounds/WeightedDotProduct, Mode=OneWay}"/>
+                <ui:LabeledContent PrependLabel="Dot product similarity score:"
+                                   Content="{Binding Compounds/SimpleDotProduct, Mode=OneWay}"/>
+                <ui:LabeledContent PrependLabel="Reverse dot product similarity score:"
+                                   Content="{Binding Compounds/ReverseDotProduct, Mode=OneWay}"/>
+                <ui:LabeledContent PrependLabel="Total score:"
+                                   Content="{Binding Compounds/TotalScore, Mode=OneWay}"/>
             </StackPanel>
 
-            <Grid Grid.Row="1" Margin="0,0,5,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="20"/>
-                </Grid.RowDefinitions>
-
-                <Border Background="WhiteSmoke"
-                        BorderBrush="Black" BorderThickness="1,0,0,0"
-                        Grid.Row="1" Grid.Column="2" >
-                    <spectrum:LineSpectrumControl x:Name="MS2DecLine"
-                                                  ItemsSource="{Binding Ms2DecSpectrum}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" >
-                        <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
-                        </spectrum:LineSpectrumControl.LinePen>
-                        <spectrum:LineSpectrumControl.ToolTip>
-                            <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="m/z: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                    <TextBlock Text=" Intensity: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Intensity}"/>
-                                </StackPanel>
-                            </ToolTip>
-                        </spectrum:LineSpectrumControl.ToolTip>
-                    </spectrum:LineSpectrumControl>
-                </Border>
-                <Border Background="WhiteSmoke"
-                        BorderBrush="Black" BorderThickness="1,0,0,1"
-                        Grid.Row="2" Grid.Column="2" >
-                    <spectrum:LineSpectrumControl x:Name="MS2Ref"
-                                           ItemsSource="{Binding Compounds/Spectrum}"
-                                           HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                           VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                           RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                           RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                           FlippedY="False"
-                                           HorizontalPropertyName="Mass"
-                                           VerticalPropertyName="Intensity">
-                        <spectrum:LineSpectrumControl.LinePen>
-                            <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-                        </spectrum:LineSpectrumControl.LinePen>
-                    </spectrum:LineSpectrumControl>
-                </Border>
-                <axis:HorizontalAxisControl x:Name="MzAxis"
-                                            DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                            HorizontalAxis="{Binding AxisMapper}"
-                                            LabelTicks="{Binding LabelTicks}"
-                                            RangeX="{Binding Range}"
-                                            Grid.Row="3" Grid.Column="2" />
-                <axis:VerticalAxisControl x:Name="MeasureIntensityAxis"
-                                          DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
-                                          VerticalAxis="{Binding AxisMapper}"
-                                          LabelTicks="{Binding LabelTicks}"
-                                          RangeY="{Binding Range}"
-                                          Grid.Row="1" Grid.Column="1" />
-                <axis:VerticalAxisControl x:Name="ReferenceIntensityAxis"
-                                          DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
-                                          VerticalAxis="{Binding AxisMapper}"
-                                          LabelTicks="{Binding LabelTicks}"
-                                          RangeY="{Binding Range}"
-                                          FlippedY="False"
-                                          Grid.Row="2" Grid.Column="1" />
-                <TextBlock Text="m/z"
-                           FontStyle="Italic"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Grid.Row="4" Grid.Column="2" />
-                <TextBlock Text="Relative abundance"
-                           FontStyle="Italic"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
-                    <TextBlock.LayoutTransform>
-                        <TransformGroup>
-                            <RotateTransform Angle="-90" />
-                            <TranslateTransform X="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=TextBlock}}" />
-                        </TransformGroup>
-                    </TextBlock.LayoutTransform>
-                </TextBlock>
-                <TextBlock Text="Measurement vs. Reference"
-                           VerticalAlignment="Bottom"
-                           Grid.Row="0" Grid.Column="3"/>
-                <TextBlock Text="Measurement" FontStyle="Italic" FontFamily="Calibri"
-                           VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                           Grid.Row="0" Grid.Column="3"/>
-                <TextBlock Text="Reference" FontStyle="Italic" FontFamily="Calibri"
-                           VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                           Margin="0,0,5,5"
-                           Grid.Row="4" Grid.Column="3"/>
-                <GridSplitter Background="Black"
-                              Height="1"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                              Grid.Row="1" Grid.Column="2"/>
-            </Grid>
+            <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel, Mode=OneTime}" Margin="0,0,5,0" Grid.Row="1"/>
         </Grid>
     </Grid>
 </Window>

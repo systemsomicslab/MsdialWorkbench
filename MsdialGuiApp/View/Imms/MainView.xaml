@@ -247,7 +247,7 @@
                                                 </Style>
                                             </StackPanel.Resources>
                                             <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
+                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
                                             <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>

@@ -1,8 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
-using CompMs.Common.Extension;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -11,8 +14,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
-using NSSplash;
-using NSSplash.impl;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -22,6 +23,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -49,9 +51,10 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
+            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
                 new MsRawSpectrumLoader(provider, parameter),
-                new MsDecSpectrumLoader(analysisFile.DeconvolutionFilePath, Ms1Peaks),
+                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(refer),
                 peak => peak.Mass,
                 peak => peak.Intensity)
@@ -104,6 +107,24 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
+
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    Brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        peak => peak.Ontology,
+                        Color.FromArgb(180, 181, 181, 181));
+                    break;
+                case TargetOmics.Metabolomics:
+                    Brush = new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
+                        peak => Color.FromArgb(
+                            180,
+                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
+                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
+                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
+                        enableCache: true);
+                    break;
+            }
         }
 
         private readonly MsdialImmsParameter parameter;
@@ -134,6 +155,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private string rawSplashKey = string.Empty;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+
+        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         public string FileName {
             get => fileName;

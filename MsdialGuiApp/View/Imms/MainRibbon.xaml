@@ -50,6 +50,7 @@
         </Ribbon.ApplicationMenu>
         <Ribbon.ContextualTabGroups>
             <RibbonContextualTabGroup Header="Tool" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
+            <RibbonContextualTabGroup Header="Graph" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
         </Ribbon.ContextualTabGroups>
         <RibbonTab Header="Processing"
                    KeyTip="P">
@@ -219,12 +220,26 @@
                 <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
                 <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
                 <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
-                <RibbonCheckBox Label="Ccs matched" IsChecked="{Binding CcsChecked}"/>
+                <RibbonCheckBox Label="Ccs matched" IsChecked="{Binding CcsChecked}" IsEnabled="False"/>
                 <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
-                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}"/>
-                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}"/>
-                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}"/>
+                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
                 <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
+            </RibbonGroup>
+        </RibbonTab>
+        <RibbonTab Header="Utility"
+                   ContextualTabGroupHeader="Graph">
+            <RibbonGroup Header="Peak color">
+                <RibbonComboBox Label="Alignment"
+                                SelectionBoxWidth="80"
+                                VerticalAlignment="Center">
+                    <RibbonGallery SelectedValue="{Binding AlignmentVM.SelectedBrush.Value}"
+                                   SelectedValuePath="Mapper">
+                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentVM.Brushes}"
+                                               DisplayMemberPath="Label"/>
+                    </RibbonGallery>
+                </RibbonComboBox>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Help"

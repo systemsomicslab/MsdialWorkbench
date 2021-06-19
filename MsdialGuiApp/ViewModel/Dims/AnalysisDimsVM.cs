@@ -1,7 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
@@ -13,6 +17,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -20,7 +25,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AnalysisDimsVM(DimsAnalysisModel model) {
             Model = model;
-            Ms1Peaks = CollectionViewSource.GetDefaultView(model.Ms1Peaks);
 
             var hAxis = Model.PlotModel2
                 .ObserveProperty(m => m.HorizontalRange)
@@ -30,8 +34,26 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .ObserveProperty(m => m.VerticalRange)
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
+            IBrushMapper<ChromatogramPeakFeatureModel> brush = null;
+            switch (model.Parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        peak => peak.Ontology,
+                        Color.FromArgb(180, 181, 181, 181));
+                    break;
+                case TargetOmics.Metabolomics:
+                    brush = new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
+                        peak => Color.FromArgb(
+                            180,
+                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
+                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
+                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
+                        enableCache: true);
+                    break;
+            }
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel2, horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel2, brushSource: Observable.Return(brush), horizontalAxis: hAxis, verticalAxis: vAxis) .AddTo(Disposables);
             EicViewModel = new Chart.EicViewModel(model.EicModel2, horizontalAxis: hAxis).AddTo(Disposables);
             RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel2).AddTo(Disposables);
 
@@ -39,6 +61,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             AmplitudeOrderMin = model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
             AmplitudeOrderMax = model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
+
+            Ms1Peaks = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
             PropertyChanged += OnFilterChanged;
         }
 
@@ -225,7 +249,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
+            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult.Value, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
             var window = new View.CompoundSearchWindow
             {
                 DataContext = vm,

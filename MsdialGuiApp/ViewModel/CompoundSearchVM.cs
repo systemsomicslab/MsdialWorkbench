@@ -1,101 +1,86 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Utility;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
+    class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
     {
-        public ObservableCollection<CompoundResult> Compounds {
-            get => compounds;
-            set {
-                var old = compounds;
-                if (SetProperty(ref compounds, value)) {
-                    if (compoundsView != null) {
-                        compoundsView.CurrentChanged -= RaiseExecuteChange;
-                    }
-                    compoundsView = CollectionViewSource.GetDefaultView(compounds);
-                    if (compoundsView != null) {
-                        compoundsView.MoveCurrentToFirst();
-                        compoundsView.CurrentChanged += RaiseExecuteChange;
-                    }
-                }
+        public CompoundSearchVM(CompoundSearchModel<T> model) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
             }
+
+            this.model = model;
+
+            MsSpectrumViewModel = new MsSpectrumViewModel(model.MsSpectrumModel);
+            ParameterVM = new MsRefSearchParameterVM(this.model.Parameter);
+
+            SelectedCompound = new ReactivePropertySlim<CompoundResult>()
+                .AddTo(Disposables);
+            SelectedCompound.Subscribe(c => {
+                this.model.SelectedReference = c?.msReference;
+                this.model.SelectedMatchResult = c?.matchResult;
+            });
+
+            var canSet = SelectedCompound.Select(c => c != null);
+            SetConfidenceCommand = canSet.ToReactiveCommand().AddTo(Disposables);
+            SetConfidenceCommand.Subscribe(this.model.SetConfidence);
+            SetUnsettledCommand = canSet.ToReactiveCommand().AddTo(Disposables);
+            SetUnsettledCommand.Subscribe(this.model.SetUnsettled);
+            SetUnknownCommand = canSet.ToReactiveCommand().AddTo(Disposables);
+            SetUnknownCommand.Subscribe(this.model.SetUnknown);
+
+            var ms1Tol = ParameterVM.ObserveProperty(m => m.Ms1Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var ms2Tol = ParameterVM.ObserveProperty(m => m.Ms2Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var condition = new[]
+            {
+                ms1Tol.Select(tol => tol >= MassEPS),
+                ms2Tol.Select(tol => tol >= MassEPS),
+            }.CombineLatestValuesAreAllTrue()
+            .Merge(Observable.Return(true));
+            SearchCommand = IsBusy.Inverse()
+                .CombineLatest(condition, (a, b) => a && b)
+                .ToReactiveCommand().AddTo(Disposables);
+
+            searchUnsubscriber = new[] {
+                ms1Tol.ToUnit(),
+                ms2Tol.ToUnit(),
+                SearchCommand.ToUnit()
+            }.Merge()
+            .CombineLatest(condition, (_, c) => c)
+            .Where(c => c)
+            .Select(_ => SearchAsync())
+            .Switch()
+            .Subscribe(cs => Compounds = cs)
+            .AddTo(Disposables);
+
+            SearchCommand.Execute();
         }
-        private ObservableCollection<CompoundResult> compounds = new ObservableCollection<CompoundResult>();
-        private ICollectionView compoundsView;
-
-        public List<SpectrumPeakWrapper> Ms2DecSpectrum {
-            get => ms2DecSpectrum;
-            set => SetProperty(ref ms2DecSpectrum, value);
-        }
-        private List<SpectrumPeakWrapper> ms2DecSpectrum = new List<SpectrumPeakWrapper>();
-
-        public MsRefSearchParameterVM ParameterVM {
-            get => parameterVM;
-            set {
-                var oldValue = parameterVM;
-                var newValue = value;
-                if (SetProperty(ref parameterVM, value)) {
-                    if (oldValue != null) {
-                        oldValue.PropertyChanged -= OnParameterChanged;
-                    }
-                    if (newValue != null) {
-                        newValue.PropertyChanged += OnParameterChanged;
-                    }
-                }
-            }
-        }
-        private MsRefSearchParameterVM parameterVM;
-
-        public int FileID { get; }
-        public string FileName { get; }
-        public double AccurateMass { get; }
-        public string AdductName { get; }
-        public string MetaboliteName { get; }
-
-        private readonly MSDecResult msdecResult;
-        private readonly T property;
-        private readonly IAnnotator<T, MSDecResult> Annotator;
-        private readonly IReadOnlyList<IsotopicPeak> isotopes;
 
         public CompoundSearchVM(
             AnalysisFileBean analysisFile,
             T peakFeature, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
             IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null) {
+            MsRefSearchParameterBase parameter = null)
+            : this(new CompoundSearchModel<T>(analysisFile, peakFeature, msdecResult, isotopes, annotator, parameter)) {
 
-            this.msdecResult = msdecResult;
-            this.isotopes = isotopes;
-            Annotator = annotator;
-            ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
-
-            FileID = analysisFile.AnalysisFileId;
-            FileName = analysisFile.AnalysisFileName;
-            AccurateMass = peakFeature.PrecursorMz;
-            AdductName = peakFeature.AdductType.AdductIonName;
-            MetaboliteName = peakFeature.Name;
-            property = peakFeature;
-
-            Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
-            Search();
         }
 
         public CompoundSearchVM(
@@ -103,175 +88,54 @@ namespace CompMs.App.Msdial.ViewModel
             T spot, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
             IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null) {
+            MsRefSearchParameterBase parameter = null)
+            : this(new CompoundSearchModel<T>(alignmentFile, spot, msdecResult, isotopes, annotator, parameter)) {
 
-            this.msdecResult = msdecResult;
-            this.isotopes = isotopes;
-            Annotator = annotator;
-            ParameterVM = new MsRefSearchParameterVM(parameter != null ? new MsRefSearchParameterBase(parameter) : new MsRefSearchParameterBase());
-
-            FileID = alignmentFile.FileID;
-            FileName = alignmentFile.FileName;
-            AccurateMass = spot.PrecursorMz;
-            AdductName = spot.AdductType.AdductIonName;
-            MetaboliteName = spot.Name;
-            property = spot;
-
-            Ms2DecSpectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
-            Search();
         }
 
-        public DelegateCommand SearchCommand => searchCommand ?? (searchCommand = new DelegateCommand(Search, CanSearch));
-        private DelegateCommand searchCommand; 
+        private readonly CompoundSearchModel<T> model;
+        protected static readonly double MassEPS = 1e-10;
 
-        private bool canSearch = false;
-        private static readonly double EPS = 1e-10;
-        private bool CanSearch() {
-            if (ParameterVM.Ms1Tolerance <= EPS || ParameterVM.Ms2Tolerance <= EPS)
-                return false;
-            return canSearch;
+        public MsSpectrumViewModel MsSpectrumViewModel { get; }
+
+        public MsRefSearchParameterVM ParameterVM {
+            get => parameterVM;
+            set => SetProperty(ref parameterVM, value);
+        }
+        private MsRefSearchParameterVM parameterVM;
+
+        public int FileID => model.File.FileID;
+        public string FileName => model.File.FileName;
+        public double AccurateMass => model.Property.PrecursorMz;
+        public string AdductName => model.Property.AdductType.AdductIonName;
+        public string MetaboliteName => model.Property.Name;
+
+        public IReadOnlyList<CompoundResult> Compounds {
+            get => compounds;
+            set => SetProperty(ref compounds, value);
+        }
+        private IReadOnlyList<CompoundResult> compounds = new ObservableCollection<CompoundResult>();
+
+        public ReactivePropertySlim<CompoundResult> SelectedCompound { get; }
+
+        public ReactiveCommand SearchCommand { get; protected set; }
+
+        protected IDisposable searchUnsubscriber;
+
+        public ReactivePropertySlim<bool> IsBusy { get; } = new ReactivePropertySlim<bool>(false);
+
+        protected async Task<IReadOnlyList<CompoundResult>> SearchAsync() {
+            IsBusy.Value = true;
+            var result = await Task.Run(model.Search);
+            IsBusy.Value = false;
+            return result;
         }
 
-        private CancellationTokenSource cts = null;
+        public ReactiveCommand SetConfidenceCommand { get; }
 
-        private void Search() {
-            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            canSearch = false;
-            if (cts != null) {
-                cts.Cancel();
-            }
+        public ReactiveCommand SetUnsettledCommand { get; }
 
-            var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
-            foreach (var candidate in candidates) {
-                candidate.IsManuallyModified = true;
-                candidate.Source |= SourceType.Manual;
-            }
-            Compounds = new ObservableCollection<CompoundResult>(
-                candidates.OrderByDescending(result => result.TotalScore)
-                    .Select(result => new CompoundResult(Annotator.Refer(result), result)));
-
-            canSearch = true;
-            System.Windows.Input.Mouse.OverrideCursor = null;
-        }
-
-        private async void OnParameterChanged(object sender, PropertyChangedEventArgs e) {
-            if (!CanSearch()) {
-                return;
-            }
-
-            if (cts != null) {
-                cts.Cancel();
-            }
-
-            var localCts = new CancellationTokenSource();
-            cts = localCts;
-
-            await SearchAsync(cts.Token).ContinueWith(
-                t => {
-                    localCts.Dispose();
-                    if (cts == localCts)
-                        cts = null;
-                });
-        }
-
-        private async Task SearchAsync(CancellationToken token) {
-            if (!canSearch)
-                return;
-
-            var compounds = await Task.Run(() => {
-                var candidates = Annotator.FindCandidates(property, msdecResult, isotopes, ParameterVM.innerModel);
-                foreach (var candidate in candidates) {
-                    candidate.IsManuallyModified = true;
-                    candidate.Source |= SourceType.Manual;
-                }
-                token.ThrowIfCancellationRequested();
-
-                return new ObservableCollection<CompoundResult>(
-                    candidates
-                        .OrderByDescending(result => result.TotalScore)
-                        .Select(result => new CompoundResult(Annotator.Refer(result), result)));
-            }, token);
-
-            token.ThrowIfCancellationRequested();
-
-            Compounds = compounds;
-        }
-
-        public DelegateCommand SetConfidenceCommand => setConfidenceCommand ?? (setConfidenceCommand = new DelegateCommand(SetConfidence, CanSetAnnotation));
-        private DelegateCommand setConfidenceCommand;
-
-        private void SetConfidence() {
-            var compound = (CompoundResult)compoundsView.CurrentItem;
-            var reference = compound.msReference;
-            var result = compound.matchResult;
-            DataAccess.SetMoleculeMsPropertyAsConfidence(property, reference, result);
-            if (property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(result);
-            }
-        }
-
-        public DelegateCommand SetUnsettledCommand => setUnsettledCommand ?? (setUnsettledCommand = new DelegateCommand(SetUnsettled, CanSetAnnotation));
-        private DelegateCommand setUnsettledCommand;
-
-        private void SetUnsettled() {
-            var compound = (CompoundResult)compoundsView.CurrentItem;
-            var reference = compound.msReference;
-            var result = compound.matchResult;
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(property, reference, result);
-            if (property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(result);
-            }
-        }
-
-        private bool CanSetAnnotation() {
-            return (CompoundResult)compoundsView.CurrentItem != null;
-        }
-
-        private void RaiseExecuteChange(object sender, EventArgs e) {
-            SetConfidenceCommand.RaiseCanExecuteChanged();
-            SetUnsettledCommand.RaiseCanExecuteChanged();
-        }
-
-        public DelegateCommand SetUnknownCommand => setUnknownCommand ?? (setUnknownCommand = new DelegateCommand(SetUnknown));
-        private DelegateCommand setUnknownCommand;
-
-        private void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(property);
-            if (property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            }
-        }
-    }
-}
-
-namespace CompMs.App.Msdial.ViewModel
-{
-    public class CompoundResult
-    {
-        public int LibraryID => matchResult.LibraryID;
-        public string Name => msReference.Name;
-        public string AdductName => msReference.AdductType.AdductIonName;
-        public double PrecursorMz => msReference.PrecursorMz;
-        public string Instrument => msReference.InstrumentModel;
-        public string Comment => msReference.Comment;
-        public double WeightedDotProduct => matchResult.WeightedDotProduct;
-        public double SimpleDotProduct => matchResult.SimpleDotProduct;
-        public double ReverseDotProduct => matchResult.ReverseDotProduct;
-        public double MassSimilarity => matchResult.AcurateMassSimilarity;
-        public double Presence => matchResult.MatchedPeaksPercentage;
-        public double TotalScore => matchResult.TotalScore;
-        public List<SpectrumPeakWrapper> Spectrum => spectrum ?? (spectrum = msReference.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList());
-        private List<SpectrumPeakWrapper> spectrum = null;
-
-        internal readonly MoleculeMsReference msReference;
-        internal readonly MsScanMatchResult matchResult;
-        public CompoundResult(MoleculeMsReference msReference, MsScanMatchResult matchResult) {
-            this.msReference = msReference;
-            this.matchResult = matchResult;
-        }
+        public ReactiveCommand SetUnknownCommand { get; }
     }
 }
 
@@ -295,6 +159,16 @@ namespace CompMs.App.Msdial.ViewModel
                 if (innerModel.Ms2Tolerance != value) {
                     innerModel.Ms2Tolerance = value;
                     OnPropertyChanged(nameof(Ms2Tolerance));
+                }
+            }
+        }
+
+        public float CcsTolerance {
+            get => innerModel.CcsTolerance;
+            set {
+                if (innerModel.CcsTolerance != value) {
+                    innerModel.CcsTolerance = value;
+                    OnPropertyChanged(nameof(CcsTolerance));
                 }
             }
         }

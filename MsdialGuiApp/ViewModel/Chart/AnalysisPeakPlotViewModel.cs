@@ -1,11 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -13,6 +15,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         public AnalysisPeakPlotViewModel(
             AnalysisPeakPlotModel model,
+            IObservable<IBrushMapper<ChromatogramPeakFeatureModel>> brushSource = null,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> verticalAxis = null) {
             Spots = model.Spots;
@@ -30,6 +33,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 verticalAxis = new ReactiveAxisManager<double>(vRange);
             }
             VerticalAxis = verticalAxis;
+
+            if (brushSource == null) {
+                brushSource = Observable.Return<IBrushMapper<ChromatogramPeakFeatureModel>>(null);
+            }
+            Brush = brushSource.ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             Target = model.ToReactivePropertyAsSynchronized(m => m.Target)
                 .AddTo(Disposables);
@@ -64,6 +73,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; } 
+
+        public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>> Brush { get; }
 
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 

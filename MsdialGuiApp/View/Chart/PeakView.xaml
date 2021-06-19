@@ -33,7 +33,7 @@
                                     ItemsSource="{Binding Spots, Mode=OneWay}"
                                     HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                                     VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
-                                    EachPlotBrushName="SpotColor"
+                                    BrushMapper="{Binding Brush.Value}"
                                     Radius="5.5"
                                     SelectedItem="{Binding Target.Value, Mode=TwoWay}"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
