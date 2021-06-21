@@ -19,7 +19,7 @@ namespace StructureFinderConsoleApp
         [STAThread]
         static void Main(string[] args)
         {
-            Derivatization.Test();
+            //Derivatization.Test();
             /// code for Natural Product Reports 2020
             //Code4NPR2020.GenerateStructureTableFromMSPs();
             //Code4NPR2020.ExtractClassyFireOntologies();
@@ -37,7 +37,7 @@ namespace StructureFinderConsoleApp
             //Code4NPR2020.Check144Existence(@"D:\Paper of Natural Product Reports\Statistics\node-2105.txt", @"D:\Paper of Natural Product Reports\Statistics\node-2105-144.txt");
 
             //Code4NPR2020.ExtractSubstructureContainingStructureQueries();
-            Code4NPR2020.CalculatePrecursorMz(@"C:\Users\hiroshi.tsugawa\Desktop\temp_smiles.txt", @"C:\Users\hiroshi.tsugawa\Desktop\temp_premz.txt");
+            Code4NPR2020.CalculatePrecursorMz(@"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\temp.txt", @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\temp_premz.txt");
             //Code4NPR2020.CheckPrecursorMzExistence();
 
             //BondPathStatistics.StatisticsOfMatchedFragmentIons(@"D:\9_Spectral library curations\Fragment curation\20200910\Pos\msp\", "-Pos");

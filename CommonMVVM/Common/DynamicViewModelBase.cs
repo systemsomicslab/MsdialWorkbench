@@ -41,7 +41,25 @@ namespace CompMs.CommonMVVM.Common
                 return false;
             }
 
-            property.SetValue(innerModel, value, null);
+            var propType = property.PropertyType;
+            //Console.WriteLine(propType);
+            if (propType == typeof(Single)) {
+                property.SetValue(innerModel, float.Parse(value.ToString()), null);
+            }
+            else if (propType == typeof(Double)) {
+                property.SetValue(innerModel, float.Parse(value.ToString()), null);
+            }
+            else if (propType == typeof(Int32)) {
+                property.SetValue(innerModel, float.Parse(value.ToString()), null);
+            }
+            else if (propType == typeof(Int64)) {
+                property.SetValue(innerModel, float.Parse(value.ToString()), null);
+            }
+            else {
+                property.SetValue(innerModel, value, null);
+            }
+            //property.SetValue(innerModel, value, null);
+
             OnPropertyChanged(propertyname);
             return true;
         }

@@ -168,7 +168,7 @@
                                        AppendLabel="Ao^2">
                         <TextBox Name="TextBox_CcsToleranceOfPostIdentification">
                             <TextBox.Text>
-                                <Binding Path="TextDbSearchParam.Ms1Tolerance"
+                                <Binding Path="TextDbSearchParam.CcsTolerance"
                                          ValidatesOnDataErrors="True"
                                          UpdateSourceTrigger="LostFocus"
                                          NotifyOnValidationError="True">

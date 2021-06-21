@@ -31,7 +31,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            return msSpectrums[level];
+            if (msSpectrums.ContainsKey(level))
+                return msSpectrums[level];
+            else
+                return null;
         }
     }
 
