@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CompMs.App.Msdial.View"
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
-                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+                    xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
+                    xmlns:if="clr-namespace:CompMs.Common.Interfaces;assembly=Common">
     <!--
     <mvvm:PercentSliderToLabelConverter x:Key="sliderToLabelConverter" />
     -->
@@ -151,4 +153,108 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="CopyableDetailContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ChromXCollapseContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, StringFormat=N4, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Content, TargetNullValue=-1, RelativeSource={RelativeSource Self}}"
+                         Value="-1">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger> 
+        </Style.Triggers>
+    </Style>
+
+    <!--CompoundSearch properties template-->
+    <DataTemplate x:Key="FileInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource CopyableDetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="File information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="File ID:"
+                               Content="{Binding Path=(do:IFileBean.FileID), Mode=OneWay}"/>
+            <ui:LabeledContent PrependLabel="File name:"
+                               Content="{Binding Path=(do:IFileBean.FileName), Mode=OneWay}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="PeakInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="Peak information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="Molecular species:"
+                               Content="{Binding Path=(if:IIonProperty.AdductType).AdductIonName, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+            <ui:LabeledContent PrependLabel="Accurate mass:">
+                <TextBox Text="{Binding Path=(if:IMSProperty.PrecursorMz), StringFormat=N5, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Retention time:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).RT.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Retention index:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).RI.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Drift time:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).Drift.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AnnotationInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="Annotation information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="Identified:">
+                <TextBox>
+                    <TextBox.Style>
+                        <Style BasedOn="{StaticResource ReadOnlyTextBox}" TargetType="TextBox">
+                            <Setter Property="Text" Value="{Binding Path=(if:IMoleculeProperty.Name), Mode=OneWay}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=(if:IMoleculeProperty.Name), Mode=OneWay, TargetNullValue=''}" Value="">
+                                    <Setter Property="Text" Value="Unknown"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Ontology:"
+                               Content="{Binding Path=(if:IMoleculeProperty.Ontology), Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+            <ui:LabeledContent PrependLabel="Formula:"
+                               Content="{Binding Path=(if:IMoleculeProperty.Formula).FormulaString, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+        </StackPanel>
+    </DataTemplate>
 </ResourceDictionary>

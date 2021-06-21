@@ -101,6 +101,10 @@ namespace CompMs.App.Msdial.ViewModel
         }
         private MsRefSearchParameterVM parameterVM;
 
+        public IFileBean File => model.File;
+
+        public T Property => model.Property;
+
         public int FileID => model.File.FileID;
         public string FileName => model.File.FileName;
         public double AccurateMass => model.Property.PrecursorMz;
