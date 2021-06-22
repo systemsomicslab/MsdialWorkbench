@@ -128,4 +128,52 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return new ReadOnlyCollection<RawSpectrum>(accumulatedSpectrum);
         }
     }
+
+    public class ImmsRepresentativeDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        public ImmsRepresentativeDataProviderFactory(
+            int retry = 5, bool isGuiProcess = false) {
+
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+        }
+
+        private readonly bool isGuiProcess;
+        private readonly int retry;
+
+        public IDataProvider Create(AnalysisFileBean file) {
+            return new ImmsRepresentativeDataProvider(file, isGuiProcess, retry);
+        }
+
+        public IDataProvider Create(RawMeasurement rawMeasurement) {
+            return new ImmsRepresentativeDataProvider(rawMeasurement);
+        }
+    }
+
+    public class ImmsAverageDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        public ImmsAverageDataProviderFactory(
+            double massTolerance, double driftTolerance,
+            int retry = 5, bool isGuiProcess = false) {
+
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+            this.massTolerance = massTolerance;
+            this.driftTolerance = driftTolerance;
+        }
+
+        private readonly bool isGuiProcess;
+        private readonly int retry;
+        private readonly double massTolerance, driftTolerance;
+
+        public IDataProvider Create(AnalysisFileBean file) {
+            return new ImmsAverageDataProvider(file, massTolerance, driftTolerance, isGuiProcess, retry);
+        }
+
+        public IDataProvider Create(RawMeasurement rawMeasurement) {
+            return new ImmsAverageDataProvider(rawMeasurement, massTolerance, driftTolerance);
+        }
+    }
 }

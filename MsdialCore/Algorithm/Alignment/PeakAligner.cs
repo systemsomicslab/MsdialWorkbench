@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataStructure;
@@ -26,7 +25,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected IAlignmentRefiner Refiner { get; set; }
         protected ParameterBase Param { get; set; }
         protected List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
-        public IProcessFactory ProcessFactory { get; set; }
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
+
 
         public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param, List<MoleculeMsReference> mspDB = null) {
             Accessor = accessor;
@@ -120,7 +120,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             List<AlignmentSpotProperty> spots,
             ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
-            var provider = ProcessFactory?.CreateProvider(analysisFile);
+            var provider = ProviderFactory?.Create(analysisFile);
             IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
             if (spectra == null) {
                 using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {

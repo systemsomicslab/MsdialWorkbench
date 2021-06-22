@@ -2,19 +2,20 @@
 using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm;
+using CompMs.MsdialImmsCore.Algorithm.Alignment;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
@@ -35,11 +36,14 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public ImmsMethodModel(MsdialDataStorage storage) {
+        public ImmsMethodModel(MsdialDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory) {
             Storage = storage;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(storage.AnalysisFiles);
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(storage.AlignmentFiles);
+            this.providerFactory = providerFactory;
         }
+
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
 
         public IAnnotator<ChromatogramPeakFeature, MSDecResult> MspChromatogramAnnotator { get; private set; }
         public IAnnotator<ChromatogramPeakFeature, MSDecResult> TextDBChromatogramAnnotator { get; private set; }
@@ -172,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, MspChromatogramAnnotator, TextDBChromatogramAnnotator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, MspChromatogramAnnotator, TextDBChromatogramAnnotator, providerFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
@@ -183,7 +187,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return true;
         }
 
-        private static bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,
@@ -197,11 +201,10 @@ namespace CompMs.App.Msdial.Model.Imms
             };
             pbw.Show();
 
-            var factory = new ImmsProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
-            AlignmentProcessFactory aFactory = factory.CreateAlignmentFactory();
+            var factory = new ImmsAlignmentProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase);
+            var aligner = factory.CreatePeakAligner();
+            aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
-            var aligner = aFactory.CreatePeakAligner();
-            aligner.ProcessFactory = factory; // TODO: I'll remove this later.
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
@@ -241,7 +244,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (cacheAnalysisFile == analysis) return;
 
             cacheAnalysisFile = analysis;
-            var provider = new ImmsAverageDataProvider(analysis);
+            var provider = providerFactory.Create(analysis);
             AnalysisModel = new ImmsAnalysisModel( // should dispose.
                 analysis,
                 provider,
@@ -291,6 +294,37 @@ namespace CompMs.App.Msdial.Model.Imms
             };
 
             dialog.ShowDialog();
+        }
+
+        public void ExportAnalysis(Window owner) {
+            var container = Storage;
+            var spectraTypes = new List<Export.SpectraType>
+            {
+                new Export.SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
+                new Export.SpectraType(
+                    ExportspectraType.centroid,
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
+                new Export.SpectraType(
+                    ExportspectraType.profile,
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+            };
+            var spectraFormats = new List<Export.SpectraFormat>
+            {
+                new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+            };
+
+            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, providerFactory)) {
+                var dialog = new AnalysisResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+
+                dialog.ShowDialog();
+            }
         }
 
         private bool disposedValue;
