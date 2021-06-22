@@ -51,23 +51,6 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
-            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
-            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
-                new MsRawSpectrumLoader(provider, parameter),
-                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(refer),
-                peak => peak.Mass,
-                peak => peak.Intensity)
-            {
-                GraphTitle = "Measure vs. Reference",
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Aubndance",
-                HorizontaProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity),
-            };
-
             EicModel = new Chart.EicModel(
                 new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd)
                 )
@@ -94,6 +77,24 @@ namespace CompMs.App.Msdial.Model.Imms
                 .Where(t => t == null)
                 .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
+
+            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
+            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
+                Target,
+                new MsRawSpectrumLoader(provider, parameter),
+                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
+                new MsRefSpectrumLoader(refer),
+                peak => peak.Mass,
+                peak => peak.Intensity)
+            {
+                GraphTitle = "Measure vs. Reference",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Aubndance",
+                HorizontaProperty = nameof(SpectrumPeak.Mass),
+                VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
+            };
 
             SurveyScanModel = new Chart.SurveyScanModel(
                 Target.SelectMany(t =>
@@ -223,10 +224,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 FocusMz = target.Mass;
             }
 
-            await Task.WhenAll(
-                EicModel.LoadEicAsync(target, token),
-                Ms2SpectrumModel.LoadSpectrumAsync(target, token)
-            ).ConfigureAwait(false);
+            await EicModel.LoadEicAsync(target, token).ConfigureAwait(false);
         }
 
         async Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
