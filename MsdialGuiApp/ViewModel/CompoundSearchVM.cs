@@ -13,6 +13,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -28,8 +29,8 @@ namespace CompMs.App.Msdial.ViewModel
 
             this.model = model;
 
-            MsSpectrumViewModel = new MsSpectrumViewModel(model.MsSpectrumModel);
-            ParameterVM = new MsRefSearchParameterVM(this.model.Parameter);
+            MsSpectrumViewModel = new MsSpectrumViewModel(model.MsSpectrumModel).AddTo(Disposables);
+            ParameterVM = new MsRefSearchParameterVM(this.model.Parameter).AddTo(Disposables);
 
             SelectedCompound = new ReactivePropertySlim<CompoundResult>()
                 .AddTo(Disposables);
@@ -46,12 +47,12 @@ namespace CompMs.App.Msdial.ViewModel
             SetUnknownCommand = canSet.ToReactiveCommand().AddTo(Disposables);
             SetUnknownCommand.Subscribe(this.model.SetUnknown);
 
-            var ms1Tol = ParameterVM.ObserveProperty(m => m.Ms1Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var ms2Tol = ParameterVM.ObserveProperty(m => m.Ms2Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var ms1Tol = ParameterVM.Ms1Tolerance;
+            var ms2Tol = ParameterVM.Ms2Tolerance;
             var condition = new[]
             {
-                ms1Tol.Select(tol => tol >= MassEPS),
-                ms2Tol.Select(tol => tol >= MassEPS),
+                ms1Tol.ObserveHasErrors.Inverse(),
+                ms2Tol.ObserveHasErrors.Inverse(),
             }.CombineLatestValuesAreAllTrue();
             SearchCommand = IsBusy.Inverse()
                 .CombineLatest(condition, (a, b) => a && b)
@@ -144,40 +145,45 @@ namespace CompMs.App.Msdial.ViewModel
 {
     public class MsRefSearchParameterVM : ViewModelBase
     {
-        public float Ms1Tolerance {
-            get => innerModel.Ms1Tolerance;
-            set {
-                if (innerModel.Ms1Tolerance != value) {
-                    innerModel.Ms1Tolerance = value;
-                    OnPropertyChanged(nameof(Ms1Tolerance));
-                }
-            }
-        }
+        public MsRefSearchParameterVM(MsRefSearchParameterBase innerModel) {
+            this.innerModel = innerModel;
 
-        public float Ms2Tolerance {
-            get => innerModel.Ms2Tolerance;
-            set {
-                if (innerModel.Ms2Tolerance != value) {
-                    innerModel.Ms2Tolerance = value;
-                    OnPropertyChanged(nameof(Ms2Tolerance));
-                }
-            }
-        }
+            Ms1Tolerance = new ReactiveProperty<string>(innerModel.Ms1Tolerance.ToString())
+                .SetValidateAttribute(() => Ms1Tolerance);
+            Ms2Tolerance = new ReactiveProperty<string>(innerModel.Ms2Tolerance.ToString())
+                .SetValidateAttribute(() => Ms2Tolerance);
+            CcsTolerance = new ReactiveProperty<string>(innerModel.CcsTolerance.ToString())
+                .SetValidateAttribute(() => CcsTolerance);
 
-        public float CcsTolerance {
-            get => innerModel.CcsTolerance;
-            set {
-                if (innerModel.CcsTolerance != value) {
-                    innerModel.CcsTolerance = value;
-                    OnPropertyChanged(nameof(CcsTolerance));
-                }
-            }
+            Ms1Tolerance.ObserveHasErrors.Inverse()
+                .Where(c => c)
+                .Subscribe(_ => innerModel.Ms1Tolerance = float.Parse(Ms1Tolerance.Value))
+                .AddTo(Disposables);
+            Ms2Tolerance.ObserveHasErrors.Inverse()
+                .Where(c => c)
+                .Subscribe(_ => innerModel.Ms2Tolerance = float.Parse(Ms2Tolerance.Value))
+                .AddTo(Disposables);
+            CcsTolerance.ObserveHasErrors.Inverse()
+                .Where(c => c)
+                .Subscribe(_ => innerModel.CcsTolerance = float.Parse(CcsTolerance.Value))
+                .AddTo(Disposables);
         }
 
         internal readonly MsRefSearchParameterBase innerModel;
 
-        public MsRefSearchParameterVM(MsRefSearchParameterBase innerModel) {
-            this.innerModel = innerModel;
-        }
+        [Required(ErrorMessage = "Ms1 tolerance required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
+        public ReactiveProperty<string> Ms1Tolerance { get; }
+
+        [Required(ErrorMessage = "Ms2 tolerance required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
+        public ReactiveProperty<string> Ms2Tolerance { get; }
+
+        [Required(ErrorMessage = "Ccs tolerance required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
+        public ReactiveProperty<string> CcsTolerance { get; }
     }
 }

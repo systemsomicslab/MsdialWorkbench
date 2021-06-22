@@ -194,17 +194,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (Model.Target.Value?.innerModel == null || Model.MsdecResult.Value == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(
-                Model.AlignmentFile,
-                Model.Target.Value.innerModel,
-                Model.MsdecResult.Value,
-                null,
-                Model.MspAnnotator,
-                Model.Parameter.MspSearchParam);
-            
-            if (compoundSearchService.ShowDialog(vm) == true) {
-                Model.Target.Value.RaisePropertyChanged();
-                Ms1Spots?.Refresh();
+            using (var vm = new CompoundSearchVM<AlignmentSpotProperty>(
+                 Model.AlignmentFile,
+                 Model.Target.Value.innerModel,
+                 Model.MsdecResult.Value,
+                 null,
+                 Model.MspAnnotator,
+                 Model.Parameter.MspSearchParam)) {
+
+                if (compoundSearchService.ShowDialog(vm) == true) {
+                    Model.Target.Value.RaisePropertyChanged();
+                    Ms1Spots?.Refresh();
+                }
             }
         }
 

@@ -56,26 +56,31 @@
             <StackPanel Orientation="Horizontal"
                         Margin="8"
                         Grid.Row="1">
-                <Label Content="MS1 tol. [Da]:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox Name="TextBox_Ms1Tolerance"
-                         Text="{Binding ParameterVM.Ms1Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
-                <Label Content="MS2 tol. [Da]:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Margin="10,0,0,0"/>
-                <TextBox Name="TextBox_Ms2Tolerance"
-                         Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
-                <Label Content="Ccs tol.:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Margin="10,0,0,0"/>
-                <TextBox Name="TextBox_CcsTolerance"
-                         Text="{Binding ParameterVM.CcsTolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
+                <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                    <TextBox Name="TextBox_Ms1Tolerance"
+                             Text="{Binding ParameterVM.Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                             HorizontalAlignment="Left" VerticalAlignment="Center"
+                             Width="70"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="MS2 tol. [Da]:"
+                                   Height="25" 
+                                   Margin="10,0,0,0">
+                    <TextBox Name="TextBox_Ms2Tolerance"
+                             Text="{Binding ParameterVM.Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                             HorizontalAlignment="Left" VerticalAlignment="Center"
+                             Width="70"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Ccs tol.:"
+                                   Margin="10,0,0,0"
+                                   Height="25" >
+                    <TextBox Name="TextBox_CcsTolerance"
+                             Text="{Binding ParameterVM.CcsTolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                             HorizontalAlignment="Left" VerticalAlignment="Center"
+                             Width="70"/>
+                </ui:LabeledContent>
 
                 <Button Name="Button_ReAnalysis"
                         Content="Search"

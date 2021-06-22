@@ -165,15 +165,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
                 return;
 
-            var vm = new ImmsCompoundSearchVM<AlignmentSpotProperty>(
+            using (var vm = new ImmsCompoundSearchVM<AlignmentSpotProperty>(
                 model.AlignmentFile,
                 Target.Value.innerModel,
                 model.MsdecResult.Value,
                 null,
                 mspAnnotator,
-                new MsRefSearchParameterBase(model.Parameter.MspSearchParam));
+                new MsRefSearchParameterBase(model.Parameter.MspSearchParam))) {
 
-            compoundSearchService.ShowDialog(vm);
+                compoundSearchService.ShowDialog(vm);
+            }
         }
 
         /*

@@ -123,15 +123,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> searchCompoundCommand;
 
         public void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(model.AnalysisFile, model.Target.InnerModel, model.MsdecResult, null, model.MspAnnotator);
-            var window = new View.CompoundSearchWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using (var vm = new CompoundSearchVM<ChromatogramPeakFeature>(model.AnalysisFile, model.Target.InnerModel, model.MsdecResult, null, model.MspAnnotator)) {
+                var window = new View.CompoundSearchWindow
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            window.ShowDialog();
+                window.ShowDialog();
+            }
         }
     }
 }

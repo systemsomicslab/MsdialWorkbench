@@ -18,17 +18,17 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ImmsCompoundSearchVM(ImmsCompoundSearchModel<T> model) : base(model) {
             searchUnsubscriber?.Dispose();
 
-            var ms1Tol = ParameterVM.ObserveProperty(m => m.Ms1Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var ms2Tol = ParameterVM.ObserveProperty(m => m.Ms2Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var ccsTol = ParameterVM.ObserveProperty(m => m.CcsTolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var ms1Tol = ParameterVM.Ms1Tolerance;
+            var ms2Tol = ParameterVM.Ms2Tolerance;
+            var ccsTol = ParameterVM.CcsTolerance;
             var condition = new[]
             {
-                ms1Tol.Select(tol => tol >= MassEPS),
-                ms2Tol.Select(tol => tol >= MassEPS),
+                ms1Tol.ObserveHasErrors.Inverse(),
+                ms2Tol.ObserveHasErrors.Inverse(),
+                ccsTol.ObserveHasErrors.Inverse(),
             }.CombineLatestValuesAreAllTrue();
 
             searchUnsubscriber = new[] {
-                ccsTol.ToUnit(),
                 SearchCommand.ToUnit()
             }.Merge()
             .CombineLatest(condition, (_, c) => c)

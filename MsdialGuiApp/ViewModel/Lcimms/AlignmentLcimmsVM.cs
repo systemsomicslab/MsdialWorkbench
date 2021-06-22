@@ -105,15 +105,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model.Target?.innerModel == null)
                 return;
 
-            var vm = new CompoundSearchVM<AlignmentSpotProperty>(model.AlignmentFile, model.Target.innerModel, model.MsdecResult, null, model.MspAnnotator);
-            var window = new View.CompoundSearchWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using (var vm = new CompoundSearchVM<AlignmentSpotProperty>(model.AlignmentFile, model.Target.innerModel, model.MsdecResult, null, model.MspAnnotator)) {
+                var window = new View.CompoundSearchWindow
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            window.ShowDialog();
+                window.ShowDialog();
+            }
         }
 
         private bool CanSearchCompound(Window owner) {

@@ -249,18 +249,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult.Value, null, Model.MspAnnotator, Model.Parameter.MspSearchParam);
-            var window = new View.CompoundSearchWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using(var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult.Value, null, Model.MspAnnotator, Model.Parameter.MspSearchParam)) {
+                var window = new View.CompoundSearchWindow
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            if (window.ShowDialog() == true) {
-                Model.Target.Value.RaisePropertyChanged();
-                _ = Model.OnTargetChangedAsync(Model.Target.Value);
-                Ms1Peaks?.Refresh();
+                if (window.ShowDialog() == true) {
+                    Model.Target.Value.RaisePropertyChanged();
+                    _ = Model.OnTargetChangedAsync(Model.Target.Value);
+                    Ms1Peaks?.Refresh();
+                }
             }
         }
 
