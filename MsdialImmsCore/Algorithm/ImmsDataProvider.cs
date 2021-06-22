@@ -34,7 +34,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (msSpectrums.ContainsKey(level))
                 return msSpectrums[level];
             else
-                return null;
+                return new List<RawSpectrum>(0).AsReadOnly();
         }
     }
 
