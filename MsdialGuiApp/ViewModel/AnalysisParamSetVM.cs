@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel
                 msp.ScanID = counter++;
 
             if (!string.IsNullOrEmpty(param.TextDBFilePath)) {
-                if (File.Exists(param.TextDBFilePath)) {
+                if (!File.Exists(param.TextDBFilePath)) {
                     MessageBox.Show($"{param.TextDBFilePath} does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }

@@ -79,9 +79,9 @@ namespace CompMs.Common.Proteomics.Function {
                 var aa = new AminoAcid(container.AnywehereSite2Mod[aaChar].OriginalAA, compositions.Item1, compositions.Item2);
                 aaSequence.Add(aa);
             }
-            if (peptide.Sequence == "AQACHFITMCIFTCTAQHSSIHLGQLDWFYWVPNAPCTMR") {
-                Console.WriteLine();
-            }
+            //if (peptide.Sequence == "AQACHFITMCIFTCTAQHSSIHLGQLDWFYWVPNAPCTMR") {
+            //    Console.WriteLine();
+            //}
             peptide.SequenceObj = aaSequence;
             peptide.Formula = CalculatePeptideFormula(aaSequence);
             peptide.ModifiedSequence = String.Join("", aaSequence.Select(n => n.Code()));

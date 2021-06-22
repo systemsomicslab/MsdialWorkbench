@@ -37,7 +37,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             foreach (var fQuery in fastaQueries) {
                 if (fQuery.IsValidated) {
                     var sequence = fQuery.Sequence;
-                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites);
+                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, fQuery.UniqueIdentifier, fQuery.Index);
 
                     Console.WriteLine(fQuery.Header);
 
@@ -55,7 +55,6 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
                     }
                 }
             }
-
         }
     }
 }

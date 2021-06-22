@@ -12,6 +12,7 @@ namespace CompMs.Common.Parser {
 
         public static List<FastaProperty> ReadFastaUniProtKB(string file) {
             var queries = new List<FastaProperty>();
+            var counter = 0;
             using (var sr = new StreamReader(file, Encoding.ASCII)) {
                 var wkstr = sr.ReadLine();
                 var isRecordStarted = wkstr.StartsWith(">");
@@ -32,7 +33,9 @@ namespace CompMs.Common.Parser {
                         else {
                             fastaQuery.IsValidated = true;
                         }
+                        fastaQuery.Index = counter;
                         queries.Add(fastaQuery);
+                        counter++;
                     }
                     else {
                         wkstr = sr.ReadLine();

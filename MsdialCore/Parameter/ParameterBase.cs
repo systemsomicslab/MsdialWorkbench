@@ -21,363 +21,398 @@ namespace CompMs.MsdialCore.Parameter {
     public class ParameterBase {
 
         [Key(0)]
-        public DateTime ProjectStartDate { get; set; } = DateTime.Now;
-        [Key(1)]
-        public DateTime FinalSavedDate { get; set; } = DateTime.Now;
-        [Key(2)]
-        public string MsdialVersionNumber { get; set; } = Resources.VERSION;
+        public ProjectBaseParameter ProjectParam { get; set; } = new ProjectBaseParameter();
+        [IgnoreMember]
+        public DateTime ProjectStartDate { get => ProjectParam.ProjectStartDate; set => ProjectParam.ProjectStartDate = value; }
+        [IgnoreMember]
+        public DateTime FinalSavedDate { get => ProjectParam.FinalSavedDate; set => ProjectParam.FinalSavedDate = value; }
+        [IgnoreMember]
+        public string MsdialVersionNumber { get => ProjectParam.MsdialVersionNumber; set => ProjectParam.MsdialVersionNumber = value; }
 
 
         // Project container
-        [Key(3)]
-        public string ProjectFolderPath { get; set; } = string.Empty;
-        [Key(4)]
-        public string ProjectFilePath { get; set; } = string.Empty;
-        [Key(5)]
-        public Dictionary<int, string> FileID_ClassName { get; set; } = new Dictionary<int, string>();
-        [Key(6)]
-        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; } = new Dictionary<int, AnalysisFileType>();
-        [Key(7)]
-        public bool IsBoxPlotForAlignmentResult { get; set; }
-        [Key(8)]
-        public Dictionary<string, int> ClassnameToOrder { get; set; } = new Dictionary<string, int>();
-        [Key(9)]
-        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
+        [IgnoreMember]
+        public string ProjectFolderPath { get => ProjectParam.ProjectFolderPath; set => ProjectParam.ProjectFolderPath = value; }
+        [IgnoreMember]
+        public string ProjectFilePath { get => ProjectParam.ProjectFilePath; set => ProjectParam.ProjectFilePath = value; }
+        [IgnoreMember]
+        public Dictionary<int, string> FileID_ClassName { get => ProjectParam.FileID_ClassName; set => ProjectParam.FileID_ClassName = value; }
+        [IgnoreMember]
+        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get => ProjectParam.FileID_AnalysisFileType; set => ProjectParam.FileID_AnalysisFileType = value; }
+        [IgnoreMember]
+        public bool IsBoxPlotForAlignmentResult { get => ProjectParam.IsBoxPlotForAlignmentResult; set => ProjectParam.IsBoxPlotForAlignmentResult = value; }
+        [IgnoreMember]
+        public Dictionary<string, int> ClassnameToOrder { get => ProjectParam.ClassnameToOrder; set => ProjectParam.ClassnameToOrder = value; }
+        [IgnoreMember]
+        public Dictionary<string, List<byte>> ClassnameToColorBytes { get => ProjectParam.ClassnameToColorBytes; set => ProjectParam.ClassnameToColorBytes = value; }
 
         // Project type
-        [Key(10)]
-        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
-        [Key(11)]
-        public MSDataType MSDataType { get; set; } = MSDataType.Profile;
-        [Key(12)]
-        public MSDataType MS2DataType { get; set; } = MSDataType.Profile;
-        [Key(13)]
-        public IonMode IonMode { get; set; } = IonMode.Positive;
-        [Key(14)]
-        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metabolomics;
-        [Key(15)]
-        public Ionization Ionization { get; set; } = Ionization.ESI;
-        [Key(16)]
-        public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
+        [IgnoreMember]
+        public AcquisitionType AcquisitionType { get => ProjectParam.AcquisitionType; set => ProjectParam.AcquisitionType = value; }
+        [IgnoreMember]
+        public MSDataType MSDataType { get => ProjectParam.MSDataType; set => ProjectParam.MSDataType = value; }
+        [IgnoreMember]
+        public MSDataType MS2DataType { get => ProjectParam.MS2DataType; set => ProjectParam.MS2DataType = value; }
+        [IgnoreMember]
+        public IonMode IonMode { get => ProjectParam.IonMode; set => ProjectParam.IonMode = value; }
+        [IgnoreMember]
+        public TargetOmics TargetOmics { get => ProjectParam.TargetOmics; set => ProjectParam.TargetOmics = value; }
+        [IgnoreMember]
+        public Ionization Ionization { get => ProjectParam.Ionization; set => ProjectParam.Ionization = value; }
+        [IgnoreMember]
+        public MachineCategory MachineCategory { get => ProjectParam.MachineCategory; set => ProjectParam.MachineCategory = value; }
 
         // Project metadata
-        [Key(17)]
-        public string CollisionEnergy { get; set; } = string.Empty;
-        [Key(18)]
-        public string InstrumentType { get; set; } = string.Empty;
-        [Key(19)]
-        public string Instrument { get; set; } = string.Empty;
-        [Key(20)]
-        public string Authors { get; set; } = string.Empty;
-        [Key(21)]
-        public string License { get; set; } = string.Empty;
-        [Key(22)]
-        public string Comment { get; set; } = string.Empty;
+        [IgnoreMember]
+        public string CollisionEnergy { get => ProjectParam.CollisionEnergy; set => ProjectParam.CollisionEnergy = value; }
+        [IgnoreMember]
+        public string InstrumentType { get => ProjectParam.InstrumentType; set => ProjectParam.InstrumentType = value; }
+        [IgnoreMember]
+        public string Instrument { get => ProjectParam.Instrument; set => ProjectParam.Instrument = value; }
+        [IgnoreMember]
+        public string Authors { get => ProjectParam.Authors; set => ProjectParam.Authors = value; }
+        [IgnoreMember]
+        public string License { get => ProjectParam.License; set => ProjectParam.License = value; }
+        [IgnoreMember]
+        public string Comment { get => ProjectParam.Comment; set => ProjectParam.Comment = value; }
+
 
         // Annotation
-        [Key(23)]
-        public string MspFilePath { get; set; } = string.Empty;
-        [Key(24)]
-        public string TextDBFilePath { get; set; } = string.Empty;
-        [Key(25)]
-        public string IsotopeTextDBFilePath { get; set; } = string.Empty;
-        [Key(26)]
-        public string CompoundListInTargetModePath { get; set; } = string.Empty;
-        [Key(147)]
-        public string CompoundListForRtCorrectionPath { get; set; } = string.Empty;
-        [Key(27)]
-        public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
+        [Key(1)]
+        public ReferenceBaseParameter ReferenceFileParam { get; set; } = new ReferenceBaseParameter();
+        [IgnoreMember]
+        public string MspFilePath { get => ReferenceFileParam.MspFilePath; set => ReferenceFileParam.MspFilePath = value; }
+        [IgnoreMember]
+        public string TextDBFilePath { get => ReferenceFileParam.TextDBFilePath; set => ReferenceFileParam.TextDBFilePath = value; }
+        [IgnoreMember]
+        public string IsotopeTextDBFilePath { get => ReferenceFileParam.IsotopeTextDBFilePath; set => ReferenceFileParam.IsotopeTextDBFilePath = value; }
+        [IgnoreMember]
+        public string CompoundListInTargetModePath { get => ReferenceFileParam.CompoundListInTargetModePath; set => ReferenceFileParam.CompoundListInTargetModePath = value; }
+        [IgnoreMember]
+        public string CompoundListForRtCorrectionPath { get => ReferenceFileParam.CompoundListForRtCorrectionPath; set => ReferenceFileParam.CompoundListForRtCorrectionPath = value; }
+        [IgnoreMember]
+        public List<AdductIon> SearchedAdductIons { get => ReferenceFileParam.SearchedAdductIons; set => ReferenceFileParam.SearchedAdductIons = value; }
 
         // Export
-        [Key(28)]
-        public ExportSpectraFileFormat ExportSpectraFileFormat { get; set; } = ExportSpectraFileFormat.msp;
-        [Key(29)]
-        public ExportspectraType ExportSpectraType { get; set; } = ExportspectraType.deconvoluted;
-        [Key(30)]
-        public string MatExportFolderPath { get; set; } = string.Empty;
-        [Key(31)]
-        public string ExportFolderPath { get; set; } = string.Empty;
+        [Key(2)]
+        public DataExportBaseParameter DataExportParam { get; set; } = new DataExportBaseParameter();
+        [IgnoreMember]
+        public ExportSpectraFileFormat ExportSpectraFileFormat { get => DataExportParam.ExportSpectraFileFormat; set => DataExportParam.ExportSpectraFileFormat = value; }
+        [IgnoreMember]
+        public ExportspectraType ExportSpectraType { get => DataExportParam.ExportSpectraType; set => DataExportParam.ExportSpectraType = value; }
+        [IgnoreMember]
+        public string MatExportFolderPath { get => DataExportParam.MatExportFolderPath; set => DataExportParam.MatExportFolderPath = value; }
+        [IgnoreMember]
+        public string ExportFolderPath { get => DataExportParam.ExportFolderPath; set => DataExportParam.ExportFolderPath = value; }
+        [IgnoreMember]
+        public bool IsHeightMatrixExport { get => DataExportParam.IsHeightMatrixExport; set => DataExportParam.IsHeightMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsNormalizedMatrixExport { get => DataExportParam.IsNormalizedMatrixExport; set => DataExportParam.IsNormalizedMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsRepresentativeSpectraExport { get => DataExportParam.IsRepresentativeSpectraExport; set => DataExportParam.IsRepresentativeSpectraExport = value; }
+        [IgnoreMember]
+        public bool IsPeakIdMatrixExport { get => DataExportParam.IsPeakIdMatrixExport; set => DataExportParam.IsPeakIdMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsRetentionTimeMatrixExport { get => DataExportParam.IsRetentionTimeMatrixExport; set => DataExportParam.IsRetentionTimeMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsMassMatrixExport { get => DataExportParam.IsMassMatrixExport; set => DataExportParam.IsMassMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsMsmsIncludedMatrixExport { get => DataExportParam.IsMsmsIncludedMatrixExport; set => DataExportParam.IsMsmsIncludedMatrixExport = value; }
 
+        [IgnoreMember]
+        public bool IsUniqueMsMatrixExport { get => DataExportParam.IsUniqueMsMatrixExport; set => DataExportParam.IsUniqueMsMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsPeakAreaMatrixExport { get => DataExportParam.IsPeakAreaMatrixExport; set => DataExportParam.IsPeakAreaMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsParameterExport { get => DataExportParam.IsParameterExport; set => DataExportParam.IsParameterExport = value; }
+        [IgnoreMember]
+        public bool IsGnpsExport { get => DataExportParam.IsGnpsExport; set => DataExportParam.IsGnpsExport = value; }
+        [IgnoreMember]
+        public bool IsMolecularNetworkingExport { get => DataExportParam.IsMolecularNetworkingExport; set => DataExportParam.IsMolecularNetworkingExport = value; }
+        [IgnoreMember]
+        public bool IsSnMatrixExport { get => DataExportParam.IsSnMatrixExport; set => DataExportParam.IsSnMatrixExport = value; }
+        [IgnoreMember]
+        public bool IsExportedAsMzTabM { get => DataExportParam.IsExportedAsMzTabM; set => DataExportParam.IsExportedAsMzTabM = value; }
 
-        [Key(32)]
-        public bool IsHeightMatrixExport { get; set; } = true;
-        [Key(33)]
-        public bool IsNormalizedMatrixExport { get; set; }
-        [Key(34)]
-        public bool IsRepresentativeSpectraExport { get; set; }
-        [Key(35)]
-        public bool IsPeakIdMatrixExport { get; set; }
-        [Key(36)]
-        public bool IsRetentionTimeMatrixExport { get; set; }
-        [Key(37)]
-        public bool IsMassMatrixExport { get; set; }
-        [Key(38)]
-        public bool IsMsmsIncludedMatrixExport { get; set; }
-
-        [Key(39)]
-        public bool IsUniqueMsMatrixExport { get; set; }
-        [Key(40)]
-        public bool IsPeakAreaMatrixExport { get; set; }
-        [Key(41)]
-        public bool IsParameterExport { get; set; }
-        [Key(42)]
-        public bool IsGnpsExport { get; set; }
-        [Key(43)]
-        public bool IsMolecularNetworkingExport { get; set; }
-        [Key(44)]
-        public bool IsSnMatrixExport { get; set; }
-        [Key(45)]
-        public bool IsExportedAsMzTabM { get; set; }
 
 
         // Process parameters
-        [Key(46)]
-        public ProcessOption ProcessOption { get; set; } = ProcessOption.All;
-        [Key(47)]
-        public int NumThreads { get; set; } = 2;
+        [Key(3)]
+        public ProcessBaseParameter ProcessBaseParam { get; set; } = new ProcessBaseParameter();
+        [IgnoreMember]
+        public ProcessOption ProcessOption { get => ProcessBaseParam.ProcessOption; set => ProcessBaseParam.ProcessOption = value; }
+        [IgnoreMember]
+        public int NumThreads { get => ProcessBaseParam.NumThreads; set => ProcessBaseParam.NumThreads = value; }
+
 
         // feature detection base
-        [Key(48)]
-        public SmoothingMethod SmoothingMethod { get; set; } = SmoothingMethod.LinearWeightedMovingAverage;
-        [Key(49)]
-        public int SmoothingLevel { get; set; } = 3;
-        [Key(50)]
-        public double MinimumAmplitude { get; set; } = 1000;
-        [Key(51)]
-        public double MinimumDatapoints { get; set; } = 5;
-        [Key(52)]
-        public float MassSliceWidth { get; set; } = 0.1F;
-        [Key(53)]
-        public float RetentionTimeBegin { get; set; } = 0;
-        [Key(54)]
-        public float RetentionTimeEnd { get; set; } = 100;
-        [Key(55)]
-        public float MassRangeBegin { get; set; } = 0;
-        [Key(56)]
-        public float MassRangeEnd { get; set; } = 2000;
-        [Key(57)]
-        public float Ms2MassRangeBegin { get; set; } = 0;
-        [Key(58)]
-        public float Ms2MassRangeEnd { get; set; } = 2000;
-        [Key(59)]
-        public float CentroidMs1Tolerance { get; set; } = 0.01F;
-        [Key(60)]
-        public float CentroidMs2Tolerance { get; set; } = 0.025F;
-        [Key(61)]
-        public int MaxChargeNumber { get; set; } = 2;
-        [Key(62)]
-        public bool IsBrClConsideredForIsotopes { get; set; } = false;
-        [Key(63)]
-        public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+        [Key(4)]
+        public PeakPickBaseParameter PeakPickBaseParam { get; set; } = new PeakPickBaseParameter();
+
+        [IgnoreMember]
+        public SmoothingMethod SmoothingMethod { get => PeakPickBaseParam.SmoothingMethod; set => PeakPickBaseParam.SmoothingMethod = value; }
+        [IgnoreMember]
+        public int SmoothingLevel { get => PeakPickBaseParam.SmoothingLevel; set => PeakPickBaseParam.SmoothingLevel = value; }
+        [IgnoreMember]
+        public double MinimumAmplitude { get => PeakPickBaseParam.MinimumAmplitude; set => PeakPickBaseParam.MinimumAmplitude = value; }
+        [IgnoreMember]
+        public double MinimumDatapoints { get => PeakPickBaseParam.MinimumDatapoints; set => PeakPickBaseParam.MinimumDatapoints = value; }
+        [IgnoreMember]
+        public float MassSliceWidth { get => PeakPickBaseParam.MassSliceWidth; set => PeakPickBaseParam.MassSliceWidth = value; }
+        [IgnoreMember]
+        public float RetentionTimeBegin { get => PeakPickBaseParam.RetentionTimeBegin; set => PeakPickBaseParam.RetentionTimeBegin = value; }
+        [IgnoreMember]
+        public float RetentionTimeEnd { get => PeakPickBaseParam.RetentionTimeEnd; set => PeakPickBaseParam.RetentionTimeEnd = value; }
+        [IgnoreMember]
+        public float MassRangeBegin { get => PeakPickBaseParam.MassRangeBegin; set => PeakPickBaseParam.MassRangeBegin = value; }
+        [IgnoreMember]
+        public float MassRangeEnd { get => PeakPickBaseParam.MassRangeEnd; set => PeakPickBaseParam.MassRangeEnd = value; }
+        [IgnoreMember]
+        public float Ms2MassRangeBegin { get => PeakPickBaseParam.Ms2MassRangeBegin; set => PeakPickBaseParam.Ms2MassRangeBegin = value; }
+        [IgnoreMember]
+        public float Ms2MassRangeEnd { get => PeakPickBaseParam.Ms2MassRangeEnd; set => PeakPickBaseParam.Ms2MassRangeEnd = value; }
+        [IgnoreMember]
+        public float CentroidMs1Tolerance { get => PeakPickBaseParam.CentroidMs1Tolerance; set => PeakPickBaseParam.CentroidMs1Tolerance = value; }
+        [IgnoreMember]
+        public float CentroidMs2Tolerance { get => PeakPickBaseParam.CentroidMs2Tolerance; set => PeakPickBaseParam.CentroidMs2Tolerance = value; }
+        [IgnoreMember]
+        public int MaxChargeNumber { get => PeakPickBaseParam.MaxChargeNumber; set => PeakPickBaseParam.MaxChargeNumber = value; }
+        [IgnoreMember]
+        public bool IsBrClConsideredForIsotopes { get => PeakPickBaseParam.IsBrClConsideredForIsotopes; set => PeakPickBaseParam.IsBrClConsideredForIsotopes = value; }
+        [IgnoreMember]
+        public List<MzSearchQuery> ExcludedMassList { get => PeakPickBaseParam.ExcludedMassList; set => PeakPickBaseParam.ExcludedMassList = value; }
+
 
 
         // alignment base
-        [Key(64)]
-        public int AlignmentReferenceFileID { get; set; } = 0;
-        [Key(65)]
-        public float RetentionTimeAlignmentFactor { get; set; } = 0.5F;
-        [Key(66)]
-        public float Ms1AlignmentFactor { get; set; } = 0.5F;
-        [Key(67)]
-        public float SpectrumSimilarityAlignmentFactor { get; set; } = 0.5F;
-        [Key(68)]
-        public float Ms1AlignmentTolerance { get; set; } = 0.015F;
-        [Key(69)]
-        public float RetentionTimeAlignmentTolerance { get; set; } = 0.05F;
-        [Key(70)]
-        public float SpectrumSimilarityAlignmentTolerance { get; set; } = 0.8F;
-        [Key(71)]
-        public float AlignmentScoreCutOff { get; set; } = 50;
-        [Key(72)]
-        public bool TogetherWithAlignment { get; set; } = true;
-
+        [Key(5)]
+        public AlignmentBaseParameter AlignmentBaseParam { get; set; } = new AlignmentBaseParameter();
+        [IgnoreMember]
+        public int AlignmentReferenceFileID { get => AlignmentBaseParam.AlignmentReferenceFileID; set => AlignmentBaseParam.AlignmentReferenceFileID = value; }
+        [IgnoreMember]
+        public float RetentionTimeAlignmentFactor { get => AlignmentBaseParam.RetentionTimeAlignmentFactor; set => AlignmentBaseParam.RetentionTimeAlignmentFactor = value; }
+        [IgnoreMember]
+        public float Ms1AlignmentFactor { get => AlignmentBaseParam.Ms1AlignmentFactor; set => AlignmentBaseParam.Ms1AlignmentFactor = value; }
+        [IgnoreMember]
+        public float SpectrumSimilarityAlignmentFactor { get => AlignmentBaseParam.SpectrumSimilarityAlignmentFactor; set => AlignmentBaseParam.SpectrumSimilarityAlignmentFactor = value; }
+        [IgnoreMember]
+        public float Ms1AlignmentTolerance { get => AlignmentBaseParam.Ms1AlignmentTolerance; set => AlignmentBaseParam.Ms1AlignmentTolerance = value; }
+        [IgnoreMember]
+        public float RetentionTimeAlignmentTolerance { get => AlignmentBaseParam.RetentionTimeAlignmentTolerance; set => AlignmentBaseParam.RetentionTimeAlignmentTolerance = value; }
+        [IgnoreMember]
+        public float SpectrumSimilarityAlignmentTolerance { get => AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance; set => AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = value; }
+        [IgnoreMember]
+        public float AlignmentScoreCutOff { get => AlignmentBaseParam.AlignmentScoreCutOff; set => AlignmentBaseParam.AlignmentScoreCutOff = value; }
+        [IgnoreMember]
+        public bool TogetherWithAlignment { get => AlignmentBaseParam.TogetherWithAlignment; set => AlignmentBaseParam.TogetherWithAlignment = value; }
 
         // spectral library search
-        [Key(73)]
-        public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() { 
-            SolventType = SolventType.CH3COONH4,
-            LbmQueries = LbmQueryParcer.GetLbmQueries(false)
-        };
-        [Key(74)]
-        public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
+        [Key(6)]
+        public RefSpecMatchBaseParameter RefSpecMatchBaseParam { get; set; } = new RefSpecMatchBaseParameter();
 
-
-        [Key(75)]
-        public bool OnlyReportTopHitInMspSearch { get; set; } = false;
-        [Key(76)]
-        public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
-            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 0.85F
-        };
-        [Key(77)]
-        public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;
-        [Key(78)]
-        public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
-
-        [Key(79)]
-        public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
+        [IgnoreMember]
+        public LipidQueryBean LipidQueryContainer { get => RefSpecMatchBaseParam.LipidQueryContainer; set => RefSpecMatchBaseParam.LipidQueryContainer = value; }
+        [IgnoreMember]
+        public MsRefSearchParameterBase MspSearchParam { get => RefSpecMatchBaseParam.MspSearchParam; set => RefSpecMatchBaseParam.MspSearchParam = value; }
+        [IgnoreMember]
+        public bool OnlyReportTopHitInMspSearch { get => RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch; set => RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch = value; }
+        [IgnoreMember]
+        public MsRefSearchParameterBase TextDbSearchParam { get => RefSpecMatchBaseParam.TextDbSearchParam; set => RefSpecMatchBaseParam.TextDbSearchParam = value; }
+        [IgnoreMember]
+        public bool OnlyReportTopHitInTextDBSearch { get => RefSpecMatchBaseParam.OnlyReportTopHitInTextDBSearch; set => RefSpecMatchBaseParam.OnlyReportTopHitInTextDBSearch = value; }
+        [IgnoreMember]
+        public bool IsIdentificationOnlyPerformedForAlignmentFile { get => RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile; set => RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile = value; }
+        [IgnoreMember]
+        public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get => RefSpecMatchBaseParam.FileIdRiInfoDictionary; set => RefSpecMatchBaseParam.FileIdRiInfoDictionary = value; }
 
         // deconvolution
-        [Key(80)]
-        public float SigmaWindowValue { get; set; } = 0.5F;
-        [Key(81)]
-        public float AmplitudeCutoff { get; set; } = 0;
-        [Key(82)]
-        public float AveragePeakWidth { get; set; } = 30;
-        [Key(83)]
-        public float KeptIsotopeRange { get; set; } = 5;
-        [Key(84)]
-        public bool RemoveAfterPrecursor { get; set; } = true;
-        [Key(85)]
-        public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
-        [Key(86)]
-        public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
-        [Key(148)]
-        public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
+        [Key(7)]
+        public ChromDecBaseParameter ChromDecBaseParam { get; set; } = new ChromDecBaseParameter();
+        [IgnoreMember]
+        public bool IsDoMs2ChromDeconvolution { get => ChromDecBaseParam.IsDoMs2ChromDeconvolution; set => ChromDecBaseParam.IsDoMs2ChromDeconvolution = value; }
+        [IgnoreMember]
+        public float SigmaWindowValue { get => ChromDecBaseParam.SigmaWindowValue; set => ChromDecBaseParam.SigmaWindowValue = value; }
+        [IgnoreMember]
+        public float AmplitudeCutoff { get => ChromDecBaseParam.AmplitudeCutoff; set => ChromDecBaseParam.AmplitudeCutoff = value; }
+        [IgnoreMember]
+        public float AveragePeakWidth { get => ChromDecBaseParam.AveragePeakWidth; set => ChromDecBaseParam.AveragePeakWidth = value; }
+        [IgnoreMember]
+        public float KeptIsotopeRange { get => ChromDecBaseParam.KeptIsotopeRange; set => ChromDecBaseParam.KeptIsotopeRange = value; }
+        [IgnoreMember]
+        public bool RemoveAfterPrecursor { get => ChromDecBaseParam.RemoveAfterPrecursor; set => ChromDecBaseParam.RemoveAfterPrecursor = value; }
+        [IgnoreMember]
+        public bool KeepOriginalPrecursorIsotopes { get => ChromDecBaseParam.KeepOriginalPrecursorIsotopes; set => ChromDecBaseParam.KeepOriginalPrecursorIsotopes = value; }
+        [IgnoreMember]
+        public AccuracyType AccuracyType { get => ChromDecBaseParam.AccuracyType; set => ChromDecBaseParam.AccuracyType = value; }
+        [IgnoreMember]
+        public double TargetCE { get => ChromDecBaseParam.TargetCE; set => ChromDecBaseParam.TargetCE = value; }
 
+        [Key(8)]
+        public ProteomicsBaseParameter ProteomicsBaseParam { get; set; } = new ProteomicsBaseParameter();
+
+        [IgnoreMember]
+        public bool IsDoAndromedaMs2Deconvolution { get => ProteomicsBaseParam.IsDoAndromedaMs2Deconvolution; set => ProteomicsBaseParam.IsDoAndromedaMs2Deconvolution = value; }
+        [IgnoreMember]
+        public double AndromedaDelta { get => ProteomicsBaseParam.AndromedaDelta; set => ProteomicsBaseParam.AndromedaDelta = value; }
+        [IgnoreMember]
+        public int AndromedaMaxPeaks { get => ProteomicsBaseParam.AndromedaMaxPeaks; set => ProteomicsBaseParam.AndromedaMaxPeaks = value; }
 
         // Post-alignment and filtering
-        [Key(87)]
-        public float PeakCountFilter { get; set; } = 0;
-        [Key(88)]
-        public bool IsForceInsertForGapFilling { get; set; } = true;
-        [Key(89)]
-        public float NPercentDetectedInOneGroup { get; set; } = 0;
-        [Key(90)]
-        public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get; set; } = false;
-        [Key(91)]
-        public float SampleMaxOverBlankAverage { get; set; } = 5;
-        [Key(92)]
-        public float SampleAverageOverBlankAverage { get; set; } = 5;
-        [Key(93)]
-        public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get; set; } = true;
-        [Key(94)]
-        public bool IsKeepRefMatchedMetaboliteFeatures { get; set; } = true;
-        [Key(95)]
-        public bool IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples { get; set; } = false;
-        [Key(96)]
-        public BlankFiltering BlankFiltering { get; set; } = BlankFiltering.SampleMaxOverBlankAve;
-        [Key(97)]
-        public bool IsKeepSuggestedMetaboliteFeatures { get; set; } = false;
-        [Key(98)]
-        public float FoldChangeForBlankFiltering { get; set; } = 5;
+        [Key(9)]
+        public PostProcessBaseParameter PostProcessBaseParam { get; set; } = new PostProcessBaseParameter();
+
+        [IgnoreMember]
+        public float PeakCountFilter { get => PostProcessBaseParam.PeakCountFilter; set => PostProcessBaseParam.PeakCountFilter = value; }
+        [IgnoreMember]
+        public bool IsForceInsertForGapFilling { get => PostProcessBaseParam.IsForceInsertForGapFilling; set => PostProcessBaseParam.IsForceInsertForGapFilling = value; }
+        [IgnoreMember]
+        public float NPercentDetectedInOneGroup { get => PostProcessBaseParam.NPercentDetectedInOneGroup; set => PostProcessBaseParam.NPercentDetectedInOneGroup = value; }
+        [IgnoreMember]
+        public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange; set => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = value; }
+        [IgnoreMember]
+        public float SampleMaxOverBlankAverage { get => PostProcessBaseParam.SampleMaxOverBlankAverage; set => PostProcessBaseParam.SampleMaxOverBlankAverage = value; }
+        [IgnoreMember]
+        public float SampleAverageOverBlankAverage { get => PostProcessBaseParam.SampleAverageOverBlankAverage; set => PostProcessBaseParam.SampleAverageOverBlankAverage = value; }
+        [IgnoreMember]
+        public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking; set => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking = value; }
+        [IgnoreMember]
+        public bool IsKeepRefMatchedMetaboliteFeatures { get => PostProcessBaseParam.IsKeepRefMatchedMetaboliteFeatures; set => PostProcessBaseParam.IsKeepRefMatchedMetaboliteFeatures = value; }
+        [IgnoreMember]
+        public bool IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples { get => PostProcessBaseParam.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples; set => PostProcessBaseParam.IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples = value; }
+        [IgnoreMember]
+        public BlankFiltering BlankFiltering { get => PostProcessBaseParam.BlankFiltering; set => PostProcessBaseParam.BlankFiltering = value; }
+        [IgnoreMember]
+        public bool IsKeepSuggestedMetaboliteFeatures { get => PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures; set => PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures = value; }
+        [IgnoreMember]
+        public float FoldChangeForBlankFiltering { get => PostProcessBaseParam.FoldChangeForBlankFiltering; set => PostProcessBaseParam.FoldChangeForBlankFiltering = value; }
 
 
         // Normalization option
-        [Key(99)]
-        public bool IsNormalizeNone { get; set; } = true;
-        [Key(100)]
-        public bool IsNormalizeIS { get; set; }
-        [Key(101)]
-        public bool IsNormalizeLowess { get; set; }
-        [Key(102)]
-        public bool IsNormalizeIsLowess { get; set; }
-        [Key(103)]
-        public bool IsNormalizeTic { get; set; }
-        [Key(104)]
-        public bool IsNormalizeMTic { get; set; }
-        [Key(105)]
-        public bool IsNormalizeSplash { get; set; }
+        [Key(10)]
+        public DataNormalizationBaseParameter DataNormalizationBaseParam { get; set; } = new DataNormalizationBaseParameter();
 
-        [Key(106)]
-        public double LowessSpan { get; set; }
-        [Key(107)]
-        public bool IsBlankSubtract { get; set; }
+        [IgnoreMember]
+        public bool IsNormalizeNone { get => DataNormalizationBaseParam.IsNormalizeNone; set => DataNormalizationBaseParam.IsNormalizeNone = value; }
+        [IgnoreMember]
+        public bool IsNormalizeIS { get => DataNormalizationBaseParam.IsNormalizeIS; set => DataNormalizationBaseParam.IsNormalizeIS = value; }
+        [IgnoreMember]
+        public bool IsNormalizeLowess { get => DataNormalizationBaseParam.IsNormalizeLowess; set => DataNormalizationBaseParam.IsNormalizeLowess = value; }
+        [IgnoreMember]
+        public bool IsNormalizeIsLowess { get => DataNormalizationBaseParam.IsNormalizeIsLowess; set => DataNormalizationBaseParam.IsNormalizeIsLowess = value; }
+        [IgnoreMember]
+        public bool IsNormalizeTic { get => DataNormalizationBaseParam.IsNormalizeTic; set => DataNormalizationBaseParam.IsNormalizeTic = value; }
+        [IgnoreMember]
+        public bool IsNormalizeMTic { get => DataNormalizationBaseParam.IsNormalizeMTic; set => DataNormalizationBaseParam.IsNormalizeMTic = value; }
+        [IgnoreMember]
+        public bool IsNormalizeSplash { get => DataNormalizationBaseParam.IsNormalizeSplash; set => DataNormalizationBaseParam.IsNormalizeSplash = value; }
+        [IgnoreMember]
+        public double LowessSpan { get => DataNormalizationBaseParam.LowessSpan; set => DataNormalizationBaseParam.LowessSpan = value; }
+        [IgnoreMember]
+        public bool IsBlankSubtract { get => DataNormalizationBaseParam.IsBlankSubtract; set => DataNormalizationBaseParam.IsBlankSubtract = value; }
 
         // Statistics
-        [Key(108)]
-        public TransformMethod Transform { get; set; } = TransformMethod.None;
-        [Key(109)]
-        public ScaleMethod Scale { get; set; } = ScaleMethod.AutoScale;
-        [Key(110)]
-        public int MaxComponent { get; set; } = 2;
-
-        [Key(111)]
-        public TransformMethod TransformPls { get; set; } = TransformMethod.None;
-        [Key(112)]
-        public ScaleMethod ScalePls { get; set; } = ScaleMethod.AutoScale;
-        [Key(113)]
-        public bool IsAutoFitPls { get; set; } = true;
-        [Key(114)]
-        public int ComponentPls { get; set; } = 2;
-
-        [Key(115)]
-        public MultivariateAnalysisOption MultivariateAnalysisOption { get; set; } = MultivariateAnalysisOption.Pca;
-        [Key(116)]
-        public bool IsIdentifiedImportedInStatistics { get; set; } = true;
-        [Key(117)]
-        public bool IsAnnotatedImportedInStatistics { get; set; }
-        [Key(118)]
-        public bool IsUnknownImportedInStatistics { get; set; }
+        [Key(11)]
+        public StatisticsBaseParameter StatisticsBaseParam { get; set; } = new StatisticsBaseParameter();
+        [IgnoreMember]
+        public TransformMethod Transform { get => StatisticsBaseParam.Transform; set => StatisticsBaseParam.Transform = value; }
+        [IgnoreMember]
+        public ScaleMethod Scale { get => StatisticsBaseParam.Scale; set => StatisticsBaseParam.Scale = value; }
+        [IgnoreMember]
+        public int MaxComponent { get => StatisticsBaseParam.MaxComponent; set => StatisticsBaseParam.MaxComponent = value; }
+        [IgnoreMember]
+        public TransformMethod TransformPls { get => StatisticsBaseParam.TransformPls; set => StatisticsBaseParam.TransformPls = value; }
+        [IgnoreMember]
+        public ScaleMethod ScalePls { get => StatisticsBaseParam.ScalePls; set => StatisticsBaseParam.ScalePls = value; }
+        [IgnoreMember]
+        public bool IsAutoFitPls { get => StatisticsBaseParam.IsAutoFitPls; set => StatisticsBaseParam.IsAutoFitPls = value; }
+        [IgnoreMember]
+        public int ComponentPls { get => StatisticsBaseParam.ComponentPls; set => StatisticsBaseParam.ComponentPls = value; }
+        [IgnoreMember]
+        public MultivariateAnalysisOption MultivariateAnalysisOption { get => StatisticsBaseParam.MultivariateAnalysisOption; set => StatisticsBaseParam.MultivariateAnalysisOption = value; }
+        [IgnoreMember]
+        public bool IsIdentifiedImportedInStatistics { get => StatisticsBaseParam.IsIdentifiedImportedInStatistics; set => StatisticsBaseParam.IsIdentifiedImportedInStatistics = value; }
+        [IgnoreMember]
+        public bool IsAnnotatedImportedInStatistics { get => StatisticsBaseParam.IsAnnotatedImportedInStatistics; set => StatisticsBaseParam.IsAnnotatedImportedInStatistics = value; }
+        [IgnoreMember]
+        public bool IsUnknownImportedInStatistics { get => StatisticsBaseParam.IsUnknownImportedInStatistics; set => StatisticsBaseParam.IsUnknownImportedInStatistics = value; }
 
         // Mrmprobs export
-        [Key(119)]
-        public float MpMs1Tolerance { get; set; } = 0.005F;
-        [Key(120)]
-        public float MpMs2Tolerance { get; set; } = 0.01F;
-        [Key(121)]
-        public float MpRtTolerance { get; set; } = 0.5F;
-        [Key(122)]
-        public int MpTopN { get; set; } = 5;
-        [Key(123)]
-        public bool MpIsIncludeMsLevel1 { get; set; } = true;
-        [Key(124)]
-        public bool MpIsUseMs1LevelForQuant { get; set; } = false;
-        [Key(125)]
-        public bool MpIsFocusedSpotOutput { get; set; } = false;
-        [Key(126)]
-        public bool MpIsReferenceBaseOutput { get; set; } = true;
-        [Key(127)]
-        public bool MpIsExportOtherCandidates { get; set; } = false;
-        [Key(128)]
-        public float MpIdentificationScoreCutOff { get; set; } = 80F;
+        [Key(12)]
+        public MrmprobsExportBaseParameter MrmprobsExportBaseParam { get; set; } = new MrmprobsExportBaseParameter();
+        [IgnoreMember]
+        public float MpMs1Tolerance { get => MrmprobsExportBaseParam.MpMs1Tolerance; set => MrmprobsExportBaseParam.MpMs1Tolerance = value; }
+        [IgnoreMember]
+        public float MpMs2Tolerance { get => MrmprobsExportBaseParam.MpMs2Tolerance; set => MrmprobsExportBaseParam.MpMs2Tolerance = value; }
+        [IgnoreMember]
+        public float MpRtTolerance { get => MrmprobsExportBaseParam.MpRtTolerance; set => MrmprobsExportBaseParam.MpRtTolerance = value; }
+        [IgnoreMember]
+        public int MpTopN { get => MrmprobsExportBaseParam.MpTopN; set => MrmprobsExportBaseParam.MpTopN = value; }
+        [IgnoreMember]
+        public bool MpIsIncludeMsLevel1 { get => MrmprobsExportBaseParam.MpIsIncludeMsLevel1; set => MrmprobsExportBaseParam.MpIsIncludeMsLevel1 = value; }
+        [IgnoreMember]
+        public bool MpIsUseMs1LevelForQuant { get => MrmprobsExportBaseParam.MpIsUseMs1LevelForQuant; set => MrmprobsExportBaseParam.MpIsUseMs1LevelForQuant = value; }
+        [IgnoreMember]
+        public bool MpIsFocusedSpotOutput { get => MrmprobsExportBaseParam.MpIsFocusedSpotOutput; set => MrmprobsExportBaseParam.MpIsFocusedSpotOutput = value; }
+        [IgnoreMember]
+        public bool MpIsReferenceBaseOutput { get => MrmprobsExportBaseParam.MpIsReferenceBaseOutput; set => MrmprobsExportBaseParam.MpIsReferenceBaseOutput = value; }
+        [IgnoreMember]
+        public bool MpIsExportOtherCandidates { get => MrmprobsExportBaseParam.MpIsExportOtherCandidates; set => MrmprobsExportBaseParam.MpIsExportOtherCandidates = value; }
+        [IgnoreMember]
+        public float MpIdentificationScoreCutOff { get => MrmprobsExportBaseParam.MpIdentificationScoreCutOff; set => MrmprobsExportBaseParam.MpIdentificationScoreCutOff = value; }
 
 
         // molecular networking
-        [Key(129)]
-        public double MnRtTolerance { get; set; } = 100;
-        [Key(130)]
-        public double MnIonCorrelationSimilarityCutOff { get; set; } = 95;
-        [Key(131)]
-        public double MnSpectrumSimilarityCutOff { get; set; } = 75;
-        [Key(132)]
-        public double MnRelativeAbundanceCutOff { get; set; } = 1;
-        [Key(133)]
-        public double MnMassTolerance { get; set; } = 0.025;
-        [Key(134)]
-        public bool MnIsExportIonCorrelation { get; set; } = false;
+        [Key(13)]
+        public MolecularSpectrumNetworkingBaseParameter MolecularSpectrumNetworkingBaseParam { get; set; } = new MolecularSpectrumNetworkingBaseParameter();
+        [IgnoreMember] 
+        public double MnRtTolerance { get => MolecularSpectrumNetworkingBaseParam.MnRtTolerance; set => MolecularSpectrumNetworkingBaseParam.MnRtTolerance = value; }
+        [IgnoreMember]
+        public double MnIonCorrelationSimilarityCutOff { get => MolecularSpectrumNetworkingBaseParam.MnIonCorrelationSimilarityCutOff; set => MolecularSpectrumNetworkingBaseParam.MnIonCorrelationSimilarityCutOff = value; }
+        [IgnoreMember]
+        public double MnSpectrumSimilarityCutOff { get => MolecularSpectrumNetworkingBaseParam.MnSpectrumSimilarityCutOff; set => MolecularSpectrumNetworkingBaseParam.MnSpectrumSimilarityCutOff = value; }
+        [IgnoreMember]
+        public double MnRelativeAbundanceCutOff { get => MolecularSpectrumNetworkingBaseParam.MnRelativeAbundanceCutOff; set => MolecularSpectrumNetworkingBaseParam.MnRelativeAbundanceCutOff = value; }
+        [IgnoreMember]
+        public double MnMassTolerance { get => MolecularSpectrumNetworkingBaseParam.MnMassTolerance; set => MolecularSpectrumNetworkingBaseParam.MnMassTolerance = value; }
+        [IgnoreMember]
+        public bool MnIsExportIonCorrelation { get => MolecularSpectrumNetworkingBaseParam.MnIsExportIonCorrelation; set => MolecularSpectrumNetworkingBaseParam.MnIsExportIonCorrelation = value; }
+
+        //Tracking of isotope labeles
+        [Key(14)]
+        public IsotopeTrackingBaseParameter IsotopeTrackingBaseParam { get; set; } = new IsotopeTrackingBaseParameter();
+        [IgnoreMember]
+        public bool TrackingIsotopeLabels { get => IsotopeTrackingBaseParam.TrackingIsotopeLabels; set => IsotopeTrackingBaseParam.TrackingIsotopeLabels = value; }
+        [IgnoreMember]
+        public bool UseTargetFormulaLibrary { get => IsotopeTrackingBaseParam.UseTargetFormulaLibrary; set => IsotopeTrackingBaseParam.UseTargetFormulaLibrary = value; }
+        [IgnoreMember]
+        public IsotopeTrackingDictionary IsotopeTrackingDictionary { get => IsotopeTrackingBaseParam.IsotopeTrackingDictionary; set => IsotopeTrackingBaseParam.IsotopeTrackingDictionary = value; }
+        [IgnoreMember]
+        public int NonLabeledReferenceID { get => IsotopeTrackingBaseParam.NonLabeledReferenceID; set => IsotopeTrackingBaseParam.NonLabeledReferenceID = value; }
+        [IgnoreMember]
+        public bool SetFullyLabeledReferenceFile { get => IsotopeTrackingBaseParam.SetFullyLabeledReferenceFile; set => IsotopeTrackingBaseParam.SetFullyLabeledReferenceFile = value; }
+        [IgnoreMember]
+        public int FullyLabeledReferenceID { get => IsotopeTrackingBaseParam.FullyLabeledReferenceID; set => IsotopeTrackingBaseParam.FullyLabeledReferenceID = value; }
 
 
         // others
-        [Key(135)]
-        public RetentionTimeCorrectionCommon RetentionTimeCorrectionCommon { get; set; } = new RetentionTimeCorrectionCommon();
-        [Key(136)]
-        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = new List<MoleculeMsReference>();
-        [Key(137)]
-        public List<StandardCompound> StandardCompounds { get; set; } = new List<StandardCompound>();
+        [Key(15)]
+        public AdvancedProcessOptionBaseParameter AdvancedProcessOptionBaseParam { get; set; } = new AdvancedProcessOptionBaseParameter();
+        [IgnoreMember]
+        public RetentionTimeCorrectionCommon RetentionTimeCorrectionCommon { get => AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon; set => AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon = value; }
+        [IgnoreMember]
+        public List<MoleculeMsReference> CompoundListInTargetMode { get => AdvancedProcessOptionBaseParam.CompoundListInTargetMode; set => AdvancedProcessOptionBaseParam.CompoundListInTargetMode = value; }
+        [IgnoreMember]
+        public List<StandardCompound> StandardCompounds { get => AdvancedProcessOptionBaseParam.StandardCompounds; set => AdvancedProcessOptionBaseParam.StandardCompounds = value; }
+        [IgnoreMember]
+        public bool IsLabPrivate { get => AdvancedProcessOptionBaseParam.IsLabPrivate; set => AdvancedProcessOptionBaseParam.IsLabPrivate = value; }
+        [IgnoreMember]
+        public bool IsLabPrivateVersionTada { get => AdvancedProcessOptionBaseParam.IsLabPrivateVersionTada; set => AdvancedProcessOptionBaseParam.IsLabPrivateVersionTada = value; }
+        [IgnoreMember]
+        public bool QcAtLeastFilter { get => AdvancedProcessOptionBaseParam.QcAtLeastFilter; set => AdvancedProcessOptionBaseParam.QcAtLeastFilter = value; }
 
-        [Key(138)]
-        public bool IsLabPrivate { get; set; } = false;
-        [Key(139)]
-        public bool IsLabPrivateVersionTada { get; set; } = false;
-        [Key(149)]
-        public bool QcAtLeastFilter { get; set; } = false;
-
-        //Tracking of isotope labeles
-        [Key(140)]
-        public bool TrackingIsotopeLabels { get; set; } = false;
-        [Key(141)]
-        public bool UseTargetFormulaLibrary { get; set; } = false;
-        [Key(142)]
-        public IsotopeTrackingDictionary IsotopeTrackingDictionary { get; set; } = new IsotopeTrackingDictionary();
-        [Key(143)]
-        public int NonLabeledReferenceID { get; set; } = 0;
-        [Key(144)]
-        public bool SetFullyLabeledReferenceFile { get; set; } = false;
-        [Key(145)]
-        public int FullyLabeledReferenceID { get; set; } = 0;
 
         // corrdec
-        [Key(146)]
+        [Key(16)]
         public CorrDecParam CorrDecParam { get; set; } = new CorrDecParam();
 
 
@@ -482,6 +517,10 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Keep isotope range", KeptIsotopeRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Exclude after precursor", RemoveAfterPrecursor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep original precursor isotopes", KeepOriginalPrecursorIsotopes.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Is do ms2 chrom deconvolution", IsDoMs2ChromDeconvolution.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Is do andromeda ms2 deconvolution", IsDoAndromedaMs2Deconvolution.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Andromeda delta", AndromedaDelta.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Andromeda max peaks", AndromedaMaxPeaks.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Target CE", TargetCE.ToString() }));
 
             pStrings.Add("\r\n");
@@ -632,6 +671,399 @@ namespace CompMs.MsdialCore.Parameter {
         public List<IsotopeElement> IsotopeElements { get; set; } = new List<IsotopeElement>();
         [Key(1)]
         public int SelectedID { get; set; } = 0;
+    }
+
+    [MessagePackObject]
+    public class ProjectBaseParameter {
+
+        [Key(0)]
+        public DateTime ProjectStartDate { get; set; } = DateTime.Now;
+        [Key(1)]
+        public DateTime FinalSavedDate { get; set; } = DateTime.Now;
+        [Key(2)]
+        public string MsdialVersionNumber { get; set; } = Resources.VERSION;
+
+
+        // Project container
+        [Key(3)]
+        public string ProjectFolderPath { get; set; } = string.Empty;
+        [Key(4)]
+        public string ProjectFilePath { get; set; } = string.Empty;
+        [Key(5)]
+        public Dictionary<int, string> FileID_ClassName { get; set; } = new Dictionary<int, string>();
+        [Key(6)]
+        public Dictionary<int, AnalysisFileType> FileID_AnalysisFileType { get; set; } = new Dictionary<int, AnalysisFileType>();
+        [Key(7)]
+        public bool IsBoxPlotForAlignmentResult { get; set; }
+        [Key(8)]
+        public Dictionary<string, int> ClassnameToOrder { get; set; } = new Dictionary<string, int>();
+        [Key(9)]
+        public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
+
+        // Project type
+        [Key(10)]
+        public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
+        [Key(11)]
+        public MSDataType MSDataType { get; set; } = MSDataType.Profile;
+        [Key(12)]
+        public MSDataType MS2DataType { get; set; } = MSDataType.Profile;
+        [Key(13)]
+        public IonMode IonMode { get; set; } = IonMode.Positive;
+        [Key(14)]
+        public TargetOmics TargetOmics { get; set; } = TargetOmics.Metabolomics;
+        [Key(15)]
+        public Ionization Ionization { get; set; } = Ionization.ESI;
+        [Key(16)]
+        public MachineCategory MachineCategory { get; set; } = MachineCategory.LCMS;
+
+        // Project metadata
+        [Key(17)]
+        public string CollisionEnergy { get; set; } = string.Empty;
+        [Key(18)]
+        public string InstrumentType { get; set; } = string.Empty;
+        [Key(19)]
+        public string Instrument { get; set; } = string.Empty;
+        [Key(20)]
+        public string Authors { get; set; } = string.Empty;
+        [Key(21)]
+        public string License { get; set; } = string.Empty;
+        [Key(22)]
+        public string Comment { get; set; } = string.Empty;
+    }
+
+    [MessagePackObject]
+    public class ReferenceBaseParameter {
+        [Key(0)]
+        public string MspFilePath { get; set; } = string.Empty;
+        [Key(1)]
+        public string TextDBFilePath { get; set; } = string.Empty;
+        [Key(2)]
+        public string IsotopeTextDBFilePath { get; set; } = string.Empty;
+        [Key(3)]
+        public string CompoundListInTargetModePath { get; set; } = string.Empty;
+        [Key(4)]
+        public string CompoundListForRtCorrectionPath { get; set; } = string.Empty;
+        [Key(5)]
+        public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
+    }
+
+    [MessagePackObject]
+    public class DataExportBaseParameter {
+        [Key(0)]
+        public ExportSpectraFileFormat ExportSpectraFileFormat { get; set; } = ExportSpectraFileFormat.msp;
+        [Key(1)]
+        public ExportspectraType ExportSpectraType { get; set; } = ExportspectraType.deconvoluted;
+        [Key(2)]
+        public string MatExportFolderPath { get; set; } = string.Empty;
+        [Key(3)]
+        public string ExportFolderPath { get; set; } = string.Empty;
+
+
+        [Key(4)]
+        public bool IsHeightMatrixExport { get; set; } = true;
+        [Key(5)]
+        public bool IsNormalizedMatrixExport { get; set; }
+        [Key(6)]
+        public bool IsRepresentativeSpectraExport { get; set; }
+        [Key(7)]
+        public bool IsPeakIdMatrixExport { get; set; }
+        [Key(8)]
+        public bool IsRetentionTimeMatrixExport { get; set; }
+        [Key(9)]
+        public bool IsMassMatrixExport { get; set; }
+        [Key(10)]
+        public bool IsMsmsIncludedMatrixExport { get; set; }
+
+        [Key(11)]
+        public bool IsUniqueMsMatrixExport { get; set; }
+        [Key(12)]
+        public bool IsPeakAreaMatrixExport { get; set; }
+        [Key(13)]
+        public bool IsParameterExport { get; set; }
+        [Key(14)]
+        public bool IsGnpsExport { get; set; }
+        [Key(15)]
+        public bool IsMolecularNetworkingExport { get; set; }
+        [Key(16)]
+        public bool IsSnMatrixExport { get; set; }
+        [Key(17)]
+        public bool IsExportedAsMzTabM { get; set; }
+    }
+
+    [MessagePackObject]
+    public class ProcessBaseParameter {
+        // Process parameters
+        [Key(0)]
+        public ProcessOption ProcessOption { get; set; } = ProcessOption.All;
+        [Key(1)]
+        public int NumThreads { get; set; } = 2;
+    }
+
+    [MessagePackObject]
+    public class PeakPickBaseParameter {
+        [Key(0)]
+        public SmoothingMethod SmoothingMethod { get; set; } = SmoothingMethod.LinearWeightedMovingAverage;
+        [Key(1)]
+        public int SmoothingLevel { get; set; } = 3;
+        [Key(2)]
+        public double MinimumAmplitude { get; set; } = 1000;
+        [Key(3)]
+        public double MinimumDatapoints { get; set; } = 5;
+        [Key(4)]
+        public float MassSliceWidth { get; set; } = 0.1F;
+        [Key(5)]
+        public float RetentionTimeBegin { get; set; } = 0;
+        [Key(6)]
+        public float RetentionTimeEnd { get; set; } = 100;
+        [Key(7)]
+        public float MassRangeBegin { get; set; } = 0;
+        [Key(8)]
+        public float MassRangeEnd { get; set; } = 2000;
+        [Key(9)]
+        public float Ms2MassRangeBegin { get; set; } = 0;
+        [Key(10)]
+        public float Ms2MassRangeEnd { get; set; } = 2000;
+        [Key(11)]
+        public float CentroidMs1Tolerance { get; set; } = 0.01F;
+        [Key(12)]
+        public float CentroidMs2Tolerance { get; set; } = 0.025F;
+        [Key(13)]
+        public int MaxChargeNumber { get; set; } = 2;
+        [Key(14)]
+        public bool IsBrClConsideredForIsotopes { get; set; } = false;
+        [Key(15)]
+        public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+    }
+
+    [MessagePackObject]
+    public class AlignmentBaseParameter {
+        [Key(0)]
+        public int AlignmentReferenceFileID { get; set; } = 0;
+        [Key(1)]
+        public float RetentionTimeAlignmentFactor { get; set; } = 0.5F;
+        [Key(2)]
+        public float Ms1AlignmentFactor { get; set; } = 0.5F;
+        [Key(3)]
+        public float SpectrumSimilarityAlignmentFactor { get; set; } = 0.5F;
+        [Key(4)]
+        public float Ms1AlignmentTolerance { get; set; } = 0.015F;
+        [Key(5)]
+        public float RetentionTimeAlignmentTolerance { get; set; } = 0.05F;
+        [Key(6)]
+        public float SpectrumSimilarityAlignmentTolerance { get; set; } = 0.8F;
+        [Key(7)]
+        public float AlignmentScoreCutOff { get; set; } = 50;
+        [Key(8)]
+        public bool TogetherWithAlignment { get; set; } = true;
+    }
+
+    [MessagePackObject]
+    public class RefSpecMatchBaseParameter {
+        [Key(0)]
+        public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() {
+            SolventType = SolventType.CH3COONH4,
+            LbmQueries = LbmQueryParcer.GetLbmQueries(false)
+        };
+        [Key(1)]
+        public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
+
+
+        [Key(2)]
+        public bool OnlyReportTopHitInMspSearch { get; set; } = false;
+        [Key(3)]
+        public MsRefSearchParameterBase TextDbSearchParam { get; set; } = new MsRefSearchParameterBase() {
+            RtTolerance = 0.1F, Ms1Tolerance = 0.01F, TotalScoreCutoff = 0.85F
+        };
+        [Key(4)]
+        public bool OnlyReportTopHitInTextDBSearch { get; set; } = false;
+        [Key(5)]
+        public bool IsIdentificationOnlyPerformedForAlignmentFile { get; set; } = false;
+        [Key(6)]
+        public Dictionary<int, RiDictionaryInfo> FileIdRiInfoDictionary { get; set; } = new Dictionary<int, RiDictionaryInfo>();
+
+    }
+
+    [MessagePackObject]
+    public class ChromDecBaseParameter {
+        [Key(0)]
+        public bool IsDoMs2ChromDeconvolution { get; set; } = false;
+        [Key(1)]
+        public float SigmaWindowValue { get; set; } = 0.5F;
+        [Key(2)]
+        public float AmplitudeCutoff { get; set; } = 0;
+        [Key(3)]
+        public float AveragePeakWidth { get; set; } = 30;
+        [Key(4)]
+        public float KeptIsotopeRange { get; set; } = 5;
+        [Key(5)]
+        public bool RemoveAfterPrecursor { get; set; } = true;
+        [Key(6)]
+        public bool KeepOriginalPrecursorIsotopes { get; set; } = false;
+        [Key(7)]
+        public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
+        [Key(8)]
+        public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
+    }
+
+    [MessagePackObject]
+    public class ProteomicsBaseParameter {
+        [Key(0)]
+        public bool IsDoAndromedaMs2Deconvolution { get; set; } = false;
+        [Key(1)]
+        public double AndromedaDelta { get; set; } = 100;
+        [Key(2)]
+        public int AndromedaMaxPeaks { get; set; } = 12;
+    }
+
+    [MessagePackObject]
+    public class PostProcessBaseParameter {
+        // Post-alignment and filtering
+        [Key(0)]
+        public float PeakCountFilter { get; set; } = 0;
+        [Key(1)]
+        public bool IsForceInsertForGapFilling { get; set; } = true;
+        [Key(2)]
+        public float NPercentDetectedInOneGroup { get; set; } = 0;
+        [Key(3)]
+        public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get; set; } = false;
+        [Key(4)]
+        public float SampleMaxOverBlankAverage { get; set; } = 5;
+        [Key(5)]
+        public float SampleAverageOverBlankAverage { get; set; } = 5;
+        [Key(6)]
+        public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get; set; } = true;
+        [Key(7)]
+        public bool IsKeepRefMatchedMetaboliteFeatures { get; set; } = true;
+        [Key(8)]
+        public bool IsReplaceTrueZeroValuesWithHalfOfMinimumPeakHeightOverAllSamples { get; set; } = false;
+        [Key(9)]
+        public BlankFiltering BlankFiltering { get; set; } = BlankFiltering.SampleMaxOverBlankAve;
+        [Key(10)]
+        public bool IsKeepSuggestedMetaboliteFeatures { get; set; } = false;
+        [Key(11)]
+        public float FoldChangeForBlankFiltering { get; set; } = 5;
+
+    }
+
+    [MessagePackObject]
+    public class DataNormalizationBaseParameter {
+        [Key(0)]
+        public bool IsNormalizeNone { get; set; } = true;
+        [Key(1)]
+        public bool IsNormalizeIS { get; set; }
+        [Key(2)]
+        public bool IsNormalizeLowess { get; set; }
+        [Key(3)]
+        public bool IsNormalizeIsLowess { get; set; }
+        [Key(4)]
+        public bool IsNormalizeTic { get; set; }
+        [Key(5)]
+        public bool IsNormalizeMTic { get; set; }
+        [Key(6)]
+        public bool IsNormalizeSplash { get; set; }
+        [Key(7)]
+        public double LowessSpan { get; set; }
+        [Key(8)]
+        public bool IsBlankSubtract { get; set; }
+    }
+
+    [MessagePackObject]
+    public class StatisticsBaseParameter {
+        [Key(0)]
+        public TransformMethod Transform { get; set; } = TransformMethod.None;
+        [Key(1)]
+        public ScaleMethod Scale { get; set; } = ScaleMethod.AutoScale;
+        [Key(2)]
+        public int MaxComponent { get; set; } = 2;
+        [Key(3)]
+        public TransformMethod TransformPls { get; set; } = TransformMethod.None;
+        [Key(4)]
+        public ScaleMethod ScalePls { get; set; } = ScaleMethod.AutoScale;
+        [Key(5)]
+        public bool IsAutoFitPls { get; set; } = true;
+        [Key(6)]
+        public int ComponentPls { get; set; } = 2;
+        [Key(7)]
+        public MultivariateAnalysisOption MultivariateAnalysisOption { get; set; } = MultivariateAnalysisOption.Pca;
+        [Key(8)]
+        public bool IsIdentifiedImportedInStatistics { get; set; } = true;
+        [Key(9)]
+        public bool IsAnnotatedImportedInStatistics { get; set; }
+        [Key(10)]
+        public bool IsUnknownImportedInStatistics { get; set; }
+    }
+
+    [MessagePackObject]
+    public class MrmprobsExportBaseParameter {
+        [Key(0)]
+        public float MpMs1Tolerance { get; set; } = 0.005F;
+        [Key(1)]
+        public float MpMs2Tolerance { get; set; } = 0.01F;
+        [Key(2)]
+        public float MpRtTolerance { get; set; } = 0.5F;
+        [Key(3)]
+        public int MpTopN { get; set; } = 5;
+        [Key(4)]
+        public bool MpIsIncludeMsLevel1 { get; set; } = true;
+        [Key(5)]
+        public bool MpIsUseMs1LevelForQuant { get; set; } = false;
+        [Key(6)]
+        public bool MpIsFocusedSpotOutput { get; set; } = false;
+        [Key(7)]
+        public bool MpIsReferenceBaseOutput { get; set; } = true;
+        [Key(8)]
+        public bool MpIsExportOtherCandidates { get; set; } = false;
+        [Key(9)]
+        public float MpIdentificationScoreCutOff { get; set; } = 80F;
+    }
+
+    [MessagePackObject]
+    public class MolecularSpectrumNetworkingBaseParameter {
+        [Key(0)]
+        public double MnRtTolerance { get; set; } = 100;
+        [Key(1)]
+        public double MnIonCorrelationSimilarityCutOff { get; set; } = 95;
+        [Key(2)]
+        public double MnSpectrumSimilarityCutOff { get; set; } = 75;
+        [Key(3)]
+        public double MnRelativeAbundanceCutOff { get; set; } = 1;
+        [Key(4)]
+        public double MnMassTolerance { get; set; } = 0.025;
+        [Key(5)]
+        public bool MnIsExportIonCorrelation { get; set; } = false;
+    }
+
+    [MessagePackObject]
+    public class IsotopeTrackingBaseParameter {
+        [Key(0)]
+        public bool TrackingIsotopeLabels { get; set; } = false;
+        [Key(1)]
+        public bool UseTargetFormulaLibrary { get; set; } = false;
+        [Key(2)]
+        public IsotopeTrackingDictionary IsotopeTrackingDictionary { get; set; } = new IsotopeTrackingDictionary();
+        [Key(3)]
+        public int NonLabeledReferenceID { get; set; } = 0;
+        [Key(4)]
+        public bool SetFullyLabeledReferenceFile { get; set; } = false;
+        [Key(5)]
+        public int FullyLabeledReferenceID { get; set; } = 0;
+    }
+
+    [MessagePackObject]
+    public class AdvancedProcessOptionBaseParameter {
+        [Key(0)]
+        public RetentionTimeCorrectionCommon RetentionTimeCorrectionCommon { get; set; } = new RetentionTimeCorrectionCommon();
+        [Key(1)]
+        public List<MoleculeMsReference> CompoundListInTargetMode { get; set; } = new List<MoleculeMsReference>();
+        [Key(2)]
+        public List<StandardCompound> StandardCompounds { get; set; } = new List<StandardCompound>();
+        [Key(3)]
+        public bool IsLabPrivate { get; set; } = false;
+        [Key(4)]
+        public bool IsLabPrivateVersionTada { get; set; } = false;
+        [Key(5)]
+        public bool QcAtLeastFilter { get; set; } = false;
+
     }
 
     [MessagePackObject]

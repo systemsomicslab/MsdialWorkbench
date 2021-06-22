@@ -20,7 +20,7 @@ namespace CompMs.Common.Enum {
     public enum RetentionType { RI, RT }
     public enum RiCompoundType { Alkanes, Fames }
     public enum AlignmentIndexType { RT, RI }
-    public enum TargetOmics { Metabolomics, Lipidomics }
+    public enum TargetOmics { Metabolomics, Lipidomics, Proteomics }
     public enum Ionization { ESI, EI }
     public enum ExportSpectraFileFormat { mgf, msp, txt, mat }
     public enum ExportspectraType { profile, centroid, deconvoluted }

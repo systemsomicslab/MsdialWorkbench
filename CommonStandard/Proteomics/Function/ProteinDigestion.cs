@@ -10,7 +10,7 @@ namespace CompMs.Common.Proteomics.Function {
     public sealed class ProteinDigestion {
         private ProteinDigestion() { }
 
-        public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites) {
+        public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites, string database = "", int databaseID = -1) {
             var peptides = new List<Peptide>();
             var peptideSequence = string.Empty;
             var twoletterAAs = string.Empty;
@@ -22,7 +22,7 @@ namespace CompMs.Common.Proteomics.Function {
 
                 if (cleavagesites.Contains(twoletterAAs)) {
                     end = i;
-                    var peptide = new Peptide() { Sequence = peptideSequence, Position = new Range(start, end) };
+                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, Sequence = peptideSequence, Position = new Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
                     peptides.Add(peptide);

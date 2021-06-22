@@ -44,7 +44,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, reportAction, token);
+            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
@@ -90,6 +90,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             List<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummary summary,
             MsdialLcImMsParameter parameter,
+            IupacDatabase iupac,
             Action<int> reportAction,
             CancellationToken token) {
 
@@ -107,13 +108,13 @@ namespace CompMs.MsdialLcImMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, parameter, summary, reportAction, token, targetCE);
+                        spectrumList, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, chromPeakFeatures, parameter, summary, reportAction, token, targetCE);
+                       spectrumList, chromPeakFeatures, parameter, summary, iupac, reportAction, token, targetCE);
             }
             return targetCE2MSDecResults;
         }

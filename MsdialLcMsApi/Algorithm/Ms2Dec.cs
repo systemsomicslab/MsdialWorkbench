@@ -23,12 +23,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         }
        
         public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary,
+            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var spot in chromPeakFeatures) {
-                var result = GetMS2DecResult(spectrumList, spot, param, summary, targetCE);
+                var result = GetMS2DecResult(spectrumList, spot, param, summary, iupac, targetCE);
                 result.ScanID = spot.PeakID;
                 msdecResults.Add(result);
                 ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
@@ -38,7 +38,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
         public MSDecResult GetMS2DecResult(List<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param, 
-            ChromatogramPeaksDataSummary summary, double targetCE = -1) { // targetCE is used in multiple CEs option
+            ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -58,9 +58,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             if (curatedSpectra.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
-            if (param.AcquisitionType == Common.Enum.AcquisitionType.DDA) {
-                return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
+            if (!param.IsDoMs2ChromDeconvolution) {
+                if (param.IsDoAndromedaMs2Deconvolution)
+                    return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
+                else
+                    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
             }
+            //if (param.AcquisitionType == Common.Enum.AcquisitionType.DDA) {
+            //    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
+            //}
 
             //check the RT range to be considered for chromatogram deconvolution
             var peakWidth = chromPeakFeature.PeakWidth();
@@ -98,15 +104,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
             //Do MS2Dec deconvolution
             if (smoothedMs2ChromPeaksList.Count > 0) {
-
-
-
-
-
                 var msdecResult = MSDecHandler.GetMSDecResult(smoothedMs2ChromPeaksList, param, topScanNum);
-                if (msdecResult == null) //if null (any pure chromatogram is not found.)
-                    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
+                if (msdecResult == null) { //if null (any pure chromatogram is not found.)
+                    if (param.IsDoAndromedaMs2Deconvolution)
+                        return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
+                    else
+                        return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
+                }
                 else {
+                    if (param.IsDoAndromedaMs2Deconvolution) {
+                        msdecResult.Spectrum = DataAccess.GetAndromedaMS2Spectrum(msdecResult.Spectrum, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
+                    }
                     if (param.KeepOriginalPrecursorIsotopes) { //replace deconvoluted precursor isotopic ions by the original precursor ions
                         msdecResult.Spectrum = MSDecObjectHandler.ReplaceDeconvolutedIsopicIonsToOriginalPrecursorIons(msdecResult, curatedSpectra, chromPeakFeature, param);
                     }

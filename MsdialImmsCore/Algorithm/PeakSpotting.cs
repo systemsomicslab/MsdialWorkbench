@@ -189,7 +189,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             MsdialImmsParameter param) {
 
             var spectrumList = provider.LoadMsNSpectrums(level: 2);
-
+            if (spectrumList.IsEmptyOrNull()) return;
             var mass = feature.Mass;
             var dt = feature.ChromXsTop.Drift.Value;
             var dtStart = feature.ChromXsLeft.Value;
