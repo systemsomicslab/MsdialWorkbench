@@ -33,12 +33,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsMethodVM(
             MsdialDataStorage storage,
+            IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> analysisCompoundSearchService,
             IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService)
             : base(serializer) {
             if (alignmentCompoundSearchService is null) {
                 throw new ArgumentNullException(nameof(alignmentCompoundSearchService));
             }
 
+            this.analysisCompoundSearchService = analysisCompoundSearchService;
             this.alignmentCompoundSearchService = alignmentCompoundSearchService;
 
             var analysisFiles = storage.AnalysisFiles;
@@ -56,6 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
+        private readonly IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> analysisCompoundSearchService;
         private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService;
 
         internal DimsMethodModel Model { get; }
@@ -239,7 +242,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             cacheAnalysisFile = analysis;
             Model.AnalysisFile = analysis;
-            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel) { DisplayFilters = displayFilters };
+            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, analysisCompoundSearchService) { DisplayFilters = displayFilters };
         }
 
         private AlignmentFileBean cacheAlignmentFile;
@@ -250,7 +253,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             cacheAlignmentFile = alignment;
             Model.AlignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, null) { DisplayFilters = displayFilters };
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, alignmentCompoundSearchService) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {

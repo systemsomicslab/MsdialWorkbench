@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -22,9 +23,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService) {
 
             this.model = model;
+            this.compoundSearchService = compoundSearchService;
 
             var hAxis = model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
@@ -36,12 +39,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .AddTo(Disposables);
 
             PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, brushSource: Observable.Return(model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
-            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            SurveyScanViewModel = new Chart.SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Subscribe(t => OnTargetChanged(t));
+            Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
 
             this.analysisFile = analysisFile;
             this.mspAnnotator = mspAnnotator;
@@ -53,11 +56,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Ms1Peaks = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
 
             PropertyChanged += OnFilterChanged;
+
+            SearchCompoundCommand = new[] {
+                Target.Select(t => t != null && t.InnerModel != null),
+                model.MsdecResult.Select(r => r != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .AddTo(Disposables);
+
+            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
         }
 
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        private readonly IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -75,25 +88,25 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             get => plotViewModel;
             set => SetProperty(ref plotViewModel, value);
         }
-        private Chart.AnalysisPeakPlotViewModel plotViewModel;
+        private AnalysisPeakPlotViewModel plotViewModel;
 
-        public Chart.EicViewModel EicViewModel {
+        public EicViewModel EicViewModel {
             get => eicViewModel;
             set => SetProperty(ref eicViewModel, value);
         }
-        private Chart.EicViewModel eicViewModel;
+        private EicViewModel eicViewModel;
 
-        public Chart.RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
             get => ms2ViewModel;
             set => SetProperty(ref ms2ViewModel, value);
         }
-        private Chart.RawDecSpectrumsViewModel ms2ViewModel;
+        private RawDecSpectrumsViewModel ms2ViewModel;
 
-        public Chart.SurveyScanViewModel SurveyScanViewModel {
+        public SurveyScanViewModel SurveyScanViewModel {
             get => surveyScanViewModel;
             set => SetProperty(ref surveyScanViewModel, value);
         }
-        private Chart.SurveyScanViewModel surveyScanViewModel;
+        private SurveyScanViewModel surveyScanViewModel;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
@@ -161,8 +174,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private double focusMz;
 
-        private MSDecResult msdecResult = null;
-
         bool PeakFilter(object obj) {
             if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
@@ -218,19 +229,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
-        private DelegateCommand<Window> searchCompoundCommand;
+        public ReactiveCommand SearchCompoundCommand { get; }
 
-        private void SearchCompound(Window owner) {
-            using (var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.Value.InnerModel, msdecResult, null, mspAnnotator)) {
-                var window = new View.CompoundSearchWindow
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                window.ShowDialog();
+        private void SearchCompound() {
+            using (var vm = new ImmsCompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.Value.InnerModel, model.MsdecResult.Value, null, mspAnnotator)) {
+                compoundSearchService.ShowDialog(vm);
             }
         }
     }

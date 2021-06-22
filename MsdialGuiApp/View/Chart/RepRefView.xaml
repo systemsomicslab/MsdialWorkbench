@@ -52,7 +52,6 @@
             <Button Name="Button_CompoundSearchAlignmentViewer"
                     Content="/Resources/CompoundSearchIcon.ico"
                     Command="{Binding SearchCompoundCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     ToolTip="Compound search"
                     HorizontalAlignment="Left"
                     Style="{StaticResource IconButton}"/>

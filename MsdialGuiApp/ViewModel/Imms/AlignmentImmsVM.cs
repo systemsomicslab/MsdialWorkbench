@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             SearchCompoundCommand = model.Target
-                .Zip(model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+                .CombineLatest(model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             SearchCompoundCommand.Subscribe(SearchCompound);

@@ -33,7 +33,12 @@ namespace CompMs.App.Msdial
             var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
             var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetWindowVM>(this);
             var alignmentCompoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM<AlignmentSpotProperty>>(this);
-            DataContext = new MainWindowVM(startUpService, analysisFilePropertySetService, alignmentCompoundSearchService);
+            var analysisCompoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM<ChromatogramPeakFeature>>(this);
+            DataContext = new MainWindowVM(
+                startUpService,
+                analysisFilePropertySetService,
+                analysisCompoundSearchService,
+                alignmentCompoundSearchService);
         }
 
         public void CloseOwnedWindows() {
