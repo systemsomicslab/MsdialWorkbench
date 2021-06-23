@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.Common.Parameter;
+using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -12,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Data;
 
 
@@ -177,21 +179,22 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        /*
         public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
         private DelegateCommand<Window> showIonTableCommand;
 
         private void ShowIonTable(Window owner) {
-            var window = new View.Imms.IonTableViewer
+            var model = new ImmsAlignmentSpotTableModel(this.model.Ms1Spots, this.model.Target);
+            var viewmodel = new ImmsAlignmentSpotTableViewModel(model);
+
+            var window = new View.Table.AlignmentSpotTable
             {
-                DataContext = this,
+                DataContext = viewmodel,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Owner = owner,
             };
 
             window.Show();
         }
-        */
 
         public void SaveProject() {
             model.SaveProject();

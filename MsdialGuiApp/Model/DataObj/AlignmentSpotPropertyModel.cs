@@ -81,6 +81,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double SignalToNoiseAve => innerModel.SignalToNoiseAve;
         public double FillPercentage => innerModel.FillParcentage;
         public double AnovaPvalue => innerModel.AnovaPvalue;

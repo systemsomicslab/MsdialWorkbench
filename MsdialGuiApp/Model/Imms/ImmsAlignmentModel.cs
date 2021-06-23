@@ -50,10 +50,13 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             };
 
+            /*
             Target = PlotModel
                 .ObserveProperty(m => m.Target)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
+            */
+            Target = PlotModel.ToReactivePropertyAsSynchronized(m => m.Target).AddTo(disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -135,7 +138,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        //public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 
         public Chart.MsSpectrumModel Ms2SpectrumModel { get; }
 

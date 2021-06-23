@@ -1,0 +1,185 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Imms.ImmsAlignmentSpotTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
+             d:DataContext="{d:DesignInstance Type=vm:ImmsAlignmentSpotTableViewModel}"
+             d:DesignHeight="450" d:DesignWidth="1200">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" MinHeight="50"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="5" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="180"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Num of rows:"/>
+                    <TextBlock Text="{Binding Spots.Count}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="Width" Value="20"/>
+                            <Setter Property="Margin" Value="0,0,2,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button IsEnabled="False"/>
+                    <Button IsEnabled="False"/>
+                    <Button IsEnabled="False"/>
+                    <Button IsEnabled="False"/>
+                    <Button IsEnabled="False"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="1">
+                <TextBlock Text="Metabolite Name Filter"/>
+                <TextBox Text="{Binding MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="2">
+                <TextBlock Text="Comment Filter"/>
+                <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <rs:RangeSlider Tag="m/z range"
+                            Minimum="{Binding MassMin, Mode=OneWay}"
+                            Maximum="{Binding MassMax, Mode=OneWay}"
+                            LowerValue="{Binding MassLower.Value, Mode=TwoWay}"
+                            UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
+                            Style="{StaticResource EditableRangeSlider}"
+                            Margin="8,0"
+                            Grid.Column="3"/>
+            <!--
+            <rs:RangeSlider Minimum="{Binding MassMin, Mode=OneWay}"
+                            Maximum="{Binding MassMax, Mode=OneWay}"
+                            LowerValue="{Binding MassLower, Mode=TwoWay}"
+                            UpperValue="{Binding MassUpper, Mode=TwoWay}"
+                            Margin="8,0" Grid.Column="3"/>
+            -->
+            <rs:RangeSlider Tag="Drift time"
+                            Minimum="{Binding DriftMin, Mode=OneWay}"
+                            Maximum="{Binding DriftMax, Mode=OneWay}"
+                            LowerValue="{Binding DriftLower.Value, Mode=TwoWay}"
+                            UpperValue="{Binding DriftUpper.Value, Mode=TwoWay}"
+                            Style="{StaticResource EditableRangeSlider}"
+                            Margin="8,0"
+                            Grid.Column="4"/>
+        </Grid>
+
+        <DataGrid x:Name="PeakSpotView"
+                  ItemsSource="{Binding Spots}"
+                  IsSynchronizedWithCurrentItem="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  CanUserReorderColumns="False" CanUserSortColumns="True"
+                  SelectionUnit="FullRow"
+                  HeadersVisibility="All"
+                  AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  Unloaded="DataGrid_Unloaded"
+                  SelectionChanged="PeakSpotView_SelectionChanged"
+                  Grid.Row="1">
+
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.CellStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Path=AlignmentID}"
+                                    IsReadOnly="True" 
+                                    Width="50" />
+                <DataGridTextColumn Header="m/z"
+                                    Binding="{Binding Path=MassCenter, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
+                <DataGridTextColumn Header="Drift time"
+                                    Binding="{Binding Path=TimesCenter, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
+                <DataGridTextColumn Header="CCS"
+                                    Binding="{Binding Path=CollisionCrossSection, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
+                <DataGridTextColumn Header="Type"
+                                    Binding="{Binding Path=AdductIonName}"
+                                    IsReadOnly="True"
+                                    Width="1*" />
+                <DataGridTextColumn Header="Fill %"
+                                    Binding="{Binding Path=FillPercentage, StringFormat=F2}"
+                                    IsReadOnly="True"
+                                    Width="50" />
+                <DataGridTextColumn Header="Metabolite name"
+                                    Binding="{Binding Path=Name}"
+                                    IsReadOnly="False"
+                                    Width="2*" >
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Comment"
+                                    Binding="{Binding Path=Comment}"
+                                    IsReadOnly="False"
+                                    Width="2*" />
+                <DataGridTextColumn Header="S/N"
+                                    Binding="{Binding Path=SignalToNoiseAve, StringFormat=F1}"
+                                    IsReadOnly="True"
+                                    Width="1*" />
+                <DataGridTextColumn Header="ANOVA&#13;P-value"
+                                    Width="80"
+                                    Binding="{Binding Path=AnovaPvalue, StringFormat=0.00E00}"
+                                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Fold change&#13;(Max/Min)"
+                                    Width="80"
+                                    Binding="{Binding Path=FoldChange, StringFormat=F2}"
+                                    IsReadOnly="True" />
+                <DataGridTemplateColumn Header="BarChart"
+                                        Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="class barchart"/>
+                            <!--<local:AlignmentClassBar/>-->
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+    </Grid>
+</UserControl>

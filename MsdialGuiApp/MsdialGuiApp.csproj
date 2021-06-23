@@ -154,6 +154,7 @@
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
+    <Compile Include="Model\Imms\ImmsAlignmentSpotTableModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsAlignmentSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
@@ -272,6 +274,9 @@
     </Compile>
     <Compile Include="View\Imms\ImmsCompoundSearchView.xaml.cs">
       <DependentUpon>ImmsCompoundSearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\ImmsAlignmentSpotTableView.xaml.cs">
+      <DependentUpon>ImmsAlignmentSpotTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
@@ -423,6 +428,9 @@
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
     <Compile Include="View\RepRef2View.xaml.cs">
       <DependentUpon>RepRef2View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
+      <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
@@ -609,6 +617,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Imms\ImmsAlignmentSpotTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Imms\MainRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -770,6 +782,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\RepRef2View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Table\AlignmentSpotTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -958,9 +974,7 @@
   <ItemGroup>
     <Resource Include="Resources\msdial_icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\Table\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>

@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Chart
     class AlignmentPeakPlotModel : BindableBase
     {
         public AlignmentPeakPlotModel(
-            IEnumerable<AlignmentSpotPropertyModel> spots,
+            ObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector) {
             if (spots is null) {
@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
-            Spots = new ObservableCollection<AlignmentSpotPropertyModel>(spots);
+            Spots = spots;
             Target = null;
 
             HorizontalSelector = horizontalSelector;
@@ -37,6 +37,13 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalTitle = string.Empty;
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
+        }
+
+        public AlignmentPeakPlotModel(
+            IEnumerable<AlignmentSpotPropertyModel> spots,
+            Func<AlignmentSpotPropertyModel, double> horizontalSelector,
+            Func<AlignmentSpotPropertyModel, double> verticalSelector)
+            : this(new ObservableCollection<AlignmentSpotPropertyModel>(spots), horizontalSelector, verticalSelector) {
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
