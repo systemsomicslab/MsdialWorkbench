@@ -21,22 +21,91 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    class CompoundSearchModel<T> : BindableBase, IDisposable where T: IMSProperty, IMoleculeProperty, IIonProperty
+    abstract class CompoundSearchModel : BindableBase, IDisposable
+    {
+        public CompoundSearchModel(
+            IFileBean file,
+            IMSIonProperty msIonProperty,
+            IMoleculeProperty moleculeProperty,
+            MsRefSearchParameterBase parameter) {
+            File = file ?? throw new ArgumentNullException(nameof(file));
+            MSIonProperty = msIonProperty ?? throw new ArgumentNullException(nameof(msIonProperty));
+            MoleculeProperty = moleculeProperty ?? throw new ArgumentNullException(nameof(moleculeProperty));
+            Parameter = parameter;
+        }
+        
+        public IFileBean File { get; }
+
+        public IMSIonProperty MSIonProperty { get; }
+
+        public IMoleculeProperty MoleculeProperty { get; }
+
+        public MsRefSearchParameterBase Parameter { get; }
+
+        public MsSpectrumModel MsSpectrumModel { get; protected set; }
+
+        public MoleculeMsReference SelectedReference { 
+            get => selectedReference;
+            set => SetProperty(ref selectedReference, value);
+        }
+        private MoleculeMsReference selectedReference;
+
+        public MsScanMatchResult SelectedMatchResult {
+            get => selectedMatchResult;
+            set => SetProperty(ref selectedMatchResult, value);
+        }
+        private MsScanMatchResult selectedMatchResult;
+
+        public IReadOnlyList<CompoundResult> Search() {
+            return new ObservableCollection<CompoundResult>(SearchCore());
+        }
+
+        protected abstract IEnumerable<CompoundResult> SearchCore();
+
+        public abstract void SetConfidence();
+
+        public abstract void SetUnsettled();
+
+        public abstract void SetUnknown();
+
+
+        private bool disposedValue;
+        protected CompositeDisposable disposables = new CompositeDisposable();
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    disposables.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    class CompoundSearchModel<T> : CompoundSearchModel where T: IMSIonProperty, IMoleculeProperty
     {
         public CompoundSearchModel(
             IFileBean fileBean,
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
             IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null) {
+            MsRefSearchParameterBase parameter = null)
+            : base(
+                  fileBean,
+                  property,
+                  property,
+                  parameter ?? new MsRefSearchParameterBase()) {
             if (property == null) {
                 throw new ArgumentException(nameof(property));
             }
 
-            this.File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
             this.Property = property;
-            this.Parameter = parameter ?? new MsRefSearchParameterBase();
-
             this.msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
             this.isotopes = isotopes;
             this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
@@ -65,31 +134,9 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly IReadOnlyList<IsotopicPeak> isotopes;
         private readonly IAnnotator<T, MSDecResult> annotator;
 
-        public MsSpectrumModel MsSpectrumModel { get; }
-
-        public IFileBean File { get; }
-
         public T Property { get; }
 
-        public MsRefSearchParameterBase Parameter { get; }
-
-        public MoleculeMsReference SelectedReference { 
-            get => selectedReference;
-            set => SetProperty(ref selectedReference, value);
-        }
-        private MoleculeMsReference selectedReference;
-
-        public MsScanMatchResult SelectedMatchResult {
-            get => selectedMatchResult;
-            set => SetProperty(ref selectedMatchResult, value);
-        }
-        private MsScanMatchResult selectedMatchResult;
-
-        public IReadOnlyList<CompoundResult> Search() {
-            return new ObservableCollection<CompoundResult>(SearchCore());
-        }
-
-        protected virtual IEnumerable<CompoundResult> SearchCore() {
+        protected override IEnumerable<CompoundResult> SearchCore() {
             var candidates = annotator.FindCandidates(Property, msdecResult, isotopes, Parameter);
             foreach (var candidate in candidates) {
                 candidate.IsManuallyModified = true;
@@ -99,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Search
                 .Select(result => new CompoundResult(annotator.Refer(result), result));
         }
 
-        public void SetConfidence() {
+        public override void SetConfidence() {
             var reference = SelectedReference;
             var result = SelectedMatchResult;
             DataAccess.SetMoleculeMsPropertyAsConfidence(Property, reference, result);
@@ -109,7 +156,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public void SetUnsettled() {
+        public override void SetUnsettled() {
             var reference = SelectedReference;
             var result = SelectedMatchResult;
             DataAccess.SetMoleculeMsPropertyAsUnsettled(Property, reference, result);
@@ -119,30 +166,12 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public void SetUnknown() {
+        public override void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(Property);
             if (Property is IAnnotatedObject obj) {
                 obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
             }
-        }
-
-        private bool disposedValue;
-        private CompositeDisposable disposables = new CompositeDisposable();
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    disposables.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

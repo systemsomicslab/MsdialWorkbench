@@ -1,13 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -20,16 +17,16 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    class CompoundSearchVM<T> : ViewModelBase where T : IMSProperty, IMoleculeProperty, IIonProperty
+    class CompoundSearchVM : ViewModelBase
     {
-        public CompoundSearchVM(CompoundSearchModel<T> model) {
+        public CompoundSearchVM(CompoundSearchModel model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
 
             this.model = model;
 
-            MsSpectrumViewModel = new MsSpectrumViewModel(model.MsSpectrumModel).AddTo(Disposables);
+            MsSpectrumViewModel = new MsSpectrumViewModel(this.model.MsSpectrumModel).AddTo(Disposables);
             ParameterVM = new MsRefSearchParameterVM(this.model.Parameter).AddTo(Disposables);
 
             SelectedCompound = new ReactivePropertySlim<CompoundResult>()
@@ -71,27 +68,7 @@ namespace CompMs.App.Msdial.ViewModel
             SearchCommand.Execute();
         }
 
-        public CompoundSearchVM(
-            AnalysisFileBean analysisFile,
-            T peakFeature, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new CompoundSearchModel<T>(analysisFile, peakFeature, msdecResult, isotopes, annotator, parameter)) {
-
-        }
-
-        public CompoundSearchVM(
-            AlignmentFileBean alignmentFile,
-            T spot, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new CompoundSearchModel<T>(alignmentFile, spot, msdecResult, isotopes, annotator, parameter)) {
-
-        }
-
-        private readonly CompoundSearchModel<T> model;
+        private readonly CompoundSearchModel model;
         protected static readonly double MassEPS = 1e-10;
 
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
@@ -104,13 +81,9 @@ namespace CompMs.App.Msdial.ViewModel
 
         public IFileBean File => model.File;
 
-        public T Property => model.Property;
+        public IMSIonProperty MSIonProperty => model.MSIonProperty;
 
-        public int FileID => model.File.FileID;
-        public string FileName => model.File.FileName;
-        public double AccurateMass => model.Property.PrecursorMz;
-        public string AdductName => model.Property.AdductType.AdductIonName;
-        public string MetaboliteName => model.Property.Name;
+        public IMoleculeProperty MoleculeProperty => model.MoleculeProperty;
 
         public IReadOnlyList<CompoundResult> Compounds {
             get => compounds;

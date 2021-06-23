@@ -11,6 +11,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string Name => msReference.Name;
         public string AdductName => msReference.AdductType.AdductIonName;
         public double PrecursorMz => msReference.PrecursorMz;
+        public ChromXs ChromXs => msReference.ChromXs;
         public string Instrument => msReference.InstrumentModel;
         public string Comment => msReference.Comment;
         public double WeightedDotProduct => matchResult.WeightedDotProduct;

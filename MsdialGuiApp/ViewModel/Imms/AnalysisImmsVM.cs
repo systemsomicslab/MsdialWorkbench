@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AnalysisFileBean analysisFile,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService) {
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;
@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
-        private readonly IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -232,7 +232,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var vm = new ImmsCompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.Value.InnerModel, model.MsdecResult.Value, null, mspAnnotator)) {
+            using (var model = new ImmsCompoundSearchModel<ChromatogramPeakFeature>(
+                analysisFile,
+                Target.Value.InnerModel,
+                this.model.MsdecResult.Value,
+                null,
+                mspAnnotator))
+            using (var vm = new ImmsCompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }
         }

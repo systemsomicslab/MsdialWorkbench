@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.CommonMVVM;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -23,7 +25,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AlignmentDimsVM(
             DimsAlignmentModel model,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService) {
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
@@ -39,9 +41,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MassLower = PlotViewModel.Spots.Min(spot => spot.MassCenter);
             MassUpper = PlotViewModel.Spots.Max(spot => spot.MassCenter);
             Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
+
+            SearchCompoundCommand = new[] {
+                Model.Target.Select(t => t?.innerModel != null),
+                Model.MsdecResult.Select(r => r != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .WithSubscribe(SearchCompound)
+            .AddTo(Disposables);
         }
 
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public DimsAlignmentModel Model { get; }
 
@@ -187,29 +197,23 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return keywords.All(keyword => spot.Name.Contains(keyword));
         }
 
-        public DelegateCommand SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand(SearchCompound, CanSearchCompound));
-        private DelegateCommand searchCompoundCommand;
+        public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            if (Model.Target.Value?.innerModel == null || Model.MsdecResult.Value == null)
-                return;
-
-            using (var vm = new CompoundSearchVM<AlignmentSpotProperty>(
-                 Model.AlignmentFile,
-                 Model.Target.Value.innerModel,
-                 Model.MsdecResult.Value,
-                 null,
-                 Model.MspAnnotator,
-                 Model.Parameter.MspSearchParam)) {
-
+            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
+                Model.AlignmentFile,
+                Model.Target.Value.innerModel,
+                Model.MsdecResult.Value,
+                null,
+                Model.MspAnnotator,
+                Model.Parameter.MspSearchParam))
+            using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();
                     Ms1Spots?.Refresh();
                 }
             }
         }
-
-        private bool CanSearchCompound() => (Model.Target.Value?.innerModel) != null && Model.MsdecResult.Value != null;
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;

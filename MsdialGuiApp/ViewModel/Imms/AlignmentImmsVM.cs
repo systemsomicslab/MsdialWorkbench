@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsAlignmentModel model,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService) {
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;
@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private readonly ImmsAlignmentModel model;
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
@@ -162,17 +162,17 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
+            if (this.model.Target.Value?.innerModel == null || this.model.MsdecResult.Value == null)
                 return;
 
-            using (var vm = new ImmsCompoundSearchVM<AlignmentSpotProperty>(
-                model.AlignmentFile,
+            using (var model = new ImmsCompoundSearchModel<AlignmentSpotProperty>(
+                this.model.AlignmentFile,
                 Target.Value.innerModel,
-                model.MsdecResult.Value,
+                this.model.MsdecResult.Value,
                 null,
                 mspAnnotator,
-                new MsRefSearchParameterBase(model.Parameter.MspSearchParam))) {
-
+                new MsRefSearchParameterBase(this.model.Parameter.MspSearchParam)))
+            using (var vm = new ImmsCompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }
         }

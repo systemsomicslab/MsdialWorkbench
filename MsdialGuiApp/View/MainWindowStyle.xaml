@@ -185,6 +185,25 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="CollapseIfZeroContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, StringFormat=N4, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Content, TargetNullValue=0, RelativeSource={RelativeSource Self}}"
+                         Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger> 
+        </Style.Triggers>
+    </Style>
+    
     <!--CompoundSearch properties template-->
     <DataTemplate x:Key="FileInfoTemplate">
         <StackPanel>
@@ -224,6 +243,9 @@
             <ui:LabeledContent PrependLabel="Drift time:"
                                Content="{Binding Path=(if:IMSProperty.ChromXs).Drift.Value, Mode=OneWay}"
                                Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Collision cross section:"
+                               Content="{Binding Path=(if:IIonProperty.CollisionCrossSection), Mode=OneWay}"
+                               Style="{StaticResource CollapseIfZeroContent}"/>
         </StackPanel>
     </DataTemplate>
 

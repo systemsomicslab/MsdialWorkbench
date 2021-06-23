@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcimms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System.ComponentModel;
@@ -102,10 +103,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> searchCompoundCommand;
 
         private void SearchCompound(Window owner) {
-            if (model.Target?.innerModel == null)
+            if (this.model.Target?.innerModel == null)
                 return;
 
-            using (var vm = new CompoundSearchVM<AlignmentSpotProperty>(model.AlignmentFile, model.Target.innerModel, model.MsdecResult, null, model.MspAnnotator)) {
+            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
+                this.model.AlignmentFile,
+                this.model.Target.innerModel,
+                this.model.MsdecResult,
+                null,
+                this.model.MspAnnotator))
+            using (var vm = new CompoundSearchVM(model)) {
                 var window = new View.CompoundSearchWindow
                 {
                     DataContext = vm,

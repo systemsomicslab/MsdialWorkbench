@@ -21,13 +21,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ImmsMethodVM(
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> analysisCompoundSearchService,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService)
             : base(serializer) {
 
             model = new ImmsMethodModel(storage, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: true)).AddTo(Disposables);
-            this.analysisCompoundSearchService = analysisCompoundSearchService;
-            this.alignmentCompoundSearchService = alignmentCompoundSearchService;
+            this.compoundSearchService = compoundSearchService ?? throw new System.ArgumentNullException(nameof(compoundSearchService));
 
             AnalysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
             AlignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
@@ -37,8 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly ImmsMethodModel model;
 
-        private readonly IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> analysisCompoundSearchService;
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public ICollectionView AnalysisFilesView {
             get => analysisFilesView;
@@ -177,7 +174,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 analysis,
                 model.MspChromatogramAnnotator,
                 model.TextDBChromatogramAnnotator,
-                analysisCompoundSearchService)
+                compoundSearchService)
             {
                 DisplayFilters = displayFilters
             };
@@ -195,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 model.AlignmentModel,
                 model.MspAlignmentAnnotator,
                 model.TextDBAlignmentAnnotator,
-                alignmentCompoundSearchService)
+                compoundSearchService)
             {
                 DisplayFilters = displayFilters
             };

@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -108,6 +109,15 @@ namespace CompMs.App.Msdial.Model.Dims
         private bool disposedValue;
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
+
+        public void LoadAnnotator() {
+            var mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
+            mspChromatogramAnnotator = mspAnnotator;
+            mspAlignmentAnnotator = mspAnnotator;
+            var textAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
+            textDBChromatogramAnnotator = textAnnotator;
+            textDBAlignmentAnnotator = textAnnotator;
+        }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
             if (AlignmentFiles == null)

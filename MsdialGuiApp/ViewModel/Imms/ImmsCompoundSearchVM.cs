@@ -1,21 +1,13 @@
-﻿using CompMs.App.Msdial.Model.Imms;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using Reactive.Bindings;
+﻿using CompMs.App.Msdial.Model.Search;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class ImmsCompoundSearchVM<T> : CompoundSearchVM<T> where T: IMSProperty, IMoleculeProperty, IIonProperty
+    class ImmsCompoundSearchVM : CompoundSearchVM
     {
-        public ImmsCompoundSearchVM(ImmsCompoundSearchModel<T> model) : base(model) {
+        public ImmsCompoundSearchVM(CompoundSearchModel model) : base(model) {
             searchUnsubscriber?.Dispose();
 
             var ms1Tol = ParameterVM.Ms1Tolerance;
@@ -39,38 +31,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .AddTo(Disposables);
 
             SearchCommand.Execute();
-        }
-
-        public ImmsCompoundSearchVM(
-            AnalysisFileBean analysisFile,
-            T peakFeature, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new ImmsCompoundSearchModel<T>(
-                analysisFile,
-                peakFeature,
-                msdecResult,
-                isotopes,
-                annotator,
-                parameter)) {
-
-        }
-
-        public ImmsCompoundSearchVM(
-            AlignmentFileBean alignmentFile,
-            T spot, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new ImmsCompoundSearchModel<T>(
-                alignmentFile,
-                spot,
-                msdecResult,
-                isotopes,
-                annotator,
-                parameter)) {
-
         }
     }
 }

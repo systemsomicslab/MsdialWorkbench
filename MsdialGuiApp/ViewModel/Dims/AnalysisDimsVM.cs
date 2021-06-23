@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Enum;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.CommonMVVM.WindowService;
@@ -10,6 +12,7 @@ using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -26,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AnalysisDimsVM(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService) {
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
@@ -69,11 +72,20 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Ms1Peaks = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
             PropertyChanged += OnFilterChanged;
+
+            SearchCompoundCommand = new[]
+            {
+                Model.Target.Select(t => t?.InnerModel != null),
+                Model.MsdecResult.Select(r => r != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .WithSubscribe(SearchCompound)
+            .AddTo(Disposables);
         }
 
         public DimsAnalysisModel Model { get; }
 
-        private readonly IWindowService<CompoundSearchVM<ChromatogramPeakFeature>> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public AnalysisPeakPlotViewModel PlotViewModel {
             get => plotViewModel2;
@@ -252,11 +264,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Model.FocusByMz(axis, FocusMz);
         }
 
-        public DelegateCommand SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand(SearchCompound));
-        private DelegateCommand searchCompoundCommand;
+        public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using(var vm = new CompoundSearchVM<ChromatogramPeakFeature>(Model.AnalysisFile, Model.Target.Value.InnerModel, Model.MsdecResult.Value, null, Model.MspAnnotator, Model.Parameter.MspSearchParam)) {
+            using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
+                Model.AnalysisFile,
+                Model.Target.Value.InnerModel,
+                Model.MsdecResult.Value,
+                null,
+                Model.MspAnnotator,
+                new MsRefSearchParameterBase(Model.Parameter.MspSearchParam)))
+            using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();
                     _ = Model.OnTargetChangedAsync(Model.Target.Value);
