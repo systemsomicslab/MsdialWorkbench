@@ -50,13 +50,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             };
 
-            /*
-            Target = PlotModel
-                .ObserveProperty(m => m.Target)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
-            */
-            Target = PlotModel.ToReactivePropertyAsSynchronized(m => m.Target).AddTo(disposables);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -94,6 +88,8 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
@@ -138,14 +134,15 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
-        //public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-        public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
+        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        public Chart.MsSpectrumModel Ms2SpectrumModel { get; }
+        public MsSpectrumModel Ms2SpectrumModel { get; }
 
-        public Chart.BarChartModel BarChartModel { get; }
+        public BarChartModel BarChartModel { get; }
 
-        public Chart.AlignmentEicModel AlignmentEicModel { get; }
+        public AlignmentEicModel AlignmentEicModel { get; }
+
+        public ImmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

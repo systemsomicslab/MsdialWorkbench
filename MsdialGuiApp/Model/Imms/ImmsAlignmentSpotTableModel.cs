@@ -12,8 +12,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             IReactiveProperty<AlignmentSpotPropertyModel> target) {
-            Spots = spots;
-            Target = target;
+            Spots = spots ?? throw new ArgumentNullException(nameof(spots));
+            Target = target ?? throw new ArgumentNullException(nameof(target));
 
             MassMin = Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;

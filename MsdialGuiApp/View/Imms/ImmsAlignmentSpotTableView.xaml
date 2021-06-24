@@ -28,14 +28,14 @@
                 <ColumnDefinition Width="110"/>
                 <ColumnDefinition />
                 <ColumnDefinition />
-                <ColumnDefinition Width="180"/>
-                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="210"/>
+                <ColumnDefinition Width="210"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Num of rows:"/>
-                    <TextBlock Text="{Binding Spots.Count}"/>
+                    <TextBlock Text="{Binding SpotsView.Count}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.Resources>
@@ -93,7 +93,8 @@
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
-                  ItemsSource="{Binding Spots}"
+                  ItemsSource="{Binding SpotsView, Mode=OneWay}"
+                  SelectedItem="{Binding Target.Value, Mode=TwoWay}"
                   IsSynchronizedWithCurrentItem="True"
                   CanUserAddRows="False" CanUserDeleteRows="False"
                   CanUserReorderColumns="False" CanUserSortColumns="True"

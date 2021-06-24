@@ -9,9 +9,9 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
@@ -37,25 +37,44 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel).AddTo(Disposables);
+
+            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
-            MassLower = PlotViewModel.Spots.Min(spot => spot.MassCenter);
-            MassUpper = PlotViewModel.Spots.Max(spot => spot.MassCenter);
-            Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
+            MassLower = AlignmentSpotTableViewModel.MassLower;
+            MassUpper = AlignmentSpotTableViewModel.MassUpper;
+            DriftLower = AlignmentSpotTableViewModel.DriftLower;
+            DriftUpper = AlignmentSpotTableViewModel.DriftUpper;
+            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
-            Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            new[]
+            {
+                MassLower.ToUnit(),
+                MassUpper.ToUnit(),
+                DriftLower.ToUnit(),
+                DriftUpper.ToUnit(),
+                DisplayFilters.ToUnit(),
+            }.Merge()
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .ObserveOnDispatcher()
+            .Subscribe(_ => Ms1Spots.Refresh())
+            .AddTo(Disposables);
 
-            SearchCompoundCommand = model.Target
-                .CombineLatest(model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+
+            SearchCompoundCommand = this.model.Target
+                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
                 .ToReactiveCommand()
                 .AddTo(Disposables);
             SearchCompoundCommand.Subscribe(SearchCompound);
         }
 
         private readonly ImmsAlignmentModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
@@ -81,6 +100,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private Chart.AlignmentEicViewModel alignmentEicViewModel;
 
+        public ImmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
+            get => alignmentSpotTableViewModel;
+            set => SetProperty(ref alignmentSpotTableViewModel, value);
+        }
+        private ImmsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
+
         public ICollectionView Ms1Spots {
             get => ms1Spots;
             set {
@@ -93,28 +118,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ICollectionView ms1Spots;
 
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+
         public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
-        public double MassLower {
-            get => massLower;
-            set {
-                if (SetProperty(ref massLower, value))
-                    Ms1Spots?.Refresh();
-            }
-        }
-
-        public double MassUpper {
-            get => massUpper;
-            set {
-                if (SetProperty(ref massUpper, value))
-                    Ms1Spots?.Refresh();
-            }
-        }
-        private double massLower, massUpper;
-
-        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+        public ReactiveProperty<double> MassLower { get; }
+        public ReactiveProperty<double> MassUpper { get; }
+        public ReactiveProperty<double> DriftLower { get; }
+        public ReactiveProperty<double> DriftUpper { get; }
 
         public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
         public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
@@ -128,19 +141,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public DisplayFilter DisplayFilters {
             get => displayFilters;
-            internal set {
-                if (SetProperty(ref displayFilters, value))
-                    Ms1Spots?.Refresh();
-            }
+            protected internal set => SetProperty(ref displayFilters, value);
         }
         private DisplayFilter displayFilters = 0;
-
-        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
 
         bool PeakFilter(object obj) {
             if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
                     && MzFilter(spot)
+                    && DriftFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
                     && (!BlankFilterChecked || spot.IsBlankFiltered)
@@ -157,14 +166,22 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         bool MzFilter(AlignmentSpotPropertyModel spot) {
-            return MassLower <= spot.MassCenter
-                && spot.MassCenter <= MassUpper;
+            return MassLower.Value <= spot.MassCenter
+                && spot.MassCenter <= MassUpper.Value;
+        }
+
+        bool DriftFilter(AlignmentSpotPropertyModel spot) {
+            return DriftLower.Value <= spot.innerModel.TimesCenter.Drift.Value
+                && spot.innerModel.TimesCenter.Drift.Value <= DriftUpper.Value;
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
+
         private void SearchCompound() {
-            if (this.model.Target.Value?.innerModel == null || this.model.MsdecResult.Value == null)
+            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
                 return;
 
             using (var model = new ImmsCompoundSearchModel<AlignmentSpotProperty>(
@@ -183,12 +200,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand<Window> showIonTableCommand;
 
         private void ShowIonTable(Window owner) {
-            var model = new ImmsAlignmentSpotTableModel(this.model.Ms1Spots, this.model.Target);
-            var viewmodel = new ImmsAlignmentSpotTableViewModel(model);
-
             var window = new View.Table.AlignmentSpotTable
             {
-                DataContext = viewmodel,
+                DataContext = AlignmentSpotTableViewModel,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Owner = owner,
             };

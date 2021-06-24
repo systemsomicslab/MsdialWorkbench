@@ -3,17 +3,23 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Helpers;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
     class ImmsAlignmentSpotTableViewModel : ViewModelBase
     {
         public ImmsAlignmentSpotTableViewModel(ImmsAlignmentSpotTableModel model) {
-            this.model = model;
+            this.model = model ?? throw new ArgumentNullException(nameof(model));
 
             Spots = this.model.Spots;
+            SpotsView = CollectionViewSource.GetDefaultView(Spots);
             Target = this.model.Target;
             MassMin = this.model.MassMin;
             MassMax = this.model.MassMax;
@@ -34,12 +40,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .SetValidateNotifyError(v => v > DriftUpper.Value ? "Too large" : null);
             DriftUpper.SetValidateNotifyError(v => v < DriftLower.Value ? "Too small" : null)
                 .SetValidateNotifyError(v => v > DriftMax ? "Too large" : null);
-
         }
 
         private readonly ImmsAlignmentSpotTableModel model;
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
+        public ICollectionView SpotsView {
+            get => spotsView;
+            set => SetProperty(ref spotsView, value);
+        }
+        private ICollectionView spotsView;
 
         public IReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 
