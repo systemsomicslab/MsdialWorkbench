@@ -1,7 +1,9 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +15,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     {
         public ImmsAlignmentSpotTableViewModel(
             ImmsAlignmentSpotTableModel model,
+            IObservable<IBarItemsLoader> barLoader,
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower, IReactiveProperty<double> driftUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
@@ -22,6 +25,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Spots = this.model.Spots;
             SpotsView = CollectionViewSource.GetDefaultView(Spots);
             Target = this.model.Target;
+
+            BarItemsLoader = barLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             MassMin = this.model.MassMin;
             MassMax = this.model.MassMax;
@@ -44,6 +49,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref spotsView, value);
         }
         private ICollectionView spotsView;
+
+        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
 
         public IReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 

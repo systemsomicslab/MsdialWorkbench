@@ -187,6 +187,7 @@
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\DataObj\CompoundResult.cs" />
+    <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
@@ -244,6 +245,9 @@
     </Compile>
     <Compile Include="View\Chart\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\SmallClassBarChart.xaml.cs">
+      <DependentUpon>SmallClassBarChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
@@ -574,6 +578,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\RepRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\SmallClassBarChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

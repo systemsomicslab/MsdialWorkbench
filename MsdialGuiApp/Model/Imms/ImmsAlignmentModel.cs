@@ -72,9 +72,9 @@ namespace CompMs.App.Msdial.Model.Imms
             Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
-            var barLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             BarChartModel = BarChartModel.Create(
-                Target, barLoader,
+                Target, BarItemsLoader,
                 item => item.Class,
                 item => item.Height);
             BarChartModel.Elements.HorizontalTitle = "Class";
@@ -161,6 +161,12 @@ namespace CompMs.App.Msdial.Model.Imms
             set => SetProperty(ref selectedBrush, value);
         }
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
+
+        public IBarItemsLoader BarItemsLoader {
+            get => barItemsLoader;
+            set => SetProperty(ref barItemsLoader, value);
+        }
+        private IBarItemsLoader barItemsLoader;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly AlignmentResultContainer container;
