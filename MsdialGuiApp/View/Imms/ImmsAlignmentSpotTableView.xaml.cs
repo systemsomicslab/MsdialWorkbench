@@ -30,7 +30,9 @@ namespace CompMs.App.Msdial.View.Imms
         }
 
         private void PeakSpotView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            PeakSpotView.ScrollIntoView(PeakSpotView.SelectedItem);
+            if (!(PeakSpotView.SelectedItem is null)){
+                PeakSpotView.ScrollIntoView(PeakSpotView.SelectedItem);
+            }
         }
     }
 }

@@ -10,8 +10,10 @@ using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
@@ -30,34 +32,48 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.model = model;
             this.compoundSearchService = compoundSearchService;
 
-            Brushes = this.model.Brushes.AsReadOnly();
-            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
-
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
-            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
-            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(model.AlignmentSpotTableModel).AddTo(Disposables);
-
-            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
 
-            MassLower = AlignmentSpotTableViewModel.MassLower;
-            MassUpper = AlignmentSpotTableViewModel.MassUpper;
-            DriftLower = AlignmentSpotTableViewModel.DriftLower;
-            DriftUpper = AlignmentSpotTableViewModel.DriftUpper;
+            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Brushes = this.model.Brushes.AsReadOnly();
+            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+
+            MassMin = this.model.MassMin;
+            MassMax = this.model.MassMax;
+            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
+            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
+            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
+            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
+
+            DriftMin = this.model.DriftMin;
+            DriftMax = this.model.DriftMax;
+            DriftLower = new ReactiveProperty<double>(DriftMin).AddTo(Disposables);
+            DriftUpper = new ReactiveProperty<double>(DriftMax).AddTo(Disposables);
+            DriftLower.SetValidateNotifyError(v => v < DriftMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > DriftUpper.Value ? "Too large" : null);
+            DriftUpper.SetValidateNotifyError(v => v < DriftLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > DriftMax ? "Too large" : null);
+
+            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+
+            CommentFilterKeywords = CommentFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-
             new[]
             {
                 MassLower.ToUnit(),
                 MassUpper.ToUnit(),
                 DriftLower.ToUnit(),
                 DriftUpper.ToUnit(),
+                CommentFilterKeyword.ToUnit(),
+                MetaboliteFilterKeyword.ToUnit(),
                 DisplayFilters.ToUnit(),
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
@@ -66,6 +82,18 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .AddTo(Disposables);
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
+            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
+            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+            AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
+                model.AlignmentSpotTableModel,
+                MassLower, MassUpper,
+                DriftLower, DriftUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.Target
                 .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
@@ -124,10 +152,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
+        public double MassMin { get; }
+        public double MassMax { get; }
         public ReactiveProperty<double> MassLower { get; }
         public ReactiveProperty<double> MassUpper { get; }
+
+        public double DriftMin { get; }
+        public double DriftMax { get; }
         public ReactiveProperty<double> DriftLower { get; }
         public ReactiveProperty<double> DriftUpper { get; }
+
+        public IReactiveProperty<string> CommentFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
+        public IReactiveProperty<string> MetaboliteFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
 
         public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
         public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
@@ -153,7 +191,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
                     && (!BlankFilterChecked || spot.IsBlankFiltered)
-                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation);
+                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
+                    && CommentFilter(spot, CommentFilterKeywords.Value)
+                    && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value);
             }
             return false;
         }
@@ -173,6 +213,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         bool DriftFilter(AlignmentSpotPropertyModel spot) {
             return DriftLower.Value <= spot.innerModel.TimesCenter.Drift.Value
                 && spot.innerModel.TimesCenter.Drift.Value <= DriftUpper.Value;
+        }
+
+        bool CommentFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Comment.Contains(keyword));
+        }
+
+        bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Name.Contains(keyword));
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }

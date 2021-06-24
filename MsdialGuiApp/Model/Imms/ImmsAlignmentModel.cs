@@ -40,6 +40,11 @@ namespace CompMs.App.Msdial.Model.Imms
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
 
+            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
+            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+            DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
+            DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
+
             var fileName = alignmentFileBean.FileName;
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter)
             {
@@ -55,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(refer);
-            Ms2SpectrumModel = Chart.MsSpectrumModel.Create(
+            Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decLoader, refLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity);
@@ -68,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Imms
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             var barLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
-            BarChartModel = Chart.BarChartModel.Create(
+            BarChartModel = BarChartModel.Create(
                 Target, barLoader,
                 item => item.Class,
                 item => item.Height);
@@ -79,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var eicFile = alignmentFileBean.EicFilePath;
             var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
-            AlignmentEicModel = Chart.AlignmentEicModel.Create(
+            AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 peak => peak.Time,
                 peak => peak.Intensity);
@@ -89,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax, DriftMin, DriftMax);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
@@ -128,13 +133,18 @@ namespace CompMs.App.Msdial.Model.Imms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double DriftMin { get; }
+        public double DriftMax { get; }
+
+        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
-
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-
-        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 

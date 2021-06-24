@@ -3,7 +3,6 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -11,15 +10,17 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         public ImmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target) {
+            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            double massMin, double massMax,
+            double driftMin, double driftMax) {
             Spots = spots ?? throw new ArgumentNullException(nameof(spots));
             Target = target ?? throw new ArgumentNullException(nameof(target));
 
-            MassMin = Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
-            MassMax = Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+            MassMin = massMin;
+            MassMax = massMax;
 
-            DriftMin = Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
-            DriftMax = Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
+            DriftMin = driftMin;
+            DriftMax = driftMax;
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
