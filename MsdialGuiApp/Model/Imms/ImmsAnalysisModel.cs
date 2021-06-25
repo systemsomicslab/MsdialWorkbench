@@ -67,10 +67,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
-            Target = PlotModel
-                .ObserveProperty(m => m.Target)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(disposables);
             Target
                 .Where(t => t != null)
                 .Subscribe(t => PlotModel.GraphTitle = $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}");
@@ -109,6 +106,8 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
+
+            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
@@ -154,6 +153,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public Chart.SurveyScanModel SurveyScanModel { get; }
 
+        public ImmsAnalysisPeakTableModel PeakTableModel { get; }
+
         public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
         public string RawSplashKey {
@@ -162,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private string rawSplashKey = string.Empty;
 
-        public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 

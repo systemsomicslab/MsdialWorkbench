@@ -154,12 +154,13 @@
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
-    <Compile Include="Model\Imms\ImmsAlignmentSpotTableModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
+    <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
+    <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
@@ -194,13 +195,14 @@
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
-    <Compile Include="ViewModel\Imms\ImmsAlignmentSpotTableViewModel.cs" />
+    <Compile Include="ViewModel\Imms\ImmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
+    <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -275,6 +277,9 @@
     </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Imms\ImmsAnalysisPeakTableView.xaml.cs">
+      <DependentUpon>ImmsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\ImmsCompoundSearchView.xaml.cs">
       <DependentUpon>ImmsCompoundSearchView.xaml</DependentUpon>
@@ -620,6 +625,10 @@
     <Page Include="View\Imms\CompoundDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Imms\ImmsAnalysisPeakTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Imms\ImmsCompoundSearchView.xaml">
       <SubType>Designer</SubType>

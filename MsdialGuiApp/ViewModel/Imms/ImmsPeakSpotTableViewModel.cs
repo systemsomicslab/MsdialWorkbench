@@ -1,0 +1,101 @@
+﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.ViewModel.Table;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using System;
+
+namespace CompMs.App.Msdial.ViewModel.Imms
+{
+    abstract class ImmsPeakSpotTableViewModel<T> : PeakSpotTableViewModelBase<T>
+    {
+        protected ImmsPeakSpotTableViewModel(
+            ImmsPeakSpotTableModel<T> model,
+            IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
+            IReactiveProperty<double> driftLower, IReactiveProperty<double> driftUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            : base(model, metaboliteFilterKeyword, commentFilterKeyword) {
+            if (massLower is null) {
+                throw new ArgumentNullException(nameof(massLower));
+            }
+
+            if (massUpper is null) {
+                throw new ArgumentNullException(nameof(massUpper));
+            }
+
+            if (driftLower is null) {
+                throw new ArgumentNullException(nameof(driftLower));
+            }
+
+            if (driftUpper is null) {
+                throw new ArgumentNullException(nameof(driftUpper));
+            }
+
+            MassMin = model.MassMin;
+            MassMax = model.MassMax;
+            MassLower = massLower;
+            MassUpper = massUpper;
+
+            DriftMin = model.DriftMin;
+            DriftMax = model.DriftMax;
+            DriftLower = driftLower;
+            DriftUpper = driftUpper;
+        }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public IReactiveProperty<double> MassLower { get; }
+        public IReactiveProperty<double> MassUpper { get; }
+
+        public double DriftMin { get; }
+        public double DriftMax { get; }
+        public IReactiveProperty<double> DriftLower { get; }
+        public IReactiveProperty<double> DriftUpper { get; }
+    }
+
+    sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel<ChromatogramPeakFeatureModel>
+    {
+        public ImmsAnalysisPeakTableViewModel(
+            ImmsAnalysisPeakTableModel model,
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<double> driftLower,
+            IReactiveProperty<double> driftUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            :base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+
+        }
+    }
+
+    sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel<AlignmentSpotPropertyModel>
+    {
+        public ImmsAlignmentSpotTableViewModel(
+            ImmsAlignmentSpotTableModel model,
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<double> driftLower,
+            IReactiveProperty<double> driftUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            : base(
+                  model,
+                  massLower,
+                  massUpper,
+                  driftLower,
+                  driftUpper,
+                  metaboliteFilterKeyword,
+                  commentFilterKeyword) {
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
+            }
+
+            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
+
+        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
+    }
+}

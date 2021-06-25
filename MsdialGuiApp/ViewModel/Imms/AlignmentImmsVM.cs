@@ -58,8 +58,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             DriftUpper.SetValidateNotifyError(v => v < DriftLower.Value ? "Too small" : null)
                 .SetValidateNotifyError(v => v > DriftMax ? "Too large" : null);
 
-            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
-            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
 
             CommentFilterKeywords = CommentFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);

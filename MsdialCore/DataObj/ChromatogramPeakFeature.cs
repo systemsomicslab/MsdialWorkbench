@@ -289,7 +289,7 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsMsmsContained => MS2RawSpectrumID >= 0;
 
         [Key(38)]
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
 
         // peak characters
         [Key(39)]
