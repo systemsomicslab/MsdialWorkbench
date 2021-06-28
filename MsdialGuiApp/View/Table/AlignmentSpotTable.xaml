@@ -13,11 +13,14 @@
         Title="Peak spot table" Height="450" Width="1250">
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type imvm:ImmsAlignmentSpotTableViewModel}">
-                <imv:ImmsAlignmentSpotTableView />
+            <DataTemplate DataType="{x:Type divm:DimsAnalysisPeakTableViewModel}">
+                <div:DimsAnalysisPeakTableView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type imvm:ImmsAnalysisPeakTableViewModel}">
                 <imv:ImmsAnalysisPeakTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type imvm:ImmsAlignmentSpotTableViewModel}">
+                <imv:ImmsAlignmentSpotTableView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

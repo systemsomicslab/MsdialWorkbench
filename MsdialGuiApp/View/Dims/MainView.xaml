@@ -272,7 +272,8 @@
                     <Grid Grid.Row="2">
 
                         <Button Name="Button_TableViewer"
-                                Command="{Binding AlignmentVM.ShowIonTableCommand, Mode=OneWay}"
+                                DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                 HorizontalContentAlignment="Right"
                                 Background="AliceBlue"

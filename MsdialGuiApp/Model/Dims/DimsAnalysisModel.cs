@@ -71,11 +71,10 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(disposables);
-            var decLoader = new MsDecSpectrumLoader(loader, Ms1Peaks);
             Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
-                decLoader,
+                new MsDecSpectrumLoader(loader, Ms1Peaks),
                 new MsRefSpectrumLoader(refer),
                 peak => peak.Mass,
                 peak => peak.Intensity)
@@ -88,6 +87,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 LabelProperty = nameof(SpectrumPeak.Mass),
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
+
+            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterPeakID))
@@ -131,6 +132,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
+        public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
+        public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
+
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
         public Chart.AnalysisPeakPlotModel PlotModel2 { get; }
@@ -138,6 +142,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public Chart.EicModel EicModel2 { get; }
 
         public Chart.RawDecSpectrumsModel Ms2SpectrumModel2 { get; }
+
+        public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
@@ -161,10 +167,8 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            await Task.WhenAll(
-                EicModel2?.LoadEicAsync(target, token),
-                Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
-            ).ConfigureAwait(false);
+            await EicModel2.LoadEicAsync(target, token).ConfigureAwait(false);
+            //Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
         }
 
         public string RawSplashKey {

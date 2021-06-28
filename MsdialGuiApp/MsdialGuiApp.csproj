@@ -152,6 +152,7 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
@@ -265,6 +267,9 @@
     </Compile>
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\DimsAnalysisPeakTableView.xaml.cs">
+      <DependentUpon>DimsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\DimsCompoundSearchView.xaml.cs">
       <DependentUpon>DimsCompoundSearchView.xaml</DependentUpon>
@@ -607,6 +612,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\DimsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

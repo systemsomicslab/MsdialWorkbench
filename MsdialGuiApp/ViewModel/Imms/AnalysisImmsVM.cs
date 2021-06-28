@@ -121,9 +121,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 model.MsdecResult.Select(r => r != null),
             }.CombineLatestValuesAreAllTrue()
             .ToReactiveCommand()
+            .WithSubscribe(SearchCompound)
             .AddTo(Disposables);
-
-            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
         }
 
         private readonly ImmsAnalysisModel model;
