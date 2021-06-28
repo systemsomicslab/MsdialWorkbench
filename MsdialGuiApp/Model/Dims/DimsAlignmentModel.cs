@@ -56,6 +56,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
+            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
+            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD)
             {
                 GraphTitle = FileName,
@@ -84,9 +87,9 @@ namespace CompMs.App.Msdial.Model.Dims
             Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
-            var barLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
-            BarChartModel = Chart.BarChartModel.Create(
-                Target, barLoader,
+            BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
+            BarChartModel = BarChartModel.Create(
+                Target, BarItemsLoader,
                 item => item.Class,
                 item => item.Height);
             BarChartModel.Elements.HorizontalTitle = "Class";
@@ -95,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Dims
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.FileID_ClassName);
-            AlignmentEicModel = Chart.AlignmentEicModel.Create(
+            AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 spot => spot.Time,
                 spot => spot.Intensity);
@@ -104,6 +107,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
@@ -137,8 +142,6 @@ namespace CompMs.App.Msdial.Model.Dims
                     break;
             }
         }
-
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         public AlignmentResultContainer Container {
             get => container;
@@ -176,15 +179,26 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; } = new ObservableCollection<AlignmentSpotPropertyModel>();
+        public IBarItemsLoader BarItemsLoader {
+            get => barItemsLoader;
+            set => SetProperty(ref barItemsLoader, value);
+        }
+        private IBarItemsLoader barItemsLoader;
+
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
-        public Chart.AlignmentEicModel AlignmentEicModel { get; }
+        public AlignmentEicModel AlignmentEicModel { get; }
 
-        public Chart.BarChartModel BarChartModel { get; }
+        public BarChartModel BarChartModel { get; }
+
+        public DimsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
@@ -204,6 +218,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, resultFile);
         }
+
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {

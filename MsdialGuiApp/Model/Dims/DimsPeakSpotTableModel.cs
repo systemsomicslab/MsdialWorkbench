@@ -32,4 +32,15 @@ namespace CompMs.App.Msdial.Model.Dims
 
         }
     }
+
+    sealed class DimsAlignmentSpotTableModel : DimsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    {
+        public DimsAlignmentSpotTableModel(
+            ObservableCollection<AlignmentSpotPropertyModel> spots,
+            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            double massMin, double massMax)
+            : base(spots, target, massMin, massMax) {
+
+        }
+    }
 }

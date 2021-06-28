@@ -1,7 +1,9 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Table;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -46,5 +48,24 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IReactiveProperty<string> commentFilterKeyword)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
         }
+    }
+
+    sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel<AlignmentSpotPropertyModel>
+    {
+        public DimsAlignmentSpotTableViewModel(
+            DimsPeakSpotTableModel<AlignmentSpotPropertyModel> model,
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
+            }
+
+            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
+
+        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
     }
 }

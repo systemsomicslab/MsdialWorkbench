@@ -2,13 +2,9 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.AxisManager;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
@@ -21,7 +17,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {

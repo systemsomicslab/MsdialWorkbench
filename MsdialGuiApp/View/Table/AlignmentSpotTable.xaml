@@ -16,6 +16,9 @@
             <DataTemplate DataType="{x:Type divm:DimsAnalysisPeakTableViewModel}">
                 <div:DimsAnalysisPeakTableView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type divm:DimsAlignmentSpotTableViewModel}">
+                <div:DimsAlignmentSpotTableView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type imvm:ImmsAnalysisPeakTableViewModel}">
                 <imv:ImmsAnalysisPeakTableView />
             </DataTemplate>
