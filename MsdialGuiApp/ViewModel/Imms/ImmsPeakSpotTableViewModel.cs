@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -59,15 +60,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     {
         public ImmsAnalysisPeakTableViewModel(
             ImmsAnalysisPeakTableModel model,
+            IObservable<EicLoader> eicLoader,
             IReactiveProperty<double> massLower,
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower,
             IReactiveProperty<double> driftUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
-            :base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword)
+            : base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+            if (eicLoader is null) {
+                throw new ArgumentNullException(nameof(eicLoader));
+            }
 
+            EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
+        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
     sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel<AlignmentSpotPropertyModel>

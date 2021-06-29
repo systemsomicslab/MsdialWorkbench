@@ -21,6 +21,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <converter:PeakToChromatogramConverter x:Key="peak2eic"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -171,7 +172,15 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="line"/>
+                            <chart:SmallEicChart>
+                                <chart:SmallEicChart.DataContext>
+                                    <MultiBinding Converter="{StaticResource peak2eic}">
+                                        <Binding />
+                                        <Binding Path="DataContext.EicLoader.Value"
+                                                 RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                    </MultiBinding>
+                                </chart:SmallEicChart.DataContext>
+                            </chart:SmallEicChart>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -189,6 +189,7 @@
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\DataObj\CompoundResult.cs" />
+    <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
@@ -252,6 +253,9 @@
     </Compile>
     <Compile Include="View\Chart\SmallClassBarChart.xaml.cs">
       <DependentUpon>SmallClassBarChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\SmallEicChart.xaml.cs">
+      <DependentUpon>SmallEicChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
@@ -595,6 +599,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\SmallClassBarChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\SmallEicChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -57,11 +57,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
-            EicModel2 = new Chart.EicModel(
-                new DimsEicLoader(
-                    provider, parameter,
-                    parameter.MassRangeBegin, parameter.MassRangeEnd)
-            )
+            EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            EicModel2 = new Chart.EicModel(EicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
@@ -146,6 +143,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
+
+        public EicLoader EicLoader { get; }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {

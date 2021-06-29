@@ -52,9 +52,8 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
-            EicModel = new Chart.EicModel(
-                new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd)
-                )
+            EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            EicModel = new Chart.EicModel(EicLoader)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "Abundance",
@@ -168,6 +167,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
+
+        public EicLoader EicLoader { get; }
 
         public string FileName {
             get => fileName;

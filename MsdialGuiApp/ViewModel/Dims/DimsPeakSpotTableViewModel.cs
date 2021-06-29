@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -43,11 +44,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public DimsAnalysisPeakTableViewModel(
             DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model,
+            IObservable<EicLoader> eicLoader,
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+            if (eicLoader is null) {
+                throw new ArgumentNullException(nameof(eicLoader));
+            }
+
+            EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
+        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
     sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel<AlignmentSpotPropertyModel>

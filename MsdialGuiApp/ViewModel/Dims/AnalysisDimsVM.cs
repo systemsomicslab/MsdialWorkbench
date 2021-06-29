@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel2).AddTo(Disposables);
             PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
                 Model.PeakTableModel,
-                MassLower,
+                Observable.Return(Model.EicLoader), MassLower,
                 MassUpper,
                 MetaboliteFilterKeyword,
                 CommentFilterKeyword)
