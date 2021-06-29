@@ -40,6 +40,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var ids = SetAlignmentID(filtered);
             IsotopeAnalysis(filtered);
             SetLinks(filtered);
+            SetStatProperty(filtered);
             PostProcess(filtered);
 
             return Tuple.Create(filtered, ids);
@@ -87,6 +88,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             if (_param.TrackingIsotopeLabels) return;
 
             IsotopeEstimator.Process(alignmentSpots, _param, _iupac);
+        }
+
+        private void SetStatProperty(List<AlignmentSpotProperty> alignments) {
+            var sampleIds = _param.FileID_AnalysisFileType.Where(kvp => kvp.Value == AnalysisFileType.Sample).Select(kvp => kvp.Key);
+            var id2class = sampleIds.ToDictionary(id => id, id => _param.FileID_ClassName[id]);
+            alignments.AsParallel().ForAll(spot => spot.CalculateFoldChange(id2class));
+            if (id2class.Values.Distinct().Count() < id2class.Count) {
+                alignments.AsParallel().ForAll(spot => spot.CalculateAnovaPvalue(id2class));
+            }
         }
 
         protected virtual void PostProcess(List<AlignmentSpotProperty> alignments) {
