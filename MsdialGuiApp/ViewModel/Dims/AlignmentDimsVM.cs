@@ -21,14 +21,47 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class AlignmentDimsVM : AlignmentFileVM
+    class AlignmentDimsVM : AlignmentFileViewModel
     {
         public AlignmentDimsVM(
             DimsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : base(model) {
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
+
+            MassMin = Model.MassMin;
+            MassMax = Model.MassMax;
+            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
+            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
+            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too small" : null);
+            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
+
+            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            CommentFilterKeywords = CommentFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            new[]
+            {
+                MassLower.ToUnit(),
+                MassUpper.ToUnit(),
+                MetaboliteFilterKeyword.ToUnit(),
+                CommentFilterKeyword.ToUnit(),
+                DisplayFilters.ToUnit(),
+            }.Merge()
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .ObserveOnDispatcher()
+            .Subscribe(_ => Ms1Spots.Refresh())
+            .AddTo(Disposables);
+
+            Ms1Spots = CollectionViewSource.GetDefaultView(Model.Ms1Spots);
 
             Brushes = Model.Brushes.AsReadOnly();
             SelectedBrush = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
@@ -37,10 +70,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(Model.AlignmentEicModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(Model.BarChartModel).AddTo(Disposables);
-
-            MassLower = PlotViewModel.Spots.Min(spot => spot.MassCenter);
-            MassUpper = PlotViewModel.Spots.Max(spot => spot.MassCenter);
-            Ms1Spots = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
+            AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
+                Model.AlignmentSpotTableModel,
+                Observable.Return(Model.BarItemsLoader),
+                MassLower, MassUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
 
             SearchCompoundCommand = new[] {
                 Model.Target.Select(t => t?.innerModel != null),
@@ -67,6 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private ICollectionView ms1Spots;
 
+        public override ICollectionView PeakSpots => ms1Spots;
+
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
             private set => SetProperty(ref plotViewModel, value);
@@ -91,34 +129,107 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private Chart.BarChartViewModel barChartViewModel;
 
+        public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
+            get => alignmentSpotTableViewModel;
+            private set => SetProperty(ref alignmentSpotTableViewModel, value);
+        }
+        private DimsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
+
         public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
-        public double MassLower {
-            get => massLower;
-            set {
-                if (SetProperty(ref massLower, value))
-                    Ms1Spots?.Refresh();
-            }
-        }
-        public double MassUpper {
-            get => massUpper;
-            set {
-                if (SetProperty(ref massUpper, value))
-                    Ms1Spots?.Refresh();
-            }
-        }
-        private double massLower, massUpper;
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public ReactiveProperty<double> MassLower { get; }
+        public ReactiveProperty<double> MassUpper { get; }
 
-        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
-        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
-        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
-        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
-        public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
-        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
+        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
+        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
+
+        public bool RefMatchedChecked {
+            get => ReadDisplayFilters(DisplayFilter.RefMatched);
+            set {
+                if (ReadDisplayFilters(DisplayFilter.RefMatched) != value) {
+                    displayFilters.Write(DisplayFilter.RefMatched, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool SuggestedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Suggested);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Suggested) != value) {
+                    displayFilters.Write(DisplayFilter.Suggested, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool UnknownChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Unknown);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Unknown) != value) {
+                    displayFilters.Write(DisplayFilter.Unknown, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool Ms2AcquiredChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Ms2Acquired) != value) {
+                    displayFilters.Write(DisplayFilter.Ms2Acquired, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool MolecularIonChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.MolecularIon);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.MolecularIon) != value) {
+                    displayFilters.Write(DisplayFilter.MolecularIon, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool BlankFilterChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Blank);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Blank) != value) {
+                    displayFilters.Write(DisplayFilter.Blank, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool ManuallyModifiedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.ManuallyModified);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.ManuallyModified) != value) {
+                    displayFilters.Write(DisplayFilter.ManuallyModified, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
 
         public DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -129,40 +240,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DisplayFilter displayFilters = 0;
 
-        public string CommentFilterKeyword {
-            get => commentFilterKeyword;
-            set {
-                if (SetProperty(ref commentFilterKeyword, value)){
-                    if (!string.IsNullOrEmpty(commentFilterKeyword)) {
-                        commentFilterKeywords = commentFilterKeyword.Split().ToList();
-                    }
-                    else {
-                        commentFilterKeywords = new List<string>(0);
-                    }
-                    Ms1Spots?.Refresh();
-                }
-            }
-        }
-        private string commentFilterKeyword;
-        private List<string> commentFilterKeywords = new List<string>(0);
-
-        public string MetaboliteFilterKeyword {
-            get => metaboliteFilterKeyword;
-            set {
-                if (SetProperty(ref metaboliteFilterKeyword, value)) {
-                    if (!string.IsNullOrEmpty(metaboliteFilterKeyword)) {
-                        metaboliteFilterKeywords = metaboliteFilterKeyword.Split().ToList();
-                    }
-                    else {
-                        metaboliteFilterKeywords = new List<string>(0);
-                    }
-                    Ms1Spots?.Refresh();
-                }
-            }
-        }
-        private string metaboliteFilterKeyword;
-        private List<string> metaboliteFilterKeywords = new List<string>(0);
-
         bool PeakFilter(object obj) {
             if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
@@ -170,9 +247,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
                     && (!BlankFilterChecked || spot.IsBlankFiltered)
-                    && MetaboliteFilter(spot, metaboliteFilterKeywords)
-                    && CommentFilter(spot, commentFilterKeywords)
-                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation);
+                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
+                    && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
+                    && CommentFilter(spot, CommentFilterKeywords.Value);
             }
             return false;
         }
@@ -185,8 +262,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         bool MzFilter(AlignmentSpotPropertyModel spot) {
-            return MassLower <= spot.MassCenter
-                && spot.MassCenter <= MassUpper;
+            return MassLower.Value <= spot.MassCenter
+                && spot.MassCenter <= MassUpper.Value;
         }
 
         bool CommentFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
@@ -244,9 +321,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand<Window> showIonTableCommand;
 
         private void ShowIonTable(Window owner) {
-            var window = new View.Dims.IonTableViewer
+            var window = new View.Table.AlignmentSpotTable
             {
-                DataContext = this,
+                DataContext = AlignmentSpotTableViewModel,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Owner = owner,
             };

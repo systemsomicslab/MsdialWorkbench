@@ -10,7 +10,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    public class AlignmentLcimmsVM : AlignmentFileVM
+    public class AlignmentLcimmsVM : TempAlignmentFileVM
     {
         public AlignmentLcimmsVM(LcimmsAlignmentModel model) {
             this.model = model;
@@ -41,6 +41,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
         private ICollectionView ms1Spots;
+
+        public override ICollectionView PeakSpots => ms1Spots;
 
         public double MassLower {
             get => massLower;

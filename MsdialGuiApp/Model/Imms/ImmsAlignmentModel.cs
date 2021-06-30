@@ -1,10 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -19,13 +19,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsAlignmentModel : BindableBase, IDisposable {
+    class ImmsAlignmentModel : AlignmentModelBase
+    {
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
@@ -46,7 +46,8 @@ namespace CompMs.App.Msdial.Model.Imms
             DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
 
             var fileName = alignmentFileBean.FileName;
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter)
+            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, labelSource)
             {
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -55,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
             };
 
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(disposables);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -99,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+                .AddTo(Disposables);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -172,33 +173,13 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly AlignmentResultContainer container;
 
         public AlignmentFileBean AlignmentFile { get; }
-        
+
         public string ResultFile { get; }
 
         public ParameterBase Parameter { get; }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(container, ResultFile);
-        }
-
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
-
-        private bool disposedValue;
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    // TODO: dispose managed state (managed objects)
-                    disposables.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

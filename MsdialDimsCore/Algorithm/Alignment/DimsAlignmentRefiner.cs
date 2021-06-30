@@ -35,6 +35,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             var filtered = FilterByBlank(cleaned);
             var ids = SetAlignmentID(filtered);
             SetIsotopes(filtered);
+            SetStatProperty(filtered);
             SetLinks(filtered);
             SetAdducts(filtered.Where(spot => !spot.AdductType.HasAdduct));
 
@@ -127,6 +128,15 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         private static void SetIsotopes(IEnumerable<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
                 spot.PeakCharacter.IsotopeWeightNumber = 0; 
+            }
+        }
+
+        private void SetStatProperty(List<AlignmentSpotProperty> alignments) {
+            var sampleIds = _param.FileID_AnalysisFileType.Where(kvp => kvp.Value == AnalysisFileType.Sample).Select(kvp => kvp.Key);
+            var id2class = sampleIds.ToDictionary(id => id, id => _param.FileID_ClassName[id]);
+            alignments.AsParallel().ForAll(spot => spot.CalculateFoldChange(id2class));
+            if (id2class.Values.Distinct().Count() < id2class.Count) {
+                alignments.AsParallel().ForAll(spot => spot.CalculateAnovaPvalue(id2class));
             }
         }
 

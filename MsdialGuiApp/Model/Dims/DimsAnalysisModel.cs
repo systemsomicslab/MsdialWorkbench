@@ -1,8 +1,8 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -20,7 +20,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsAnalysisModel : BindableBase, IDisposable
+    class DimsAnalysisModel : AnalysisModelBase
     {
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
@@ -49,7 +48,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
 
-            PlotModel2 = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD)
+            var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, labelSource)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
@@ -57,25 +57,21 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
-            EicModel2 = new Chart.EicModel(
-                new DimsEicLoader(
-                    provider, parameter,
-                    parameter.MassRangeBegin, parameter.MassRangeEnd)
-            )
+            EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            EicModel = new Chart.EicModel(EicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
             };
 
-            Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
-            var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(disposables);
-            var decLoader = new MsDecSpectrumLoader(loader, Ms1Peaks);
-            Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
+            var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
+            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
-                decLoader,
+                new MsDecSpectrumLoader(loader, Ms1Peaks),
                 new MsRefSpectrumLoader(refer),
                 peak => peak.Mass,
                 peak => peak.Intensity)
@@ -89,10 +85,12 @@ namespace CompMs.App.Msdial.Model.Dims
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
 
+            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax);
+
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterPeakID))
                 .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -113,8 +111,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
-
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
 
@@ -131,15 +127,22 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
+        public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
+        public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
+
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
-        public Chart.AnalysisPeakPlotModel PlotModel2 { get; }
+        public Chart.AnalysisPeakPlotModel PlotModel { get; }
 
-        public Chart.EicModel EicModel2 { get; }
+        public Chart.EicModel EicModel { get; }
 
-        public Chart.RawDecSpectrumsModel Ms2SpectrumModel2 { get; }
+        public Chart.RawDecSpectrumsModel Ms2SpectrumModel { get; }
+
+        public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
+
+        public EicLoader EicLoader { get; }
 
         private CancellationTokenSource cts;
         public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
@@ -161,10 +164,8 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            await Task.WhenAll(
-                EicModel2?.LoadEicAsync(target, token),
-                Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
-            ).ConfigureAwait(false);
+            await EicModel.LoadEicAsync(target, token).ConfigureAwait(false);
+            //Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
         }
 
         public string RawSplashKey {
@@ -181,7 +182,6 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
-        private bool disposedValue;
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {
             axis?.Focus(mz - MzTol, mz + MzTol);
@@ -203,21 +203,5 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    disposables.Dispose();                   
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

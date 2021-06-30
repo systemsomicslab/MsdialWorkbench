@@ -1,10 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -21,13 +21,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsAlignmentModel : BindableBase, IDisposable
+    class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -56,7 +55,11 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD)
+            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
+            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+
+            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, labelSource)
             {
                 GraphTitle = FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
@@ -67,9 +70,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Target = PlotModel
                 .ToReactivePropertySlimAsSynchronized(m => m.Target)
-                .AddTo(disposables);
+                .AddTo(Disposables);
 
-            var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(disposables);
+            var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(refer);
             Ms2SpectrumModel = MsSpectrumModel.Create(
@@ -84,9 +87,9 @@ namespace CompMs.App.Msdial.Model.Dims
             Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
-            var barLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
-            BarChartModel = Chart.BarChartModel.Create(
-                Target, barLoader,
+            BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
+            BarChartModel = BarChartModel.Create(
+                Target, BarItemsLoader,
                 item => item.Class,
                 item => item.Height);
             BarChartModel.Elements.HorizontalTitle = "Class";
@@ -95,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Dims
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.FileID_ClassName);
-            AlignmentEicModel = Chart.AlignmentEicModel.Create(
+            AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 spot => spot.Time,
                 spot => spot.Intensity);
@@ -105,10 +108,12 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax);
+
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+                .AddTo(Disposables);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -137,8 +142,6 @@ namespace CompMs.App.Msdial.Model.Dims
                     break;
             }
         }
-
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         public AlignmentResultContainer Container {
             get => container;
@@ -176,19 +179,28 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; } = new ObservableCollection<AlignmentSpotPropertyModel>();
+        public IBarItemsLoader BarItemsLoader {
+            get => barItemsLoader;
+            set => SetProperty(ref barItemsLoader, value);
+        }
+        private IBarItemsLoader barItemsLoader;
+
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
-        public Chart.AlignmentEicModel AlignmentEicModel { get; }
+        public AlignmentEicModel AlignmentEicModel { get; }
 
-        public Chart.BarChartModel BarChartModel { get; }
+        public BarChartModel BarChartModel { get; }
+
+        public DimsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-
-        private bool disposedValue;
 
         public void SaveSpectra(string filename) {
             SpectraExport.SaveSpectraTable(
@@ -203,22 +215,6 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, resultFile);
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    disposables.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

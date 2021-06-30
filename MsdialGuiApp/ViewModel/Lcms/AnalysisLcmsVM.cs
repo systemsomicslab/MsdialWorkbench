@@ -27,7 +27,7 @@ using CompMs.App.Msdial.Model.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class AnalysisLcmsVM : AnalysisFileVM
+    public class AnalysisLcmsVM : TempAnalysisFileVM
     {
         #region Property
         public ICollectionView Ms1Peaks {
@@ -40,6 +40,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 }
             }
         }
+
+        public override ICollectionView PeakSpots => ms1Peaks;
 
         public List<ChromatogramPeakWrapper> Eic {
             get => eic;

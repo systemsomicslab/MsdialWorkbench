@@ -1,28 +1,24 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using CompMs.Common.Extension;
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
-
-using CompMs.Graphics.Core.Base;
-using CompMs.Common.Extension;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Windows.Data;
 
 namespace CompMs.Graphics.Chart
 {
     public class Annotator : ChartBaseControl
     {
         static Annotator() {
-            culture = System.Globalization.CultureInfo.GetCultureInfo("en-us");
+            culture = CultureInfo.GetCultureInfo("en-us");
             typeFace = new Typeface("Calibri");
             IsHitTestVisibleProperty.OverrideMetadata(typeof(Annotator), new FrameworkPropertyMetadata(false));
-        }
-
-        public Annotator() {
-
         }
 
         public static readonly DependencyProperty DatasProperty =
@@ -46,36 +42,39 @@ namespace CompMs.Graphics.Chart
 
         static object CoerceDatas(DependencyObject d, object value) {
             var chart = (Annotator)d;
-            var datas = value as LabelData[];
+            var datas = chart.Datas;
 
             if (chart.ShouldCoerceDatas) {
                 if (!chart.ReadCleanFlag(PropertyClean.ItemsSource)) {
-                    chart.WriteCleanFlag(PropertyClean.ItemsSource, true);
                     datas = chart.UpdateItemsSource(datas);
                 }
                 if (!chart.ReadCleanFlag(PropertyClean.Item)) {
-                    chart.WriteCleanFlag(PropertyClean.Item, true);
                     datas = chart.UpdateItem(datas);
                 }
                 if (!chart.ReadCleanFlag(PropertyClean.Horizontal)) {
-                    chart.WriteCleanFlag(PropertyClean.Horizontal, true);
                     datas = chart.UpdateHorizontalItems(datas);
                 }
                 if (!chart.ReadCleanFlag(PropertyClean.Vertical)) {
-                    chart.WriteCleanFlag(PropertyClean.Vertical, true);
                     datas = chart.UpdateVerticalItems(datas);
                 }
                 if (!chart.ReadCleanFlag(PropertyClean.Order)) {
-                    chart.WriteCleanFlag(PropertyClean.Order, true);
                     datas = chart.UpdateOrderItems(datas);
                 }
                 if (!chart.ReadCleanFlag(PropertyClean.Label)) {
-                    chart.WriteCleanFlag(PropertyClean.Label, true);
                     datas = chart.UpdateLabel(datas);
                 }
-                chart.ShouldCoerceDatas = false;
-                value = datas;
+                chart.ShouldCoerceDatas = new[]
+                {
+                    !chart.ReadCleanFlag(PropertyClean.ItemsSource),
+                    !chart.ReadCleanFlag(PropertyClean.Item),
+                    !chart.ReadCleanFlag(PropertyClean.Horizontal),
+                    !chart.ReadCleanFlag(PropertyClean.Vertical),
+                    !chart.ReadCleanFlag(PropertyClean.Order),
+                    !chart.ReadCleanFlag(PropertyClean.Label),
+                }.Any(b => b);
             }
+
+            value = datas;
             return value;
         }
 
@@ -103,12 +102,15 @@ namespace CompMs.Graphics.Chart
         }
 
         void OnItemsSourceChanged(System.Collections.IEnumerable newValue, System.Collections.IEnumerable oldValue) {
-            if (newValue is INotifyCollectionChanged collectionNew) {
-                collectionNew.CollectionChanged += ItemsSourceCollectionChanged;
-            }
-            if (oldValue is INotifyCollectionChanged collectionOld) {
+            var oldView = CollectionViewSource.GetDefaultView(oldValue);
+            if (oldView is INotifyCollectionChanged collectionOld) {
                 collectionOld.CollectionChanged -= ItemsSourceCollectionChanged;
             }
+            var newView = CollectionViewSource.GetDefaultView(newValue);
+            if (newView is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += ItemsSourceCollectionChanged;
+            }
+            collectionView = newView;
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -118,21 +120,25 @@ namespace CompMs.Graphics.Chart
         }
 
         private LabelData[] UpdateItemsSource(LabelData[] value) {
-            source = ItemsSource?.Cast<object>().ToList();
+            source = collectionView?.Cast<object>().ToList();
             if (source == null || !source.Any()) {
+                WriteCleanFlag(PropertyClean.ItemsSource, true);
                 return new LabelData[0];
             }
 
             dataType = source.First().GetType();
             var datas = source.Select(_ => new LabelData()).ToArray();
 
+            WriteCleanFlag(PropertyClean.ItemsSource, true);
             WriteCleanFlag(PropertyClean.Horizontal | PropertyClean.Vertical | PropertyClean.Label | PropertyClean.Order, false);
 
             return datas;
         }
 
         private LabelData[] UpdateItem(LabelData[] value) {
-            return UpdateItemsSource(value);
+            var result = UpdateItemsSource(value);
+            WriteCleanFlag(PropertyClean.Item, true);
+            return result;
         }
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty =
@@ -158,17 +164,20 @@ namespace CompMs.Graphics.Chart
 
         LabelData[] UpdateHorizontalItems(LabelData[] datas) {
             if (string.IsNullOrEmpty(HorizontalPropertyName)) {
+                WriteCleanFlag(PropertyClean.Horizontal, true);
                 return datas;
             }
 
             var hPropertyInfo = dataType?.GetProperty(HorizontalPropertyName);
             var hAxis = HorizontalAxis;
-            if (hPropertyInfo == null || hAxis == null || datas == null || !datas.Any())
+            if (hPropertyInfo == null || hAxis == null || datas == null || !datas.Any()) {
                 return datas;
+            }
 
             foreach ((var obj, var idx) in source.WithIndex()) {
                 datas[idx].x = hPropertyInfo == null ? 0 : hAxis.TranslateToAxisValue(hPropertyInfo.GetValue(obj));
             }
+            WriteCleanFlag(PropertyClean.Horizontal, true);
             return datas;
         }
 
@@ -195,17 +204,20 @@ namespace CompMs.Graphics.Chart
 
         LabelData[] UpdateVerticalItems(LabelData[] datas) {
             if (string.IsNullOrEmpty(VerticalPropertyName)) {
+                WriteCleanFlag(PropertyClean.Vertical, true);
                 return datas;
             }
 
             var vPropertyInfo = dataType?.GetProperty(VerticalPropertyName);
             var vAxis = VerticalAxis;
-            if (vPropertyInfo == null || vAxis == null || datas == null || !datas.Any())
+            if (vPropertyInfo == null || vAxis == null || datas == null || !datas.Any()) {
                 return datas;
+            }
 
             foreach ((var obj, var idx) in source.WithIndex()) {
                 datas[idx].y = vPropertyInfo == null ? 0 : vAxis.TranslateToAxisValue(vPropertyInfo.GetValue(obj));
             }
+            WriteCleanFlag(PropertyClean.Vertical, true);
             return datas;
         }
 
@@ -228,8 +240,9 @@ namespace CompMs.Graphics.Chart
         }
 
         LabelData[] UpdateOrderItems(LabelData[] datas) {
-            if (datas == null || !datas.Any())
+            if (datas == null || !datas.Any()) {
                 return datas;
+            }
 
             PropertyInfo prop = null;
             if (!string.IsNullOrEmpty(OrderingPropertyName)) {
@@ -247,6 +260,7 @@ namespace CompMs.Graphics.Chart
                     datas[idx].order = 0;
                 }
             }
+            WriteCleanFlag(PropertyClean.Order, true);
             return datas;
         }
 
@@ -271,8 +285,9 @@ namespace CompMs.Graphics.Chart
         }
 
         LabelData[] UpdateLabel(LabelData[] datas) {
-            if (dataType == null || datas == null || !datas.Any())
+            if (dataType == null || datas == null || !datas.Any()) {
                 return datas;
+            }
 
             var format = Format;
             var lPropertyInfo = LabelPropertyName != null ? dataType.GetProperty(LabelPropertyName) : null;
@@ -285,6 +300,7 @@ namespace CompMs.Graphics.Chart
                 else
                     datas[idx].label = obj.ToString();
             }
+            WriteCleanFlag(PropertyClean.Label, true);
             return datas;
         }
 
@@ -412,9 +428,10 @@ namespace CompMs.Graphics.Chart
         }
 
         #region field
+        private ICollectionView collectionView;
         private List<object> source;
         private Type dataType;
-        private static readonly System.Globalization.CultureInfo culture;
+        private static readonly CultureInfo culture;
         private static readonly Typeface typeFace;
         private PropertyClean cleanFlags = PropertyClean.All;
         #endregion

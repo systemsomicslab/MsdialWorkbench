@@ -7,9 +7,8 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using Accord.Statistics.Testing;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -188,6 +187,33 @@ namespace CompMs.MsdialCore.DataObj {
         public float AnovaPvalue;
         [Key(30)]
         public float FoldChange;
+
+        public void CalculateAnovaPvalue(IReadOnlyDictionary<int, string> id2class) {
+            var targets = AlignedPeakProperties
+                .Where(peak => id2class.ContainsKey(peak.FileID))
+                .GroupBy(peak => id2class[peak.FileID])
+                .ToArray();
+            if (targets.All(group => group.Count() == 1)) {
+                AnovaPvalue = 0f;
+                return;
+            }
+            var inputs = targets.Select(group => group.Select(peak => peak.PeakHeightTop).ToArray()).ToArray();
+            var oneWayAnova = new OneWayAnova(inputs);
+            AnovaPvalue = (float)oneWayAnova.FTest.PValue;
+        }
+
+        public void CalculateFoldChange(IReadOnlyDictionary<int, string> id2class) {
+            var aves = AlignedPeakProperties
+                .Where(peak => id2class.ContainsKey(peak.FileID))
+                .GroupBy(peak => id2class[peak.FileID])
+                .Select(group => group.Average(peak => peak.PeakHeightTop))
+                .ToArray();
+            if (!aves.Any()) {
+                FoldChange = 0f;
+                return;
+            }
+            FoldChange = (float)(aves.Max() / Math.Max(1, aves.Min()));
+        }
 
         [Key(31)]
         public float HeightAverage { get; set; }

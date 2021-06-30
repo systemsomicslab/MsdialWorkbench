@@ -1,8 +1,8 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsAnalysisModel : BindableBase, IDisposable {
+    class ImmsAnalysisModel : AnalysisModelBase {
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
@@ -47,19 +46,19 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics))
             );
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
-            EicModel = new Chart.EicModel(
-                new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd)
-                )
+            EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            EicModel = new Chart.EicModel(EicLoader)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "Abundance",
             };
-            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass)
+            var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, labelsource)
             {
                 HorizontalTitle = EicModel.HorizontalTitle,
                 VerticalTitle = "m/z",
@@ -67,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(disposables);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(Disposables);
             Target
                 .Where(t => t != null)
                 .Subscribe(t => PlotModel.GraphTitle = $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}");
@@ -76,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
-            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(disposables);
+            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, parameter),
@@ -102,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     })),
                 spec => spec.Mass,
                 spec => spec.Intensity
-            ).AddTo(disposables);
+            ).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
@@ -112,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
                 .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -137,7 +136,6 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
         private readonly string peakAreaFile;
         private readonly IDataProvider provider;
-        private CompositeDisposable disposables = new CompositeDisposable();
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks {
             get => ms1Peaks;
@@ -169,17 +167,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
+        public EicLoader EicLoader { get; }
+
         public string FileName {
             get => fileName;
             set => SetProperty(ref fileName, value);
         }
         private string fileName;
-
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
-        }
-        private string displayLabel;
 
         public double AmplitudeOrderMin { get; }
         public double AmplitudeOrderMax { get; }
@@ -252,24 +246,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 }, token);
             }
             return ms1Spectrum;
-        }
-
-        private bool disposedValue;
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    disposables?.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

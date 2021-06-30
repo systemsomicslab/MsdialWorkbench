@@ -308,4 +308,25 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="OverlapChartOnly">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:MultiChart}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1,0,0,1">
+                        <Border Background="{TemplateBinding Background}"
+                                behavior:ZoomByDragBehavior.IsEnabled="True"
+                                behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                behavior:MoveByDragBehavior.IsEnabled="True"
+                                behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
+                            <Grid IsItemsHost="True"/>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

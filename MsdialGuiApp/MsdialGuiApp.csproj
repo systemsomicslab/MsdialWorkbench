@@ -152,6 +152,9 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
+    <Compile Include="Model\Core\AnalysisModelBase.cs" />
+    <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
@@ -188,9 +191,11 @@
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\DataObj\CompoundResult.cs" />
+    <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
@@ -251,6 +256,9 @@
     <Compile Include="View\Chart\SmallClassBarChart.xaml.cs">
       <DependentUpon>SmallClassBarChart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Chart\SmallEicChart.xaml.cs">
+      <DependentUpon>SmallEicChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
@@ -265,6 +273,12 @@
     </Compile>
     <Compile Include="LC\MobilityView.xaml.cs">
       <DependentUpon>MobilityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\DimsAlignmentSpotTableView.xaml.cs">
+      <DependentUpon>DimsAlignmentSpotTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\DimsAnalysisPeakTableView.xaml.cs">
+      <DependentUpon>DimsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\DimsCompoundSearchView.xaml.cs">
       <DependentUpon>DimsCompoundSearchView.xaml</DependentUpon>
@@ -590,6 +604,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Chart\SmallEicChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\SurveyScanView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -607,6 +625,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LC\MobilityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\DimsAlignmentSpotTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\DimsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

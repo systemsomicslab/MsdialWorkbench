@@ -13,7 +13,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public AlignmentPeakPlotModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-            Func<AlignmentSpotPropertyModel, double> verticalSelector) {
+            Func<AlignmentSpotPropertyModel, double> verticalSelector,
+            IObservable<string> labelSource) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }
@@ -26,11 +27,17 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
+            if (labelSource is null) {
+                throw new ArgumentNullException(nameof(labelSource));
+            }
+
             Spots = spots;
             Target = null;
 
             HorizontalSelector = horizontalSelector;
             VerticalSelector = verticalSelector;
+
+            LabelSource = labelSource;
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
@@ -42,8 +49,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public AlignmentPeakPlotModel(
             IEnumerable<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-            Func<AlignmentSpotPropertyModel, double> verticalSelector)
-            : this(new ObservableCollection<AlignmentSpotPropertyModel>(spots), horizontalSelector, verticalSelector) {
+            Func<AlignmentSpotPropertyModel, double> verticalSelector,
+            IObservable<string> labelSource)
+            : this(new ObservableCollection<AlignmentSpotPropertyModel>(spots), horizontalSelector, verticalSelector, labelSource) {
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
@@ -126,5 +134,7 @@ namespace CompMs.App.Msdial.Model.Chart
             set => SetProperty(ref verticalProperty, value);
         }
         private string verticalProperty;
+
+        public IObservable<string> LabelSource { get; }
     }
 }
