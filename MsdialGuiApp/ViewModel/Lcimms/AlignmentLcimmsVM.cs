@@ -10,7 +10,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    public class AlignmentLcimmsVM : AlignmentFileVM
+    public class AlignmentLcimmsVM : TempAlignmentFileVM
     {
         public AlignmentLcimmsVM(LcimmsAlignmentModel model) {
             this.model = model;

@@ -61,6 +61,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            LabelProperty = model.LabelSource
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
@@ -82,5 +86,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+
+        public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
     }
 }

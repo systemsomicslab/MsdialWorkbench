@@ -20,7 +20,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class AlignmentLcmsVM : AlignmentFileVM
+    public class AlignmentLcmsVM : TempAlignmentFileVM
     {
         public ICollectionView Ms1Spots {
             get => ms1Spots;

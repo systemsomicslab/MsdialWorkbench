@@ -47,6 +47,10 @@
                                     behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}"
                                     behavior:ScatterFocusBehavior.LabelTargetRadius="{Binding Radius, RelativeSource={RelativeSource Self}}"
                                     behavior:ScatterFocusBehavior.LabelTemplate="{Binding LabelTemplate, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
+                             HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
+                             VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
+                             LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
             <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
                             ContentTemplate="{DynamicResource FocusCross}"
                             IsHitTestVisible="False">

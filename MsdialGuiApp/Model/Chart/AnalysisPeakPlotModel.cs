@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Target = null;
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
-            LabelSource = labelSource;
+            LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;

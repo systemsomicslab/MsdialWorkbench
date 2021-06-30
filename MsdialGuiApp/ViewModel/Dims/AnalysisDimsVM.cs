@@ -77,18 +77,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Ms1Peaks = CollectionViewSource.GetDefaultView(Model.Ms1Peaks);
 
-            var hAxis = Model.PlotModel2
+            var hAxis = Model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
-            var vAxis = Model.PlotModel2
+            var vAxis = Model.PlotModel
                 .ObserveProperty(m => m.VerticalRange)
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel2, brushSource: Observable.Return(Model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new EicViewModel(Model.EicModel2, horizontalAxis: hAxis).AddTo(Disposables);
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel2).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel, brushSource: Observable.Return(Model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new EicViewModel(Model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
             PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
                 Model.PeakTableModel,
                 Observable.Return(Model.EicLoader), MassLower,
@@ -119,12 +119,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void UpdateGraphTitleOnTargetChanged(ChromatogramPeakFeatureModel t) {
             if (t == null) {
-                Model.PlotModel2.GraphTitle = string.Empty;
-                Model.EicModel2.GraphTitle = string.Empty;
+                Model.PlotModel.GraphTitle = string.Empty;
+                Model.EicModel.GraphTitle = string.Empty;
             }
             else {
-                Model.PlotModel2.GraphTitle = $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}";
-                Model.EicModel2.GraphTitle = $"{t.Mass:N4}[Da]  Max intensity: {Model.EicModel2.MaxIntensity:F0}";
+                Model.PlotModel.GraphTitle = $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}";
+                Model.EicModel.GraphTitle = $"{t.Mass:N4}[Da]  Max intensity: {Model.EicModel.MaxIntensity:F0}";
             }
         }
 

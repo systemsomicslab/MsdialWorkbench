@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
 
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel2 = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, labelSource)
+            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, labelSource)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
@@ -58,17 +58,17 @@ namespace CompMs.App.Msdial.Model.Dims
             };
 
             EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            EicModel2 = new Chart.EicModel(EicLoader)
+            EicModel = new Chart.EicModel(EicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
             };
 
-            Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target);
             Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
-            Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
+            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
                 new MsDecSpectrumLoader(loader, Ms1Peaks),
@@ -132,11 +132,11 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
-        public Chart.AnalysisPeakPlotModel PlotModel2 { get; }
+        public Chart.AnalysisPeakPlotModel PlotModel { get; }
 
-        public Chart.EicModel EicModel2 { get; }
+        public Chart.EicModel EicModel { get; }
 
-        public Chart.RawDecSpectrumsModel Ms2SpectrumModel2 { get; }
+        public Chart.RawDecSpectrumsModel Ms2SpectrumModel { get; }
 
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            await EicModel2.LoadEicAsync(target, token).ConfigureAwait(false);
+            await EicModel.LoadEicAsync(target, token).ConfigureAwait(false);
             //Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
         }
 

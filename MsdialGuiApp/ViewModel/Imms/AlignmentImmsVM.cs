@@ -21,12 +21,13 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class AlignmentImmsVM : AlignmentFileVM {
+    class AlignmentImmsVM : AlignmentFileViewModel {
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
             IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
             IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : base(model) {
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;

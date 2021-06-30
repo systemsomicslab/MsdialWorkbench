@@ -21,11 +21,12 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class AlignmentDimsVM : AlignmentFileVM
+    class AlignmentDimsVM : AlignmentFileViewModel
     {
         public AlignmentDimsVM(
             DimsAlignmentModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : base(model) {
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
