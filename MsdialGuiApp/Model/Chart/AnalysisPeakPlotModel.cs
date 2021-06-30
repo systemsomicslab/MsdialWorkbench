@@ -13,14 +13,16 @@ namespace CompMs.App.Msdial.Model.Chart
         public AnalysisPeakPlotModel(
             IEnumerable<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
-            Func<ChromatogramPeakFeatureModel, double> verticalSelector)
-            :this(new ObservableCollection<ChromatogramPeakFeatureModel>(spots), horizontalSelector, verticalSelector) {
+            Func<ChromatogramPeakFeatureModel, double> verticalSelector,
+            IObservable<string> labelSource)
+            :this(new ObservableCollection<ChromatogramPeakFeatureModel>(spots), horizontalSelector, verticalSelector, labelSource) {
 
         }
         public AnalysisPeakPlotModel(
             ObservableCollection<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
-            Func<ChromatogramPeakFeatureModel, double> verticalSelector) {
+            Func<ChromatogramPeakFeatureModel, double> verticalSelector,
+            IObservable<string> labelSource) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }
@@ -29,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Target = null;
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
+            LabelSource = labelSource;
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
@@ -118,10 +121,6 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private string verticalProperty;
 
-        public string LabelProperty {
-            get => labelProperty;
-            set => SetProperty(ref labelProperty, value);
-        }
-        private string labelProperty;
+        public IObservable<string> LabelSource { get; }
     }
 }

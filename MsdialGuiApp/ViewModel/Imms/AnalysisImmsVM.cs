@@ -19,13 +19,14 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class AnalysisImmsVM : AnalysisFileVM {
+    class AnalysisImmsVM : AnalysisFileViewModel {
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : base(model) {
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;
@@ -181,12 +182,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref fileName, value);
         }
         private string fileName;
-
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
-        }
-        private string displayLabel;
 
         public double MassMin { get; }
         public double MassMax { get; }

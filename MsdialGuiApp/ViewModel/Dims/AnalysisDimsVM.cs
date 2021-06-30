@@ -20,11 +20,12 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class AnalysisDimsVM : AnalysisFileVM
+    class AnalysisDimsVM : AnalysisFileViewModel
     {
         public AnalysisDimsVM(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : base(model) {
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
@@ -160,12 +161,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private ICollectionView ms1Peaks;
 
         public override ICollectionView PeakSpots => ms1Peaks;
-
-        public string DisplayLabel {
-            get => displayLabel;
-            set => SetProperty(ref displayLabel, value);
-        }
-        private string displayLabel;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilters(DisplayFilter.RefMatched);

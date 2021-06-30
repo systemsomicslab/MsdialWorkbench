@@ -29,16 +29,15 @@
                       HorizontalAlignment="Left" 
                       VerticalAlignment="Top" 
                       SelectedIndex="0"
-                      SelectedValuePath="DataContext"
-                      SelectedValue="{Binding DisplayLabel, Mode=TwoWay}"
-                      IsEnabled="False"
+                      SelectedValuePath="Tag"
+                      SelectedValue="{Binding DisplayLabel.Value, Mode=TwoWay}"
                       Margin="0">
-                <TextBlock Text="None" DataContext="{x:Null}"/>
-                <TextBlock Text="Retention time" DataContext="ChromXValue"/>
-                <TextBlock Text="Mass" DataContext="Mass"/>
-                <TextBlock Text="Metabolite" DataContext="Name"/>
-                <TextBlock Text="Isotope" DataContext="Isotope"/>
-                <TextBlock Text="Adduct" DataContext="AdductIonName"/>
+                <TextBlock Text="None" Tag="{x:Null}"/>
+                <TextBlock Text="Retention time" Tag="ChromXValue"/>
+                <TextBlock Text="Mass" Tag="Mass"/>
+                <TextBlock Text="Metabolite" Tag="Name"/>
+                <TextBlock Text="Isotope" Tag="Isotope"/>
+                <TextBlock Text="Adduct" Tag="AdductIonName"/>
             </ComboBox>
         </StackPanel>
 

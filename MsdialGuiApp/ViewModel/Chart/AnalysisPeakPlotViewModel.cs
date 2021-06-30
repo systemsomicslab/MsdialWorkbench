@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            LabelProperty = model.ObserveProperty(m => m.LabelProperty)
+            LabelProperty = model.LabelSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }

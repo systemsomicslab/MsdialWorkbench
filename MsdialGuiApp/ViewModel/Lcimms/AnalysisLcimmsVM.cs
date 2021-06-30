@@ -11,7 +11,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    public class AnalysisLcimmsVM : AnalysisFileVM
+    public class AnalysisLcimmsVM : TempAnalysisFileVM
     {
 
         public AnalysisLcimmsVM(LcimmsAnalysisModel model) {

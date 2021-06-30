@@ -153,6 +153,7 @@
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
+    <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />

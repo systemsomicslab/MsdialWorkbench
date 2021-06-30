@@ -27,7 +27,7 @@ using CompMs.App.Msdial.Model.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class AnalysisLcmsVM : AnalysisFileVM
+    public class AnalysisLcmsVM : TempAnalysisFileVM
     {
         #region Property
         public ICollectionView Ms1Peaks {
