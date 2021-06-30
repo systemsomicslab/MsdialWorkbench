@@ -31,7 +31,7 @@ namespace CompMs.Graphics.UI.RangeSlider
             set => SetValue(MaximumProperty, value);
         }
         public static readonly DependencyProperty MaximumProperty =
-            DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RangeSlider), new PropertyMetadata(100d, MaximumChanged));
+            DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RangeSlider), new PropertyMetadata(1d, MaximumChanged));
 
         public double LowerValue {
             get => (double)GetValue(LowerValueProperty);
@@ -45,7 +45,7 @@ namespace CompMs.Graphics.UI.RangeSlider
             set => SetValue(UpperValueProperty, value);
         }
         public static readonly DependencyProperty UpperValueProperty =
-            DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(RangeSlider), new PropertyMetadata(100d, ValueChanged));
+            DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(RangeSlider), new PropertyMetadata(1d, ValueChanged));
 
         public double IntervalValue {
             get => (double)GetValue(IntervalValueProperty);
