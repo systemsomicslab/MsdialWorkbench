@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSProperty, IMoleculeProperty, IIonProperty
+    class ImmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSIonProperty, IMoleculeProperty
     {
         public ImmsCompoundSearchModel(
             IFileBean fileBean,
@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         }
 
+        public double CollisionCrossSection => msReference.CollisionCrossSection;
         public double CcsSimilarity => matchResult.CcsSimilarity;
     }
 }

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -9,6 +10,7 @@ using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -22,9 +24,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IWindowService<CompoundSearchVM> compoundSearchService) {
 
             this.model = model;
+            this.compoundSearchService = compoundSearchService;
+
+            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
+
+            this.analysisFile = analysisFile;
+            this.mspAnnotator = mspAnnotator;
+            this.textDBAnnotator = textDBAnnotator;
+            FileName = analysisFile.AnalysisFileName;
 
             var hAxis = model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
@@ -35,29 +47,89 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
+            MassMin = this.model.MassMin;
+            MassMax = this.model.MassMax;
+            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
+            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
+            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
+            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
+
+            DriftMin = this.model.ChromMin;
+            DriftMax = this.model.ChromMax;
+            DriftLower = new ReactiveProperty<double>(DriftMin).AddTo(Disposables);
+            DriftUpper = new ReactiveProperty<double>(DriftMax).AddTo(Disposables);
+            DriftLower.SetValidateNotifyError(v => v < DriftMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > DriftUpper.Value ? "Too large" : null);
+            DriftUpper.SetValidateNotifyError(v => v < DriftLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > DriftMax ? "Too large" : null);
+
+            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+            CommentFilterKeywords = CommentFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            var AmplitudeLowerValue = this.ObserveProperty(m => m.AmplitudeLowerValue)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            var AmplitudeUpperValue = this.ObserveProperty(m => m.AmplitudeUpperValue)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
+            AmplitudeOrderMax = this.model.Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0d;
+            AmplitudeOrderMin = this.model.Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0d;
+
+            new[]
+            {
+                MassLower.ToUnit(),
+                MassUpper.ToUnit(),
+                DriftLower.ToUnit(),
+                DriftUpper.ToUnit(),
+                CommentFilterKeyword.ToUnit(),
+                MetaboliteFilterKeyword.ToUnit(),
+                DisplayFilters.ToUnit(),
+                AmplitudeLowerValue.ToUnit(),
+                AmplitudeUpperValue.ToUnit(),
+            }.Merge()
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .ObserveOnDispatcher()
+            .Subscribe(_ => Ms1Peaks.Refresh())
+            .AddTo(Disposables);
+
+            Ms1Peaks = CollectionViewSource.GetDefaultView(this.model.Ms1Peaks);
+
             PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, brushSource: Observable.Return(model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new Chart.EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
-            RawDecSpectrumsViewModel = new Chart.RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            SurveyScanViewModel = new Chart.SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
+            PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
+                this.model.PeakTableModel,
+                MassLower,
+                MassUpper,
+                DriftLower,
+                DriftUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
 
-            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Subscribe(t => OnTargetChanged(t));
+            SearchCompoundCommand = new[] {
+                Target.Select(t => t != null && t.InnerModel != null),
+                model.MsdecResult.Select(r => r != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .AddTo(Disposables);
 
-            this.analysisFile = analysisFile;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
-            FileName = analysisFile.AnalysisFileName;
-
-            AmplitudeOrderMax = model.PlotModel.Spots.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0d;
-            AmplitudeOrderMin = model.PlotModel.Spots.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0d;
-            Ms1Peaks = CollectionViewSource.GetDefaultView(PlotViewModel.Spots);
-
-            PropertyChanged += OnFilterChanged;
+            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
         }
 
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -75,25 +147,31 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             get => plotViewModel;
             set => SetProperty(ref plotViewModel, value);
         }
-        private Chart.AnalysisPeakPlotViewModel plotViewModel;
+        private AnalysisPeakPlotViewModel plotViewModel;
 
-        public Chart.EicViewModel EicViewModel {
+        public EicViewModel EicViewModel {
             get => eicViewModel;
             set => SetProperty(ref eicViewModel, value);
         }
-        private Chart.EicViewModel eicViewModel;
+        private EicViewModel eicViewModel;
 
-        public Chart.RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
             get => ms2ViewModel;
             set => SetProperty(ref ms2ViewModel, value);
         }
-        private Chart.RawDecSpectrumsViewModel ms2ViewModel;
+        private RawDecSpectrumsViewModel ms2ViewModel;
 
-        public Chart.SurveyScanViewModel SurveyScanViewModel {
+        public SurveyScanViewModel SurveyScanViewModel {
             get => surveyScanViewModel;
             set => SetProperty(ref surveyScanViewModel, value);
         }
-        private Chart.SurveyScanViewModel surveyScanViewModel;
+        private SurveyScanViewModel surveyScanViewModel;
+
+        public ImmsAnalysisPeakTableViewModel PeakTableViewModel {
+            get => peakTableViewModel;
+            set => SetProperty(ref peakTableViewModel, value);
+        }
+        private ImmsAnalysisPeakTableViewModel peakTableViewModel;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
@@ -108,6 +186,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => SetProperty(ref displayLabel, value);
         }
         private string displayLabel;
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public ReactiveProperty<double> MassLower { get; }
+        public ReactiveProperty<double> MassUpper { get; }
+
+        public double DriftMin { get; }
+        public double DriftMax { get; }
+        public ReactiveProperty<double> DriftLower { get; }
+        public ReactiveProperty<double> DriftUpper { get; }
+
+        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
+        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
 
         public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
         public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
@@ -161,15 +254,17 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private double focusMz;
 
-        private MSDecResult msdecResult = null;
-
         bool PeakFilter(object obj) {
             if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
+                    && MzFilter(peak)
+                    && DriftFilter(peak)
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
-                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation);
+                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
+                    && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
+                    && CommentFilter(peak, CommentFilterKeywords.Value);
             }
             return false;
         }
@@ -186,11 +281,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
         }
 
-        void OnFilterChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(DisplayFilters)
-                || e.PropertyName == nameof(AmplitudeLowerValue)
-                || e.PropertyName == nameof(AmplitudeUpperValue))
-                Ms1Peaks?.Refresh();
+        bool MzFilter(ChromatogramPeakFeatureModel peak) {
+            return MassLower.Value <= peak.Mass && peak.Mass <= MassUpper.Value;
+        }
+
+        bool DriftFilter(ChromatogramPeakFeatureModel peak) {
+            return DriftLower.Value <= peak.ChromXValue && peak.ChromXValue <= DriftUpper.Value;
+        }
+
+        bool CommentFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
+        }
+
+        bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {
@@ -218,19 +322,32 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
-        private DelegateCommand<Window> searchCompoundCommand;
+        public ReactiveCommand SearchCompoundCommand { get; }
 
-        private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(analysisFile, Target.Value.InnerModel, msdecResult, null, mspAnnotator);
-            var window = new View.CompoundSearchWindow
+        private void SearchCompound() {
+            using (var model = new ImmsCompoundSearchModel<ChromatogramPeakFeature>(
+                analysisFile,
+                Target.Value.InnerModel,
+                this.model.MsdecResult.Value,
+                null,
+                mspAnnotator))
+            using (var vm = new ImmsCompoundSearchVM(model)) {
+                compoundSearchService.ShowDialog(vm);
+            }
+        }
+
+        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
+        private DelegateCommand<Window> showIonTableCommand;
+
+        private void ShowIonTable(Window owner) {
+            var window = new View.Table.AlignmentSpotTable
             {
-                DataContext = vm,
+                DataContext = PeakTableViewModel,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
 
-            window.ShowDialog();
+            window.Show();
         }
     }
 }

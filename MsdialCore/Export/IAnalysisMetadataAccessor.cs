@@ -112,7 +112,11 @@ namespace CompMs.MsdialCore.Export
         }
 
         protected string GetIsotopesListContent(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> spectrumList) {
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+            var spectrum = spectrumList.FirstOrDefault(spec => spec.ScanNumber == feature.MS1RawSpectrumIdTop);
+            if (spectrum is null) {
+                return "null";
+            }
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
             if (isotopes.IsEmptyOrNull()) {
                 return "null";
             }
@@ -129,6 +133,7 @@ namespace CompMs.MsdialCore.Export
 
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
         protected static string ValueOrNull(double? value, string format) => value?.ToString(format) ?? "null";
+        protected static string NullIfNegative(double value, string format) => value <= 0 ? "null" : value.ToString(format);
         protected static MsScanMatchResult NullIfUnknown(MsScanMatchResult result) => result.IsUnknown ? null : result;
     }
 }

@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CompMs.App.Msdial.View"
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
-                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+                    xmlns:do="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
+                    xmlns:if="clr-namespace:CompMs.Common.Interfaces;assembly=Common">
     <!--
     <mvvm:PercentSliderToLabelConverter x:Key="sliderToLabelConverter" />
     -->
@@ -146,6 +148,221 @@
                                Grid.Column="0"/>
                         <ContentPresenter VerticalAlignment="Center"
                                           Grid.Column="1"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CopyableDetailContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ChromXCollapseContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, StringFormat=N4, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Content, TargetNullValue=-1, RelativeSource={RelativeSource Self}}"
+                         Value="-1">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger> 
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CollapseIfZeroContent" TargetType="ui:LabeledContent"
+           BasedOn="{StaticResource DetailContent}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBox Text="{Binding Path=Content, StringFormat=N4, RelativeSource={RelativeSource TemplatedParent}}"
+                             Style="{StaticResource ReadOnlyTextBox}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Content, TargetNullValue=0, RelativeSource={RelativeSource Self}}"
+                         Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger> 
+        </Style.Triggers>
+    </Style>
+    
+    <!--CompoundSearch properties template-->
+    <DataTemplate x:Key="FileInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource CopyableDetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="File information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="File ID:"
+                               Content="{Binding Path=(do:IFileBean.FileID), Mode=OneWay}"/>
+            <ui:LabeledContent PrependLabel="File name:"
+                               Content="{Binding Path=(do:IFileBean.FileName), Mode=OneWay}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="PeakInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="Peak information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="Molecular species:"
+                               Content="{Binding Path=(if:IIonProperty.AdductType).AdductIonName, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+            <ui:LabeledContent PrependLabel="Accurate mass:">
+                <TextBox Text="{Binding Path=(if:IMSProperty.PrecursorMz), StringFormat=N5, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Retention time:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).RT.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Retention index:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).RI.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Drift time:"
+                               Content="{Binding Path=(if:IMSProperty.ChromXs).Drift.Value, Mode=OneWay}"
+                               Style="{StaticResource ChromXCollapseContent}"/>
+            <ui:LabeledContent PrependLabel="Collision cross section:"
+                               Content="{Binding Path=(if:IIonProperty.CollisionCrossSection), Mode=OneWay}"
+                               Style="{StaticResource CollapseIfZeroContent}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AnnotationInfoTemplate">
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="Annotation information" FontStyle="Italic"
+                       HorizontalAlignment="Left"/>
+            <Separator/>
+            <ui:LabeledContent PrependLabel="Identified:">
+                <TextBox>
+                    <TextBox.Style>
+                        <Style BasedOn="{StaticResource ReadOnlyTextBox}" TargetType="TextBox">
+                            <Setter Property="Text" Value="{Binding Path=(if:IMoleculeProperty.Name), Mode=OneWay}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=(if:IMoleculeProperty.Name), Mode=OneWay, TargetNullValue=''}" Value="">
+                                    <Setter Property="Text" Value="Unknown"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Ontology:"
+                               Content="{Binding Path=(if:IMoleculeProperty.Ontology), Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+            <ui:LabeledContent PrependLabel="Formula:"
+                               Content="{Binding Path=(if:IMoleculeProperty.Formula).FormulaString, Mode=OneWay}"
+                               Style="{StaticResource CopyableDetailContent}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- RangeSlider -->
+    <Style TargetType="{x:Type rs:RangeSlider}"
+           x:Key="EditableRangeSlider"
+           xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type rs:RangeSlider}">
+                    <Grid>
+                        <Grid.Resources>
+                            <ControlTemplate x:Key="simpleSlider" TargetType="Slider">
+                                <Border SnapsToDevicePixels="True"
+                                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Rectangle x:Name="PART_SelectionRange"/>
+                                        <Track x:Name="PART_Track" Grid.Row="1">
+                                            <Track.Thumb>
+                                                <Thumb x:Name="Thumb">
+                                                    <Thumb.Template>
+                                                        <ControlTemplate TargetType="Thumb">
+                                                            <Rectangle Fill="{x:Static SystemColors.ControlBrush}"
+                                                                       Stroke="{x:Static SystemColors.ActiveBorderBrush}"
+                                                                       StrokeThickness="1"
+                                                                       Width="10" Height="18"
+                                                                       SnapsToDevicePixels="True"/>
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Grid.Resources>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 TextAlignment="Center"
+                                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                   Margin="10,0"
+                                   Grid.Row="0" Grid.Column="2"/>
+                        <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                 TextAlignment="Center"
+                                 Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"/>
+
+                        <Rectangle Fill="{x:Static SystemColors.ControlBrush}"
+                                   Stroke="{x:Static SystemColors.ActiveBorderBrush}"
+                                   StrokeThickness="1"
+                                   VerticalAlignment="Center"
+                                   Height="5" Margin="5,0"
+                                   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
+                        <Slider x:Name="PART_LowerRange"
+                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                Value="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                VerticalAlignment="Center"
+                                Template="{StaticResource simpleSlider}"
+                                Margin="0,0,10,0"
+                                Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
+                        <Slider x:Name="PART_UpperRange"
+                                Minimum="{Binding Minimum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                Maximum="{Binding Maximum, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                Value="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                VerticalAlignment="Center"
+                                Template="{StaticResource simpleSlider}"
+                                Margin="10,0,0,0"
+                                Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

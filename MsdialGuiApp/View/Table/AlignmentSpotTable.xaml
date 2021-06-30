@@ -1,0 +1,24 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Table.AlignmentSpotTable"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Table"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+        xmlns:imv="clr-namespace:CompMs.App.Msdial.View.Imms"
+        xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+        xmlns:div="clr-namespace:CompMs.App.Msdial.View.Dims"
+        xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+        mc:Ignorable="d"
+        Title="Peak spot table" Height="450" Width="1250">
+    <ContentControl Content="{Binding}">
+        <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type imvm:ImmsAlignmentSpotTableViewModel}">
+                <imv:ImmsAlignmentSpotTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type imvm:ImmsAnalysisPeakTableViewModel}">
+                <imv:ImmsAnalysisPeakTableView />
+            </DataTemplate>
+        </ContentControl.Resources>
+    </ContentControl>
+</Window>

@@ -33,13 +33,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsMethodVM(
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService)
             : base(serializer) {
-            if (alignmentCompoundSearchService is null) {
-                throw new ArgumentNullException(nameof(alignmentCompoundSearchService));
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
-            this.alignmentCompoundSearchService = alignmentCompoundSearchService;
+            this.compoundSearchService = compoundSearchService;
 
             var analysisFiles = storage.AnalysisFiles;
             var alignmentFiles = storage.AlignmentFiles;
@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         internal DimsMethodModel Model { get; }
 
@@ -207,6 +207,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public override void LoadProject() {
+            Model.LoadAnnotator();
+
             LoadSelectedAnalysisFile();
         }
 
@@ -239,7 +241,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             cacheAnalysisFile = analysis;
             Model.AnalysisFile = analysis;
-            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel) { DisplayFilters = displayFilters };
+            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, compoundSearchService) { DisplayFilters = displayFilters };
         }
 
         private AlignmentFileBean cacheAlignmentFile;
@@ -250,7 +252,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             cacheAlignmentFile = alignment;
             Model.AlignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, null) { DisplayFilters = displayFilters };
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService) { DisplayFilters = displayFilters };
         }
 
         public override void SaveProject() {

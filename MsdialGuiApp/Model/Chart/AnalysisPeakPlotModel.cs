@@ -13,12 +13,19 @@ namespace CompMs.App.Msdial.Model.Chart
         public AnalysisPeakPlotModel(
             IEnumerable<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
+            Func<ChromatogramPeakFeatureModel, double> verticalSelector)
+            :this(new ObservableCollection<ChromatogramPeakFeatureModel>(spots), horizontalSelector, verticalSelector) {
+
+        }
+        public AnalysisPeakPlotModel(
+            ObservableCollection<ChromatogramPeakFeatureModel> spots,
+            Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
             Func<ChromatogramPeakFeatureModel, double> verticalSelector) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }
 
-            Spots = new ObservableCollection<ChromatogramPeakFeatureModel>(spots);
+            Spots = spots;
             Target = null;
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));

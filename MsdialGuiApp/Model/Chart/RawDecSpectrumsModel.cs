@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using System;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,14 +15,32 @@ namespace CompMs.App.Msdial.Model.Chart
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
             Func<SpectrumPeak, double> horizontalSelector,
+            Func<SpectrumPeak, double> verticalSelector)
+            : this(
+              Observable.Return<ChromatogramPeakFeatureModel>(null),
+              rawLoader, decLoader, refLoader,
+              horizontalSelector, verticalSelector) {
+
+        }
+
+        public RawDecSpectrumsModel(
+            IObservable<ChromatogramPeakFeatureModel> targetSource,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
+            Func<SpectrumPeak, double> horizontalSelector,
             Func<SpectrumPeak, double> verticalSelector) {
 
             RawLoader = rawLoader;
             DecLoader = decLoader;
             RefLoader = refLoader;
 
-            RawRefSpectrumModels = new MsSpectrumModel(horizontalSelector, verticalSelector);
-            DecRefSpectrumModels = new MsSpectrumModel(horizontalSelector, verticalSelector);
+            var rawSource = targetSource.Select(target => rawLoader.LoadSpectrum(target));
+            var decSource = targetSource.Select(target => decLoader.LoadSpectrum(target));
+            var refSource = targetSource.Select(target => refLoader.LoadSpectrum(target));
+
+            RawRefSpectrumModels = new MsSpectrumModel(rawSource, refSource, horizontalSelector, verticalSelector);
+            DecRefSpectrumModels = new MsSpectrumModel(decSource, refSource, horizontalSelector, verticalSelector);
         }
 
         public IMsSpectrumLoader<ChromatogramPeakFeatureModel> RawLoader { get; }

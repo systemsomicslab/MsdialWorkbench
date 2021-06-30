@@ -3,6 +3,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialImmsCore.Algorithm;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
 using System.Linq;
@@ -20,11 +21,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ImmsMethodVM(
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService)
             : base(serializer) {
 
-            model = new ImmsMethodModel(storage).AddTo(Disposables);
-            this.compoundSearchService = compoundSearchService;
+            model = new ImmsMethodModel(storage, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: true)).AddTo(Disposables);
+            this.compoundSearchService = compoundSearchService ?? throw new System.ArgumentNullException(nameof(compoundSearchService));
 
             AnalysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
             AlignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly ImmsMethodModel model;
 
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public ICollectionView AnalysisFilesView {
             get => analysisFilesView;
@@ -172,7 +173,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 model.AnalysisModel,
                 analysis,
                 model.MspChromatogramAnnotator,
-                model.TextDBChromatogramAnnotator)
+                model.TextDBChromatogramAnnotator,
+                compoundSearchService)
             {
                 DisplayFilters = displayFilters
             };
@@ -200,6 +202,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public override void SaveProject() {
             AlignmentVM?.SaveProject();
         }
+
+        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
+        private DelegateCommand<Window> exportAnalysisResultCommand;
+        
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;

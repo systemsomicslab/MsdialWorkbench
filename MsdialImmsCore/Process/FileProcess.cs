@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
@@ -33,7 +32,7 @@ namespace CompMs.MsdialImmsCore.Process
             var mspAnnotator = new ImmsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
             var textDBAnnotator = new ImmsTextDBAnnotator(container.TextDB, container.ParameterBase.TextDbSearchParam, "TextDB");
 
-            Run(file, container, mspAnnotator, textDBAnnotator, isGuiProcess, reportAction, token);
+            Run(file, container, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), isGuiProcess, reportAction, token);
         }
 
         public static void Run(
@@ -41,15 +40,15 @@ namespace CompMs.MsdialImmsCore.Process
             MsdialDataStorage container,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
             bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
+            Action<int> reportAction = null, CancellationToken token = default) {
 
             var parameter = container.ParameterBase as MsdialImmsParameter;
             var iupacDB = container.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
-            var provider = new ImmsAverageDataProvider(rawObj);
+            var provider = providerFactory.Create(file);
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);

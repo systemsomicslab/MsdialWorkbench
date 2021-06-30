@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
             IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
-            IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -34,18 +34,18 @@ namespace CompMs.App.Msdial
                 throw new ArgumentNullException(nameof(analysisFilePropertySetService));
             }
 
-            if (alignmentCompoundSearchService is null) {
-                throw new ArgumentNullException(nameof(alignmentCompoundSearchService));
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
-            this.alignmentCompoundSearchService = alignmentCompoundSearchService;
+            this.compoundSearchService = compoundSearchService;
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
         private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
-        private readonly IWindowService<CompoundSearchVM<AlignmentSpotProperty>> alignmentCompoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
 
         public MethodVM MethodVM {
             get => methodVM;
@@ -124,9 +124,9 @@ namespace CompMs.App.Msdial
                 case MachineCategory.LCMS:
                     return new ViewModel.Lcms.LcmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
                 case MachineCategory.IFMS:
-                    return new ViewModel.Dims.DimsMethodVM(storage, alignmentCompoundSearchService);
+                    return new ViewModel.Dims.DimsMethodVM(storage, compoundSearchService);
                 case MachineCategory.IMMS:
-                    return new ViewModel.Imms.ImmsMethodVM(storage, alignmentCompoundSearchService);
+                    return new ViewModel.Imms.ImmsMethodVM(storage, compoundSearchService);
                 case MachineCategory.LCIMMS:
                     throw new NotImplementedException("Lcimms method is working now.");
                     

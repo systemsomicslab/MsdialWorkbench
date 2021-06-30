@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcimms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
@@ -123,15 +124,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> searchCompoundCommand;
 
         public void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM<ChromatogramPeakFeature>(model.AnalysisFile, model.Target.InnerModel, model.MsdecResult, null, model.MspAnnotator);
-            var window = new View.CompoundSearchWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
+                this.model.AnalysisFile,
+                this.model.Target.InnerModel,
+                this.model.MsdecResult,
+                null,
+                this.model.MspAnnotator))
+            using (var vm = new CompoundSearchVM(model)) {
+                var window = new View.CompoundSearchWindow
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            window.ShowDialog();
+                window.ShowDialog();
+            }
         }
     }
 }

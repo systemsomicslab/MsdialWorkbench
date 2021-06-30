@@ -540,8 +540,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (num - 1 > 0) {
                 var ordered = chromPeakFeatures.OrderBy(n => n.PeakHeightTop).ToList();
                 for (var i = 0; i < num; i++) {
-                    chromPeakFeatures[i].PeakShape.AmplitudeScoreValue = (float)((double)i / (double)(num - 1));
-                    chromPeakFeatures[i].PeakShape.AmplitudeOrderValue = i;
+                    ordered[i].PeakShape.AmplitudeScoreValue = (float)((double)i / (double)(num - 1));
+                    ordered[i].PeakShape.AmplitudeOrderValue = i;
                 }
             }
         }

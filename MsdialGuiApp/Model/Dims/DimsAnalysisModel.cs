@@ -67,9 +67,13 @@ namespace CompMs.App.Msdial.Model.Dims
                 VerticalTitle = "Abundance"
             };
 
+            Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
+            Target.Subscribe(async t => await OnTargetChangedAsync(t));
+
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(disposables);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Peaks);
             Ms2SpectrumModel2 = new Chart.RawDecSpectrumsModel(
+                Target,
                 new MsRawSpectrumLoader(provider, Parameter),
                 decLoader,
                 new MsRefSpectrumLoader(refer),
@@ -84,9 +88,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 LabelProperty = nameof(SpectrumPeak.Mass),
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
-
-            Target = PlotModel2.ToReactivePropertySlimAsSynchronized(m => m.Target);
-            Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterPeakID))

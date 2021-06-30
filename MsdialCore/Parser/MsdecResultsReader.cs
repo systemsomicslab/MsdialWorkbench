@@ -90,8 +90,10 @@ namespace CompMs.MsdialCore.Parser {
 
         public static MSDecResult ReadMSDecResult(Stream fs, long seekPoint, int version, bool isAnnotationInfoIncluded) {
             if (version == 1) {
-                fs.Seek(seekPoint, SeekOrigin.Begin);
-                return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
+                lock (fs) {
+                    fs.Seek(seekPoint, SeekOrigin.Begin);
+                    return ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
+                }
             }
             else {
                 return null;
@@ -137,20 +139,22 @@ namespace CompMs.MsdialCore.Parser {
             seekPoints = new List<long>();
             var buffer = new byte[4];
 
-            fs.Read(buffer, 0, 4);
+            lock (fs) {
+                fs.Read(buffer, 0, 4);
 
-            var totalPeakNumber = BitConverter.ToInt32(buffer, 0);
-            buffer = new byte[8 * totalPeakNumber];
-            fs.Read(buffer, 0, buffer.Length);
-            for (int i = 0; i < totalPeakNumber; i++)
-                seekPoints.Add(BitConverter.ToInt64(buffer, 8 * i));
+                var totalPeakNumber = BitConverter.ToInt32(buffer, 0);
+                buffer = new byte[8 * totalPeakNumber];
+                fs.Read(buffer, 0, buffer.Length);
+                for (int i = 0; i < totalPeakNumber; i++)
+                    seekPoints.Add(BitConverter.ToInt64(buffer, 8 * i));
 
-            var results = new List<MSDecResult>();
-            foreach (var item in seekPoints) {
-                var result = ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
-                results.Add(result);
+                var results = new List<MSDecResult>();
+                foreach (var item in seekPoints) {
+                    var result = ReadMSDecResultVer1(fs, isAnnotationInfoIncluded);
+                    results.Add(result);
+                }
+                return results;
             }
-            return results;
         }
 
         public static MSDecResult ReadMSDecResultVer1(Stream fs, bool isAnnotationInfoIncluded) {

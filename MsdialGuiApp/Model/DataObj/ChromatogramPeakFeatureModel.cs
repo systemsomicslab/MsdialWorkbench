@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double? ChromXValue => innerModel.ChromXs.Value;
         public double? ChromXLeftValue => innerModel.ChromXsLeft.Value;
         public double? ChromXRightValue => innerModel.ChromXsRight.Value;
-        public double CollisionCrosSection => innerModel.CollisionCrossSection;
+        public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double Mass => innerModel.Mass;
         public double Intensity => innerModel.PeakHeightTop;
         public double PeakArea => innerModel.PeakAreaAboveZero;

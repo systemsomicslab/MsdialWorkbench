@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -7,7 +9,6 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialImmsCore.Export
 {
@@ -75,6 +76,81 @@ namespace CompMs.MsdialImmsCore.Export
             content.Add("m/z matched", (matchResult?.IsPrecursorMzMatch ?? false).ToString());
             content.Add("MS/MS matched", (matchResult?.IsSpectrumMatch ?? false).ToString());
             content.Add("CCS similarity", ValueOrNull(matchResult?.CcsSimilarity, "F2"));
+            return content;
+        }
+    }
+
+    public class ImmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
+    {
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type)
+            : base(refer, parameter, type) {
+
+        }
+
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter)
+            : this(refer, parameter, parameter.ExportSpectraType) {
+
+        }
+
+        protected override string[] GetHeadersCore() {
+            return new string[] {
+                "Peak ID",
+                "Name",
+                "Scan",
+                "Mobility left",
+                "Mobility",
+                "Mobility right",
+                "CCS",
+                "Precursor m/z",
+                "Height",
+                "Area",
+                "Model masses",
+                "Adduct",
+                "Isotope",
+                "Comment",
+                "Reference CCS",
+                "Reference m/z",
+                "Formula",
+                "Ontology",
+                "InChIKey",
+                "SMILES",
+                "Annotation tag (VS1.0)",
+                "CCS matched",
+                "m/z matched",
+                "MS/MS matched",
+                "CCS similarity",
+                "m/z similarity",
+                "Simple dot product",
+                "Weighted dot product",
+                "Reverse dot product",
+                "Matched peaks count",
+                "Matched peaks percentage",
+                "Total score",
+                "S/N",
+                "MS1 isotopes",
+                "MSMS spectrum" };
+        }
+
+        protected override Dictionary<string, string> GetContentCore(
+            ChromatogramPeakFeature feature,
+            MSDecResult msdec,
+            MoleculeMsReference reference,
+            MsScanMatchResult matchResult,
+            IReadOnlyList<RawSpectrum> spectrumList) {
+
+            var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList);
+            content["Mobility left"] = string.Format("{0:F3}", feature.ChromXsLeft.Drift.Value);
+            content["Mobility"] = string.Format("{0:F3}", feature.ChromXs.Drift.Value);
+            content["Mobility right"] = string.Format("{0:F3}", feature.ChromXsRight.Drift.Value);
+            content["CCS"] = NullIfNegative(feature.CollisionCrossSection, "F3");
+            content["Precursor m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
+            content["Reference CCS"] = ValueOrNull(reference?.CollisionCrossSection, "F3");
+            content["Reference m/z"] = ValueOrNull(reference?.PrecursorMz, "F5");
+            content["CCS matched"] = (matchResult?.IsCcsMatch ?? false).ToString();
+            content["m/z matched"] = (matchResult?.IsPrecursorMzMatch ?? false).ToString();
+            content["CCS similarity"] = ValueOrNull(matchResult?.CcsSimilarity, "F2");
+            content["m/z similarity"] = ValueOrNull(matchResult?.AcurateMassSimilarity, "F2");
+
             return content;
         }
     }

@@ -1,36 +1,26 @@
-﻿using CompMs.App.Msdial.Model.Imms;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using Reactive.Bindings;
+﻿using CompMs.App.Msdial.Model.Search;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class ImmsCompoundSearchVM<T> : CompoundSearchVM<T> where T: IMSProperty, IMoleculeProperty, IIonProperty
+    class ImmsCompoundSearchVM : CompoundSearchVM
     {
-        public ImmsCompoundSearchVM(ImmsCompoundSearchModel<T> model) : base(model) {
+        public ImmsCompoundSearchVM(CompoundSearchModel model) : base(model) {
             searchUnsubscriber?.Dispose();
 
-            var ms1Tol = ParameterVM.ObserveProperty(m => m.Ms1Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var ms2Tol = ParameterVM.ObserveProperty(m => m.Ms2Tolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var ccsTol = ParameterVM.ObserveProperty(m => m.CcsTolerance).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var ms1Tol = ParameterVM.Ms1Tolerance;
+            var ms2Tol = ParameterVM.Ms2Tolerance;
+            var ccsTol = ParameterVM.CcsTolerance;
             var condition = new[]
             {
-                ms1Tol.Select(tol => tol >= MassEPS),
-                ms2Tol.Select(tol => tol >= MassEPS),
+                ms1Tol.ObserveHasErrors.Inverse(),
+                ms2Tol.ObserveHasErrors.Inverse(),
+                ccsTol.ObserveHasErrors.Inverse(),
             }.CombineLatestValuesAreAllTrue();
 
             searchUnsubscriber = new[] {
-                ms1Tol.ToUnit(),
-                ms2Tol.ToUnit(),
-                ccsTol.ToUnit(),
                 SearchCommand.ToUnit()
             }.Merge()
             .CombineLatest(condition, (_, c) => c)
@@ -41,38 +31,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .AddTo(Disposables);
 
             SearchCommand.Execute();
-        }
-
-        public ImmsCompoundSearchVM(
-            AnalysisFileBean analysisFile,
-            T peakFeature, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new ImmsCompoundSearchModel<T>(
-                analysisFile,
-                peakFeature,
-                msdecResult,
-                isotopes,
-                annotator,
-                parameter)) {
-
-        }
-
-        public ImmsCompoundSearchVM(
-            AlignmentFileBean alignmentFile,
-            T spot, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(new ImmsCompoundSearchModel<T>(
-                alignmentFile,
-                spot,
-                msdecResult,
-                isotopes,
-                annotator,
-                parameter)) {
-
         }
     }
 }

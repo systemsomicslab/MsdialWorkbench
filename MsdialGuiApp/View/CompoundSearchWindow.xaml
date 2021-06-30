@@ -3,12 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+        xmlns:imv="clr-namespace:CompMs.App.Msdial.View.Imms"
+        xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+        xmlns:div="clr-namespace:CompMs.App.Msdial.View.Dims"
+        xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:CompoundSearchVM}}"
         Name="CompoundSearch"
         Title="Compound search" Height="720" Width="1280">
     <Window.Resources>
@@ -19,241 +23,17 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*" />
-            <ColumnDefinition Width="2*" />
-        </Grid.ColumnDefinitions>
-        
-        <Grid Grid.Column="0">
-            
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <StackPanel Orientation="Horizontal"
-                        Margin="8"
-                        Grid.Row="0">
-                <Label Content="Selected library ID:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Name="Label_SelectedLibraryID"
-                       Content="{Binding Compounds/LibraryID}"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Margin="8,8,8,0"
-                        Grid.Row="1">
-                <StackPanel.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Width" Value="85"/>
-                        <Setter Property="Height" Value="25"/>
-                        <Setter Property="Margin" Value="8,0"/>
-                    </Style>
-                </StackPanel.Resources>
-
-                <TextBlock Text="Change annotation:"
-                           VerticalAlignment="Center"
-                           Margin="8,0"/>
-                <Button Content="Confidence" Command="{Binding SetConfidenceCommand, Mode=OneTime}" Click="Ok_Click"/>
-                <Button Content="Unsettled" Command="{Binding SetUnsettledCommand, Mode=OneTime}" Click="Ok_Click"/>
-                <Button Content="Unknown" Command="{Binding SetUnknownCommand, Mode=OneTime}" Click="Ok_Click"/>
-                <Button Content="Close" Click="Cancel_Click"/>
-
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Margin="8"
-                        Grid.Row="2">
-                <Label Content="MS1 tol. [Da]:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBox Name="TextBox_Ms1Tolerance"
-                         Text="{Binding ParameterVM.Ms1Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
-                <Label Content="MS2 tol. [Da]:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Margin="10,0,0,0"/>
-                <TextBox Name="TextBox_Ms2Tolerance"
-                         Text="{Binding ParameterVM.Ms2Tolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
-                <Label Content="Ccs tol.:"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Margin="10,0,0,0"/>
-                <TextBox Name="TextBox_CcsTolerance"
-                         Text="{Binding ParameterVM.CcsTolerance, Mode=TwoWay, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                         Width="70" Height="25" />
-
-                <Button Name="Button_ReAnalysis"
-                        Content="Search"
-                        Command="{Binding SearchCommand, Mode=OneTime}"
-                        Width="85" Height="25"
-                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Margin="30,0,0,0"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Margin="8"
-                        Grid.Row="3">
-                <StackPanel.Resources>
-                    <Style TargetType="Label">
-                        <Setter Property="Width" Value="120"/>
-                        <Setter Property="Height" Value="25"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Margin" Value="5,2,0,0"/>
-                    </Style>
-                    <Style TargetType="TextBox">
-                        <Setter Property="Height" Value="25"/>
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="Black" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="IsReadOnly" Value="True" />
-                        <Setter Property="Margin" Value="0,2,0,0"/>
-                    </Style>
-                </StackPanel.Resources>
-
-                <StackPanel>
-                    <TextBlock Text="File infomation" FontStyle="Italic"
-                               HorizontalAlignment="Left"/>
-                    <Separator />
-
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="File ID:"/>
-                        <TextBox Text="{Binding FileID, Mode=OneTime}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="File name:"/>
-                        <TextBox Text="{Binding FileName, Mode=OneTime}"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <StackPanel Margin="25,0,0,0">
-                    <TextBlock Text="Peak infomation" FontStyle="Italic"
-                               HorizontalAlignment="Left"/>
-                    <Separator />
-
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Accurate mass:"/>
-                        <TextBox Text="{Binding AccurateMass, Mode=OneTime}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="MolecularSpecies:"/>
-                        <TextBox Text="{Binding AdductName, Mode=OneTime}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Identified:"/>
-                        <TextBox>
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Text" Value="{Binding MetaboliteName, Mode=OneTime}"/>
-                                    <Setter Property="Height" Value="25"/>
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="Foreground" Value="Black" />
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                                    <Setter Property="IsReadOnly" Value="True" />
-                                    <Setter Property="Margin" Value="0,2,0,0"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding MetaboliteName, TargetNullValue='', Mode=OneTime}" Value="">
-                                            <Setter Property="Text" Value="Unknown"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
-
-            <Grid Margin="8" Grid.Row="4">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Label Content="Library information" FontStyle="Italic"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"
-                       Grid.Row="0"/>
-                <DataGrid Name="DataGrid_LibraryInformation"
-                          ItemsSource="{Binding Path=Compounds, IsAsync=True}"
-                          SelectedItem="{Binding SelectedCompound.Value, Mode=OneWayToSource}"
-                          IsSynchronizedWithCurrentItem="True"
-                          CanUserAddRows="False" CanUserDeleteRows="False"
-                          CanUserReorderColumns="False" CanUserSortColumns="True"
-                          SelectionUnit="FullRow" IsReadOnly="True"
-                          HeadersVisibility="All" AutoGenerateColumns="False"
-                          Grid.Row="1">
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="DataGridColumnHeader" >
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Library ID" Width="*" Binding="{Binding Path=LibraryID}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Name" Width="2*" Binding="{Binding Path=Name}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=AdductName}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Pre. m/z" Width="*" Binding="{Binding Path=PrecursorMz}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Dot prod." Width="*" Binding="{Binding Path=WeightedDotProduct, StringFormat=0.00}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Rev. prod." Width="*" Binding="{Binding Path=ReverseDotProduct, StringFormat=0.00}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Presense" Width="*" Binding="{Binding Path=Presence, StringFormat=0.00}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Instrument" Width="*" Binding="{Binding Path=Instrument}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-
-        </Grid>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="3*" />
-            </Grid.RowDefinitions>
-
-            <StackPanel Margin="5,10" Grid.Row="0">
-                <StackPanel.Resources>
-                    <Style TargetType="TextBox" x:Key="ReadOnlyTextBox">
-                        <Setter Property="Height" Value="25"/>
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="Black" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="IsReadOnly" Value="True" />
-                    </Style>
-                    <Style TargetType="{x:Type ui:LabeledContent}"
-                           BasedOn="{StaticResource AlignedContent}">
-                        <Setter Property="ContentTemplate">
-                            <Setter.Value>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
-                                             Style="{StaticResource ReadOnlyTextBox}"/>
-                                </DataTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </StackPanel.Resources>
-                <ui:LabeledContent PrependLabel="Name:"
-                                   Content="{Binding Compounds/Name, Mode=OneWay}"/>
-                <ui:LabeledContent PrependLabel="Accurate mass similarity score:"
-                                   Content="{Binding Compounds/MassSimilarity, Mode=OneWay}"/>
-                <ui:LabeledContent PrependLabel="Weighted dot product similarity score:"
-                                   Content="{Binding Compounds/WeightedDotProduct, Mode=OneWay}"/>
-                <ui:LabeledContent PrependLabel="Dot product similarity score:"
-                                   Content="{Binding Compounds/SimpleDotProduct, Mode=OneWay}"/>
-                <ui:LabeledContent PrependLabel="Reverse dot product similarity score:"
-                                   Content="{Binding Compounds/ReverseDotProduct, Mode=OneWay}"/>
-                <ui:LabeledContent PrependLabel="Total score:"
-                                   Content="{Binding Compounds/TotalScore, Mode=OneWay}"/>
-            </StackPanel>
-
-            <chart:MsSpectrumView DataContext="{Binding MsSpectrumViewModel, Mode=OneTime}" Margin="0,0,5,0" Grid.Row="1"/>
-        </Grid>
-    </Grid>
+    <ContentControl Content="{Binding}">
+        <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type vm:CompoundSearchVM}">
+                <div:DimsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type divm:DimsCompoundSearchViewModel}">
+                <div:DimsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type imvm:ImmsCompoundSearchVM}">
+                <imv:ImmsCompoundSearchView />
+            </DataTemplate>
+        </ContentControl.Resources>
+    </ContentControl>
 </Window>

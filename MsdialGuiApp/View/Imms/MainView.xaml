@@ -285,11 +285,14 @@
 
                     <Grid Grid.Row="2" Grid.Column="1">
 
-                        <Button Name="Button_TableViewer" Height="25" 
-                                Width="110" Margin="0,2,0,0" 
-                                HorizontalContentAlignment="Right"
+                        <Button Name="Button_TableViewer"
+                                DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 Background="AliceBlue"
-                                VerticalAlignment="Top" HorizontalAlignment="Right">
+                                Margin="0,2,0,0" 
+                                HorizontalContentAlignment="Right"
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Height="25" Width="110">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Resources/Table.png"/>
