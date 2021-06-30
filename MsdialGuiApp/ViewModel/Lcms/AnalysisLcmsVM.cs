@@ -41,6 +41,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
+        public override ICollectionView PeakSpots => ms1Peaks;
+
         public List<ChromatogramPeakWrapper> Eic {
             get => eic;
             set {

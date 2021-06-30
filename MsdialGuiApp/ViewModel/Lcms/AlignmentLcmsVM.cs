@@ -35,6 +35,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private ICollectionView ms1Spots;
         private ObservableCollection<AlignmentSpotPropertyModel> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
 
+        public override ICollectionView PeakSpots => ms1Spots;
+
         public double MassMin => _ms1Spots.Min(spot => spot.MassCenter);
         public double MassMax => _ms1Spots.Max(spot => spot.MassCenter);
         public double MassLower {

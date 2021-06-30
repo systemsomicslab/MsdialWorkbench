@@ -142,6 +142,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ICollectionView ms1Peaks;
 
+        public override ICollectionView PeakSpots => ms1Peaks;
+
         public AnalysisPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
             set => SetProperty(ref plotViewModel, value);
@@ -201,15 +203,99 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactivePropertySlim<string> CommentFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
 
-        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
-        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
-        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
-        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
-        public bool CcsChecked => ReadDisplayFilters(DisplayFilter.CcsMatched);
-        public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
-        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
+        public bool RefMatchedChecked {
+            get => ReadDisplayFilters(DisplayFilter.RefMatched);
+            set {
+                if (ReadDisplayFilters(DisplayFilter.RefMatched) != value) {
+                    displayFilters.Write(DisplayFilter.RefMatched, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool SuggestedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Suggested);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Suggested) != value) {
+                    displayFilters.Write(DisplayFilter.Suggested, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool UnknownChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Unknown);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Unknown) != value) {
+                    displayFilters.Write(DisplayFilter.Unknown, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool Ms2AcquiredChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Ms2Acquired) != value) {
+                    displayFilters.Write(DisplayFilter.Ms2Acquired, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool MolecularIonChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.MolecularIon);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.MolecularIon) != value) {
+                    displayFilters.Write(DisplayFilter.MolecularIon, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool UniqueIonsChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.UniqueIons);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.UniqueIons) != value) {
+                    displayFilters.Write(DisplayFilter.UniqueIons, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool CcsChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.CcsMatched);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.CcsMatched) != value) {
+                    displayFilters.Write(DisplayFilter.CcsMatched, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool ManuallyModifiedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.ManuallyModified);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.ManuallyModified) != value) {
+                    displayFilters.Write(DisplayFilter.ManuallyModified, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
 
         public DisplayFilter DisplayFilters {
             get => displayFilters;
@@ -336,6 +422,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
+
         private DelegateCommand<Window> showIonTableCommand;
 
         private void ShowIonTable(Window owner) {

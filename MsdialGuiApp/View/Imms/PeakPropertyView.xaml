@@ -62,9 +62,14 @@
                         </TextBox>
                     </ui:LabeledContent>
 
-                    <ui:LabeledContent PrependLabel="Drift time [1/k0]">
+                    <ui:LabeledContent PrependLabel="Drift time [1/k0]:">
                         <TextBox Name="TextBox_PeakInformation_DriftTime"
                                  Text="{Binding ChromXValue, Mode=OneWay, StringFormat=F4, TargetNullValue=NA}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="CCS:">
+                        <TextBox Name="TextBox_PeakInformation_Ccs"
+                                 Text="{Binding CollisionCrossSection, Mode=OneWay, StringFormat=F3, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="m/z:">
@@ -166,9 +171,14 @@
                         </TextBox>
                     </ui:LabeledContent>
 
-                    <ui:LabeledContent PrependLabel="Drift time [1/k0]">
+                    <ui:LabeledContent PrependLabel="Drift time [1/k0]:">
                         <TextBox Name="TextBox_PeakInformation_DriftTime"
                                  Text="{Binding TimesCenter, Mode=OneWay, StringFormat=F4, TargetNullValue=NA}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="CCS:">
+                        <TextBox Name="TextBox_PeakInformation_Ccs"
+                                 Text="{Binding CollisionCrossSection, Mode=OneWay, StringFormat=F3, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="m/z:">

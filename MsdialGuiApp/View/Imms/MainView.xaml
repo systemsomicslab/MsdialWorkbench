@@ -193,11 +193,8 @@
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <!--
-                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisVM}"
-                                                  IsEnabled="False"
+                    <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
-                    -->
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
                                           Grid.Row="2" Grid.Column="0"/>
@@ -370,6 +367,7 @@
                         <TabItem Header="MS2 Chrom." 
                                  Name="TabItem_MS2Chromatogram" 
                                  Height="25"
+                                 IsEnabled="False"
                                  Background="{StaticResource LightThemeColor}">
                                  <!--
                             <ms2:ChromatogramView />
@@ -379,6 +377,7 @@
                         <TabItem Header="Raw vs. Purified" 
                                  Name="TabItem_RawVsDeconvolution" 
                                  Height="25"
+                                 IsEnabled="False"
                                  Background="{StaticResource LightThemeColor}">
 
 <!--

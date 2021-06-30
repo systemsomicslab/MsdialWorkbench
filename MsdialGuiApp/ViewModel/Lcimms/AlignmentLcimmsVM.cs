@@ -42,6 +42,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
         private ICollectionView ms1Spots;
 
+        public override ICollectionView PeakSpots => ms1Spots;
+
         public double MassLower {
             get => massLower;
             set {

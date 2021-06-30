@@ -102,6 +102,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private ICollectionView ms1Spots;
 
+        public override ICollectionView PeakSpots => ms1Spots;
+
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
             get => plotViewModel;
             private set => SetProperty(ref plotViewModel, value);
@@ -146,14 +148,87 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReactivePropertySlim<string> CommentFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
 
-        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
-        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
-        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
-        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
-        public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        // public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
-        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
+        public bool RefMatchedChecked {
+            get => ReadDisplayFilters(DisplayFilter.RefMatched);
+            set {
+                if (ReadDisplayFilters(DisplayFilter.RefMatched) != value) {
+                    displayFilters.Write(DisplayFilter.RefMatched, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool SuggestedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Suggested);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Suggested) != value) {
+                    displayFilters.Write(DisplayFilter.Suggested, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool UnknownChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Unknown);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Unknown) != value) {
+                    displayFilters.Write(DisplayFilter.Unknown, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool Ms2AcquiredChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Ms2Acquired) != value) {
+                    displayFilters.Write(DisplayFilter.Ms2Acquired, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool MolecularIonChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.MolecularIon);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.MolecularIon) != value) {
+                    displayFilters.Write(DisplayFilter.MolecularIon, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool BlankFilterChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.Blank);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.Blank) != value) {
+                    displayFilters.Write(DisplayFilter.Blank, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
+
+        public bool ManuallyModifiedChecked {
+            get {
+                return ReadDisplayFilters(DisplayFilter.ManuallyModified);
+            }
+            set {
+                if (ReadDisplayFilters(DisplayFilter.ManuallyModified) != value) {
+                    displayFilters.Write(DisplayFilter.ManuallyModified, value);
+                    OnPropertyChanged(nameof(DisplayFilters));
+                }
+            }
+        }
 
         public DisplayFilter DisplayFilters {
             get => displayFilters;

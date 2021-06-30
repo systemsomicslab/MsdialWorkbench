@@ -8,6 +8,7 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="235" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
@@ -59,6 +60,11 @@
                     <ui:LabeledContent PrependLabel="m/z similarity:">
                         <TextBox Name="TextBox_PeakInformation_Ms1Similarity"
                                  Text="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="ccs similarity:">
+                        <TextBox Name="TextBox_PeakInformation_CcsSimilarity"
+                                 Text="{Binding ScanMatchResult.CcsSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Spectrum similarity:">
@@ -155,6 +161,11 @@
                     <ui:LabeledContent PrependLabel="m/z similarity:">
                         <TextBox Name="TextBox_PeakInformation_Ms1Similarity"
                                  Text="{Binding ScanMatchResult.AcurateMassSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue='NA'}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="ccs similarity:">
+                        <TextBox Name="TextBox_PeakInformation_CcsSimilarity"
+                                 Text="{Binding ScanMatchResult.CcsSimilarity, Converter={StaticResource permille}, Mode=OneWay, StringFormat=F0, TargetNullValue='NA'}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Spectrum similarity:">

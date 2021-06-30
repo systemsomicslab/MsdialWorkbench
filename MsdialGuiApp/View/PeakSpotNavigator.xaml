@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisImmsVM}}"
              d:DesignHeight="235" d:DesignWidth="200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -31,17 +31,14 @@
                       SelectedIndex="0"
                       SelectedValuePath="DataContext"
                       SelectedValue="{Binding DisplayLabel, Mode=TwoWay}"
+                      IsEnabled="False"
                       Margin="0">
-                <ComboBox.ItemsSource>
-                    <x:Array Type="TextBlock">
-                        <TextBlock Text="None" DataContext="{x:Null}"/>
-                        <TextBlock Text="Retention time" DataContext="ChromXValue"/>
-                        <TextBlock Text="Mass" DataContext="Mass"/>
-                        <TextBlock Text="Metabolite" DataContext="Name"/>
-                        <TextBlock Text="Isotope" DataContext="Isotope"/>
-                        <TextBlock Text="Adduct" DataContext="AdductIonName"/>
-                    </x:Array>
-                </ComboBox.ItemsSource>
+                <TextBlock Text="None" DataContext="{x:Null}"/>
+                <TextBlock Text="Retention time" DataContext="ChromXValue"/>
+                <TextBlock Text="Mass" DataContext="Mass"/>
+                <TextBlock Text="Metabolite" DataContext="Name"/>
+                <TextBlock Text="Isotope" DataContext="Isotope"/>
+                <TextBlock Text="Adduct" DataContext="AdductIonName"/>
             </ComboBox>
         </StackPanel>
 
@@ -53,15 +50,17 @@
                        VerticalAlignment="Center" Margin="0,0,5,0" />
 
                 <Label Name="Label_DisplayPeakNum"
-                       Content="{Binding Ms1Peaks.Count, TargetNullValue=0 }"
+                       Content="{Binding PeakSpots.Count, TargetNullValue=0 }"
                        ContentStringFormat="{}Num. {0:D}"
                        VerticalAlignment="Center" HorizontalAlignment="Right"
                        Margin="10,0,10,0"/>
             </Grid>
 
             <rs:RangeSlider x:Name="doubleSlider_AmplitudeFilter"
+                            IsEnabled="False"
                             Minimum="0" Maximum="1" 
-                            LowerValue="{Binding AmplitudeLowerValue, Mode=TwoWay}" UpperValue="{Binding AmplitudeUpperValue, Mode=TwoWay}" 
+                            LowerValue="{Binding AmplitudeLowerValue, Mode=TwoWay}"
+                            UpperValue="{Binding AmplitudeUpperValue, Mode=TwoWay}" 
                             ToolTip="Display filter based on peak height"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                             Height="25" Margin="10,0"/>
@@ -91,6 +90,7 @@
                 <CheckBox Name="CheckBox_CcsMatchedOnly" 
                           Content="CCS matched"
                           IsChecked="{Binding CcsChecked}"
+                          IsEnabled="False"
                           ToolTip="Display annotated peaks with CCS value"/>
 
                 <CheckBox Name="CheckBox_PlotUnknownOnly" 
@@ -101,21 +101,24 @@
                 <CheckBox Name="CheckBox_PlotMolcularIonOnly" 
                           Content="Molecular ion"
                           IsChecked="{Binding MolecularIonChecked}"
+                          IsEnabled="False"
                           ToolTip="Display mono isotopic ion [M + 0]"/>
 
                 <CheckBox Name="CheckBox_PlotMsMsOnly" 
                           Content="MS2 acquired"
-                          IsChecked="{Binding MsmsAcquiredChecked}"
+                          IsChecked="{Binding Ms2AcquiredChecked}"
                           ToolTip="Display peaks having MS/MS information"/>
 
                 <CheckBox Name="CheckBox_IsBlankPassed" 
                           Content="Blank filter"
                           IsChecked="{Binding BlankFilterChecked}"
+                          IsEnabled="False"
                           ToolTip="Display peaks passing blank filter"/>
 
                 <CheckBox Name="CheckBox_SearchedFragment" 
                           Content="Unique ions"
                           IsChecked="{Binding UniqueIonsChecked}"
+                          IsEnabled="False"
                           ToolTip="Display precursor ions having searched fragments"/>
             </UniformGrid>
         </StackPanel>
