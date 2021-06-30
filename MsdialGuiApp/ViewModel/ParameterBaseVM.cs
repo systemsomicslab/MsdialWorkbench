@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -825,6 +826,107 @@ namespace CompMs.App.Msdial.ViewModel
                 OnPropertyChanged(nameof(TargetCE));
             }
         }
+
+        // proteomics param
+        public bool IsDoAndromedaMs2Deconvolution {
+            get => innerModel.IsDoAndromedaMs2Deconvolution;
+            set {
+                if (innerModel.IsDoAndromedaMs2Deconvolution == value) return;
+                innerModel.IsDoAndromedaMs2Deconvolution = value;
+                OnPropertyChanged(nameof(IsDoAndromedaMs2Deconvolution));
+            }
+        }
+
+        public float AndromedaDelta {
+            get => innerModel.AndromedaDelta;
+            set {
+                if (innerModel.AndromedaDelta == value) return;
+                innerModel.AndromedaDelta = value;
+                OnPropertyChanged(nameof(AndromedaDelta));
+            }
+        }
+
+        public int AndromedaMaxPeaks {
+            get => innerModel.AndromedaMaxPeaks;
+            set {
+                if (innerModel.AndromedaMaxPeaks == value) return;
+                innerModel.AndromedaMaxPeaks = value;
+                OnPropertyChanged(nameof(AndromedaMaxPeaks));
+            }
+        }
+
+        public string FastaFilePath {
+            get => innerModel.FastaFilePath;
+            set {
+                if (innerModel.FastaFilePath == value) return;
+                innerModel.FastaFilePath = value;
+                OnPropertyChanged(nameof(FastaFilePath));
+            }
+        }
+
+        public List<Modification> VariableModifications {
+            get => innerModel.VariableModifications;
+            set {
+                if (innerModel.VariableModifications == value) return;
+                innerModel.VariableModifications = value;
+                OnPropertyChanged(nameof(VariableModifications));
+            }
+        }
+
+        public List<Modification> FixedModifications {
+            get => innerModel.FixedModifications;
+            set {
+                if (innerModel.FixedModifications == value) return;
+                innerModel.FixedModifications = value;
+                OnPropertyChanged(nameof(FixedModifications));
+            }
+        }
+
+        public List<Enzyme> EnzymesForDigestion {
+            get => innerModel.EnzymesForDigestion;
+            set {
+                if (innerModel.EnzymesForDigestion == value) return;
+                innerModel.EnzymesForDigestion = value;
+                OnPropertyChanged(nameof(EnzymesForDigestion));
+            }
+        }
+
+        public CollisionType CollistionType {
+            get => innerModel.CollistionType;
+            set {
+                if (innerModel.CollistionType == value) return;
+                innerModel.CollistionType = value;
+                OnPropertyChanged(nameof(CollistionType));
+            }
+        }
+
+        public float FalseDiscoveryRateForPeptide {
+            get => innerModel.FalseDiscoveryRateForPeptide;
+            set {
+                if (innerModel.FalseDiscoveryRateForPeptide == value) return;
+                innerModel.FalseDiscoveryRateForPeptide = value;
+                OnPropertyChanged(nameof(FalseDiscoveryRateForPeptide));
+            }
+        }
+
+        public float FalseDiscoveryRateForProtein {
+            get => innerModel.FalseDiscoveryRateForProtein;
+            set {
+                if (innerModel.FalseDiscoveryRateForProtein == value) return;
+                innerModel.FalseDiscoveryRateForProtein = value;
+                OnPropertyChanged(nameof(FalseDiscoveryRateForProtein));
+            }
+        }
+
+        public MsRefSearchParameterBase ProteoMs2RefSearchParam {
+            get => innerModel.ProteoMs2RefSearchParam;
+            set {
+                if (innerModel.ProteoMs2RefSearchParam == value) return;
+                innerModel.ProteoMs2RefSearchParam = value;
+                OnPropertyChanged(nameof(ProteoMs2RefSearchParam));
+            }
+        }
+
 
         // Post-alignment and filtering
 

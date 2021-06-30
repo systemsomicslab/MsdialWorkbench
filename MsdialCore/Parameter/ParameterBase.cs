@@ -14,6 +14,7 @@ using CompMs.Common.Parser;
 using System.IO;
 using System.Text;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 
 namespace CompMs.MsdialCore.Parameter {
 
@@ -248,14 +249,31 @@ namespace CompMs.MsdialCore.Parameter {
         public double TargetCE { get => ChromDecBaseParam.TargetCE; set => ChromDecBaseParam.TargetCE = value; }
 
         [Key(8)]
-        public ProteomicsBaseParameter ProteomicsBaseParam { get; set; } = new ProteomicsBaseParameter();
+        public ProteomicsParameter ProteomicsParam { get; set; } = new ProteomicsParameter();
 
         [IgnoreMember]
-        public bool IsDoAndromedaMs2Deconvolution { get => ProteomicsBaseParam.IsDoAndromedaMs2Deconvolution; set => ProteomicsBaseParam.IsDoAndromedaMs2Deconvolution = value; }
+        public bool IsDoAndromedaMs2Deconvolution { get => ProteomicsParam.IsDoAndromedaMs2Deconvolution; set => ProteomicsParam.IsDoAndromedaMs2Deconvolution = value; }
         [IgnoreMember]
-        public double AndromedaDelta { get => ProteomicsBaseParam.AndromedaDelta; set => ProteomicsBaseParam.AndromedaDelta = value; }
+        public float AndromedaDelta { get => ProteomicsParam.AndromedaDelta; set => ProteomicsParam.AndromedaDelta = value; }
         [IgnoreMember]
-        public int AndromedaMaxPeaks { get => ProteomicsBaseParam.AndromedaMaxPeaks; set => ProteomicsBaseParam.AndromedaMaxPeaks = value; }
+        public int AndromedaMaxPeaks { get => ProteomicsParam.AndromedaMaxPeaks; set => ProteomicsParam.AndromedaMaxPeaks = value; }
+
+        [IgnoreMember]
+        public string FastaFilePath { get => ProteomicsParam.FastaFilePath; set => ProteomicsParam.FastaFilePath = value; }
+        [IgnoreMember]
+        public List<Modification> VariableModifications { get => ProteomicsParam.VariableModifications; set => ProteomicsParam.VariableModifications = value; }
+        [IgnoreMember]
+        public List<Modification> FixedModifications { get => ProteomicsParam.FixedModifications; set => ProteomicsParam.FixedModifications = value; }
+        [IgnoreMember]
+        public List<Enzyme> EnzymesForDigestion { get => ProteomicsParam.EnzymesForDigestion; set => ProteomicsParam.EnzymesForDigestion = value; }
+        [IgnoreMember]
+        public CollisionType CollistionType { get => ProteomicsParam.CollistionType; set => ProteomicsParam.CollistionType = value; }
+        [IgnoreMember]
+        public float FalseDiscoveryRateForPeptide { get => ProteomicsParam.FalseDiscoveryRateForPeptide; set => ProteomicsParam.FalseDiscoveryRateForPeptide = value; }
+        [IgnoreMember]
+        public float FalseDiscoveryRateForProtein { get => ProteomicsParam.FalseDiscoveryRateForProtein; set => ProteomicsParam.FalseDiscoveryRateForProtein = value; }
+        [IgnoreMember]
+        public MsRefSearchParameterBase ProteoMs2RefSearchParam { get => ProteomicsParam.MsRefSearchParam; set => ProteomicsParam.MsRefSearchParam = value; }
 
         // Post-alignment and filtering
         [Key(9)]
@@ -730,6 +748,37 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(22)]
         public string Comment { get; set; } = string.Empty;
     }
+    [MessagePackObject]
+    public class ProteomicsParameter {
+
+        // processing
+        [Key(0)]
+        public bool IsDoAndromedaMs2Deconvolution { get; set; } = false;
+        [Key(1)]
+        public float AndromedaDelta { get; set; } = 100;
+        [Key(2)]
+        public int AndromedaMaxPeaks { get; set; } = 12;
+
+        // spectral annotation
+        [Key(3)]
+        public string FastaFilePath { get; set; } = string.Empty;
+        [Key(4)]
+        public List<Modification> VariableModifications { get; set; } = new List<Modification>();
+        [Key(5)]
+        public List<Modification> FixedModifications { get; set; } = new List<Modification>();
+        [Key(6)]
+        public List<Enzyme> EnzymesForDigestion { get; set; } = new List<Enzyme>();
+        [Key(7)]
+        public CollisionType CollistionType { get; set; } = CollisionType.HCD;
+        [Key(8)]
+        public float FalseDiscoveryRateForPeptide { get; set; } = 1.0F; //%
+        [Key(9)]
+        public float FalseDiscoveryRateForProtein { get; set; } = 1.0F; //%
+
+        // other basic parameter
+        [Key(10)]
+        public MsRefSearchParameterBase MsRefSearchParam { get; set; } = new MsRefSearchParameterBase();
+    }
 
     [MessagePackObject]
     public class ReferenceBaseParameter {
@@ -903,16 +952,6 @@ namespace CompMs.MsdialCore.Parameter {
         public AccuracyType AccuracyType { get; set; } = AccuracyType.IsAccurate;
         [Key(8)]
         public double TargetCE { get; set; } = 0; // used for AIF deconvolution. Zero means that min CE is used for MS1 
-    }
-
-    [MessagePackObject]
-    public class ProteomicsBaseParameter {
-        [Key(0)]
-        public bool IsDoAndromedaMs2Deconvolution { get; set; } = false;
-        [Key(1)]
-        public double AndromedaDelta { get; set; } = 100;
-        [Key(2)]
-        public int AndromedaMaxPeaks { get; set; } = 12;
     }
 
     [MessagePackObject]

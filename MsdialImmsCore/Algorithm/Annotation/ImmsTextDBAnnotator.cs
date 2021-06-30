@@ -55,8 +55,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
-                if (candidate.ChromXs.Drift.Value < property.ChromXs.Drift.Value - parameter.CcsTolerance
-                    || property.ChromXs.Drift.Value + parameter.CcsTolerance < candidate.ChromXs.Drift.Value)
+                if (Math.Abs(candidate.CollisionCrossSection - property.CollisionCrossSection) > parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 result.LibraryIDWhenOrdered = i;
@@ -79,7 +78,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, string sourceKey) {
-
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 

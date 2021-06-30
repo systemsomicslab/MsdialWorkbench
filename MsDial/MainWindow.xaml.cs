@@ -6460,6 +6460,15 @@ namespace Rfx.Riken.OsakaUniv
                 this.mainWindowDisplayVM.DisplayFocus("MZ");
             }
         }
+
+        private void TabControl_PeakCharacter_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (this.projectProperty == null) return;
+
+            if (this.TabItem_StructureImage.IsSelected == true) {
+                this.Image_Structure.Source = this.mainWindowDisplayVM.GetSmilesAsImage(this.DisplayedSmilesInfo, this.TabControl_PeakCharacter.ActualWidth, this.TabControl_PeakCharacter.ActualHeight);
+            }
+        }
+
         #endregion
 
         #region // Required Methods for INotifyPropertyChanged
@@ -6729,6 +6738,6 @@ namespace Rfx.Riken.OsakaUniv
             //Mouse.OverrideCursor = null;
         }
 
-
+        
     }
 }

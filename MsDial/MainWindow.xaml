@@ -476,7 +476,7 @@
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="370"/>
-                        <ColumnDefinition Width="370" MinWidth="370" MaxWidth="730" />
+                        <ColumnDefinition Width="370" MinWidth="370" />
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="0">
@@ -881,7 +881,8 @@
 
 
                             <TabControl Name="TabControl_PeakCharacter" Grid.Row="0" 
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                        SelectionChanged="TabControl_PeakCharacter_SelectionChanged">
 
                                 <TabItem Header="Basic peak property" 
                                      Name="TabItem_BasicProperty" 
@@ -973,7 +974,12 @@
                                         </StackPanel>
                                     </Grid>
                                 </TabItem>
-                             
+
+                                <TabItem Header="Structure" Name="TabItem_StructureImage" Height="25"
+                                     Background="LightSteelBlue">
+                                    <Image Name="Image_Structure" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                                </TabItem>
+
                             </TabControl>
 
 

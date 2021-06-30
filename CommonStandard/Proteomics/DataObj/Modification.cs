@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.Function;
 using CompMs.Common.Proteomics.Parser;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -235,28 +236,48 @@ namespace CompMs.Common.Proteomics.DataObj {
     //proteinCterm modification is allowed only once.
     //anyCterm modification is allowed only once.
     //anyNterm modification is allowed only once.
+    [MessagePackObject]
     public class Modification {
+        [Key(0)]
         public string Title { get; set; }
+        [Key(1)]
         public string Description { get; set; }
+        [Key(2)]
         public string CreateDate { get; set; }
+        [Key(3)]
         public string LastModifiedDate { get; set; }
+        [Key(4)]
         public string User { get; set; }
+        [Key(5)]
         public int ReporterCorrectionM2 { get; set; }
+        [Key(6)]
         public int ReporterCorrectionM1 { get; set; }
+        [Key(7)]
         public int ReporterCorrectionP1 { get; set; }
+        [Key(8)]
         public int ReporterCorrectionP2 { get; set; }
+        [Key(9)]
         public bool ReporterCorrectionType { get; set; }
+        [Key(10)]
         public Formula Composition { get; set; } // only derivative moiety 
+        [Key(11)]
         public List<ModificationSite> ModificationSites { get; set; } = new List<ModificationSite>();
+        [Key(12)]
         public string Position { get; set; } // anyCterm, anyNterm, anywhere, notCterm, proteinCterm, proteinNterm
+        [Key(13)]
         public string Type { get; set; } // Standard, Label, IsobaricLabel, Glycan, AaSubstitution, CleavedCrosslink, NeuCodeLabel
+        [Key(14)]
         public string TerminusType { get; set; }
 
     }
 
+    [MessagePackObject]
     public class ModificationSite {
+        [Key(0)]
         public string Site { get; set; }
+        [Key(1)]
         public List<ProductIon> DiagnosticIons { get; set; } = new List<ProductIon>();
+        [Key(2)]
         public List<NeutralLoss> DiagnosticNLs { get; set; } = new List<NeutralLoss>();
     }
 }

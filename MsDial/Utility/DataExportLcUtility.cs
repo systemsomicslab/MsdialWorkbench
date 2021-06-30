@@ -2586,7 +2586,7 @@ namespace Rfx.Riken.OsakaUniv
             for (int i = 0; i < files.Count; i++)
             {
                 var fileProp = files[i].AnalysisFilePropertyBean;
-                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mgf;
+                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.msp;
                 var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
 
                 using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))

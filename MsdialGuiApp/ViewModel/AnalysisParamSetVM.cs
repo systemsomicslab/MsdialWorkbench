@@ -339,6 +339,26 @@ namespace CompMs.App.Msdial.ViewModel
                 Param.IsotopeTextDBFilePath = ofd.FileName;
             }
         }
+
+        public DelegateCommand FastaFileBrowseCommand {
+            get => fastaFileBrowseCommand ?? (fastaFileBrowseCommand = new DelegateCommand(FastaFileBrowse));
+        }
+        private DelegateCommand fastaFileBrowseCommand;
+
+        private void FastaFileBrowse() {
+            var ofd = new OpenFileDialog {
+                Title = "Import a fasta file for peptide annotation",
+                Filter = "FASTA file(*.fasta)|*.fasta;",
+                RestoreDirectory = true,
+                Multiselect = false,
+            };
+
+            if (ofd.ShowDialog() == true) {
+                Param.FastaFilePath = ofd.FileName;
+            }
+        }
+
+
         #endregion
     }
 }

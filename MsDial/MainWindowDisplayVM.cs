@@ -1,10 +1,12 @@
 ﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess;
 using Msdial.Lcms.Dataprocess.Utility;
+using Riken.Metabolomics.StructureFinder.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace Rfx.Riken.OsakaUniv
 {
@@ -1064,6 +1066,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = string.Empty;
             this.mainWindow.DisplayedSmilesInfo = smiles;
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         private void labelUiSetting(PeakAreaBean peakSpot, DriftSpotBean driftSpot) {
@@ -1193,7 +1197,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = ccsSimilarityString;
             this.mainWindow.DisplayedSmilesInfo = smiles;
-
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         private void labelUiSetting(MS1DecResult ms1DecResult)
@@ -1263,6 +1268,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = riSimilarityString;
             this.mainWindow.DisplayedSmilesInfo = smiles;
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         private void labelUiSetting(AlignmentPropertyBean alignmentPropertyBean)
@@ -1357,6 +1364,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = string.Empty;
             this.mainWindow.DisplayedSmilesInfo = smiles;
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         private void labelUiSetting(AlignmentPropertyBean peakSpot, AlignedDriftSpotPropertyBean driftSpot) {
@@ -1482,6 +1491,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = ccsSimilarityString;
             this.mainWindow.DisplayedSmilesInfo = smiles;
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         private void labelUiSetting(AlignmentPropertyBean alignmentPropertyBean, MS1DecResult ms1DecResult)
@@ -1554,6 +1565,8 @@ namespace Rfx.Riken.OsakaUniv
             this.mainWindow.DisplayedSpectrumMatchInfo = "(Dot)" + specSimilarityString + " | (Rev)" + revSpecSimilarityString;
             this.mainWindow.DisplayedCcsSimilarityInfo = riSimilarityString;
             this.mainWindow.DisplayedSmilesInfo = smiles;
+            if (this.mainWindow.TabItem_StructureImage.IsSelected == true)
+                this.mainWindow.Image_Structure.Source = GetSmilesAsImage(smiles, this.mainWindow.TabControl_PeakCharacter.ActualWidth, this.mainWindow.TabControl_PeakCharacter.ActualHeight);
         }
 
         public string GetCompoundName(int id)
@@ -1787,6 +1800,12 @@ namespace Rfx.Riken.OsakaUniv
                 if (setting.AmpSliderLowerValue != (float)ampSliderLowerValue) setting.AmpSliderLowerValue = (float)ampSliderLowerValue;
                 if (setting.AmpSliderUpperValue != (float)ampSliderUpperValue) setting.AmpSliderUpperValue = (float)ampSliderUpperValue;
             }
-        }        
+        }
+
+        public BitmapImage GetSmilesAsImage(string smiles, double width, double height) {
+            if (width <= 0 || height <= 0) return null;
+            if (smiles == string.Empty || smiles == "NA") return null;
+            return MoleculeImage.SmilesToMediaImageSource(smiles, (int)width, (int)height);
+        }
     }
 }
