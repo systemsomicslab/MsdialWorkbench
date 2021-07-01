@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.View.Export;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
@@ -6,7 +7,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -20,6 +20,7 @@ using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,17 +30,18 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsMethodModel : BindableBase, IDisposable
+    class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Drift);
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public ImmsMethodModel(MsdialDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory) {
+        public ImmsMethodModel(
+            MsdialDataStorage storage,
+            IDataProviderFactory<AnalysisFileBean> providerFactory)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(storage.AnalysisFiles);
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(storage.AlignmentFiles);
             this.providerFactory = providerFactory;
         }
 
@@ -78,18 +80,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private MsdialDataStorage storage;
 
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
-            get => analysisFiles;
-            set => SetProperty(ref analysisFiles, value);
-        }
-        private ObservableCollection<AnalysisFileBean> analysisFiles;
-
-        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
-            get => alignmentFiles;
-            set => SetProperty(ref alignmentFiles, value);
-        }
-        private ObservableCollection<AlignmentFileBean> alignmentFiles;
-
         public int InitializeNewProject(Window window) {
             // Set analysis param
             if (!ProcessSetAnalysisParameter(window))
@@ -97,13 +87,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var processOption = Storage.ParameterBase.ProcessOption;
             // Run Identification
-            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, Storage))
                     return -1;
             }
 
             // Run Alignment
-            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Alignment)) {
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!ProcessAlignment(window, Storage))
                     return -1;
             }
@@ -131,8 +121,6 @@ namespace CompMs.App.Msdial.Model.Imms
             var apsw_result = apsw.ShowDialog();
             if (apsw_result != true) return false;
 
-            if (AlignmentFiles == null)
-                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
             var filename = analysisParamSetVM.AlignmentResultFileName;
             AlignmentFiles.Add(
                 new AlignmentFileBean
@@ -241,39 +229,51 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (cacheAnalysisFile == analysis) return;
+            if (AnalysisFile == analysis) {
+                return;
+            }
 
-            cacheAnalysisFile = analysis;
+            if (AnalysisModel != null) {
+                AnalysisModel.Dispose();
+                Disposables.Remove(AnalysisModel);
+            }
+
+            AnalysisFile = analysis;
             var provider = providerFactory.Create(analysis);
-            AnalysisModel = new ImmsAnalysisModel( // should dispose.
+            AnalysisModel = new ImmsAnalysisModel(
                 analysis,
                 provider,
                 storage.DataBaseMapper,
                 Storage.ParameterBase,
                 MspChromatogramAnnotator,
-                TextDBChromatogramAnnotator);
+                TextDBChromatogramAnnotator)
+            .AddTo(Disposables);
         }
 
-        private AnalysisFileBean cacheAnalysisFile;
-
         public void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (cacheAlignmentFile == alignment) return;
+            if (AlignmentFile == alignment) {
+                return;
+            }
 
-            cacheAlignmentFile = alignment;
-            AlignmentModel = new ImmsAlignmentModel( // should dispose
+            if (AlignmentModel != null) {
+                AlignmentModel.Dispose();
+                Disposables.Remove(AlignmentModel);
+            }
+
+            AlignmentFile = alignment;
+            AlignmentModel = new ImmsAlignmentModel(
                 alignment,
                 Storage.ParameterBase,
                 Storage.DataBaseMapper,
                 MspAlignmentAnnotator,
-                TextDBAlignmentAnnotator);
+                TextDBAlignmentAnnotator)
+            .AddTo(Disposables);
         }
-
-        private AlignmentFileBean cacheAlignmentFile;
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
             var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.ParameterBase);
-            var vm = new AlignmentResultExport2VM(cacheAlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
@@ -325,25 +325,6 @@ namespace CompMs.App.Msdial.Model.Imms
 
                 dialog.ShowDialog();
             }
-        }
-
-        private bool disposedValue;
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    analysisModel?.Dispose();
-                    alignmentModel?.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

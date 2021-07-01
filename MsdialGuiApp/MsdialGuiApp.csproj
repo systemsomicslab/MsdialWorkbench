@@ -160,6 +160,7 @@
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
+    <Compile Include="Model\Core\MethodModelBase.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Model\DataObj\CompoundResult.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
+    <Compile Include="ViewModel\DataObj\AnalysisFileBeanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />

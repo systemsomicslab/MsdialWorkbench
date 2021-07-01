@@ -37,6 +37,7 @@
             <SolidColorBrush x:Key="ThemeColor" Color="Green" PresentationOptions:Freeze="True"/>
             <SolidColorBrush x:Key="LightThemeColor" Color="PaleGreen" PresentationOptions:Freeze="True"/>
             <SolidColorBrush x:Key="DarkThemeColor" Color="DarkGreen" PresentationOptions:Freeze="True"/>
+            <SolidColorBrush x:Key="AccentColor" Color="DeepPink" PresentationOptions:Freeze="True"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

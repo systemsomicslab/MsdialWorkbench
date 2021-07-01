@@ -18,7 +18,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class LcimmsMethodVM : MethodVM
+    class LcimmsMethodVM : TempMethodVM
     {
         public LcimmsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
             : this(new LcimmsMethodModel(storage, analysisFiles, alignmentFiles)) {
