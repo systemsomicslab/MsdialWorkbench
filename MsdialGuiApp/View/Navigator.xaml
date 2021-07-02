@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <Label Content="File navigator" 
-               Foreground="Black" Background="{StaticResource LightThemeColor}"
+               Foreground="Black" Background="{StaticResource MainThemeColor}"
                VerticalAlignment="Top" HorizontalContentAlignment="Center" 
                Height="28" Grid.Row="0" />
 
@@ -50,7 +50,7 @@
         <GridSplitter Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
 
         <Label Content="Alignment navigator"
-               Foreground="Black" Background="{StaticResource LightThemeColor}" 
+               Foreground="Black" Background="{StaticResource MainThemeColor}" 
                VerticalAlignment="Top" HorizontalContentAlignment="Center"
                Height="28" Grid.Row="1"/>
 

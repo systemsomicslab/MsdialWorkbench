@@ -16,7 +16,7 @@
     <StackPanel>
         <Label Content="Peak spot navigator" 
                Height="28" Foreground="Black" 
-               HorizontalContentAlignment="Center" Background="{StaticResource LightThemeColor}" VerticalAlignment="Top" />
+               HorizontalContentAlignment="Center" Background="{StaticResource MainThemeColor}" VerticalAlignment="Top" />
 
         <StackPanel Orientation="Horizontal"
                     Height="25"

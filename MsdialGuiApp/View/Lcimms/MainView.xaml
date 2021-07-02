@@ -93,7 +93,7 @@
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -144,7 +144,7 @@
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -205,7 +205,7 @@
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
-                                 Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
+                                 Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -225,7 +225,7 @@
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -238,7 +238,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
+                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -301,7 +301,7 @@
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                  <!--
                                 <local:PeakPropertyView DataContext="{Binding Target}"/>
                                 -->
@@ -310,7 +310,7 @@
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                  <!--
                                 <local:CompoundDetailView DataContext="{Binding Target}"/>
                                 -->
@@ -327,7 +327,7 @@
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource LightThemeColor}"
+                                 Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
                                                    DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
@@ -344,7 +344,7 @@
                         <TabItem Header="MS2 Chrom." 
                                  Name="TabItem_MS2Chromatogram" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                  <!--
                             <ms2:ChromatogramView />
                             -->
@@ -353,7 +353,7 @@
                         <TabItem Header="Raw vs. Purified" 
                                  Name="TabItem_RawVsDeconvolution" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
 
 <!--
                             <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
@@ -363,7 +363,7 @@
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource LightThemeColor}" 
+                                 Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
                                                    ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"

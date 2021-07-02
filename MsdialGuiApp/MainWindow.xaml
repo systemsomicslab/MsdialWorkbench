@@ -9,7 +9,7 @@
               xmlns:view="clr-namespace:CompMs.App.Msdial.View"
               mc:Ignorable="d"
               d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowVM}}"
-              Title="{Binding ProjectFile, StringFormat='MS-DIAL {0}'}" Height="800" Width="1280">
+              Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
     <i:Interaction.Behaviors>
         <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
     </i:Interaction.Behaviors>
@@ -42,6 +42,7 @@
                 <StackPanel VerticalAlignment="Center">
                     <Image Source="/Resources/msdial_icon.png" Width="200"/>
                     <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
+                    <TextBlock Text="Alpha version" FontSize="70" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center"

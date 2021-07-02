@@ -37,7 +37,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="Survey scan (MS1) spectrum"
-               Foreground="Black" Background="{StaticResource LightThemeColor}"
+               Foreground="Black" Background="{StaticResource MainThemeColor}"
                HorizontalContentAlignment="Center" VerticalAlignment="Top"
                Grid.Row="0"/>
         <chart:SimpleChartControl HorizontalAxis="{Binding MassAxis, ElementName=Ms1Plot}"
