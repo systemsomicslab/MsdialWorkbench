@@ -156,8 +156,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AnalysisVM = new AnalysisImmsVM(
                 model.AnalysisModel,
                 analysisFile.File,
-                model.MspChromatogramAnnotator,
-                model.TextDBChromatogramAnnotator,
+                model.MspAnnotator,
+                model.TextDBAnnotator,
                 compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters
@@ -176,8 +176,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
             AlignmentVM = new AlignmentImmsVM(
                 model.AlignmentModel,
-                model.MspAlignmentAnnotator,
-                model.TextDBAlignmentAnnotator,
+                model.MspAnnotator,
+                model.TextDBAnnotator,
                 compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters

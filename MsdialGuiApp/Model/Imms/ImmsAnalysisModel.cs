@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -33,8 +34,8 @@ namespace CompMs.App.Msdial.Model.Imms
             IDataProvider provider,
             IMatchResultRefer refer,
             ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
             this.provider = provider;
             this.parameter = parameter as MsdialImmsParameter;
@@ -133,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private readonly MsdialImmsParameter parameter;
-        private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        private readonly IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
         private readonly string peakAreaFile;
         private readonly IDataProvider provider;
 

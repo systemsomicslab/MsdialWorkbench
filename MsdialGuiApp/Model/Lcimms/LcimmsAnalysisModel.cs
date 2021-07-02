@@ -3,6 +3,7 @@ using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
@@ -29,14 +30,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
             this.analysisFile = analysisFile;
             this.provider = provider;
             this.parameter = parameter;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
             peakAreaFile = analysisFile.PeakAreaBeanInformationFilePath;
@@ -64,9 +65,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks => ms1Peaks;
         private readonly ObservableCollection<ChromatogramPeakFeatureModel> ms1Peaks;
 
-        public IAnnotator<ChromatogramPeakFeature, MSDecResult> MspAnnotator => mspAnnotator;
-        public IAnnotator<ChromatogramPeakFeature, MSDecResult> TextDBAnnotator => textDBAnnotator;
-        private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
         
         public List<SpectrumPeak> Ms1Spectrum
         {
@@ -351,7 +351,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     if (representative == null)
                         return;
 
-                    var reference = mspAnnotator.Refer(representative);
+                    var reference = MspAnnotator.Refer(representative);
                     if (reference != null) {
                         token.ThrowIfCancellationRequested();
                         ms2ReferenceSpectrum = reference.Spectrum;

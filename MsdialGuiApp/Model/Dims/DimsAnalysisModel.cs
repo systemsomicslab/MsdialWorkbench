@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -34,11 +35,11 @@ namespace CompMs.App.Msdial.Model.Dims
             IDataProvider provider,
             IMatchResultRefer refer,
             ParameterBase parameter,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
 
             AnalysisFile = analysisFile;
             FileName = analysisFile.AnalysisFileName;
@@ -114,10 +115,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
 
-        public IAnnotator<ChromatogramPeakFeature, MSDecResult> MspAnnotator => mspAnnotator;
-        public IAnnotator<ChromatogramPeakFeature, MSDecResult> TextDBAnnotator => textDBAnnotator;
-
-        private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
 
         public string FileName {
             get => fileName;

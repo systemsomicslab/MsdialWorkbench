@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Imms
             T property,
             MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<T, MSDecResult> annotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
             MsRefSearchParameterBase parameter = null) : base(
                 fileBean,
                 property,

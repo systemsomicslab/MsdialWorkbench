@@ -2,12 +2,12 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -23,8 +23,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
@@ -43,8 +43,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
 
             this.analysisFile = analysisFile;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
             FileName = analysisFile.AnalysisFileName;
 
             var hAxis = model.PlotModel
@@ -136,7 +136,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
-        private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
@@ -419,7 +420,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Target.Value.InnerModel,
                 this.model.MsdecResult.Value,
                 null,
-                mspAnnotator))
+                MspAnnotator))
             using (var vm = new ImmsCompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

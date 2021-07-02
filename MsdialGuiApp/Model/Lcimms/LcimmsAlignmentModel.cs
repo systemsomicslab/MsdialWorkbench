@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -29,8 +30,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase param,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -39,8 +40,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             spectraFile = alignmentFileBean.SpectraFilePath;
 
             this.param = param;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
@@ -54,9 +55,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MSDecResult MsdecResult => msdecResult;
         private MSDecResult msdecResult = null;
 
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> MspAnnotator => mspAnnotator;
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
-        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots => ms1Spots;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (target != null) {
                 await Task.Run(() => {
                     if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                        var reference = mspAnnotator.Refer(matched);
+                        var reference = MspAnnotator.Refer(matched);
                         ms2ReferenceSpectrum = reference.Spectrum;
                     }
                 }).ConfigureAwait(false);

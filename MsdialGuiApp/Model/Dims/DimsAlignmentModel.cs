@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
@@ -38,8 +39,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentFileBean alignmentFileBean,
             IMatchResultRefer refer,
             ParameterBase param,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -48,8 +49,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
             this.Parameter = param;
             this.DataBaseRefer = refer;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
@@ -167,9 +168,8 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
 
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> MspAnnotator => mspAnnotator;
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
-        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
