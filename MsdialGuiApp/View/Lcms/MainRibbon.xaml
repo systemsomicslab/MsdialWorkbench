@@ -60,18 +60,18 @@
         <Ribbon.Resources>
 
             <Style TargetType="Ribbon">
-                <Setter Property="BorderBrush" Value="{StaticResource DarkThemeColor}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SubThemeColor}" />
             </Style>
 
             <Style TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource DarkThemeColor}"/>
+                <Setter Property="Background" Value="{StaticResource SubThemeColor}"/>
                 <Setter Property="BorderBrush" Value="White" />
                 <Setter Property="BorderThickness" Value="0,0,0,0" />
 
             </Style>
 
             <Style TargetType="RibbonTabHeader">
-                <Setter Property="Background" Value="{StaticResource DarkThemeColor}"/>
+                <Setter Property="Background" Value="{StaticResource SubThemeColor}"/>
                 <Setter Property="CheckedBackground" Value="White"/>
                 <Setter Property="CheckedBorderBrush" Value="White"/>
                 <Setter Property="Foreground" Value="White"/>

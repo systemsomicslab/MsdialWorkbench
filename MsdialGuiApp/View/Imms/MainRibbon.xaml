@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsMethodVM}}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Ribbon Background="{StaticResource LightThemeColor}">
+    <Ribbon Background="{StaticResource MainThemeColor}">
         <Ribbon.QuickAccessToolBar>
             <RibbonQuickAccessToolBar>
                 <RibbonButton SmallImageSource="{StaticResource New_project_is}"
@@ -28,7 +28,7 @@
         <Ribbon.ApplicationMenu>
             <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
                                    KeyTip="F"
-                                   Background="{StaticResource DarkThemeColor}">
+                                   Background="{StaticResource SubThemeColor}">
                 <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
                                            Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
@@ -49,8 +49,8 @@
             </RibbonApplicationMenu>
         </Ribbon.ApplicationMenu>
         <Ribbon.ContextualTabGroups>
-            <RibbonContextualTabGroup Header="Tool" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
-            <RibbonContextualTabGroup Header="Graph" Visibility="Visible" Background="{StaticResource LightThemeColor}"/>
+            <RibbonContextualTabGroup Header="Tool" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
+            <RibbonContextualTabGroup Header="Graph" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
         </Ribbon.ContextualTabGroups>
         <RibbonTab Header="Processing"
                    KeyTip="P">

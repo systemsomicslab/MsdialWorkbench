@@ -190,7 +190,7 @@
                         <TabControl.ItemContainerStyle>
                             <Style TargetType="TabItem">
                                 <Setter Property="Height" Value="25"/>
-                                <Setter Property="Background" Value="{StaticResource LightThemeColor}"/>
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
                             </Style>
                         </TabControl.ItemContainerStyle>
 
@@ -251,19 +251,19 @@
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
-                                 Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
+                                 Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
                             <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
                         </TabItem>
 
 
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource LightThemeColor}">
+                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
                             <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
@@ -315,14 +315,14 @@
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                 <local:PeakPropertyView DataContext="{Binding Model.Target.Value, Mode=OneWay}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                 <local:CompoundDetailView DataContext="{Binding Model.Target.Value, Mode=OneWay}"/>
                             </TabItem>
                          
@@ -337,7 +337,7 @@
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource LightThemeColor}"
+                                 Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <chart:ExpRefView>
                                 <chart:ExpRefView.ContextMenu>
@@ -351,7 +351,7 @@
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource LightThemeColor}" 
+                                 Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <chart:RepRefView>
                                 <chart:RepRefView.ContextMenu>

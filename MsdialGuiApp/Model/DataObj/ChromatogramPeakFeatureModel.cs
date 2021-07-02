@@ -102,6 +102,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
 
+        [Obsolete]
         public Brush SpotColor { get; set; }
         //public Brush SpotColorByOntology { get; set; }
 

@@ -100,6 +100,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
 
+        [Obsolete]
         public List<BarItem> BarItems { get; private set; }
         internal readonly AlignmentSpotProperty innerModel;
 
@@ -109,6 +110,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
+        [Obsolete]
         public Brush SpotColor { get; set; }
 
         static AlignmentSpotPropertyModel() {

@@ -206,7 +206,7 @@
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:PeakView DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
@@ -231,7 +231,7 @@
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
 
                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
                                 <chart:AlignmentPeakPlotView.LabelTemplate>
@@ -261,20 +261,20 @@
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
-                                 Name="TabItem_EicViewer" Background="{StaticResource LightThemeColor}">
+                                 Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
                             <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
                         </TabItem>
 
                         <TabItem Name="TabItem_AlignedEic"
                                  Header="EIC of aligned spot"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
                         </TabItem>
 
@@ -331,14 +331,14 @@
                             <TabItem Header="Basic peak property" 
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                 <local:PeakPropertyView DataContext="{Binding Target.Value}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                 <local:CompoundDetailView DataContext="{Binding Target.Value}"/>
                             </TabItem>
                          
@@ -353,7 +353,7 @@
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource LightThemeColor}"
+                                 Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <chart:ExpRefView>
                                 <chart:ExpRefView.ContextMenu>
@@ -368,7 +368,7 @@
                                  Name="TabItem_MS2Chromatogram" 
                                  Height="25"
                                  IsEnabled="False"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
                                  <!--
                             <ms2:ChromatogramView />
                             -->
@@ -378,7 +378,7 @@
                                  Name="TabItem_RawVsDeconvolution" 
                                  Height="25"
                                  IsEnabled="False"
-                                 Background="{StaticResource LightThemeColor}">
+                                 Background="{StaticResource MainThemeColor}">
 
 <!--
                             <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
@@ -388,7 +388,7 @@
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource LightThemeColor}" 
+                                 Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <chart:RepRefView>
                                 <chart:RepRefView.ContextMenu>

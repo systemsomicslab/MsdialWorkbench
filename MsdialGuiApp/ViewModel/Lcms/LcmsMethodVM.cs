@@ -23,7 +23,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class LcmsMethodVM : MethodVM {
+    public class LcmsMethodVM : TempMethodVM {
         public AnalysisLcmsVM AnalysisVM {
             get => analysisVM;
             set => SetProperty(ref analysisVM, value);

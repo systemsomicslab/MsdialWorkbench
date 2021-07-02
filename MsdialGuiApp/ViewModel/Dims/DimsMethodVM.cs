@@ -1,9 +1,8 @@
 ﻿using CompMs.App.Msdial.Dims;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Normalize;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -15,6 +14,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,38 +22,37 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class DimsMethodVM : MethodVM {
+    class DimsMethodVM : MethodViewModel {
         static DimsMethodVM() {
             serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
         }
 
         public DimsMethodVM(
+            DimsMethodModel model,
             MsdialDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService)
-            : base(serializer) {
+            : base(model, serializer) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
+            Model = model;
             this.compoundSearchService = compoundSearchService;
 
-            var analysisFiles = storage.AnalysisFiles;
-            var alignmentFiles = storage.AlignmentFiles;
-
-            Model = new DimsMethodModel(storage, analysisFiles, alignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true));
-            Disposables.Add(Model);
-
-            AnalysisFilesView = CollectionViewSource.GetDefaultView(Model.AnalysisFiles);
-            AnalysisFilesView.MoveCurrentToFirst();
-
-            AlignmentFilesView = CollectionViewSource.GetDefaultView(Model.AlignmentFiles);
-            AlignmentFilesView.MoveCurrentToFirst();
-
             PropertyChanged += OnDisplayFiltersChanged;
+        }
+
+        public DimsMethodVM(
+            MsdialDataStorage storage,
+            IWindowService<CompoundSearchVM> compoundSearchService)
+            : this(
+                  new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true)),
+                  storage,
+                  compoundSearchService) {
+
         }
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
@@ -71,9 +70,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             set => SetProperty(ref alignmentVM, value);
         }
         private AlignmentDimsVM alignmentVM;
-
-        public ICollectionView AnalysisFilesView { get; }
-        public ICollectionView AlignmentFilesView { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -138,7 +134,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     return -1;
             }
 
-            LoadAnalysisFile(Model.Storage.AnalysisFiles.FirstOrDefault());
+            AnalysisFilesView.MoveCurrentToFirst();
+            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
+            LoadAnalysisFileCommand.Execute();
             return 0;
         }
 
@@ -209,50 +207,35 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public override void LoadProject() {
             Model.LoadAnnotator();
 
-            LoadSelectedAnalysisFile();
+            AnalysisFilesView.MoveCurrentToFirst();
+            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
+            LoadAnalysisFileCommand.Execute();
         }
 
-        public DelegateCommand LoadAnalysisFileCommand {
-            get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadSelectedAnalysisFile));
-        }
-        private DelegateCommand loadAnalysisFileCommand;
-
-        private void LoadSelectedAnalysisFile() {
-            if (AnalysisFilesView.CurrentItem is AnalysisFileBean analysis) {
-                LoadAnalysisFile(analysis);
-            }
-        }
-
-        public DelegateCommand LoadAlignmentFileCommand {
-            get => loadAlignmentFileCommand ?? (loadAlignmentFileCommand = new DelegateCommand(LoadSelectedAlignmentFile));
-        }
-        private DelegateCommand loadAlignmentFileCommand;
-        private void LoadSelectedAlignmentFile() {
-            if (AlignmentFilesView.CurrentItem is AlignmentFileBean alignment) {
-                LoadAlignmentFile(alignment);
-            }
-        }
-
-        private AnalysisFileBean cacheAnalysisFile;
-        private void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (cacheAnalysisFile == analysis || analysis == null) {
+        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
+            if (analysisFile?.File == null || Model.AnalysisFile == analysisFile.File) {
                 return;
             }
 
-            cacheAnalysisFile = analysis;
-            Model.AnalysisFile = analysis;
-            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, compoundSearchService) { DisplayFilters = displayFilters };
+            Model.LoadAnalysisFile(analysisFile.File);
+            if (AnalysisVM != null) {
+                AnalysisVM.Dispose();
+                Disposables.Remove(AnalysisVM);
+            }
+            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, compoundSearchService) { DisplayFilters = displayFilters }.AddTo(Disposables);
         }
 
-        private AlignmentFileBean cacheAlignmentFile;
-        private void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (cacheAlignmentFile == alignment || alignment == null) {
+        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
+            if (alignmentFile?.File == null || Model.AlignmentFile == alignmentFile.File) {
                 return;
             }
 
-            cacheAlignmentFile = alignment;
-            Model.AlignmentFile = alignment;
-            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService) { DisplayFilters = displayFilters };
+            Model.LoadAlignmentFile(alignmentFile.File);
+            if (AlignmentVM != null) {
+                AlignmentVM.Dispose();
+                Disposables.Remove(AlignmentVM);
+            }
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService) { DisplayFilters = displayFilters }.AddTo(Disposables);
         }
 
         public override void SaveProject() {

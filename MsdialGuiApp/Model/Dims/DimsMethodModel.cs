@@ -1,8 +1,8 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -15,6 +15,7 @@ using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialDimsCore.Parser;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsMethodModel : BindableBase, IDisposable
+    class DimsMethodModel : MethodModelBase
     {
         static DimsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -32,10 +33,13 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public DimsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles, IDataProviderFactory<AnalysisFileBean> providerFactory) {
+        public DimsMethodModel(
+            MsdialDataStorage storage,
+            List<AnalysisFileBean> analysisFiles,
+            List<AlignmentFileBean> alignmentFiles,
+            IDataProviderFactory<AnalysisFileBean> providerFactory)
+            : base(analysisFiles, alignmentFiles) {
             Storage = storage;
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
             ProviderFactory = providerFactory;
         }
 
@@ -47,38 +51,6 @@ namespace CompMs.App.Msdial.Model.Dims
             set => SetProperty(ref storage, value);
         }
         private MsdialDataStorage storage;
-
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
-            get => analysisFiles;
-            set => SetProperty(ref analysisFiles, value);
-        }
-        private ObservableCollection<AnalysisFileBean> analysisFiles;
-
-        public AnalysisFileBean AnalysisFile {
-            get => analysisFile;
-            set {
-                if (SetProperty(ref analysisFile, value)) {
-                    AnalysisModel = CreateAnalysisModel(value);
-                }
-            }
-        }
-        private AnalysisFileBean analysisFile;
-
-        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
-            get => alignmentFiles;
-            set => SetProperty(ref alignmentFiles, value);
-        }
-        private ObservableCollection<AlignmentFileBean> alignmentFiles;
-
-        public AlignmentFileBean AlignmentFile {
-            get => alignmentFile;
-            set {
-                if (SetProperty(ref alignmentFile, value)) {
-                    AlignmentModel = CreateAlignmentModel(value);
-                }
-            }
-        }
-        private AlignmentFileBean alignmentFile;
 
         public DimsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -106,7 +78,6 @@ namespace CompMs.App.Msdial.Model.Dims
             get => serializer ?? (serializer = new MsdialDimsSerializer());
         }
         private MsdialDimsSerializer serializer;
-        private bool disposedValue;
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
@@ -120,16 +91,14 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
-            if (AlignmentFiles == null)
-                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
             AlignmentFiles.Add(
                 new AlignmentFileBean
                 {
                     FileID = AlignmentFiles.Count,
                     FileName = alignmentResultFileName,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                    FilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                    EicFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
+                    SpectraFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
                 }
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -192,6 +161,19 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentModel?.SaveProject();
         }
 
+        public void LoadAnalysisFile(AnalysisFileBean analysis) {
+            if (analysis == AnalysisFile) {
+                return;
+            }
+            AnalysisFile = analysis;
+
+            if (AnalysisModel != null) {
+                AnalysisModel.Dispose();
+                Disposables.Remove(AnalysisModel);
+            }
+            AnalysisModel = CreateAnalysisModel(analysis).AddTo(Disposables);
+        }
+
         public DimsAnalysisModel CreateAnalysisModel(AnalysisFileBean analysisFile) {
             if (analysisFile == null) {
                 return null;
@@ -205,6 +187,19 @@ namespace CompMs.App.Msdial.Model.Dims
                     textDBChromatogramAnnotator);
         }
 
+        public void LoadAlignmentFile(AlignmentFileBean alignment) {
+            if (alignment == AlignmentFile) {
+                return;
+            }
+            AlignmentFile = alignment;
+
+            if (AlignmentModel != null) {
+                AlignmentModel.Dispose();
+                Disposables.Remove(AlignmentModel);
+            }
+            AlignmentModel = CreateAlignmentModel(alignment).AddTo(Disposables);
+        }
+
         private DimsAlignmentModel CreateAlignmentModel(AlignmentFileBean alignmentFile) {
             if (alignmentFile == null) {
                 return null;
@@ -215,23 +210,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.ParameterBase,
                 mspAlignmentAnnotator,
                 textDBAlignmentAnnotator);
-        }
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    AnalysisModel?.Dispose();
-                    AlignmentModel?.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }
