@@ -10,7 +10,6 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsMspAnnotator : MspDbRestorableBase, IAnnotator<IMSIonProperty, MSDecResult>
+    public class ImmsMspAnnotator : MspDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
@@ -35,7 +34,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult Annotate(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -44,7 +43,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FindCandidates(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -71,7 +70,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter = null) {
 
@@ -157,7 +156,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public void Validate(
             MsScanMatchResult result,
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)

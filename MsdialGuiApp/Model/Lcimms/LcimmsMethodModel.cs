@@ -31,11 +31,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) {
             Storage = storage;
 
-            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-
-            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            var mspAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
+            var textAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            mspChromatogramAnnotator = mspAnnotator;
+            textDBChromatogramAnnotator = textAnnotator;
+            mspAlignmentAnnotator = mspAnnotator;
+            textDBAlignmentAnnotator = textAnnotator;
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AnalysisFile = AnalysisFiles.FirstOrDefault();
@@ -43,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentFile = AlignmentFiles.FirstOrDefault();
 
             var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add(mspChromatogramAnnotator);
-            dataMapper.Add(textDBChromatogramAnnotator);
+            dataMapper.Add(mspAnnotator);
+            dataMapper.Add(textAnnotator);
         }
 
         private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;

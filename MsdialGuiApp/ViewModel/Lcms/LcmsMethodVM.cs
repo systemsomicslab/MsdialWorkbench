@@ -110,8 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? Enumerable.Empty<AlignmentFileBean>());
 
             var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add(new MspDbRestorableDataBaseRefer(Storage.MspDB, "MspDB"));
-            dataMapper.Add(new TextDbRestorableDataBaseRefer(Storage.TextDB, "TextDB"));
+            dataMapper.Add(new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
+            dataMapper.Add(new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
         }
 
         public override int InitializeNewProject(Window window) {

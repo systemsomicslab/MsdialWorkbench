@@ -102,10 +102,10 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnnotator() {
-            var mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
+            var mspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
             MspChromatogramAnnotator = mspAnnotator;
             MspAlignmentAnnotator = mspAnnotator;
-            var textAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
+            var textAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
             TextDBChromatogramAnnotator = textAnnotator;
             TextDBAlignmentAnnotator = textAnnotator;
         }

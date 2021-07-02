@@ -18,7 +18,7 @@ namespace CompMs.MsdialImmsCore.Parser
 
         protected override void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
             using (var stream = File.Open(path, FileMode.Open)) {
-                storage.DataBaseMapper?.Restore(new ImmsRestorationVisitor(storage.ParameterBase), stream);
+                storage.DataBaseMapper?.Restore(new ImmsLoadAnnotatorVisitor(storage.ParameterBase), stream);
             }
         }
     }
