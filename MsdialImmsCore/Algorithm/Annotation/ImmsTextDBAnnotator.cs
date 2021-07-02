@@ -50,7 +50,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string sourceKey) {
-
+            //if (Math.Abs(property.PrecursorMz - 770.509484372875) < 0.02) {
+            //    Console.WriteLine();
+            //}
             (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
@@ -97,8 +99,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 scores.Add(result.AcurateMassSimilarity);
             if (result.CcsSimilarity >= 0)
                 scores.Add(result.CcsSimilarity);
-            if (result.IsotopeSimilarity >= 0)
-                scores.Add(result.IsotopeSimilarity);
+            //if (result.IsotopeSimilarity >= 0)
+            //    scores.Add(result.IsotopeSimilarity);
             result.TotalScore = scores.DefaultIfEmpty().Average();
 
             return result;

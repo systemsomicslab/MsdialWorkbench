@@ -37,12 +37,12 @@ namespace CompMs.MsdialCore.Algorithm {
         public static void Process(
             List<ChromatogramPeakFeature> peakFeatures,
             ParameterBase param, 
-            IupacDatabase iupac)
+            IupacDatabase iupac, bool isDriftAxis = false)
         {
             peakFeatures = peakFeatures.OrderBy(n => n.PrecursorMz).ToList();
 
             //var spectrumMargin = 2;
-            var rtMargin = 0.25F;
+            var xMargin = isDriftAxis ? 0.01F : 0.25F;
             var isotopeMax = 8.1;
 
             foreach (var peak in peakFeatures) {
@@ -51,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
                 // var focusedScan = peak.ScanNumberAtPeakTop;
                 var focusedMass = peak.PrecursorMz;
-                var focusedRt = peak.ChromXsTop.RT.Value;
+                var focusedXValue = isDriftAxis ? peak.ChromXsTop.Drift.Value : peak.ChromXsTop.RT.Value;
 
                 var startScanIndex = SearchCollection.LowerBound(peakFeatures, new ChromatogramPeakFeature() { Mass = focusedMass - param.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
                 //DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
@@ -59,30 +59,31 @@ namespace CompMs.MsdialCore.Algorithm {
 
                 for (int j = startScanIndex; j < peakFeatures.Count; j++) {
 
+                    var xValue = isDriftAxis ? peakFeatures[j].ChromXsTop.Drift.Value : peakFeatures[j].ChromXsTop.RT.Value;
                     if (peakFeatures[j].PeakID == peak.PeakID) continue;
-                    if (peakFeatures[j].ChromXsTop.RT.Value < focusedRt - rtMargin) continue;
-                    if (peakFeatures[j].ChromXsTop.RT.Value > focusedRt + rtMargin) continue;
+                    if (xValue < focusedXValue - xMargin) continue;
+                    if (xValue > focusedXValue + xMargin) continue;
                     if (peakFeatures[j].PeakCharacter.IsotopeWeightNumber >= 0) continue;
                     if (peakFeatures[j].PrecursorMz <= focusedMass) continue;
                     if (peakFeatures[j].PrecursorMz > focusedMass + isotopeMax) break;
 
                     isotopeCandidates.Add(peakFeatures[j]);
                 }
-                EstimateIsotopes(isotopeCandidates, param, iupac);
+                EstimateIsotopes(isotopeCandidates, param, iupac, isDriftAxis);
             }
         }
      
         public static void EstimateIsotopes(
             List<ChromatogramPeakFeature> peakFeatures,
             ParameterBase param,
-            IupacDatabase iupac) {
+            IupacDatabase iupac, bool isDriftAxis = false) {
             var c13_c12Diff = MassDiffDictionary.C13_C12;  //1.003355F;
             var br81_br79 = MassDiffDictionary.Br81_Br79; //1.9979535; also to be used for S34_S32 (1.9957959), Cl37_Cl35 (1.99704991)
             var tolerance = param.CentroidMs1Tolerance;
             var monoIsoPeak = peakFeatures[0];
             var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
             var accuracy = MolecularFormulaUtility.ConvertPpmToMassAccuracy(monoIsoPeak.PrecursorMz, ppm);
-            var rtMargin = 0.06F;
+            var xMargin = isDriftAxis ? 0.005F : 0.06F;
 
             tolerance = (float)accuracy;
             if (tolerance < param.CentroidMs1Tolerance) tolerance = param.CentroidMs1Tolerance;
@@ -94,20 +95,20 @@ namespace CompMs.MsdialCore.Algorithm {
             //if (Math.Abs(monoIsoPeak.AccurateMass - 762.5087) < 0.001) {
             //    Console.WriteLine();
             //}
-            var rtMonoisotope = monoIsoPeak.ChromXsTop.RT.Value;
-            var rtFocused = monoIsoPeak.ChromXsTop.RT.Value;
+            var xMonoisotope = isDriftAxis ? monoIsoPeak.ChromXsTop.Drift.Value : monoIsoPeak.ChromXsTop.RT.Value;
+            var xFocused = isDriftAxis ? monoIsoPeak.ChromXsTop.Drift.Value : monoIsoPeak.ChromXsTop.RT.Value;
             //charge number check at M + 1
             var predChargeNumber = 1;
             for (int j = 1; j < peakFeatures.Count; j++) {
                 var isotopePeak = peakFeatures[j];
                 if (isotopePeak.PrecursorMz > monoIsoPeak.PrecursorMz + c13_c12Diff + tolerance) break;
-                var isotopeRt = isotopePeak.ChromXsTop.RT.Value;
+                var isotopeXValue = isDriftAxis ? isotopePeak.ChromXsTop.Drift.Value : isotopePeak.ChromXsTop.RT.Value;
 
                 for (int k = param.MaxChargeNumber; k >= 1; k--) {
                     var predIsotopeMass = (double)monoIsoPeak.PrecursorMz + (double)c13_c12Diff / (double)k;
                     var diff = Math.Abs(predIsotopeMass - isotopePeak.PrecursorMz);
-                    var diffRt = Math.Abs(rtMonoisotope - isotopeRt);
-                    if (diff < tolerance && diffRt < rtMargin) {
+                    var diffX = Math.Abs(xMonoisotope - isotopeXValue);
+                    if (diff < tolerance && diffX < xMargin) {
                         predChargeNumber = k;
                         if (k <= 3) {
                             break;
@@ -165,20 +166,20 @@ namespace CompMs.MsdialCore.Algorithm {
                 for (int j = reminderIndex; j < peakFeatures.Count; j++) {
 
                     var isotopePeak = peakFeatures[j];
-                    var isotopeRt = isotopePeak.ChromXsTop.RT.Value;
+                    var isotopeXValue = isDriftAxis ? isotopePeak.ChromXsTop.Drift.Value : isotopePeak.ChromXsTop.RT.Value;
                     var isotopeMz = isotopePeak.PrecursorMz;
                     var diffMz = Math.Abs(predIsotopicMass - isotopeMz);
                     var diffMzClBr = Math.Abs(predClBrIsotopicMass - isotopeMz);
-                    var diffRt = Math.Abs(rtFocused - isotopeRt);
+                    var diffXValue = Math.Abs(xFocused - isotopeXValue);
 
-                    if (diffMz < tolerance && diffRt < rtMargin) {
+                    if (diffMz < tolerance && diffXValue < xMargin) {
 
                         if (isotopeTemps[i].PeakID == -1) {
                             isotopeTemps[i] = new IsotopeTemp() {
                                 WeightNumber = i, Mz = isotopeMz,
                                 Intensity = isotopePeak.PeakHeightTop, PeakID = j
                             };
-                            rtFocused = isotopeRt;
+                            xFocused = isotopeXValue;
                             mzFocused = isotopeMz;
                         }
                         else {
@@ -187,18 +188,18 @@ namespace CompMs.MsdialCore.Algorithm {
                                 isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
                                 isotopeTemps[i].PeakID = j;
 
-                                rtFocused = isotopeRt;
+                                xFocused = isotopeXValue;
                                 mzFocused = isotopeMz;
                             }
                         }
                     }
-                    else if (param.IsBrClConsideredForIsotopes && i % 2 == 0 && diffMzClBr < tolerance && diffRt < rtMargin) {
+                    else if (param.IsBrClConsideredForIsotopes && i % 2 == 0 && diffMzClBr < tolerance && diffXValue < xMargin) {
                         if (isotopeTemps[i].PeakID == -1) {
                             isotopeTemps[i] = new IsotopeTemp() {
                                 WeightNumber = i, Mz = isotopeMz, MzClBr = isotopeMz,
                                 Intensity = isotopePeak.PeakHeightTop, PeakID = j
                             };
-                            rtFocused = isotopeRt;
+                            xFocused = isotopeXValue;
                             mzFocused = isotopeMz;
                         }
                         else {
@@ -208,7 +209,7 @@ namespace CompMs.MsdialCore.Algorithm {
                                 isotopeTemps[i].Intensity = isotopePeak.PeakHeightTop;
                                 isotopeTemps[i].PeakID = j;
 
-                                rtFocused = isotopeRt;
+                                xFocused = isotopeXValue;
                                 mzFocused = isotopeMz;
                             }
                         }

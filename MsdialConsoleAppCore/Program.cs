@@ -50,11 +50,11 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //args = new string[] {
             //    "lcmsdda"
             //    , "-i"
-            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\lcmsdda\commandlinetest"
             //    , "-m"
-            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata\param.txt"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\lcmsdda\commandlinetest\param.txt"
             //    , "-o"
-            //    , @"D:\0_Code\MsdialWorkbenchDemo\wiff1\MSDIAL ver 4.60\demodata"
+            //    , @"E:\0_SourceCode\MsdialWorkbenchDemo\lcmsdda\commandlinetest"
             //    , "-p"
             //};
 
@@ -98,6 +98,21 @@ namespace Riken.Metabolomics.MsdialConsoleApp
             //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs\Msdial-lcms-dia-Param.txt"
             //    , "-o"
             //    , @"D:\Lecture for metabolomics software 2019\191111_SoftwareLecture_DIA\Lecture Metabolomics software 2019\demo data\Demo data for all ions with multiple CEs" };
+
+
+            //LC-IM-DDA (PASEF) test using .d
+            args = new string[] {
+                "lcimmsdda"
+                , "-i"
+                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
+                , "-m"
+                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg\param.txt"
+                , "-o"
+                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
+                , "-p" };
+
+
+
             #endregion
 
             return MainProcess.Run(args);

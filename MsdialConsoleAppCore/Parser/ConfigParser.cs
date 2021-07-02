@@ -6,6 +6,7 @@ using Rfx.Riken.OsakaUniv;
 using System.IO;
 using Msdial.Gcms.Dataprocess.Utility;
 using MsdialConsoleAppCore.Properties;
+using CompMs.RawDataHandler.Core;
 
 namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 {
@@ -296,6 +297,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     if (param.AnalysisParamOfMsdialCorrDec == null) param.AnalysisParamOfMsdialCorrDec = new AnalysisParamOfMsdialCorrDec();
                     if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.AnalysisParamOfMsdialCorrDec.RemoveAfterPrecursor = bool.Parse(value); return;
 
+                // ion mobility setting
+                case "accumulated rt ragne": if (float.TryParse(value, out f)) param.AccumulatedRtRagne = f; return;
+                case "ccs search tolerance": if (float.TryParse(value, out f)) param.CcsSearchTolerance = f; return;
+                case "mobility axis alignment tolerance": if (float.TryParse(value, out f)) param.DriftTimeAlignmentTolerance = f; return;
+                case "use ccs for identification scoring": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.IsUseCcsForIdentificationScoring = bool.Parse(value); return;
+                case "use ccs for identification filtering": if (value.ToUpper() == "TRUE" || value.ToUpper() == "FALSE") param.IsUseCcsForIdentificationFiltering = bool.Parse(value); return;
             }
         }
 
@@ -392,6 +399,60 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     if (value.ToUpper() == "TRUE")
                         projectProp.IsLabPrivateVersionTada = true;                    
                     return;
+            }
+        }
+        #endregion
+
+        #region to obtain ccs calibration data
+
+        public static void SetCalibrateInformation(AnalysisParametersBean param, List<AnalysisFileBean> files) {
+            if (param.FileidToCcsCalibrantData != null && param.FileidToCcsCalibrantData.Count > 0) return;
+            param.FileidToCcsCalibrantData = new Dictionary<int, CoefficientsForCcsCalculation>();
+
+            var isAllCalibrantImported = true;
+            foreach (var file in files) {
+                var ibfpath = file.AnalysisFilePropertyBean.AnalysisFilePath;
+                using (var access = new RawDataAccess(ibfpath, 0, true)) {
+                    var calinfo = access.ReadIonmobilityCalibrationInfo();
+                    var fileid = file.AnalysisFilePropertyBean.AnalysisFileId;
+                    CoefficientsForCcsCalculation ccsCalinfo;
+                    if (calinfo == null) {
+                        ccsCalinfo = new CoefficientsForCcsCalculation() {
+                            IsAgilentIM = false, AgilentBeta = -1, AgilentTFix = -1,
+                            IsBrukerIM = false, IsWatersIM = false, WatersCoefficient = -1, WatersExponent = -1, WatersT0 = -1
+                        };
+                    }
+                    else {
+                        ccsCalinfo = new CoefficientsForCcsCalculation() {
+                            IsAgilentIM = calinfo.IsAgilentIM, AgilentBeta = calinfo.AgilentBeta, AgilentTFix = calinfo.AgilentTFix,
+                            IsBrukerIM = calinfo.IsBrukerIM, IsWatersIM = calinfo.IsWatersIM, WatersCoefficient = calinfo.WatersCoefficient, WatersExponent = calinfo.WatersExponent, WatersT0 = calinfo.WatersT0
+                        };
+                        if (calinfo.IsAgilentIM) {
+                            param.IonMobilityType = IonMobilityType.Dtims;
+                        }
+                        else if (calinfo.IsWatersIM) {
+                            param.IonMobilityType = IonMobilityType.Twims;
+                        }
+                        else {
+                            param.IonMobilityType = IonMobilityType.Tims;
+                        }
+                    }
+
+                    param.FileidToCcsCalibrantData[fileid] = ccsCalinfo;
+                    if (ccsCalinfo.AgilentBeta == -1 && ccsCalinfo.AgilentTFix == -1 &&
+                        ccsCalinfo.WatersCoefficient == -1 && ccsCalinfo.WatersExponent == -1 && ccsCalinfo.WatersT0 == -1) {
+                        isAllCalibrantImported = false;
+                    }
+                }
+            }
+            param.IsAllCalibrantDataImported = isAllCalibrantImported;
+            if (!isAllCalibrantImported) {
+                var errorMessage = param.IonMobilityType == IonMobilityType.Dtims
+                    ? "For Agilent single fieled-based CCS calculation, you have to set the coefficients for all files. "
+                    : "For Waters CCS calculation, you have to set the coefficients for all files. ";
+                errorMessage += "Otherwise, the Mason–Schamp equation using gasweight=28.0134 and temperature=305.0 is used for CCS calculation for all data. ";
+                errorMessage += "Because the program does not find the calibration data file, the CCS calculation process is performed by the Mason-Schamp equation.";
+                Console.WriteLine(errorMessage);
             }
         }
         #endregion

@@ -58,7 +58,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             var gcmsParam = ConfigParser.ReadForGcms(methodFile);
 			var rdamProperty = AnalysisFilesParser.GetRdamProperty(analysisFiles);
             var alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputFolder);
-
+           
             if (gcmsParam.RiDictionaryFilePath != string.Empty)
             {
                 var errorMessage = string.Empty;

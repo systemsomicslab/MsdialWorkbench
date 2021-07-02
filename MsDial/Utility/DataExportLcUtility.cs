@@ -406,6 +406,9 @@ namespace Rfx.Riken.OsakaUniv
                 exportSpectra(mainWindow, exportFolderPath, alignmentFileID,
                     alignmentResult, exportSpectraFileFormat, targetAnalysisFileID, blankFilter);
 
+            if (isParamExport) {
+                ParameterExport(analysisFiles, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, paramFile);
+            }
             mainWindow.PeakViewerForLcRefresh(focusedFileID);
 
             if (focusedAlignmentFileID < 0)

@@ -40,12 +40,17 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
                     return lcmsDdaProcess(inputFolder, outputFolder, methodFile, isProjectStore, targetMz);
                 case "lcmsdia":
                     return lcmsDiaProcess(inputFolder, outputFolder, methodFile, isProjectStore, targetMz, isAif);
+                case "lcimmsdda":
+                    return lcimmsProcess(inputFolder, outputFolder, methodFile, isProjectStore);
+                case "lcimmsdia":
+                    return lcimmsProcess(inputFolder, outputFolder, methodFile, isProjectStore, true);
                 default:
                     Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia'");
                     return -1;
             }
         }
 
+       
         private static int gcmsProcess(string inputFolder, string outputFolder, string methodFile, bool isProjectStore)
         {
 			var code = 0;
@@ -89,15 +94,31 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
 			return code;
 		}
 
-		/// <summary>
-		/// Shows console application usage help
-		/// </summary>
-		/// <returns>error code -1</returns>
+        private static int lcimmsProcess(string inputFolder, string outputFolder, string methodFile, bool isProjectStore, bool isDIA = false) {
+            var code = 0;
+            try {
+                code = new LcimmsProcess().Run(inputFolder, outputFolder, methodFile, isProjectStore, isDIA);
+            }
+            catch (Exception ex) {
+                code = ex.GetHashCode();
+                var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
+                Debug.WriteLine(msg);
+                Console.WriteLine(msg);
+            }
+
+            return code;
+        }
+
+
+        /// <summary>
+        /// Shows console application usage help
+        /// </summary>
+        /// <returns>error code -1</returns>
         private static int argsError() {
             var error = @"
 Msdial Console App requires the following args:
 MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimdda, lcimdia	(required)
            <input folder>	is the folder containing the files to be processed	(required)
            <output folder>	is the folder to save results	(required)
            <method file>	is a file holding processing properties	(required)
@@ -112,7 +133,7 @@ MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <met
             var error = @"
 Msdial Console App requires the following args:
 MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
-    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia	(required)
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimdda, lcimdia	(required)
            <input folder>	is the folder containing the files to be processed	(required)
            <output folder>	is the folder to save results	(required)
            <method file>	is a file holding processing properties	(required)

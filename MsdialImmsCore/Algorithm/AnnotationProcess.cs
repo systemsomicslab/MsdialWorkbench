@@ -85,6 +85,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = msdecResults[i];
+                    //Console.WriteLine("mass {0}, isotope {1}", chromPeakFeature.Mass, chromPeakFeature.PeakCharacter.IsotopeWeightNumber);
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, mspAnnotator, textDBAnnotator, parameter);
                     }
@@ -98,7 +99,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
             MsdialImmsParameter parameter) {
-
+            //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
+            //    Console.WriteLine();
+            //}
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance);
 
             SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam, parameter.TargetOmics);
@@ -138,7 +141,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             if (textDBAnnotator == null)
                 return;
-
+            //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
+            //    Console.WriteLine();
+            //}
             var results = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter)
                 .Where(candidate => candidate.IsPrecursorMzMatch)
                 .Where(candidate => candidate.TotalScore >= textDBSearchParameter.TotalScoreCutoff)

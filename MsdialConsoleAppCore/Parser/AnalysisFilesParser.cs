@@ -62,11 +62,20 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
         public static List<AnalysisFileBean> ReadFolderContents(string folderpath)
         {
             var filepathes = Directory.GetFiles(folderpath, "*.*", SearchOption.TopDirectoryOnly);
+            var folderpathes = Directory.GetDirectories(folderpath);
             var importableFiles = new List<string>();
 
             foreach (var file in filepathes) {
                 var extension = System.IO.Path.GetExtension(file).ToLower();
                 if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf" 
+                    || extension == ".wiff" || extension == ".wiff2"
+                    || extension == ".raw" || extension == ".d")
+                    importableFiles.Add(file);
+            }
+
+            foreach (var file in folderpathes) {
+                var extension = System.IO.Path.GetExtension(file).ToLower();
+                if (extension == ".abf" || extension == ".cdf" || extension == ".mzml" || extension == ".ibf"
                     || extension == ".wiff" || extension == ".wiff2"
                     || extension == ".raw" || extension == ".d")
                     importableFiles.Add(file);

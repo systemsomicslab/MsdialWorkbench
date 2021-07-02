@@ -516,10 +516,12 @@ namespace Msdial.Lcms.Dataprocess.Utility {
             ObservableCollection<double[]> ms1Spectra;
             MS2DecResult ms2DecResult;
             if (driftSpot == null) {
+                Console.WriteLine("rt axis {0}", peakAreaBean.Ms1LevelDatapointNumberAtAcculateMs1);
                 ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(accumulatedSpectra, projectProperty.DataType, peakAreaBean.Ms1LevelDatapointNumberAtAcculateMs1, param.CentroidMs1Tolerance, true);
                 ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, peakAreaBean.MasterPeakID);
             }
             else {
+                Console.WriteLine("im axis {0}", driftSpot.Ms1LevelDatapointNumber);
                 ms1Spectra = DataAccessLcUtility.GetCentroidMassSpectra(spectrumCollection, projectProperty.DataType, driftSpot.Ms1LevelDatapointNumber, param.CentroidMs1Tolerance, true);
                 ms2DecResult = SpectralDeconvolution.ReadMS2DecResult(fs, seekpointList, driftSpot.MasterPeakID);
             }
