@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -25,11 +25,19 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AnalysisFileBean analysisFile,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
             IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
@@ -130,6 +138,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly AnalysisFileBean analysisFile;
         private readonly IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, textDBAnnotator;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public ICollectionView Ms1Peaks {
             get => ms1Peaks;
@@ -416,19 +425,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
 
-        private DelegateCommand<Window> showIonTableCommand;
+        private DelegateCommand showIonTableCommand;
 
-        private void ShowIonTable(Window owner) {
-            var window = new View.Table.AlignmentSpotTable
-            {
-                DataContext = PeakTableViewModel,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Owner = owner,
-            };
-
-            window.Show();
+        private void ShowIonTable() {
+            peakSpotTableService.Show(PeakTableViewModel);
         }
     }
 }

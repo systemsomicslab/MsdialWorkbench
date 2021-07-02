@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -24,11 +25,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public AnalysisDimsVM(
             DimsAnalysisModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
 
             Model = model;
             this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
 
             Target = Model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Target.Subscribe(UpdateGraphTitleOnTargetChanged);
@@ -110,6 +119,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsAnalysisModel Model { get; }
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public AnalysisPeakPlotViewModel PlotViewModel {
             get => plotViewModel2;
@@ -346,18 +356,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
-        private DelegateCommand<Window> showIonTableCommand;
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand showIonTableCommand;
 
-        private void ShowIonTable(Window owner) {
-            var window = new View.Table.AlignmentSpotTable
-            {
-                DataContext = PeakTableViewModel,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Owner = owner,
-            };
-
-            window.Show();
+        private void ShowIonTable() {
+            peakSpotTableService.Show(PeakTableViewModel);
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));

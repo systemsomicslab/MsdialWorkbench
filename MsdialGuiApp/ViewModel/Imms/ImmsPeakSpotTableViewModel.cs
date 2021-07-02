@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -9,10 +8,10 @@ using System;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    abstract class ImmsPeakSpotTableViewModel<T> : PeakSpotTableViewModelBase<T>
+    abstract class ImmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected ImmsPeakSpotTableViewModel(
-            ImmsPeakSpotTableModel<T> model,
+            IImmsPeakSpotTableModel model,
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower, IReactiveProperty<double> driftUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
@@ -56,7 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public IReactiveProperty<double> DriftUpper { get; }
     }
 
-    sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel<ChromatogramPeakFeatureModel>
+    sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel
     {
         public ImmsAnalysisPeakTableViewModel(
             ImmsAnalysisPeakTableModel model,
@@ -77,7 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
-    sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel<AlignmentSpotPropertyModel>
+    sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel
     {
         public ImmsAlignmentSpotTableViewModel(
             ImmsAlignmentSpotTableModel model,
