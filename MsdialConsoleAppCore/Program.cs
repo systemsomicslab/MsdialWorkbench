@@ -101,15 +101,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp
 
 
             //LC-IM-DDA (PASEF) test using .d
-            args = new string[] {
-                "lcimmsdda"
-                , "-i"
-                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
-                , "-m"
-                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg\param.txt"
-                , "-o"
-                , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
-                , "-p" };
+            //args = new string[] {
+            //    "lcimmsdda"
+            //    , "-i"
+            //    , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
+            //    , "-m"
+            //    , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg\param.txt"
+            //    , "-o"
+            //    , @"E:\6_Projects\PROJECT_Bruker_Multimethods\Bruker_20210521\4D-Lipidmics_neg"
+            //    , "-p" };
 
 
 
