@@ -40,7 +40,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.peakSpotTableService = peakSpotTableService;
 
             Target = Model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Subscribe(UpdateGraphTitleOnTargetChanged);
+            Target.Select(t => t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
+                .Subscribe(title => Model.PlotModel.GraphTitle = title);
+            Target.CombineLatest(Model.EicModel.MaxIntensitySource, (t, i) => t is null ? string.Empty : $"{t.Mass:N4}[Da]  Max intensity: {i:F0}")
+                .Subscribe(title => Model.EicModel.GraphTitle = title);
 
             MassMin = Model.MassMin;
             MassMax = Model.MassMax;
@@ -126,17 +129,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             set => SetProperty(ref plotViewModel2, value);
         }
         private AnalysisPeakPlotViewModel plotViewModel2;
-
-        private void UpdateGraphTitleOnTargetChanged(ChromatogramPeakFeatureModel t) {
-            if (t == null) {
-                Model.PlotModel.GraphTitle = string.Empty;
-                Model.EicModel.GraphTitle = string.Empty;
-            }
-            else {
-                Model.PlotModel.GraphTitle = $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}";
-                Model.EicModel.GraphTitle = $"{t.Mass:N4}[Da]  Max intensity: {Model.EicModel.MaxIntensity:F0}";
-            }
-        }
 
         public EicViewModel EicViewModel {
             get => eicViewModel2;
@@ -350,7 +342,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();
-                    _ = Model.OnTargetChangedAsync(Model.Target.Value);
                     Ms1Peaks?.Refresh();
                 }
             }

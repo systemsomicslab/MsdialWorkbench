@@ -58,15 +58,14 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
+            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target);
+
             EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            EicModel = new Chart.EicModel(EicLoader)
+            EicModel = new Chart.EicModel(Target, EicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
             };
-
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target);
-            Target.Subscribe(async t => await OnTargetChangedAsync(t));
 
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
@@ -142,30 +141,6 @@ namespace CompMs.App.Msdial.Model.Dims
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         public EicLoader EicLoader { get; }
-
-        private CancellationTokenSource cts;
-        public async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
-            cts?.Cancel();
-            var localCts = cts = new CancellationTokenSource();
-
-            try {
-                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
-                    t => {
-                        localCts.Dispose();
-                        if (cts == localCts) {
-                            cts = null;
-                        }
-                    }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) {
-
-            }
-        }
-
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            await EicModel.LoadEicAsync(target, token).ConfigureAwait(false);
-            //Ms2SpectrumModel2?.LoadSpectrumAsync(target, token)
-        }
 
         public string RawSplashKey {
             get => rawSplashKey;

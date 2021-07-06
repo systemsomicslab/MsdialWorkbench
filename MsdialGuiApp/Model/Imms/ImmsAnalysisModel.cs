@@ -52,12 +52,6 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
-            EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
-            EicModel = new Chart.EicModel(EicLoader)
-            {
-                HorizontalTitle = "Drift time [1/k0]",
-                VerticalTitle = "Abundance",
-            };
             var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, labelsource)
             {
@@ -74,7 +68,14 @@ namespace CompMs.App.Msdial.Model.Imms
             Target
                 .Where(t => t == null)
                 .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
-            Target.Subscribe(async t => await OnTargetChangedAsync(t));
+            Target.Subscribe(t => OnTargetChanged(t));
+
+            EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            EicModel = new Chart.EicModel(Target, EicLoader)
+            {
+                HorizontalTitle = "Drift time [1/k0]",
+                VerticalTitle = "Abundance",
+            };
 
             var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
@@ -204,33 +205,12 @@ namespace CompMs.App.Msdial.Model.Imms
         public double IntensityMin => Ms1Peaks.Min(peak => peak.Intensity);
         public double IntensityMax => Ms1Peaks.Max(peak => peak.Intensity);
 
-        private CancellationTokenSource cts;
-
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target) {
-            cts?.Cancel();
-            var localCts = cts = new CancellationTokenSource();
-
-            try {
-                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
-                    t => {
-                        localCts.Dispose();
-                        if (cts == localCts)
-                            cts = null;
-                    }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) {
-
-            }
-        }
-
-        async Task OnTargetChangedAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        void OnTargetChanged(ChromatogramPeakFeatureModel target) {
             if (target != null) {
                 FocusID = target.InnerModel.MasterPeakID;
                 FocusDt = target.ChromXValue ?? 0;
                 FocusMz = target.Mass;
             }
-
-            await EicModel.LoadEicAsync(target, token).ConfigureAwait(false);
         }
 
         async Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
