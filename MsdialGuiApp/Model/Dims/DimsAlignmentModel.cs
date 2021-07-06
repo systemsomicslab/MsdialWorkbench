@@ -59,8 +59,9 @@ namespace CompMs.App.Msdial.Model.Dims
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
 
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, labelSource)
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource)
             {
                 GraphTitle = FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
@@ -68,10 +69,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Kendrick mass defect"
             };
-
-            Target = PlotModel
-                .ToReactivePropertySlimAsSynchronized(m => m.Target)
-                .AddTo(Disposables);
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
