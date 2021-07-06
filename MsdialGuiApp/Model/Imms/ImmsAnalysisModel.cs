@@ -52,8 +52,9 @@ namespace CompMs.App.Msdial.Model.Imms
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, labelsource)
+            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
             {
                 HorizontalTitle = EicModel.HorizontalTitle,
                 VerticalTitle = "m/z",
@@ -61,14 +62,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
 
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(Disposables);
             Target
                 .Where(t => t != null)
                 .Subscribe(t => PlotModel.GraphTitle = $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}");
             Target
                 .Where(t => t == null)
                 .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
-            Target.Subscribe(t => OnTargetChanged(t));
 
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
             EicModel = new Chart.EicModel(Target, EicLoader)
@@ -132,6 +131,7 @@ namespace CompMs.App.Msdial.Model.Imms
                         enableCache: true);
                     break;
             }
+            Target.Subscribe(t => OnTargetChanged(t));
         }
 
         private readonly MsdialImmsParameter parameter;

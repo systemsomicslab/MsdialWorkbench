@@ -49,16 +49,15 @@ namespace CompMs.App.Msdial.Model.Dims
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics)));
 
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, labelSource)
+            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
                 HorizontalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
-
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target);
 
             EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
             EicModel = new Chart.EicModel(Target, EicLoader)
