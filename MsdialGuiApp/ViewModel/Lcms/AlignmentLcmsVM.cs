@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.param = param;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
-            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
+            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Ms1Spots = CollectionViewSource.GetDefaultView(_ms1Spots);
 
             MassLower = MassMin;

@@ -242,7 +242,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath);
             _ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, param.TargetOmics == CompMs.Common.Enum.TargetOmics.Metabolomics ? false : true))
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
             Peaks = peaks;
             AmplitudeOrderMin = _ms1Peaks.Min(peak => peak.AmplitudeOrderValue);

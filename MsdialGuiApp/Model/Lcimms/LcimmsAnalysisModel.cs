@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != CompMs.Common.Enum.TargetOmics.Metabolomics))
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
             Peaks = peaks;
             MsdecResultsReader.GetSeekPointers(deconvolutionFile, out _, out seekPointers, out _);

@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak, parameter.TargetOmics != TargetOmics.Metabolomics))
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;

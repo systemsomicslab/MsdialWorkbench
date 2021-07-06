@@ -2,14 +2,9 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -100,8 +95,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
 
-        [Obsolete]
-        public List<BarItem> BarItems { get; private set; }
         internal readonly AlignmentSpotProperty innerModel;
 
         public static readonly double KMIupacUnit;
@@ -110,40 +103,14 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
-        [Obsolete]
-        public Brush SpotColor { get; set; }
 
         static AlignmentSpotPropertyModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class = null, bool coloredByOntology = false) {
+        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
-
-            if (id2class != null) {
-                _ = SetBarItems(innerModel, id2class);  // TODO: error handling
-            }
-            if (coloredByOntology) {
-                SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?
-                  new SolidColorBrush(ChemOntologyColor.Ontology2RgbaBrush[innerModel.Ontology]) :
-                  new SolidColorBrush(Color.FromArgb(180, 181, 181, 181));
-            }
-            else {
-                SpotColor = new SolidColorBrush(Color.FromArgb(180
-                            , (byte)(255 * innerModel.RelativeAmplitudeValue)
-                            , (byte)(255 * (1 - Math.Abs(innerModel.RelativeAmplitudeValue - 0.5)))
-                            , (byte)(255 - 255 * innerModel.RelativeAmplitudeValue)));
-            }
-
-            SpotColor.Freeze();
-        }
-
-        private async Task SetBarItems(AlignmentSpotProperty innerModel, Dictionary<int, string> id2class) {
-            BarItems = await Task.Run(() => innerModel.AlignedPeakProperties
-            .GroupBy(peak => id2class[peak.FileID])
-            .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-            .ToList());
         }
 
         public void RaisePropertyChanged() {
