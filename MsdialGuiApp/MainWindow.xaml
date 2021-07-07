@@ -103,9 +103,10 @@
 
         <ContentControl Content="{Binding MethodVM}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type lc:LcmsMethodVM}"
-                              xmlns:lc="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms">
-                    <view:MainView />
+                <DataTemplate DataType="{x:Type lcvm:LcmsMethodVM}"
+                              xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+                              xmlns:lcvw="clr-namespace:CompMs.App.Msdial.View.Lcms">
+                    <lcvw:MainView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type divm:DimsMethodVM}"
                               xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"

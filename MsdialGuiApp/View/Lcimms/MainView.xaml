@@ -79,12 +79,14 @@
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
                     -->
 
+                    <!--
                     <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
                                                Spectrum="{Binding Ms1Spectrum}"
                                                SplashKey="{Binding Ms1SplashKey}"
                                                MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
                                                MassAxis="{StaticResource MassAxis}"
                                                Grid.Row="2" Grid.Column="0"/>
+                    -->
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -99,6 +101,7 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
+                                <!--
                                 <commonview:PeakView DataContext="{Binding PlotViewModel}"
                                                      Grid.Column="0">
                                     <commonview:PeakView.LabelTemplate>
@@ -137,6 +140,7 @@
                                         </DataTemplate>
                                     </commonview:PeakView.LabelTemplate>
                                 </commonview:PeakView>
+                                -->
                             </Grid>
                         </TabItem>
 
@@ -151,6 +155,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
+                                <!--
                                 <commonview:AlignmentPeakPlotView DataContext="{Binding RtPlotVM}">
                                     <commonview:AlignmentPeakPlotView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
@@ -193,13 +198,13 @@
                                         </DataTemplate>
                                     </commonview:AlignmentPeakPlotView.LabelTemplate>
                                 </commonview:AlignmentPeakPlotView>
+                                -->
                             </Grid>
                         </TabItem>
 
                     </TabControl>
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
-                                xmlns:eic="clr-namespace:CompMs.App.Msdial.View.EicAndBar"
                                 Margin="0,-1,0,0"
                                 Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
 
@@ -211,6 +216,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+                                <!--
                                 <commonview:EicView DataContext="{Binding AnalysisVM}"
                                                     ChromAxis="{StaticResource ChromAxis}"
                                                     ChromTitle="Retention time [min]"
@@ -219,6 +225,7 @@
                                                     ChromAxis="{StaticResource ChromAxis}"
                                                     ChromTitle="Drift time [1/k0]"
                                                     Grid.Column="1"/>
+                                                    -->
                             </Grid>
                         </TabItem>
 
@@ -329,6 +336,7 @@
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource MainThemeColor}"
                                  Height="25">
+                                 <!--
                             <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
                                                    DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
                                                    ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
@@ -339,6 +347,7 @@
                                     </ContextMenu>
                                 </commonview:ExpRefView.ContextMenu>
                             </commonview:ExpRefView>
+                            -->
                         </TabItem>
 
                         <TabItem Header="MS2 Chrom." 
@@ -365,6 +374,7 @@
                                  DataContext="{Binding AlignmentVM}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
+                                 <!--
                             <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
                                                    ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
                                                    MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
@@ -374,6 +384,7 @@
                                     </ContextMenu>
                                 </commonview:RepRefView.ContextMenu>
                             </commonview:RepRefView>
+                            -->
                         </TabItem>
 
                     </TabControl>
