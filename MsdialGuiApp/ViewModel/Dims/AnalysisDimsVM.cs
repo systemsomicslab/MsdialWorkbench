@@ -40,10 +40,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.peakSpotTableService = peakSpotTableService;
 
             Target = Model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Select(t => t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
-                .Subscribe(title => Model.PlotModel.GraphTitle = title);
-            Target.CombineLatest(Model.EicModel.MaxIntensitySource, (t, i) => t is null ? string.Empty : $"{t.Mass:N4}[Da]  Max intensity: {i:F0}")
-                .Subscribe(title => Model.EicModel.GraphTitle = title);
 
             MassMin = Model.MassMin;
             MassMax = Model.MassMax;

@@ -22,8 +22,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
@@ -50,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak)));
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
             {
@@ -58,6 +57,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
+            Target.Select(t => t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
+                .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
             EicModel = new Chart.EicModel(Target, EicLoader)
@@ -65,6 +66,12 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
             };
+            Target.CombineLatest(
+                EicModel.MaxIntensitySource,
+                (t, i) => t is null
+                    ? string.Empty
+                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
+                .Subscribe(title => EicModel.GraphTitle = title);
 
             var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(

@@ -152,55 +152,31 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentModel?.SaveProject();
         }
 
-        public void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (analysis == AnalysisFile) {
-                return;
-            }
-            AnalysisFile = analysis;
-
+        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            AnalysisModel = CreateAnalysisModel(analysis).AddTo(Disposables);
+            AnalysisModel = new DimsAnalysisModel(
+                analysisFile,
+                ProviderFactory.Create(analysisFile),
+                Storage.DataBaseMapper,
+                Storage.ParameterBase,
+                mspAnnotator,
+                textDBAnnotator).AddTo(Disposables);;
         }
 
-        public DimsAnalysisModel CreateAnalysisModel(AnalysisFileBean analysisFile) {
-            if (analysisFile == null) {
-                return null;
-            }
-            return new DimsAnalysisModel(
-                    analysisFile,
-                    ProviderFactory.Create(analysisFile),
-                    Storage.DataBaseMapper,
-                    Storage.ParameterBase,
-                    mspAnnotator,
-                    textDBAnnotator);
-        }
-
-        public void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (alignment == AlignmentFile) {
-                return;
-            }
-            AlignmentFile = alignment;
-
+        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = CreateAlignmentModel(alignment).AddTo(Disposables);
-        }
-
-        private DimsAlignmentModel CreateAlignmentModel(AlignmentFileBean alignmentFile) {
-            if (alignmentFile == null) {
-                return null;
-            }
-            return new DimsAlignmentModel(
+            AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
                 Storage.DataBaseMapper,
                 Storage.ParameterBase,
                 mspAnnotator,
-                textDBAnnotator);
+                textDBAnnotator).AddTo(Disposables);
         }
     }
 }

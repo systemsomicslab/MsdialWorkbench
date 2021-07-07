@@ -128,7 +128,7 @@ namespace CompMs.App.Msdial
         private TempMethodVM CreateNewMethodVM(MachineCategory category, MsdialDataStorage storage) {
             switch (category) {
                 case MachineCategory.LCMS:
-                    return new ViewModel.Lcms.LcmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                    return new ViewModel.Lcms.LcmsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.IFMS:
                     return new ViewModel.Dims.DimsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.IMMS:

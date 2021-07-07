@@ -45,7 +45,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.analysisFile = analysisFile;
             MspAnnotator = mspAnnotator;
             TextDBAnnotator = textDBAnnotator;
-            FileName = analysisFile.AnalysisFileName;
 
             var hAxis = model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
@@ -186,12 +185,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private ImmsAnalysisPeakTableViewModel peakTableViewModel;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
-
-        public string FileName {
-            get => fileName;
-            set => SetProperty(ref fileName, value);
-        }
-        private string fileName;
 
         public double MassMin { get; }
         public double MassMax { get; }

@@ -61,13 +61,11 @@ namespace CompMs.App.Msdial.Model.Imms
                 HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
-
-            Target
-                .Where(t => t != null)
-                .Subscribe(t => PlotModel.GraphTitle = $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}");
-            Target
-                .Where(t => t == null)
-                .Subscribe(_ => PlotModel.GraphTitle = string.Empty);
+            Target.Select(
+                t => t is null
+                    ? string.Empty
+                    : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}")
+                .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
             EicModel = new Chart.EicModel(Target, EicLoader)
@@ -75,6 +73,13 @@ namespace CompMs.App.Msdial.Model.Imms
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "Abundance",
             };
+            Target.CombineLatest(
+                EicModel.MaxIntensitySource,
+                (t, i) => t is null
+                    ? string.Empty
+                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {this.parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
+                .Subscribe(title => EicModel.GraphTitle = title);
+
 
             var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
@@ -198,12 +203,12 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private double focusMz;
 
-        public double ChromMin => Ms1Peaks.Min(peak => peak.ChromXValue) ?? 0;
-        public double ChromMax => Ms1Peaks.Max(peak => peak.ChromXValue) ?? 0;
-        public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
-        public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
-        public double IntensityMin => Ms1Peaks.Min(peak => peak.Intensity);
-        public double IntensityMax => Ms1Peaks.Max(peak => peak.Intensity);
+        public double ChromMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.ChromXValue) ?? 0d;
+        public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
+        public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
+        public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
+        public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
+        public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
 
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {
             if (target != null) {
