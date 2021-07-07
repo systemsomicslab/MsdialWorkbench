@@ -17,6 +17,7 @@ using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -111,6 +112,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel = new SurveyScanModel(
                 Target.SelectMany(t =>
                     Observable.Defer(() => {
+                        if (t is null) {
+                            return Observable.Return(new List<SpectrumPeakWrapper>());
+                        }
                         var spectra = DataAccess.GetCentroidMassSpectra(
                             this.provider.LoadMs1Spectrums()[t.MS1RawSpectrumIdTop],
                             Parameter.MSDataType, 0, float.MinValue, float.MaxValue);
@@ -125,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Peak table
             // PeakTableModel =
 
-            var MsdecResult = Target.Where(t => t != null)
+            MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

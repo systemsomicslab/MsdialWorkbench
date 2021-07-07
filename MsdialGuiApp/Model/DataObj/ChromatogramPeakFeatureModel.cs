@@ -7,7 +7,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : ViewModelBase, IAnnotatedObject
+    public class ChromatogramPeakFeatureModel : BindableBase, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;

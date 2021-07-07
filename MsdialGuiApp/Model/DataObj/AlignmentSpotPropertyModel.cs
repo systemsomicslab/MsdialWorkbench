@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentSpotPropertyModel : ViewModelBase, IAnnotatedObject
+    public class AlignmentSpotPropertyModel : BindableBase, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
