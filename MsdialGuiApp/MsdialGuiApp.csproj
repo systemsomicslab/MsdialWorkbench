@@ -182,6 +182,7 @@
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
+    <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
@@ -335,6 +337,12 @@
     </Compile>
     <Compile Include="View\Lcimms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\LcmsAlignmentSpotTableView.xaml.cs">
+      <DependentUpon>LcmsAlignmentSpotTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\LcmsAnalysisPeakTableView.xaml.cs">
+      <DependentUpon>LcmsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
@@ -643,6 +651,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcimms\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\LcmsAlignmentSpotTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\LcmsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

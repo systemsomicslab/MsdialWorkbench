@@ -282,7 +282,7 @@
 
                         <Button Name="Button_TableViewer"
                                 DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
-                                Command="{Binding ShowIonTablCommand, Mode=OneWay}"
+                                Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 Background="AliceBlue"
                                 HorizontalContentAlignment="Right"
                                 VerticalAlignment="Top" HorizontalAlignment="Right"
