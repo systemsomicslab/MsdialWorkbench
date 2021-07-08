@@ -9,7 +9,7 @@ namespace CompMs.App.Msdial.ViewModel
     }
 
     // In the future, TempAlignmentFileVM will be replaced by AlignmentFileViewModel.
-    abstract class AlignmentFileViewModel : TempAnalysisFileVM
+    abstract class AlignmentFileViewModel : TempAlignmentFileVM
     {
         public AlignmentFileViewModel(AlignmentModelBase model) {
             DisplayLabel = model.ToReactivePropertySlimAsSynchronized(m => m.DisplayLabel).AddTo(Disposables);

@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            // AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax, DriftMin, DriftMax);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax, RtMin, RtMax);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -153,7 +153,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MsSpectrumModel Ms2SpectrumModel { get; }
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
-
+        public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {

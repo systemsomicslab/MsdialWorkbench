@@ -116,7 +116,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
-                Observable.Return(model.EicLoader), MassLower,
+                Observable.Return(model.EicLoader),
+                MassLower,
                 MassUpper,
                 DriftLower,
                 DriftUpper,

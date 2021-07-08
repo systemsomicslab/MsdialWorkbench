@@ -126,7 +126,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 horizontalAxis: hAxis).AddTo(Disposables);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: hAxis).AddTo(Disposables);
-            //PeakTableViewModel = 
+            PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
+                this.model.PeakTableModel,
+                Observable.Return(this.model.EicLoader),
+                MassLower,
+                MassUpper,
+                RtLower,
+                RtUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+            .AddTo(Disposables);
 
             SearchCompoundCommand = new[] {
                 Target.Select(t => t != null && t.InnerModel != null),
@@ -161,7 +170,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
-
+        public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public List<ChromatogramPeakFeature> Peaks { get; }
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
@@ -187,7 +196,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         internal bool SetDisplayFilters(DisplayFilter flag, bool value) {
-            if (ReadDisplayFilters(flag)) {
+            if (ReadDisplayFilters(flag) != value) {
                 WriteDisplayFilters(flag, value);
                 OnPropertyChanged(nameof(DisplayFilters));
                 return true;
@@ -221,7 +230,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             set => SetDisplayFilters(DisplayFilter.CcsMatched, value);
         }
 
-        public bool MsmsAcquiredChecked {
+        public bool Ms2AcquiredChecked {
             get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
             set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
         }
@@ -279,7 +288,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && MzFilter(peak)
                     && RtFilter(peak)
                     && AmplitudeFilter(peak)
-                    && (!MsmsAcquiredChecked || peak.IsMsmsContained)
+                    && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
                     && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
                     && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
@@ -383,6 +392,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             using (var vm = new ViewModel.CompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }
+        }
+
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand showIonTableCommand;
+
+        private void ShowIonTable() {
+            peakSpotTableService.Show(PeakTableViewModel);
         }
     }
 

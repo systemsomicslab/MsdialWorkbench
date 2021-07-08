@@ -16,7 +16,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -98,7 +97,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
-            // AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel
+            AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
+                this.model.AlignmentSpotTableModel,
+                Observable.Return(model.BarItemsLoader),
+                MassLower,
+                MassUpper,
+                RtLower,
+                RtUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.Target
                 .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
@@ -134,6 +142,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
         public BarChartViewModel BarChartViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
         public double MassMin { get; }
         public double MassMax { get; }
@@ -173,6 +182,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public bool MolecularIonChecked {
             get => ReadDisplayFilters(DisplayFilter.MolecularIon);
             set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
+        }
+
+        public bool UniquesIonsChecked {
+            get => ReadDisplayFilters(DisplayFilter.UniqueIons);
+            set => SetDisplayFilters(DisplayFilter.UniqueIons, value);
         }
 
         public bool BlankFilterChecked {
@@ -269,17 +283,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
-        private DelegateCommand<Window> showIonTableCommand;
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand showIonTableCommand;
 
-        private void ShowIonTable(Window owner) {
-            var window = new View.Dims.IonTableViewer {
-                DataContext = this,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Owner = owner,
-            };
-
-            window.Show();
+        private void ShowIonTable() {
+            peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
         public void SaveProject() {
