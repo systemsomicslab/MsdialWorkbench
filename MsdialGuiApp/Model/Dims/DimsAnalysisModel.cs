@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
@@ -12,13 +13,10 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -34,7 +32,8 @@ namespace CompMs.App.Msdial.Model.Dims
             IMatchResultRefer refer,
             ParameterBase parameter,
             IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator)
+            : base(analysisFile) {
 
             MspAnnotator = mspAnnotator;
             TextDBAnnotator = textDBAnnotator;
@@ -43,14 +42,8 @@ namespace CompMs.App.Msdial.Model.Dims
             FileName = analysisFile.AnalysisFileName;
             Parameter = parameter;
 
-            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-            Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak)));
-
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
-
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
@@ -61,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            EicModel = new Chart.EicModel(Target, EicLoader)
+            EicModel = new EicModel(Target, EicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
@@ -73,11 +66,10 @@ namespace CompMs.App.Msdial.Model.Dims
                     : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
                 .Subscribe(title => EicModel.GraphTitle = title);
 
-            var loader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
-            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
+            Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
-                new MsDecSpectrumLoader(loader, Ms1Peaks),
+                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(refer),
                 peak => peak.Mass,
                 peak => peak.Intensity)
@@ -92,11 +84,6 @@ namespace CompMs.App.Msdial.Model.Dims
             };
 
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax);
-
-            MsdecResult = Target.Where(t => t != null)
-                .Select(t => loader.LoadMSDecResult(t.MasterPeakID))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -129,18 +116,14 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private string fileName;
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
-
         public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
         public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
 
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        public AnalysisPeakPlotModel PlotModel { get; }
 
-        public Chart.AnalysisPeakPlotModel PlotModel { get; }
+        public EicModel EicModel { get; }
 
-        public Chart.EicModel EicModel { get; }
-
-        public Chart.RawDecSpectrumsModel Ms2SpectrumModel { get; }
+        public RawDecSpectrumsModel Ms2SpectrumModel { get; }
 
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
@@ -159,8 +142,6 @@ namespace CompMs.App.Msdial.Model.Dims
             set => SetProperty(ref deconvolutionSplashKey, value);
         }
         private string deconvolutionSplashKey = string.Empty;
-
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         private static readonly double MzTol = 20;
         public void FocusByMz(IAxisManager axis, double mz) {

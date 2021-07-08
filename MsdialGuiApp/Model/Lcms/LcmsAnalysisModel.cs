@@ -10,15 +10,12 @@ using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
@@ -33,7 +30,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultRefer refer,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+            : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
             }
@@ -53,12 +51,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFile = analysisFile;
             this.provider = provider;
             Parameter = parameter;
-
-            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
-            Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak)));
-
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -90,7 +82,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .Subscribe(title => EicModel.GraphTitle = title);
 
             // Ms2 spectrum
-            var decLoader = new MSDecLoader(AnalysisFile.DeconvolutionFilePath).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(this.provider, Parameter),
@@ -127,12 +118,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            // PeakTableModel =
-
-            MsdecResult = Target.Where(t => t != null)
-                .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
 
             switch (Parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -157,12 +143,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ParameterBase Parameter { get; }
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
-
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
-
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
-
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -173,7 +153,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public SurveyScanModel SurveyScanModel { get; }
 
-        // public LcmsAnalysisPeakTableModel PeakTableModel { get; }
+        public LcmsAnalysisPeakTableModel PeakTableModel { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 

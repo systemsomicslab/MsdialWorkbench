@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
@@ -10,16 +11,13 @@ using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -35,7 +33,8 @@ namespace CompMs.App.Msdial.Model.Imms
             IMatchResultRefer refer,
             ParameterBase parameter,
             IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator)
+            : base(analysisFile) {
 
             this.provider = provider;
             this.parameter = parameter as MsdialImmsParameter;
@@ -43,18 +42,12 @@ namespace CompMs.App.Msdial.Model.Imms
             this.textDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
-            peakAreaFile = analysisFile.PeakAreaBeanInformationFilePath;
 
-            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(peakAreaFile);
-            Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
-                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
-            );
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
-            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new Chart.AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
             {
                 HorizontalTitle = EicModel.HorizontalTitle,
                 VerticalTitle = "m/z",
@@ -68,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
-            EicModel = new Chart.EicModel(Target, EicLoader)
+            EicModel = new EicModel(Target, EicLoader)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "Abundance",
@@ -80,9 +73,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {this.parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
                 .Subscribe(title => EicModel.GraphTitle = title);
 
-
-            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
-            Ms2SpectrumModel = new Chart.RawDecSpectrumsModel(
+            Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
@@ -99,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
 
-            SurveyScanModel = new Chart.SurveyScanModel(
+            SurveyScanModel = new SurveyScanModel(
                 Target.SelectMany(t =>
                     Observable.DeferAsync(async token => {
                         var result = await LoadMs1SpectrumAsync(t, token);
@@ -113,11 +104,6 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
-
-            MsdecResult = Target.Where(t => t != null)
-                .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -141,36 +127,23 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly MsdialImmsParameter parameter;
         private readonly IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
-        private readonly string peakAreaFile;
         private readonly IDataProvider provider;
 
-        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks {
-            get => ms1Peaks;
-            set => SetProperty(ref ms1Peaks, value);
-        }
-        private ObservableCollection<ChromatogramPeakFeatureModel> ms1Peaks;
+        public AnalysisPeakPlotModel PlotModel { get; }
 
-        public Chart.AnalysisPeakPlotModel PlotModel { get; }
+        public EicModel EicModel { get; }
 
-        public Chart.EicModel EicModel { get; }
+        public RawDecSpectrumsModel Ms2SpectrumModel { get; }
 
-        public Chart.RawDecSpectrumsModel Ms2SpectrumModel { get; }
-
-        public Chart.SurveyScanModel SurveyScanModel { get; }
+        public SurveyScanModel SurveyScanModel { get; }
 
         public ImmsAnalysisPeakTableModel PeakTableModel { get; }
-
-        public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
         public string RawSplashKey {
             get => rawSplashKey;
             set => SetProperty(ref rawSplashKey, value);
         }
         private string rawSplashKey = string.Empty;
-
-        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
-
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 

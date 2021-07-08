@@ -1,11 +1,48 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Core
 {
     internal class AnalysisModelBase : BindableBase, IDisposable
     {
+        public AnalysisModelBase(AnalysisFileBean analysisFile) {
+            if (analysisFile is null) {
+                throw new ArgumentNullException(nameof(analysisFile));
+            }
+
+            var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
+                peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
+            );
+
+            Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+
+            decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
+            MsdecResult = Target.Where(t => !(t is null))
+                .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+        }
+
+        protected readonly MSDecLoader decLoader;
+
+        public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
+
+        public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; protected set; }
+
         public string DisplayLabel {
             get => displayLabel;
             set => SetProperty(ref displayLabel, value);
