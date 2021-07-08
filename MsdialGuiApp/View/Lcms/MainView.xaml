@@ -219,7 +219,7 @@
                                             </StackPanel.Resources>
                                             <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
                                             <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
                                             <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -243,7 +243,7 @@
                                                 </Style>
                                             </StackPanel.Resources>
                                             <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N4}; }"/>
+                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
                                             <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>

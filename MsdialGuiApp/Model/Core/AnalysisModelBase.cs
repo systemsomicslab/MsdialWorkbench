@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
-        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; protected set; }
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public string DisplayLabel {
             get => displayLabel;

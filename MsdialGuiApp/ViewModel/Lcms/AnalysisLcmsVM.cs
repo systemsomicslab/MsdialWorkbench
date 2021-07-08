@@ -1,20 +1,18 @@
-﻿using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows.Data;
-using CompMs.Graphics.Core.Base;
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.CommonMVVM.WindowService;
+using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using CompMs.App.Msdial.ViewModel.Chart;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
-using CompMs.App.Msdial.Model.Search;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -47,17 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
 
-            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Target.Subscribe(OnTargetChanged).AddTo(Disposables);
-
-            var hAxis = this.model.PlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-            var vAxis = this.model.PlotModel
-                .ObserveProperty(m => m.VerticalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
 
             MassMin = this.model.MassMin;
             MassMax = this.model.MassMax;
@@ -77,25 +65,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
                 .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
 
-            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
-            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(w => w.Split())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
-            CommentFilterKeywords = CommentFilterKeyword.Select(w => w.Split())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
             var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-
-            var AmplitudeLowerValue = this.ObserveProperty(m => m.AmplitudeLowerValue)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var AmplitudeUpperValue = this.ObserveProperty(m => m.AmplitudeUpperValue)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            AmplitudeOrderMin = this.model.Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0d;
-            AmplitudeOrderMax = this.model.Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0d;
 
             new[]
             {
@@ -111,10 +83,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1Peaks?.Refresh())
+            .Subscribe(_ => Ms1PeaksView?.Refresh())
             .AddTo(Disposables);
 
-            Ms1Peaks = CollectionViewSource.GetDefaultView(this.model.Ms1Peaks);
+            var hAxis = this.model.PlotModel
+                .ObserveProperty(m => m.HorizontalRange)
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .AddTo(Disposables);
+            var vAxis = this.model.PlotModel
+                .ObserveProperty(m => m.VerticalRange)
+                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .AddTo(Disposables);
 
             PlotViewModel = new AnalysisPeakPlotViewModel(
                 this.model.PlotModel,
@@ -125,7 +104,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 this.model.EicModel,
                 horizontalAxis: hAxis).AddTo(Disposables);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
-            SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: hAxis).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(
+                this.model.SurveyScanModel,
+                horizontalAxis: vAxis).AddTo(Disposables);
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),
@@ -144,6 +125,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .ToReactiveCommand()
             .WithSubscribe(SearchCompound)
             .AddTo(Disposables);
+
+            Ms1PeaksView.Filter += PeakFilter;
         }
 
         private readonly LcmsAnalysisModel model;
@@ -151,29 +134,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
-        public ICollectionView Ms1Peaks {
-            get => ms1Peaks;
-            set {
-                var old = ms1Peaks;
-                if (SetProperty(ref ms1Peaks, value)) {
-                    if (old != null) old.Filter -= PeakFilter;
-                    if (ms1Peaks != null) ms1Peaks.Filter += PeakFilter;
-                }
-            }
-        }
-
-        private ICollectionView ms1Peaks;
-
-        public override ICollectionView PeakSpots => ms1Peaks;
-
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public List<ChromatogramPeakFeature> Peaks { get; }
-
-        public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
         /*
         public string RawSplashKey {
@@ -186,29 +152,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             set => SetProperty(ref deconvolutionSplashKey, value);
         }
         */
-
-        internal bool ReadDisplayFilters(DisplayFilter flag) {
-            return displayFilters.Read(flag);
-        }
-
-        internal void WriteDisplayFilters(DisplayFilter flag, bool value) {
-            displayFilters.Write(flag, value);
-        }
-
-        internal bool SetDisplayFilters(DisplayFilter flag, bool value) {
-            if (ReadDisplayFilters(flag) != value) {
-                WriteDisplayFilters(flag, value);
-                OnPropertyChanged(nameof(DisplayFilters));
-                return true;
-            }
-            return false;
-        }
-
-        public DisplayFilter DisplayFilters {
-            get => displayFilters;
-            internal set => SetProperty(ref displayFilters, value);
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilters(DisplayFilter.RefMatched);
@@ -255,20 +198,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
         }
 
-        public double AmplitudeOrderMin { get; }
-        public double AmplitudeOrderMax { get; }
-
-        public double AmplitudeLowerValue {
-            get => amplitudeLowerValue;
-            set => SetProperty(ref amplitudeLowerValue, value);
-        }
-
-        public double AmplitudeUpperValue {
-            get => amplitudeUpperValue;
-            set => SetProperty(ref amplitudeUpperValue, value);
-        }
-        private double amplitudeLowerValue = 0d, amplitudeUpperValue = 1d;
-
         public double RtMin { get; }
         public double RtMax { get; }
         public ReactiveProperty<double> RtLower { get; }
@@ -277,12 +206,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public double MassMax { get; }
         public ReactiveProperty<double> MassLower { get; }
         public ReactiveProperty<double> MassUpper { get; }
-        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
-        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
 
-        bool PeakFilter(object obj) {
+        protected bool PeakFilter(object obj) {
             if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
                     && MzFilter(peak)
@@ -311,19 +236,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool RtFilter(ChromatogramPeakFeatureModel peak) {
             return RtLower.Value <= peak.ChromXValue && peak.ChromXValue <= RtUpper.Value;
-        }
-
-        bool AmplitudeFilter(ChromatogramPeakFeatureModel peak) {
-            return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
-                && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
-        }
-
-        bool CommentFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
-        }
-
-        bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {
@@ -357,7 +269,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void FocusByID(object[] axes) {
             var focus = model.Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
-            Ms1Peaks.MoveCurrentTo(focus);
+            Ms1PeaksView.MoveCurrentTo(focus);
             if (axes?.Length == 2) {
                 (axes[0] as IAxisManager)?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
                 (axes[1] as IAxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);

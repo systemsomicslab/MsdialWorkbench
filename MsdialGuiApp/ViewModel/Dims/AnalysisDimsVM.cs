@@ -12,12 +12,9 @@ using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -39,8 +36,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
 
-            Target = Model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
             MassMin = Model.MassMin;
             MassMax = Model.MassMax;
             MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
@@ -50,25 +45,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
                 .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
 
-            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
-            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
-            CommentFilterKeywords = CommentFilterKeyword.Select(c => c.Split()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
-            var AmplitudeLowerValue = this.ObserveProperty(m => m.AmplitudeLowerValue)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var AmplitudeUpperValue = this.ObserveProperty(m => m.AmplitudeUpperValue)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            AmplitudeOrderMin = Model.Ms1Peaks.Min(peak => peak.AmplitudeOrderValue);
-            AmplitudeOrderMax = Model.Ms1Peaks.Max(peak => peak.AmplitudeOrderValue);
-
             var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            new[]
+            Observable.Merge(new[]
             {
                 MassLower.ToUnit(),
                 MassUpper.ToUnit(),
@@ -77,13 +58,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 DisplayFilters.ToUnit(),
                 AmplitudeLowerValue.ToUnit(),
                 AmplitudeUpperValue.ToUnit(),
-            }.Merge()
+            })
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1Peaks.Refresh())
+            .Subscribe(_ => Ms1PeaksView.Refresh())
             .AddTo(Disposables);
-
-            Ms1Peaks = CollectionViewSource.GetDefaultView(Model.Ms1Peaks);
 
             var hAxis = Model.PlotModel
                 .ObserveProperty(m => m.HorizontalRange)
@@ -108,12 +87,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             SearchCompoundCommand = new[]
             {
-                Model.Target.Select(t => t?.InnerModel != null),
+                Target.Select(t => t?.InnerModel != null),
                 Model.MsdecResult.Select(r => r != null),
             }.CombineLatestValuesAreAllTrue()
             .ToReactiveCommand()
             .WithSubscribe(SearchCompound)
             .AddTo(Disposables);
+
+            Ms1PeaksView.Filter += PeakFilter;
         }
 
         public DimsAnalysisModel Model { get; }
@@ -145,121 +126,40 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DimsAnalysisPeakTableViewModel peakTableViewModel;
 
-        public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
-
-        public ICollectionView Ms1Peaks {
-            get => ms1Peaks;
-            set {
-                var old = ms1Peaks;
-                if (SetProperty(ref ms1Peaks, value)) {
-                    if (old != null) old.Filter -= PeakFilter;
-                    if (ms1Peaks != null) ms1Peaks.Filter += PeakFilter;
-                }
-            }
-        }
-        private ICollectionView ms1Peaks;
-
-        public override ICollectionView PeakSpots => ms1Peaks;
-
         public bool RefMatchedChecked {
             get => ReadDisplayFilters(DisplayFilter.RefMatched);
-            set {
-                if (ReadDisplayFilters(DisplayFilter.RefMatched) != value) {
-                    displayFilters.Write(DisplayFilter.RefMatched, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
         }
 
         public bool SuggestedChecked {
-            get {
-                return ReadDisplayFilters(DisplayFilter.Suggested);
-            }
-            set {
-                if (ReadDisplayFilters(DisplayFilter.Suggested) != value) {
-                    displayFilters.Write(DisplayFilter.Suggested, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            get => ReadDisplayFilters(DisplayFilter.Suggested);
+            set => SetDisplayFilters(DisplayFilter.Suggested, value);
         }
 
         public bool UnknownChecked {
-            get {
-                return ReadDisplayFilters(DisplayFilter.Unknown);
-            }
-            set {
-                if (ReadDisplayFilters(DisplayFilter.Unknown) != value) {
-                    displayFilters.Write(DisplayFilter.Unknown, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            get => ReadDisplayFilters(DisplayFilter.Unknown);
+            set => SetDisplayFilters(DisplayFilter.Unknown, value);
         }
 
         public bool Ms2AcquiredChecked {
-            get {
-                return ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-            }
-            set {
-                if (ReadDisplayFilters(DisplayFilter.Ms2Acquired) != value) {
-                    displayFilters.Write(DisplayFilter.Ms2Acquired, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
         }
 
         public bool MolecularIonChecked {
-            get {
-                return ReadDisplayFilters(DisplayFilter.MolecularIon);
-            }
-            set {
-                if (ReadDisplayFilters(DisplayFilter.MolecularIon) != value) {
-                    displayFilters.Write(DisplayFilter.MolecularIon, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
+            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
         }
 
         public bool ManuallyModifiedChecked {
-            get {
-                return ReadDisplayFilters(DisplayFilter.ManuallyModified);
-            }
-            set {
-                if (ReadDisplayFilters(DisplayFilter.ManuallyModified) != value) {
-                    displayFilters.Write(DisplayFilter.ManuallyModified, value);
-                    OnPropertyChanged(nameof(DisplayFilters));
-                }
-            }
+            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
+            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
         }
-
-        public DisplayFilter DisplayFilters {
-            get => displayFilters;
-            internal set => SetProperty(ref displayFilters, value);
-        }
-        private DisplayFilter displayFilters = 0;
 
         public double MassMin { get; }
         public double MassMax { get; }
         public ReactiveProperty<double> MassLower { get; }
         public ReactiveProperty<double> MassUpper { get; }
-
-        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
-        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
-
-        public double AmplitudeLowerValue {
-            get => amplitudeLowerValue;
-            set => SetProperty(ref amplitudeLowerValue, value);
-        }
-
-        public double AmplitudeUpperValue {
-            get => amplitudeUpperValue;
-            set => SetProperty(ref amplitudeUpperValue, value);
-        }
-        private double amplitudeLowerValue = 0d, amplitudeUpperValue = 1d;
-
-        public double AmplitudeOrderMin { get; }
-        public double AmplitudeOrderMax { get; }
 
         public int FocusID {
             get => focusID;
@@ -273,7 +173,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private double focusMz;
 
-        bool PeakFilter(object obj) {
+        protected bool PeakFilter(object obj) {
             if (obj is ChromatogramPeakFeatureModel peak) {
                 return AnnotationFilter(peak)
                     && MzFilter(peak)
@@ -294,21 +194,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 || UnknownChecked && peak.IsUnknown;
         }
 
-        bool AmplitudeFilter(ChromatogramPeakFeatureModel peak) {
-            return AmplitudeLowerValue * (AmplitudeOrderMax - AmplitudeOrderMin) <= peak.AmplitudeOrderValue - AmplitudeOrderMin
-                && peak.AmplitudeScore - AmplitudeOrderMin <= AmplitudeUpperValue * (AmplitudeOrderMax - AmplitudeOrderMin);
-        }
-
         bool MzFilter(ChromatogramPeakFeatureModel peak) {
             return MassLower.Value <= peak.Mass && peak.Mass <= MassUpper.Value;
-        }
-
-        bool CommentFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
-        }
-
-        bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Name.Contains(keyword));
         }
 
         public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
@@ -331,7 +218,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private void SearchCompound() {
             using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
                 Model.AnalysisFile,
-                Model.Target.Value.InnerModel,
+                Target.Value.InnerModel,
                 Model.MsdecResult.Value,
                 null,
                 Model.MspAnnotator,
@@ -339,7 +226,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();
-                    Ms1Peaks?.Refresh();
+                    Ms1PeaksView?.Refresh();
                 }
             }
         }
@@ -374,11 +261,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private bool CanSaveSpectra(Window owner)
         {
             return Model.CanSaveSpectra();
-        }
-
-
-        private bool ReadDisplayFilters(DisplayFilter flags) {
-            return (flags & DisplayFilters) != 0;
         }
     }
 }

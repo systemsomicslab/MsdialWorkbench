@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private ICollectionView ms1Spots;
-        public override ICollectionView PeakSpots => ms1Spots;
+        public override ICollectionView PeakSpotsView => ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 

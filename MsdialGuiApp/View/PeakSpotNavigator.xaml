@@ -49,7 +49,7 @@
                        VerticalAlignment="Center" Margin="0,0,5,0" />
 
                 <Label Name="Label_DisplayPeakNum"
-                       Content="{Binding PeakSpots.Count, TargetNullValue=0 }"
+                       Content="{Binding PeakSpotsView.Count, TargetNullValue=0 }"
                        ContentStringFormat="{}Num. {0:D}"
                        VerticalAlignment="Center" HorizontalAlignment="Right"
                        Margin="10,0,10,0"/>
@@ -58,8 +58,8 @@
             <rs:RangeSlider x:Name="doubleSlider_AmplitudeFilter"
                             IsEnabled="False"
                             Minimum="0" Maximum="1" 
-                            LowerValue="{Binding AmplitudeLowerValue, Mode=TwoWay}"
-                            UpperValue="{Binding AmplitudeUpperValue, Mode=TwoWay}" 
+                            LowerValue="{Binding AmplitudeLowerValue.Value, Mode=TwoWay}"
+                            UpperValue="{Binding AmplitudeUpperValue.Value, Mode=TwoWay}" 
                             ToolTip="Display filter based on peak height"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                             Height="25" Margin="10,0"/>
