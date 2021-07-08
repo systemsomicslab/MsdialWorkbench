@@ -161,7 +161,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, storage, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    var provider = new StandardDataProvider(analysisfile, true, 5);
+                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
