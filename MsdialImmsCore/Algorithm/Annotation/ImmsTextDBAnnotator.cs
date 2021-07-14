@@ -54,8 +54,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
-                if (candidate.ChromXs.Drift.Value < property.ChromXs.Drift.Value - parameter.CcsTolerance
-                    || property.ChromXs.Drift.Value + parameter.CcsTolerance < candidate.ChromXs.Drift.Value)
+                if (parameter.IsUseCcsForAnnotationFiltering
+                    && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) <  parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 result.LibraryIDWhenOrdered = i;
@@ -82,16 +82,19 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
-            var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
-
             var isotopeSimilarity = MsScanMatching.GetIsotopeRatioSimilarity(scanIsotopes, referenceIsotopes, property.PrecursorMz, ms1Tol);
 
             var result = new MsScanMatchResult
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                AcurateMassSimilarity = (float)ms1Similarity, CcsSimilarity = (float)ccsSimilarity, IsotopeSimilarity = (float)isotopeSimilarity,
+                AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, SourceKey = sourceKey
             };
+
+            if (parameter.IsUseCcsForAnnotationScoring) {
+                var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
+                result.CcsSimilarity = (float)ccsSimilarity;
+            }
 
             var scores = new List<float> { };
             if (result.AcurateMassSimilarity >= 0)
