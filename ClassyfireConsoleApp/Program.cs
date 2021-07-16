@@ -10,8 +10,8 @@ namespace ClassyfireConsoleApp {
     class Program {
         static void Main(string[] args) {
 
-            //ClassifyInChIKeys(@"D:\Paper of Natural Product Reports\Statistics\key4classyfire.txt",
-            //    @"D:\Paper of Natural Product Reports\Statistics\key4classyfire_result.txt");
+            ClassifyInChIKeys(@"E:\6_Projects\PROJECT_ImagingMS\CCSref\inchikeys.txt",
+                @"E:\6_Projects\PROJECT_ImagingMS\CCSref\inchikeys_classified.txt");
 
             //ClassifyInChIKeys(@"D:\PROJECT for MSFINDER\Classyfire results\MINE contents.txt",
             //   @"D:\PROJECT for MSFINDER\Classyfire results\MINE contents-inchikeyclassyfied.txt");
