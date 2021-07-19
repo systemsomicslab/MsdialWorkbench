@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         [Required(ErrorMessage = "Amplitude cut off required.")]
         [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
-        [Range(0d, 1d, ErrorMessage = "A threshold should be between 0-1.")]
+        [Range(0d, 100d, ErrorMessage = "A threshold should be between 0-100.")]
         public ReactiveProperty<string> RelativeAmpCutoff { get; }
 
         [Required(ErrorMessage = "Amplitude cut off required.")]
@@ -159,11 +159,11 @@ namespace CompMs.App.Msdial.ViewModel
                 .Select(_ => float.Parse(Ms2Tolerance.Value))
                 .Subscribe(x => this.model.Ms2Tolerance = x)
                 .AddTo(Disposables);
-            RelativeAmpCutoff = new ReactiveProperty<string>(model.RelativeAmpCutoff.ToString())
+            RelativeAmpCutoff = new ReactiveProperty<string>((model.RelativeAmpCutoff * 100).ToString())
                 .SetValidateAttribute(() => RelativeAmpCutoff)
                 .AddTo(Disposables);
             RelativeAmpCutoff.ObserveHasErrors.Where(e => !e)
-                .Select(_ => float.Parse(RelativeAmpCutoff.Value))
+                .Select(_ => float.Parse(RelativeAmpCutoff.Value) / 100)
                 .Subscribe(x => this.model.RelativeAmpCutoff = x)
                 .AddTo(Disposables);
             AbsoluteAmpCutoff = new ReactiveProperty<string>(model.AbsoluteAmpCutoff.ToString())
