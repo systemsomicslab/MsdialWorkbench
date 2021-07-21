@@ -118,29 +118,33 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcmsParameter>((MsdialLcmsParameter)Storage.ParameterBase, AnalysisFiles);
-            var apsw = new AnalysisParamSetForLcWindow
-            {
-                DataContext = analysisParamSetVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            var apsw_result = apsw.ShowDialog();
-            if (apsw_result != true) return false;
-
-            var filename = analysisParamSetVM.AlignmentResultFileName;
-            AlignmentFiles.Add(
-                new AlignmentFileBean
+            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcmsParameter>((MsdialLcmsParameter)Storage.ParameterBase, AnalysisFiles)) {
+                var apsw = new AnalysisParamSetForLcWindow
                 {
-                    FileID = AlignmentFiles.Count,
-                    FileName = filename,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                if (apsw.ShowDialog() != true) {
+                    return false;
                 }
-            );
-            Storage.AlignmentFiles = AlignmentFiles.ToList();
-            return true;
+
+                if (analysisParamSetVM.TogetherWithAlignment) {
+                    var filename = analysisParamSetVM.AlignmentResultFileName;
+                    AlignmentFiles.Add(
+                        new AlignmentFileBean
+                        {
+                            FileID = AlignmentFiles.Count,
+                            FileName = filename,
+                            FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                            EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                            SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                        }
+                    );
+                    Storage.AlignmentFiles = AlignmentFiles.ToList();
+                }
+                return true;
+            }
         }
 
         private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {

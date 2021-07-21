@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Lipidomics;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
@@ -14,6 +16,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Microsoft.Win32;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -82,6 +85,9 @@ namespace CompMs.App.Msdial.ViewModel
         public List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
         public List<MoleculeMsReference> TextDB { get; set; } = new List<MoleculeMsReference>();
 
+        public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
+        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
+
         #endregion
 
         #region Field
@@ -117,6 +123,10 @@ namespace CompMs.App.Msdial.ViewModel
 
             parameter.QcAtLeastFilter = false;
 
+            AnnotationProcessSettingModel = new AnnotationProcessSettingModel();
+            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
+                AnnotationProcessSettingModel,
+                Lcms.LcmsAnnotationSettingViewModel.Create).AddTo(Disposables);
         }
 
         #region Command

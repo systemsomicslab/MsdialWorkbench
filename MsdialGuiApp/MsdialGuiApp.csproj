@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -167,11 +167,18 @@
     <Compile Include="Model\Core\MethodModelBase.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
+    <Compile Include="Model\Lcms\LcmsAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
+    <Compile Include="Model\Lcms\LcmsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
+    <Compile Include="Model\Lcms\LcmsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
+    <Compile Include="Model\Setting\AnnotationProcessSettingModel.cs" />
+    <Compile Include="Model\Setting\IAnnotationSettingModel.cs" />
+    <Compile Include="Model\Setting\MassAnnotationSettingModel.cs" />
+    <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -215,9 +222,15 @@
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
+    <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\IAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
@@ -433,6 +446,9 @@
       <DependentUpon>MobilityView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
+    <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
+      <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
@@ -640,6 +656,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Lcms\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Lcms\LcmsAlignmentSpotTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -747,6 +767,14 @@
     <Page Include="View\MobilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Setting\AnnotationProcessSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
       <SubType>Designer</SubType>

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.MsdialLcMsApi.Algorithm {
+namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
     public class Annotation {
 
         public double InitialProgress { get; set; } = 60.0;

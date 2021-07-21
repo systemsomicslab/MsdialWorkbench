@@ -6,6 +6,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
+using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
