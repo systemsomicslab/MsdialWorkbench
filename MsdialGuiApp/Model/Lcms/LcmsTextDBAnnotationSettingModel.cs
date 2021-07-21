@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -9,12 +8,8 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsTextDBAnnotationSettingModel : DataBaseAnnotationSettingModelBase
+    sealed class LcmsTextDBAnnotationSettingModel : DataBaseAnnotationSettingModelBase
     {
-        public LcmsTextDBAnnotationSettingModel() {
-
-        }
-
         public LcmsTextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
             : base(other) {
             
@@ -32,15 +27,15 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
-            switch (Source) {
-                case SourceType.TextDB:
+            switch (DBSource) {
+                case DataBaseSource.Text:
                     var textdb = TextLibraryParser.TextLibraryReader(DataBasePath, out string error);
                     if (!string.IsNullOrEmpty(error)) {
                         throw new Exception(error);
                     }
                     return new MoleculeDataBase(textdb, DataBaseID);
                 default:
-                    throw new NotSupportedException(Source.ToString());
+                    throw new NotSupportedException(DBSource.ToString());
             }
         }
     }

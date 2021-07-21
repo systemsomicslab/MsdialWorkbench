@@ -1,10 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Lipidomics;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View;
-using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Setting;
-using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -13,9 +10,9 @@ using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.Win32;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -27,24 +24,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    class AnalysisParamSetVM<T> : ViewModelBase where T : ParameterBase
+    class LcmsAnalysisParameterSetViewModel : ViewModelBase
     {
         #region Property
         public ParameterBaseVM Param {
             get => paramVM;
             set => SetProperty(ref paramVM, value);
-        }
-
-        public MsRefSearchParameterBaseVM MspSearchParam {
-            get => mspSearchParam;
-            set => SetProperty(ref mspSearchParam, value);
-        }
-
-        public MsRefSearchParameterBaseVM TextDbSearchParam {
-            get => textDbSearchParam;
-            set => SetProperty(ref textDbSearchParam, value);
         }
 
         public string AlignmentResultFileName {
@@ -82,26 +69,23 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
 
-        public List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
-        public List<MoleculeMsReference> TextDB { get; set; } = new List<MoleculeMsReference>();
+        public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
+        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
         #endregion
 
         #region Field
-        protected readonly T param;
+        protected readonly MsdialLcmsParameter param;
         ParameterBaseVM paramVM;
-        MsRefSearchParameterBaseVM mspSearchParam, textDbSearchParam;
         string alignmentResultFileName;
         ObservableCollection<AnalysisFileBean> analysisFiles;
         ObservableCollection<MzSearchQueryVM> excludedMassList;
         ObservableCollection<AdductIonVM> searchedAdductIons;
         #endregion
 
-        public AnalysisParamSetVM(T parameter, IEnumerable<AnalysisFileBean> files) {
+        public LcmsAnalysisParameterSetViewModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files) {
             param = parameter;
             Param = MsdialProjectParameterFactory.Create(parameter);
-            MspSearchParam = new MsRefSearchParameterBaseVM(parameter.MspSearchParam);
-            TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
 
             var dt = DateTime.Now;
             AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
@@ -119,18 +103,32 @@ namespace CompMs.App.Msdial.ViewModel
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
             parameter.QcAtLeastFilter = false;
+
+            AnnotationProcessSettingModel = new AnnotationProcessSettingModel();
+            var factory = new LcmsAnnotationSettingViewModelModelFactory(parameter);
+            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
+                    AnnotationProcessSettingModel,
+                    factory.Create)
+                .AddTo(Disposables);
+
+            if (param.TargetOmics == TargetOmics.Lipidomics) {
+                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
+                var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
+                (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
+            }
+
+            ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
+                .ToAsyncReactiveCommand<Window>()
+                .WithSubscribe(async window => await Task.Run(() => ContinueProcess(window)))
+                .AddTo(Disposables);
         }
 
         #region Command
-        public DelegateCommand<Window> ContinueProcessCommand {
-            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisParamSetWindow));
-        }
-        private DelegateCommand<Window> continueProcessCommand;
-        private bool canExecuteCommand = true;
+        public AsyncReactiveCommand<Window> ContinueProcessCommand { get; }
 
-        private async void ContinueProcess(Window window) {
-            canExecuteCommand = false;
-            ContinueProcessCommand.RaiseCanExecuteChanged();
+        private void ContinueProcess(Window window) {
             Mouse.OverrideCursor = Cursors.Wait;
 
             var message = new ShortMessageWindow
@@ -142,7 +140,7 @@ namespace CompMs.App.Msdial.ViewModel
                         : "Loading libraries.."
             };
             message.Show();
-            var result = await ClosingMethod();
+            var result = ClosingMethod();
             message.Close();
 
             if (result) {
@@ -151,11 +149,9 @@ namespace CompMs.App.Msdial.ViewModel
             }
 
             Mouse.OverrideCursor = null;
-            canExecuteCommand = true;
-            ContinueProcessCommand.RaiseCanExecuteChanged();
         }
 
-        protected virtual async Task<bool> ClosingMethod() {
+        protected virtual bool ClosingMethod() {
             if (!param.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -169,42 +165,6 @@ namespace CompMs.App.Msdial.ViewModel
                 .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
                 .ToList();
 
-            if (!string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
-                var ext = Path.GetExtension(param.MspFilePath);
-                if (ext == ".msp" || ext == ".msp2") {
-                    MspDB = LibraryHandler.ReadMspLibrary(param.MspFilePath).OrderBy(msp => msp.PrecursorMz).ToList();
-                }
-                else {
-                    MspDB = new List<MoleculeMsReference>();
-                }
-            }
-            else if (string.IsNullOrEmpty(param.MspFilePath) && param.TargetOmics == TargetOmics.Metabolomics) {
-                MspDB = new List<MoleculeMsReference>();
-            }
-            else if (param.TargetOmics == TargetOmics.Lipidomics) {
-                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var files = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                if (files.Length == 1) {
-                    param.MspFilePath = files.First();
-                    MspDB = await Task.Run(() => LibraryHandler.ReadLipidMsLibrary(param.MspFilePath, param).OrderBy(msp => msp.PrecursorMz).ToList());
-                }
-            }
-            var counter = 0;
-            foreach (var msp in MspDB)
-                msp.ScanID = counter++;
-
-            if (!string.IsNullOrEmpty(param.TextDBFilePath)) {
-                if (!File.Exists(param.TextDBFilePath)) {
-                    MessageBox.Show($"{param.TextDBFilePath} does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-                TextDB = TextLibraryParser.TextLibraryReader(param.TextDBFilePath, out string error);
-                if (TextDB.IsEmptyOrNull()) {
-                    MessageBox.Show(error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-            }
-
             if (param.TogetherWithAlignment && AnalysisFiles.Count > 1) {
                 param.QcAtLeastFilter = false;
 
@@ -217,10 +177,6 @@ namespace CompMs.App.Msdial.ViewModel
             }
 
             return true;
-        }
-
-        private bool ValidateAnalysisParamSetWindow(Window window) {
-            return canExecuteCommand;
         }
 
         public DelegateCommand<Window> CancelProcessCommand {
@@ -252,74 +208,6 @@ namespace CompMs.App.Msdial.ViewModel
                     param.SearchedAdductIons = new List<AdductIon>();
                 param.SearchedAdductIons.Add(vm.AdductIon);
                 SearchedAdductIons.Add(new AdductIonVM(vm.AdductIon));
-            }
-        }
-
-        public ICommand MspCommand {
-            get {
-                if (param.TargetOmics == TargetOmics.Lipidomics)
-                    return LipidDBSetCommand;
-                return MspFileSelectCommand;
-            }
-        }
-
-        public DelegateCommand<Window> LipidDBSetCommand {
-            get => lipidDBSetCommand ?? (lipidDBSetCommand = new DelegateCommand<Window>(LipidDBSet));
-        }
-        private DelegateCommand<Window> lipidDBSetCommand;
-
-        private void LipidDBSet(Window owner) {
-            var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly).Length != 1) {
-                MessageBox.Show("There is no LBM file or several LBM files are existed in this application folder. Please see the tutorial.",
-                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var vm = new LipidDbSetVM(param.LipidQueryContainer, param.IonMode);
-            var window = new LipidDbSetWindow
-            {
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                DataContext = vm,
-            };
-            window.ShowDialog();
-        }
-
-        public DelegateCommand MspFileSelectCommand {
-            get => mspFileSelectCommand ?? (mspFileSelectCommand = new DelegateCommand(MspFileSelect));
-        }
-        private DelegateCommand mspFileSelectCommand;
-
-        private void MspFileSelect() {
-            var ofd = new OpenFileDialog
-            {
-                Title = "Import a library file",
-                Filter = "MSP file(*.msp)|*.msp*",
-                RestoreDirectory = true,
-                Multiselect = false,
-            };
-
-            if (ofd.ShowDialog() == true) {
-                Param.MspFilePath = ofd.FileName;
-            }
-        }
-
-        public DelegateCommand TextDBFileSelectCommand {
-            get => textDBFileSelectCommand ?? (textDBFileSelectCommand = new DelegateCommand(TextDBFileSelect));
-        }
-        private DelegateCommand textDBFileSelectCommand;
-
-        private void TextDBFileSelect() {
-            var ofd = new OpenFileDialog
-            {
-                Title = "Import a library file for post identification",
-                Filter = "Text file(*.txt)|*.txt;",
-                RestoreDirectory = true,
-                Multiselect = false,
-            };
-
-            if (ofd.ShowDialog() == true) {
-                Param.TextDBFilePath = ofd.FileName;
             }
         }
 

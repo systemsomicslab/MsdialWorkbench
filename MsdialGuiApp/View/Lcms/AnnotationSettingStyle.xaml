@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+                    xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <DataTemplate DataType="{x:Type localVM:LcmsAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
@@ -20,16 +21,18 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Database path:" VerticalAlignment="Center" Grid.Column="0"/>
                         <TextBox Text="{Binding DataBasePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Left"
                                  Margin="8" Grid.Column="1"/>
                         <Button Content="Browse"
                                 Command="{Binding BrowseCommand, Mode=OneTime}"
                                 Width="64" Height="24" Grid.Column="2"/>
                     </Grid>
                     <ui:LabeledContent PrependLabel="Database name">
-                        <TextBox Text="{Binding DataBaseID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding DataBaseID.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Left"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Database type">
-                        <ComboBox ItemsSource="{Binding Sources, Mode=OneTime}" SelectedItem="{Binding Source.Value}"/>
+                        <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}"/>
                     </ui:LabeledContent>
                 </StackPanel>
 
@@ -37,6 +40,120 @@
                                 Margin="0,8" Grid.Row="1"/>
             </Grid>
         </ScrollViewer>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="MS2SpectrumSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"
+                               AppendLabel="%">
+                <TextBox Text="{Binding RelativeAmpCutoff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (absolute):">
+                <TextBox Text="{Binding AbsoluteAmpCutoff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Mass range begin:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding MassRangeBegin.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Mass range end:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding MassRangeEnd.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="AnnotationCutOff">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Dot product score:">
+                <TextBox Text="{Binding SimpleDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Weighted dot product score:">
+                <TextBox Text="{Binding WeightedDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Reverse dot product score:">
+                <TextBox Text="{Binding ReverseDotProductCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Matched spectrum percentage:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding MatchedPeaksPercentageCutOff.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Minimum number of matched spectrum:">
+                <TextBox Text="{Binding MinimumSpectrumMatch.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Total score:">
+                <TextBox Text="{Binding TotalScoreCutoff.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="RetentionTimeSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Use retention time for scoring">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationScoring.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Use retention time for filtering">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationFiltering.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsLbmAnnotationSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Margin="8" Grid.Row="0">
+                <TextBlock Text="Lipid database and MS/MS identification setting"
+                           FontStyle="Italic"
+                           VerticalAlignment="Center"/>
+                <ui:LabeledContent PrependLabel="Lipid database:">
+                    <Button Content="Set"
+                            Command="{Binding LipidDBSetCommand, Mode=OneTime}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Width="64"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                                   AppendLabel="Da">
+                    <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                                   AppendLabel="Da">
+                    <TextBox Text="{Binding ParameterVM.Ms2Tolerance.Value}"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Retention time tolerance:"
+                                   AppendLabel="min">
+                    <TextBox Text="{Binding ParameterVM.RtTolerance.Value}"/>
+                </ui:LabeledContent>
+            </StackPanel>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="1">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource MS2SpectrumSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource AnnotationCutOff}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotationSettingViewModel}">
@@ -48,7 +165,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Margin="8" Grid.Row="0">
-                <TextBlock Text="Mass tolerance"/>
+                <TextBlock Text="Lipid database and MS/MS identification setting"
+                           FontStyle="Italic"
+                           VerticalAlignment="Center"/>
                 <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
                                    AppendLabel="Da">
                     <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
@@ -57,8 +176,6 @@
                                    AppendLabel="Da">
                     <TextBox Text="{Binding ParameterVM.Ms2Tolerance.Value}"/>
                 </ui:LabeledContent>
-
-                <TextBlock Text="Retention time tolerance"/>
                 <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                    AppendLabel="min">
                     <TextBox Text="{Binding ParameterVM.RtTolerance.Value}"/>
@@ -67,60 +184,23 @@
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
                       Grid.Row="1">
-                <StackPanel Margin="8">
-                    <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"
-                                       AppendLabel="%">
-                        <TextBox Text="{Binding ParameterVM.RelativeAmpCutoff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (absolute):">
-                        <TextBox Text="{Binding ParameterVM.AbsoluteAmpCutoff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Mass range begin:"
-                                       AppendLabel="Da">
-                        <TextBox Text="{Binding ParameterVM.MassRangeBegin.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Mass range end:"
-                                       AppendLabel="Da">
-                        <TextBox Text="{Binding ParameterVM.MassRangeEnd.Value}"/>
-                    </ui:LabeledContent>
-                </StackPanel>
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource MS2SpectrumSetting}"
+                                Margin="8"/>
             </Expander>
 
             <Expander Header="Annotaion cut off" Margin="0,8"
                       Grid.Row="2">
-                <StackPanel Margin="8">
-                    <ui:LabeledContent PrependLabel="Dot product score:">
-                        <TextBox Text="{Binding ParameterVM.SimpleDotProductCutOff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Weighted dot product score:">
-                        <TextBox Text="{Binding ParameterVM.WeightedDotProductCutOff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Reverse dot product score:">
-                        <TextBox Text="{Binding ParameterVM.ReverseDotProductCutOff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Matched spectrum percentage:"
-                                       AppendLabel="%">
-                        <TextBox Text="{Binding ParameterVM.MatchedPeaksPercentageCutOff.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Minimum number of matched spectrum:">
-                        <TextBox Text="{Binding ParameterVM.MinimumSpectrumMatch.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Total score:">
-                        <TextBox Text="{Binding ParameterVM.TotalScoreCutoff.Value}"/>
-                    </ui:LabeledContent>
-                </StackPanel>
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource AnnotationCutOff}"
+                                Margin="8"/>
             </Expander>
 
             <Expander Header="Retention time setting" Margin="0,8"
                       Grid.Row="3">
-                <StackPanel Margin="8">
-                    <ui:LabeledContent PrependLabel="Use retention time for scoring">
-                        <CheckBox IsChecked="{Binding ParameterVM.IsUseTimeForAnnotationScoring.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Use retention time for filtering">
-                        <CheckBox IsChecked="{Binding ParameterVM.IsUseTimeForAnnotationFiltering.Value}"/>
-                    </ui:LabeledContent>
-                </StackPanel>
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
             </Expander>
         </Grid>
     </DataTemplate>
@@ -157,14 +237,9 @@
 
             <Expander Header="Retention time setting" Margin="0,8"
                       Grid.Row="3">
-                <StackPanel Margin="8">
-                    <ui:LabeledContent PrependLabel="Use retention time for scoring">
-                        <CheckBox IsChecked="{Binding ParameterVM.IsUseTimeForAnnotationScoring.Value}"/>
-                    </ui:LabeledContent>
-                    <ui:LabeledContent PrependLabel="Use retention time for filtering">
-                        <CheckBox IsChecked="{Binding ParameterVM.IsUseTimeForAnnotationFiltering.Value}"/>
-                    </ui:LabeledContent>
-                </StackPanel>
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
             </Expander>
         </Grid>
     </DataTemplate>
