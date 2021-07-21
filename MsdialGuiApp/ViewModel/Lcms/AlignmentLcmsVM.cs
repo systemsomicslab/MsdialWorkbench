@@ -1,27 +1,127 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.View.Lcms;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.MessagePack;
+using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Reactive.Linq;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class AlignmentLcmsVM : TempAlignmentFileVM
+    class AlignmentLcmsVM : AlignmentFileViewModel
     {
+        public AlignmentLcmsVM(
+            LcmsAlignmentModel model,
+            IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            : base(model) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            this.model = model;
+            this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
+
+            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Brushes = this.model.Brushes.AsReadOnly();
+            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+
+            MassMin = this.model.MassMin;
+            MassMax = this.model.MassMax;
+            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
+            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
+            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
+            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
+
+            RtMin = this.model.RtMin;
+            RtMax = this.model.RtMax;
+            RtLower = new ReactiveProperty<double>(RtMin).AddTo(Disposables);
+            RtUpper = new ReactiveProperty<double>(RtMax).AddTo(Disposables);
+            RtLower.SetValidateNotifyError(v => v < RtMin ? "Too small" : null)
+                .SetValidateNotifyError(v => v > RtUpper.Value ? "Too large" : null);
+            RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
+                .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
+
+            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(w => w.Split())
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            CommentFilterKeywords = CommentFilterKeyword.Select(w => w.Split())
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
+            new[]
+            {
+                MassLower.ToUnit(),
+                MassUpper.ToUnit(),
+                RtLower.ToUnit(),
+                RtUpper.ToUnit(),
+                MetaboliteFilterKeywords.ToUnit(),
+                CommentFilterKeywords.ToUnit(),
+                DisplayFilters.ToUnit(),
+            }.Merge()
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .ObserveOnDispatcher()
+            .Subscribe(_ => Ms1Spots?.Refresh())
+            .AddTo(Disposables);
+
+            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+
+            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, SelectedBrush).AddTo(Disposables);
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel).AddTo(Disposables);
+            AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
+            AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
+                this.model.AlignmentSpotTableModel,
+                Observable.Return(model.BarItemsLoader),
+                MassLower,
+                MassUpper,
+                RtLower,
+                RtUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
+
+            SearchCompoundCommand = this.model.Target
+                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+                .ToReactiveCommand()
+                .WithSubscribe(SearchCompound)
+                .AddTo(Disposables);
+        }
+
+        private readonly LcmsAlignmentModel model;
+        private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+
         public ICollectionView Ms1Spots {
             get => ms1Spots;
             set {
@@ -32,128 +132,73 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 }
             }
         }
+
         private ICollectionView ms1Spots;
-        private ObservableCollection<AlignmentSpotPropertyModel> _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
+        public override ICollectionView PeakSpotsView => ms1Spots;
 
-        public override ICollectionView PeakSpots => ms1Spots;
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        public double MassMin => _ms1Spots.Min(spot => spot.MassCenter);
-        public double MassMax => _ms1Spots.Max(spot => spot.MassCenter);
-        public double MassLower {
-            get => massLower;
-            set {
-                if (SetProperty(ref massLower, value))
-                    Ms1Spots?.Refresh();
-            }
+        public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public BarChartViewModel BarChartViewModel { get; }
+        public AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public ReactiveProperty<double> MassLower { get; }
+        public ReactiveProperty<double> MassUpper { get; }
+
+        public double RtMin { get; }
+        public double RtMax { get; }
+        public ReactiveProperty<double> RtLower { get; }
+        public ReactiveProperty<double> RtUpper { get; }
+
+        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
+        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
+
+        public bool RefMatchedChecked {
+            get => ReadDisplayFilters(DisplayFilter.RefMatched);
+            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
         }
-        public double MassUpper {
-            get => massUpper;
-            set {
-                if (SetProperty(ref massUpper, value))
-                    Ms1Spots?.Refresh();
-            }
+
+        public bool SuggestedChecked {
+            get => ReadDisplayFilters(DisplayFilter.Suggested);
+            set => SetDisplayFilters(DisplayFilter.Suggested, value);
         }
-        private double massLower, massUpper;
 
-        public double RtMin => _ms1Spots.Min(spot => spot.TimesCenter);
-        public double RtMax => _ms1Spots.Max(spot => spot.TimesCenter);
-        public double RtLower {
-            get => rtLower;
-            set {
-                if (SetProperty(ref rtLower, value))
-                    Ms1Spots?.Refresh();
-            }
+        public bool UnknownChecked {
+            get => ReadDisplayFilters(DisplayFilter.Unknown);
+            set => SetDisplayFilters(DisplayFilter.Unknown, value);
         }
-        public double RtUpper {
-            get => rtUpper;
-            set {
-                if (SetProperty(ref rtUpper, value))
-                    Ms1Spots?.Refresh();
-            }
+
+        public bool Ms2AcquiredChecked {
+            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
+            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
         }
-        private double rtLower, rtUpper;
 
-
-        public List<BarItem> BarItems {
-            get => barItems;
-            set => SetProperty(ref barItems, value);
+        public bool MolecularIonChecked {
+            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
+            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
         }
-        private List<BarItem> barItems = new List<BarItem>();
-        
-        public AlignmentResultContainer Container {
-            get => container;
-            set => SetProperty(ref container, value);
+
+        public bool UniquesIonsChecked {
+            get => ReadDisplayFilters(DisplayFilter.UniqueIons);
+            set => SetDisplayFilters(DisplayFilter.UniqueIons, value);
         }
-        private AlignmentResultContainer container;
 
-        public AlignmentSpotPropertyModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value)) {
-                    OnTargetChanged();
-                }
-            }
+        public bool BlankFilterChecked {
+            get => ReadDisplayFilters(DisplayFilter.Blank);
+            set => SetDisplayFilters(DisplayFilter.Blank, value);
         }
-        private AlignmentSpotPropertyModel target;
 
-        public List<Chromatogram> EicChromatograms {
-            get => eicChromatograms;
-            set {
-                if (SetProperty(ref eicChromatograms, value)) {
-                    OnPropertyChanged(nameof(EicMax));
-                    OnPropertyChanged(nameof(EicMin));
-                    OnPropertyChanged(nameof(IntensityMax));
-                    OnPropertyChanged(nameof(IntensityMin));
-                }
-            }
+        public bool ManuallyModifiedChecked {
+            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
+            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
         }
-        private List<Chromatogram> eicChromatograms;
 
-       
-
-        public double EicMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Time) ?? 0;
-        public double EicMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Time) ?? 0;
-        public double IntensityMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0;
-        public double IntensityMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0;
-
-        public List<SpectrumPeakWrapper> Ms2Spectrum {
-            get => ms2Spectrum;
-            set {
-                if (SetProperty(ref ms2Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeakWrapper> ms2Spectrum = new List<SpectrumPeakWrapper>();
-
-        public List<SpectrumPeakWrapper> Ms2ReferenceSpectrum {
-            get => ms2ReferenceSpectrum;
-            set {
-                if (SetProperty(ref ms2ReferenceSpectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeakWrapper> ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
-
-        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0;
-        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0;
-        
-        
-        public string FileName {
-            get => fileName;
-            set => SetProperty(ref fileName, value);
-        }
-        private string fileName; 
-
-        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
-        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
-        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
-        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
-        public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
         public DisplayFilter DisplayFilters {
             get => displayFilters;
             internal set {
@@ -161,156 +206,36 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     Ms1Spots?.Refresh();
             }
         }
-        
-        private DisplayFilter displayFilters = 0;
+        private DisplayFilter displayFilters = DisplayFilter.Unset;
+
         private bool ReadDisplayFilters(DisplayFilter flags) {
             return (flags & DisplayFilters) != 0;
         }
 
-        private readonly AlignmentFileBean alignmentFile;
-        private readonly List<long> seekPointers = new List<long>();
-        private readonly ParameterBase param = null;
-        private readonly string resultFile = string.Empty;
-        private readonly string eicFile = string.Empty;
-        private readonly string spectraFile = string.Empty;
-        private readonly List<MoleculeMsReference> msp = new List<MoleculeMsReference>();
-
-        private MSDecResult msdecResult = null;
-        private static ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-
-        static AlignmentLcmsVM() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
+        private void WriteDisplayFilters(DisplayFilter flags, bool value) {
+            displayFilters.Write(flags, value);
         }
 
-        public AlignmentLcmsVM(AlignmentFileBean alignmentFileBean, ParameterBase param) {
-            alignmentFile = alignmentFileBean;
-            fileName = alignmentFileBean.FileName;
-            resultFile = alignmentFileBean.FilePath;
-            eicFile = alignmentFileBean.EicFilePath;
-            spectraFile = alignmentFileBean.SpectraFilePath;
-
-            this.param = param;
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
-
-            _ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, param.FileID_ClassName)));
-            Ms1Spots = CollectionViewSource.GetDefaultView(_ms1Spots);
-
-            MassLower = MassMin;
-            MassUpper = MassMax;
-
-            RtLower = RtMin;
-            RtUpper = RtMax;
-
-            MsdecResultsReader.GetSeekPointers(spectraFile, out _, out seekPointers, out _);
-
-            PropertyChanged += OnTargetChanged;
-        }
-
-        private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Target)) {
-                await OnTargetChanged(Target).ConfigureAwait(false);
+        private bool SetDisplayFilters(DisplayFilter flags, bool value) {
+            if (ReadDisplayFilters(flags) != value) {
+                WriteDisplayFilters(flags, value);
+                OnPropertyChanged(nameof(DisplayFilters));
+                return true;
             }
-        }
-
-        private async Task OnTargetChanged(AlignmentSpotPropertyModel target) {
-            await Task.WhenAll(
-                LoadBarItemsAsync(target),
-                LoadEicAsync(target),
-                LoadMs2SpectrumAsync(target),
-                LoadMs2ReferenceAsync(target)
-           ).ConfigureAwait(false);
-        }
-
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target) {
-            BarItems = new List<BarItem>();
-            if (target == null)
-                return;
-
-            // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
-            BarItems = await Task.Run(() =>
-                target.AlignedPeakProperties
-                .GroupBy(peak => param.FileID_ClassName[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-                .ToList()).ConfigureAwait(false);
-        }
-
-        async Task LoadEicAsync(AlignmentSpotPropertyModel target) {
-            EicChromatograms = new List<Chromatogram>();
-            if (target == null)
-                return;
-
-            // maybe using file pointer is better
-            EicChromatograms = await Task.Run(() => {
-                var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                foreach (var peakinfo in spotinfo.PeakInfos) {
-                    var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
-                    var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                    chroms.Add(new Chromatogram {
-                        Class = param.FileID_ClassName[peakinfo.FileID],
-                        Peaks = items,
-                        PeakArea = peakitems,
-                    });
-                }
-                return chroms;
-            }).ConfigureAwait(false);
-        }
-
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target) {
-            Ms2Spectrum = new List<SpectrumPeakWrapper>();
-            if (target == null)
-                return;
-
-            await Task.Run(() => {
-                var idx = _ms1Spots.IndexOf(target);
-                msdecResult = MsdecResultsReader.ReadMSDecResult(spectraFile, seekPointers[idx]);
-                Ms2Spectrum = msdecResult.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList();
-            }).ConfigureAwait(false);
-        }
-
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target) {
-            Ms2ReferenceSpectrum = new List<SpectrumPeakWrapper>();
-            if (target == null)
-                return;
-
-            await Task.Run(() => {
-                if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                    var reference = msp[matched.LibraryIDWhenOrdered];
-                    if (matched.LibraryID != reference.ScanID) {
-                        reference = msp.FirstOrDefault(msp => msp.ScanID == matched.LibraryID);
-                    }
-                    Ms2ReferenceSpectrum = reference?.Spectrum.Select(peak => new SpectrumPeakWrapper(peak)).ToList() ?? new List<SpectrumPeakWrapper>();
-                }
-            }).ConfigureAwait(false);
-        }
-
-
-        private void OnTargetChanged() {
-            var target = Target;
-            if (target == null) {
-                BarItems = new List<BarItem>();
-                EicChromatograms = new List<Chromatogram>();
-                return;
-            }
-
-            // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
-            BarItems = target.AlignedPeakProperties
-                .GroupBy(peak => param.FileID_ClassName[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-                .ToList();
-
-            // maybe using file pointer is better
-            var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-            EicChromatograms = spotinfo.PeakInfos.Select(peakinfo => new Chromatogram { Peaks = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList() }).ToList();
+            return false;
         }
 
         bool PeakFilter(object obj) {
             if (obj is AlignmentSpotPropertyModel spot) {
                 return AnnotationFilter(spot)
                     && MzFilter(spot)
+                    && RtFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
-                    && (!BlankFilterChecked || spot.IsBlankFiltered);
+                    && (!BlankFilterChecked || spot.IsBlankFiltered)
+                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
+                    && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
+                    && CommentFilter(spot, CommentFilterKeywords.Value);
             }
             return false;
         }
@@ -323,39 +248,50 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool MzFilter(AlignmentSpotPropertyModel spot) {
-            return MassLower <= spot.MassCenter
-                && spot.MassCenter <= MassUpper;
+            return MassLower.Value <= spot.MassCenter
+                && spot.MassCenter <= MassUpper.Value;
         }
 
-        public DelegateCommand<Window> SearchCompoundCommand => searchCompoundCommand ?? (searchCompoundCommand = new DelegateCommand<Window>(SearchCompound));
-        private DelegateCommand<Window> searchCompoundCommand;
-
-        private void SearchCompound(Window owner) {
-            var vm = new CompoundSearchVM(alignmentFile, Target.innerModel, msdecResult, msp, param.MspSearchParam, param.TargetOmics, null);
-            var window = new CompoundSearchWindow {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            window.ShowDialog();
+        bool RtFilter(AlignmentSpotPropertyModel spot) {
+            return RtLower.Value <= spot.TimesCenter
+                && spot.TimesCenter <= RtUpper.Value;
         }
 
-        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
-        private DelegateCommand<Window> showIonTableCommand;
+        bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Name.Contains(keyword));
+        }
 
-        private void ShowIonTable(Window owner) {
-            var window = new View.Dims.IonTableViewer {
-                DataContext = this,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Owner = owner,
-            };
+        bool CommentFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Comment.Contains(keyword));
+        }
 
-            window.Show();
+        public ReactiveCommand SearchCompoundCommand { get; }
+
+        private void SearchCompound() {
+            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
+                return;
+
+            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
+                this.model.AlignmentFile,
+                Target.Value.innerModel,
+                this.model.MsdecResult.Value,
+                null,
+                null,
+                new MsRefSearchParameterBase(this.model.Parameter.MspSearchParam)))
+            using (var vm = new ViewModel.CompoundSearchVM(model)) {
+                compoundSearchService.ShowDialog(vm);
+            }
+        }
+
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand showIonTableCommand;
+
+        private void ShowIonTable() {
+            peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile<AlignmentResultContainer>(Container, resultFile);
+            model.SaveProject();
         }
 
     }

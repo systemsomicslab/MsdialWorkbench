@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
         private ICollectionView ms1Peaks;
 
-        public override ICollectionView PeakSpots => ms1Peaks;
+        public override ICollectionView PeakSpotsView => ms1Peaks;
 
         public string DisplayLabel {
             get => displayLabel;

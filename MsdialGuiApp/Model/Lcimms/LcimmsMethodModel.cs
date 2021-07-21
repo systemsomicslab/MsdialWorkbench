@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -31,11 +32,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) {
             Storage = storage;
 
-            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-
-            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            MspAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
+            TextDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
             AnalysisFile = AnalysisFiles.FirstOrDefault();
@@ -43,12 +41,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentFile = AlignmentFiles.FirstOrDefault();
 
             var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add(mspChromatogramAnnotator);
-            dataMapper.Add(textDBChromatogramAnnotator);
+            dataMapper.Add(MspAnnotator);
+            dataMapper.Add(TextDBAnnotator);
         }
 
-        private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;
-        private IAnnotator<AlignmentSpotProperty, MSDecResult> mspAlignmentAnnotator, textDBAlignmentAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; private set; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; private set; }
 
         public MsdialDataStorage Storage {
             get => storage;
@@ -121,12 +119,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Storage.AlignmentFiles = AlignmentFiles.ToList();
 
             Storage.MspDB = MspDB;
-            mspChromatogramAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            mspAlignmentAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
+            MspAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
 
             Storage.TextDB = TextDB;
-            textDBChromatogramAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-            textDBAlignmentAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            TextDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
@@ -180,8 +176,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     analysisFile,
                     new StandardDataProvider(analysisFile, isGuiProcess: true, retry: 5),
                     Storage.ParameterBase,
-                    mspChromatogramAnnotator,
-                    textDBChromatogramAnnotator);
+                    MspAnnotator,
+                    TextDBAnnotator);
         }
 
         private LcimmsAlignmentModel CreateAlignmentModel(AlignmentFileBean alignmentFile) {
@@ -191,8 +187,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new LcimmsAlignmentModel(
                 alignmentFile,
                 Storage.ParameterBase,
-                mspAlignmentAnnotator,
-                textDBAlignmentAnnotator);
+                MspAnnotator,
+                TextDBAnnotator);
         }
     }
 }

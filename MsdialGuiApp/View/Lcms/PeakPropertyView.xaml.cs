@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Details
+namespace CompMs.App.Msdial.View.Lcms
 {
     /// <summary>
     /// Interaction logic for PeakPropertyView.xaml

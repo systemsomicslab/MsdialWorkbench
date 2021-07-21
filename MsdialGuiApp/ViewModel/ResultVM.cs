@@ -5,6 +5,6 @@ namespace CompMs.App.Msdial.ViewModel
 {
     public abstract class ResultVM : ViewModelBase
     {
-        public abstract ICollectionView PeakSpots { get; }
+        public abstract ICollectionView PeakSpotsView { get; }
     }
 }

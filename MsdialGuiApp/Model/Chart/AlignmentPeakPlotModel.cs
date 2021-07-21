@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.Model.Chart
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
+            IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
             IObservable<string> labelSource) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
@@ -27,12 +28,16 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
+            if (targetSource is null) {
+                throw new ArgumentNullException(nameof(targetSource));
+            }
+
             if (labelSource is null) {
                 throw new ArgumentNullException(nameof(labelSource));
             }
 
             Spots = spots;
-            Target = null;
+            TargetSource = targetSource;
 
             HorizontalSelector = horizontalSelector;
             VerticalSelector = verticalSelector;
@@ -46,22 +51,9 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalProperty = string.Empty;
         }
 
-        public AlignmentPeakPlotModel(
-            IEnumerable<AlignmentSpotPropertyModel> spots,
-            Func<AlignmentSpotPropertyModel, double> horizontalSelector,
-            Func<AlignmentSpotPropertyModel, double> verticalSelector,
-            IObservable<string> labelSource)
-            : this(new ObservableCollection<AlignmentSpotPropertyModel>(spots), horizontalSelector, verticalSelector, labelSource) {
-        }
-
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
-        // nullable value
-        public AlignmentSpotPropertyModel Target {
-            get => target;
-            set => SetProperty(ref target, value);
-        }
-        private AlignmentSpotPropertyModel target;
+        public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
 
         public Range HorizontalRange {
             get {

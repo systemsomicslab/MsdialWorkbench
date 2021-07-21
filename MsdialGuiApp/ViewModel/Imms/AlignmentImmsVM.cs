@@ -1,12 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -15,7 +16,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 
@@ -24,13 +24,21 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     class AlignmentImmsVM : AlignmentFileViewModel {
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
 
             this.model = model;
             this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
 
             this.mspAnnotator = mspAnnotator;
             this.textDBAnnotator = textDBAnnotator;
@@ -147,7 +155,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ICollectionView ms1Spots;
 
-        public override ICollectionView PeakSpots => ms1Spots;
+        public override ICollectionView PeakSpotsView => ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
@@ -325,7 +333,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
 
         private void SearchCompound() {
             if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
@@ -343,18 +352,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand<Window> ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand<Window>(ShowIonTable));
-        private DelegateCommand<Window> showIonTableCommand;
+        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand showIonTableCommand;
 
-        private void ShowIonTable(Window owner) {
-            var window = new View.Table.AlignmentSpotTable
-            {
-                DataContext = AlignmentSpotTableViewModel,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Owner = owner,
-            };
-
-            window.Show();
+        private void ShowIonTable() {
+            peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
         public void SaveProject() {

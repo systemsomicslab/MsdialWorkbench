@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View
+namespace CompMs.App.Msdial.View.Lcms
 {
     /// <summary>
-    /// Interaction logic for ExpRef2View.xaml
+    /// Interaction logic for LcmsAnalysisPeakTableView.xaml
     /// </summary>
-    public partial class ExpRef2View : UserControl
+    public partial class LcmsAnalysisPeakTableView : UserControl
     {
-        public ExpRef2View() {
+        public LcmsAnalysisPeakTableView() {
             InitializeComponent();
         }
     }

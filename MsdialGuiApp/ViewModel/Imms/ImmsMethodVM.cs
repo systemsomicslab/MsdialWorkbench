@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.DataObj;
@@ -7,7 +8,6 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -22,22 +22,31 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ImmsMethodVM(
             ImmsMethodModel model,
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model, serializer) {
+            if (compoundSearchService is null) {
+                throw new System.ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new System.ArgumentNullException(nameof(peakSpotTableService));
+            }
 
             this.model = model;
-            this.compoundSearchService = compoundSearchService ?? throw new System.ArgumentNullException(nameof(compoundSearchService));
+            this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public ImmsMethodVM(
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
                   new ImmsMethodModel(storage, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: true)),
                   storage,
-                  compoundSearchService) {
+                  compoundSearchService, peakSpotTableService) {
 
         }
             
@@ -45,6 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsMethodModel model;
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public AnalysisImmsVM AnalysisVM {
             get => analysisVM;
@@ -146,9 +156,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AnalysisVM = new AnalysisImmsVM(
                 model.AnalysisModel,
                 analysisFile.File,
-                model.MspChromatogramAnnotator,
-                model.TextDBChromatogramAnnotator,
-                compoundSearchService)
+                model.MspAnnotator,
+                model.TextDBAnnotator,
+                compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
@@ -166,9 +176,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
             AlignmentVM = new AlignmentImmsVM(
                 model.AlignmentModel,
-                model.MspAlignmentAnnotator,
-                model.TextDBAlignmentAnnotator,
-                compoundSearchService)
+                model.MspAnnotator,
+                model.TextDBAnnotator,
+                compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);

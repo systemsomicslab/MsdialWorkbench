@@ -1,15 +1,13 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.ChemView;
 using CompMs.MsdialCore.DataObj;
 using System;
-using System.Windows.Media;
-using CompMs.Common.Interfaces;
-using CompMs.Common.DataObj.Property;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : ViewModelBase, IAnnotatedObject
+    public class ChromatogramPeakFeatureModel : BindableBase, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
@@ -102,10 +100,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
 
-        [Obsolete]
-        public Brush SpotColor { get; set; }
-        //public Brush SpotColorByOntology { get; set; }
-
         public ChromatogramPeakFeature InnerModel => innerModel;
         #endregion
 
@@ -119,21 +113,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public ChromatogramPeakFeatureModel(ChromatogramPeakFeature feature, bool coloredByOntology = false) {
+        public ChromatogramPeakFeatureModel(ChromatogramPeakFeature feature) {
             innerModel = feature;
-            if (coloredByOntology) {
-                SpotColor = ChemOntologyColor.Ontology2RgbaBrush.ContainsKey(innerModel.Ontology) ?
-                  new SolidColorBrush(ChemOntologyColor.Ontology2RgbaBrush[innerModel.Ontology]) :
-                  new SolidColorBrush(Color.FromArgb(180, 181, 181, 181));
-            }
-            else {
-                SpotColor = new SolidColorBrush(Color.FromArgb(180
-                            , (byte)(255 * innerModel.PeakShape.AmplitudeScoreValue)
-                            , (byte)(255 * (1 - Math.Abs(innerModel.PeakShape.AmplitudeScoreValue - 0.5)))
-                            , (byte)(255 - 255 * innerModel.PeakShape.AmplitudeScoreValue)));
-            }
-
-            SpotColor.Freeze();
         }
 
         public void RaisePropertyChanged() {

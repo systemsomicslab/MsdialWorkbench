@@ -23,15 +23,35 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private AnalysisFileBean analysisFile;
 
+        public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
+
+        public void LoadAnalysisFile(AnalysisFileBean analysisFile) {
+            if (AnalysisFile == analysisFile || analysisFile is null) {
+                return;
+            }
+            AnalysisFile = analysisFile;
+            LoadAnalysisFileCore(AnalysisFile);
+        }
+
+        protected abstract void LoadAnalysisFileCore(AnalysisFileBean analysisFile);
+
         public AlignmentFileBean AlignmentFile {
             get => alignmentFile;
             set => SetProperty(ref alignmentFile, value);
         }
         private AlignmentFileBean alignmentFile;
 
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
-
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
+
+        public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
+            if (AlignmentFile == alignmentFile || alignmentFile is null) {
+                return;
+            }
+            AlignmentFile = alignmentFile;
+            LoadAlignmentFileCore(AlignmentFile);
+        }
+
+        protected abstract void LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         private bool disposedValue;
         protected CompositeDisposable Disposables = new CompositeDisposable();

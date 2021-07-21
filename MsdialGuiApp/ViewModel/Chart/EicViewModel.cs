@@ -16,27 +16,25 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> verticalAxis = null) {
 
-            Eic = model.ObserveProperty(m => m.Eic)
+            Eic = model.EicSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            EicPeak = model.ObserveProperty(m => m.EicPeak)
+            EicPeak = model.EicPeakSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            EicFocused = model.ObserveProperty(m => m.EicFocused)
+            EicFocused = model.EicFocusedSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            if (horizontalAxis == null) {
-                var chromRange = model.ObserveProperty(m => m.ChromRange);
-                horizontalAxis = chromRange
+            if (horizontalAxis is null) {
+                horizontalAxis = model.ChromRangeSource
                     .ToReactiveAxisManager<double>()
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
-            if (verticalAxis == null) {
-                var abundanceRange = model.ObserveProperty(m => m.AbundanceRange);
-                verticalAxis = abundanceRange
+            if (verticalAxis is null) {
+                verticalAxis = model.AbundanceRangeSource
                     .ToReactiveAxisManager<double>(new ChartMargin(0, 0.1), new Range(0d, 0d))
                     .AddTo(Disposables);
             }

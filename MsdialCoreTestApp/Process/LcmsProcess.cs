@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -46,7 +47,8 @@ namespace CompMs.App.MsdialConsole.Process {
             var files = container.AnalysisFiles;
             var tasks = new Task[files.Count];
             foreach ((var file, var idx) in files.WithIndex()) {
-                tasks[idx] = Task.Run(() => FileProcess.Run(file, container));
+                var provider = new StandardDataProvider(file, false, 5);
+                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container));
             }
             Task.WaitAll(tasks);
 

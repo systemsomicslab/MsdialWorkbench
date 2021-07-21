@@ -43,8 +43,7 @@ namespace CompMs.App.Msdial.Model.Dims
             ProviderFactory = providerFactory;
         }
 
-        private IAnnotator<ChromatogramPeakFeature, MSDecResult> mspChromatogramAnnotator, textDBChromatogramAnnotator;
-        private IAnnotator<AlignmentSpotProperty, MSDecResult> mspAlignmentAnnotator, textDBAlignmentAnnotator;
+        private IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
 
         public MsdialDataStorage Storage {
             get => storage;
@@ -82,12 +81,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
         public void LoadAnnotator() {
-            var mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
-            mspChromatogramAnnotator = mspAnnotator;
-            mspAlignmentAnnotator = mspAnnotator;
-            var textAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, MSDecResult>;
-            textDBChromatogramAnnotator = textAnnotator;
-            textDBAlignmentAnnotator = textAnnotator;
+            mspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
+            textDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
         }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
@@ -105,21 +100,17 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Storage.DataBaseMapper = new DataBaseMapper();
 
-            var mspAnnotator = new DimsMspAnnotator(MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            mspChromatogramAnnotator = mspAnnotator;
-            mspAlignmentAnnotator = mspAnnotator;
+            mspAnnotator = new DimsMspAnnotator(MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(MspDB, "MspDB"));
             Storage.DataBaseMapper.Add(mspAnnotator);
 
-            var textAnnotator = new MassAnnotator(TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-            textDBChromatogramAnnotator = textAnnotator;
-            textDBAlignmentAnnotator = textAnnotator;
+            textDBAnnotator = new MassAnnotator(TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
             Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(TextDB, "TextDB"));
-            Storage.DataBaseMapper.Add(textAnnotator);
+            Storage.DataBaseMapper.Add(textDBAnnotator);
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, storage, mspChromatogramAnnotator, textDBChromatogramAnnotator, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => ProcessFile.Run(analysisfile, storage, mspAnnotator, textDBAnnotator, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
@@ -161,55 +152,31 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentModel?.SaveProject();
         }
 
-        public void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (analysis == AnalysisFile) {
-                return;
-            }
-            AnalysisFile = analysis;
-
+        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            AnalysisModel = CreateAnalysisModel(analysis).AddTo(Disposables);
+            AnalysisModel = new DimsAnalysisModel(
+                analysisFile,
+                ProviderFactory.Create(analysisFile),
+                Storage.DataBaseMapper,
+                Storage.ParameterBase,
+                mspAnnotator,
+                textDBAnnotator).AddTo(Disposables);;
         }
 
-        public DimsAnalysisModel CreateAnalysisModel(AnalysisFileBean analysisFile) {
-            if (analysisFile == null) {
-                return null;
-            }
-            return new DimsAnalysisModel(
-                    analysisFile,
-                    ProviderFactory.Create(analysisFile),
-                    Storage.DataBaseMapper,
-                    Storage.ParameterBase,
-                    mspChromatogramAnnotator,
-                    textDBChromatogramAnnotator);
-        }
-
-        public void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (alignment == AlignmentFile) {
-                return;
-            }
-            AlignmentFile = alignment;
-
+        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = CreateAlignmentModel(alignment).AddTo(Disposables);
-        }
-
-        private DimsAlignmentModel CreateAlignmentModel(AlignmentFileBean alignmentFile) {
-            if (alignmentFile == null) {
-                return null;
-            }
-            return new DimsAlignmentModel(
+            AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
                 Storage.DataBaseMapper,
                 Storage.ParameterBase,
-                mspAlignmentAnnotator,
-                textDBAlignmentAnnotator);
+                mspAnnotator,
+                textDBAnnotator).AddTo(Disposables);
         }
     }
 }

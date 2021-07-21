@@ -39,8 +39,12 @@ namespace CompMs.MsdialCore.Algorithm
             return rawObj.SpectrumList.Where(spectrum => spectrum.MsLevel == 1).ToList().AsReadOnly();
         }
 
+        private Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            return rawObj.SpectrumList.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+            if (cache.TryGetValue(level, out var spectrums)) {
+                return spectrums;
+            }
+            return cache[level] = rawObj.SpectrumList.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
         }
 
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {

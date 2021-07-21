@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.MS2
+namespace CompMs.App.Msdial.View.Lcms
 {
     /// <summary>
-    /// Interaction logic for ExpRefView.xaml
+    /// Interaction logic for LcmsAlignmentSpotTableView.xaml
     /// </summary>
-    public partial class ExpRefView : UserControl
+    public partial class LcmsAlignmentSpotTableView : UserControl
     {
-        public ExpRefView() {
+        public LcmsAlignmentSpotTableView() {
             InitializeComponent();
         }
     }

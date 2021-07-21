@@ -205,8 +205,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     var specPrecMz = spec.Precursor.SelectedIonMz;
 
                     var IsMassInWindow = IsInMassWindow(mass, spec, ms2Tol, param.AcquisitionType);
-                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
-                        ? true : false; // used for diapasef
+                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd); // used for diapasef
 
                     if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd) { // meaning normal dia data
                         if (dtStart <= spec.DriftTime && spec.DriftTime <= dtEnd) {

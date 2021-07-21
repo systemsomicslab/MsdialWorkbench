@@ -28,8 +28,8 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var data = MessagePackHandler.LoadFromFile<DataStorageForTest>(datafile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
             var mapper = new DataBaseMapper();
-            mapper.Add(new DataBaseRefer(data.MspDB, "MspDB"));
-            mapper.Add(new DataBaseRefer(data.TextDB, "TextDB"));
+            mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
+            mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
 
             var exporter = new AlignmentCSVExporter();
             var stream = new MemoryStream();
