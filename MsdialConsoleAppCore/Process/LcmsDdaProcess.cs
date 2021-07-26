@@ -30,6 +30,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             var rdamProperty = AnalysisFilesParser.GetRdamProperty(analysisFiles);
             var lcmsParam = ConfigParser.ReadForLcmsParameter(methodFile);
             var projectProp = ConfigParser.ReadForLcmsProjectProperty(methodFile, inputFolder);
+            ConfigParser.SetLCMSAlignmentReferenceFileByFilename(methodFile, analysisFiles, lcmsParam);
+
             var alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputFolder);
 
             //check dda or dia
