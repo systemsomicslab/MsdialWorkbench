@@ -38,6 +38,8 @@ namespace CompMs.Common.DataObj.Result {
         public float MatchedPeaksPercentage { get; set; }
         [Key(8)]
         public float EssentialFragmentMatchedScore { get; set; }
+        [Key(28)]
+        public float AndromedaScore { get; set; }
 
         // others
         [Key(9)]

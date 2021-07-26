@@ -104,13 +104,14 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
-                    MsScanMatchResult result = null;
-                    if (param.TargetOmics == Common.Enum.TargetOmics.Metabolomics) {
-                        result = MsScanMatching.CompareIMMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
-                    }
-                    else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
-                        result = MsScanMatching.CompareIMMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
-                    }
+                    MsScanMatchResult result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam,
+                       param.TargetOmics, ccs, isotopes, refSpec.IsotopicPeaks, param.AndromedaDelta, param.AndromedaMaxPeaks);
+                    //if (param.TargetOmics == Common.Enum.TargetOmics.Metabolomics) {
+                    //    result = MsScanMatching.CompareIMMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
+                    //}
+                    //else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
+                    //    result = MsScanMatching.CompareIMMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, ccs, isotopes, refSpec.IsotopicPeaks);
+                    //}
                     result.Source = SourceType.MspDB;
                     if (result.IsSpectrumMatch || result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
@@ -140,7 +141,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
-                    var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam);
                     result.Source = SourceType.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
