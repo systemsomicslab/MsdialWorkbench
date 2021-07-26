@@ -19,6 +19,18 @@
             <Setter Property="Width" Value="24"/>
             <Setter Property="Height" Value="24"/>
         </Style>
+        <Style TargetType="ListBoxItem" x:Key="ErrorStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=(vm:IAnnotationSettingViewModel.ObserveHasErrors).Value}" Value="true">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="ToolTip">
+                        <Setter.Value>
+                            <ToolTip Content="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -55,6 +67,7 @@
                      SelectedValue="{Binding Path=SelectedAnnotation}"
                      DisplayMemberPath="Label.Value"
                      IsSynchronizedWithCurrentItem="True"
+                     ItemContainerStyle="{StaticResource ErrorStyle}"
                      Margin="8,4"
                      Grid.Row="1"/>
         </Grid>

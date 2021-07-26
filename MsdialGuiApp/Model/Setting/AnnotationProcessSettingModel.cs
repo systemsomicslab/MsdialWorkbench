@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.MsdialCore.Parameter;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -14,6 +15,10 @@ namespace CompMs.App.Msdial.Model.Setting
 
     class AnnotationProcessSettingModel : IAnnotationProcessSettingModel
     {
+        public AnnotationProcessSettingModel() {
+
+        }
+
         public ObservableCollection<IAnnotationSettingModel> Annotations { get; } = new ObservableCollection<IAnnotationSettingModel>();
 
         public void AddAnnotation(IAnnotationSettingModel model) {
