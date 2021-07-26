@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\DatabaseStandard\DatabaseStandard.csproj" />
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj" />
