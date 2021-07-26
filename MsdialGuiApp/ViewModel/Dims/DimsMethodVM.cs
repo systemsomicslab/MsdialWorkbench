@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -33,29 +34,37 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsMethodVM(
             DimsMethodModel model,
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model, serializer) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
             Model = model;
             this.compoundSearchService = compoundSearchService;
-
+            this.peakSpotTableService = peakSpotTableService;
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public DimsMethodVM(
             MsdialDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService)
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
                   new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true)),
                   storage,
-                  compoundSearchService) {
+                  compoundSearchService,
+                  peakSpotTableService) {
 
         }
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         internal DimsMethodModel Model { get; }
 
@@ -222,7 +231,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 AnalysisVM.Dispose();
                 Disposables.Remove(AnalysisVM);
             }
-            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, compoundSearchService) { DisplayFilters = displayFilters }.AddTo(Disposables);
+            AnalysisVM =  new AnalysisDimsVM(Model.AnalysisModel, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters }.AddTo(Disposables);
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
@@ -235,7 +244,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 AlignmentVM.Dispose();
                 Disposables.Remove(AlignmentVM);
             }
-            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService) { DisplayFilters = displayFilters }.AddTo(Disposables);
+            AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters }.AddTo(Disposables);
         }
 
         public override void SaveProject() {

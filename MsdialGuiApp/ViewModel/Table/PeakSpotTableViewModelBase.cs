@@ -2,18 +2,17 @@
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Table
 {
-    abstract class PeakSpotTableViewModelBase<T> : ViewModelBase
+    abstract class PeakSpotTableViewModelBase : ViewModelBase
     {
-        private readonly PeakSpotTableModelBase<T> model;
+        private readonly IPeakSpotTableModelBase model;
 
         public PeakSpotTableViewModelBase(
-            PeakSpotTableModelBase<T> model,
+            IPeakSpotTableModelBase model,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword) {
             if (model is null) {
@@ -29,14 +28,11 @@ namespace CompMs.App.Msdial.ViewModel.Table
             }
 
             this.model = model;
-            PeakSpots = this.model.PeakSpots;
-            PeakSpotsView = CollectionViewSource.GetDefaultView(PeakSpots);
+            PeakSpotsView = CollectionViewSource.GetDefaultView(this.model.PeakSpots);
             Target = this.model.Target;
             MetaboliteFilterKeyword = metaboliteFilterKeyword;
             CommentFilterKeyword = commentFilterKeyword;
         }
-
-        public ObservableCollection<T> PeakSpots { get; }
 
         public ICollectionView PeakSpotsView {
             get => peakSpotsView;
@@ -44,7 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.Table
         }
         private ICollectionView peakSpotsView;
 
-        public IReactiveProperty<T> Target { get; }
+        public IReactiveProperty Target { get; }
 
         public IReactiveProperty<string> MetaboliteFilterKeyword { get; }
 

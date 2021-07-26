@@ -8,17 +8,15 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MassAnnotator : IAnnotator<IMSProperty, MSDecResult>
+    public class MassAnnotator : IAnnotator<IMSProperty, IMSScanProperty>
     {
         private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
 
@@ -46,7 +44,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult Annotate(
-            IMSProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -55,7 +53,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FindCandidates(
-            IMSProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -80,7 +78,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(
-            IMSProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter = null) {
 
@@ -165,7 +163,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Validate(
             MsScanMatchResult result,
-            IMSProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)

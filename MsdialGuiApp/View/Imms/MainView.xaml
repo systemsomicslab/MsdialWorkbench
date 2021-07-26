@@ -255,7 +255,6 @@
                     </TabControl>
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
-                                xmlns:eic="clr-namespace:CompMs.App.Msdial.View.EicAndBar"
                                 Margin="0,-1,0,0"
                                 Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
 

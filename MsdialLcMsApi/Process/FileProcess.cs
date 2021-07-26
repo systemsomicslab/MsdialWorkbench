@@ -6,6 +6,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
+using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ namespace CompMs.MsdialLcMsApi.Process {
     public sealed class FileProcess {
         private FileProcess() { }
 
-        public static void Run(AnalysisFileBean file, MsdialDataStorage container, bool isGuiProcess = false, 
-            Action<int> reportAction = null, CancellationToken token = new CancellationToken()) {
+        public static void Run(AnalysisFileBean file, IDataProvider provider, MsdialDataStorage container,
+            bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = new CancellationToken()) {
             var param = (MsdialLcmsParameter)container.ParameterBase;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
@@ -45,7 +46,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // feature detections
                 Console.WriteLine("Peak picking started");
-                var chromPeakFeatures = new PeakSpotting(0, 30).Run(rawObj, param, reportAction);
+                var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, reportAction);
                 IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
                 var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
                 file.ChromPeakFeaturesSummary = summary;

@@ -61,8 +61,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             var cmbinedFeatures = PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList);
-            cmbinedFeatures = PeakSpottingCore.GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, rawObj, param, ChromXType.RT, ChromXUnit.Min);
-            cmbinedFeatures = PeakSpottingCore.GetOtherChromPeakFeatureProperties(cmbinedFeatures, allSpectrum, param);
+            cmbinedFeatures = PeakSpottingCore.GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, null, param, ChromXType.RT, ChromXUnit.Min);
+            cmbinedFeatures = PeakSpottingCore.GetOtherChromPeakFeatureProperties(cmbinedFeatures);
 
             return cmbinedFeatures;
         }

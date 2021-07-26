@@ -24,7 +24,7 @@ namespace CompMs.Common.Parameter {
         public float RelativeAmpCutoff { get; set; } = 0F;
         [Key(8)]
         public float AbsoluteAmpCutoff { get; set; } = 0;
-
+        
         // by [0-1]
         [Key(9)]
         public float WeightedDotProductCutOff { get; set; } = 0.5F;
@@ -34,6 +34,8 @@ namespace CompMs.Common.Parameter {
         public float ReverseDotProductCutOff { get; set; } = 0.5F;
         [Key(12)]
         public float MatchedPeaksPercentageCutOff { get; set; } = 0.5F;
+        [Key(19)]
+        public float AndromedaScoreCutOff { get; set; } = 0.1F;
         [Key(13)]
         public float TotalScoreCutoff { get; set; } = 0.8F;
 

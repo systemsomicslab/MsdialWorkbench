@@ -38,11 +38,11 @@ namespace CompMs.MsdialDimsCore.Common {
             }
             #endregion
 
-            Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = null;
-            if (omics == TargetOmics.Lipidomics)
-                getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
-            else if (omics == TargetOmics.Metabolomics)
-                getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+            Func<MoleculeMsReference, MsScanMatchResult> getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, omics, -1.0, isotopes, refSpec.IsotopicPeaks);
+            //if (omics == TargetOmics.Lipidomics)
+            //    getMatchResult = refSpec => MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
+            //else if (omics == TargetOmics.Metabolomics)
+            //    getMatchResult = refSpec => MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param, isotopes, refSpec.IsotopicPeaks);
 
             return await Task.Run(() => GetMatchResults(mspDB, precursorMz, ms1Tol, getMatchResult));
         }

@@ -8,14 +8,13 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.MSDec;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, MSDecResult>
+    public class ImmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
 
@@ -29,7 +28,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult Annotate(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -38,7 +37,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public List<MsScanMatchResult> FindCandidates(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -57,7 +56,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
-                if (Math.Abs(candidate.CollisionCrossSection - property.CollisionCrossSection) > parameter.CcsTolerance)
+				if (parameter.IsUseCcsForAnnotationFiltering
+                    && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) <  parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 result.LibraryIDWhenOrdered = i;
@@ -68,7 +68,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference, MsRefSearchParameterBase parameter = null) {
 
             if (parameter == null)
@@ -83,16 +83,19 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
-            var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
-
             var isotopeSimilarity = MsScanMatching.GetIsotopeRatioSimilarity(scanIsotopes, referenceIsotopes, property.PrecursorMz, ms1Tol);
 
             var result = new MsScanMatchResult
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                AcurateMassSimilarity = (float)ms1Similarity, CcsSimilarity = (float)ccsSimilarity, IsotopeSimilarity = (float)isotopeSimilarity,
+                AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, SourceKey = sourceKey
             };
+
+            if (parameter.IsUseCcsForAnnotationScoring) {
+                var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
+                result.CcsSimilarity = (float)ccsSimilarity;
+            }
 
             var scores = new List<float> { };
             if (result.AcurateMassSimilarity >= 0)
@@ -137,7 +140,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public void Validate(
             MsScanMatchResult result,
-            IMSIonProperty property, MSDecResult scan, IReadOnlyList<IsotopicPeak> isotopes,
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter = null) {
 

@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Table"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+        xmlns:lcv="clr-namespace:CompMs.App.Msdial.View.Lcms"
+        xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
         xmlns:imv="clr-namespace:CompMs.App.Msdial.View.Imms"
         xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
         xmlns:div="clr-namespace:CompMs.App.Msdial.View.Dims"
@@ -13,6 +15,12 @@
         Title="Peak spot table" Height="450" Width="1250">
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type lcvm:LcmsAnalysisPeakTableViewModel}">
+                <lcv:LcmsAnalysisPeakTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcvm:LcmsAlignmentSpotTableViewModel}">
+                <lcv:LcmsAlignmentSpotTableView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type divm:DimsAnalysisPeakTableViewModel}">
                 <div:DimsAnalysisPeakTableView />
             </DataTemplate>

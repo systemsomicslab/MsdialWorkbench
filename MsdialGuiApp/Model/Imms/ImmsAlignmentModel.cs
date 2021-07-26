@@ -38,16 +38,17 @@ namespace CompMs.App.Msdial.Model.Imms
             Parameter = parameter;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
-                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, parameter.FileID_ClassName)));
+                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
             DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
 
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var fileName = alignmentFileBean.FileName;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, labelSource)
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
@@ -55,8 +56,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
             };
-
-            Target = PlotModel.ToReactivePropertySlimAsSynchronized(m => m.Target).AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);

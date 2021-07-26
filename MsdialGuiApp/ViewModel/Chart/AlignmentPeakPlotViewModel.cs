@@ -39,8 +39,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             Brush = brushSource.ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            Target = model.ToReactivePropertyAsSynchronized(m => m.Target)
-                .AddTo(Disposables);
+            Target = model.TargetSource;
 
             GraphTitle = model.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
@@ -75,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> Brush { get; }
 
-        public ReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
+        public IReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

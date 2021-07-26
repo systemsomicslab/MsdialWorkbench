@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Parser
 
         protected virtual void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
             using (var stream = File.Open(path, FileMode.Open)) {
-                storage.DataBaseMapper?.Restore(new StandardRestorationVisitor(storage.ParameterBase), stream);
+                storage.DataBaseMapper?.Restore(new StandardLoadAnnotatorVisitor(storage.ParameterBase), stream);
             }
         }
 

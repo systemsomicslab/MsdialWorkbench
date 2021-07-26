@@ -9,10 +9,10 @@ using System;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    abstract class DimsPeakSpotTableViewModel<T> : PeakSpotTableViewModelBase<T>
+    abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected DimsPeakSpotTableViewModel(
-            DimsPeakSpotTableModel<T> model,
+            IDimsPeakSpotTableModel model,
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword)
@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public IReactiveProperty<double> MassUpper { get; }
     }
 
-    sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel<ChromatogramPeakFeatureModel>
+    sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
     {
         public DimsAnalysisPeakTableViewModel(
             DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model,
@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
-    sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel<AlignmentSpotPropertyModel>
+    sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel
     {
         public DimsAlignmentSpotTableViewModel(
             DimsPeakSpotTableModel<AlignmentSpotPropertyModel> model,

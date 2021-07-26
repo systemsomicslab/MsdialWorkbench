@@ -1,6 +1,6 @@
-﻿using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using System.IO;
 
 namespace CompMs.MsdialCore.Parser
 {
@@ -9,8 +9,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     public interface IReferRestorationKey
     {
-        IMatchResultRefer Accept(IRestorationVisitor visitor, MoleculeDataBase database);
-
+        IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -23,7 +22,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(0)]
         public string Key { get; set; }
 
-        public abstract IMatchResultRefer Accept(IRestorationVisitor visitor, MoleculeDataBase database);
+        public abstract IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -33,7 +32,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IMatchResultRefer Accept(IRestorationVisitor visitor, MoleculeDataBase database) {
+        public override IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -45,7 +44,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IMatchResultRefer Accept(IRestorationVisitor visitor, MoleculeDataBase database) {
+        public override IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }

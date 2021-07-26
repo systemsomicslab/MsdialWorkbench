@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
@@ -22,19 +23,33 @@ namespace CompMs.MsdialCore.DataObj
             Databases = databases;
         }
 
+        [Key(0)]
+        // Should not use setter.
+        public Dictionary<string, IReferRestorationKey> KeyToRestorationKey { get; set; }
+
+        private Dictionary<string, IReferRestorationKey> InnerKeyToRestorationKey {
+            get {
+                if (KeyToRestorationKey == null) {
+                    KeyToRestorationKey = new Dictionary<string, IReferRestorationKey>();
+                }
+                return KeyToRestorationKey;
+            }
+        }
+
+        [Key(1)]
+        // Should not use setter.
+        public List<MoleculeDataBase> Databases { get; set; }
+
         [IgnoreMember]
         string IMatchResultRefer.Key { get; } = string.Empty;
 
         [IgnoreMember]
-        public ReadOnlyDictionary<string, IMatchResultRefer> KeyToRefer {
-            get {
-                return new ReadOnlyDictionary<string, IMatchResultRefer>(keyToRefer);
-            }
-        }
+        public ReadOnlyDictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>> KeyToAnnotator
+            => new ReadOnlyDictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>>(keyToAnnotator);
 
-        private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
+        private Dictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>> keyToAnnotator = new Dictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>>();
 
-        public void Restore(IRestorationVisitor visitor, Stream stream) {
+        public void Restore(ILoadAnnotatorVisitor visitor, Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
                 foreach (var db in Databases) {
                     var entry = archive.GetEntry(db.Id);
@@ -49,7 +64,7 @@ namespace CompMs.MsdialCore.DataObj
                 if (database is null) {
                     continue;
                 }
-                keyToRefer[kvp.Key] = kvp.Value.Accept(visitor, database);
+                keyToAnnotator[kvp.Key] = kvp.Value.Accept(visitor, database);
             }
         }
 
@@ -63,40 +78,23 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
 
-            foreach (var kvp in KeyToRefer) {
+            foreach (var kvp in KeyToAnnotator) {
                 if (kvp.Value is IRestorableRefer refer) {
                     InnerKeyToRestorationKey[refer.Key] = refer.Save();
                 }
             }
         }
 
-        [Key(1)]
-        // Should not use setter.
-        public List<MoleculeDataBase> Databases { get; set; }
-
-        [Key(0)]
-        // Should not use setter.
-        public Dictionary<string, IReferRestorationKey> KeyToRestorationKey { get; set; }
-
-        private Dictionary<string, IReferRestorationKey> InnerKeyToRestorationKey {
-            get {
-                if (KeyToRestorationKey == null) {
-                    KeyToRestorationKey = new Dictionary<string, IReferRestorationKey>();
-                }
-                return KeyToRestorationKey;
-            }
-        }
-
-        public void Add(IMatchResultRefer refer) {
-            keyToRefer[refer.Key] = refer;
+        public void Add(IAnnotator<IMSIonProperty, IMSScanProperty> annotator) {
+            keyToAnnotator[annotator.Key] = annotator;
         }
 
         public void Remove(string sourceKey) {
-            keyToRefer.Remove(sourceKey);
+            keyToAnnotator.Remove(sourceKey);
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (result?.SourceKey != null && KeyToRefer.TryGetValue(result.SourceKey, out var refer)) {
+            if (result?.SourceKey != null && KeyToAnnotator.TryGetValue(result.SourceKey, out var refer)) {
                 return refer.Refer(result);
             }
             return null;

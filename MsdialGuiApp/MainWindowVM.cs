@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
@@ -23,7 +24,8 @@ namespace CompMs.App.Msdial
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
             IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
-            IWindowService<CompoundSearchVM> compoundSearchService) {
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -36,14 +38,20 @@ namespace CompMs.App.Msdial
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
 
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
             this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
         private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public TempMethodVM MethodVM {
             get => methodVM;
@@ -120,11 +128,11 @@ namespace CompMs.App.Msdial
         private TempMethodVM CreateNewMethodVM(MachineCategory category, MsdialDataStorage storage) {
             switch (category) {
                 case MachineCategory.LCMS:
-                    return new ViewModel.Lcms.LcmsMethodVM(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+                    return new ViewModel.Lcms.LcmsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.IFMS:
-                    return new ViewModel.Dims.DimsMethodVM(storage, compoundSearchService);
+                    return new ViewModel.Dims.DimsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.IMMS:
-                    return new ViewModel.Imms.ImmsMethodVM(storage, compoundSearchService);
+                    return new ViewModel.Imms.ImmsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.LCIMMS:
                     throw new NotImplementedException("Lcimms method is working now.");
                     

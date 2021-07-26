@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -11,28 +11,28 @@ namespace CompMs.App.Msdial.Model.Chart
     class AnalysisPeakPlotModel : BindableBase
     {
         public AnalysisPeakPlotModel(
-            IEnumerable<ChromatogramPeakFeatureModel> spots,
-            Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
-            Func<ChromatogramPeakFeatureModel, double> verticalSelector,
-            IObservable<string> labelSource)
-            :this(new ObservableCollection<ChromatogramPeakFeatureModel>(spots), horizontalSelector, verticalSelector, labelSource) {
-
-        }
-        public AnalysisPeakPlotModel(
             ObservableCollection<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
             Func<ChromatogramPeakFeatureModel, double> verticalSelector,
+            IReactiveProperty<ChromatogramPeakFeatureModel> targetSource,
             IObservable<string> labelSource) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }
 
+            if (targetSource is null) {
+                throw new ArgumentNullException(nameof(targetSource));
+            }
+
+            if (labelSource is null) {
+                throw new ArgumentNullException(nameof(labelSource));
+            }
+
             Spots = spots;
-            Target = null;
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
-            LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
-
+            LabelSource = labelSource;
+            TargetSource = targetSource;
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
             VerticalTitle = string.Empty;
@@ -64,12 +64,7 @@ namespace CompMs.App.Msdial.Model.Chart
             }
         }
 
-        // nullable value
-        public ChromatogramPeakFeatureModel Target {
-            get => target;
-            set => SetProperty(ref target, value);
-        }
-        private ChromatogramPeakFeatureModel target;
+        public IReactiveProperty<ChromatogramPeakFeatureModel> TargetSource { get; }
 
         public Func<ChromatogramPeakFeatureModel, double> HorizontalSelector {
             get => horizontalSelector;

@@ -17,6 +17,9 @@ namespace CompMs.Common.Proteomics.Function {
         private static double H2O = 18.010564684;
         private static double Proton = 1.00727646688;
         private static double Electron = 0.0005485799;
+        private static double NH3 = 17.026549101;
+        private static double H3PO4 = 97.976895575;
+
 
         public static MoleculeMsReference Convert2SpecObj(Peptide peptide, AdductIon adduct, CollisionType cType) {
             switch (cType) {
@@ -33,19 +36,60 @@ namespace CompMs.Common.Proteomics.Function {
 
             var spectrum = new List<SpectrumPeak>() {
                 new SpectrumPeak() {
-                    Mass = msref.PrecursorMz, Intensity = 1000, Comment = "Precursor"
+                    Mass = msref.PrecursorMz, Intensity = 1000, Comment = "Precursor", PeakID = sequence.Count
                 }
             };
             var bMz = Proton;
             var yMz = msref.PrecursorMz;
+
+            var bSequence = string.Empty;
+            var ySequence = peptide.Sequence;
+
+            var bModSequence = string.Empty;
+            var yModSequence = peptide.ModifiedSequence;
+
+            if (yModSequence.Contains("Y[Phospho]")) {
+                spectrum.Add(new SpectrumPeak() { Mass = 216.042021256, Intensity = 50, Comment = "C8H11NO4P", PeakID = 0 });
+            }
+
             for (int i = 0; i < sequence.Count; i++) { // N -> C
 
                 var aaResidueMass = sequence[i].ExactMass() - H2O;
                 bMz += aaResidueMass;
                 yMz -= aaResidueMass;
 
-                spectrum.Add(new SpectrumPeak() { Mass = bMz, Intensity = 1000, Comment = "b_" + (i + 1).ToString() });
-                spectrum.Add(new SpectrumPeak() { Mass = yMz, Intensity = 1000, Comment = "y_" + (sequence.Count - i).ToString() });
+                bSequence += sequence[i].OneLetter;
+                ySequence = ySequence.Substring(1);
+
+                bModSequence += sequence[i].ModifiedCode;
+                yModSequence = yModSequence.Substring(sequence[i].ModifiedCode.Length);
+
+                spectrum.Add(new SpectrumPeak() { Mass = bMz, Intensity = 1000, Comment = "b", PeakID = i + 1 });
+                spectrum.Add(new SpectrumPeak() { Mass = yMz, Intensity = 1000, Comment = "y", PeakID = sequence.Count - i - 1 });
+
+                spectrum.Add(new SpectrumPeak() { Mass = bMz * 0.5, Intensity = 100, Comment = "b2+", PeakID = i + 1 });
+                spectrum.Add(new SpectrumPeak() { Mass = yMz * 0.5, Intensity = 100, Comment = "y2+", PeakID = sequence.Count - i - 1 });
+
+                if (bSequence.Contains("D") || bSequence.Contains("E") || bSequence.Contains("S") || bSequence.Contains("T")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = bMz - H2O, Intensity = 200, Comment = "b-H2O", PeakID = i + 1 });
+                }
+                if (ySequence.Contains("D") || ySequence.Contains("E") || ySequence.Contains("S") || ySequence.Contains("T")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = yMz - H2O, Intensity = 200, Comment = "y-H2O", PeakID = sequence.Count - i - 1 });
+                }
+
+                if (bSequence.Contains("K") || bSequence.Contains("N") || bSequence.Contains("Q") || bSequence.Contains("R")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = bMz - NH3, Intensity = 200, Comment = "b-NH3", PeakID = i + 1 });
+                }
+                if (ySequence.Contains("K") || ySequence.Contains("N") || ySequence.Contains("Q") || ySequence.Contains("R")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = yMz - NH3, Intensity = 200, Comment = "y-NH3", PeakID = sequence.Count - i - 1 });
+                }
+
+                if (bModSequence.Contains("S[Phospho]") || bModSequence.Contains("T[Phospho]")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = bMz - H3PO4, Intensity = 400, Comment = "b-H3PO4", PeakID = i + 1 });
+                }
+                if (yModSequence.Contains("S[Phospho]") || yModSequence.Contains("T[Phospho]")) {
+                    spectrum.Add(new SpectrumPeak() { Mass = yMz - H3PO4, Intensity = 400, Comment = "y-H3PO4", PeakID = sequence.Count - i - 1 });
+                }
             }
             msref.Spectrum = spectrum.OrderBy(n => n.Mass).ToList();
 

@@ -15,8 +15,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> Run(RawMeasurement rawObj, MsdialGcmsParameter param, Action<int> reportAction) {
-            return CoreProcess.Execute3DFeatureDetection(rawObj, param, param.RetentionTimeBegin, param.RetentionTimeEnd, 
-                ChromXType.RT, ChromXUnit.Min, reportAction);
+            return CoreProcess.Execute3DFeatureDetection(null, param, param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT,
+ChromXUnit.Min, reportAction);
         }
     }
 }

@@ -27,6 +27,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                     { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
                     { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
                 },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "B" },
+                    { 2, "C" }, { 3, "D" }
+                },
                 RetentionTimeAlignmentTolerance = 0.05f,
                 Ms1AlignmentTolerance = 0.015f,
                 FoldChangeForBlankFiltering = 0.1f,
@@ -61,6 +66,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 {
                     { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
                     { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "B" },
+                    { 2, "C" }, { 3, "D" }
                 },
                 RetentionTimeAlignmentTolerance = 0.05f,
                 Ms1AlignmentTolerance = 0.015f,
@@ -112,6 +122,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                     { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
                     { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
                 },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "B" },
+                    { 2, "C" }, { 3, "D" }
+                },
                 RetentionTimeAlignmentTolerance = 0.05f,
                 Ms1AlignmentTolerance = 0.015f,
                 FoldChangeForBlankFiltering = 0.1f,
@@ -162,6 +177,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 {
                     { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
                     { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "B" },
+                    { 2, "C" }, { 3, "D" }
                 },
                 RetentionTimeAlignmentTolerance = 0.05f,
                 Ms1AlignmentTolerance = 0.015f,

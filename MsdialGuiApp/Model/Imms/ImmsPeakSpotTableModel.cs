@@ -5,7 +5,15 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>
+    interface IImmsPeakSpotTableModel : IPeakSpotTableModelBase
+    {
+        double MassMin { get; }
+        double MassMax { get; }
+        double DriftMin { get; }
+        double DriftMax { get; }
+    }
+
+    abstract class ImmsPeakSpotTableModel<T> : PeakSpotTableModelBase<T>, IImmsPeakSpotTableModel where T : class
     {
         public ImmsPeakSpotTableModel(
             ObservableCollection<T> peakSpots,

@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
@@ -38,8 +39,8 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentFileBean alignmentFileBean,
             IMatchResultRefer refer,
             ParameterBase param,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
+            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -48,8 +49,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
             this.Parameter = param;
             this.DataBaseRefer = refer;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
+            MspAnnotator = mspAnnotator;
+            TextDBAnnotator = textDBAnnotator;
 
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
@@ -58,8 +59,9 @@ namespace CompMs.App.Msdial.Model.Dims
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
 
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, labelSource)
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource)
             {
                 GraphTitle = FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
@@ -67,10 +69,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Kendrick mass defect"
             };
-
-            Target = PlotModel
-                .ToReactivePropertySlimAsSynchronized(m => m.Target)
-                .AddTo(Disposables);
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
@@ -167,9 +165,8 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
 
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> MspAnnotator => mspAnnotator;
-        public IAnnotator<AlignmentSpotProperty, MSDecResult> TextDBAnnotator => textDBAnnotator;
-        private readonly IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator, textDBAnnotator;
+        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
+        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

@@ -47,9 +47,13 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)))
                 .Merge(lowerEmpty.Select(_ => new Range(0, 1)));
 
-            HorizontalRangeSource = upperAny.CombineLatest(lowerAny, (upper, lower) => upper.Concat(lower))
-                .Where(spec => spec.Any())
-                .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
+            HorizontalRangeSource = new[]
+            {
+                upperSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
+                lowerSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
+            }.CombineLatest(specs => specs.SelectMany(spec => spec))
+            .Where(spec => spec.Any())
+            .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
 
             UpperSpectrumSource.Subscribe(spectrum => UpperSpectrum = spectrum);
             LowerSpectrumSource.Subscribe(spectrum => LowerSpectrum = spectrum);

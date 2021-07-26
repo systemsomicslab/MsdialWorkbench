@@ -97,7 +97,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             if (modseqence.IsEmptyOrNull()) return string.Empty;
             var code = originalcode;
             foreach (var mod in modseqence) {
-                code += ";" + mod.Title.Split('(')[0].Trim();
+                code += "[" + mod.Title.Split('(')[0].Trim() + "]";
             }
             return code;
         }
@@ -122,7 +122,12 @@ namespace CompMs.Common.Proteomics.DataObj {
             }
 
             if (!modCodes.IsEmptyOrNull()) {
-                code = code + "(" + String.Join(";", modCodes) + ")";
+                if (modCodes.Count == 1) {
+                    code = code + "[" + modCodes[0] + "]";
+                }
+                else {
+                    code = code + "[" + String.Join("][", modCodes) + "]";
+                }
             }
 
             return (code, new Formula(dict));
@@ -172,13 +177,13 @@ namespace CompMs.Common.Proteomics.DataObj {
             if (IsModified()) {
                 if (ModSequence[ModSequence.Count - 1].Type == "AaSubstitution") {
                     if (AminoAcidObjUtility.IsAAEqual(oneletter, ModifiedAACode)) {
-                        ModifiedAACode += ";" + mod.Title.Split('(')[0].Trim();
+                        ModifiedAACode += "[" + mod.Title.Split('(')[0].Trim() + "]";
                         ModSequence.Add(mod);
                     }
                 }
                 else {
                     if (AminoAcidObjUtility.IsAAEqual(oneletter, OriginalAA.OneLetter)) {
-                        ModifiedAACode += ";" + mod.Title.Split('(')[0].Trim();
+                        ModifiedAACode += "[" + mod.Title.Split('(')[0].Trim() + "]";
                         ModSequence.Add(mod);
                     }
                 }
@@ -195,7 +200,7 @@ namespace CompMs.Common.Proteomics.DataObj {
                         }
                     }
                     else {
-                        ModifiedAACode = oneletter + ";" + mod.Title.Split('(')[0].Trim();
+                        ModifiedAACode = oneletter + "[" + mod.Title.Split('(')[0].Trim() + "]";
                     }
                     ModSequence.Add(mod);
                 }

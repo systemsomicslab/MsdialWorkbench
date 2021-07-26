@@ -5,95 +5,49 @@ using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     class EicModel : ValidatableBase
     {
-        public EicModel(EicLoader loader)
-            : this(loader, string.Empty, string.Empty, string.Empty) {
-            
-        }
-
-        public EicModel(EicLoader loader, string graphTitle)
-            : this(loader, graphTitle, string.Empty, string.Empty) {
-            
-        }
-
-        public EicModel(EicLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
-
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
             Loader = loader;
 
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
             VerticalTitle = verticalTitle;
 
-            Eic = new List<ChromatogramPeakWrapper>();
-            EicPeak = new List<ChromatogramPeakWrapper>();
-            EicFocused = new List<ChromatogramPeakWrapper>();
-
             HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue);
             VerticalProperty = nameof(ChromatogramPeakWrapper.Intensity);
+
+            var sources = targetSource.Select(t => loader.LoadEicAsync(t, default)).Switch();
+
+            EicSource = sources.Select(src => src.Item1);
+            EicPeakSource = sources.Select(src => src.Item2);
+            EicFocusedSource = sources.Select(src => src.Item3);
+
+            MaxIntensitySource = EicPeakSource.Select(src => src.Any() ? src.Max(peak => peak.Intensity) : 0);
+            ChromRangeSource = EicSource.Select(src => src.Any() ? new Range(src.Min(peak => peak.ChromXValue) ?? 0, src.Max(peak => peak.ChromXValue) ?? 1) : new Range(0, 1));
+            AbundanceRangeSource = EicFocusedSource.Select(src => src.Any() ? new Range(0, src.Max(peak => peak.Intensity)) : new Range(0, 1));
+        }
+
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader)
+            : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
+
         }
 
         public EicLoader Loader { get; }
 
-        public List<ChromatogramPeakWrapper> Eic {
-            get => eic;
-            set => SetProperty(ref eic, value);
-        }
-        private List<ChromatogramPeakWrapper> eic;
+        public IObservable<List<ChromatogramPeakWrapper>> EicSource { get; }
 
-        public List<ChromatogramPeakWrapper> EicPeak {
-            get => eicPeak;
-            set {
-                if (SetProperty(ref eicPeak, value)) {
-                    OnPropertyChanged(nameof(ChromRange));
-                }
-            }
-        }
-        private List<ChromatogramPeakWrapper> eicPeak;
+        public IObservable<List<ChromatogramPeakWrapper>> EicPeakSource { get; }
 
-        public List<ChromatogramPeakWrapper> EicFocused {
-            get => eicFocused;
-            set {
-                if (SetProperty(ref eicFocused, value)) {
-                    OnPropertyChanged(nameof(AbundanceRange));
-                }
-            }
-        }
-        private List<ChromatogramPeakWrapper> eicFocused;
+        public IObservable<List<ChromatogramPeakWrapper>> EicFocusedSource { get; }
 
-        public double MaxIntensity {
-            get {
-                if (!Eic.Any()) {
-                    return 0;
-                }
-                return Eic.Max(peak => peak.Intensity);
-            }
-        }
-
-        public Range ChromRange {
-            get {
-                if (!Eic.Any()) {
-                    return new Range(0, 1);
-                }
-                var minimum = Eic.Min(peak => peak.ChromXValue);
-                var maximum = Eic.Max(peak => peak.ChromXValue);
-                return new Range(minimum ?? 0, maximum ?? 1);
-            }
-        }
-
-        public Range AbundanceRange {
-            get {
-                if (!Eic.Any()) {
-                    return new Range(0, 1);
-                }
-                return new Range(0, EicFocused.Max(peak => peak.Intensity));
-            }
-        }
+        public IObservable<double> MaxIntensitySource { get; }
+        public IObservable<Range> ChromRangeSource { get; }
+        public IObservable<Range> AbundanceRangeSource { get; }
 
         public string HorizontalTitle {
             get => horizontalTitle;
@@ -124,13 +78,5 @@ namespace CompMs.App.Msdial.Model.Chart
             set => SetProperty(ref verticalProperty, value);
         }
         private string verticalProperty;
-
-        public async Task LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            (Eic, EicPeak, EicFocused) = await Loader.LoadEicAsync(target, token);
-        }
-
-        public void LoadEic(ChromatogramPeakFeatureModel target) {
-            (Eic, EicPeak, EicFocused) = Loader.LoadEic(target);
-        }
     }
 }

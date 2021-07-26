@@ -40,8 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             Brush = brushSource.ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            Target = model.ToReactivePropertyAsSynchronized(m => m.Target)
-                .AddTo(Disposables);
+            Target = model.TargetSource;
 
             GraphTitle = model.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
@@ -76,7 +75,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>> Brush { get; }
 
-        public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

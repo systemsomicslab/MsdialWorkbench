@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CompMs.MsdialLcMsApi.Algorithm {
+namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
     public class Annotation {
 
         public double InitialProgress { get; set; } = 60.0;
@@ -68,13 +68,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
-                    MsScanMatchResult result = null;
-                    if (param.TargetOmics == Common.Enum.TargetOmics.Metabolomics) {
-                        result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
-                    }
-                    else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
-                        result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
-                    }
+                    MsScanMatchResult result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, 
+                        param.TargetOmics, -1.0, isotopes, refSpec.IsotopicPeaks, param.AndromedaDelta, param.AndromedaMaxPeaks);
+                    //if (param.TargetOmics == Common.Enum.TargetOmics.Metabolomics) {
+                    //    result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    //}
+                    //else if (param.TargetOmics == Common.Enum.TargetOmics.Lipidomics) {
+                    //    result = MsScanMatching.CompareMS2LipidomicsScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    //}
                     if (result != null && (result.IsSpectrumMatch || result.IsPrecursorMzMatch)) {
                         result.Source = SourceType.MspDB;
                         result.LibraryIDWhenOrdered = i;
@@ -103,7 +104,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     if (refSpec.PrecursorMz > mz + ms1Tol) break;
                     if (refSpec.PrecursorMz < mz - ms1Tol) continue;
 
-                    var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam, isotopes, refSpec.IsotopicPeaks);
+                    var result = MsScanMatching.CompareMS2ScanProperties(msdecResult, refSpec, param.MspSearchParam);
                     result.Source = SourceType.TextDB;
                     if (result.IsPrecursorMzMatch) {
                         result.LibraryIDWhenOrdered = i;
