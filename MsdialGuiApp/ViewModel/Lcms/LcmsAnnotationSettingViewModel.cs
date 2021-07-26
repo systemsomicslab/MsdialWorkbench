@@ -4,6 +4,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -19,12 +20,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     class LcmsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
     {
-        public LcmsAnnotationSettingViewModel(LcmsAnnotationSettingModel model) {
+        public LcmsAnnotationSettingViewModel(LcmsAnnotationSettingModel model, MsdialLcmsParameter parameter) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
 
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
             this.model = model;
+            Parameter = parameter;
             ParameterVM = new MsRefSearchParameterBaseViewModel(this.model.Parameter);
             DataBasePath = this.model.ToReactivePropertyAsSynchronized(m => m.DataBasePath)
                 .SetValidateAttribute(() => DataBasePath)
@@ -38,31 +44,52 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .SetValidateAttribute(() => DataBaseID)
             .AddTo(Disposables);
             DataBaseID.Subscribe(id => this.model.DataBaseID = this.model.AnnotatorID = id).AddTo(Disposables);
-            Sources = new List<SourceType> { SourceType.MspDB, SourceType.TextDB };
-            Source = DataBasePath
+            AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text };
+            DBSource = DataBasePath
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
                     if (Regex.IsMatch(ext, @"\.msp\d*")) {
-                        return SourceType.MspDB;
+                        return DataBaseSource.Msp;
                     }
                     else if (Regex.IsMatch(ext, @"\.lbm\d*")) {
-                        return SourceType.MspDB;
+                        return DataBaseSource.Lbm;
                     }
                     else if (Regex.IsMatch(ext, @"\.txt\d*")) {
-                        return SourceType.TextDB;
+                        return DataBaseSource.Text;
                     }
-                    return SourceType.None;
+                    return DataBaseSource.None;
                 })
-                .ToReactiveProperty(SourceType.None)
+                .ToReactiveProperty(DataBaseSource.None)
+                .SetValidateNotifyError(src => DBSources.Contains(src) ? null : "Unknown database")
                 .AddTo(Disposables);
-            Source.Subscribe(s => this.model.Source = s).AddTo(Disposables);
-            Label = DataBaseID.CombineLatest(Source, (id, src) => $"{id} ({src})").ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DBSource.Subscribe(s => this.model.DBSource = s).AddTo(Disposables);
+            AnnotationSource = DBSource
+                .Select(src => {
+                    switch (src) {
+                        case DataBaseSource.Msp:
+                        case DataBaseSource.Lbm:
+                            return SourceType.MspDB;
+                        case DataBaseSource.Text:
+                            return SourceType.TextDB;
+                        default:
+                            return SourceType.None;
+                    }
+                })
+                .ToReadOnlyReactivePropertySlim(SourceType.None)
+                .AddTo(Disposables);
+            AnnotationSource.Subscribe(s => this.model.AnnotationSource = s).AddTo(Disposables);
 
-            Implement = Source.Select<SourceType, IAnnotationSettingViewModel>(s => {
+            Label = DataBaseID.CombineLatest(DBSource, (id, src) => $"{id} ({src})")
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Implement = DBSource.Select<DataBaseSource, IAnnotationSettingViewModel>(s => {
                 switch (s) {
-                    case SourceType.MspDB:
+                    case DataBaseSource.Msp:
                         return new LcmsMspAnnotationSettingViewModel(this.model);
-                    case SourceType.TextDB:
+                    case DataBaseSource.Lbm:
+                        return new LcmsLbmAnnotationSettingViewModel(this.model, Parameter);
+                    case DataBaseSource.Text:
                         return new LcmsTextDBAnnotationSettingViewModel(this.model);
                     default:
                         return null;
@@ -71,10 +98,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             Implement.Subscribe(impl => this.model.Implement = impl?.Model).AddTo(Disposables);
+
+            hasErrors = new IObservable<bool>[]
+            {
+                Implement.Select(impl => impl is null || impl.ObserveHasErrors.Value),
+                DataBasePath.ObserveHasErrors,
+                DataBaseID.ObserveHasErrors,
+                DBSource.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         private readonly LcmsAnnotationSettingModel model;
         IAnnotationSettingModel IAnnotationSettingViewModel.Model => model;
+        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
+        private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
 
         public ReadOnlyReactivePropertySlim<string> Label { get; }
 
@@ -88,11 +128,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         [Required(ErrorMessage = "Database name is required.")]
         public ReactiveProperty<string> DataBaseID { get; }
 
-        public ReactiveProperty<SourceType> Source { get; }
+        public ReactiveProperty<DataBaseSource> DBSource { get; }
+        public ReactivePropertySlim<string> AnnotatorID { get; }
+        public List<DataBaseSource> DBSources { get; }
 
-        public List<SourceType> Sources { get; }
+        public ReadOnlyReactivePropertySlim<SourceType> AnnotationSource { get; }
 
         public DelegateCommand BrowseCommand => browseCommand ?? (browseCommand = new DelegateCommand(Browse));
+
+        public MsdialLcmsParameter Parameter { get; }
+
         private DelegateCommand browseCommand;
 
         private void Browse() {
@@ -108,10 +153,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 DataBasePath.Value = ofd.FileName;
             }
         }
+    }
 
-        public static LcmsAnnotationSettingViewModel Create() {
+    sealed class LcmsAnnotationSettingViewModelModelFactory
+    {
+        public LcmsAnnotationSettingViewModelModelFactory(MsdialLcmsParameter parameter) {
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            Parameter = parameter;
+        }
+
+        public MsdialLcmsParameter Parameter { get; }
+
+        public LcmsAnnotationSettingViewModel Create() {
             var m = new LcmsAnnotationSettingModel();
-            return new LcmsAnnotationSettingViewModel(m);
+            return new LcmsAnnotationSettingViewModel(m, Parameter);
         }
     }
 }

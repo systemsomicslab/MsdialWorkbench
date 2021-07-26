@@ -34,11 +34,41 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     this.model.AddAnnotation(vm.Model);
                     Annotations.Add(vm);
                 }).AddTo(Disposables);
-
+            var observeCollectionChanged = new[]
+            {
+                Annotations.ObserveAddChanged().ToUnit(),
+                Annotations.ObserveRemoveChanged().ToUnit(),
+            }.Merge();
+            var observeAnnotationsHasErrors = Annotations
+                .ObserveElementObservableProperty(annotation => annotation.ObserveHasErrors)
+                .ToUnit()
+                .Merge(observeCollectionChanged)
+                .SelectMany(_ => Observable.Defer(() =>
+                    Annotations.Select(annotation => annotation.ObserveHasErrors)
+                    .CombineLatestValuesAreAllFalse()
+                    .Inverse()
+                ));
+            var observeAnnotatorIDDuplication = Annotations
+                .ObserveElementObservableProperty(annotation => annotation.AnnotatorID)
+                .ToUnit()
+                .Merge(observeCollectionChanged)
+                .SelectMany(_ => Observable.Defer(() => Observable.Return(
+                    Annotations.Select(annotation => annotation.AnnotatorID.Value).Distinct().Count() != Annotations.Count
+                )));
+            ObserveHasErrors = new[]
+            {
+                observeAnnotationsHasErrors,
+                observeAnnotatorIDDuplication,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
         private readonly IAnnotationProcessSettingModel model;
 
         public ObservableCollection<IAnnotationSettingViewModel> Annotations { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public IAnnotationSettingViewModel SelectedAnnotation {
             get => selectedAnnotation;

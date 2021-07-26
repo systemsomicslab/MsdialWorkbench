@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
@@ -118,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcmsParameter>((MsdialLcmsParameter)Storage.ParameterBase, AnalysisFiles)) {
+            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel((MsdialLcmsParameter)Storage.ParameterBase, AnalysisFiles)) {
                 var apsw = new AnalysisParamSetForLcWindow
                 {
                     DataContext = analysisParamSetVM,

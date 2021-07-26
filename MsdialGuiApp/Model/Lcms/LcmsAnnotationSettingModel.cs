@@ -6,7 +6,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsAnnotationSettingModel : DataBaseAnnotationSettingModelBase
+    sealed class LcmsAnnotationSettingModel : DataBaseAnnotationSettingModelBase
     {
         public IAnnotationSettingModel Implement {
             get => implement;

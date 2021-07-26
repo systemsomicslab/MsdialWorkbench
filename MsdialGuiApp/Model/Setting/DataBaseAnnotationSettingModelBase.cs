@@ -1,12 +1,20 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
+using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
+    enum DataBaseSource
+    {
+        None, Msp, Lbm, Text
+    }
+
     abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
     {
         public DataBaseAnnotationSettingModelBase() {
@@ -16,7 +24,8 @@ namespace CompMs.App.Msdial.Model.Setting
         public DataBaseAnnotationSettingModelBase(DataBaseAnnotationSettingModelBase model) {
             DataBasePath = model.DataBasePath;
             DataBaseID = model.DataBaseID;
-            Source = model.Source;
+            DBSource = model.DBSource;
+            AnnotationSource = model.AnnotationSource;
             AnnotatorID = model.AnnotatorID;
             Parameter = model.Parameter;
         }
@@ -33,11 +42,17 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string dataBaseID = string.Empty;
 
-        public SourceType Source {
+        public DataBaseSource DBSource {
             get => source;
             set => SetProperty(ref source, value);
         }
-        private SourceType source = SourceType.None;
+        private DataBaseSource source = DataBaseSource.None;
+
+        public SourceType AnnotationSource {
+            get => annotationSource;
+            set => SetProperty(ref annotationSource, value);
+        }
+        private SourceType annotationSource;
 
         public string AnnotatorID {
             get => annotatorID;
@@ -54,5 +69,24 @@ namespace CompMs.App.Msdial.Model.Setting
         public abstract Annotator Build(ParameterBase parameter);
         public abstract Annotator Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
         public abstract MoleculeDataBase LoadDataBase(ParameterBase parameter);
+
+        protected static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {
+            List<MoleculeMsReference> db;
+            switch (source) {
+                case DataBaseSource.Msp:
+                    db = LibraryHandler.ReadMspLibrary(path);
+                    break;
+                case DataBaseSource.Lbm:
+                    db = LibraryHandler.ReadLipidMsLibrary(path, parameter);
+                    break;
+                default:
+                    db = new List<MoleculeMsReference>(0);
+                    break;
+            }
+            for(int i = 0; i< db.Count; i++) {
+                db[i].ScanID = i;
+            }
+            return db;
+        }
     }
 }

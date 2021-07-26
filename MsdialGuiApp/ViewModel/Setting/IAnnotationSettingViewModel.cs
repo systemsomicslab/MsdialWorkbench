@@ -5,7 +5,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     internal interface IAnnotationSettingViewModel
     {
-        ReadOnlyReactivePropertySlim<string> Label { get; }
         IAnnotationSettingModel Model { get; }
+
+        ReactivePropertySlim<string> AnnotatorID { get; }
+        ReadOnlyReactivePropertySlim<string> Label { get; }
+        ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 }
