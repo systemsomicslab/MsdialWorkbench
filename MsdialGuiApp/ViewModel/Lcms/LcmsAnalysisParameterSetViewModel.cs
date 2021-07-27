@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Property;
@@ -28,31 +28,86 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     class LcmsAnalysisParameterSetViewModel : ViewModelBase
     {
-        #region Property
+        public LcmsAnalysisParameterSetViewModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files)
+            : this(new LcmsAnalysisParameterSetModel(parameter, files)) {
+            
+        }
+
+        public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
+            Model = model;
+            Param = MsdialProjectParameterFactory.Create(Model.Parameter);
+
+            var dt = DateTime.Now;
+            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
+
+            AnalysisFiles = Model.AnalysisFiles;
+
+            ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
+                Model.Parameter.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
+                         .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
+            );
+
+            if (Model.Parameter.SearchedAdductIons.IsEmptyOrNull()) {
+                Model.Parameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.Parameter.IonMode);
+            }
+            Model.Parameter.SearchedAdductIons[0].IsIncluded = true;
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.Parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+
+            Model.Parameter.QcAtLeastFilter = false;
+
+            var factory = new LcmsAnnotationSettingViewModelModelFactory(Model.Parameter);
+            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
+                    Model.AnnotationProcessSettingModel,
+                    factory.Create)
+                .AddTo(Disposables);
+
+            if (Model.Parameter.TargetOmics == TargetOmics.Lipidomics) {
+                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
+                var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
+                (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
+            }
+
+            ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
+                .ToAsyncReactiveCommand<Window>()
+                .WithSubscribe(async window => await Task.Run(() => ContinueProcess(window)))
+                .AddTo(Disposables);
+        }
+
+        public LcmsAnalysisParameterSetModel Model { get; }
+
+        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
+
         public ParameterBaseVM Param {
             get => paramVM;
             set => SetProperty(ref paramVM, value);
         }
+        ParameterBaseVM paramVM;
 
         public string AlignmentResultFileName {
             get => alignmentResultFileName;
             set => SetProperty(ref alignmentResultFileName, value);
         }
+        string alignmentResultFileName;
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles {
             get => analysisFiles;
             set => SetProperty(ref analysisFiles, value);
         }
+        ObservableCollection<AnalysisFileBean> analysisFiles;
 
         public ObservableCollection<MzSearchQueryVM> ExcludedMassList {
             get => excludedMassList;
             set => SetProperty(ref excludedMassList, value);
         }
+        ObservableCollection<MzSearchQueryVM> excludedMassList;
 
         public ObservableCollection<AdductIonVM> SearchedAdductIons {
             get => searchedAdductIons;
             set => SetProperty(ref searchedAdductIons, value);
         }
+        ObservableCollection<AdductIonVM> searchedAdductIons;
 
         public bool TogetherWithAlignment {
             get => (Param.ProcessOption.HasFlag(ProcessOption.Alignment));
@@ -69,63 +124,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
-        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
-
-        #endregion
-
-        #region Field
-        protected readonly MsdialLcmsParameter param;
-        ParameterBaseVM paramVM;
-        string alignmentResultFileName;
-        ObservableCollection<AnalysisFileBean> analysisFiles;
-        ObservableCollection<MzSearchQueryVM> excludedMassList;
-        ObservableCollection<AdductIonVM> searchedAdductIons;
-        #endregion
-
-        public LcmsAnalysisParameterSetViewModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files) {
-            param = parameter;
-            Param = MsdialProjectParameterFactory.Create(parameter);
-
-            var dt = DateTime.Now;
-            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
-
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
-
-            ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
-                parameter.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
-                         .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
-            );
-
-            if (parameter.SearchedAdductIons.IsEmptyOrNull())
-                parameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
-            parameter.SearchedAdductIons[0].IsIncluded = true;
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
-
-            parameter.QcAtLeastFilter = false;
-
-            AnnotationProcessSettingModel = new AnnotationProcessSettingModel();
-            var factory = new LcmsAnnotationSettingViewModelModelFactory(parameter);
-            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
-                    AnnotationProcessSettingModel,
-                    factory.Create)
-                .AddTo(Disposables);
-
-            if (param.TargetOmics == TargetOmics.Lipidomics) {
-                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
-                var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
-                (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
-            }
-
-            ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
-                .ToAsyncReactiveCommand<Window>()
-                .WithSubscribe(async window => await Task.Run(() => ContinueProcess(window)))
-                .AddTo(Disposables);
-        }
-
-        #region Command
         public AsyncReactiveCommand<Window> ContinueProcessCommand { get; }
 
         private void ContinueProcess(Window window) {
@@ -135,7 +133,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
+                Text = Model.Parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
                         ? "RT correction viewer will be opened\nafter libraries are loaded."
                         : "Loading libraries.."
             };
@@ -152,29 +150,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         protected virtual bool ClosingMethod() {
-            if (!param.SearchedAdductIons[0].IsIncluded) {
+            if (!Model.Parameter.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
-            if (param.MaxChargeNumber <= 0)
-                param.MaxChargeNumber = 2;
-
-            param.ExcludedMassList = ExcludedMassList
+            Model.Parameter.ExcludedMassList = ExcludedMassList
                 .Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
                 .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
                 .ToList();
 
-            if (param.TogetherWithAlignment && AnalysisFiles.Count > 1) {
-                param.QcAtLeastFilter = false;
 
-                if (param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+            if (Model.Parameter.TogetherWithAlignment && AnalysisFiles.Count > 1) {
+
+                if (Model.Parameter.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
                     if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
                         "Do you continue this analysis without the filter option?",
                         "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
                         return false;
                 }
             }
+
+            Model.ClosingMethod();
 
             return true;
         }
@@ -204,9 +201,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             };
 
             if (window.ShowDialog() == true) {
-                if (param.SearchedAdductIons == null)
-                    param.SearchedAdductIons = new List<AdductIon>();
-                param.SearchedAdductIons.Add(vm.AdductIon);
+                if (Model.Parameter.SearchedAdductIons == null)
+                    Model.Parameter.SearchedAdductIons = new List<AdductIon>();
+                Model.Parameter.SearchedAdductIons.Add(vm.AdductIon);
                 SearchedAdductIons.Add(new AdductIonVM(vm.AdductIon));
             }
         }
@@ -229,6 +226,5 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Param.IsotopeTextDBFilePath = ofd.FileName;
             }
         }
-        #endregion
     }
 }

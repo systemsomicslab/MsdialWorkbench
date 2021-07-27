@@ -92,34 +92,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        public int InitializeNewProject(Window window) {
-            // Set analysis param
-            if (!ProcessSetAnalysisParameter(window))
-                return -1;
-
-            var processOption = Storage.ParameterBase.ProcessOption;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(window, Storage))
-                    return -1;
-            }
-
-            // Run Alignment
-            if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(window, Storage))
-                    return -1;
-            }
-
-            return 0;
-        }
-
         public void LoadAnnotator() {
             // MspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
             // TextDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
         }
 
-        private bool ProcessSetAnalysisParameter(Window owner) {
-            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel((MsdialLcmsParameter)Storage.ParameterBase, AnalysisFiles)) {
+        public bool ProcessSetAnalysisParameter(Window owner) {
+            var parameter = (MsdialLcmsParameter)Storage.ParameterBase;
+            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles);
+            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
                 var apsw = new AnalysisParamSetForLcWindow
                 {
                     DataContext = analysisParamSetVM,
@@ -129,26 +110,28 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (apsw.ShowDialog() != true) {
                     return false;
                 }
-
-                if (analysisParamSetVM.TogetherWithAlignment) {
-                    var filename = analysisParamSetVM.AlignmentResultFileName;
-                    AlignmentFiles.Add(
-                        new AlignmentFileBean
-                        {
-                            FileID = AlignmentFiles.Count,
-                            FileName = filename,
-                            FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                            EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                            SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
-                        }
-                    );
-                    Storage.AlignmentFiles = AlignmentFiles.ToList();
-                }
-                return true;
             }
+
+            if (parameter.TogetherWithAlignment) {
+                var filename = analysisParamSetModel.AlignmentResultFileName;
+                AlignmentFiles.Add(
+                    new AlignmentFileBean
+                    {
+                        FileID = AlignmentFiles.Count,
+                        FileName = filename,
+                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                        SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                    }
+                );
+                Storage.AlignmentFiles = AlignmentFiles.ToList();
+            }
+
+            Storage.DataBaseMapper = analysisParamSetModel.BuildAnnotator();
+            return true;
         }
 
-        private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
+        public bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,
@@ -178,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return true;
         }
 
-        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+        public bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,

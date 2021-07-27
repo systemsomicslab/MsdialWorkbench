@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
@@ -138,11 +139,32 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public override int InitializeNewProject(Window window) {
-            model.InitializeNewProject(window);
+            InitializeNewProjectCore(window);
 
             AnalysisFilesView.MoveCurrentToFirst();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
             LoadAnalysisFileCommand.Execute();
+
+            return 0;
+        }
+
+        private int InitializeNewProjectCore(Window window) {
+            // Set analysis param
+            if (!model.ProcessSetAnalysisParameter(window))
+                return -1;
+
+            var processOption = Storage.ParameterBase.ProcessOption;
+            // Run Identification
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                if (!model.ProcessAnnotaion(window, Storage))
+                    return -1;
+            }
+
+            // Run Alignment
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                if (!model.ProcessAlignment(window, Storage))
+                    return -1;
+            }
 
             return 0;
         }

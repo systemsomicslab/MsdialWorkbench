@@ -7,10 +7,12 @@
         xmlns:local="clr-namespace:CompMs.App.Msdial.LC"
         xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
         xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         mc:Ignorable="d"
         xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
         Name="AnalysisParamSetView"
+        behavior:DialogResultSetBehavior.DialogResult="{x:Null}"
         Height="630" Width="650">
     <Window.Resources>
     </Window.Resources>

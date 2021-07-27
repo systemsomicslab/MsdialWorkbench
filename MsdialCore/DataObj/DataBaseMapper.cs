@@ -61,9 +61,6 @@ namespace CompMs.MsdialCore.DataObj
 
             foreach (var kvp in InnerKeyToRestorationKey) {
                 var database = Databases.FirstOrDefault(db => db.Id == kvp.Key);
-                if (database is null) {
-                    continue;
-                }
                 keyToAnnotator[kvp.Key] = kvp.Value.Accept(visitor, database);
             }
         }
@@ -87,6 +84,11 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Add(IAnnotator<IMSIonProperty, IMSScanProperty> annotator) {
             keyToAnnotator[annotator.Key] = annotator;
+        }
+
+        public void Add(IAnnotator<IMSIonProperty, IMSScanProperty> annotator, MoleculeDataBase database) {
+            keyToAnnotator[annotator.Key] = annotator;
+            Databases.Add(database);
         }
 
         public void Remove(string sourceKey) {
