@@ -12,6 +12,7 @@ namespace CompMs.Common.DataObj.Result {
         MspDB = 1 << 2,
         TextDB = 1 << 4,
         Manual = 1 << 6,
+        FastaDB = 1 << 3,
     }
 
     [MessagePackObject]
