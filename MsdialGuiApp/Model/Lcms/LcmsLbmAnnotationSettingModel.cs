@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
@@ -30,14 +31,15 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
         private IonMode ionMode;
 
-        public override Annotator Build(ParameterBase parameter) {
+        public override IAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override Annotator Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
-            return new Annotator(
+        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+            return new DatabaseAnnotatorContainer(
                 new LcmsMspAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotatorID),
+                molecules,
                 Parameter);
         }
 

@@ -155,7 +155,6 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
-    <Compile Include="Model\DataObj\Annotator.cs" />
     <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
