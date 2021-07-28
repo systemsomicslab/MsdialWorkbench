@@ -4,14 +4,14 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
+using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using System;
 
-namespace CompMs.MsdialImmsCore.Parser
+namespace CompMs.MsdialLcMsApi.Parser
 {
-    sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    sealed class LcmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
-        public ImmsLoadAnnotatorVisitor(ParameterBase parameter) {
+        public LcmsLoadAnnotatorVisitor(ParameterBase parameter) {
             Parameter = parameter;
         }
 
@@ -19,20 +19,20 @@ namespace CompMs.MsdialImmsCore.Parser
 
         public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new ImmsMspAnnotator(database.Database, key.Parameter, Parameter.TargetOmics, key.Key);
+                return new LcmsMspAnnotator(database.Database, key.Parameter, Parameter.TargetOmics, key.Key);
             }
             else if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new ImmsTextDBAnnotator(database.Database, key.Parameter, key.Key);
+                return new LcmsTextDBAnnotator(database.Database, key.Parameter, key.Key);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
         public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new ImmsMspAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
+            return new LcmsMspAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
         }
 
         public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new ImmsTextDBAnnotator(database.Database, Parameter.TextDbSearchParam, key.Key);
+            return new LcmsTextDBAnnotator(database.Database, Parameter.TextDbSearchParam, key.Key);
         }
     }
 }

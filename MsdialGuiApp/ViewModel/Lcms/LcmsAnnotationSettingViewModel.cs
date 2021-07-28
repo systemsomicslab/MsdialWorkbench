@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var ofd = new OpenFileDialog
             {
                 Title = "Import a library file",
-                Filter = "MSP file(*.msp)|*.msp*",
+                Filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|Text library(*.txt)|*.txt|All(*)|*",
                 RestoreDirectory = true,
                 Multiselect = false,
             };

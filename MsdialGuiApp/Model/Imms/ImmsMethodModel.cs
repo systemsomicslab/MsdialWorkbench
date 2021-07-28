@@ -127,12 +127,12 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
-            MspAnnotator = new ImmsMspAnnotator(analysisParamSetVM.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB"));
-            Storage.DataBaseMapper.Add(MspAnnotator);
-            TextDBAnnotator = new ImmsTextDBAnnotator(analysisParamSetVM.TextDB, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB"));
-            Storage.DataBaseMapper.Add(TextDBAnnotator);
+            var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB");
+            MspAnnotator = new ImmsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            Storage.DataBaseMapper.Add(MspAnnotator, msp);
+            var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB");
+            TextDBAnnotator = new ImmsTextDBAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            Storage.DataBaseMapper.Add(TextDBAnnotator, text);
             return true;
         }
 

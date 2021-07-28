@@ -100,13 +100,13 @@ namespace CompMs.App.Msdial.Model.Dims
 
             Storage.DataBaseMapper = new DataBaseMapper();
 
-            mspAnnotator = new DimsMspAnnotator(MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(MspDB, "MspDB"));
-            Storage.DataBaseMapper.Add(mspAnnotator);
+            var msp = new MoleculeDataBase(MspDB, "MspDB");
+            mspAnnotator = new DimsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            Storage.DataBaseMapper.Add(mspAnnotator, msp);
 
-            textDBAnnotator = new MassAnnotator(TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-            Storage.DataBaseMapper.Databases.Add(new MoleculeDataBase(TextDB, "TextDB"));
-            Storage.DataBaseMapper.Add(textDBAnnotator);
+            var text = new MoleculeDataBase(TextDB, "TextDB");
+            textDBAnnotator = new MassAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            Storage.DataBaseMapper.Add(textDBAnnotator, text);
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {

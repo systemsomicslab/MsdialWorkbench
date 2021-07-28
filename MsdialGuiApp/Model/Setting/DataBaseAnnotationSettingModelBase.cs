@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -66,8 +67,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private MsRefSearchParameterBase parameter = new MsRefSearchParameterBase();
 
-        public abstract Annotator Build(ParameterBase parameter);
-        public abstract Annotator Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
+        public abstract IAnnotatorContainer Build(ParameterBase parameter);
+        public abstract IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
         public abstract MoleculeDataBase LoadDataBase(ParameterBase parameter);
 
         protected static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {

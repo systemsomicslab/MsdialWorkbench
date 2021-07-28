@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -14,16 +15,13 @@ using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 {
-    public class LcmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
+    public class LcmsTextDBAnnotator : StandardRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
-        public MsRefSearchParameterBase Parameter { get; }
-
         public LcmsTextDBAnnotator(IEnumerable<MoleculeMsReference> textDB, MsRefSearchParameterBase parameter, string annotatorID)
-            : base(textDB, annotatorID) {
+            : base(textDB, parameter, annotatorID, SourceType.TextDB) {
             this.db.Sort(comparer);
-            this.Parameter = parameter;
             this.ReferObject = new DataBaseRefer(this.db);
         }
 
@@ -167,6 +165,33 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+        }
+
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return results.Argmax(result => result.TotalScore);
+        }
+
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            var filtered = new List<MsScanMatchResult>();
+            foreach (var result in results) {
+                if (!result.IsPrecursorMzMatch) {
+                    continue;
+                }
+                if (result.TotalScore < parameter.TotalScoreCutoff) {
+                    continue;
+                }
+                filtered.Add(result);
+            }
+            return filtered;
+        }
+
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return FilterByThreshold(results, parameter)
+                .Where(result => result.IsPrecursorMzMatch)
+                .ToList();
         }
     }
 }

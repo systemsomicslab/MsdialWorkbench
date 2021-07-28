@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -158,6 +159,33 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
+        }
+
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return results.Argmax(result => result.TotalScore);
+        }
+
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            var filtered = new List<MsScanMatchResult>();
+            foreach (var result in results) {
+                if (!result.IsPrecursorMzMatch) {
+                    continue;
+                }
+                if (result.TotalScore < parameter.TotalScoreCutoff) {
+                    continue;
+                }
+                filtered.Add(result);
+            }
+            return filtered;
+        }
+
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return FilterByThreshold(results, parameter)
+                .Where(result => result.IsPrecursorMzMatch)
+                .ToList();
         }
     }
 }

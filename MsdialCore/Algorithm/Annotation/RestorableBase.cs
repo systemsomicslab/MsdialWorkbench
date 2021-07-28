@@ -1,8 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
@@ -40,5 +40,34 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
+    }
+
+    public abstract class StandardRestorableBase : IRestorableRefer
+    {
+        public StandardRestorableBase(
+            IEnumerable<MoleculeMsReference> db,
+            MsRefSearchParameterBase parameter,
+            string key,
+            SourceType sourceType) {
+
+            this.db = db.ToList();
+            Parameter = parameter;
+            Key = key;
+            SourceType = sourceType;
+        }
+
+        protected readonly List<MoleculeMsReference> db;
+
+        public MsRefSearchParameterBase Parameter { get; }
+
+        public string Key { get; }
+
+        public SourceType SourceType { get; }
+
+        public abstract MoleculeMsReference Refer(MsScanMatchResult result);
+
+        public IReferRestorationKey Save() {
+            return new StandardRestorationKey(Key, Parameter, SourceType);
+        }
     }
 }

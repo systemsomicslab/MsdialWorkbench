@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
@@ -15,14 +16,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             
         }
 
-        public override Annotator Build(ParameterBase parameter) {
+        public override IAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override Annotator Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
-            return new Annotator(
+        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+            return new DatabaseAnnotatorContainer(
                 new LcmsTextDBAnnotator(molecules.Database, Parameter, AnnotatorID),
+                molecules,
                 Parameter);
         }
 

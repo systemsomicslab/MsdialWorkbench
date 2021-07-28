@@ -89,6 +89,7 @@
     <Compile Include="Behavior\DataGridCommitBehavior.cs" />
     <Compile Include="Behavior\DataGridPasteBehavior.cs" />
     <Compile Include="Behavior\DataGridScrollToSelectionBehavior.cs" />
+    <Compile Include="Behavior\DialogResultSetBehavior.cs" />
     <Compile Include="Behavior\MoveByDragBehavior.cs" />
     <Compile Include="Behavior\ResetRangeByDoubleClickBehavior.cs" />
     <Compile Include="Behavior\ScatterFocusBehavior.cs" />

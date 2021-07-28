@@ -111,8 +111,8 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean fileBean,
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<Annotator> annotators)
-            : this(fileBean, property, msdecResult, isotopes, annotators[0].AnnotatorImpl, annotators[0].Parameter){
+            IReadOnlyList<IAnnotatorContainer> annotators)
+            : this(fileBean, property, msdecResult, isotopes, annotators[0].Annotator, annotators[0].Parameter){
 
         }
 
