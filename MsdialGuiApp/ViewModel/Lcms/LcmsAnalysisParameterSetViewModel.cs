@@ -70,8 +70,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
-                .ToAsyncReactiveCommand<Window>()
-                .WithSubscribe(async window => await Task.Run(() => ContinueProcess(window)))
+                .ToReactiveCommand<Window>()
+                .WithSubscribe(window => ContinueProcess(window))
                 .AddTo(Disposables);
         }
 
@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public AsyncReactiveCommand<Window> ContinueProcessCommand { get; }
+        public ReactiveCommand<Window> ContinueProcessCommand { get; }
 
         private void ContinueProcess(Window window) {
             Mouse.OverrideCursor = Cursors.Wait;

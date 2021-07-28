@@ -16,6 +16,7 @@ namespace CompMs.MsdialCore.DataObj
     public class DataBaseMapper : IMatchResultRefer
     {
         public DataBaseMapper() {
+            Annotators = new List<IAnnotatorContainer>();
         }
 
         [Key(0)]

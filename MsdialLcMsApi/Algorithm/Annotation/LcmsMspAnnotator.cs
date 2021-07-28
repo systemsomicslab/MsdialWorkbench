@@ -3,6 +3,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
@@ -17,19 +18,17 @@ using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 {
-    public class LcmsMspAnnotator : MspDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
+    public class LcmsMspAnnotator : StandardRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
         private readonly TargetOmics omics;
 
         public DataBaseRefer ReferObject { get; }
-        public MsRefSearchParameterBase Parameter { get; }
 
         public LcmsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID)
-            : base(mspDB, annotatorID) {
+            : base(mspDB, parameter, annotatorID, SourceType.MspDB) {
                 db.Sort(comparer);
-                Parameter = parameter;
                 this.omics = omics;
                 ReferObject = new DataBaseRefer(db);
         }
@@ -232,6 +231,47 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             else {
                 result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
             }
+        }
+
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return results.Argmax(result => result.TotalScore);
+        }
+
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            var filtered = new List<MsScanMatchResult>();
+            foreach (var result in results) {
+                if (Ms2Filtering(result, parameter)) {
+                    continue;
+                }
+                if (result.TotalScore < parameter.TotalScoreCutoff) {
+                    continue;
+                }
+                filtered.Add(result);
+            }
+            return filtered;
+        }
+
+        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
+                return false;
+            }
+            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
+                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
+                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
+                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
+                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
+                return false;
+            }
+            return true;
+        }
+
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            return FilterByThreshold(results, parameter)
+                .Where(result => result.IsPrecursorMzMatch && result.IsSpectrumMatch)
+                .ToList();
         }
     }
 }

@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace CompMs.MsdialLcMsApi.Process {
@@ -24,6 +23,7 @@ namespace CompMs.MsdialLcMsApi.Process {
             var param = (MsdialLcmsParameter)container.ParameterBase;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
+            var annotatorContainers = container.DataBaseMapper.Annotators;
             var isotopeTextDB = container.IsotopeTextDB;
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;
@@ -85,7 +85,7 @@ namespace CompMs.MsdialLcMsApi.Process {
                     var msdecResults = ce2msdecs.Value;
                     var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                     var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                    new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, mspDB, textDB, param, reportAction);
+                    new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, annotatorContainers, mspDB, textDB, param, reportAction);
                 }
 
                 // characterizatin

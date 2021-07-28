@@ -53,9 +53,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Storage = model.Storage;
 
+            /*
             var dataMapper = Storage.DataBaseMapper;
             dataMapper.Add(new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
             dataMapper.Add(new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
+            */
         }
 
         private static readonly MsdialSerializer serializer;

@@ -39,6 +39,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Parameter = parameter;
         }
 
+        public AnnotatorContainer(
+            IReferRestorationKey annotatorKey,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            Parameter = parameter;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
         [IgnoreMember]
         public IAnnotator<IMSIonProperty, IMSScanProperty> Annotator { get; private set; }
         [IgnoreMember]
@@ -89,6 +97,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Database = database;
             DatabaseID = Database.Id;
             Parameter = parameter;
+        }
+
+        public DatabaseAnnotatorContainer(
+            IReferRestorationKey annotatorKey,
+            MoleculeDataBase database,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            Parameter = parameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
         }
 
         [IgnoreMember]

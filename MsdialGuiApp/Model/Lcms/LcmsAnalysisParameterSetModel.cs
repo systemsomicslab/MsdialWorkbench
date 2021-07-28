@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
                 var db = annotation.LoadDataBase(Parameter);
                 var annotator = annotation.Build(Parameter.ProjectParam, db);
-                dbm.Add(annotator.Annotator, db);
+                dbm.Add(annotator);
             }
             return dbm;
         }
