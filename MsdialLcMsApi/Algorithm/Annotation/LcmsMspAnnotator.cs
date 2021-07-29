@@ -61,7 +61,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, string annotatorID) {
 
-            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance, parameter.RtTolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
@@ -127,7 +127,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);
-            if (parameter.IsUseTimeForAnnotationScoring && result.CcsSimilarity >= 0)
+            if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0)
                 scores.Add(result.RtSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
@@ -146,16 +146,22 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 parameter = Parameter;
             }
 
-            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
-            return db.GetRange(lo, hi - lo);
+            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance, parameter.RtTolerance);
+            var candidates = db.GetRange(lo, hi - lo);
+            if (!parameter.IsUseTimeForAnnotationFiltering) {
+                return db.GetRange(lo, hi - lo);
+            }
+            return candidates.Where(candidate => Math.Abs(candidate.ChromXs.RT.Value - property.ChromXs.RT.Value) <= parameter.RtTolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance, double rtTolerance) {
 
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
+            var rt = property.ChromXs.RT;
+            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance, ChromXs = new ChromXs(rt.Value - rtTolerance, rt.Type, rt.Unit) };
             var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
             dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
+            dummy.ChromXs.RT.Value = rt.Value + rtTolerance;
             var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
             return (lo, hi);
         }
@@ -201,7 +207,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+            result.IsRtMatch = parameter.IsUseTimeForAnnotationScoring
+                && Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
         }
 
         private static void ValidateOnLipidomics(
@@ -243,7 +250,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (Ms2Filtering(result, parameter)) {
+                if (!SatisfyMs2Conditions(result, parameter)) {
                     continue;
                 }
                 if (result.TotalScore < parameter.TotalScoreCutoff) {
@@ -254,7 +261,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             return filtered;
         }
 
-        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
             if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
                 return false;
             }
