@@ -9,6 +9,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(0, typeof(DataBaseRestorationKey))]
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
+    [MessagePack.Union(3, typeof(StandardRestorationKey))]
     public interface IReferRestorationKey
     {
         IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);

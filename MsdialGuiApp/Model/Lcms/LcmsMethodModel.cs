@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Enum;
@@ -76,7 +75,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 analysisFile,
                 provider,
                 Storage.DataBaseMapper,
-                Storage.ParameterBase)
+                Storage.ParameterBase,
+                Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
 
@@ -88,7 +88,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentModel = new LcmsAlignmentModel(
                 AlignmentFile,
                 Storage.ParameterBase,
-                Storage.DataBaseMapper)
+                Storage.DataBaseMapper,
+                Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
 

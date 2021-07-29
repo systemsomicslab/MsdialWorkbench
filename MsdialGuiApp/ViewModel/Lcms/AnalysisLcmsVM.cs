@@ -300,7 +300,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Target.Value.InnerModel,
                 this.model.MsdecResult.Value,
                 null,
-                null))
+                this.model.Annotators))
             using (var vm = new ViewModel.CompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

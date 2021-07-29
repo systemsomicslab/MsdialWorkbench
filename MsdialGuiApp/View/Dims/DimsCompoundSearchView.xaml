@@ -59,7 +59,8 @@
                         Grid.Row="1">
                 <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
                     <TextBox Name="TextBox_Ms1Tolerance"
-                             Text="{Binding ParameterVM.Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             DataContext="{Binding ParameterVM.Value}"
+                             Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                              HorizontalAlignment="Left" VerticalAlignment="Center"
                              Width="70"/>
@@ -68,7 +69,8 @@
                                    Height="25" 
                                    Margin="10,0,0,0">
                     <TextBox Name="TextBox_Ms2Tolerance"
-                             Text="{Binding ParameterVM.Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             DataContext="{Binding ParameterVM.Value}"
+                             Text="{Binding Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
                              HorizontalAlignment="Left" VerticalAlignment="Center"
                              Width="70"/>
