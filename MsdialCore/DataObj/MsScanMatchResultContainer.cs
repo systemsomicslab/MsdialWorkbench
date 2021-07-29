@@ -34,12 +34,18 @@ namespace CompMs.MsdialCore.DataObj
         public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Source, result.TotalScore)) : null;
 
         [IgnoreMember]
-        public bool IsMspBasedRepresentative => MSRawID2MspBasedMatchResult.Values.Contains(Representative);
-
+        public bool IsMspBasedRepresentative => (Representative.Source & SourceType.MspDB) == SourceType.MspDB
+            || MSRawID2MspBasedMatchResult.Values.Contains(Representative);
         [IgnoreMember]
-        public bool IsTextDbBasedRepresentative => TextDbBasedMatchResults.Contains(Representative);
+        public bool IsTextDbBasedRepresentative => (Representative.Source & SourceType.TextDB) == SourceType.TextDB
+            || TextDbBasedMatchResults.Contains(Representative);
         [IgnoreMember]
         public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
+        [IgnoreMember]
+        public bool IsReferenceMatched => IsMspBasedRepresentative && Representative.IsSpectrumMatch
+            || IsTextDbBasedRepresentative && Representative.IsPrecursorMzMatch;
+        [IgnoreMember]
+        public bool IsAnnotationSuggested => !IsReferenceMatched && IsMspBasedRepresentative && Representative.IsPrecursorMzMatch;
         [IgnoreMember]
         public bool IsUnknown => (Representative.Source & SourceType.Unknown) == SourceType.Unknown;
 

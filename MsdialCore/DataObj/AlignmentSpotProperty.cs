@@ -136,7 +136,7 @@ namespace CompMs.MsdialCore.DataObj {
                 if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
                     return true;
                 }
-                return false;
+                return MatchResults.IsReferenceMatched;
             }
         }
 
@@ -155,7 +155,7 @@ namespace CompMs.MsdialCore.DataObj {
                 else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
                     return true;
                 }
-                return false;
+                return MatchResults.IsAnnotationSuggested;
             }
         }
 
