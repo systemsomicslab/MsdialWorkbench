@@ -51,12 +51,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string annotatorID) {
 
-            (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance, parameter.RtTolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
                 if (parameter.IsUseTimeForAnnotationFiltering
-                    && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) < parameter.RtTolerance) {
+                    && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > parameter.RtTolerance) {
                     continue;
                 }
 
@@ -104,7 +104,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var scores = new List<float> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
-            if (result.RtSimilarity >= 0)
+            if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0)
                 scores.Add(result.RtSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
@@ -123,15 +123,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 parameter = Parameter;
             }
 
-            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
-            return db.GetRange(lo, hi - lo);
+            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance, parameter.RtTolerance);
+            var candidates =  db.GetRange(lo, hi - lo);
+            if (!parameter.IsUseTimeForAnnotationFiltering) {
+                return candidates;
+            }
+            return candidates.Where(candidate => Math.Abs(candidate.ChromXs.RT.Value - property.ChromXs.RT.Value) <= parameter.RtTolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance, double rtTolerance) {
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
+            var rt = property.ChromXs.RT;
+            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance, ChromXs = new ChromXs(rt.Value - rtTolerance, rt.Type, rt.Unit) };
             var lo = SearchCollection.LowerBound(textDB, dummy, comparer);
             dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
+            dummy.ChromXs.RT.Value = rt.Value + rtTolerance;
             var hi = SearchCollection.UpperBound(textDB, dummy, lo, textDB.Count, comparer);
             return (lo, hi);
         }
@@ -157,14 +163,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         }
 
         private static void ValidateCore(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            ValidateBase(result, property, reference, parameter);
-        }
-
-        private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+            result.IsRtMatch = parameter.IsUseTimeForAnnotationScoring
+                && Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
