@@ -42,11 +42,14 @@ namespace Msdial.Lcms.Dataprocess {
                 return ccs;
             }
             else if (mobilitytype == IonMobilityType.Twims) {
+                // https://www.waters.com/webassets/cms/library/docs/2018asms_midey_msi.pdf
                 var coeff = calinfo.WatersCoefficient;
                 var t0 = calinfo.WatersT0;
                 var exponent = calinfo.WatersExponent;
 
-                var ccs = coeff * Math.Pow(mobility + t0, exponent);
+                var omegac = coeff * Math.Pow(mobility + t0, exponent);
+                var ccs = omegac / Math.Sqrt(reducedMass) * (double)charge;
+
                 return ccs;
             }
             else {
@@ -57,16 +60,15 @@ namespace Msdial.Lcms.Dataprocess {
         public static double CrossSectionToMobility(IonMobilityType type, double ccs, int charge, double molWeight,
             CoefficientsForCcsCalculation calinfo, bool isCalibrantInfoImported,
             double gasWeight = 28.0134, double temperature = 305.0) {
-           
+
+            var reducedMass = molWeight * gasWeight / (molWeight + gasWeight);
             if (type == IonMobilityType.Tims) {
-                var reducedMass = molWeight * gasWeight / (molWeight + gasWeight);
                 var k0 = ccs_conversion_factor * (double)charge / (Math.Sqrt(reducedMass * temperature) * ccs);
                 if (k0 > 0)
                     return 1 / k0;
                 else
                     return -1;
             } else if (!isCalibrantInfoImported) {
-                var reducedMass = molWeight * gasWeight / (molWeight + gasWeight);
                 var k0 = ccs_conversion_factor * (double)charge / (Math.Sqrt(reducedMass * temperature) * ccs);
                 return k0;	// in cm2/Vs
             }
@@ -81,8 +83,10 @@ namespace Msdial.Lcms.Dataprocess {
                 var coeff = calinfo.WatersCoefficient;
                 var t0 = calinfo.WatersT0;
                 var exponent = calinfo.WatersExponent;
-                var k0 = Math.Pow(ccs / coeff, 1 / exponent) - t0;
-               
+
+                var omegac = ccs * Math.Sqrt(reducedMass) / (double)charge;
+                var k0 = Math.Exp((Math.Log(omegac) - Math.Log(coeff)) / exponent) - t0;
+                
                 return k0;
             }
             else {

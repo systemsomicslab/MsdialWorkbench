@@ -406,6 +406,9 @@ namespace Rfx.Riken.OsakaUniv
                 exportSpectra(mainWindow, exportFolderPath, alignmentFileID,
                     alignmentResult, exportSpectraFileFormat, targetAnalysisFileID, blankFilter);
 
+            if (isParamExport) {
+                ParameterExport(analysisFiles, mainWindow.AnalysisParamForLC, mainWindow.ProjectProperty, paramFile);
+            }
             mainWindow.PeakViewerForLcRefresh(focusedFileID);
 
             if (focusedAlignmentFileID < 0)
@@ -2586,7 +2589,7 @@ namespace Rfx.Riken.OsakaUniv
             for (int i = 0; i < files.Count; i++)
             {
                 var fileProp = files[i].AnalysisFilePropertyBean;
-                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.mgf;
+                var filePath = folderpath + "\\" + fileProp.AnalysisFileName + "." + ExportSpectraFileFormat.msp;
                 var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
 
                 using (StreamWriter sw = new StreamWriter(filePath, false, Encoding.ASCII))

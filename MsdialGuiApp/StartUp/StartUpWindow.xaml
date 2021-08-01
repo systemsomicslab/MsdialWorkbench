@@ -56,7 +56,7 @@
             <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
@@ -382,6 +382,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
                     <RadioButton Name="RadioButton_PositiveMode"
@@ -406,6 +407,7 @@
             <GroupBox Name="GroupBox_TargetOmics" Header="Target omics" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
@@ -436,9 +438,23 @@
 
                             <ToolTip>
                                 <TextBlock>
-                                Identification method is optimized for lipidomics.
-                                <LineBreak />
-                                You can use MSDIAL internal LipidBlast MS/MS library for lipid identifications.
+                                The analysis procedure is optimized for lipidomics.
+                                </TextBlock>
+                            </ToolTip>
+
+                        </ToolTipService.ToolTip>
+                    </RadioButton>
+
+                    <RadioButton Name="RadioButton_Proteomics"
+                                 Content="Proteomics"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BTEConverter}, ConverterParameter=Lipidomics}"
+                                 IsEnabled="{Binding IsChecked, ElementName=RadioButton_EI, Converter={StaticResource NegativeConverter}}"
+                                 Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <ToolTipService.ToolTip>
+
+                            <ToolTip>
+                                <TextBlock>
+                                The analysis procedure is optimized for proteomics.
                                 </TextBlock>
                             </ToolTip>
 

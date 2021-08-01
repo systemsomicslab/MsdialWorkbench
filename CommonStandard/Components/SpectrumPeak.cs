@@ -30,12 +30,18 @@ namespace CompMs.Common.Components
         public int IsotopeParentPeakID { get; set; } = -1;
         [Key(9)]
         public int IsotopeWeightNumber { get; set; } = -1;
+        [Key(10)]
+        public bool IsMatched { get; set; } = false;
 
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, string comment = null) {
             Mass = mass;
             Intensity = intensity;
             Comment = comment;
+        }
+
+        public SpectrumPeak Clone() {
+            return (SpectrumPeak)MemberwiseClone();
         }
     }
 }

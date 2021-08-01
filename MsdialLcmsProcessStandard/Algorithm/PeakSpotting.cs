@@ -648,7 +648,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
                 var originalIndex = accumulatedMs1Spectrum[(int)peaklist[detectedPeaks[i].ScanNumAtPeakTop][0]].OriginalIndex;
                 peakAreaBean.Ms1LevelDatapointNumber = originalIndex;
-                peakAreaBean.Ms1LevelDatapointNumberAtAcculateMs1 = accumulatedMs1Spectrum[(int)peaklist[detectedPeaks[i].ScanNumAtPeakTop][0]].ScanNumber;
+                //peakAreaBean.Ms1LevelDatapointNumberAtAcculateMs1 = accumulatedMs1Spectrum[(int)peaklist[detectedPeaks[i].ScanNumAtPeakTop][0]].ScanNumber;
+                peakAreaBean.Ms1LevelDatapointNumberAtAcculateMs1 = (int)peaklist[detectedPeaks[i].ScanNumAtPeakTop][0];
 
                 var originalLeftScanID = accumulatedMs1Spectrum[(int)peaklist[detectedPeaks[i].ScanNumAtLeftPeakEdge][0]].OriginalIndex;
                 var originalRightScanID = accumulatedMs1Spectrum[(int)peaklist[detectedPeaks[i].ScanNumAtRightPeakEdge][0]].OriginalIndex;

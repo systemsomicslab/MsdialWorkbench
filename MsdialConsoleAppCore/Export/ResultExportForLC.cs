@@ -80,6 +80,36 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Export
             }
         }
 
+        public static void ExportAlignmentResultForIonMobilityData(string outputFile, AlignmentFileBean alignmentResultFile, AlignmentResultBean alignmentResultBean,
+            List<MspFormatCompoundInformationBean> mspDB, List<PostIdentificatioinReferenceBean> txtDB, List<AnalysisFileBean> analysisFiles, AnalysisParametersBean param) {
+            using (var fs = File.Open(alignmentResultFile.SpectraFilePath, FileMode.Open, FileAccess.ReadWrite)) {
+                var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
+
+                using (StreamWriter sw = new StreamWriter(outputFile, false, Encoding.ASCII)) {
+                    //Header
+                    ResultExportLcUtility.WriteDataMatrixHeaderAtIonMobility(sw, new ObservableCollection<AnalysisFileBean>(analysisFiles));
+
+                    var alignedSpots = alignmentResultBean.AlignmentPropertyBeanCollection;
+                    //From the second
+                    for (int i = 0; i < alignedSpots.Count; i++) {
+
+                        if (param.IsRemoveFeatureBasedOnPeakHeightFoldChange && alignedSpots[i].IsBlankFiltered) continue;
+                        ResultExportLcUtility.WriteDataMatrixMetaDataAtIonMobility(sw, alignedSpots[i], new AlignedDriftSpotPropertyBean(), alignedSpots, mspDB, txtDB, fs, seekpointList, param);
+                        ResultExportLcUtility.WriteData(sw, alignedSpots[i].AlignedPeakPropertyBeanCollection, "Height", false, 0.0F);
+
+
+                        var driftSpots = alignedSpots[i].AlignedDriftSpots;
+                        for (int j = 0; j < driftSpots.Count; j++) {
+                            ResultExportLcUtility.WriteDataMatrixMetaDataAtIonMobility(sw, alignedSpots[i], driftSpots[j], alignedSpots, mspDB, txtDB, fs, seekpointList, param);
+
+                            // Replace true zero values with 1/2 of minimum peak height over all samples
+                            ResultExportLcUtility.WriteData(sw, driftSpots[j].AlignedPeakPropertyBeanCollection, "Height", false, 0.0F);
+                        }
+                    }
+                }
+            }
+        }
+
         public static void ExportIsotopeTrackingResultAsMatFormatFile(string outputFolder,
            ProjectPropertyBean projectProp,
            AnalysisParametersBean param,

@@ -527,9 +527,9 @@ namespace StructureFinderConsoleApp {
 
 
         public static void ExtractClassyFireOntologies() {
-            var keyfile = @"D:\Paper of Natural Product Reports\Statistics\key.txt";
-            var ontologyfile = @"D:\Paper of Natural Product Reports\Statistics\InchikeyClassyfireDB-VS4.icd";
-            var output = @"D:\Paper of Natural Product Reports\Statistics\key_output.txt";
+            var keyfile = @"E:\6_Projects\PROJECT_ImagingMS\CCSref\inchikeys.txt";
+            var ontologyfile = @"E:\6_Projects\PROJECT_NPR_REVIEW\Statistics\InchikeyClassyfireDB-VS4.icd";
+            var output = @"E:\6_Projects\PROJECT_ImagingMS\CCSref\inchikeys_classified.txt";
             var keylist = new List<string>();
             var key2Ontology = new Dictionary<string, List<string>>(); // [0] name [1] id
             using (var sr = new StreamReader(keyfile, true)) { // key contains the list of short inchikey without header

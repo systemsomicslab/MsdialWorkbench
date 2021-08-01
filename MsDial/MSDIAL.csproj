@@ -924,6 +924,10 @@
       <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
       <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
+      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
+      <Name>MolViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MonaExport\MonaExport.csproj">
       <Project>{3232ef20-fadb-47c5-958f-4eab0eee2f91}</Project>
       <Name>MonaExport</Name>

@@ -28,98 +28,138 @@ namespace CompMs.Common.Algorithm.Scoring {
             return true;
         }
 
-        public static MsScanMatchResult CompareIMMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
-            MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
-            var result = CompareMS2ScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
-            var isCcsMatch = false;
-            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+        //public static MsScanMatchResult CompareIMMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
+        //    MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+        //    var result = CompareMS2ScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
+        //    var isCcsMatch = false;
+        //    var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
             
-            result.CcsSimilarity = (float)ccsSimilarity;
-            result.IsCcsMatch = isCcsMatch;
+        //    result.CcsSimilarity = (float)ccsSimilarity;
+        //    result.IsCcsMatch = isCcsMatch;
 
-            result.TotalScore = (float)GetTotalScore(result, param);
+        //    result.TotalScore = (float)GetTotalScore(result, param);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public static MsScanMatchResult CompareIMMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
-            MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
-            var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
-            var isCcsMatch = false;
-            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+      
+        //public static MsScanMatchResult CompareIMMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
+        //    MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
+        //    var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
+        //    var isCcsMatch = false;
+        //    var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
             
-            result.CcsSimilarity = (float)ccsSimilarity;
-            result.IsCcsMatch = isCcsMatch;
+        //    result.CcsSimilarity = (float)ccsSimilarity;
+        //    result.IsCcsMatch = isCcsMatch;
 
-            result.TotalScore = (float)GetTotalScore(result, param);
+        //    result.TotalScore = (float)GetTotalScore(result, param);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
-            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
-            var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
+            TargetOmics targetOmics = TargetOmics.Metabolomics, double scanCCS = -1.0,
+            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null, 
+            double andromedaDelta = 100, int andromedaMaxPeaks = 12) {
+
+            MsScanMatchResult result = null;
+            if (targetOmics == TargetOmics.Metabolomics) {
+                result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            } 
+            else if (targetOmics == TargetOmics.Lipidomics) {
+                result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
+            } 
+            else if (targetOmics == TargetOmics.Proteomics) {
+                result = CompareMS2ProteomicsScanProperties(scanProp, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
+            }
+
             result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            
+            var isCcsMatch = false;
+            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+
+            result.CcsSimilarity = (float)ccsSimilarity;
+            result.IsCcsMatch = isCcsMatch;
             result.TotalScore = (float)GetTotalScore(result, param);
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
-            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
+        //public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
+        //    IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
+        //    var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+        //    result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+        //    result.TotalScore = (float)GetTotalScore(result, param);
+        //    return result;
+        //}
 
-            var isMs1Match = false;
-            var isMs2Match = false;
-            var isRtMatch = false;
-            var isRiMatch = false;
+        //public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
+        //   IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null) {
+
+        //    var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
+        //    var isotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+        //    result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+        //    result.TotalScore = (float)GetTotalScore(result, param);
+        //    return result;
+        //}
+
+        public static MsScanMatchResult CompareMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param) {
+
+            var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var matchedPeaksScores = GetLipidomicsMatchedPeaksScores(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            result.MatchedPeaksCount = (float)matchedPeaksScores[1];
+            result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
+
+            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
+                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
+                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+                result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.IsSpectrumMatch = true;
+            }
 
             var isLipidClassMatch = false;
             var isLipidChainsMatch = false;
             var isLipidPositionMatch = false;
             var isOtherLipidMatch = false;
 
-            var name = refSpec.Name;
-            var refID = refSpec.ScanID;
-
-            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            var matchedPeaksScores = GetLipidomicsMatchedPeaksScores(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-
-            if (weightedDotProduct >= param.WeightedDotProductCutOff &&
-                simpleDotProduct >= param.SimpleDotProductCutOff &&
-                reverseDotProduct >= param.ReverseDotProductCutOff &&
-                matchedPeaksScores[0] >= param.MatchedPeaksPercentageCutOff &&
-                matchedPeaksScores[1] >= param.MinimumSpectrumMatch) {
-                isMs2Match = true;
-            }
-
-            name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
+            var name = GetRefinedLipidAnnotationLevel(scanProp, refSpec, param.Ms2Tolerance,
                 out isLipidClassMatch, out isLipidChainsMatch, out isLipidPositionMatch, out isOtherLipidMatch);
             if (name == string.Empty)
                 return null;
 
-            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
-            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
-            var ms1Tol = param.Ms1Tolerance;
-            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-            if (scanProp.PrecursorMz > 500) {
-                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
-            }
-            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
-            var isotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, ms1Tol);
-
-            var result = new MsScanMatchResult() {
-                Name = name, LibraryID = refID, InChIKey = refSpec.InChIKey, WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
-                MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = isotopeSimilarity,
-                IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isMs2Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch,
-                IsLipidChainsMatch = isLipidChainsMatch, IsLipidClassMatch = isLipidClassMatch, IsLipidPositionMatch = isLipidPositionMatch, IsOtherLipidMatch = isOtherLipidMatch
-            };
+            result.Name = name;
+            result.IsLipidChainsMatch = isLipidChainsMatch;
+            result.IsLipidClassMatch = isLipidClassMatch;
+            result.IsLipidPositionMatch = isLipidPositionMatch;
+            result.IsOtherLipidMatch = isOtherLipidMatch;
             result.TotalScore = (float)GetTotalScore(result, param);
 
             return result;
         }
+
+        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
+            MsRefSearchParameterBase param, float andromedaDelta, float andromedaMaxPeaks) {
+
+            var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var matchedPeaks = GetMachedSpectralPeaks(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+
+            result.AndromedaScore = (float)GetAndromedaScore(matchedPeaks, andromedaDelta, andromedaMaxPeaks);
+            result.MatchedPeaksCount = matchedPeaks.Count(n => n.IsMatched);
+            result.MatchedPeaksPercentage = (float)(result.MatchedPeaksCount / matchedPeaks.Count());
+
+            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
+                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
+                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+                result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch &&
+                result.AndromedaScore >= param.AndromedaScoreCutOff) {
+                result.IsSpectrumMatch = true;
+            }
+            result.TotalScore = (float)GetTotalScore(result, param);
+
+            return result;
+        }
+
 
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
             MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
@@ -132,14 +172,6 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result.TotalScore = (float)GetTotalSimilarity(result.RtSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
             }
             return result;
-        }
-
-        public static double GetIntegratedSpectraSimilarity(MsScanMatchResult result) {
-            var dotproductFact = 3.0;
-            var revDotproductFact = 2.0;
-            var matchedRatioFact = 1.0;
-            return (dotproductFact * result.WeightedDotProduct + revDotproductFact * result.ReverseDotProduct + matchedRatioFact * result.MatchedPeaksPercentage) /
-                (dotproductFact + revDotproductFact + matchedRatioFact);
         }
 
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scan1, IMSScanProperty scan2,
@@ -155,53 +187,56 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
+        public static double GetIntegratedSpectraSimilarity(MsScanMatchResult result) {
+            var dotproductFact = 3.0;
+            var revDotproductFact = 2.0;
+            var matchedRatioFact = 1.0;
+            return (dotproductFact * result.WeightedDotProduct + revDotproductFact * result.ReverseDotProduct + matchedRatioFact * result.MatchedPeaksPercentage) /
+                (dotproductFact + revDotproductFact + matchedRatioFact);
+        }
+
+
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param, 
             float ms2Tol, float massRangeBegin, float massRangeEnd) {
-            var isSpecMatch = false;
-            var isRtMatch = false;
-            var isRiMatch = false;
-            var isMs1Match = false;
 
-            var name = refSpec.Name;
-            var refID = refSpec.ScanID;
-
-            var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-
-            if (weightedDotProduct >= param.WeightedDotProductCutOff &&
-                simpleDotProduct >= param.SimpleDotProductCutOff &&
-                reverseDotProduct >= param.ReverseDotProductCutOff &&
-                matchedPeaksScores[0] >= param.MatchedPeaksPercentageCutOff &&
-                matchedPeaksScores[1] >= param.MinimumSpectrumMatch) {
-                isSpecMatch = true;
-            }
-
-            var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
-            var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
-
-            var ms1Tol = param.Ms1Tolerance;
-            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
-            if (scanProp.PrecursorMz > 500) {
-                ms1Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(scanProp.PrecursorMz, ppm);
-            }
-            var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
-
-            var result = new MsScanMatchResult() {
-                Name = name, LibraryID = refID, InChIKey = refSpec.InChIKey, WeightedDotProduct = (float)weightedDotProduct,
-                SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
-                AcurateMassSimilarity = (float)ms1Similarity,
-                MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isSpecMatch, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
-            };
-
+            var result = CompareMSScanProperties(scanProp, (IMSScanProperty)refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
+            result.Name = refSpec.Name;
+            result.LibraryID = refSpec.ScanID;
+            result.InChIKey = refSpec.InChIKey;
             return result;
         }
 
         public static MsScanMatchResult CompareMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
            float ms2Tol, float massRangeBegin, float massRangeEnd) {
-            var isSpecMatch = false;
+
+            var result = CompareBasicMSScanProperties(scanProp, refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
+            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
+
+            result.MatchedPeaksCount = (float)matchedPeaksScores[1];
+            result.MatchedPeaksPercentage = (float)matchedPeaksScores[0];
+            if (result.WeightedDotProduct >= param.WeightedDotProductCutOff &&
+                result.SimpleDotProduct >= param.SimpleDotProductCutOff &&
+                result.ReverseDotProduct >= param.ReverseDotProductCutOff &&
+                result.MatchedPeaksPercentage >= param.MatchedPeaksPercentageCutOff &&
+                result.MatchedPeaksCount >= param.MinimumSpectrumMatch) {
+                result.IsSpectrumMatch = true;
+            }
+
+            return result;
+        }
+
+        public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, MsRefSearchParameterBase param,
+           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+            var result = CompareMSScanProperties(scanProp, (IMSScanProperty)refSpec, param, ms2Tol, massRangeBegin, massRangeEnd);
+            result.Name = refSpec.Name;
+            result.LibraryID = refSpec.ScanID;
+            result.InChIKey = refSpec.InChIKey;
+            return result;
+        }
+
+        public static MsScanMatchResult CompareBasicMSScanProperties(IMSScanProperty scanProp, IMSScanProperty refSpec, MsRefSearchParameterBase param,
+           float ms2Tol, float massRangeBegin, float massRangeEnd) {
+            
             var isRtMatch = false;
             var isRiMatch = false;
             var isMs1Match = false;
@@ -209,16 +244,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             var weightedDotProduct = GetWeightedDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var simpleDotProduct = GetSimpleDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
             var reverseDotProduct = GetReverseDotProduct(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-            var matchedPeaksScores = GetMatchedPeaksScores(scanProp, refSpec, ms2Tol, massRangeBegin, massRangeEnd);
-
-            if (weightedDotProduct >= param.WeightedDotProductCutOff &&
-                simpleDotProduct >= param.SimpleDotProductCutOff &&
-                reverseDotProduct >= param.ReverseDotProductCutOff &&
-                matchedPeaksScores[0] >= param.MatchedPeaksPercentageCutOff &&
-                matchedPeaksScores[1] >= param.MinimumSpectrumMatch) {
-                isSpecMatch = true;
-            }
-
             var rtSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RT, refSpec.ChromXs.RT, param.RtTolerance, out isRtMatch);
             var riSimilarity = GetGaussianSimilarity(scanProp.ChromXs.RI, refSpec.ChromXs.RI, param.RiTolerance, out isRiMatch);
 
@@ -233,12 +258,14 @@ namespace CompMs.Common.Algorithm.Scoring {
                 WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
-                MatchedPeaksCount = (float)matchedPeaksScores[1], MatchedPeaksPercentage = (float)matchedPeaksScores[0],
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsSpectrumMatch = isSpecMatch, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
             };
 
             return result;
         }
+
+
+
 
 
         /// <summary>
@@ -359,6 +386,84 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (libCounter == 0) return new double[2] { 0, 0 };
             else
                 return new double[2] { (double)counter / (double)libCounter, libCounter };
+        }
+
+        /// <summary>
+        /// please set the 'mached spectral peaks' list obtained from the method of GetMachedSpectralPeaks where isMatched property is set to each spectrum peak obj
+        /// </summary>
+        /// <param name="peaks"></param>
+        /// <returns></returns>
+        public static double GetAndromedaScore(List<SpectrumPeak> peaks, double andromedaDelta, double andromedaMaxPeak) {
+            var p = andromedaMaxPeak / andromedaDelta;
+            var q = 1 - p;
+            var n = peaks.Count;
+            var k = peaks.Count(spec => spec.IsMatched == true);
+
+            var sum = 0.0;
+            for (int j = k; j <= n; j++) {
+                var bc = Mathematics.Basic.BasicMathematics.BinomialCoefficient(n, j);
+                var p_prob = Math.Pow(p, j);
+                var q_prob = Math.Pow(q, n - j);
+                sum += bc * p_prob * q_prob;
+            }
+            return -10.0 * Math.Log10(sum);
+        }
+
+        /// </summary>
+        /// <param name="peaks1">
+        /// Add the experimental MS/MS spectrum.
+        /// </param>
+        /// <param name="peaks2">
+        /// Add the theoretical MS/MS spectrum. The theoretical MS/MS spectrum is supposed to be retreived in MSP parcer.
+        /// </param>
+        /// <param name="bin">
+        /// Add the bin value to merge the abundance of m/z.
+        /// </param>
+        public static List<SpectrumPeak> GetMachedSpectralPeaks(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+           double massBegin, double massEnd) {
+            if (!IsComparedAvailable(prop1, prop2)) return new List<SpectrumPeak>();
+
+            var peaks1 = prop1.Spectrum;
+            var peaks2 = prop2.Spectrum;
+
+            var minMz = Math.Max(peaks2[0].Mass, massBegin);
+            var maxMz = Math.Min(peaks2[peaks2.Count - 1].Mass, massEnd);
+            var focusedMz = minMz;
+
+            int remaindIndexM = 0, remaindIndexL = 0;
+            var searchedPeaks = new List<SpectrumPeak>();
+
+            while (focusedMz <= maxMz) {
+                var maxRefIntensity = double.MinValue;
+                var maxRefID = -1;
+                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                    if (peaks2[i].Mass < focusedMz - bin)  continue;
+                    else if (Math.Abs(focusedMz - peaks2[i].Mass) < bin) {
+                        if (maxRefIntensity < peaks2[i].Intensity) {
+                            maxRefIntensity = peaks2[i].Intensity;
+                            maxRefID = i;
+                        }
+                    }
+                    else { remaindIndexL = i; break; }
+                }
+
+                SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
+                if (spectrumPeak == null) continue;
+
+                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                    if (peaks1[i].Mass < focusedMz - bin) continue;
+                    else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
+                        spectrumPeak.IsMatched = true;
+                    }
+                    else { remaindIndexM = i; break; }
+                }
+
+                searchedPeaks.Add(spectrumPeak);
+
+                if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
+                focusedMz = peaks2[remaindIndexL].Mass;
+            }
+            return searchedPeaks;
         }
 
         /// <summary>
@@ -1846,6 +1951,9 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
             if (result.MatchedPeaksPercentage > 0) {
                 totalScore += result.MatchedPeaksPercentage;
+            }
+            if (result.AndromedaScore > 0) {
+                totalScore += result.AndromedaScore;
             }
             return totalScore;
         }

@@ -46,8 +46,12 @@ namespace Rfx.Riken.OsakaUniv
             sw.WriteLine("NAME: " + rawData.Name);
             sw.WriteLine("SCANNUMBER: " + rawData.ScanNumber);
             sw.WriteLine("RETENTIONTIME: " + rawData.RetentionTime);
+            if (rawData.RetentionIndex > 0)
+                sw.WriteLine("RETENTIONINDEX: " + rawData.RetentionIndex);
             sw.WriteLine("PRECURSORMZ: " + rawData.PrecursorMz);
             sw.WriteLine("PRECURSORTYPE: " + rawData.PrecursorType);
+            if (rawData.Ccs > 0)
+                sw.WriteLine("CCS: " + rawData.Ccs);
             sw.WriteLine("IONMODE: " + rawData.IonMode);
             sw.WriteLine("SPECTRUMTYPE: " + rawData.SpectrumType);
             sw.WriteLine("FORMULA: " + rawData.Formula);

@@ -50,12 +50,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string sourceKey) {
-
+            //if (Math.Abs(property.PrecursorMz - 770.509484372875) < 0.02) {
+            //    Console.WriteLine();
+            //}
             (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
-                if (parameter.IsUseCcsForAnnotationFiltering
+				if (parameter.IsUseCcsForAnnotationFiltering
                     && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) <  parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
@@ -79,7 +81,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, string sourceKey) {
-
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
@@ -102,8 +103,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 scores.Add(result.AcurateMassSimilarity);
             if (result.CcsSimilarity >= 0)
                 scores.Add(result.CcsSimilarity);
-            if (result.IsotopeSimilarity >= 0)
-                scores.Add(result.IsotopeSimilarity);
+            //if (result.IsotopeSimilarity >= 0)
+            //    scores.Add(result.IsotopeSimilarity);
             result.TotalScore = scores.DefaultIfEmpty().Average();
 
             return result;

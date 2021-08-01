@@ -94,7 +94,7 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction) {
 
             var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
-            IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
+            IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB, true);
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
         }

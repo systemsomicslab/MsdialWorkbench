@@ -98,7 +98,7 @@
                 </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn SortMemberPath="WatersT0" Width="*" Header="T0" IsReadOnly="False" 
-                                        ClipboardContentBinding="{Binding Path=AgilentTFix}">
+                                        ClipboardContentBinding="{Binding Path=WatersT0}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Name="TextBox_WatersT0" 
@@ -126,7 +126,7 @@
                         <DataTemplate>
                             <TextBox Name="TextBox_WatersExponent" 
                                         Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                        Text="{Binding Path=WatersT0, UpdateSourceTrigger=LostFocus, NotifyOnSourceUpdated=True}" 
+                                        Text="{Binding Path=WatersExponent, UpdateSourceTrigger=LostFocus, NotifyOnSourceUpdated=True}" 
                                         VerticalContentAlignment="Center" IsReadOnly="False" HorizontalAlignment="Stretch" Margin="0,0,0,0">
                                 <TextBox.ContextMenu>
                                     <ContextMenu>
