@@ -174,11 +174,15 @@ namespace CompMs.MsdialCore.Utility
             if (alignment.Count == 0) return -1;
             var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray(); // ms2 contained
             if (alignmentWithMSMS.Length != 0) {
-                return alignmentWithMSMS.Argmax(align =>
-                    (align.MSRawID2MspBasedMatchResult?.Values.DefaultIfEmpty().Max(val => val?.TotalScore), align.PeakHeightTop)  // highest total score then highest intensity
-                    ).FileID;
+                return alignmentWithMSMS.Argmax(peak =>
+                    // highest total score then highest intensity
+                    (peak.MatchResults.MatchResults.DefaultIfEmpty().Max(val => val.TotalScore), peak.PeakHeightTop)
+                ).FileID;
             }
-            return alignment.Argmax(align => (align.TextDbBasedMatchResult?.TotalScore, align.PeakHeightTop)).FileID; // highest total score then highest intensity
+            return alignment.Argmax(peak =>
+                // highest total score then highest intensity
+                (peak.MatchResults.MatchResults.DefaultIfEmpty().Max(val => val.TotalScore), peak.PeakHeightTop)
+            ).FileID;
         }
     }
 }
