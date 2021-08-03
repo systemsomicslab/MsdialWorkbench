@@ -88,7 +88,7 @@ namespace CompMs.Common.DataObj.Result {
         public SourceType Source { get; set; }
         [Key(27)]
         public string SourceKey { get; set; }
-        [Key(28)]
+        [Key(29)]
         public int SpectrumID { get; set; } = -1; 
 
         public MsScanMatchResult Clone() {

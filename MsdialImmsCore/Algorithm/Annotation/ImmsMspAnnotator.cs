@@ -20,7 +20,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
     public class ImmsMspAnnotator : MspDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
-        private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
+        private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
         private readonly TargetOmics omics;
 
@@ -56,7 +56,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, string sourceKey) {
 
-            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance, parameter.CcsTolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = mspDB[i];
@@ -138,16 +138,24 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
-            return db.GetRange(lo, hi - lo);
+            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance, parameter.CcsTolerance);
+            var candidates = db.GetRange(lo, hi - lo);
+            if (!parameter.IsUseCcsForAnnotationFiltering) {
+                return db.GetRange(lo, hi - lo);
+            }
+            return candidates.Where(candidate => Math.Abs(candidate.CollisionCrossSection - property.CollisionCrossSection) <= parameter.CcsTolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance, double ccsTolerance) {
 
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
+            var dummy = new MSIonProperty(
+                property.PrecursorMz - ms1Tolerance,
+                null, IonMode.Negative, null,
+                property.CollisionCrossSection - ccsTolerance);
             var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
             dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
+            dummy.CollisionCrossSection = property.CollisionCrossSection + ccsTolerance;
             var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
             return (lo, hi);
         }
@@ -181,6 +189,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateBase(result, property, reference, parameter);
         }
 
+        private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
@@ -191,7 +200,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
+            if (parameter.IsUseCcsForAnnotationScoring) {
+                var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
+                result.IsCcsMatch = diff <= MsdialCcsMatchThreshold && diff <= parameter.CcsTolerance;
+            }
         }
 
         private static void ValidateOnLipidomics(
@@ -233,7 +245,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (Ms2Filtering(result, parameter)) {
+                if (!SatisfyMs2Conditions(result, parameter)) {
                     continue;
                 }
                 if (result.TotalScore < parameter.TotalScoreCutoff) {
@@ -244,7 +256,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return filtered;
         }
 
-        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
             if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
                 return false;
             }
