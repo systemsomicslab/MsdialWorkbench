@@ -350,6 +350,36 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
+        public void ValidateRtMatchTest() {
+            var reference = new MoleculeMsReference {
+                Name = "PC 18:0_20:4", CompoundClass = "PC",
+                PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
+                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                RtTolerance = 2f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+
+            var target = new ChromatogramPeakFeature {
+                PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
+            };
+
+            var result = annotator.CalculateScore(target, target, null, reference, null);
+            annotator.Validate(result, target, target, null, reference, null);
+
+            Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
+            Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
+
+            Assert.IsTrue(result.IsPrecursorMzMatch);
+            Assert.IsFalse(result.IsRtMatch);
+        }
+
+
+        [TestMethod()]
         public void SelectTopHitTest() {
             IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), "MspDB");
             var results = new List<MsScanMatchResult>

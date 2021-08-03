@@ -405,6 +405,49 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
+        public void ValidateRtMatchTest() {
+            var reference = new MoleculeMsReference {
+                Name = "PC 18:0_20:4", CompoundClass = "PC",
+                PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
+                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
+                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
+                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
+                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
+                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
+                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
+                }
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 2f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+
+            var target = new ChromatogramPeakFeature {
+                PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
+                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
+                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
+                }
+            };
+
+            var result = annotator.CalculateScore(target, target, null, reference, null);
+            annotator.Validate(result, target, target, null, reference, null);
+
+            Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
+            Assert.IsFalse(result.IsRtMatch);
+        }
+
+        [TestMethod()]
         public void ValidateRtNotUsedTest() {
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",

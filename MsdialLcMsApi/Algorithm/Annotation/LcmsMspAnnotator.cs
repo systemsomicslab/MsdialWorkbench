@@ -197,6 +197,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 ValidateBase(result, property, reference, parameter);
         }
 
+        private static readonly double MsdialRtMatchThreshold = 0.5;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
@@ -207,8 +208,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsRtMatch = parameter.IsUseTimeForAnnotationScoring
-                && Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+            if (parameter.IsUseTimeForAnnotationScoring) {
+                var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
+                result.IsRtMatch = diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
+            }
         }
 
         private static void ValidateOnLipidomics(
