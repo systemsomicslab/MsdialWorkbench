@@ -17,7 +17,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
     public class ImmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
     {
-        private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.DriftComparer);
+        private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
         public MsRefSearchParameterBase Parameter { get; }
 
@@ -50,15 +50,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
             MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string sourceKey) {
-            //if (Math.Abs(property.PrecursorMz - 770.509484372875) < 0.02) {
-            //    Console.WriteLine();
-            //}
-            (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance, parameter.IsUseCcsForAnnotationFiltering ? parameter.CcsTolerance : double.PositiveInfinity);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = textDB[i];
 				if (parameter.IsUseCcsForAnnotationFiltering
-                    && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) <  parameter.CcsTolerance)
+                    && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) > parameter.CcsTolerance)
                     continue;
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 result.LibraryIDWhenOrdered = i;
@@ -119,15 +116,20 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
-            return db.GetRange(lo, hi - lo);
+            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance, parameter.IsUseCcsForAnnotationFiltering ? parameter.CcsTolerance : double.PositiveInfinity);
+            var candidates = db.GetRange(lo, hi - lo);
+            if (!parameter.IsUseCcsForAnnotationFiltering) {
+                return candidates;
+            }
+            return candidates.Where(candidate => Math.Abs(candidate.CollisionCrossSection - property.CollisionCrossSection) <= parameter.CcsTolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance, double ccsTolerance) {
             ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
+            var dummy = new MSIonProperty(property.PrecursorMz - ms1Tolerance, null, Common.Enum.IonMode.Negative, null, property.CollisionCrossSection - ccsTolerance);
             var lo = SearchCollection.LowerBound(textDB, dummy, comparer);
             dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
+            dummy.CollisionCrossSection = property.CollisionCrossSection + ccsTolerance;
             var hi = SearchCollection.UpperBound(textDB, dummy, lo, textDB.Count, comparer);
             return (lo, hi);
         }
@@ -154,11 +156,15 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             ValidateBase(result, property, reference, parameter);
         }
 
+        private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
+            if (parameter.IsUseCcsForAnnotationScoring) {
+                var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
+                result.IsCcsMatch = diff <= Math.Min(MsdialCcsMatchThreshold, parameter.CcsTolerance);
+            }
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {

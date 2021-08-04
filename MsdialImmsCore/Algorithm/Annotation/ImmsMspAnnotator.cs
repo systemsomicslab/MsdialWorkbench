@@ -141,7 +141,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance, parameter.CcsTolerance);
             var candidates = db.GetRange(lo, hi - lo);
             if (!parameter.IsUseCcsForAnnotationFiltering) {
-                return db.GetRange(lo, hi - lo);
+                return candidates;
             }
             return candidates.Where(candidate => Math.Abs(candidate.CollisionCrossSection - property.CollisionCrossSection) <= parameter.CcsTolerance).ToList();
         }
