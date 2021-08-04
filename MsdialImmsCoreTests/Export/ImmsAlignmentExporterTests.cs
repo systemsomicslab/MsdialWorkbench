@@ -79,7 +79,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
         }
 
         private static void prepare() {
-            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsON_pos\2021_06_22_12_02_28.mtd2";
+            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsON_pos\2021_08_04_21_56_42.mtd2";
             var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_dec1";
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv";

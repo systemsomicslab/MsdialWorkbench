@@ -65,7 +65,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         }
 
         private static void prepare() {
-            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_neg\2021_06_22_12_57_58.mtd2";
+            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_neg\2021_08_04_21_43_53.mtd2";
             var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_dec2";
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv";

@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using System;
 using System.Collections.Generic;
 using CompMs.Common.Components;
@@ -11,7 +10,7 @@ using CompMs.Common.DataObj.Result;
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 {
     [TestClass()]
-    public class ImmsMspAnnotatorTests
+    public class ImmsTextDBAnnotatorTests
     {
         [TestMethod()]
         public void ImmsMspAnnotatorTest() {
@@ -26,13 +25,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -53,13 +51,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -80,13 +77,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -103,17 +99,18 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, CollisionCrossSection = 106 },
+                    new MoleculeMsReference { Name = "F", InChIKey = "f", PrecursorMz = 100.01, CollisionCrossSection = 106 },
+                    new MoleculeMsReference { Name = "G", InChIKey = "g", PrecursorMz = 99.99, CollisionCrossSection = 94 },
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(target, target, null);
@@ -138,12 +135,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(target, target, null);
@@ -160,54 +156,27 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
             };
 
             var result = annotator.CalculateScore(target, target, null, reference, null);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
-            Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
-            Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
-            Assert.IsTrue(result.MatchedPeaksPercentage > 0);
-            Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
         }
 
@@ -216,54 +185,27 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
             };
 
             var result = annotator.CalculateScore(target, target, null, reference, null);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
-            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
-            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
-            Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
-            Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity == 0);
-            Assert.IsTrue(result.WeightedDotProduct > 0);
-            Assert.IsTrue(result.SimpleDotProduct > 0);
-            Assert.IsTrue(result.ReverseDotProduct > 0);
-            Assert.IsTrue(result.MatchedPeaksPercentage > 0);
-            Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
         }
 
@@ -280,13 +222,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -305,16 +246,16 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, CollisionCrossSection = 106 },
+                    new MoleculeMsReference { Name = "F", InChIKey = "f", PrecursorMz = 100.009, CollisionCrossSection = 120 },
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(target);
@@ -331,21 +272,21 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, CollisionCrossSection = 100 },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, CollisionCrossSection = 106 },
+                    new MoleculeMsReference { Name = "F", InChIKey = "f", PrecursorMz = 100.009, CollisionCrossSection = 120 },
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(db, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(target);
 
-            CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4], }, results);
+            CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4], db[5], }, results);
         }
 
         [TestMethod()]
@@ -354,34 +295,17 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
                 AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
             };
 
             var result = annotator.CalculateScore(target, target, null, reference, null);
@@ -389,19 +313,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
-            Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
-            Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");
-            Console.WriteLine($"IsLipidChainsMatch: {result.IsLipidChainsMatch}");
-            Console.WriteLine($"IsLipidPositionMatch: {result.IsLipidPositionMatch}");
-            Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsCcsMatch);
-            Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
-            Assert.IsFalse(result.IsLipidChainsMatch);
-            Assert.IsFalse(result.IsLipidPositionMatch);
-            Assert.IsFalse(result.IsOtherLipidMatch);
         }
 
         [TestMethod()]
@@ -410,34 +324,17 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
                 AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 12f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 111,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
             };
 
             var result = annotator.CalculateScore(target, target, null, reference, null);
@@ -445,19 +342,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
-            Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
-            Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");
-            Console.WriteLine($"IsLipidChainsMatch: {result.IsLipidChainsMatch}");
-            Console.WriteLine($"IsLipidPositionMatch: {result.IsLipidPositionMatch}");
-            Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsFalse(result.IsCcsMatch);
-            Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
-            Assert.IsFalse(result.IsLipidChainsMatch);
-            Assert.IsFalse(result.IsLipidPositionMatch);
-            Assert.IsFalse(result.IsOtherLipidMatch);
         }
 
         [TestMethod()]
@@ -466,34 +353,17 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
                 AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
             };
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
             };
 
             var result = annotator.CalculateScore(target, target, null, reference, null);
@@ -501,24 +371,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
-            Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
-            Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");
-            Console.WriteLine($"IsLipidChainsMatch: {result.IsLipidChainsMatch}");
-            Console.WriteLine($"IsLipidPositionMatch: {result.IsLipidPositionMatch}");
-            Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsFalse(result.IsCcsMatch);
-            Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
-            Assert.IsFalse(result.IsLipidChainsMatch);
-            Assert.IsFalse(result.IsLipidPositionMatch);
-            Assert.IsFalse(result.IsOtherLipidMatch);
         }
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -541,7 +401,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -597,7 +457,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[0], results[2], results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] {
+                results[0],             results[2],
+                results[4], results[5], results[6],
+                results[7], results[8],
+            }, actuals);
         }
 
         [TestMethod()]
@@ -608,7 +472,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -669,7 +533,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
-            CollectionAssert.AreEquivalent(new[] { results[0], results[10], }, actuals);
+            CollectionAssert.AreEquivalent(new[] {
+                results[0],             results[2],
+                            results[4], results[5],
+                results[6], results[7], results[8],
+                            results[10],
+            }, actuals);
         }
     }
 }
