@@ -12,22 +12,10 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public abstract class TempMethodVM : ViewModelBase {
-        public TempMethodVM(MsdialSerializer serializer) {
-            Serializer = serializer;
-        }
-
-        public MsdialSerializer Serializer { get; }
-
-        public abstract int InitializeNewProject(Window window);
-        public abstract void LoadProject();
-        public abstract void SaveProject();
-    }
-
-    abstract class MethodViewModel : TempMethodVM
+    abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(MethodModelBase model, MsdialSerializer serializer)
-            : base(serializer) {
+        public MethodViewModel(MethodModelBase model, MsdialSerializer serializer) {
+            Serializer = serializer;
 
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -51,6 +39,8 @@ namespace CompMs.App.Msdial.ViewModel
                 .WithSubscribe(LoadAlignmentFile)
                 .AddTo(Disposables);
         }
+
+        public MsdialSerializer Serializer { get; }
 
         public ReactivePropertySlim<AnalysisFileBeanViewModel> SelectedAnalysisFile { get; }
         public ReactivePropertySlim<AlignmentFileBeanViewModel> SelectedAlignmentFile { get; }
@@ -81,5 +71,9 @@ namespace CompMs.App.Msdial.ViewModel
         }
 
         protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
+
+        public abstract int InitializeNewProject(Window window);
+        public abstract void LoadProject();
+        public abstract void SaveProject();
     }
 }

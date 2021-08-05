@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var provider = providerFactory.Create(AnalysisFile);
+            var provider = providerFactory.Create(analysisFile);
             AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
@@ -86,16 +86,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Disposables.Remove(AlignmentModel);
             }
             AlignmentModel = new LcmsAlignmentModel(
-                AlignmentFile,
+                alignmentFile,
                 Storage.ParameterBase,
                 Storage.DataBaseMapper,
                 Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
-        }
-
-        public void LoadAnnotator() {
-            // MspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
-            // TextDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
         }
 
         public bool ProcessSetAnalysisParameter(Window owner) {
@@ -150,7 +145,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var provider = new StandardDataProvider(analysisfile, true, 5);
+                    var provider = providerFactory.Create(analysisfile);
                     await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }

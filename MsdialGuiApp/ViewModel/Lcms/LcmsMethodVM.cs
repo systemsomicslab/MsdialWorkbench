@@ -5,7 +5,6 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Extensions;
@@ -52,12 +51,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.peakSpotTableService = peakSpotTableService;
 
             Storage = model.Storage;
-
-            /*
-            var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add(new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
-            dataMapper.Add(new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
-            */
         }
 
         private static readonly MsdialSerializer serializer;
@@ -172,8 +165,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public override void LoadProject() {
-            model.LoadAnnotator();
-
             AnalysisFilesView.MoveCurrentToFirst();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
             LoadAnalysisFileCommand.Execute();
