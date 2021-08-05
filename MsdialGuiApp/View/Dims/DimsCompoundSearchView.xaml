@@ -16,7 +16,13 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <setting:AnnotatorDataTemplateSelector xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
+                                                   x:Key="AnnotatorSettingTemplateSelector"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -57,6 +63,13 @@
             <StackPanel Orientation="Horizontal"
                         Margin="8"
                         Grid.Row="1">
+                <ComboBox ItemsSource="{Binding Annotators}"
+                          SelectedItem="{Binding Annotator.Value}"
+                          DisplayMemberPath="AnnotatorID"
+                          VerticalAlignment="Center"
+                          Width="70"
+                          Margin="4,0"/>
+
                 <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
                     <TextBox Name="TextBox_Ms1Tolerance"
                              DataContext="{Binding ParameterVM.Value}"
@@ -75,6 +88,40 @@
                              HorizontalAlignment="Left" VerticalAlignment="Center"
                              Width="70"/>
                 </ui:LabeledContent>
+
+                <ToggleButton x:Name="ToggleAdvancedSetting"
+                              VerticalAlignment="Center"
+                              Margin="4,0">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Foreground" Value="Blue"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="Red"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <TextBlock Text="Advanced"
+                                       TextDecorations="Underline"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                </ToggleButton>
+                <Popup IsOpen="{Binding IsChecked, ElementName=ToggleAdvancedSetting}"
+                       StaysOpen="False"
+                       Placement="Bottom"
+                       PlacementTarget="{Binding ElementName=ToggleAdvancedSetting, Mode=OneTime}">
+                    <Border Background="White" BorderBrush="Black">
+                        <Border.Resources>
+                            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}"/>
+                        </Border.Resources>
+                        <ContentControl Content="{Binding}"
+                                        ContentTemplateSelector="{StaticResource AnnotatorSettingTemplateSelector}"/>
+                    </Border>
+                </Popup>
 
                 <Button Name="Button_ReAnalysis"
                         Content="Search"

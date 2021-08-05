@@ -47,22 +47,12 @@ namespace CompMs.App.Msdial.Model.Search
             File = file;
             MSIonProperty = msIonProperty;
             MoleculeProperty = moleculeProperty;
-            Annotators = annotators;
+            Annotators = annotators.Select(
+                annotator => new AnnotatorContainer(
+                    annotator.Annotator,
+                    new MsRefSearchParameterBase(annotator.Parameter)
+                )).ToList();
             Annotator = Annotators.FirstOrDefault();
-        }
-
-        public CompoundSearchModel(
-            IFileBean file,
-            IMSIonProperty msIonProperty,
-            IMoleculeProperty moleculeProperty,
-            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
-            MsRefSearchParameterBase parameter)
-            : this(file,
-                  msIonProperty,
-                  moleculeProperty,
-                  new List<IAnnotatorContainer>
-                  { new AnnotatorContainer(annotator, parameter) }) {
-
         }
 
         public IReadOnlyList<IAnnotatorContainer> Annotators { get; } 
@@ -163,6 +153,7 @@ namespace CompMs.App.Msdial.Model.Search
             };
         }
 
+        [Obsolete]
         public CompoundSearchModel(
             IFileBean fileBean,
             T property, MSDecResult msdecResult,

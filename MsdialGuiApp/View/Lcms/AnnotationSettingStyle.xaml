@@ -43,6 +43,38 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="ToleranceSettingWithMs2ForLcms">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms2Tolerance.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Retention time tolerance:"
+                               AppendLabel="min">
+                <TextBox Text="{Binding RtTolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="ToleranceSettingForLcms">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Retention time tolerance:"
+                               AppendLabel="min">
+                <TextBox Text="{Binding RtTolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
                   x:Key="MS2SpectrumSetting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"
@@ -64,7 +96,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="AnnotationCutOff">
+                  x:Key="AnnotationCutOffWithMs2">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Dot product score:">
                 <TextBox Text="{Binding SimpleDotProductCutOff.Value}"/>
@@ -89,6 +121,15 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
+                  x:Key="AnnotationCutOff">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Total score:">
+                <TextBox Text="{Binding TotalScoreCutoff.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
                   x:Key="RetentionTimeSetting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Use retention time for scoring">
@@ -103,15 +144,17 @@
     <DataTemplate DataType="{x:Type localVM:LcmsLbmAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="8" Grid.Row="0">
-                <TextBlock Text="Lipid database and MS/MS identification setting"
-                           FontStyle="Italic"
-                           VerticalAlignment="Center"/>
+            <TextBlock Text="Lipid database and MS/MS identification setting"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Grid.Row="0"/>
+            <StackPanel Margin="8" Grid.Row="1">
                 <ui:LabeledContent PrependLabel="Lipid database:">
                     <Button Content="Set"
                             Command="{Binding LipidDBSetCommand, Mode=OneTime}"
@@ -119,36 +162,27 @@
                             VerticalAlignment="Center"
                             Width="64"/>
                 </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                                   AppendLabel="Da">
-                    <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
-                </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
-                                   AppendLabel="Da">
-                    <TextBox Text="{Binding ParameterVM.Ms2Tolerance.Value}"/>
-                </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                                   AppendLabel="min">
-                    <TextBox Text="{Binding ParameterVM.RtTolerance.Value}"/>
-                </ui:LabeledContent>
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                                Grid.Row="1"/>
             </StackPanel>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
-                      Grid.Row="1">
+                      Grid.Row="2">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource MS2SpectrumSetting}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Annotaion cut off" Margin="0,8"
-                      Grid.Row="2">
+                      Grid.Row="3">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource AnnotationCutOff}"
+                                ContentTemplate="{StaticResource AnnotationCutOffWithMs2}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Retention time setting" Margin="0,8"
-                      Grid.Row="3">
+                      Grid.Row="4">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"
                                 Margin="8"/>
@@ -159,36 +193,57 @@
     <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="8" Grid.Row="0">
-                <TextBlock Text="Lipid database and MS/MS identification setting"
-                           FontStyle="Italic"
-                           VerticalAlignment="Center"/>
-                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                                   AppendLabel="Da">
-                    <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
-                </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
-                                   AppendLabel="Da">
-                    <TextBox Text="{Binding ParameterVM.Ms2Tolerance.Value}"/>
-                </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                                   AppendLabel="min">
-                    <TextBox Text="{Binding ParameterVM.RtTolerance.Value}"/>
-                </ui:LabeledContent>
-            </StackPanel>
+            <TextBlock Text="Lipid database and MS/MS identification setting"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterVM}"
+                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                            Margin="8" Grid.Row="1"/>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
-                      Grid.Row="1">
+                      Grid.Row="2">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource MS2SpectrumSetting}"
                                 Margin="8"/>
             </Expander>
 
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource AnnotationCutOffWithMs2}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsTextDBAnnotationSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Tolerance" Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterVM}"
+                            ContentTemplate="{StaticResource ToleranceSettingForLcms}"
+                            Margin="8" Grid.Row="1"/>
             <Expander Header="Annotaion cut off" Margin="0,8"
                       Grid.Row="2">
                 <ContentControl Content="{Binding ParameterVM}"
@@ -205,42 +260,34 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:LcmsTextDBAnnotationSettingViewModel}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <StackPanel Margin="8" Grid.Row="0">
-                <TextBlock Text="Tolerance"/>
-                <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                                   AppendLabel="Da">
-                    <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                                   AppendLabel="min">
-                    <TextBox Text="{Binding ParameterVM.RtTolerance.Value}"/>
-                </ui:LabeledContent>
+    <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
+                  x:Key="LcmsAnnotatorSetting">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Mass tolerance"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource ToleranceSettingForLcms}"/>
+                <TextBlock Text="Retention time setting"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"/>
             </StackPanel>
+        </ScrollViewer>
+    </DataTemplate>
 
-            <Expander Header="Annotaion cut off" Margin="0,8"
-                      Grid.Row="2">
-                <StackPanel Margin="8">
-                    <ui:LabeledContent PrependLabel="Total score:">
-                        <TextBox Text="{Binding ParameterVM.TotalScoreCutoff.Value}"/>
-                    </ui:LabeledContent>
-                </StackPanel>
-            </Expander>
-
-            <Expander Header="Retention time setting" Margin="0,8"
-                      Grid.Row="3">
-                <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"
-                                Margin="8"/>
-            </Expander>
-        </Grid>
+    <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
+                  x:Key="LcmsAnnotatorSettingWithMs2">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Mass tolerance"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"/>
+                <TextBlock Text="MS2 spectrum cut off"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource MS2SpectrumSetting}"/>
+                <TextBlock Text="Retention time setting"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"/>
+            </StackPanel>
+        </ScrollViewer>
     </DataTemplate>
 </ResourceDictionary>

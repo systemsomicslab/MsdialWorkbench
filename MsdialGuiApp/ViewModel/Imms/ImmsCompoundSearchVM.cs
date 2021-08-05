@@ -28,15 +28,23 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand().AddTo(Disposables);
 
-            searchUnsubscriber = new[] {
-                SearchCommand.ToUnit()
-            }.Merge()
-            .CombineLatest(ParameterHasErrors, (_, c) => !c)
-            .Where(c => c)
-            .Select(_ => SearchAsync())
-            .Switch()
-            .Subscribe(cs => Compounds = cs)
-            .AddTo(Disposables);
+            searchUnsubscriber = ParameterHasErrors
+                .Where(hasErrors => !hasErrors)
+                .Select(_ => new[]
+                {
+                    SearchCommand.ToUnit(),
+                    ParameterVM.SelectMany(parameter => new[]
+                    {
+                        parameter.Ms1Tolerance.ToUnit(),
+                        parameter.Ms2Tolerance.ToUnit(),
+                        parameter.CcsTolerance.ToUnit(),
+                    }.Merge())
+                }.Merge())
+                .Switch()
+                .Select(_ => SearchAsync())
+                .Switch()
+                .Subscribe(cs => Compounds = cs)
+                .AddTo(Disposables);
 
             SearchCommand.Execute();
         }

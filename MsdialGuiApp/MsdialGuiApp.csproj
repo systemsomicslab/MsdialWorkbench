@@ -454,6 +454,7 @@
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
@@ -948,6 +949,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
