@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
         [IgnoreMember]
-        public bool IsReferenceMatched => IsMspBasedRepresentative && Representative.IsSpectrumMatch
+        public bool IsReferenceMatched => Representative.IsSpectrumMatch
             || IsTextDbBasedRepresentative && Representative.IsPrecursorMzMatch;
         [IgnoreMember]
         public bool IsAnnotationSuggested => !IsReferenceMatched && IsMspBasedRepresentative && Representative.IsPrecursorMzMatch;

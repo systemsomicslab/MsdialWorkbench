@@ -1,16 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialLcMsApi.Algorithm.Alignment;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialLcmsApi.Parameter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
@@ -462,6 +459,49 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Assert.AreEqual(expects.Count, actuals.Count);
             foreach ((var expect, var actual) in expects.Zip(actuals))
                 AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
+        public void KeepReferenceMatchWhenMergeTest() {
+            var param = new MsdialLcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Blank }, { 1, AnalysisFileType.Sample },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample },
+                },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "B" },
+                    { 2, "C" }, { 3, "D" }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                FoldChangeForBlankFiltering = 0.1f,
+                BlankFiltering = BlankFiltering.SampleMaxOverBlankAve,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = true,
+                IsKeepRemovableFeaturesAndAssignedTagForChecking = true,
+                IsKeepRefMatchedMetaboliteFeatures = true,
+                IsKeepSuggestedMetaboliteFeatures = true,
+            };
+            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var refiner = new LcmsAlignmentRefiner(param, iupac);
+
+            var alignments = BatchBuildAlignmentSpotProperty(2, d_mass: -param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
+            alignments[0].MatchResults.ClearResults();
+            alignments[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[0].TextDbBasedMatchResult = null;
+
+            alignments[1].MatchResults.ClearResults();
+            alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+            alignments[1].TextDbBasedMatchResult = null;
+            alignments[1].MatchResults.AddResult(new MsScanMatchResult { IsSpectrumMatch = true, Source = SourceType.Manual });
+            Assert.IsTrue(alignments[1].MatchResults.IsReferenceMatched);
+
+            (var actuals, _) = refiner.Refine(alignments);
+
+            CollectionAssert.AreEquivalent(alignments, actuals);
         }
 
         [TestMethod()]

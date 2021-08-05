@@ -1,15 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialLcMsApi.Algorithm.Alignment;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Components;
-using CompMs.Common.Interfaces;
 using System.Diagnostics;
-using System.Linq;
-using CompMs.MsdialCore.Algorithm;
-using CompMs.Common.DataObj;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 {
@@ -88,6 +85,59 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Assert.AreEqual(data[1][3].ChromXs.RT.Value, actual[3].AlignedPeakProperties[1].ChromXsTop.RT.Value);
             Assert.AreEqual(data[1][4].ChromXs.RT.Value, actual[4].AlignedPeakProperties[1].ChromXsTop.RT.Value);
             Assert.AreEqual(data[1][5].ChromXs.RT.Value, actual[5].AlignedPeakProperties[1].ChromXsTop.RT.Value);
+        }
+
+        [TestMethod]
+        public void AlignPeaksToMasterTest() {
+            var rtTol = 1d;
+            var mzTol = 0.01;
+
+            var spots = new List<AlignmentSpotProperty>
+            {
+                new AlignmentSpotProperty {
+                    MassCenter = 799.991d,
+                    TimesCenter = new ChromXs(7),
+                    AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                    {
+                        new AlignmentChromPeakFeature(),
+                    }
+                },
+                new AlignmentSpotProperty {
+                    MassCenter = 800d,
+                    TimesCenter = new ChromXs(5),
+                    AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                    {
+                        new AlignmentChromPeakFeature(),
+                    }
+                },
+            };
+            var masters = new List<IMSScanProperty>
+            {
+                new ChromatogramPeakFeature
+                {
+                    PrecursorMz = 799.991d,
+                    ChromXs = new ChromXs(7),
+                },
+                new ChromatogramPeakFeature
+                {
+                    PrecursorMz = 800d,
+                    ChromXs = new ChromXs(5),
+                },
+            };
+            var target = new ChromatogramPeakFeature
+            {
+                MasterPeakID = 1,
+                Name = "Target",
+                PrecursorMz = 800d,
+                ChromXs = new ChromXs(5),
+            };
+            var targets = new List<IMSScanProperty> { target, };
+
+            var joiner = new LcmsPeakJoiner(rtTol, mzTol);
+            joiner.AlignPeaksToMaster(spots, masters, targets, 0);
+
+            Assert.AreEqual(target.MasterPeakID, spots[1].AlignedPeakProperties[0].MasterPeakID);
+            Assert.AreEqual(target.Name, spots[1].AlignedPeakProperties[0].Name);
         }
     }
 

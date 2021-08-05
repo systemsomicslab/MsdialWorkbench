@@ -128,8 +128,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                 dummy.ChromXs = new ChromXs(target.ChromXs.RT.Value - _rttol, ChromXType.RT);
                 dummy.PrecursorMz = target.PrecursorMz - _mztol;
                 var lo = SearchCollection.LowerBound(masters, dummy, Comparer);
+                dummy.ChromXs.RT.Value = target.ChromXs.RT.Value + _rttol;
+                dummy.PrecursorMz = target.PrecursorMz + _mztol;
                 for (var i = lo; i < n; i++) {
-                    if (target.ChromXs.RT.Value + _rttol < masters[i].ChromXs.RT.Value)
+                    if (Comparer.Compare(target, dummy) > 0)
                         break;
                     if (!IsSimilarTo(masters[i], target))
                         continue;
