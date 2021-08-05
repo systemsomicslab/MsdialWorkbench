@@ -59,7 +59,9 @@ namespace CompMs.Common.Components {
         [Key(19)]
         public float CollisionEnergy { get; set; }
         [Key(20)]
-        public int BinId { get; set; } // used for binbase
+        public int DatabaseID { get; set; } // used for binbase, fastaDB etc
+        [Key(27)]
+        public string DatabaseUniqueIdentifier { get; set; } // used for binbase, fastaDB etc
         [Key(21)]
         public int Charge { get; set; }
         [Key(22)]

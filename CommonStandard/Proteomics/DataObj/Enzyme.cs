@@ -18,5 +18,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         public string User { get; set; }
         [Key(5)]
         public List<string> SpecificityList { get; set; } = new List<string>();
+        [Key(6)]
+        public bool IsSelected { get; set; }
     }
 }

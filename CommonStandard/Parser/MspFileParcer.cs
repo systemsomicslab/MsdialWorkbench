@@ -251,7 +251,7 @@ namespace CompMs.Common.Parser {
             switch (fieldName.ToLower()) {
                 // string
                 case "name": mspObj.Name = fieldValue;  return false;
-                case "binid": mspObj.BinId = int.TryParse(fieldValue, out int binid) ? binid : -1;  return false;
+                case "binid": mspObj.DatabaseID = int.TryParse(fieldValue, out int binid) ? binid : -1;  return false;
 
                 case "comment": 
                 case "comments": 

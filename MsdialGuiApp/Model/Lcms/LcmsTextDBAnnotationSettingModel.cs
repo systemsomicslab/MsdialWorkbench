@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -35,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     if (!string.IsNullOrEmpty(error)) {
                         throw new Exception(error);
                     }
-                    return new MoleculeDataBase(textdb, DataBaseID);
+                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB);
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }

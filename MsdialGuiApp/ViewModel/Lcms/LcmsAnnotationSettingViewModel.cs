@@ -96,6 +96,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         return new LcmsLbmAnnotationSettingViewModel(this.model, Parameter);
                     case DataBaseSource.Text:
                         return new LcmsTextDBAnnotationSettingViewModel(this.model);
+                    case DataBaseSource.Fasta:
+                        return new LcmsFastaAnnotationSettingViewModel(this.model, Parameter);
                     default:
                         return null;
                 }

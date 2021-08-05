@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
             switch (DBSource) {
                 case DataBaseSource.Msp:
-                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath), DataBaseID);
+                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB);
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }

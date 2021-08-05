@@ -59,7 +59,7 @@ namespace CompMs.Common.Parser {
             if (headerArray.Length == 1) return;
             query.UniqueIdentifier = headerArray[1];
             if (headerArray.Length == 2) return;
-
+            query.Description = headerArray[2];
             var descriptions = headerArray[2].Split(' ');
             query.EntryName = descriptions[0];
 

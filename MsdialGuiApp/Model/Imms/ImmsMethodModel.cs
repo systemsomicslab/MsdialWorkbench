@@ -3,6 +3,7 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -127,10 +128,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 }
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
-            var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB");
+            var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
             MspAnnotator = new ImmsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             Storage.DataBaseMapper.Add(MspAnnotator, msp);
-            var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB");
+            var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
             TextDBAnnotator = new ImmsTextDBAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, "TextDB");
             Storage.DataBaseMapper.Add(TextDBAnnotator, text);
             return true;
