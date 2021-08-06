@@ -75,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 provider,
-                Storage.ParameterBase,
+                null, Storage.ParameterBase,
                 null, null)
             .AddTo(Disposables);
         }

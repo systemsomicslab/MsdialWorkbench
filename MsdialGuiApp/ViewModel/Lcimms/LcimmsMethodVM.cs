@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 AnalysisVM.Dispose();
                 Disposables.Remove(AnalysisVM);
             }
-            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel)
+            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel, null, null)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
