@@ -4,12 +4,7 @@ using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public abstract class TempAlignmentFileVM : ResultVM
-    {
-    }
-
-    // In the future, TempAlignmentFileVM will be replaced by AlignmentFileViewModel.
-    abstract class AlignmentFileViewModel : TempAlignmentFileVM
+    abstract class AlignmentFileViewModel : ResultVM
     {
         public AlignmentFileViewModel(AlignmentModelBase model) {
             DisplayLabel = model.ToReactivePropertySlimAsSynchronized(m => m.DisplayLabel).AddTo(Disposables);

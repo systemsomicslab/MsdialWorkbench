@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 AnalysisVM.Dispose();
                 Disposables.Remove(AnalysisVM);
             }
-            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel, null, null)
+            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel, compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
@@ -250,7 +250,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 AlignmentVM.Dispose();
                 Disposables.Remove(AlignmentVM);
             }
-            AlignmentVM = new AlignmentLcimmsVM(model.AlignmentModel)
+            AlignmentVM = new AlignmentLcimmsVM(model.AlignmentModel, compoundSearchService, peakSpotTableService)
             {
                 DisplayFilters = displayFilters,
             }.AddTo(Disposables);

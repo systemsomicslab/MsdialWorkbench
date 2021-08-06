@@ -87,8 +87,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
-                Storage.ParameterBase,
-                null, null)
+                Storage.ParameterBase, null)
             .AddTo(Disposables);
         }
 

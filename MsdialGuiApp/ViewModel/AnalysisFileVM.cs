@@ -10,12 +10,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public abstract class TempAnalysisFileVM : ResultVM
-    {
-    }
-
-    // In the future, TempAnalysisFileVM will be replaced by AnalysisFileViewModel.
-    abstract class AnalysisFileViewModel : TempAnalysisFileVM
+    abstract class AnalysisFileViewModel : ResultVM
     {
         public AnalysisFileViewModel(AnalysisModelBase model) {
             if (model is null) {
