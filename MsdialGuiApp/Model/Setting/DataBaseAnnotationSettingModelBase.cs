@@ -11,11 +11,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    enum DataBaseSource
-    {
-        None, Msp, Lbm, Text
-    }
-
+    
     abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
     {
         public DataBaseAnnotationSettingModelBase() {

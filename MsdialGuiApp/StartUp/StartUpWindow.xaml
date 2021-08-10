@@ -447,7 +447,7 @@
 
                     <RadioButton Name="RadioButton_Proteomics"
                                  Content="Proteomics"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BTEConverter}, ConverterParameter=Lipidomics}"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BTEConverter}, ConverterParameter=Proteomics}"
                                  IsEnabled="{Binding IsChecked, ElementName=RadioButton_EI, Converter={StaticResource NegativeConverter}}"
                                  Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
                         <ToolTipService.ToolTip>

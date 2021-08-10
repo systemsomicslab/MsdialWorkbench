@@ -45,7 +45,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
                 case "lcimmsdia":
                     return lcimmsProcess(inputFolder, outputFolder, methodFile, isProjectStore, true);
                 default:
-                    Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia'");
+                    Console.WriteLine("Invalid analysis type. Valid options are: 'gcms', 'lcmsdda', 'lcmsdia', 'lcimmsdda', 'lcimmsdia'");
                     return -1;
             }
         }
@@ -118,7 +118,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
             var error = @"
 Msdial Console App requires the following args:
 MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option)
-    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimdda, lcimdia	(required)
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimmsdda, lcimmsdia	(required)
            <input folder>	is the folder containing the files to be processed	(required)
            <output folder>	is the folder to save results	(required)
            <method file>	is a file holding processing properties	(required)
@@ -133,7 +133,7 @@ MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <met
             var error = @"
 Msdial Console App requires the following args:
 MsdialConsoleApp.exe <analysisType> -i <input folder> -o <output folder> -m <method file> -p (option) -mCE (option) -target <target m/z>
-    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimdda, lcimdia	(required)
+    Where: <analysisType>	is one of gcms, lcmsdda, lcmsdia, lcimmsdda, lcimmsdia	(required)
            <input folder>	is the folder containing the files to be processed	(required)
            <output folder>	is the folder to save results	(required)
            <method file>	is a file holding processing properties	(required)

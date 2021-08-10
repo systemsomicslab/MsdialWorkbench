@@ -1182,6 +1182,15 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
+                        StandardName = "PC 15:0_18:1(d7)",
+                        Concentration = 33.19585,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 753.106,
+                        PeakID = -1,
+                        TargetClass = "EtherOxPC"
+                    });
+
+                    compounds.Add(new StandardCompound() {
                         StandardName = "PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,

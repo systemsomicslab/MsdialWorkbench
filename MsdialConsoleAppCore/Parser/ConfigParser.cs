@@ -336,6 +336,48 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             }
         }
 
+        public static int FindAlignmentReferenceFileByName(String filepath, List<AnalysisFileBean> files) {
+
+            using (var sr = new StreamReader(filepath, Encoding.ASCII))
+            {
+                while (sr.Peek() > -1)
+                {
+                    var line = sr.ReadLine();
+                    if (line == string.Empty) continue;
+                    if (line.Length < 2) continue;
+                    if (line[0] == '#') continue;
+
+                    var lineArray = line.Split(':');
+                    if (lineArray.Length < 2) continue;
+
+                    var method = lineArray[0].Trim();
+                    var value = line.Substring(line.Split(':')[0].Length + 1).Trim();
+
+                    // match filename in configuration to loaded analysis files without suffix, case-sensitive
+                    if (method.ToLower() == "alignment reference file name") {
+                        foreach (var file in files) {
+                            if (file.AnalysisFilePropertyBean.AnalysisFileName == value) {
+                                Console.WriteLine("Setting alignment reference file to id {0}: {1}", file.AnalysisFilePropertyBean.AnalysisFileId, value);
+                                return file.AnalysisFilePropertyBean.AnalysisFileId;
+                            }
+                        }
+
+                        Console.WriteLine("Sample {0} not found, setting alignment reference id to 0", value);
+                        return 0;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        public static void SetGCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParamOfMsdialGcms param) {
+            param.AlignmentReferenceFileID = FindAlignmentReferenceFileByName(filepath, files);
+        }
+
+        public static void SetLCMSAlignmentReferenceFileByFilename(String filepath, List<AnalysisFileBean> files, AnalysisParametersBean param) {
+            param.AlignmentReferenceFileID = FindAlignmentReferenceFileByName(filepath, files);
+        }
         #endregion
 
         #region // to make projectpropertybean for lcms project

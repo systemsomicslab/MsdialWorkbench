@@ -2,19 +2,29 @@
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.Proteomics.DataObj {
+    [MessagePackObject]
     public class AminoAcid {
+        [Key(0)]
         public char OneLetter { get; set; }
+        [Key(1)]
         public string ThreeLetters { get; set; }
+        [Key(2)]
         public Formula Formula { get; set; } // original formula information
 
+        [Key(3)]
         public string ModifiedCode { get; set; }
+        [Key(4)]
         public Formula ModifiedFormula { get; set; }
+        [Key(5)]
         public Formula ModifiedComposition { get; set; }
+        [Key(6)]
+        public List<Modification> Modifications { get; set; }
 
         public bool IsModified() {
             return !ModifiedCode.IsEmptyOrNull();
@@ -61,6 +71,19 @@ namespace CompMs.Common.Proteomics.DataObj {
             this.ModifiedCode = modifiedCode;
             this.ModifiedComposition = modifiedComposition;
             this.ModifiedFormula = MolecularFormulaUtility.SumFormulas(modifiedComposition, aa.Formula);
+        }
+
+        public AminoAcid(AminoAcid aa, string modifiedCode, Formula modifiedComposition, List<Modification> modifications) {
+            this.OneLetter = aa.OneLetter;
+            this.ThreeLetters = aa.ThreeLetters;
+            this.Formula = aa.Formula;
+
+            if (modifiedCode.IsEmptyOrNull()) return;
+
+            this.ModifiedCode = modifiedCode;
+            this.ModifiedComposition = modifiedComposition;
+            this.ModifiedFormula = MolecularFormulaUtility.SumFormulas(modifiedComposition, aa.Formula);
+            this.Modifications = modifications;
         }
     }
 }

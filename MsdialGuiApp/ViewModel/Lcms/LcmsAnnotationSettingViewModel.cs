@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
             DataBaseID.Subscribe(id => this.model.DataBaseID = this.model.AnnotatorID = id).AddTo(Disposables);
             AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text };
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta };
             DBSource = DataBasePath
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
@@ -57,6 +57,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     }
                     else if (Regex.IsMatch(ext, @"\.txt\d*")) {
                         return DataBaseSource.Text;
+                    }
+                    else if (Regex.IsMatch(ext, @"\.fasta\d*")) {
+                        return DataBaseSource.Fasta;
                     }
                     return DataBaseSource.None;
                 })
@@ -72,6 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                             return SourceType.MspDB;
                         case DataBaseSource.Text:
                             return SourceType.TextDB;
+                        case DataBaseSource.Fasta:
+                            return SourceType.FastaDB;
                         default:
                             return SourceType.None;
                     }
@@ -91,6 +96,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                         return new LcmsLbmAnnotationSettingViewModel(this.model, Parameter);
                     case DataBaseSource.Text:
                         return new LcmsTextDBAnnotationSettingViewModel(this.model);
+                    case DataBaseSource.Fasta:
+                        return new LcmsFastaAnnotationSettingViewModel(this.model, Parameter);
                     default:
                         return null;
                 }
