@@ -164,6 +164,8 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
+    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
