@@ -12,10 +12,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 {
     public abstract class ImmsBaseDataProvider : BaseDataProvider
     {
+        protected List<RawSpectrum> rawSpectrums;
         private Dictionary<int, ReadOnlyCollection<RawSpectrum>> msSpectrums;
 
         public ImmsBaseDataProvider(RawMeasurement rawObj) : base(rawObj) {
-            msSpectrums = rawObj.SpectrumList
+            rawSpectrums = rawObj.SpectrumList.Select(spec => spec.ShallowCopy()).ToList();
+            msSpectrums = rawSpectrums
                 .GroupBy(spectrum => spectrum.MsLevel)
                 .ToDictionary(
                     group => group.Key,
@@ -36,6 +38,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             else
                 return new List<RawSpectrum>(0).AsReadOnly();
         }
+
+        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+            return rawSpectrums.AsReadOnly();
+        }
     }
 
     public class ImmsRepresentativeDataProvider : ImmsBaseDataProvider
@@ -43,7 +49,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private readonly List<RawSpectrum> representativeSpectrum;
 
         public ImmsRepresentativeDataProvider(RawMeasurement rawObj) : base(rawObj) {
-            this.representativeSpectrum = SelectRepresentative(rawObj.SpectrumList).OrderBy(spectrum => spectrum.DriftTime).ToList();
+            this.representativeSpectrum = SelectRepresentative(rawSpectrums).OrderBy(spectrum => spectrum.DriftTime).ToList();
         }
 
         public ImmsRepresentativeDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
@@ -67,7 +73,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private readonly List<RawSpectrum> accumulatedSpectrum;
 
         public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance) : base(rawObj) {
-            this.accumulatedSpectrum = AccumulateSpectrum(rawObj.SpectrumList, massTolerance, driftTolerance).ToList();
+            this.accumulatedSpectrum = AccumulateSpectrum(rawSpectrums, massTolerance, driftTolerance).ToList();
         }
 
         public ImmsAverageDataProvider(RawMeasurement rawObj)
@@ -83,10 +89,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var ms1Spectrum = rawSpectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
             var numOfMeasurement = ms1Spectrum.Select(spectrum => spectrum.ScanStartTime).Distinct().Count();
 
-            var groups = ms1Spectrum.GroupBy(spectrum => Math.Ceiling(spectrum.DriftTime / driftTolerance));
+            var groups = rawSpectrums.GroupBy(spectrum => Math.Ceiling(spectrum.DriftTime / driftTolerance));
             var result = groups
-                .Select(group => AccumulateRawSpectrums(group.ToList(), massTolerance, numOfMeasurement))
-                .OrderBy(spectrum => spectrum.DriftTime)
+                .OrderBy(kvp => kvp.Key)
+                .SelectMany(group => AccumulateRawSpectrums(group.ToList(), massTolerance, numOfMeasurement))
                 .ToList();
             for (var i = 0; i < result.Count; i++) {
                 result[i].Index = i;
@@ -95,8 +101,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return result;
         }
 
-        private static RawSpectrum AccumulateRawSpectrums(IReadOnlyCollection<RawSpectrum> spectrums, double massTolerance, int numOfMeasurement) {
-            var groups = spectrums.SelectMany(spectrum => spectrum.Spectrum)
+        private static IEnumerable<RawSpectrum> AccumulateRawSpectrums(IReadOnlyCollection<RawSpectrum> spectrums, double massTolerance, int numOfMeasurement) {
+            var ms1Spectrums = spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
+            var groups = ms1Spectrums.SelectMany(spectrum => spectrum.Spectrum)
                 .GroupBy(peak => (int)(peak.Mz / massTolerance));
             var massBins = new Dictionary<int, double[]>();
             foreach (var group in groups) {
@@ -105,13 +112,17 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var basepeak = peaks.Argmax(peak => peak.Intensity);
                 massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
             }
-            var result = CloneRawSpectrum(spectrums.First());
+            var result = CloneRawSpectrum(ms1Spectrums.First());
+            result.OriginalIndex = ms1Spectrums.First().Index;
             SpectrumParser.setSpectrumProperties(result, massBins);
-            return result;
+            return new[] { result }.Concat(
+                spectrums.Where(spectrum => spectrum.MsLevel != 1)
+                .OrderBy(spectrum => spectrum.Index));
         }
 
         private static RawSpectrum CloneRawSpectrum(RawSpectrum spec) {
             return new RawSpectrum() {
+                OriginalIndex = spec.OriginalIndex,
                 ScanNumber = spec.ScanNumber,
                 ScanStartTime = spec.ScanStartTime,
                 ScanStartTimeUnit = spec.ScanStartTimeUnit,
