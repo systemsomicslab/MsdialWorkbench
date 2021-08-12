@@ -11,7 +11,7 @@ namespace CompMs.Common.Proteomics.DataObj {
     public class Peptide {
         public string DatabaseOrigin { get; set; }
         public int DatabaseOriginID { get; set; }
-        public string Sequence { get; set; } // original amino acid sequence
+        public string Sequence { get => SequenceObj.IsEmptyOrNull() ? string.Empty : String.Join("", SequenceObj.Select(n => n.OneLetter.ToString())); } // original amino acid sequence
         public string ModifiedSequence { get => SequenceObj.IsEmptyOrNull() ? string.Empty : String.Join("", SequenceObj.Select(n => n.Code())); }
         public Range Position { get; set; }
         public double ExactMass { get; set; }

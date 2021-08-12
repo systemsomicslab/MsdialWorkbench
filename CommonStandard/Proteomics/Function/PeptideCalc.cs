@@ -29,17 +29,28 @@ namespace CompMs.Common.Proteomics.Function {
             return mass - offsetMass;
         }
 
-        // just return peptide obj containing exactmass using default setting
-        public static Peptide Sequence2Peptide(string sequence) {
-            
-            var formula = Sequence2Formula(sequence);
-            return new Peptide() { Sequence = sequence, ExactMass = formula.Mass };
+        public static double Sequence2Mass(List<AminoAcid> sequence) {
+            var mass = 0.0;
+            var offsetMass = OH + H2O * (sequence.Count - 2) + H; // N-terminal, internal amino acids, C-terminal
+            for (int i = 0; i < sequence.Count; i++) {
+                var aaChar = sequence[i];
+                mass += aaChar.ExactMass();
+            }
+            return mass - offsetMass;
+        }
+
+        public static List<AminoAcid> Sequence2AminoAcids(string sequence, Dictionary<char, AminoAcid> char2AA) {
+            var aalist = new List<AminoAcid>();
+            foreach (var oneletter in sequence) {
+                if (char2AA.ContainsKey(oneletter))
+                    aalist.Add(char2AA[oneletter]);
+            }
+            return aalist;
         }
 
         public static Peptide Sequence2Peptide(Peptide peptide) {
-            var sequence = peptide.Sequence;
-            var formula = Sequence2Formula(sequence);
-            peptide.ExactMass = formula.Mass;
+            var sequence = peptide.SequenceObj;
+            peptide.ExactMass = Sequence2Mass(sequence);
             return peptide;
         }
 
@@ -50,14 +61,14 @@ namespace CompMs.Common.Proteomics.Function {
         }
 
         public static Peptide Sequence2PeptideByFixedModifications(Peptide peptide, ModificationContainer container, double maxPeptideMass = 4600) {
-            var sequence = peptide.Sequence;
+            var sequence = peptide.SequenceObj;
             if (container.IsEmptyOrNull()) return Sequence2Peptide(peptide);
 
             var isProteinNTerminal = peptide.IsProteinNterminal;
             var isProteinCTerminal = peptide.IsProteinCterminal;
             var aaSequence = new List<AminoAcid>();
             
-            for (int i = 0; i < sequence.Length; i++) {
+            for (int i = 0; i < sequence.Count; i++) {
                 var modseq = new List<Modification>();
                 var aa = GetAminoAcidByFixedModifications(peptide, modseq, container, i);
                 aaSequence.Add(aa);
@@ -76,11 +87,11 @@ namespace CompMs.Common.Proteomics.Function {
             var isProteinNTerminal = peptide.IsProteinNterminal;
             var isProteinCTerminal = peptide.IsProteinCterminal;
 
-            var sequence = peptide.Sequence;
-            var aaChar = sequence[index];
+            var sequence = peptide.SequenceObj;
+            var aaChar = sequence[index].OneLetter;
 
             var isPeptideNTerminal = index == 0 ? true : false;
-            var isPeptideCTerminal = index == sequence.Length - 1 ? true : false;
+            var isPeptideCTerminal = index == sequence.Count - 1 ? true : false;
 
             return GetAminoAcidByFixedModifications(modseq, container, aaChar, isPeptideNTerminal, isPeptideCTerminal, isProteinNTerminal, isProteinCTerminal);
         }
@@ -125,6 +136,18 @@ namespace CompMs.Common.Proteomics.Function {
             //return aa;
         }
 
+        public static Dictionary<char, AminoAcid> GetSimpleChar2AminoAcidDictionary() {
+            var aaletters = AminoAcidObjUtility.AminoAcidLetters;
+            var dict = new Dictionary<char, AminoAcid>();
+            foreach (var oneletter in aaletters) { // initialize normal amino acids
+                var aa = new AminoAcid(oneletter);
+                dict[oneletter] = aa;
+            }
+
+            return dict;
+        }
+
+
         /// <summary>
         /// peptide should be processed by Sequence2PeptideByFixedModifications before using this method
         /// </summary>
@@ -133,7 +156,7 @@ namespace CompMs.Common.Proteomics.Function {
         /// <param name="maxNumberOfModificationsPerPeptide"></param>
         /// <returns></returns>
         public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 5, double maxPeptideMass = 4600) {
-            var sequence = peptide.Sequence;
+            //var sequence = peptide.Sequence;
             if (container.IsEmptyOrNull()) return new List<Peptide>() { Sequence2Peptide(peptide) };
 
             var currentModCount = peptide.CountModifiedAminoAcids();
@@ -143,10 +166,10 @@ namespace CompMs.Common.Proteomics.Function {
             var peptides = new List<Peptide>();
             foreach (var result in results) {
                 var nPep = new Peptide() {
-                    DatabaseOrigin = peptide.DatabaseOrigin, DatabaseOriginID = peptide.DatabaseOriginID, Sequence = peptide.Sequence,
+                    DatabaseOrigin = peptide.DatabaseOrigin, DatabaseOriginID = peptide.DatabaseOriginID, SequenceObj = result,
                     Position = new Range(peptide.Position.Start, peptide.Position.End), IsProteinCterminal = peptide.IsProteinCterminal, IsProteinNterminal = peptide.IsProteinNterminal
                 };
-                nPep.SequenceObj = result;
+                //nPep.SequenceObj = result;
                 var formula = CalculatePeptideFormula(result);
                 if (formula.Mass > maxPeptideMass) continue;
                 nPep.ExactMass = formula.Mass;
@@ -161,7 +184,7 @@ namespace CompMs.Common.Proteomics.Function {
             List<AminoAcid> aminoacids, List<List<AminoAcid>> result) {
 
             //Console.WriteLine(index);
-            if (index >= pep.Sequence.Length) {
+            if (index >= pep.SequenceObj.Count) {
                 result.Add(aminoacids.ToList());
                 return;
             }
@@ -187,11 +210,11 @@ namespace CompMs.Common.Proteomics.Function {
             var isProteinNTerminal = peptide.IsProteinNterminal;
             var isProteinCTerminal = peptide.IsProteinCterminal;
 
-            var sequence = peptide.Sequence;
-            var aaChar = sequence[index];
+            var sequence = peptide.SequenceObj;
+            var aaChar = sequence[index].OneLetter;
 
             var isPeptideNTerminal = index == 0 ? true : false;
-            var isPeptideCTerminal = index == sequence.Length - 1 ? true : false;
+            var isPeptideCTerminal = index == sequence.Count - 1 ? true : false;
 
             return GetAminoAcidByVariableModifications(modseq, container, aaChar, isPeptideNTerminal, isPeptideCTerminal, isProteinNTerminal, isProteinCTerminal);
         }

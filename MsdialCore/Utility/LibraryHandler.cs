@@ -8,6 +8,7 @@ using CompMs.Common.Query;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace CompMs.MsdialCore.Utility {
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
             var minimumPeptideLength = parameter.MinimumPeptideLength;
             var maxPeptideMass = parameter.MaxPeptideMass;
-
+            var char2AA = PeptideCalc.GetSimpleChar2AminoAcidDictionary();
             var syncObj = new object();
             var error = string.Empty;
             var peptides = new List<Peptide>();
@@ -65,7 +66,7 @@ namespace CompMs.MsdialCore.Utility {
             Parallel.ForEach(quereis, fQuery => {
                 if (fQuery.IsValidated) {
                     var sequence = fQuery.Sequence;
-                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
+                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
                     if (!digestedPeptides.IsEmptyOrNull()) {
                         var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
                         lock (syncObj) {
@@ -78,5 +79,7 @@ namespace CompMs.MsdialCore.Utility {
             });
             return peptides.OrderBy(n => n.ExactMass).ToList();
         }
+
+       
     }
 }

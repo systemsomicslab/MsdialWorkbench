@@ -7,6 +7,11 @@ using MessagePack;
 
 namespace CompMs.Common.Components
 {
+    public enum SpectrumComment {
+        precursor, b, y, b2, y2, b_h2o, y_h2o, b_nh3, y_nh3, b_h3po4, y_h3po4, tyrosinep   
+    }
+
+
     [MessagePackObject]
     public class SpectrumPeak : ISpectrumPeak
     {
@@ -32,6 +37,8 @@ namespace CompMs.Common.Components
         public int IsotopeWeightNumber { get; set; } = -1;
         [Key(10)]
         public bool IsMatched { get; set; } = false;
+        [Key(11)]
+        public SpectrumComment SpectrumComment { get; set; }
 
         public SpectrumPeak() { }
         public SpectrumPeak(double mass, double intensity, string comment = null) {

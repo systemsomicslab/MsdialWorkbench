@@ -179,6 +179,7 @@
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
     <Compile Include="Model\Setting\AnnotationProcessSettingModel.cs" />
     <Compile Include="Model\Setting\EnzymeSettingModel.cs" />
+    <Compile Include="Model\Setting\FastaAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\IAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\LbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\MassAnnotationSettingModel.cs" />
