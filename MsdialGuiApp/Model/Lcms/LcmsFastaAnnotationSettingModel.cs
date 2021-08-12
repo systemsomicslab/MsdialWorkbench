@@ -59,23 +59,23 @@ namespace CompMs.App.Msdial.Model.Lcms {
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
             var refQueries = new List<MoleculeMsReference>();
-            foreach (var fQuery in fastaQueries) {
-                if (fQuery.IsValidated) {
-                    var sequence = fQuery.Sequence;
-                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, 
-                        fQuery.UniqueIdentifier, fQuery.Index);
+            //foreach (var fQuery in fastaQueries) {
+            //    if (fQuery.IsValidated) {
+            //        var sequence = fQuery.Sequence;
+            //        var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, 
+            //            fQuery.UniqueIdentifier, fQuery.Index);
 
-                    //Console.WriteLine(fQuery.Header);
-                    if (!digestedPeptides.IsEmptyOrNull()) {
+            //        //Console.WriteLine(fQuery.Header);
+            //        if (!digestedPeptides.IsEmptyOrNull()) {
 
-                        var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
-                        foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
-                            var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, CollisionType.HCD);
-                            refQueries.Add(refSpec);
-                        }
-                    }
-                }
-            }
+            //            var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
+            //            foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
+            //                var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, CollisionType.HCD);
+            //                refQueries.Add(refSpec);
+            //            }
+            //        }
+            //    }
+            //}
             return refQueries;
         }
     }

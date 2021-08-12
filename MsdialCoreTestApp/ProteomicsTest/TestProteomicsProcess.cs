@@ -43,7 +43,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             var cleavageSites = ProteinDigestion.GetCleavageSites(this.Enzymes, enzymeList);
             var modContainer = ModificationUtility.GetModificationContainer(this.FixedModifications, this.VariableModifications, fixedMods, variableMods);
             var fastaQueries = FastaParser.ReadFastaUniProtKB(fasta_file);
-
+            var char2AA = PeptideCalc.GetSimpleChar2AminoAcidDictionary();
             var maxMissedCleavage = 2;
             var maxNumberOfModificationsPerPeptide = 5;
             var queries = new List<Peptide>();
@@ -58,58 +58,58 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             var queryCount = fastaQueries.Count;
             var error = string.Empty;
 
-            //Parallel.ForEach(fastaQueries, fQuery => {
-            //    if (fQuery.IsValidated) {
-            //        var sequence = fQuery.Sequence;
-            //        var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
-            //        if (!digestedPeptides.IsEmptyOrNull()) {
-            //            var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
-            //            lock (syncObj) {
-            //                foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
-            //                    //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
-            //                    //refSpecs.Add(refSpec);
-            //                    queries.Add(peptide);
-            //                }
-            //                counter++;
-            //                Console.WriteLine("Creation finished: {0} / {1} for total {2} peptides", counter, queryCount, queries.Count);
-            //            }
-            //        }
-            //    }
-            //});
-
-
-
-
-
-
-
-
-
-
-            foreach (var fQuery in fastaQueries) {
-                counter++;
+            Parallel.ForEach(fastaQueries, fQuery => {
                 if (fQuery.IsValidated) {
                     var sequence = fQuery.Sequence;
-                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
-
-                    //Console.WriteLine(fQuery.Header);
-
+                    var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
                     if (!digestedPeptides.IsEmptyOrNull()) {
-
                         var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
-                        foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
-                            //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
-                            //Console.WriteLine("Mass {0}, Position {1}, Sequence {2}", refSpec.PrecursorMz, (peptide.Position.Start + 1).ToString() + "-" + (peptide.Position.End + 1).ToString(), peptide.ModifiedSequence);
-                            queries.Add(peptide);
+                        lock (syncObj) {
+                            foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
+                                //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
+                                //refSpecs.Add(refSpec);
+                                queries.Add(peptide);
+                            }
                             counter++;
                             Console.WriteLine("Creation finished: {0} / {1} for total {2} peptides", counter, queryCount, queries.Count);
-                            //foreach (var peak in refSpec.Spectrum) {
-                            //    Console.WriteLine("Mass {0}, Intensity {1}, Comment {2}", peak.Mass, peak.Intensity, peak.Comment);
-                            //}
                         }
                     }
                 }
-            }
+            });
+
+
+
+
+
+
+
+
+
+
+            //foreach (var fQuery in fastaQueries) {
+            //    counter++;
+            //    if (fQuery.IsValidated) {
+            //        var sequence = fQuery.Sequence;
+            //        var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
+
+            //        //Console.WriteLine(fQuery.Header);
+
+            //        if (!digestedPeptides.IsEmptyOrNull()) {
+
+            //            var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
+            //            foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
+            //                //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
+            //                //Console.WriteLine("Mass {0}, Position {1}, Sequence {2}", refSpec.PrecursorMz, (peptide.Position.Start + 1).ToString() + "-" + (peptide.Position.End + 1).ToString(), peptide.ModifiedSequence);
+            //                queries.Add(peptide);
+            //                counter++;
+            //                Console.WriteLine("Creation finished: {0} / {1} for total {2} peptides", counter, queryCount, queries.Count);
+            //                //foreach (var peak in refSpec.Spectrum) {
+            //                //    Console.WriteLine("Mass {0}, Intensity {1}, Comment {2}", peak.Mass, peak.Intensity, peak.Comment);
+            //                //}
+            //            }
+            //        }
+            //    }
+            //}
             sw.Stop();
             Console.WriteLine(sw.ElapsedMilliseconds);
             Console.ReadLine();

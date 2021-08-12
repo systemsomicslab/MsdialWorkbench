@@ -192,6 +192,7 @@ namespace CompMs.Common.Proteomics.DataObj {
             return dict;
         }
 
+      
         public Dictionary<char, ModificationProtocol> GetModificationProtocolDict(List<Modification> modifications) {
             var dict = GetInitializeObject();
             foreach (var mod in modifications) {
