@@ -61,9 +61,7 @@ namespace CompMs.App.Msdial.Model.Core
         public DataBaseMapper BuildAnnotator() {
             var dbm = new DataBaseMapper();
             foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
-                var db = annotation.LoadDataBase(ParameterBase);
-                var annotator = annotation.Build(ParameterBase.ProjectParam, db);
-                dbm.Add(annotator);
+                dbm.Add(annotation.Build(ParameterBase));
             }
             return dbm;
         }

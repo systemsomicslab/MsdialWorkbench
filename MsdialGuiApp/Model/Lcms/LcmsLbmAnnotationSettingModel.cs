@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
@@ -37,14 +36,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsMspAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotatorID),
                 molecules,
                 Parameter);
         }
 
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
+        private MoleculeDataBase LoadDataBase(ParameterBase parameter) {
             switch (DBSource) {
                 case DataBaseSource.Lbm:
                     return new MoleculeDataBase(LoadMspDataBase(DataBasePath, parameter), DataBaseID, DataBaseSource.Lbm, SourceType.MspDB);
