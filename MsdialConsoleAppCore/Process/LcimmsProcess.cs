@@ -32,6 +32,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process {
 
             var lcmsParam = ConfigParser.ReadForLcmsParameter(methodFile);
             lcmsParam.IsIonMobility = true;
+            ConfigParser.SetLCMSAlignmentReferenceFileByFilename(methodFile, analysisFiles, lcmsParam);
             ConfigParser.SetCalibrateInformation(lcmsParam, analysisFiles);
 
             var alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputFolder);

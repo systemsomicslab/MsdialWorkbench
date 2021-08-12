@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -16,21 +16,21 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override IAnnotatorContainer Build(ParameterBase parameter) {
-            var molecules = LoadDataBase(parameter);
+            var molecules = LoadDataBase();
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsMspAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotatorID),
                 molecules,
                 Parameter);
         }
 
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
+        private MoleculeDataBase LoadDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
-                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath), DataBaseID);
+                    return new MoleculeDataBase(LoadMspDataBase(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB);
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }

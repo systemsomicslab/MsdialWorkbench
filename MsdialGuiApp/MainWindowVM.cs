@@ -134,8 +134,7 @@ namespace CompMs.App.Msdial
                 case MachineCategory.IMMS:
                     return new ViewModel.Imms.ImmsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.LCIMMS:
-                    throw new NotImplementedException("Lcimms method is working now.");
-                    
+                    return new ViewModel.Lcimms.LcimmsMethodVM(storage, compoundSearchService, peakSpotTableService);
             }
             throw new NotImplementedException("This method is not implemented");
         }

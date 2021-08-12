@@ -22,34 +22,36 @@ namespace CompMs.MsdialImmsCore.Export.Tests
         [TestMethod()]
         public void ExportTest() {
             // prepare();
-            var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1";
-            var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv";
+            var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1.cache";
+            var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv.cache";
 
-            var data = MessagePackHandler.LoadFromFile<DataStorageForTest>(datafile);
-            var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
-            var mapper = new DataBaseMapper();
-            mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
-            mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
+            using (var datastream = File.Open(datafile, FileMode.Open)) {
+                var data = MessagePackDefaultHandler.LoadFromStream<DataStorageForTest>(datastream);
+                var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
+                var mapper = new DataBaseMapper();
+                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
+                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
 
-            var exporter = new AlignmentCSVExporter();
-            var stream = new MemoryStream();
-            exporter.Export(
-                stream,
-                data.Spots,
-                msdecResults,
-                data.Files,
-                new ImmsMetadataAccessor(mapper, data.Parameter),
-                new LegacyQuantValueAccessor("Height", data.Parameter),
-                new List<StatsValue>(0));
+                var exporter = new AlignmentCSVExporter();
+                var stream = new MemoryStream();
+                exporter.Export(
+                    stream,
+                    data.Spots,
+                    msdecResults,
+                    data.Files,
+                    new ImmsMetadataAccessor(mapper, data.Parameter),
+                    new LegacyQuantValueAccessor("Height", data.Parameter),
+                    new List<StatsValue>(0));
 
-            var expected = File.ReadAllText(expectedfile);
-            var actual = Encoding.UTF8.GetString(stream.ToArray());
-            // Assert.AreEqual(expected, actual);
-            // CollectionAssert.AreEqual(
-            //     expected.Split(Environment.NewLine).Select(row => row.TrimEnd('\t')).ToArray(),
-            //     actual.Split(Environment.NewLine).ToArray());
-            foreach ((var ex, var ac) in expected.Split(Environment.NewLine).Select(row => row.TrimEnd('\t')).Zip(actual.Split(Environment.NewLine))) {
-                Assert.AreEqual(ex, ac);
+                var expected = File.ReadAllText(expectedfile);
+                var actual = Encoding.UTF8.GetString(stream.ToArray());
+                // Assert.AreEqual(expected, actual);
+                // CollectionAssert.AreEqual(
+                //     expected.Split(Environment.NewLine).Select(row => row.TrimEnd('\t')).ToArray(),
+                //     actual.Split(Environment.NewLine).ToArray());
+                foreach ((var ex, var ac) in expected.Split(Environment.NewLine).Select(row => row.TrimEnd('\t')).Zip(actual.Split(Environment.NewLine))) {
+                    Assert.AreEqual(ex, ac);
+                }
             }
         }
 
@@ -79,10 +81,10 @@ namespace CompMs.MsdialImmsCore.Export.Tests
         }
 
         private static void prepare() {
-            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsON_pos\2021_08_04_21_56_42.mtd2";
-            var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_dec1";
-            var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1";
-            var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv";
+            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsON_pos\2021_08_12_10_36_16.mtd2";
+            var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_dec1.cache";
+            var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1.cache";
+            var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv.cache";
 
             var storage = new Parser.MsdialImmsSerializer().LoadMsdialDataStorageBase(project);
             var alignmentFile = storage.AlignmentFiles[0];
@@ -132,7 +134,9 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 TextDB = text,
             };
 
-            MessagePackHandler.SaveToFile(data, newdatafile);
+            using (var stream = File.Open(newdatafile, FileMode.Create)) {
+                MessagePackDefaultHandler.SaveToStream(data, stream);
+            }
         }
     }
 

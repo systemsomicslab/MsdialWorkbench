@@ -1,5 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -17,25 +17,25 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public override IAnnotatorContainer Build(ParameterBase parameter) {
-            var molecules = LoadDataBase(parameter);
-            return Build(parameter.ProjectParam, molecules);
+            var molecules = LoadDataBase();
+            return Build(molecules);
         }
 
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private IAnnotatorContainer Build(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsTextDBAnnotator(molecules.Database, Parameter, AnnotatorID),
                 molecules,
                 Parameter);
         }
 
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
+        private MoleculeDataBase LoadDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Text:
                     var textdb = TextLibraryParser.TextLibraryReader(DataBasePath, out string error);
                     if (!string.IsNullOrEmpty(error)) {
                         throw new Exception(error);
                     }
-                    return new MoleculeDataBase(textdb, DataBaseID);
+                    return new MoleculeDataBase(textdb, DataBaseID, DataBaseSource.Text, SourceType.TextDB);
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }

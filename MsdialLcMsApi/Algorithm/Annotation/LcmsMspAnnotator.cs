@@ -32,7 +32,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 this.omics = omics;
                 ReferObject = new DataBaseRefer(db);
         }
-        
+
         public MsScanMatchResult Annotate(
             IMSIonProperty property,
             IMSScanProperty scan,

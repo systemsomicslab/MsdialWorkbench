@@ -11,11 +11,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    enum DataBaseSource
-    {
-        None, Msp, Lbm, Text
-    }
-
+    
     abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
     {
         public DataBaseAnnotationSettingModelBase() {
@@ -68,8 +64,6 @@ namespace CompMs.App.Msdial.Model.Setting
         private MsRefSearchParameterBase parameter = new MsRefSearchParameterBase();
 
         public abstract IAnnotatorContainer Build(ParameterBase parameter);
-        public abstract IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
-        public abstract MoleculeDataBase LoadDataBase(ParameterBase parameter);
 
         protected static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {
             List<MoleculeMsReference> db;

@@ -6,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -130,10 +131,11 @@ namespace CompMs.MsdialCore.Export
             return "null"; // write something
         }
 
+        private readonly static double eps = 1e-10;
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
-        protected static string ValueOrNull(float value, string format) => value != 0 ? value.ToString(format) : "null"; 
-        protected static string ValueOrNull(double value, string format) => value != 0 ? value.ToString(format) : "null"; 
-        protected static string ValueOrNull(double? value, string format) => value != null && value != 0 ? value.Value.ToString(format) : "null"; 
+        protected static string ValueOrNull(float value, string format) => Math.Abs(value) > eps ? value.ToString(format) : "null"; 
+        protected static string ValueOrNull(double value, string format) => Math.Abs(value) > eps  ? value.ToString(format) : "null"; 
+        protected static string ValueOrNull(double? value, string format) => value != null ? value.Value.ToString(format) : "null"; 
     }
 
 }

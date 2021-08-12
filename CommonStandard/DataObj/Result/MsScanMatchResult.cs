@@ -1,7 +1,5 @@
 ﻿using MessagePack;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.Common.DataObj.Result {
     [Flags]
@@ -12,6 +10,11 @@ namespace CompMs.Common.DataObj.Result {
         MspDB = 1 << 2,
         TextDB = 1 << 4,
         Manual = 1 << 6,
+        FastaDB = 1 << 1,
+        DecoyDB = 1 << 3
+    }
+    public enum DataBaseSource {
+        None, Msp, Lbm, Text, Fasta
     }
 
     [MessagePackObject]
@@ -38,7 +41,7 @@ namespace CompMs.Common.DataObj.Result {
         public float MatchedPeaksPercentage { get; set; }
         [Key(8)]
         public float EssentialFragmentMatchedScore { get; set; }
-        [Key(28)]
+        [Key(29)]
         public float AndromedaScore { get; set; }
 
         // others
@@ -88,8 +91,10 @@ namespace CompMs.Common.DataObj.Result {
         public SourceType Source { get; set; }
         [Key(27)]
         public string SourceKey { get; set; }
-        [Key(29)]
-        public int SpectrumID { get; set; } = -1; 
+        [Key(28)]
+        public int SpectrumID { get; set; } = -1;
+        [Key(30)]
+        public int PeptideLength { get; set; } = 0;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

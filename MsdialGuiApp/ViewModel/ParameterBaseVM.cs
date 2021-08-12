@@ -918,15 +918,6 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
 
-        public MsRefSearchParameterBase ProteoMs2RefSearchParam {
-            get => innerModel.ProteoMs2RefSearchParam;
-            set {
-                if (innerModel.ProteoMs2RefSearchParam == value) return;
-                innerModel.ProteoMs2RefSearchParam = value;
-                OnPropertyChanged(nameof(ProteoMs2RefSearchParam));
-            }
-        }
-
 
         // Post-alignment and filtering
 

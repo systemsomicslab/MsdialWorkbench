@@ -229,8 +229,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .ToList();
 
             if (representatives.Any()) {
-                feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.OriginalIndex, spec => spec.CollisionEnergy);
-                feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).OriginalIndex;
+                feature.MS2RawSpectrumID2CE = representatives.ToDictionary(spec => spec.Index, spec => spec.CollisionEnergy);
+                feature.MS2RawSpectrumID = representatives.Argmax(spec => spec.TotalIonCurrent).Index;
             }
         }
 

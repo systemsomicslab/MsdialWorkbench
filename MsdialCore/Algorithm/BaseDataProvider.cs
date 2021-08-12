@@ -13,14 +13,14 @@ namespace CompMs.MsdialCore.Algorithm
 {
     public abstract class BaseDataProvider : IDataProvider
     {
-        protected readonly RawMeasurement rawObj;
+        protected readonly List<RawSpectrum> spectrums;
 
-        protected BaseDataProvider(RawMeasurement rawObj) {
-            this.rawObj = rawObj;
+        protected BaseDataProvider(IEnumerable<RawSpectrum> spectrums) {
+            this.spectrums = spectrums.ToList();
         }
 
         protected BaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            :this(LoadMeasurement(file, isGuiProcess, retry)) { }
+            :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList) { }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isGuiProcess)) {
@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public virtual ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return rawObj.SpectrumList.Where(spectrum => spectrum.MsLevel == 1).ToList().AsReadOnly();
+            return spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList().AsReadOnly();
         }
 
         private Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
@@ -44,11 +44,11 @@ namespace CompMs.MsdialCore.Algorithm
             if (cache.TryGetValue(level, out var spectrums)) {
                 return spectrums;
             }
-            return cache[level] = rawObj.SpectrumList.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+            return cache[level] = spectrums.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
         }
 
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return rawObj.SpectrumList.AsReadOnly();
+            return spectrums.AsReadOnly();
         }
     }
 }

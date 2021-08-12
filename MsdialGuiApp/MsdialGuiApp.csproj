@@ -164,10 +164,13 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
+    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnnotationSettingModel.cs" />
+    <Compile Include="Model\Lcms\LcmsFastaAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
     <Compile Include="Model\Lcms\LcmsMspAnnotationSettingModel.cs" />
@@ -177,10 +180,13 @@
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
     <Compile Include="Model\Setting\AnnotationProcessSettingModel.cs" />
+    <Compile Include="Model\Setting\EnzymeSettingModel.cs" />
+    <Compile Include="Model\Setting\FastaAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\IAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\LbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\MassAnnotationSettingModel.cs" />
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
+    <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
@@ -227,15 +233,19 @@
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsFastaAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsLbmAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
+    <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
     <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
@@ -455,6 +465,9 @@
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
+    <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
+      <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
@@ -779,6 +792,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\EnzymeSettingWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

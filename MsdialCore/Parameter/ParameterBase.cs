@@ -273,7 +273,16 @@ namespace CompMs.MsdialCore.Parameter {
         [IgnoreMember]
         public float FalseDiscoveryRateForProtein { get => ProteomicsParam.FalseDiscoveryRateForProtein; set => ProteomicsParam.FalseDiscoveryRateForProtein = value; }
         [IgnoreMember]
-        public MsRefSearchParameterBase ProteoMs2RefSearchParam { get => ProteomicsParam.MsRefSearchParam; set => ProteomicsParam.MsRefSearchParam = value; }
+        public int MaxNumberOfModificationsPerPeptide { get => ProteomicsParam.MaxNumberOfModificationsPerPeptide; set => ProteomicsParam.MaxNumberOfModificationsPerPeptide = value; }
+        [IgnoreMember]
+        public int MaxMissedCleavage { get => ProteomicsParam.MaxMissedCleavage; set => ProteomicsParam.MaxMissedCleavage = value; }
+        [IgnoreMember]
+        public int MinimumPeptideLength { get => ProteomicsParam.MinimumPeptideLength; set => ProteomicsParam.MinimumPeptideLength = value; }
+        [IgnoreMember]
+        public float MaxPeptideMass { get => ProteomicsParam.MaxPeptideMass; set => ProteomicsParam.MaxPeptideMass = value; }
+
+        //[IgnoreMember]
+        //public MsRefSearchParameterBase ProteoMs2RefSearchParam { get => ProteomicsParam.MsRefSearchParam; set => ProteomicsParam.MsRefSearchParam = value; }
 
         // Post-alignment and filtering
         [Key(9)]
@@ -774,10 +783,18 @@ namespace CompMs.MsdialCore.Parameter {
         public float FalseDiscoveryRateForPeptide { get; set; } = 1.0F; //%
         [Key(9)]
         public float FalseDiscoveryRateForProtein { get; set; } = 1.0F; //%
-
-        // other basic parameter
         [Key(10)]
-        public MsRefSearchParameterBase MsRefSearchParam { get; set; } = new MsRefSearchParameterBase();
+        public int MaxNumberOfModificationsPerPeptide { get; set; } = 5;
+        [Key(11)]
+        public int MaxMissedCleavage { get; set; } = 2;
+        [Key(12)]
+        public int MinimumPeptideLength { get; set; } = 7;
+        [Key(13)]
+        public float MaxPeptideMass { get; set; } = 4600;
+
+        //// other basic parameter
+        //[Key(10)]
+        //public MsRefSearchParameterBase MsRefSearchParam { get; set; } = new MsRefSearchParameterBase();
     }
 
     [MessagePackObject]

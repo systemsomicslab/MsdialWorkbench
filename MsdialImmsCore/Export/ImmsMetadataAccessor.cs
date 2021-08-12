@@ -75,7 +75,7 @@ namespace CompMs.MsdialImmsCore.Export
             content.Add("CCS matched", (matchResult?.IsCcsMatch ?? false).ToString());
             content.Add("m/z matched", (matchResult?.IsPrecursorMzMatch ?? false).ToString());
             content.Add("MS/MS matched", (matchResult?.IsSpectrumMatch ?? false).ToString());
-            content.Add("CCS similarity", ValueOrNull(matchResult?.CcsSimilarity, "F2"));
+            content.Add("CCS similarity", matchResult.IsUnknown ? "null" : matchResult.CcsSimilarity.ToString("F2"));
             return content;
         }
     }

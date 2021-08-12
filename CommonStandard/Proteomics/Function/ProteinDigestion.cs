@@ -3,6 +3,7 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Parser;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.Proteomics.Function {
@@ -10,26 +11,85 @@ namespace CompMs.Common.Proteomics.Function {
     public sealed class ProteinDigestion {
         private ProteinDigestion() { }
 
-        public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites, string database = "", int databaseID = -1) {
+        public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites, Dictionary<char, AminoAcid> char2AA, string database = "", int databaseID = -1) {
             var peptides = new List<Peptide>();
+            //var peptideSequence = string.Empty;
+            var twoletterAAs = string.Empty;
+            var start = 0;
+            var end = 0;
+
+            var proteinSeqObj = PeptideCalc.Sequence2AminoAcids(proteinSequence, char2AA);
+            return GetDigestedPeptideSequences(proteinSeqObj, cleavagesites, database, databaseID);
+            //for (int i = 0; i < proteinSequence.Length - 1; i++) {
+            //    //peptideSequence += proteinSequence[i];
+            //    twoletterAAs = proteinSequence[i].ToString() + proteinSequence[i + 1].ToString();
+
+            //    if (cleavagesites.Contains(twoletterAAs)) {
+            //        end = i;
+            //        //var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, Sequence = peptideSequence, Position = new Range(start, end) };
+            //        var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
+            //        peptide.IsProteinNterminal = start == 0 ? true : false;
+            //        peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
+            //        peptides.Add(peptide);
+
+            //        //peptideSequence = string.Empty;
+            //        start = i + 1;
+            //        end = i + 1;
+            //    }
+            //}
+
+            //return peptides;
+        }
+
+
+        public static List<Peptide> GetDigestedPeptideSequences(List<AminoAcid> proteinSeqObj, List<string> cleavagesites, string database = "", int databaseID = -1) {
+            var peptides = new List<Peptide>();
+            var twoletterAAs = string.Empty;
+            var start = 0;
+            var end = 0;
+
+            for (int i = 0; i < proteinSeqObj.Count - 1; i++) {
+                twoletterAAs = proteinSeqObj[i].OneLetter.ToString() + proteinSeqObj[i + 1].OneLetter.ToString();
+
+                if (cleavagesites.Contains(twoletterAAs)) {
+                    end = i;
+                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
+                    peptide.IsProteinNterminal = start == 0 ? true : false;
+                    peptide.IsProteinCterminal = end == proteinSeqObj.Count - 1 ? true : false;
+                    peptides.Add(peptide);
+
+                    start = i + 1;
+                    end = i + 1;
+                }
+            }
+
+            return peptides;
+        }
+
+        public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites, Dictionary<char, AminoAcid> char2AA,
+            int maxMissedCleavage = 2, string database = "", int databaseID = -1, int minimumPeptideLength = 7) {
             var peptideSequence = string.Empty;
             var twoletterAAs = string.Empty;
             var start = 0;
             var end = 0;
-            for (int i = 0; i < proteinSequence.Length - 1; i++) {
-                peptideSequence += proteinSequence[i];
-                twoletterAAs = proteinSequence[i].ToString() + proteinSequence[i + 1].ToString();
+            var proteinSeqObj = PeptideCalc.Sequence2AminoAcids(proteinSequence, char2AA);
+            var peptides = GetDigestedPeptideSequences(proteinSeqObj, cleavagesites, database, databaseID);
+            var currentTotalCount = peptides.Count;
 
-                if (cleavagesites.Contains(twoletterAAs)) {
-                    end = i;
-                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, Sequence = peptideSequence, Position = new Range(start, end) };
+            for (int i = 1; i <= maxMissedCleavage; i++) {
+                for (int j = 0; j < currentTotalCount - i; j++) {
+                    start = peptides[j].Position.Start;
+                    end = peptides[j + i].Position.End;
+                    //peptideSequence = string.Empty;
+                    //for (int k = j; k <= j + i; k++) {
+                    //    peptideSequence += peptides[k].Sequence;
+                    //}
+                    var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
-                    peptides.Add(peptide);
 
-                    peptideSequence = string.Empty;
-                    start = i + 1;
-                    end = i + 1;
+                    if (peptide.SequenceObj.Count >= minimumPeptideLength)
+                        peptides.Add(peptide);
                 }
             }
 
@@ -56,6 +116,19 @@ namespace CompMs.Common.Proteomics.Function {
                 }
             }
                  
+            foreach (var enzyme in sEnzymes) {
+                foreach (var site in enzyme.SpecificityList) {
+                    sites.Add(site);
+                }
+            }
+
+            return sites;
+        }
+
+        public static List<string> GetCleavageSites(List<Enzyme> enzymes) {
+            var sites = new List<string>();
+            var sEnzymes = enzymes.Where(n => n.IsSelected).ToList();
+
             foreach (var enzyme in sEnzymes) {
                 foreach (var site in enzyme.SpecificityList) {
                     sites.Add(site);
