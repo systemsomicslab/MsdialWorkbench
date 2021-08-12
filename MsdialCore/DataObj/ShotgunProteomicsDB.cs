@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class ShotgunProteomicsDB : IDisposable {
+    public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase {
         [Key(10)]
         private bool disposedValue;
 

@@ -10,7 +10,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class MoleculeDataBase
+    public class MoleculeDataBase : IReferenceDataBase
     {
         public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
