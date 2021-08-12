@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj
             DataBaseSource = dbsource;
         }
 
-        public MoleculeDataBase(string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource) {
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;

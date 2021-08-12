@@ -12,11 +12,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
 {
     public abstract class ImmsBaseDataProvider : BaseDataProvider
     {
-        protected List<RawSpectrum> rawSpectrums;
-        private Dictionary<int, ReadOnlyCollection<RawSpectrum>> msSpectrums;
+        protected readonly List<RawSpectrum> rawSpectrums;
+        private readonly Dictionary<int, ReadOnlyCollection<RawSpectrum>> msSpectrums;
 
-        public ImmsBaseDataProvider(RawMeasurement rawObj) : base(rawObj) {
-            rawSpectrums = rawObj.SpectrumList.Select(spec => spec.ShallowCopy()).ToList();
+        public ImmsBaseDataProvider(IEnumerable<RawSpectrum> spectrums)
+            : base(spectrums) {
+
+            rawSpectrums = this.spectrums.Select(spec => spec.ShallowCopy()).ToList();
             msSpectrums = rawSpectrums
                 .GroupBy(spectrum => spectrum.MsLevel)
                 .ToDictionary(
@@ -24,11 +26,16 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     group => group.OrderBy(spectrum => spectrum.DriftTime).ToList().AsReadOnly());
         }
 
+        public ImmsBaseDataProvider(RawMeasurement rawObj) : this(rawObj.SpectrumList) {
+
+        }
+
         public ImmsBaseDataProvider(AnalysisFileBean file) : this(LoadMeasurement(file, false, 5)) {
 
         }
 
-        public ImmsBaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry) : this(LoadMeasurement(file, isGuiProcess, retry)) {
+        public ImmsBaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
+            : this(LoadMeasurement(file, isGuiProcess, retry)) {
 
         }
 
@@ -47,6 +54,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
     public class ImmsRepresentativeDataProvider : ImmsBaseDataProvider
     {
         private readonly List<RawSpectrum> representativeSpectrum;
+
+        public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums) : base(spectrums) {
+
+        }
 
         public ImmsRepresentativeDataProvider(RawMeasurement rawObj) : base(rawObj) {
             this.representativeSpectrum = SelectRepresentative(rawSpectrums).OrderBy(spectrum => spectrum.DriftTime).ToList();
@@ -72,8 +83,16 @@ namespace CompMs.MsdialImmsCore.Algorithm
     {
         private readonly List<RawSpectrum> accumulatedSpectrum;
 
-        public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance) : base(rawObj) {
+        public ImmsAverageDataProvider(IEnumerable<RawSpectrum> spectrums, double massTolerance, double driftTolerance)
+            : base(spectrums) {
+
             this.accumulatedSpectrum = AccumulateSpectrum(rawSpectrums, massTolerance, driftTolerance).ToList();
+            this.cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
+        }
+
+        public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance)
+            : this(rawObj.SpectrumList, massTolerance, driftTolerance) {
+
         }
 
         public ImmsAverageDataProvider(RawMeasurement rawObj)
@@ -113,7 +132,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
             }
             var result = CloneRawSpectrum(ms1Spectrums.First());
-            result.OriginalIndex = ms1Spectrums.First().Index;
             SpectrumParser.setSpectrumProperties(result, massBins);
             return new[] { result }.Concat(
                 spectrums.Where(spectrum => spectrum.MsLevel != 1)
@@ -136,7 +154,19 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public override ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return new ReadOnlyCollection<RawSpectrum>(accumulatedSpectrum);
+            return LoadMsNSpectrums(1);
+        }
+
+        private readonly Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache;
+        public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
+            if (cache.ContainsKey(level))
+                return cache[level];
+            else
+                return cache[level] = accumulatedSpectrum.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+        }
+
+        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+            return accumulatedSpectrum.AsReadOnly();
         }
     }
 
