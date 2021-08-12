@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    abstract class AnalysisParameterSetModelBase : BindableBase
+    public abstract class AnalysisParameterSetModelBase : BindableBase
     {
         public AnalysisParameterSetModelBase(ParameterBase parameter, IEnumerable<AnalysisFileBean> files) {
             if (parameter is null) {
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Core
                 throw new ArgumentNullException(nameof(files));
             }
 
-            Parameter = parameter;
+            ParameterBase = parameter;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
 
             var dt = DateTime.Now;
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Core
 
             AnnotationProcessSettingModel = new AnnotationProcessSettingModel();
         }
-        public ParameterBase Parameter { get; }
+        public ParameterBase ParameterBase { get; }
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 
@@ -61,22 +61,22 @@ namespace CompMs.App.Msdial.Model.Core
         public DataBaseMapper BuildAnnotator() {
             var dbm = new DataBaseMapper();
             foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
-                var db = annotation.LoadDataBase(Parameter);
-                var annotator = annotation.Build(Parameter.ProjectParam, db);
+                var db = annotation.LoadDataBase(ParameterBase);
+                var annotator = annotation.Build(ParameterBase.ProjectParam, db);
                 dbm.Add(annotator);
             }
             return dbm;
         }
 
         public void ClosingMethod() {
-            if (Parameter.MaxChargeNumber <= 0) {
-                Parameter.MaxChargeNumber = 2;
+            if (ParameterBase.MaxChargeNumber <= 0) {
+                ParameterBase.MaxChargeNumber = 2;
             }
 
-            Parameter.ExcludedMassList = ExcludedMassList.ToList();
+            ParameterBase.ExcludedMassList = ExcludedMassList.ToList();
 
-            if (Parameter.TogetherWithAlignment && AnalysisFiles.Count >= 2) {
-                Parameter.QcAtLeastFilter = false;
+            if (ParameterBase.TogetherWithAlignment && AnalysisFiles.Count >= 2) {
+                ParameterBase.QcAtLeastFilter = false;
             }
         }
     }

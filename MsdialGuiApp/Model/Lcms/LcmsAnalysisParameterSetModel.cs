@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
+    public class LcmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
     {
         public LcmsAnalysisParameterSetModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files)
             : base(parameter, files) {
 
-            LcmsParameter = parameter;
+            Parameter = parameter;
         }
 
-        public MsdialLcmsParameter LcmsParameter { get; }
+        public MsdialLcmsParameter Parameter { get; }
     }
 }

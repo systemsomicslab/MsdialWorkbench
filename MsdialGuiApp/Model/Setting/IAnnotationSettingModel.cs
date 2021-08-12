@@ -5,7 +5,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    interface IAnnotationSettingModel
+    public interface IAnnotationSettingModel
     {
         string AnnotatorID { get; }
 

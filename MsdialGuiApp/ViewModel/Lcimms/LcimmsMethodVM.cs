@@ -24,10 +24,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     {
         public LcimmsMethodVM(
             MsdialDataStorage storage,
-            IDataProviderFactory<AnalysisFileBean> providerFactory,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : this(new LcimmsMethodModel(storage, providerFactory), compoundSearchService, peakSpotTableService) {
+            : this(
+                  new LcimmsMethodModel(storage, new StandardDataProviderFactory()),
+                  compoundSearchService,
+                  peakSpotTableService) {
             
         }
 

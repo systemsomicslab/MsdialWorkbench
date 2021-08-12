@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Setting
         void RemoveAnnotation(IAnnotationSettingModel model);
     }
 
-    class AnnotationProcessSettingModel : IAnnotationProcessSettingModel
+    public class AnnotationProcessSettingModel : IAnnotationProcessSettingModel
     {
         public AnnotationProcessSettingModel() {
 

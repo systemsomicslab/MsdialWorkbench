@@ -14,9 +14,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            LcimmsParameter = parameter;
+            Parameter = parameter;
         }
 
-        public MsdialLcImMsParameter LcimmsParameter { get; }
+        public MsdialLcImMsParameter Parameter { get; }
     }
 }
