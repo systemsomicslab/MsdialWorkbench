@@ -17,7 +17,7 @@ namespace CompMs.MsdialLcMsApi.Parser
 
         public ParameterBase Parameter { get; }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(StandardRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
                 return new LcmsMspAnnotator(database.Database, key.Parameter, Parameter.TargetOmics, key.Key);
             }
@@ -27,11 +27,11 @@ namespace CompMs.MsdialLcMsApi.Parser
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
             return new LcmsMspAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
             return new LcmsTextDBAnnotator(database.Database, Parameter.TextDbSearchParam, key.Key);
         }
     }

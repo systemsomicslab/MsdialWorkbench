@@ -9,6 +9,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -17,7 +18,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MassAnnotator : IAnnotator<IMSProperty, IMSScanProperty>
+    public class MassAnnotator : ISerializableAnnotator<IMSProperty, IMSScanProperty, MoleculeDataBase>
     {
         private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
 
@@ -265,7 +266,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .ToList();
         }
 
-        public IReferRestorationKey Save() {
+        public IReferRestorationKey<MoleculeDataBase> Save() {
             switch (source) {
                 case SourceType.MspDB:
                     return new MspDbRestorationKey(sourceKey);

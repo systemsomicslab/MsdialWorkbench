@@ -7,19 +7,26 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.MsdialCore.Parser
 {
+    public interface IReferRestorationKey
+    {
+        ISerializableAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor);
+
+        string Key { get; }
+    }
+
     [MessagePack.Union(0, typeof(DataBaseRestorationKey))]
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
-    public interface IReferRestorationKey
+    public interface IReferRestorationKey<in T>
     {
-        IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
+        ISerializableAnnotator<IMSIonProperty, IMSScanProperty, T> Accept(ILoadAnnotatorVisitor visitor, T database);
 
         string Key { get; }
     }
 
     [MessagePack.MessagePackObject]
-    public abstract class DataBaseRestorationKey : IReferRestorationKey
+    public abstract class DataBaseRestorationKey : IReferRestorationKey<MoleculeDataBase>
     {
         public DataBaseRestorationKey(string key) {
             Key = key;
@@ -28,7 +35,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(Key))]
         public string Key { get; set; }
 
-        public abstract IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
+        public abstract ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -38,7 +45,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -50,7 +57,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -78,7 +85,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }
 
-        public override IAnnotator<IMSIonProperty, IMSScanProperty> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }

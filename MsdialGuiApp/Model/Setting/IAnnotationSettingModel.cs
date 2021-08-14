@@ -8,6 +8,6 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         string AnnotatorID { get; }
 
-        IAnnotatorContainer Build(ParameterBase parameter);
+        ISerializableAnnotatorContainer Build(ParameterBase parameter);
     }
 }

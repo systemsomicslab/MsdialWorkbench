@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
         private IAnnotationSettingModel implement;
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             return Implement.Build(parameter);
         }
     }

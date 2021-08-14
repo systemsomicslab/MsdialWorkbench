@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IAnnotator<in T, in U>
-        : IMatchResultRefer, IRestorableRefer
+        : IMatchResultRefer
         where T : IMSProperty
         where U : IMSScanProperty
     {
@@ -21,5 +21,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
         List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
         List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
+    }
+
+    public interface ISerializableAnnotator<in T, in U>
+        : IAnnotator<T, U>, IRestorableRefer
+        where T : IMSProperty
+        where U : IMSScanProperty
+    {
+
+    }
+
+    public interface ISerializableAnnotator<in T, in U, in V>
+        : IAnnotator<T, U>, IRestorableRefer<V>
+        where T : IMSProperty
+        where U : IMSScanProperty
+    {
+
     }
 }

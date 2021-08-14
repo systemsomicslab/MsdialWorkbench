@@ -9,13 +9,14 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
-    public class ImmsTextDBAnnotator : TextDbRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
+    public class ImmsTextDBAnnotator : TextDbRestorableBase, ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase>
     {
         private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 

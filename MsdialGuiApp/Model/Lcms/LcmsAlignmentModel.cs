@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             IMatchResultRefer refer,
-            IReadOnlyList<IAnnotatorContainer> annotators) {
+            IReadOnlyList<ISerializableAnnotatorContainer> annotators) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
             }
@@ -143,7 +143,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
-        public IReadOnlyList<IAnnotatorContainer> Annotators { get; }
+        public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }

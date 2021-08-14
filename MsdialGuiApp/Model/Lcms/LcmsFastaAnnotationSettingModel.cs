@@ -21,12 +21,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             this.ParameterBase = paramBase;
         }
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }
 
-        private IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsFastaAnnotator(molecules.Database, Parameter, this.ParameterBase.ProteomicsParam, AnnotatorID, molecules.SourceType),
                 molecules,

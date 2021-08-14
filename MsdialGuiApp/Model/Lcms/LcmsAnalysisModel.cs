@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IDataProvider provider,
             IMatchResultRefer refer,
             ParameterBase parameter,
-            IReadOnlyList<IAnnotatorContainer> annotators)
+            IReadOnlyList<ISerializableAnnotatorContainer> annotators)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -148,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AnalysisFileBean AnalysisFile { get; }
 
         public ParameterBase Parameter { get; }
-        public IReadOnlyList<IAnnotatorContainer> Annotators { get; }
+        public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }

@@ -16,12 +16,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             
         }
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase();
             return Build(molecules);
         }
 
-        private IAnnotatorContainer Build(MoleculeDataBase molecules) {
+        private ISerializableAnnotatorContainer Build(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsTextDBAnnotator(molecules.Database, Parameter, AnnotatorID),
                 molecules,

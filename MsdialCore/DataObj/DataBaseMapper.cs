@@ -16,21 +16,21 @@ namespace CompMs.MsdialCore.DataObj
     public class DataBaseMapper : IMatchResultRefer
     {
         public DataBaseMapper() {
-            Annotators = new List<IAnnotatorContainer>();
+            Annotators = new List<ISerializableAnnotatorContainer>();
         }
 
         [Key(0)]
         // Should not use setter.
-        public List<IAnnotatorContainer> Annotators { get; set; }
+        public List<ISerializableAnnotatorContainer> Annotators { get; set; }
 
         [IgnoreMember]
         string IMatchResultRefer.Key { get; } = string.Empty;
 
         [IgnoreMember]
-        public ReadOnlyDictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>> KeyToAnnotator
-            => new ReadOnlyDictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>>(keyToAnnotator);
+        public ReadOnlyDictionary<string, IMatchResultRefer> KeyToRefer
+            => new ReadOnlyDictionary<string, IMatchResultRefer>(keyToRefer);
 
-        private Dictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>> keyToAnnotator = new Dictionary<string, IAnnotator<IMSIonProperty, IMSScanProperty>>();
+        private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
 
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
@@ -49,32 +49,32 @@ namespace CompMs.MsdialCore.DataObj
                     var entry = archive.GetEntry(annotator.AnnotatorID);
                     using (var entry_stream = entry.Open()) {
                         annotator.Load(entry_stream, visitor);
-                        keyToAnnotator[annotator.AnnotatorID] = annotator.Annotator;
+                        keyToRefer[annotator.AnnotatorID] = annotator.Annotator;
                     }
                 }
             }
         }
 
-        public void Add(IAnnotatorContainer annotatorContainer) {
-            keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer.Annotator;
+        public void Add(ISerializableAnnotatorContainer annotatorContainer) {
+            keyToRefer[annotatorContainer.AnnotatorID] = annotatorContainer.Annotator;
             Annotators.Add(annotatorContainer);
         }
 
-        public void Add(IAnnotator<IMSIonProperty, IMSScanProperty> annotator) {
-            Add(new AnnotatorContainer(annotator, new MsRefSearchParameterBase()));
+        public void Add(ISerializableAnnotator<IMSIonProperty, IMSScanProperty> annotator) {
+            Add(new SerializableAnnotatorContainer(annotator, new MsRefSearchParameterBase()));
         }
 
-        public void Add(IAnnotator<IMSIonProperty, IMSScanProperty> annotator, MoleculeDataBase database) {
+        public void Add(ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> annotator, MoleculeDataBase database) {
             Add(new DatabaseAnnotatorContainer(annotator, database, new MsRefSearchParameterBase()));
         }
 
-        public void Remove(IAnnotatorContainer annotatorContainer) {
-            keyToAnnotator.Remove(annotatorContainer.AnnotatorID);
+        public void Remove(ISerializableAnnotatorContainer annotatorContainer) {
+            keyToRefer.Remove(annotatorContainer.AnnotatorID);
             Annotators.Remove(annotatorContainer);
         }
 
         public void Remove(string annotatorID) {
-            keyToAnnotator.Remove(annotatorID);
+            keyToRefer.Remove(annotatorID);
             var target = Annotators.Find(annotator => annotator.AnnotatorID == annotatorID);
             if (!(target is null)) {
                 Annotators.Remove(target);
@@ -82,7 +82,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (result?.SourceKey != null && KeyToAnnotator.TryGetValue(result.SourceKey, out var refer)) {
+            if (result?.SourceKey != null && KeyToRefer.TryGetValue(result.SourceKey, out var refer)) {
                 return refer.Refer(result);
             }
             return null;

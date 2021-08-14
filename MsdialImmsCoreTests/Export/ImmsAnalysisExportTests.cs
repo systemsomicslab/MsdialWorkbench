@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.DataObj.Result;
 
 namespace CompMs.MsdialImmsCore.Export.Tests
 {
@@ -31,8 +32,10 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 var data = MessagePackDefaultHandler.LoadFromStream<DataStorageForTest>(datastream);
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
                 var mapper = new DataBaseMapper();
-                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
-                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
+                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"),
+                    new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB));
+                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"),
+                    new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB));
                 var provider = new ImmsAverageDataProvider(data.Files[0], false, 5);
 
                 var stream = new MemoryStream();

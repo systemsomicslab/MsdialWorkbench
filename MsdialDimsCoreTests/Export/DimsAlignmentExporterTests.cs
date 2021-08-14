@@ -13,6 +13,7 @@ using CompMs.MsdialCore.Parser;
 using System.IO;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Export;
+using CompMs.Common.DataObj.Result;
 
 namespace CompMs.MsdialDimsCore.Export.Tests
 {
@@ -29,8 +30,10 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 var data = MessagePackDefaultHandler.LoadFromStream<DataStorageForTest>(datastream);
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
                 var mapper = new DataBaseMapper();
-                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
-                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
+                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"),
+                    new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB));
+                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB"),
+                    new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB));
 
                 var exporter = new AlignmentCSVExporter();
                 var stream = new MemoryStream();

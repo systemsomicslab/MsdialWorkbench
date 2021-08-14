@@ -101,8 +101,8 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnnotator() {
-            MspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
-            TextDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
+            MspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
+            TextDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
@@ -129,11 +129,13 @@ namespace CompMs.App.Msdial.Model.Imms
             );
             Storage.AlignmentFiles = AlignmentFiles.ToList();
             var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            MspAnnotator = new ImmsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            Storage.DataBaseMapper.Add(MspAnnotator, msp);
+            var mspAnnotator = new ImmsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            MspAnnotator = mspAnnotator;
+            Storage.DataBaseMapper.Add(mspAnnotator, msp);
             var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-            TextDBAnnotator = new ImmsTextDBAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            Storage.DataBaseMapper.Add(TextDBAnnotator, text);
+            var textDBAnnotator = new ImmsTextDBAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+            TextDBAnnotator = textDBAnnotator;
+            Storage.DataBaseMapper.Add(textDBAnnotator, text);
             return true;
         }
 

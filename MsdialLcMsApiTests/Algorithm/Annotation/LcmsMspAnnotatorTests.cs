@@ -32,7 +32,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -59,7 +59,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -86,7 +86,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseTimeForAnnotationScoring = false,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -112,7 +112,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.FindCandidates(target, target, null);
@@ -142,7 +142,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = false,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.FindCandidates(target, target, null);
@@ -176,7 +176,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -232,7 +232,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -285,7 +285,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -314,7 +314,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
@@ -340,7 +340,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = false,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
@@ -371,7 +371,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -427,7 +427,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 2f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
@@ -470,7 +470,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -505,7 +505,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -528,7 +528,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -595,7 +595,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            IAnnotator<ChromatogramPeakFeature, ChromatogramPeakFeature> annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {

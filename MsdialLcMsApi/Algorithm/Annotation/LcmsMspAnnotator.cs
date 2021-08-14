@@ -11,6 +11,7 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 {
-    public class LcmsMspAnnotator : StandardRestorableBase, IAnnotator<IMSIonProperty, IMSScanProperty>
+    public class LcmsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase>
     {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
