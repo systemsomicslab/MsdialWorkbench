@@ -27,12 +27,12 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public ImmsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
-            : base(mspDB, sourceKey){
+        public ImmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
+            : base(mspDB.Database, sourceKey){
             this.db.Sort(comparer);
             this.Parameter = parameter;
             this.omics = omics;
-            this.ReferObject = new DataBaseRefer(this.db);
+            this.ReferObject = mspDB;
         }
 
         public MsScanMatchResult Annotate(

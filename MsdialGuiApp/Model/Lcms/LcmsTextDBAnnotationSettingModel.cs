@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private ISerializableAnnotatorContainer Build(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new LcmsTextDBAnnotator(molecules.Database, Parameter, AnnotatorID),
+                new LcmsTextDBAnnotator(molecules, Parameter, AnnotatorID),
                 molecules,
                 Parameter);
         }

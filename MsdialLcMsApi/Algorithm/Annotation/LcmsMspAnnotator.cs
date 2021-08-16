@@ -25,13 +25,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         private readonly TargetOmics omics;
 
-        public DataBaseRefer ReferObject { get; }
+        private readonly IMatchResultRefer ReferObject;
 
-        public LcmsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID)
-            : base(mspDB, parameter, annotatorID, SourceType.MspDB) {
-                db.Sort(comparer);
-                this.omics = omics;
-                ReferObject = new DataBaseRefer(db);
+        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID)
+            : base(mspDB.Database, parameter, annotatorID, SourceType.MspDB) {
+            db.Sort(comparer);
+            this.omics = omics;
+            ReferObject = mspDB;
         }
 
         public MsScanMatchResult Annotate(

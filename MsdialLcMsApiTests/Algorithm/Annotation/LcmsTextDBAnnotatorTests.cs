@@ -31,7 +31,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -57,7 +57,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -83,7 +83,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = false,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -108,7 +108,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = true,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.FindCandidates(target, target, null);
@@ -137,7 +137,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.FindCandidates(target, target, null);
@@ -161,7 +161,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -190,7 +190,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -211,11 +211,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
         public void ReferTest() {
             var db = new List<MoleculeMsReference>
             {
-                    new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 0, Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 1, Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 2, Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 3, Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 4, Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
             };
             var parameter = new MsRefSearchParameterBase
             {
@@ -225,7 +225,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
@@ -253,7 +253,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 IsUseTimeForAnnotationFiltering = true,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
@@ -278,7 +278,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseTimeForAnnotationFiltering = false,
             };
-            var annotator = new LcmsTextDBAnnotator(db, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
@@ -299,7 +299,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -328,7 +328,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -362,7 +362,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 2f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
@@ -381,7 +381,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), new MsRefSearchParameterBase(), "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -404,7 +404,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -476,7 +476,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeMsReference[] { }, parameter, "MspDB");
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {

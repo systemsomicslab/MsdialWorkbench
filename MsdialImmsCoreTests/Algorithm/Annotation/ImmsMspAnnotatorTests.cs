@@ -32,7 +32,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -59,7 +59,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -86,7 +86,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = false,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -113,7 +113,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(target, target, null);
@@ -143,7 +143,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.FindCandidates(target, target, null);
@@ -177,7 +177,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -233,7 +233,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -271,11 +271,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
         public void ReferTest() {
             var db = new List<MoleculeMsReference>
             {
-                    new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, CollisionCrossSection = 96 },
-                    new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, CollisionCrossSection = 104 },
-                    new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, CollisionCrossSection = 100 },
-                    new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, CollisionCrossSection = 100 },
-                    new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, CollisionCrossSection = 106 },
+                    new MoleculeMsReference { ScanID = 0, Name = "A", InChIKey = "a", PrecursorMz = 99.991, CollisionCrossSection = 96 },
+                    new MoleculeMsReference { ScanID = 1, Name = "B", InChIKey = "b", PrecursorMz = 100, CollisionCrossSection = 104 },
+                    new MoleculeMsReference { ScanID = 2, Name = "C", InChIKey = "c", PrecursorMz = 100.009, CollisionCrossSection = 100 },
+                    new MoleculeMsReference { ScanID = 3, Name = "D", InChIKey = "d", PrecursorMz = 99.9, CollisionCrossSection = 100 },
+                    new MoleculeMsReference { ScanID = 4, Name = "E", InChIKey = "e", PrecursorMz = 100, CollisionCrossSection = 106 },
             };
             var parameter = new MsRefSearchParameterBase
             {
@@ -286,7 +286,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 IsUseCcsForAnnotationFiltering = true,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var result = annotator.Annotate(target, target, null);
@@ -314,7 +314,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = true,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(target);
@@ -340,7 +340,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 TotalScoreCutoff = 0,
                 IsUseCcsForAnnotationFiltering = false,
             };
-            var annotator = new ImmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
             var results = annotator.Search(target);
@@ -371,7 +371,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -427,7 +427,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 12f,
                 IsUseCcsForAnnotationScoring = true,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 111,
@@ -483,7 +483,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 CcsTolerance = 5f,
                 IsUseCcsForAnnotationScoring = false,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
@@ -518,7 +518,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -541,7 +541,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -608,7 +608,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new ImmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {

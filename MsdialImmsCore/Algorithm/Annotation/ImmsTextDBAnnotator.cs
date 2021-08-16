@@ -22,12 +22,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public ImmsTextDBAnnotator(IEnumerable<MoleculeMsReference> textDB, MsRefSearchParameterBase parameter, string sourceKey)
-            : base(textDB, sourceKey) {
+        public ImmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string sourceKey)
+            : base(textDB.Database, sourceKey) {
             this.db.Sort(comparer);
             this.Parameter = parameter;
-            this.ReferObject = new DataBaseRefer(this.db);
+            this.ReferObject = textDB;
         }
+
+        private readonly IMatchResultRefer ReferObject;
 
         public MsScanMatchResult Annotate(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
@@ -108,7 +110,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return result;
         }
 
-        public IMatchResultRefer ReferObject { get; }
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }

@@ -15,14 +15,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
     {
         [TestMethod()]
         public void LcmsMspAnnotatorTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -37,19 +37,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
 
-            Assert.AreEqual(db[1].InChIKey, result.InChIKey);
+            Assert.AreEqual(db.Database[1].InChIKey, result.InChIKey);
         }
 
         [TestMethod()]
         public void AnnotateTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100.001, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -64,19 +64,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
 
-            Assert.AreEqual(db[1].InChIKey, result.InChIKey);
+            Assert.AreEqual(db.Database[1].InChIKey, result.InChIKey);
         }
 
         [TestMethod()]
         public void AnnotateRtNotUsedTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100.001, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -91,19 +91,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var result = annotator.Annotate(target, target, null);
 
-            Assert.AreEqual(db[4].InChIKey, result.InChIKey);
+            Assert.AreEqual(db.Database[4].InChIKey, result.InChIKey);
         }
 
         [TestMethod()]
         public void FindCandidatesTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -118,7 +118,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var results = annotator.FindCandidates(target, target, null);
             var expected = new List<string>
             {
-                db[0].InChIKey, db[1].InChIKey, db[2].InChIKey,
+                db.Database[0].InChIKey, db.Database[1].InChIKey, db.Database[2].InChIKey,
             };
 
             CollectionAssert.AreEquivalent(expected, results.Select(result => result.InChIKey).ToList());
@@ -126,14 +126,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void FindCandidatesRtNotUsedTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -148,7 +148,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var results = annotator.FindCandidates(target, target, null);
             var expected = new List<string>
             {
-                db[0].InChIKey, db[1].InChIKey, db[2].InChIKey, db[4].InChIKey,
+                db.Database[0].InChIKey, db.Database[1].InChIKey, db.Database[2].InChIKey, db.Database[4].InChIKey,
             };
 
             CollectionAssert.AreEquivalent(expected, results.Select(result => result.InChIKey).ToList());
@@ -176,7 +176,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -232,7 +232,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -268,14 +268,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void ReferTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
-                    new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
-                    new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+                    new MoleculeMsReference { ScanID = 0, Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 1, Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 2, Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 4, Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
+                    new MoleculeMsReference { ScanID = 5, Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -292,19 +292,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
             var reference = annotator.Refer(result);
 
-            Assert.AreEqual(db[1], reference);
+            Assert.AreEqual(db.Database[1], reference);
         }
 
         [TestMethod()]
         public void SearchTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -319,19 +319,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
 
-            CollectionAssert.AreEquivalent(db.GetRange(0, 3), results);
+            CollectionAssert.AreEquivalent(new[] { db.Database[0], db.Database[1], db.Database[2], }, results);
         }
 
         [TestMethod()]
         public void SearchRtNotUsedTest() {
-            var db = new List<MoleculeMsReference>
+            var db = new MoleculeDataBase(new List<MoleculeMsReference>
             {
                     new MoleculeMsReference { Name = "A", InChIKey = "a", PrecursorMz = 99.991, ChromXs = new ChromXs(1.6, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "B", InChIKey = "b", PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "C", InChIKey = "c", PrecursorMz = 100.009, ChromXs = new ChromXs(2.4, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "D", InChIKey = "d", PrecursorMz = 99.9, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) },
                     new MoleculeMsReference { Name = "E", InChIKey = "e", PrecursorMz = 100, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min) },
-            };
+            }, "DB", DataBaseSource.Msp, SourceType.MspDB);
             var parameter = new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
@@ -345,7 +345,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
             var results = annotator.Search(target);
 
-            CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4] }, results);
+            CollectionAssert.AreEquivalent(new[] { db.Database[0], db.Database[1], db.Database[2], db.Database[4] }, results);
         }
 
         [TestMethod()]
@@ -371,7 +371,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -427,7 +427,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 2f,
                 IsUseTimeForAnnotationScoring = true,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
@@ -470,7 +470,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 RtTolerance = 0.5f,
                 IsUseTimeForAnnotationScoring = false,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature {
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
@@ -505,7 +505,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), new MsRefSearchParameterBase(), Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -528,7 +528,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
@@ -595,7 +595,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
                 TotalScoreCutoff = 0.5f,
             };
-            var annotator = new LcmsMspAnnotator(new MoleculeMsReference[] { }, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {

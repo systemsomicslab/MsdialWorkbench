@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new LcmsMspAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotatorID),
+                new LcmsMspAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotatorID),
                 molecules,
                 Parameter);
         }
