@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new MassAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID),
+                new MassAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID),
                 molecules,
                 Parameter);
         }

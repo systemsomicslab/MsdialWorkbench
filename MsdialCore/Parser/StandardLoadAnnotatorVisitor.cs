@@ -16,15 +16,15 @@ namespace CompMs.MsdialCore.Parser
         public ParameterBase Parameter { get; }
 
         public virtual ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
-            return new MassAnnotator(database.Database, key.Parameter, Parameter.TargetOmics, key.SourceType, key.Key);
+            return new MassAnnotator(database, key.Parameter, Parameter.TargetOmics, key.SourceType, key.Key);
         }
 
         public virtual ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new MassAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, SourceType.MspDB, key.Key);
+            return new MassAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, SourceType.MspDB, key.Key);
         }
 
         public virtual ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new MassAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, SourceType.TextDB, key.Key);
+            return new MassAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, SourceType.TextDB, key.Key);
         }
     }
 }

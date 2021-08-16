@@ -54,7 +54,7 @@ namespace CompMs.MsdialDimsCore.Common {
             TargetOmics omics, IReadOnlyList<IsotopicPeak> isotopes
             ) {
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(mspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), mspParam, omics, "MspDB");
-            var textAnnotator = new MassAnnotator(textDB, mspParam, omics, SourceType.TextDB, "TextDB");
+            var textAnnotator = new MassAnnotator(new MoleculeDataBase(textDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), textParam, omics, SourceType.TextDB, "TextDB");
             Run(feature, msdecResult, mspAnnotator, textAnnotator, mspParam, textParam, isotopes);
         }
 

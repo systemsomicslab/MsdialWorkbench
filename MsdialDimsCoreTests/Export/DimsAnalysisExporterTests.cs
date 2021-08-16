@@ -32,10 +32,10 @@ namespace CompMs.MsdialDimsCore.Export.Tests
 
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
                 var mapper = new DataBaseMapper();
-                mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"),
-                    new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB));
-                mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB"),
-                    new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB));
+                var msp = new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+                var text = new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+                mapper.Add(new MassAnnotator(msp, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"), msp);
+                mapper.Add(new MassAnnotator(text, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB"), text);
                 var provider = new StandardDataProvider(data.Files[0], false, 5);
 
                 var stream = new MemoryStream();
