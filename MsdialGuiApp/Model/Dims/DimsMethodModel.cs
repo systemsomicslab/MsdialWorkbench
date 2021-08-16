@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Dims
             Storage.DataBaseMapper = new DataBaseMapper();
 
             var msp = new MoleculeDataBase(MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            var mspAnnotator = new DimsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            var mspAnnotator = new DimsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
             this.mspAnnotator = mspAnnotator;
             Storage.DataBaseMapper.Add(mspAnnotator, msp);
 
