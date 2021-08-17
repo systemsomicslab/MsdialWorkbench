@@ -10,9 +10,11 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -107,9 +109,17 @@ namespace CompMs.App.Msdial
         private void RunProcessAll(Window window, MsdialDataStorage storage) {
             MethodVM?.Dispose();
 
+            var analysisFiles = storage.AnalysisFiles; // TODO: temporary
+            storage.AnalysisFiles = storage.AnalysisFiles.Select(file => new AnalysisFileBean(file)).ToList();
+            var dt = DateTime.Now;
+            foreach (var file in storage.AnalysisFiles) {
+                file.DeconvolutionFilePath = Path.Combine(Storage.ParameterBase.ProjectFilePath, $"{file.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}");
+                file.PeakAreaBeanInformationFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:_yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}");
+            }
             var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
             if (method.InitializeNewProject(window) != 0) {
 
+                storage.AnalysisFiles = analysisFiles;
                 method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
                 method.LoadProject();
                 MethodVM = method;
