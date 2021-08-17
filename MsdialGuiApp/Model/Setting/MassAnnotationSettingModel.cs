@@ -18,19 +18,19 @@ namespace CompMs.App.Msdial.Model.Setting
             
         }
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new MassAnnotator(molecules.Database, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID),
+                new MassAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID),
                 molecules,
                 Parameter);
         }
 
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
+        private MoleculeDataBase LoadDataBase(ParameterBase parameter) {
             switch (DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:

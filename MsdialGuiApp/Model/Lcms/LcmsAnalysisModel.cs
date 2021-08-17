@@ -30,7 +30,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultRefer refer,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            IReadOnlyList<ISerializableAnnotatorContainer> annotators)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -48,9 +49,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(parameter));
             }
 
+            if (annotators is null) {
+                throw new ArgumentNullException(nameof(annotators));
+            }
+
             AnalysisFile = analysisFile;
             this.provider = provider;
             Parameter = parameter;
+            Annotators = annotators;
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -142,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AnalysisFileBean AnalysisFile { get; }
 
         public ParameterBase Parameter { get; }
-
+        public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }

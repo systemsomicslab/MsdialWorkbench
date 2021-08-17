@@ -15,16 +15,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
         private IAnnotationSettingModel implement;
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             return Implement.Build(parameter);
-        }
-
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
-            return Implement.Build(projectParameter, molecules);
-        }
-
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
-            return Implement.LoadDataBase(parameter);
         }
     }
 }

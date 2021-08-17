@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
@@ -29,8 +30,8 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var mspAnnotator = new ImmsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            var textDBAnnotator = new ImmsTextDBAnnotator(container.TextDB, container.ParameterBase.TextDbSearchParam, "TextDB");
+            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
+            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, "TextDB");
 
             Run(file, container, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), isGuiProcess, reportAction, token);
         }
@@ -59,14 +60,14 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, spectrumList, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
+            var targetCE2MSDecResults = SpectrumDeconvolution(rawObj, provider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
             PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -101,7 +102,7 @@ namespace CompMs.MsdialImmsCore.Process
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
             RawMeasurement rawObj,
-            List<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummary summary,
             MsdialImmsParameter parameter,
@@ -109,6 +110,7 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction,
             CancellationToken token) {
 
+            var spectrumList = provider.LoadMsSpectrums();
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
@@ -161,13 +163,13 @@ namespace CompMs.MsdialImmsCore.Process
 
         private static void PeakCharacterization(
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            List<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
             Action<int> reportAction
             ) {
 
-            new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures, 
+            new PeakCharacterEstimator(90, 10).Process(provider.LoadMsSpectrums(), chromPeakFeatures, 
                 targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
                 parameter, reportAction);
         }

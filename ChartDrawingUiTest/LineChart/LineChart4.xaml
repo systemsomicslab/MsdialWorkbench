@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       xmlns:local="clr-namespace:ChartDrawingUiTest.LineChart"
       mc:Ignorable="d" 
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
@@ -39,22 +40,21 @@
                 Grid.Row="0" Grid.Column="1">
             <line:LineChartControl x:Name="scatter"
                                    ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}}"
-                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
+                                   HorizontalAxis="{StaticResource HorizontalAxis}"
+                                   VerticalAxis="{StaticResource VerticalAxis}"
                                    HorizontalPropertyName="X"
                                    VerticalPropertyName="Y" >
+                <line:LineChartControl.LinePen>
+                    <Pen Thickness="3" Brush="Black" PresentationOptions:Freeze="True"/>
+                </line:LineChartControl.LinePen>
             </line:LineChartControl>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />
     </Grid>

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
@@ -50,8 +51,8 @@ namespace CompMs.MsdialDimsCore
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
-            var mspAnnotator = new DimsMspAnnotator(container.MspDB, container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            var textAnnotator = new MassAnnotator(container.TextDB, container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
+            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
+            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
             Run(file, container, mspAnnotator, textAnnotator, isGuiProcess, reportAction, token);
         }
 

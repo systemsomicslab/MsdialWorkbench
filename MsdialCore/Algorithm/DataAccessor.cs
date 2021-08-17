@@ -22,25 +22,25 @@ namespace CompMs.MsdialCore.Algorithm
         }
     }
 
-    public class MassComparer : IComparer<IMSScanProperty>
+    public class MassComparer : IComparer<IMSProperty>
     {
-        public static readonly IComparer<IMSScanProperty> Comparer = new MassComparer();
+        public static readonly IComparer<IMSProperty> Comparer = new MassComparer();
 
         MassComparer() { }
-        public int Compare(IMSScanProperty x, IMSScanProperty y) {
+        public int Compare(IMSProperty x, IMSProperty y) {
             return x.PrecursorMz.CompareTo(y.PrecursorMz);
         }
     }
 
     public class ChromXsComparer
     {
-        public static readonly IComparer<IMSScanProperty> ChromXComparer = new ChromXComparerImpl();
-        public static readonly IComparer<IMSScanProperty> RTComparer = new RTComparerImpl();
-        public static readonly IComparer<IMSScanProperty> RIComparer = new RIComparerImpl();
-        public static readonly IComparer<IMSScanProperty> MzComparer = new MzComparerImpl();
-        public static readonly IComparer<IMSScanProperty> DriftComparer = new DriftComparerImpl();
+        public static readonly IComparer<IMSProperty> ChromXComparer = new ChromXComparerImpl();
+        public static readonly IComparer<IMSProperty> RTComparer = new RTComparerImpl();
+        public static readonly IComparer<IMSProperty> RIComparer = new RIComparerImpl();
+        public static readonly IComparer<IMSProperty> MzComparer = new MzComparerImpl();
+        public static readonly IComparer<IMSProperty> DriftComparer = new DriftComparerImpl();
 
-        public static IComparer<IMSScanProperty> GetComparer(ChromXType type) {
+        public static IComparer<IMSProperty> GetComparer(ChromXType type) {
             switch (type) {
                 case ChromXType.RT:
                     return RTComparer;
@@ -55,36 +55,51 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         ChromXsComparer() { }
-        class ChromXComparerImpl : IComparer<IMSScanProperty>
+        class ChromXComparerImpl : IComparer<IMSProperty>
         {
-            public int Compare(IMSScanProperty x, IMSScanProperty y) {
+            public int Compare(IMSProperty x, IMSProperty y) {
                 return x.ChromXs.Value.CompareTo(y.ChromXs.Value);
             }
         }
 
-        class RTComparerImpl : IComparer<IMSScanProperty>
+        class RTComparerImpl : IComparer<IMSProperty>
         {
-            public int Compare(IMSScanProperty x, IMSScanProperty y) {
+            public int Compare(IMSProperty x, IMSProperty y) {
                 return x.ChromXs.RT.Value.CompareTo(y.ChromXs.RT.Value);
             }
         }
-        class RIComparerImpl : IComparer<IMSScanProperty>
+        class RIComparerImpl : IComparer<IMSProperty>
         {
-            public int Compare(IMSScanProperty x, IMSScanProperty y) {
+            public int Compare(IMSProperty x, IMSProperty y) {
                 return x.ChromXs.RI.Value.CompareTo(y.ChromXs.RI.Value);
             }
         }
-        class MzComparerImpl : IComparer<IMSScanProperty>
+        class MzComparerImpl : IComparer<IMSProperty>
         {
-            public int Compare(IMSScanProperty x, IMSScanProperty y) {
+            public int Compare(IMSProperty x, IMSProperty y) {
                 return x.ChromXs.Mz.Value.CompareTo(y.ChromXs.Mz.Value);
             }
         }
-        class DriftComparerImpl : IComparer<IMSScanProperty>
+        class DriftComparerImpl : IComparer<IMSProperty>
         {
-            public int Compare(IMSScanProperty x, IMSScanProperty y) {
+            public int Compare(IMSProperty x, IMSProperty y) {
                 return x.ChromXs.Drift.Value.CompareTo(y.ChromXs.Drift.Value);
             }
+        }
+    }
+
+    public class CollisionCrossSectionComparer : IComparer<IIonProperty>
+    {
+        public static readonly IComparer<IIonProperty> Comparer;
+
+        static CollisionCrossSectionComparer() {
+            Comparer = new CollisionCrossSectionComparer();
+        }
+
+        CollisionCrossSectionComparer() { }
+
+        public int Compare(IIonProperty x, IIonProperty y) {
+            return x.CollisionCrossSection.CompareTo(y.CollisionCrossSection);
         }
     }
 

@@ -81,8 +81,9 @@ namespace CompMs.App.Msdial.Model.Dims
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
         public void LoadAnnotator() {
-            mspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"];
-            textDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"];
+            // TODO: must not cast Refer to Annotator
+            mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
+            textDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
         }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
@@ -101,11 +102,13 @@ namespace CompMs.App.Msdial.Model.Dims
             Storage.DataBaseMapper = new DataBaseMapper();
 
             var msp = new MoleculeDataBase(MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            mspAnnotator = new DimsMspAnnotator(msp.Database, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            var mspAnnotator = new DimsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+            this.mspAnnotator = mspAnnotator;
             Storage.DataBaseMapper.Add(mspAnnotator, msp);
 
             var text = new MoleculeDataBase(TextDB, "TextDB", DataBaseSource.Msp, SourceType.TextDB);
-            textDBAnnotator = new MassAnnotator(text.Database, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            var textDBAnnotator = new MassAnnotator(text, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+            this.textDBAnnotator = textDBAnnotator;
             Storage.DataBaseMapper.Add(textDBAnnotator, text);
         }
 

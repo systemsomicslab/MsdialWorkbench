@@ -1,41 +1,65 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Lcimms;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Parameter;
+using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class LcimmsMethodVM : TempMethodVM
+    class LcimmsMethodVM : MethodViewModel
     {
-        public LcimmsMethodVM(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles)
-            : this(new LcimmsMethodModel(storage, analysisFiles, alignmentFiles)) {
+        public LcimmsMethodVM(
+            MsdialDataStorage storage,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            : this(
+                  new LcimmsMethodModel(storage, new StandardDataProviderFactory()),
+                  compoundSearchService,
+                  peakSpotTableService) {
             
         }
 
-        public LcimmsMethodVM(LcimmsMethodModel model) : base(model.Serializer) {
+        public LcimmsMethodVM(
+            LcimmsMethodModel model,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            : base(model, model.Serializer) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
             this.model = model;
-            AnalysisFilesView = CollectionViewSource.GetDefaultView(model.AnalysisFiles);
-            AlignmentFilesView = CollectionViewSource.GetDefaultView(model.AlignmentFiles);
+            this.compoundSearchService = compoundSearchService;
+            this.peakSpotTableService = peakSpotTableService;
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
         private readonly LcimmsMethodModel model;
-        public ICollectionView AnalysisFilesView { get; }
-        public ICollectionView AlignmentFilesView { get; }
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public AnalysisLcimmsVM AnalysisVM {
             get => analysisVM;
@@ -87,6 +111,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
         private DisplayFilter displayFilters = DisplayFilter.Unset;
 
+        private bool ReadDisplayFilter(DisplayFilter flag) {
+            return displayFilters.Read(flag);
+        }
+
+        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
+            displayFilters.Write(flag, set);
+            OnPropertyChanged(nameof(displayFilters));
+        }
+
         void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(displayFilters)) {
                 if (AnalysisVM != null)
@@ -114,23 +147,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     return -1;
             }
 
-            LoadAnalysisFile(model.Storage.AnalysisFiles.FirstOrDefault());
+            LoadAnalysisFileCommand.Execute();
             return 0;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcImMsParameter>(model.Storage.ParameterBase as MsdialLcImMsParameter, model.Storage.AnalysisFiles);
-            var apsw = new AnalysisParamSetForLcimmsWindow
-            {
-                DataContext = analysisParamSetVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcImMsParameter>(model.Storage.ParameterBase as MsdialLcImMsParameter, model.Storage.AnalysisFiles)) {
+                var apsw = new AnalysisParamSetForLcimmsWindow
+                {
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            if (apsw.ShowDialog() != true)
-                return false;
+                if (apsw.ShowDialog() != true)
+                    return false;
 
-            model.SetStorageContent(analysisParamSetVM.AlignmentResultFileName, analysisParamSetVM.MspDB, analysisParamSetVM.TextDB);
+                model.SetStorageContent(analysisParamSetVM);
+            }
             return true;
         }
 
@@ -183,55 +217,45 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
 
         public override void LoadProject() {
-            LoadSelectedAnalysisFile();
-        }
-
-        public DelegateCommand LoadAnalysisFileCommand {
-            get => loadAnalysisFileCommand ?? (loadAnalysisFileCommand = new DelegateCommand(LoadSelectedAnalysisFile));
-        }
-        private DelegateCommand loadAnalysisFileCommand;
-
-        private AnalysisFileBean cacheAnalysisFile;
-        private void LoadSelectedAnalysisFile() {
-            if (AnalysisFilesView.CurrentItem is AnalysisFileBean analysis) {
-                LoadAnalysisFile(analysis);
-            }
-        }
-
-        private void LoadAnalysisFile(AnalysisFileBean analysis) {
-            if (cacheAnalysisFile == analysis || analysis == null) {
-                return;
-            }
-
-            cacheAnalysisFile = analysis;
-            model.AnalysisFile = analysis;
-            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel);
-        }
-
-        public DelegateCommand LoadAlignmentFileCommand {
-            get => loadAlignmentFileCommand ?? (loadAlignmentFileCommand = new DelegateCommand(LoadSelectedAlignmentFile));
-        }
-        private DelegateCommand loadAlignmentFileCommand;
-
-        private AlignmentFileBean cacheAlignmentFile;
-        private void LoadSelectedAlignmentFile() {
-            if (AlignmentFilesView.CurrentItem is AlignmentFileBean alignment) {
-                LoadAlignmentFile(alignment);
-            }
-        }
-
-        private void LoadAlignmentFile(AlignmentFileBean alignment) {
-            if (cacheAlignmentFile == alignment || alignment == null) {
-                return;
-            }
-
-            cacheAlignmentFile = alignment;
-            model.AlignmentFile = alignment;
-            AlignmentVM = new AlignmentLcimmsVM(model.AlignmentModel);
+            AnalysisFilesView.MoveCurrentToFirst();
+            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
+            LoadAnalysisFileCommand.Execute();
         }
 
         public override void SaveProject() {
             model.SaveProject();
+        }
+
+        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
+            if (analysisFile?.File is null || analysisFile.File == model.AnalysisFile) {
+                return;
+            }
+            model.LoadAnalysisFile(analysisFile.File);
+
+            if (!(AnalysisVM is null)) {
+                AnalysisVM.Dispose();
+                Disposables.Remove(AnalysisVM);
+            }
+            AnalysisVM = new AnalysisLcimmsVM(model.AnalysisModel, compoundSearchService, peakSpotTableService)
+            {
+                DisplayFilters = displayFilters
+            }.AddTo(Disposables);
+        }
+
+        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
+            if (alignmentFile?.File is null || alignmentFile.File == model.AlignmentFile) {
+                return;
+            }
+            model.LoadAlignmentFile(alignmentFile.File);
+
+            if (!(alignmentVM is null)) {
+                AlignmentVM.Dispose();
+                Disposables.Remove(AlignmentVM);
+            }
+            AlignmentVM = new AlignmentLcimmsVM(model.AlignmentModel, compoundSearchService, peakSpotTableService)
+            {
+                DisplayFilters = displayFilters,
+            }.AddTo(Disposables);
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
@@ -247,15 +271,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             };
 
             dialog.ShowDialog();
-        }
-
-        private bool ReadDisplayFilter(DisplayFilter flag) {
-            return displayFilters.Read(flag);
-        }
-
-        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
-            displayFilters.Write(flag, set);
-            OnPropertyChanged(nameof(displayFilters));
         }
     }
 }

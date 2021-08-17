@@ -2,15 +2,14 @@
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -27,7 +26,13 @@ namespace CompMs.App.Msdial.ViewModel
             this.model = model;
 
             MsSpectrumViewModel = new MsSpectrumViewModel(this.model.MsSpectrumModel).AddTo(Disposables);
-            ParameterVM = new MsRefSearchParameterVM(this.model.Parameter).AddTo(Disposables);
+
+            Annotator = this.model.ToReactivePropertySlimAsSynchronized(m => m.Annotator).AddTo(Disposables);
+            ParameterVM = Annotator
+                .Select(annotator => new MsRefSearchParameterBaseViewModel(annotator.Parameter))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             SelectedCompound = new ReactivePropertySlim<CompoundResult>()
                 .AddTo(Disposables);
@@ -44,26 +49,38 @@ namespace CompMs.App.Msdial.ViewModel
             SetUnknownCommand = canSet.ToReactiveCommand().AddTo(Disposables);
             SetUnknownCommand.Subscribe(this.model.SetUnknown);
 
-            var ms1Tol = ParameterVM.Ms1Tolerance;
-            var ms2Tol = ParameterVM.Ms2Tolerance;
-            var condition = new[]
-            {
-                ms1Tol.ObserveHasErrors.Inverse(),
-                ms2Tol.ObserveHasErrors.Inverse(),
-            }.CombineLatestValuesAreAllTrue();
-            SearchCommand = IsBusy.Inverse()
-                .CombineLatest(condition, (a, b) => a && b)
-                .ToReactiveCommand().AddTo(Disposables);
-
-            searchUnsubscriber = new[] {
-                SearchCommand.ToUnit()
-            }.Merge()
-            .CombineLatest(condition, (_, c) => c)
-            .Where(c => c)
-            .Select(_ => SearchAsync())
-            .Switch()
-            .Subscribe(cs => Compounds = cs)
+            ParameterHasErrors = ParameterVM.SelectMany(parameter =>
+                (new[]
+                {
+                    parameter.Ms1Tolerance.ObserveHasErrors,
+                    parameter.Ms2Tolerance.ObserveHasErrors,
+                }).CombineLatestValuesAreAllFalse()
+            ).Inverse()
+            .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            SearchCommand = new IObservable<bool>[]{
+                IsBusy,
+                ParameterHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand().AddTo(Disposables);
+
+            searchUnsubscriber = ParameterHasErrors
+                .Where(hasErrors => !hasErrors)
+                .Select(_ => new[]
+                {
+                    SearchCommand.ToUnit(),
+                    ParameterVM.SelectMany(parameter => new[]
+                    {
+                        parameter.Ms1Tolerance.ToUnit(),
+                        parameter.Ms2Tolerance.ToUnit(),
+                    }.Merge())
+                }.Merge())
+                .Switch()
+                .Select(_ => SearchAsync())
+                .Switch()
+                .Subscribe(cs => Compounds = cs)
+                .AddTo(Disposables);
 
             SearchCommand.Execute();
         }
@@ -73,11 +90,11 @@ namespace CompMs.App.Msdial.ViewModel
 
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
 
-        public MsRefSearchParameterVM ParameterVM {
-            get => parameterVM;
-            set => SetProperty(ref parameterVM, value);
-        }
-        private MsRefSearchParameterVM parameterVM;
+        public IReadOnlyList<IAnnotatorContainer> Annotators => model.Annotators;
+
+        public ReactivePropertySlim<IAnnotatorContainer> Annotator { get; }
+
+        public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterVM { get; }
 
         public IFileBean File => model.File;
 
@@ -98,6 +115,7 @@ namespace CompMs.App.Msdial.ViewModel
         protected IDisposable searchUnsubscriber;
 
         public ReactivePropertySlim<bool> IsBusy { get; } = new ReactivePropertySlim<bool>(false);
+        public ReadOnlyReactivePropertySlim<bool> ParameterHasErrors { get; protected set; }
 
         protected async Task<IReadOnlyList<CompoundResult>> SearchAsync() {
             IsBusy.Value = true;
@@ -111,52 +129,5 @@ namespace CompMs.App.Msdial.ViewModel
         public ReactiveCommand SetUnsettledCommand { get; }
 
         public ReactiveCommand SetUnknownCommand { get; }
-    }
-}
-
-namespace CompMs.App.Msdial.ViewModel
-{
-    public class MsRefSearchParameterVM : ViewModelBase
-    {
-        public MsRefSearchParameterVM(MsRefSearchParameterBase innerModel) {
-            this.innerModel = innerModel;
-
-            Ms1Tolerance = new ReactiveProperty<string>(innerModel.Ms1Tolerance.ToString())
-                .SetValidateAttribute(() => Ms1Tolerance);
-            Ms2Tolerance = new ReactiveProperty<string>(innerModel.Ms2Tolerance.ToString())
-                .SetValidateAttribute(() => Ms2Tolerance);
-            CcsTolerance = new ReactiveProperty<string>(innerModel.CcsTolerance.ToString())
-                .SetValidateAttribute(() => CcsTolerance);
-
-            Ms1Tolerance.ObserveHasErrors.Inverse()
-                .Where(c => c)
-                .Subscribe(_ => innerModel.Ms1Tolerance = float.Parse(Ms1Tolerance.Value))
-                .AddTo(Disposables);
-            Ms2Tolerance.ObserveHasErrors.Inverse()
-                .Where(c => c)
-                .Subscribe(_ => innerModel.Ms2Tolerance = float.Parse(Ms2Tolerance.Value))
-                .AddTo(Disposables);
-            CcsTolerance.ObserveHasErrors.Inverse()
-                .Where(c => c)
-                .Subscribe(_ => innerModel.CcsTolerance = float.Parse(CcsTolerance.Value))
-                .AddTo(Disposables);
-        }
-
-        internal readonly MsRefSearchParameterBase innerModel;
-
-        [Required(ErrorMessage = "Ms1 tolerance required.")]
-        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
-        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
-        public ReactiveProperty<string> Ms1Tolerance { get; }
-
-        [Required(ErrorMessage = "Ms2 tolerance required.")]
-        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
-        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
-        public ReactiveProperty<string> Ms2Tolerance { get; }
-
-        [Required(ErrorMessage = "Ccs tolerance required.")]
-        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
-        [Range(0.00001, double.MaxValue, ErrorMessage = "Too small tolerance.")]
-        public ReactiveProperty<string> CcsTolerance { get; }
     }
 }

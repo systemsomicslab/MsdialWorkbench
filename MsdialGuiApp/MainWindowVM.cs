@@ -53,11 +53,11 @@ namespace CompMs.App.Msdial
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
-        public TempMethodVM MethodVM {
+        public MethodViewModel MethodVM {
             get => methodVM;
             set => SetProperty(ref methodVM, value);
         }
-        private TempMethodVM methodVM;
+        private MethodViewModel methodVM;
 
         public MsdialDataStorage Storage {
             get => storage;
@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial
             SaveProject(method, storage);
         }
 
-        private TempMethodVM CreateNewMethodVM(MachineCategory category, MsdialDataStorage storage) {
+        private MethodViewModel CreateNewMethodVM(MachineCategory category, MsdialDataStorage storage) {
             switch (category) {
                 case MachineCategory.LCMS:
                     return new ViewModel.Lcms.LcmsMethodVM(storage, compoundSearchService, peakSpotTableService);
@@ -134,8 +134,7 @@ namespace CompMs.App.Msdial
                 case MachineCategory.IMMS:
                     return new ViewModel.Imms.ImmsMethodVM(storage, compoundSearchService, peakSpotTableService);
                 case MachineCategory.LCIMMS:
-                    throw new NotImplementedException("Lcimms method is working now.");
-                    
+                    return new ViewModel.Lcimms.LcimmsMethodVM(storage, compoundSearchService, peakSpotTableService);
             }
             throw new NotImplementedException("This method is not implemented");
         }
@@ -260,7 +259,7 @@ namespace CompMs.App.Msdial
         }
         private DelegateCommand saveProjectCommand;
 
-        private static void SaveProject(TempMethodVM methodVM, MsdialDataStorage storage) {
+        private static void SaveProject(MethodViewModel methodVM, MsdialDataStorage storage) {
             // TODO: implement process when project save failed.
             methodVM.Serializer.SaveMsdialDataStorage(storage.ParameterBase.ProjectFilePath, storage);
             methodVM?.SaveProject();
@@ -271,7 +270,7 @@ namespace CompMs.App.Msdial
         }
         private DelegateCommand<Window> saveAsProjectCommand;
 
-        private static void SaveAsProject(Window owner, TempMethodVM methodVM, MsdialDataStorage storage) {
+        private static void SaveAsProject(Window owner, MethodViewModel methodVM, MsdialDataStorage storage) {
             var sfd = new SaveFileDialog
             {
                 Filter = "MTD file(*.mtd2)|*.mtd2",

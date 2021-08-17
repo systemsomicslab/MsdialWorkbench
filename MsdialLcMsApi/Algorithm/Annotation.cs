@@ -29,7 +29,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         // textDB must be sorted by precursor mz
         public void MainProcess(List<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults,
-            IReadOnlyCollection<IAnnotatorContainer> annotatorContainers,
+            IReadOnlyCollection<ISerializableAnnotatorContainer> annotatorContainers,
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB,
             MsdialLcmsParameter param, Action<int> reportAction) {
 
@@ -46,8 +46,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         public void LcMsMsMatchMethod(ChromatogramPeakFeature chromPeak, MSDecResult msdecResult,
-            List<RawSpectrum> spectrumList, IReadOnlyCollection<IAnnotatorContainer> annotatorContainers, 
-            List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialLcmsParameter param) {
+            List<RawSpectrum> spectrumList, IReadOnlyCollection<ISerializableAnnotatorContainer> annotatorContainers, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialLcmsParameter param) {
 
             if (mspDB.IsEmptyOrNull() && textDB.IsEmptyOrNull() && annotatorContainers.IsEmptyOrNull()) return;
 

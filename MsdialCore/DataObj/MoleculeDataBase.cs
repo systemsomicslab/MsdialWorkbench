@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class MoleculeDataBase
+    public class MoleculeDataBase : IReferenceDataBase, IMatchResultRefer
     {
         public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
@@ -26,7 +27,7 @@ namespace CompMs.MsdialCore.DataObj
             DataBaseSource = dbsource;
         }
 
-        public MoleculeDataBase(string id, DataBaseSource dbsource, SourceType type) {
+        public MoleculeDataBase(string id, SourceType type, DataBaseSource dbsource) {
             Id = id;
             SourceType = type;
             DataBaseSource = dbsource;
@@ -36,11 +37,13 @@ namespace CompMs.MsdialCore.DataObj
         public MoleculeMsReferenceCollection Database { get; private set; }
 
         [Key(0)]
-        public string Id { get; set; }
+        public string Id { get; }
         [Key(1)]
-        public SourceType SourceType { get; set; }
+        public SourceType SourceType { get; }
         [Key(2)]
-        public DataBaseSource DataBaseSource { get; set; }
+        public DataBaseSource DataBaseSource { get; }
+
+        string IMatchResultRefer.Key => Id;
 
         public void Save(Stream stream) {
             LargeListMessagePack.Serialize(stream, Database);
@@ -50,6 +53,14 @@ namespace CompMs.MsdialCore.DataObj
             Database?.Clear();
             var db = LargeListMessagePack.Deserialize<MoleculeMsReference>(stream);
             Database = new MoleculeMsReferenceCollection(db);
+        }
+
+        MoleculeMsReference IMatchResultRefer.Refer(MsScanMatchResult result) {
+            if (result.LibraryID >= Database.Count
+                || Database[result.LibraryID].ScanID != result.LibraryID) {
+                return Database.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+            }
+            return Database[result.LibraryID];
         }
     }
 }

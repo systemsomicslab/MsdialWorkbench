@@ -11,6 +11,7 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ using System.Linq;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
-    public class DimsMspAnnotator : MspDbRestorableBase, IAnnotator<IMSProperty, IMSScanProperty>
+    public class DimsMspAnnotator : MspDbRestorableBase, ISerializableAnnotator<IMSProperty, IMSScanProperty, MoleculeDataBase>
     {
         private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
 
@@ -26,12 +27,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase Parameter { get; }
 
-        public DimsMspAnnotator(IEnumerable<MoleculeMsReference> mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
-            :base(mspDB.OrderBy(msp => msp.PrecursorMz), sourceKey) {
+        public DimsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
+            : base(mspDB.Database, sourceKey) {
             Parameter = parameter;
             this.omics = omics;
-            ReferObject = new DataBaseRefer(this.db);
+            ReferObject = mspDB;
         }
+
+        private readonly IMatchResultRefer ReferObject;
 
         public MsScanMatchResult Annotate(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
@@ -96,7 +99,6 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return result;
         }
 
-        public IMatchResultRefer ReferObject { get; }
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
@@ -184,7 +186,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (Ms2Filtering(result, parameter)) {
+                if (!SatisfyMs2Conditions(result, parameter)) {
                     continue;
                 }
                 if (result.TotalScore < parameter.TotalScoreCutoff) {
@@ -195,7 +197,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return filtered;
         }
 
-        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
             if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
                 return false;
             }

@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.DataObj.Result;
 
 namespace CompMs.MsdialDimsCore.Export.Tests
 {
@@ -23,25 +24,30 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         [TestMethod()]
         public void ExportTest() {
             // prepare();
-            var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2";
-            var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv";
+            var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2.cache";
+            var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv.cache";
 
-            var data = MessagePackHandler.LoadFromFile<DataStorageForTest>(datafile);
-            var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
-            var mapper = new DataBaseMapper();
-            mapper.Add(new MassAnnotator(data.MspDB, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.MspDB, "MspDB"));
-            mapper.Add(new MassAnnotator(data.TextDB, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB"));
-            var provider = new StandardDataProvider(data.Files[0], false, 5);
+            using (var datastream = File.Open(datafile, FileMode.Create)) {
+                var data = MessagePackDefaultHandler.LoadFromStream<DataStorageForTest>(datastream);
 
-            var stream = new MemoryStream();
-            var exporter = new AnalysisCSVExporter();
-            var metaAccessor = new DimsAnalysisMetadataAccessor(mapper, data.Parameter);
+                var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);
+                var mapper = new DataBaseMapper();
+                var msp = new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+                var text = new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+                mapper.Add(new MassAnnotator(msp, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"), msp);
+                mapper.Add(new MassAnnotator(text, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB"), text);
+                var provider = new StandardDataProvider(data.Files[0], false, 5);
 
-            exporter.Export(stream, data.Features, msdecResults, provider, metaAccessor);
+                var stream = new MemoryStream();
+                var exporter = new AnalysisCSVExporter();
+                var metaAccessor = new DimsAnalysisMetadataAccessor(mapper, data.Parameter);
 
-            var expected = File.ReadAllText(expectedfile);
-            var actual = Encoding.UTF8.GetString(stream.ToArray());
-            Assert.AreEqual(expected, actual);
+                exporter.Export(stream, data.Features, msdecResults, provider, metaAccessor);
+
+                var expected = File.ReadAllText(expectedfile);
+                var actual = Encoding.UTF8.GetString(stream.ToArray());
+                Assert.AreEqual(expected, actual);
+            }
         }
 
         private static void OriginalExportChromPeakFeature(
@@ -65,10 +71,10 @@ namespace CompMs.MsdialDimsCore.Export.Tests
         }
 
         private static void prepare() {
-            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_neg\2021_06_22_12_57_58.mtd2";
-            var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_dec2";
-            var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2";
-            var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv";
+            var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\2021_08_11_14_34_01.mtd2";
+            var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_dec2.cache";
+            var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2.cache";
+            var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv.cache";
 
             var storage = new Parser.MsdialDimsSerializer().LoadMsdialDataStorageBase(project);
             var analysisFile = storage.AnalysisFiles[0];
@@ -121,7 +127,9 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 TextDB = text,
             };
 
-            MessagePackHandler.SaveToFile(data, newdatafile);
+            using (var stream = File.Open(newdatafile, FileMode.Create)) {
+                MessagePackDefaultHandler.SaveToStream(data, stream);
+            }
         }
     }
 }

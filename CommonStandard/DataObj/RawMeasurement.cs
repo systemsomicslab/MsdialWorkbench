@@ -200,6 +200,10 @@ namespace CompMs.Common.DataObj {
             this.MaldiFrameInfo = null;
             this.Spectrum = new RawPeakElement[] { };
         }
+
+        public RawSpectrum ShallowCopy() {
+            return (RawSpectrum)MemberwiseClone();
+        }
     }
 
     public class RawPrecursorIon

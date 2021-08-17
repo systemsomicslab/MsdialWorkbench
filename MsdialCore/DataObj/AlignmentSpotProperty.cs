@@ -136,7 +136,7 @@ namespace CompMs.MsdialCore.DataObj {
                 if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
                     return true;
                 }
-                return false;
+                return MatchResults.IsReferenceMatched;
             }
         }
 
@@ -155,7 +155,7 @@ namespace CompMs.MsdialCore.DataObj {
                 else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
                     return true;
                 }
-                return false;
+                return MatchResults.IsAnnotationSuggested;
             }
         }
 
@@ -193,7 +193,7 @@ namespace CompMs.MsdialCore.DataObj {
                 .Where(peak => id2class.ContainsKey(peak.FileID))
                 .GroupBy(peak => id2class[peak.FileID])
                 .ToArray();
-            if (targets.All(group => group.Count() == 1)) {
+            if (targets.Length <= 1 || targets.All(group => group.Count() == 1)) {
                 AnovaPvalue = 0f;
                 return;
             }

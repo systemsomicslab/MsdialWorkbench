@@ -1,251 +1,182 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
+using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
+using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    public class LcimmsAlignmentModel : ViewModelBase
+    class LcimmsAlignmentModel : AlignmentModelBase
     {
+        public LcimmsAlignmentModel(
+            AlignmentFileBean alignmentFileBean,
+            ParameterBase parameter,
+            IMatchResultRefer refer) {
+
+            AlignmentFile = alignmentFileBean;
+            ResultFile = alignmentFileBean.FilePath;
+            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
+                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+
+            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
+            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+            RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.innerModel.TimesCenter.RT.Value) ?? 0d;
+            RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.innerModel.TimesCenter.RT.Value) ?? 0d;
+            DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.innerModel.TimesCenter.Drift.Value) ?? 0d;
+            DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.innerModel.TimesCenter.Drift.Value) ?? 0d;
+
+            Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+            var fileName = alignmentFileBean.FileName;
+            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
+            {
+                GraphTitle = fileName,
+                HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
+                VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
+                HorizontalTitle = "Drift time [1/k0]",
+                VerticalTitle = "m/z",
+            };
+
+            var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
+            var refLoader = new MsRefSpectrumLoader(refer);
+            Ms2SpectrumModel = MsSpectrumModel.Create(
+                Target, decLoader, refLoader,
+                peak => peak.Mass,
+                peak => peak.Intensity);
+            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
+            Ms2SpectrumModel.HorizontalTitle = "m/z";
+            Ms2SpectrumModel.VerticalTitle = "Abundance";
+            Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
+            Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
+            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
+            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
+
+            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            BarChartModel = BarChartModel.Create(
+                Target, BarItemsLoader,
+                item => item.Class,
+                item => item.Height);
+            BarChartModel.Elements.HorizontalTitle = "Class";
+            BarChartModel.Elements.VerticalTitle = "Height";
+            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
+            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
+
+            var eicFile = alignmentFileBean.EicFilePath;
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
+            AlignmentEicModel = AlignmentEicModel.Create(
+                Target, eicLoader,
+                peak => peak.Time,
+                peak => peak.Intensity);
+            AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
+            AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
+            AlignmentEicModel.Elements.VerticalTitle = "Abundance";
+            AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
+            AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
+
+            // AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(Ms1Spots, TargetZZZ, MassMin, MassMax, DriftMin, DriftMax);
+
+            MsdecResult = Target.Where(t => t != null)
+                .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
+            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
+            {
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        spot => spot.Ontology,
+                        Color.FromArgb(180, 181, 181, 181)),
+                    "Ontology"),
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
+                        spot => Color.FromArgb(
+                            180,
+                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
+                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
+                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
+                        enableCache: true),
+                    "Amplitude"),
+            };
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    SelectedBrush = Brushes[0].Mapper;
+                    break;
+                case TargetOmics.Metabolomics:
+                    SelectedBrush = Brushes[1].Mapper;
+                    break;
+            }
+        }
+
         static LcimmsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsAlignmentModel(
-            AlignmentFileBean alignmentFileBean,
-            ParameterBase param,
-            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator) {
-
-            alignmentFile = alignmentFileBean;
-            fileName = alignmentFileBean.FileName;
-            resultFile = alignmentFileBean.FilePath;
-            eicFile = alignmentFileBean.EicFilePath;
-            spectraFile = alignmentFileBean.SpectraFilePath;
-
-            this.param = param;
-            MspAnnotator = mspAnnotator;
-            TextDBAnnotator = textDBAnnotator;
-
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
-
-            ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
-            MsdecResultsReader.GetSeekPointers(alignmentFileBean.SpectraFilePath, out _, out seekPointers, out _);
-        }
-
-        public AlignmentFileBean AlignmentFile => alignmentFile;
-        private readonly AlignmentFileBean alignmentFile;
-
-        public MSDecResult MsdecResult => msdecResult;
-        private MSDecResult msdecResult = null;
-
-        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
-        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
-
-        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots => ms1Spots;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>();
-
-        public double MassMin => ms1Spots.Min(spot => spot.MassCenter);
-        public double MassMax => ms1Spots.Max(spot => spot.MassCenter);
-
-        public List<BarItem> BarItems {
-            get => barItems;
-            set => SetProperty(ref barItems, value);
-        }
-        private List<BarItem> barItems = new List<BarItem>();
-
-        public AlignmentResultContainer Container {
-            get => container;
-            set => SetProperty(ref container, value);
-        }
-        private AlignmentResultContainer container;
-
-        public AlignmentSpotPropertyModel Target {
-            get => target;
-            set {
-                if (SetProperty(ref target, value)) {
-                    _ = OnTargetChangedAsync(value);
-                }
-            }
-        }
-        private AlignmentSpotPropertyModel target;
-
-        public List<Chromatogram> EicChromatograms {
-            get => eicChromatograms;
-            set {
-                if (SetProperty(ref eicChromatograms, value)) {
-                    OnPropertyChanged(nameof(EicMax));
-                    OnPropertyChanged(nameof(EicMin));
-                    OnPropertyChanged(nameof(IntensityMax));
-                    OnPropertyChanged(nameof(IntensityMin));
-                }
-            }
-        }
-        private List<Chromatogram> eicChromatograms;
-
-        public double EicMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Time) ?? 0;
-        public double EicMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Time) ?? 0;
-        public double IntensityMax => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0;
-        public double IntensityMin => EicChromatograms?.SelectMany(chrom => chrom.Peaks).DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0;
-
-        public List<SpectrumPeak> Ms2Spectrum {
-            get => ms2Spectrum;
-            set {
-                if (SetProperty(ref ms2Spectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2Spectrum = new List<SpectrumPeak>();
-
-        public List<SpectrumPeak> Ms2ReferenceSpectrum {
-            get => ms2ReferenceSpectrum;
-            set {
-                if (SetProperty(ref ms2ReferenceSpectrum, value)) {
-                    OnPropertyChanged(nameof(Ms2MassMin));
-                    OnPropertyChanged(nameof(Ms2MassMax));
-                }
-            }
-        }
-        private List<SpectrumPeak> ms2ReferenceSpectrum = new List<SpectrumPeak>();
-
-        public double Ms2MassMin => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0;
-        public double Ms2MassMax => Ms2Spectrum.Concat(Ms2ReferenceSpectrum).DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0;
-
-        public string FileName {
-            get => fileName;
-            set => SetProperty(ref fileName, value);
-        }
-        private string fileName = string.Empty;
-
-        private readonly List<long> seekPointers = new List<long>();
-        private readonly ParameterBase param = null;
-        private readonly string resultFile = string.Empty;
-        private readonly string eicFile = string.Empty;
-        private readonly string spectraFile = string.Empty;
-
-        
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        private async void OnTargetChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(Target)) {
-                await OnTargetChangedAsync(Target).ConfigureAwait(false);
-            }
+        public AlignmentFileBean AlignmentFile { get; }
+        public string ResultFile { get; }
+        public AlignmentResultContainer Container { get; }
+
+        public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
+
+        public double MassMin { get; }
+        public double MassMax { get; }
+        public double RtMin { get; }
+        public double RtMax { get; }
+        public double DriftMin { get; }
+        public double DriftMax { get; }
+
+        public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
+
+        public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+
+        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+
+        public MsSpectrumModel Ms2SpectrumModel { get; }
+
+        public BarChartModel BarChartModel { get; }
+
+        public AlignmentEicModel AlignmentEicModel { get; }
+
+        // public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
+
+        public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+
+        public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {
+            get => selectedBrush;
+            set => SetProperty(ref selectedBrush, value);
         }
+        private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
-        private CancellationTokenSource cts;
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target) {
-            cts?.Cancel();
-            var localCts = cts = new CancellationTokenSource();
-
-            try {
-                await OnTargetChangedAsync(target, localCts.Token).ContinueWith(
-                    t => {
-                        localCts.Dispose();
-                        if (cts == localCts)
-                            cts = null;
-                    }).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) {
-
-            }
+        public IBarItemsLoader BarItemsLoader {
+            get => barItemsLoader;
+            set => SetProperty(ref barItemsLoader, value);
         }
-
-        private async Task OnTargetChangedAsync(AlignmentSpotPropertyModel target, CancellationToken token = default) {
-            await Task.WhenAll(
-                LoadBarItemsAsync(target, token),
-                LoadEicAsync(target, token),
-                LoadMs2SpectrumAsync(target, token),
-                LoadMs2ReferenceAsync(target, token)
-           ).ConfigureAwait(false);
-        }
-
-        async Task LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var barItems = new List<BarItem>();
-            if (target != null) {
-                // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
-                barItems = await Task.Run(() =>
-                    target.AlignedPeakProperties
-                    .GroupBy(peak => param.FileID_ClassName[peak.FileID])
-                    .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
-                    .ToList(), token).ConfigureAwait(false);
-            }
-            token.ThrowIfCancellationRequested();
-            BarItems = barItems;
-        }
-
-        async Task LoadEicAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var eicChromatograms = new List<Chromatogram>();
-            if (target != null) {
-                // maybe using file pointer is better
-                eicChromatograms = await Task.Run(() => {
-                    var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                    var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                    foreach (var peakinfo in spotinfo.PeakInfos) {
-                        var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
-                        var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                        chroms.Add(new Chromatogram
-                        {
-                            Class = param.FileID_ClassName[peakinfo.FileID],
-                            Peaks = items,
-                            PeakArea = peakitems,
-                        });
-                    }
-                    return chroms;
-                }, token).ConfigureAwait(false);
-            }
-            token.ThrowIfCancellationRequested();
-            EicChromatograms = eicChromatograms;
-        }
-
-        async Task LoadMs2SpectrumAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var ms2Spectrum = new List<SpectrumPeak>();
-            if (target != null) {
-                await Task.Run(() => {
-                    var idx = this.ms1Spots.IndexOf(target);
-                    msdecResult = MsdecResultsReader.ReadMSDecResult(spectraFile, seekPointers[idx]);
-                    ms2Spectrum = msdecResult.Spectrum;
-                }, token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2Spectrum = ms2Spectrum;
-        }
-
-        async Task LoadMs2ReferenceAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var ms2ReferenceSpectrum = new List<SpectrumPeak>();
-            if (target != null) {
-                await Task.Run(() => {
-                    if (target.TextDbBasedMatchResult == null && target.MspBasedMatchResult is MsScanMatchResult matched) {
-                        var reference = MspAnnotator.Refer(matched);
-                        ms2ReferenceSpectrum = reference.Spectrum;
-                    }
-                }).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            Ms2ReferenceSpectrum = ms2ReferenceSpectrum;
-        }
+        private IBarItemsLoader barItemsLoader;
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile<AlignmentResultContainer>(Container, resultFile);
+            MessagePackHandler.SaveToFile(Container, ResultFile);
         }
     }
 }

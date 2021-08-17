@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
@@ -276,8 +275,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 Target.Value.innerModel,
                 this.model.MsdecResult.Value,
                 null,
-                null,
-                new MsRefSearchParameterBase(this.model.Parameter.MspSearchParam)))
+                this.model.Annotators))
             using (var vm = new ViewModel.CompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

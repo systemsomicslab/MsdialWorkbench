@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
-using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
@@ -9,14 +8,11 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Lcms {
+namespace CompMs.App.Msdial.Model.Lcms
+{
     sealed class LcmsFastaAnnotationSettingModel : DataBaseAnnotationSettingModelBase {
         
         public ParameterBase ParameterBase { get; }
@@ -25,19 +21,19 @@ namespace CompMs.App.Msdial.Model.Lcms {
             this.ParameterBase = paramBase;
         }
 
-        public override IAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }
 
-        public override IAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
+        private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsFastaAnnotator(molecules.Database, Parameter, this.ParameterBase.ProteomicsParam, AnnotatorID, molecules.SourceType),
                 molecules,
                 Parameter);
         }
 
-        public override MoleculeDataBase LoadDataBase(ParameterBase parameter) {
+        private MoleculeDataBase LoadDataBase(ParameterBase parameter) {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
                     return new MoleculeDataBase(LoadFastaDataBase(DataBasePath, AnnotationSource == SourceType.FastaDB ? false : true, parameter), DataBaseID, DBSource, AnnotationSource);

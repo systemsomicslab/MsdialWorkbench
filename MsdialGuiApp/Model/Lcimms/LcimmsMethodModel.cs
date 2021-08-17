@@ -1,11 +1,9 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.ViewModel;
+using CompMs.Common.Components;
 using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
@@ -14,77 +12,39 @@ using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Parser;
 using CompMs.MsdialLcImMsApi.Process;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    class LcimmsMethodModel : ViewModelBase
+    class LcimmsMethodModel : MethodModelBase
     {
         static LcimmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public LcimmsMethodModel(MsdialDataStorage storage, List<AnalysisFileBean> analysisFiles, List<AlignmentFileBean> alignmentFiles) {
+        public LcimmsMethodModel(MsdialDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+            if (storage is null) {
+                throw new ArgumentNullException(nameof(storage));
+            }
+
+            if (providerFactory is null) {
+                throw new ArgumentNullException(nameof(providerFactory));
+            }
+
             Storage = storage;
-
-            MspAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
-            TextDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles);
-            AnalysisFile = AnalysisFiles.FirstOrDefault();
-            AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles);
-            AlignmentFile = AlignmentFiles.FirstOrDefault();
-
-            var dataMapper = Storage.DataBaseMapper;
-            dataMapper.Add(MspAnnotator);
-            dataMapper.Add(TextDBAnnotator);
+            this.providerFactory = providerFactory;
         }
-
-        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; private set; }
-        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; private set; }
 
         public MsdialDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
         private MsdialDataStorage storage;
-
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
-            get => analysisFiles;
-            set => SetProperty(ref analysisFiles, value);
-        }
-        private ObservableCollection<AnalysisFileBean> analysisFiles;
-
-        public AnalysisFileBean AnalysisFile {
-            get => analysisFile;
-            set {
-                if (SetProperty(ref analysisFile, value)) {
-                    AnalysisModel = CreateAnalysisModel(value);
-                }
-            }
-        }
-        private AnalysisFileBean analysisFile;
-
-        public ObservableCollection<AlignmentFileBean> AlignmentFiles {
-            get => alignmentFiles;
-            set => SetProperty(ref alignmentFiles, value);
-        }
-        private ObservableCollection<AlignmentFileBean> alignmentFiles;
-
-        public AlignmentFileBean AlignmentFile {
-            get => alignmentFile;
-            set {
-                if (SetProperty(ref alignmentFile, value)) {
-                    AlignmentModel = CreateAlignmentModel(value);
-                }
-            }
-        }
-        private AlignmentFileBean alignmentFile;
 
         public LcimmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -103,26 +63,49 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private MsdialLcImMsSerializer serializer;
 
-        public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
-            if (AlignmentFiles == null)
-                AlignmentFiles = new ObservableCollection<AlignmentFileBean>();
-            AlignmentFiles.Add(
-                new AlignmentFileBean
-                {
-                    FileID = AlignmentFiles.Count,
-                    FileName = alignmentResultFileName,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
-                }
-            );
-            Storage.AlignmentFiles = AlignmentFiles.ToList();
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
 
-            Storage.MspDB = MspDB;
-            MspAnnotator = new MassAnnotator(Storage.MspDB, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, SourceType.MspDB, "MspDB");
+        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+            if (AnalysisModel != null) {
+                AnalysisModel.Dispose();
+                Disposables.Remove(AnalysisModel);
+            }
+            var provider = providerFactory.Create(analysisFile);
+            AnalysisModel = new LcimmsAnalysisModel(
+                analysisFile,
+                provider,
+                null, Storage.ParameterBase,
+                null, null)
+            .AddTo(Disposables);
+        }
 
-            Storage.TextDB = TextDB;
-            TextDBAnnotator = new MassAnnotator(Storage.TextDB, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
+        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+            if (AlignmentModel != null) {
+                AlignmentModel.Dispose();
+                Disposables.Remove(AlignmentModel);
+            }
+            AlignmentModel = new LcimmsAlignmentModel(
+                alignmentFile,
+                Storage.ParameterBase, null)
+            .AddTo(Disposables);
+        }
+
+        public void SetStorageContent(AnalysisParamSetVM<MsdialLcImMsParameter> paramSetVM) {
+            if (paramSetVM.TogetherWithAlignment) {
+                var alignmentResultFileName = paramSetVM.AlignmentResultFileName;
+                AlignmentFiles.Add(
+                    new AlignmentFileBean
+                    {
+                        FileID = AlignmentFiles.Count,
+                        FileName = alignmentResultFileName,
+                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
+                        SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                    }
+                );
+                Storage.AlignmentFiles = AlignmentFiles.ToList();
+            }
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
@@ -166,29 +149,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void SaveProject() {
             AlignmentModel?.SaveProject();
-        }
-
-        private LcimmsAnalysisModel CreateAnalysisModel(AnalysisFileBean analysisFile) {
-            if (analysisFile == null) {
-                return null;
-            }
-            return new LcimmsAnalysisModel(
-                    analysisFile,
-                    new StandardDataProvider(analysisFile, isGuiProcess: true, retry: 5),
-                    Storage.ParameterBase,
-                    MspAnnotator,
-                    TextDBAnnotator);
-        }
-
-        private LcimmsAlignmentModel CreateAlignmentModel(AlignmentFileBean alignmentFile) {
-            if (alignmentFile == null) {
-                return null;
-            }
-            return new LcimmsAlignmentModel(
-                alignmentFile,
-                Storage.ParameterBase,
-                MspAnnotator,
-                TextDBAnnotator);
         }
     }
 }

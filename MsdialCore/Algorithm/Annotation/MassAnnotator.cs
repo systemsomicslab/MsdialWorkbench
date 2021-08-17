@@ -9,6 +9,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -17,7 +18,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class MassAnnotator : IAnnotator<IMSProperty, IMSScanProperty>
+    public class MassAnnotator : ISerializableAnnotator<IMSProperty, IMSScanProperty, MoleculeDataBase>
     {
         private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
 
@@ -29,20 +30,22 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsRefSearchParameterBase Parameter { get; }
 
         public MassAnnotator(
-            IEnumerable<MoleculeMsReference> db,
+            MoleculeDataBase db,
             MsRefSearchParameterBase parameter,
             TargetOmics omics,
             SourceType source,
             string sourceKey) {
 
-            this.db = db.ToList();
+            this.db = db.Database.ToList();
             this.db.Sort(comparer);
             this.Parameter = parameter;
             this.omics = omics;
             this.source = source;
             this.sourceKey = sourceKey;
-            ReferObject = new DataBaseRefer(this.db);
+            ReferObject = db;
         }
+
+        private readonly IMatchResultRefer ReferObject;
 
         public MsScanMatchResult Annotate(
             IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
@@ -127,8 +130,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             return result;
         }
-
-        public IMatchResultRefer ReferObject { get; }
 
         public string Key => sourceKey;
 
@@ -234,7 +235,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (Ms2Filtering(result, parameter)) {
+                if (!SatisfyMs2Conditions(result, parameter)) {
                     continue;
                 }
                 if (result.TotalScore < parameter.TotalScoreCutoff) {
@@ -245,7 +246,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return filtered;
         }
 
-        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
             if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
                 return false;
             }
@@ -265,7 +266,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .ToList();
         }
 
-        public IReferRestorationKey Save() {
+        public IReferRestorationKey<MoleculeDataBase> Save() {
             switch (source) {
                 case SourceType.MspDB:
                     return new MspDbRestorationKey(sourceKey);

@@ -94,7 +94,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var sampleIds = _param.FileID_AnalysisFileType.Where(kvp => kvp.Value == AnalysisFileType.Sample).Select(kvp => kvp.Key);
             var id2class = sampleIds.ToDictionary(id => id, id => _param.FileID_ClassName[id]);
             alignments.AsParallel().ForAll(spot => spot.CalculateFoldChange(id2class));
-            if (id2class.Values.Distinct().Count() < id2class.Count) {
+            var nClass = id2class.Values.Distinct().Count();
+            if (nClass > 1 && nClass < id2class.Count) {
                 alignments.AsParallel().ForAll(spot => spot.CalculateAnovaPvalue(id2class));
             }
         }

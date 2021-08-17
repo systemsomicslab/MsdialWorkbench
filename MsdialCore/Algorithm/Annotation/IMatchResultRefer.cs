@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
 using System.IO;
@@ -46,13 +47,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         IReferRestorationKey Save();
     }
 
-    public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer
+    public interface IRestorableRefer<in T> : IMatchResultRefer
+    {
+        IReferRestorationKey<T> Save();
+    }
+
+    public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer<MoleculeDataBase>
     {
         public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
 
         }
 
-        public abstract IReferRestorationKey Save();
+        public abstract IReferRestorationKey<MoleculeDataBase> Save();
     }
 
     public class MspDbRestorableDataBaseRefer : RestorableDataBaseRefer
@@ -61,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
 
-        public override IReferRestorationKey Save() {
+        public override IReferRestorationKey<MoleculeDataBase> Save() {
             return new MspDbRestorationKey(Key);
         }
     }
@@ -72,7 +78,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         }
 
-        public override IReferRestorationKey Save() {
+        public override IReferRestorationKey<MoleculeDataBase> Save() {
             return new TextDbRestorationKey(Key);
         }
     }

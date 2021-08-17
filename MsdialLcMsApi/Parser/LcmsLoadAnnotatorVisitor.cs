@@ -17,22 +17,22 @@ namespace CompMs.MsdialLcMsApi.Parser
 
         public ParameterBase Parameter { get; }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(StandardRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new LcmsMspAnnotator(database.Database, key.Parameter, Parameter.TargetOmics, key.Key);
+                return new LcmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key);
             }
             else if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new LcmsTextDBAnnotator(database.Database, key.Parameter, key.Key);
+                return new LcmsTextDBAnnotator(database, key.Parameter, key.Key);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new LcmsMspAnnotator(database.Database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
+            return new LcmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new LcmsTextDBAnnotator(database.Database, Parameter.TextDbSearchParam, key.Key);
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
+            return new LcmsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key);
         }
     }
 }

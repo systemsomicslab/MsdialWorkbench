@@ -1,8 +1,5 @@
 ﻿using MessagePack;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.Extension;
 
 namespace CompMs.Common.DataObj.Result {
     [Flags]

@@ -5,6 +5,19 @@
                     xmlns:VM="clr-namespace:CompMs.App.Msdial.ViewModel"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="MassToleranceSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms2Tolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
                   x:Key="Ms2Setting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"
@@ -78,29 +91,40 @@
                         </ui:LabeledContent>
                     </StackPanel>
 
-                    <StackPanel Margin="8">
-                        <TextBlock Text="Mass tolerance"/>
-                        <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                                           AppendLabel="Da">
-                            <TextBox Text="{Binding ParameterVM.Ms1Tolerance.Value}"/>
-                        </ui:LabeledContent>
-                        <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
-                                           AppendLabel="Da">
-                            <TextBox Text="{Binding ParameterVM.Ms2Tolerance.Value}"/>
-                        </ui:LabeledContent>
-                    </StackPanel>
+                    <TextBlock Text="Mass tolerance"/>
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource MassToleranceSetting}"
+                                    Margin="8"/>
                 </StackPanel>
 
                 <Expander Header="MS2 spectrum cut off" Margin="0,8"
                           Grid.Row="1">
-                    <ContentControl Content="{Binding ParameterVM}" Margin="8"/>
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource ResourceKey=Ms2Setting}"
+                                    Margin="8"/>
                 </Expander>
 
                 <Expander Header="Annotaion cut off" Margin="0,8"
                           Grid.Row="2">
-                    <ContentControl Content="{Binding ParameterVM}" Margin="8"/>
+                    <ContentControl Content="{Binding ParameterVM}"
+                                    ContentTemplate="{StaticResource ResourceKey=ScoreCutOffSetting}"
+                                    Margin="8"/>
                 </Expander>
             </Grid>
+        </ScrollViewer>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type VM:CompoundSearchVM}"
+                  x:Key="MassAnnotatorSetting">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Mass tolerance"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource MassToleranceSetting}"/>
+                <TextBlock Text="MS2 spectrum cut off"/>
+                <ContentControl Content="{Binding ParameterVM.Value}"
+                                ContentTemplate="{StaticResource Ms2Setting}"/>
+            </StackPanel>
         </ScrollViewer>
     </DataTemplate>
 </ResourceDictionary>

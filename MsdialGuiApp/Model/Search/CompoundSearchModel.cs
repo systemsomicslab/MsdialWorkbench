@@ -27,29 +27,40 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean file,
             IMSIonProperty msIonProperty,
             IMoleculeProperty moleculeProperty,
-            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
-            MsRefSearchParameterBase parameter) {
+            IReadOnlyList<IAnnotatorContainer> annotators) {
             if (file is null) {
                 throw new ArgumentNullException(nameof(file));
             }
+
             if (msIonProperty is null) {
                 throw new ArgumentNullException(nameof(msIonProperty));
             }
+
             if (moleculeProperty is null) {
                 throw new ArgumentNullException(nameof(moleculeProperty));
             }
-            if (annotator is null) {
-                throw new ArgumentNullException(nameof(annotator));
+
+            if (annotators is null) {
+                throw new ArgumentNullException(nameof(annotators));
             }
 
             File = file;
             MSIonProperty = msIonProperty;
             MoleculeProperty = moleculeProperty;
-            Annotator = annotator;
-            Parameter = parameter;
+            Annotators = annotators.Select(
+                annotator => new AnnotatorContainer(
+                    annotator.Annotator,
+                    new MsRefSearchParameterBase(annotator.Parameter)
+                )).ToList();
+            Annotator = Annotators.FirstOrDefault();
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Annotator { get; }
+        public IReadOnlyList<IAnnotatorContainer> Annotators { get; } 
+        public IAnnotatorContainer Annotator {
+            get => annotator;
+            set => SetProperty(ref annotator, value);
+        }
+        private IAnnotatorContainer annotator;
         
         public IFileBean File { get; }
 
@@ -112,22 +123,8 @@ namespace CompMs.App.Msdial.Model.Search
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
             IReadOnlyList<IAnnotatorContainer> annotators)
-            : this(fileBean, property, msdecResult, isotopes, annotators[0].Annotator, annotators[0].Parameter){
+            : base(fileBean, property, property, annotators){
 
-        }
-
-        public CompoundSearchModel(
-            IFileBean fileBean,
-            T property, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : base(
-                  fileBean,
-                  property,
-                  property,
-                  annotator,
-                  parameter ?? new MsRefSearchParameterBase()) {
             if (property == null) {
                 throw new ArgumentException(nameof(property));
             }
@@ -156,19 +153,37 @@ namespace CompMs.App.Msdial.Model.Search
             };
         }
 
+        [Obsolete]
+        public CompoundSearchModel(
+            IFileBean fileBean,
+            T property, MSDecResult msdecResult,
+            IReadOnlyList<IsotopicPeak> isotopes,
+            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
+            MsRefSearchParameterBase parameter = null)
+            : this(fileBean,
+                  property,
+                  msdecResult,
+                  isotopes,
+                  new List<IAnnotatorContainer> {
+                      new AnnotatorContainer(annotator, parameter ?? new MsRefSearchParameterBase())
+                  }) {
+
+        }
+
         private readonly MSDecResult msdecResult;
         private readonly IReadOnlyList<IsotopicPeak> isotopes;
 
         public T Property { get; }
 
         protected override IEnumerable<CompoundResult> SearchCore() {
-            var candidates = Annotator.FindCandidates(Property, msdecResult, isotopes, Parameter);
+            var annotator = Annotator.Annotator;
+            var candidates = annotator.FindCandidates(Property, msdecResult, isotopes, Annotator.Parameter);
             foreach (var candidate in candidates) {
                 candidate.IsManuallyModified = true;
                 candidate.Source |= SourceType.Manual;
             }
             return candidates.OrderByDescending(result => result.TotalScore)
-                .Select(result => new CompoundResult(Annotator.Refer(result), result));
+                .Select(result => new CompoundResult(annotator.Refer(result), result));
         }
 
         public override void SetConfidence() {

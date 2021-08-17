@@ -164,6 +164,8 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
+    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
@@ -462,6 +464,7 @@
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
@@ -871,7 +874,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="MsdialGuiApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -963,6 +965,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
             {
-                HorizontalTitle = EicModel.HorizontalTitle,
+                HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Imms
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
             EicModel = new EicModel(Target, EicLoader)
             {
-                HorizontalTitle = "Drift time [1/k0]",
+                HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             };
             Target.CombineLatest(

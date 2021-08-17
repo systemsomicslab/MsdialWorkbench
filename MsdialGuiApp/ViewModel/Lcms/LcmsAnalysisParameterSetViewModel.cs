@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
             Model = model;
-            Param = MsdialProjectParameterFactory.Create(Model.Parameter);
+            Param = MsdialProjectParameterFactory.Create(Model.ParameterBase);
 
             var dt = DateTime.Now;
             AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
@@ -43,17 +43,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AnalysisFiles = Model.AnalysisFiles;
 
             ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
-                Model.Parameter.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
+                Model.ParameterBase.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
                          .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
 
-            if (Model.Parameter.SearchedAdductIons.IsEmptyOrNull()) {
-                Model.Parameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.Parameter.IonMode);
+            if (Model.ParameterBase.SearchedAdductIons.IsEmptyOrNull()) {
+                Model.ParameterBase.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.ParameterBase.IonMode);
             }
-            Model.Parameter.SearchedAdductIons[0].IsIncluded = true;
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.Parameter.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+            Model.ParameterBase.SearchedAdductIons[0].IsIncluded = true;
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.ParameterBase.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            Model.Parameter.QcAtLeastFilter = false;
+            Model.ParameterBase.QcAtLeastFilter = false;
 
             var factory = new LcmsAnnotationSettingViewModelModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     factory.Create)
                 .AddTo(Disposables);
 
-            if (Model.Parameter.TargetOmics == TargetOmics.Lipidomics) {
+            if (Model.ParameterBase.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                 AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
@@ -133,7 +133,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = Model.Parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
+                Text = Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
                         ? "RT correction viewer will be opened\nafter libraries are loaded."
                         : "Loading libraries.."
             };
@@ -150,20 +150,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         protected virtual bool ClosingMethod() {
-            if (!Model.Parameter.SearchedAdductIons[0].IsIncluded) {
+            if (!Model.ParameterBase.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
-            Model.Parameter.ExcludedMassList = ExcludedMassList
+            Model.ParameterBase.ExcludedMassList = ExcludedMassList
                 .Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
                 .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
                 .ToList();
 
 
-            if (Model.Parameter.TogetherWithAlignment && AnalysisFiles.Count > 1) {
+            if (Model.ParameterBase.TogetherWithAlignment && AnalysisFiles.Count > 1) {
 
-                if (Model.Parameter.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
                     if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
                         "Do you continue this analysis without the filter option?",
                         "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
@@ -201,9 +201,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             };
 
             if (window.ShowDialog() == true) {
-                if (Model.Parameter.SearchedAdductIons == null)
-                    Model.Parameter.SearchedAdductIons = new List<AdductIon>();
-                Model.Parameter.SearchedAdductIons.Add(vm.AdductIon);
+                if (Model.ParameterBase.SearchedAdductIons == null)
+                    Model.ParameterBase.SearchedAdductIons = new List<AdductIon>();
+                Model.ParameterBase.SearchedAdductIons.Add(vm.AdductIon);
                 SearchedAdductIons.Add(new AdductIonVM(vm.AdductIon));
             }
         }

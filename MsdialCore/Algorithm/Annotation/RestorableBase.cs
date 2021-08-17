@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public abstract class MspDbRestorableBase : IRestorableRefer
+    public abstract class MspDbRestorableBase : IRestorableRefer<MoleculeDataBase>
     {
         public MspDbRestorableBase(IEnumerable<MoleculeMsReference> db, string sourceKey) {
             this.db = db.ToList();
@@ -19,14 +20,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         protected readonly List<MoleculeMsReference> db;
         public string Key { get; }
 
-        public IReferRestorationKey Save() {
+        public IReferRestorationKey<MoleculeDataBase> Save() {
             return new MspDbRestorationKey(Key);
         }
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
     }
 
-    public abstract class TextDbRestorableBase : IRestorableRefer
+    public abstract class TextDbRestorableBase : IRestorableRefer<MoleculeDataBase>
     {
         public TextDbRestorableBase(IEnumerable<MoleculeMsReference> db, string sourceKey) {
             this.db = db.ToList();
@@ -36,14 +37,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         protected readonly List<MoleculeMsReference> db;
         public string Key { get; }
 
-        public IReferRestorationKey Save() {
+        public IReferRestorationKey<MoleculeDataBase> Save() {
             return new TextDbRestorationKey(Key);
         }
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
     }
 
-    public abstract class StandardRestorableBase : IRestorableRefer
+    public abstract class StandardRestorableBase : IRestorableRefer<MoleculeDataBase>
     {
         public StandardRestorableBase(
             IEnumerable<MoleculeMsReference> db,
@@ -67,7 +68,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
 
-        public virtual IReferRestorationKey Save() {
+        public virtual IReferRestorationKey<MoleculeDataBase> Save() {
             return new StandardRestorationKey(Key, Parameter, SourceType);
         }
     }
@@ -84,7 +85,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             ProteomicsParameter = proteomicsparam;
         }
 
-        public override IReferRestorationKey Save() {
+        public override IReferRestorationKey<MoleculeDataBase> Save() {
             return new StandardRestorationKey(Key, Parameter, ProteomicsParameter, SourceType);
         }
     }
