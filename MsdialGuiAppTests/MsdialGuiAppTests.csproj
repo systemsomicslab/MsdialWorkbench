@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModelTests.cs" />
+    <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
