@@ -110,6 +110,65 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
+
+            Assert.AreEqual((float)annotator.CalculateAnnotatedScore(result), result.TotalScore);
+        }
+
+        [TestMethod()]
+        public void CalculatedAnnotatedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+            };
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                new[]
+                {
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+            };
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]

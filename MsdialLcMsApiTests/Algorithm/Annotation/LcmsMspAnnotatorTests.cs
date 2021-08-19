@@ -208,19 +208,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
-
-            var expected = new[]
-            {
-                result.AcurateMassSimilarity,
-                result.RtSimilarity,
-                new []{
-                    result.WeightedDotProduct,
-                    result.SimpleDotProduct,
-                    result.ReverseDotProduct,
-                }.Average(),
-                result.MatchedPeaksPercentage,
-            }.Average();
-            Assert.AreEqual(expected, result.TotalScore);
+            Assert.AreEqual((float)annotator.CalculateAnnotatedScore(result), result.TotalScore);
         }
 
         [TestMethod()]
@@ -276,18 +264,135 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.ReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
+            Assert.AreEqual((float)annotator.CalculateAnnotatedScore(result), result.TotalScore);
+        }
 
+        [TestMethod()]
+        public void CalculatedAnnotatedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
             var expected = new[]
             {
                 result.AcurateMassSimilarity,
-                new []{
+                result.RtSimilarity,
+                new[]
+                {
                     result.WeightedDotProduct,
                     result.SimpleDotProduct,
                     result.ReverseDotProduct,
                 }.Average(),
                 result.MatchedPeaksPercentage,
             }.Average();
-            Assert.AreEqual(expected, result.TotalScore);
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedAnnotatedScoreRtNotUsedTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = false,
+            };
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                new[]
+                {
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.RtSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreRtNotUsedTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = false,
+            };
+            var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]

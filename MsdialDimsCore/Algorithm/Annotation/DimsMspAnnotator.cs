@@ -83,16 +83,41 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 Source = SourceType.MspDB, SourceKey = sourceKey
             };
 
-            var scores = new List<float> { };
+            result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
+
+            return result;
+        }
+
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateAnnotatedScoreCore(result, parameter);
+        }
+
+        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
+            return scores.DefaultIfEmpty().Average();
+        }
 
-            return result;
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateSuggestedScoreCore(result, parameter);
+        }
+
+        private static double CalculateSuggestedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
+            if (result.AcurateMassSimilarity >= 0)
+                scores.Add(result.AcurateMassSimilarity);
+            return scores.DefaultIfEmpty().Average();
         }
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {

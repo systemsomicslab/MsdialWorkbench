@@ -219,6 +219,120 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
+        public void CalculatedAnnotatedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.RtSimilarity,
+            }.Average();
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedAnnotatedScoreRtNotUsedTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = false,
+            };
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = true,
+            };
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.RtSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreRtNotUsedTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                RtTolerance = 0.5f,
+                IsUseTimeForAnnotationScoring = false,
+            };
+            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
         public void ReferTest() {
             var db = new List<MoleculeMsReference>
             {

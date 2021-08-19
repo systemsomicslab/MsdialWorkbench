@@ -112,8 +112,19 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
             }
+            result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
+            return result;
+        }
 
-            var scores = new List<float> { };
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateAnnotatedScoreCore(result, parameter);
+        }
+
+        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
@@ -124,9 +135,25 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 scores.Add(result.CcsSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
+            return scores.DefaultIfEmpty().Average();
+        }
 
-            return result;
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateSuggestedScoreCore(result, parameter);
+        }
+
+        private static double CalculateSuggestedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
+            if (result.AcurateMassSimilarity >= 0)
+                scores.Add(result.AcurateMassSimilarity);
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
+                scores.Add(result.CcsSimilarity);
+            if (result.IsotopeSimilarity >= 0)
+                scores.Add(result.IsotopeSimilarity);
+            return scores.DefaultIfEmpty().Average();
         }
 
         public IMatchResultRefer ReferObject { get; }

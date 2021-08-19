@@ -101,17 +101,34 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 result.RtSimilarity = (float)rtSimilarity;
 
             }
+            result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
-            var scores = new List<float> { };
+            return result;
+        }
+
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateTotalScoreCore(result, parameter);
+        }
+
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateTotalScoreCore(result, parameter);
+        }
+
+        private static double CalculateTotalScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
             if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0)
                 scores.Add(result.RtSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
-
-            return result;
+            return scores.DefaultIfEmpty().Average();
         }
 
         public IMatchResultRefer ReferObject { get; }
