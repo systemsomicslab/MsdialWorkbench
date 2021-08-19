@@ -175,7 +175,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity > 0);
-            Assert.IsTrue(result.TotalScore > 0);
+
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.RtSimilarity,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]
@@ -204,7 +210,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.RtSimilarity == 0);
-            Assert.IsTrue(result.TotalScore > 0);
+
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]

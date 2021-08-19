@@ -101,8 +101,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var scores = new List<float> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
-            if (result.CcsSimilarity >= 0)
-                scores.Add(result.CcsSimilarity);
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
+               scores.Add(result.CcsSimilarity);
             //if (result.IsotopeSimilarity >= 0)
             //    scores.Add(result.IsotopeSimilarity);
             result.TotalScore = scores.DefaultIfEmpty().Average();

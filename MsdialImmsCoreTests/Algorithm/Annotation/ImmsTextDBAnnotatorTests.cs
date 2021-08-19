@@ -177,7 +177,13 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsTrue(result.TotalScore > 0);
+
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.CcsSimilarity,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]
@@ -206,7 +212,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.CcsSimilarity == 0);
-            Assert.IsTrue(result.TotalScore > 0);
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]

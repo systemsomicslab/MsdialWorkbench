@@ -208,6 +208,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
+
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                result.RtSimilarity,
+                new []{
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]
@@ -263,7 +276,18 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.ReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
-            Assert.IsTrue(result.TotalScore > 0);
+
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                new []{
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]

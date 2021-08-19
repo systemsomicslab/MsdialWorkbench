@@ -120,7 +120,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);
-            if (result.CcsSimilarity >= 0)
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
                 scores.Add(result.CcsSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
