@@ -27,7 +27,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2.cache";
             var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv.cache";
 
-            using (var datastream = File.Open(datafile, FileMode.Create)) {
+            using (var datastream = File.Open(datafile, FileMode.Open)) {
                 var data = MessagePackDefaultHandler.LoadFromStream<DataStorageForTest>(datastream);
 
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(data.MsdecResultFile, out var _, out var _);

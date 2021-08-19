@@ -527,62 +527,35 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.5f,
+                TotalScoreCutoff = 0.7f,
+                IsUseTimeForAnnotationScoring = true,
             };
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = false,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = false,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.4f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.4f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.4f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.4f },
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
             };
+            results[1].IsPrecursorMzMatch = false;
+            results[1].IsSpectrumMatch = false;
+            results[2].IsSpectrumMatch = false;
+            results[3].IsPrecursorMzMatch = false;
+            results[4].WeightedDotProduct = 0.4f;
+            results[5].SimpleDotProduct = 0.4f;
+            results[6].ReverseDotProduct = 0.4f;
+            results[7].MatchedPeaksCount = 2;
+            results[8].MatchedPeaksPercentage = 0.4f;
+            results[9].AcurateMassSimilarity = 0.1f;
+            results[10].RtSimilarity = 0.1f;
 
             var actuals = annotator.FilterByThreshold(results);
             var expected = new[]
@@ -599,75 +572,63 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.5f,
+                TotalScoreCutoff = 0.7f,
+                IsUseTimeForAnnotationScoring = true,
             };
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = false,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = false,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.4f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.4f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.4f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f,
-                    TotalScore = 0.8f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.4f },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
+                MatchResultBuilder(),
             };
+            results[1].IsPrecursorMzMatch = false;
+            results[1].IsSpectrumMatch = false;
+            results[2].IsSpectrumMatch = false;
+            results[3].IsPrecursorMzMatch = false;
+            results[4].WeightedDotProduct = 0.4f;
+            results[5].SimpleDotProduct = 0.4f;
+            results[6].ReverseDotProduct = 0.4f;
+            results[7].MatchedPeaksCount = 2;
+            results[8].MatchedPeaksPercentage = 0.4f;
+            results[9].AcurateMassSimilarity = 0.1f;
+            results[10].RtSimilarity = 0.1f;
+
 
             var actuals = annotator.SelectReferenceMatchResults(results);
             var expected = new[]
             {
                 results[0], results[2], results[4], results[5],
-                results[6], results[7], results[8], results[10],
+                results[6], results[7], results[8], results[11],
             };
             CollectionAssert.AreEquivalent(expected, actuals);
+        }
+
+        private static MsScanMatchResult MatchResultBuilder() {
+            return new MsScanMatchResult
+            {
+                IsPrecursorMzMatch = true,
+                IsSpectrumMatch = true,
+                AcurateMassSimilarity = 0.8f,
+                RtSimilarity = 0.8f,
+                IsotopeSimilarity = -1f,
+                WeightedDotProduct = 0.8f,
+                SimpleDotProduct = 0.8f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksCount = 6,
+                MatchedPeaksPercentage = 0.8f,
+                TotalScore = 0.8f
+            };
         }
     }
 }

@@ -204,7 +204,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 if (!result.IsPrecursorMzMatch) {
                     continue;
                 }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
+                if (CalculateTotalScoreCore(result, parameter) < parameter.TotalScoreCutoff) {
                     continue;
                 }
                 filtered.Add(result);

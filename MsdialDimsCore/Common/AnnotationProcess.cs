@@ -68,12 +68,10 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (mspAnnotator != null)
             {
-                var results = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, mspParam)
-                    .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
-                    .Where(candidate => candidate.TotalScore >= mspParam.TotalScoreCutoff)
-                    .ToList();
+                var candidates = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, mspParam);
+                var results = mspAnnotator.FilterByThreshold(candidates, mspParam);
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-                var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
+                var matches = mspAnnotator.SelectReferenceMatchResults(results, mspParam);
                 if (matches.Count > 0) {
                     var best = matches.Argmax(result => result.TotalScore);
                     feature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
@@ -91,10 +89,8 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (textAnnotator != null)
             {
-                var results = textAnnotator.FindCandidates(feature, msdecResult, isotopes, textParam)
-                    .Where(candidate => candidate.IsPrecursorMzMatch)
-                    .Where(candidate => candidate.TotalScore >= textParam.TotalScoreCutoff)
-                    .ToList();
+                var candidates = textAnnotator.FindCandidates(feature, msdecResult, isotopes, textParam);
+                var results = textAnnotator.FilterByThreshold(candidates, textParam);
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 var matches = results;
                 foreach (var result in results) {

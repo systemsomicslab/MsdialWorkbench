@@ -115,10 +115,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (mspAnnotator == null)
                 return;
 
-            var results = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter)
-                .Where(candidate => candidate.IsPrecursorMzMatch || candidate.IsSpectrumMatch)
-                .Where(candidate => candidate.TotalScore >= mspSearchParameter.TotalScoreCutoff)
-                .ToList();
+            var candidates = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter);
+            var results = mspAnnotator.FilterByThreshold(candidates, mspSearchParameter);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
             if (matches.Count > 0) {
@@ -144,10 +142,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
             //    Console.WriteLine();
             //}
-            var results = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter)
-                .Where(candidate => candidate.IsPrecursorMzMatch)
-                .Where(candidate => candidate.TotalScore >= textDBSearchParameter.TotalScoreCutoff)
-                .ToList();
+            var candidates = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter);
+            var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
             chromPeakFeature.MatchResults.AddTextDbResults(results);
             if (results.Count > 0) {

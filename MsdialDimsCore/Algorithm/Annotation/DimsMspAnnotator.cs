@@ -201,19 +201,15 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (!SatisfyMs2Conditions(result, parameter)) {
-                    continue;
+                if (SatisfySuggestedConditions(result, parameter) || SatisfyRefMatchedConditions(result, parameter)) {
+                    filtered.Add(result);
                 }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
-                    continue;
-                }
-                filtered.Add(result);
             }
             return filtered;
         }
 
-        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
                 return false;
             }
             if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
@@ -223,13 +219,18 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
                 return false;
             }
-            return true;
+            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return FilterByThreshold(results, parameter)
-                .Where(result => result.IsPrecursorMzMatch && result.IsSpectrumMatch)
-                .ToList();
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
         }
     }
 }
