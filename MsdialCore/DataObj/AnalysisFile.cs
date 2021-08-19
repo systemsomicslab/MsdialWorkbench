@@ -47,7 +47,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public AnalysisFileBean(AnalysisFileBean other) {
-            AnalysisFilePath = other.AnalysisFileClass;
+            AnalysisFilePath = other.AnalysisFilePath;
             AnalysisFileName = other.AnalysisFileName;
             AnalysisFileType = other.AnalysisFileType;
             AnalysisFileClass = other.AnalysisFileClass;

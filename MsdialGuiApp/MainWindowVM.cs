@@ -113,8 +113,8 @@ namespace CompMs.App.Msdial
             storage.AnalysisFiles = storage.AnalysisFiles.Select(file => new AnalysisFileBean(file)).ToList();
             var dt = DateTime.Now;
             foreach (var file in storage.AnalysisFiles) {
-                file.DeconvolutionFilePath = Path.Combine(Storage.ParameterBase.ProjectFilePath, $"{file.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}");
-                file.PeakAreaBeanInformationFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:_yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}");
+                file.DeconvolutionFilePath = Path.Combine(storage.ParameterBase.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}");
+                file.PeakAreaBeanInformationFilePath = Path.Combine(storage.ParameterBase.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:_yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}");
             }
             var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
             if (method.InitializeNewProject(window) != 0) {
