@@ -118,7 +118,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var candidates = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter);
             var results = mspAnnotator.FilterByThreshold(candidates, mspSearchParameter);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-            var matches = results.Where(candidate => candidate.IsPrecursorMzMatch && candidate.IsSpectrumMatch).ToList();
+            var matches = mspAnnotator.SelectReferenceMatchResults(results, mspSearchParameter);
             if (matches.Count > 0) {
                 var best = matches.Argmax(result => result.TotalScore);
                 chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
@@ -143,7 +143,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             //    Console.WriteLine();
             //}
             var candidates = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter);
-            var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
+            var results = textDBAnnotator.SelectReferenceMatchResults(candidates, textDBSearchParameter);
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
             chromPeakFeature.MatchResults.AddTextDbResults(results);
             if (results.Count > 0) {

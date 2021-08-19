@@ -92,7 +92,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 var candidates = textAnnotator.FindCandidates(feature, msdecResult, isotopes, textParam);
                 var results = textAnnotator.FilterByThreshold(candidates, textParam);
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-                var matches = results;
+                var matches = textAnnotator.SelectReferenceMatchResults(results, textParam);
                 foreach (var result in results) {
                     feature.MatchResults.AddTextDbResult(result);
                 }
