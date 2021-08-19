@@ -1,10 +1,14 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
 using CompMs.Common.Query;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
@@ -51,6 +55,13 @@ namespace CompMs.MsdialCore.Utility {
 
             return mspQueries;
         }
+
+        public static ShotgunProteomicsDB GenerateShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
+            var db = new ShotgunProteomicsDB(file, id, proteomicsParam, msrefSearchParam);
+            return db;
+        }
+
+
         public static List<Peptide> GenerateTargetPeptideReference(List<FastaProperty> quereis,
                 List<string> cleavageSites, ModificationContainer modContainer, ProteomicsParameter parameter) {
             var maxMissedCleavage = parameter.MaxMissedCleavage;

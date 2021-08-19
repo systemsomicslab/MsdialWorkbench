@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System;
@@ -41,6 +42,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
     [Union(1, typeof(SerializableAnnotatorContainer))]
+    [Union(2, typeof(ShotgunProteomicsDBAnnotatorContainer))]
     public interface ISerializableAnnotatorContainer : IAnnotatorContainer
     {
         void Save(Stream stream);
@@ -99,6 +101,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public interface IDatabaseAnnotatorContainer : ISerializableAnnotatorContainer
     {
         MoleculeDataBase Database { get; }
+        string DatabaseID { get; }
+    }
+
+    [Union(0, typeof(ShotgunProteomicsDBAnnotatorContainer))]
+    public interface IShotgunProteomicsDBAnnotatorContainer : ISerializableAnnotatorContainer {
+        ShotgunProteomicsDB Database { get; }
         string DatabaseID { get; }
     }
 
@@ -162,6 +170,77 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             Database.Load(stream);
+            Annotator = AnnotatorKey.Accept(visitor, Database);
+        }
+    }
+
+    [MessagePackObject]
+    public sealed class ShotgunProteomicsDBAnnotatorContainer : IShotgunProteomicsDBAnnotatorContainer {
+        public ShotgunProteomicsDBAnnotatorContainer(
+            ISerializableAnnotator<IMSIonProperty, IMSScanProperty, ShotgunProteomicsDB> annotator,
+            ShotgunProteomicsDB database, ProteomicsParameter proteomicsParameter,
+            MsRefSearchParameterBase msRefSearchParameter) {
+            if (annotator is null) {
+                throw new ArgumentNullException(nameof(annotator));
+            }
+
+            if (database is null) {
+                throw new ArgumentNullException(nameof(database));
+            }
+
+            if (msRefSearchParameter is null) {
+                throw new ArgumentNullException(nameof(msRefSearchParameter));
+            }
+
+            if (proteomicsParameter is null) {
+                throw new ArgumentNullException(nameof(proteomicsParameter));
+            }
+            Annotator = annotator;
+            AnnotatorID = Annotator.Key;
+            Database = database;
+            DatabaseID = Database.Id;
+            MsRefSearchParameter = msRefSearchParameter;
+        }
+
+        public ShotgunProteomicsDBAnnotatorContainer(
+            IReferRestorationKey<ShotgunProteomicsDB> annotatorKey,
+            ShotgunProteomicsDB database,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            MsRefSearchParameter = parameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
+        [IgnoreMember]
+        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, ShotgunProteomicsDB> Annotator { get; private set; }
+        [IgnoreMember]
+        public string AnnotatorID { get; }
+
+        [Key("AnnotatorKey")]
+        public IReferRestorationKey<ShotgunProteomicsDB> AnnotatorKey { get; set; }
+
+        [Key("MsRefSearchParameter")]
+        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
+
+        [Key("ProteomicsParameter")]
+        public ProteomicsParameter ProteomicsParameter { get; set; }
+
+        [Key("Database")]
+        public ShotgunProteomicsDB Database { get; set; }
+        [IgnoreMember]
+        public string DatabaseID { get; }
+
+        IAnnotator<IMSIonProperty, IMSScanProperty> IAnnotatorContainer.Annotator => Annotator;
+        MsRefSearchParameterBase IAnnotatorContainer.Parameter => MsRefSearchParameter;
+
+        public void Save(Stream stream) {
+            Database.Save();
+            AnnotatorKey = Annotator.Save();
+        }
+
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
+            Database.Load();
             Annotator = AnnotatorKey.Accept(visitor, Database);
         }
     }

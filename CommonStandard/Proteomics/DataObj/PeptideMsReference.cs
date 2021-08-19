@@ -4,28 +4,37 @@ using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace CompMs.Common.Proteomics.DataObj {
+    [MessagePackObject]
     public class PeptideMsReference : IMSScanProperty, IIonProperty {
+        [Key(0)]
         public Peptide Peptide { get; }
+        [IgnoreMember]
         private Stream Fs { get; set; }
-        private long SeekPoint { get; set; }
+        [Key(1)]
+        private long SeekPoint2MS { get; set; }
+        [Key(2)]
+        private long SeekPoint2PEP { get; set; }
 
         public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct) {
-            Peptide = peptide; Fs = fs; SeekPoint = seekPoint; AdductType = adduct;
+            Peptide = peptide; Fs = fs; SeekPoint2MS = seekPoint; AdductType = adduct;
             PrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
         }
 
+        [Key(3)]
         public int ScanID { get; set; }
-        public List<SpectrumPeak> Spectrum { get => ReadSpectrum(Fs, SeekPoint); set => new NotSupportedException(); }
+        [IgnoreMember]
+        public List<SpectrumPeak> Spectrum { get => ReadSpectrum(Fs, SeekPoint2MS); set => new NotSupportedException(); }
 
         private List<SpectrumPeak> ReadSpectrum(Stream fs, long seekPoint) {
             lock (fs) {
-                return MsfFileParser.ReadSpectrumPeaks(fs, seekPoint);
+                return MsfPepFileParser.ReadSpectrumPeaks(fs, seekPoint);
             }
         }
 
@@ -33,11 +42,16 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         }
 
+        [Key(4)]
         public ChromXs ChromXs { get; set; }
+        [Key(5)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
+        [Key(6)]
         public double PrecursorMz { get; set; }
 
+        [Key(7)]
         public AdductIon AdductType { get; set; }
+        [Key(8)]
         public double CollisionCrossSection { get; set; }
 
     }
