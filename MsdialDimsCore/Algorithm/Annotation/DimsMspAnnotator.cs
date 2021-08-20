@@ -8,8 +8,6 @@ using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
-using CompMs.Common.Utility;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
@@ -21,8 +19,6 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
     public class DimsMspAnnotator : MspDbRestorableBase, ISerializableAnnotator<IMSProperty, IMSScanProperty, MoleculeDataBase>
     {
-        private static readonly IComparer<IMSScanProperty> comparer = MassComparer.Comparer;
-
         private readonly TargetOmics omics;
 
         public MsRefSearchParameterBase Parameter { get; }
@@ -32,30 +28,30 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             Parameter = parameter;
             this.omics = omics;
             ReferObject = mspDB;
+            searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
         }
 
+        private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultRefer ReferObject;
 
         public MsScanMatchResult Annotate(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, db, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, omics, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null) {
             if (parameter == null)
                 parameter = Parameter;
 
-            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, db, omics, Key);
+            return FindCandidatesCore(property, DataAccess.GetNormalizedMSScanProperty(scan, parameter), parameter, omics, Key);
         }
 
-        private static List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, string sourceKey) {
-            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance);
-            var results = new List<MsScanMatchResult>(hi - lo);
-            for (var i = lo; i < hi; i++) {
-                var candidate = mspDB[i];
+        private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
+            var candidates = SearchBound(property, parameter.Ms1Tolerance);
+            var results = new List<MsScanMatchResult>(candidates.Count);
+            foreach (var candidate in candidates) {
                 var result = CalculateScoreCore(property, scan, candidate, parameter, sourceKey);
-                result.LibraryIDWhenOrdered = i;
                 ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
             }
@@ -87,16 +83,41 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 Source = SourceType.MspDB, SourceKey = sourceKey
             };
 
-            var scores = new List<float> { };
+            result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
+
+            return result;
+        }
+
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateAnnotatedScoreCore(result, parameter);
+        }
+
+        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
+            return scores.DefaultIfEmpty().Average();
+        }
 
-            return result;
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateSuggestedScoreCore(result, parameter);
+        }
+
+        private static double CalculateSuggestedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
+            if (result.AcurateMassSimilarity >= 0)
+                scores.Add(result.AcurateMassSimilarity);
+            return scores.DefaultIfEmpty().Average();
         }
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
@@ -107,17 +128,11 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             if (parameter == null)
                 parameter = Parameter;
 
-            (var lo, var hi) = SearchBoundIndex(property, db, parameter.Ms1Tolerance);
-            return db.GetRange(lo, hi - lo);
+            return SearchBound(property, parameter.Ms1Tolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double tolerance) {
-            tolerance = CalculateMassTolerance(tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - tolerance };
-            var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
-            dummy.PrecursorMz = property.PrecursorMz + tolerance;
-            var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
-            return (lo, hi);
+        private IReadOnlyList<MoleculeMsReference> SearchBound(IMSProperty property, double tolerance) {
+            return searcher.Search(new MassSearchQuery(property.PrecursorMz, CalculateMassTolerance(tolerance, property.PrecursorMz)));
         }
 
         private static double CalculateMassTolerance(double tolerance, double mass) {
@@ -186,19 +201,15 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (!SatisfyMs2Conditions(result, parameter)) {
-                    continue;
+                if (SatisfySuggestedConditions(result, parameter) || SatisfyRefMatchedConditions(result, parameter)) {
+                    filtered.Add(result);
                 }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
-                    continue;
-                }
-                filtered.Add(result);
             }
             return filtered;
         }
 
-        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
                 return false;
             }
             if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
@@ -208,13 +219,18 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
                 return false;
             }
-            return true;
+            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return FilterByThreshold(results, parameter)
-                .Where(result => result.IsPrecursorMzMatch && result.IsSpectrumMatch)
-                .ToList();
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
         }
     }
 }

@@ -139,6 +139,64 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Assert.AreEqual(target.MasterPeakID, spots[1].AlignedPeakProperties[0].MasterPeakID);
             Assert.AreEqual(target.Name, spots[1].AlignedPeakProperties[0].Name);
         }
+
+        [TestMethod()]
+        public void AlignPeaksToMasterOverlapTest() {
+            var rtTol = 1d;
+            var mzTol = 0.01;
+            var spots = new List<AlignmentSpotProperty>
+            {
+                BuildSpotProperty(100.00d, 10),
+                BuildSpotProperty(100.01d, 11),
+                BuildSpotProperty(100.02d, 12),
+                BuildSpotProperty(100.03d, 13),
+            };
+
+            var masters = new List<IMSScanProperty>
+            {
+                BuildPeakFeature(0, 100.00d, 10),
+                BuildPeakFeature(1, 100.01d, 11),
+                BuildPeakFeature(2, 100.02d, 12),
+                BuildPeakFeature(3, 100.03d, 13),
+            };
+
+            var targets = new List<IMSScanProperty>
+            {
+                BuildPeakFeature(1, 100.009d, 11),
+                BuildPeakFeature(2, 100.011d, 11.2),
+            };
+
+            var joiner = new LcmsPeakJoiner(rtTol, mzTol);
+            joiner.AlignPeaksToMaster(spots, masters, targets, 0);
+
+            Assert.AreEqual(-1, spots[0].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(1, spots[1].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(2, spots[2].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(-1, spots[3].AlignedPeakProperties[0].PeakID);
+        }
+
+        AlignmentSpotProperty BuildSpotProperty(double mass, double rt) {
+            return new AlignmentSpotProperty
+            {
+                MassCenter = mass,
+                TimesCenter = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
+                AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                {
+                    new AlignmentChromPeakFeature { PeakID = -1, },
+                },
+            };
+        }
+
+        ChromatogramPeakFeature BuildPeakFeature(int id, double mass, double rt) {
+            var peak = new ChromatogramPeakFeature
+            {
+                PeakID = id,
+                PrecursorMz = mass,
+                ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
+            };
+            peak.MatchResults.AddMspResult(100, MsScanMatchResultContainer.UnknownResult);
+            return peak;
+        }
     }
 
     class MockAccessor : DataAccessor

@@ -97,17 +97,34 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
             }
+            result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
+            return result;
+        }
+
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateTotalScoreCore(result, parameter);
+        }
+
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateTotalScoreCore(result, parameter);
+        }
+
+        private static double CalculateTotalScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
             var scores = new List<float> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
-            if (result.CcsSimilarity >= 0)
-                scores.Add(result.CcsSimilarity);
-            //if (result.IsotopeSimilarity >= 0)
-            //    scores.Add(result.IsotopeSimilarity);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
-
-            return result;
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
+               scores.Add(result.CcsSimilarity);
+            if (result.IsotopeSimilarity >= 0)
+                scores.Add(result.IsotopeSimilarity);
+            return scores.DefaultIfEmpty().Average();
         }
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
@@ -182,7 +199,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 if (!result.IsPrecursorMzMatch) {
                     continue;
                 }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
+                if (CalculateTotalScoreCore(result, parameter) < parameter.TotalScoreCutoff) {
                     continue;
                 }
                 filtered.Add(result);

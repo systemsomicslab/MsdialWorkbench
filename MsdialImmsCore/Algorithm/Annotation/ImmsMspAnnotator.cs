@@ -112,21 +112,48 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
             }
+            result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
+            return result;
+        }
 
-            var scores = new List<float> { };
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateAnnotatedScoreCore(result, parameter);
+        }
+
+        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
                 scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
             if (result.MatchedPeaksPercentage >= 0)
                 scores.Add(result.MatchedPeaksPercentage);
-            if (result.CcsSimilarity >= 0)
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
                 scores.Add(result.CcsSimilarity);
             if (result.IsotopeSimilarity >= 0)
                 scores.Add(result.IsotopeSimilarity);
-            result.TotalScore = scores.DefaultIfEmpty().Average();
+            return scores.DefaultIfEmpty().Average();
+        }
 
-            return result;
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return CalculateSuggestedScoreCore(result, parameter);
+        }
+
+        private static double CalculateSuggestedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            var scores = new List<double> { };
+            if (result.AcurateMassSimilarity >= 0)
+                scores.Add(result.AcurateMassSimilarity);
+            if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
+                scores.Add(result.CcsSimilarity);
+            if (result.IsotopeSimilarity >= 0)
+                scores.Add(result.IsotopeSimilarity);
+            return scores.DefaultIfEmpty().Average();
         }
 
         public IMatchResultRefer ReferObject { get; }
@@ -246,19 +273,18 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             }
             var filtered = new List<MsScanMatchResult>();
             foreach (var result in results) {
-                if (!SatisfyMs2Conditions(result, parameter)) {
-                    continue;
+                if (SatisfySuggestedConditions(result, parameter)) {
+                    filtered.Add(result);
                 }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
-                    continue;
+                else if (SatisfyRefMatchedConditions(result, parameter)) {
+                    filtered.Add(result);
                 }
-                filtered.Add(result);
             }
             return filtered;
         }
 
-        private static bool SatisfyMs2Conditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
                 return false;
             }
             if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
@@ -268,13 +294,18 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
                 return false;
             }
-            return true;
+            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return FilterByThreshold(results, parameter)
-                .Where(result => result.IsPrecursorMzMatch && result.IsSpectrumMatch)
-                .ToList();
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
         }
     }
 }

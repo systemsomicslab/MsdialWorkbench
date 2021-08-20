@@ -2,7 +2,6 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -42,6 +41,30 @@ namespace CompMs.MsdialCore.DataObj {
         public RetentionTimeCorrectionBean RetentionTimeCorrectionBean { get; set; } = new RetentionTimeCorrectionBean();
         [Key(16)]
         public ChromatogramPeaksDataSummary ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummary();
+
+        public AnalysisFileBean() {
+
+        }
+
+        public AnalysisFileBean(AnalysisFileBean other) {
+            AnalysisFilePath = other.AnalysisFilePath;
+            AnalysisFileName = other.AnalysisFileName;
+            AnalysisFileType = other.AnalysisFileType;
+            AnalysisFileClass = other.AnalysisFileClass;
+            AnalysisFileAnalyticalOrder = other.AnalysisFileAnalyticalOrder;
+            AnalysisFileId = other.AnalysisFileId;
+            AnalysisFileIncluded = other.AnalysisFileIncluded;
+            DeconvolutionFilePath = other.DeconvolutionFilePath;
+            DeconvolutionFilePathList = other.DeconvolutionFilePathList;
+            PeakAreaBeanInformationFilePath = other.PeakAreaBeanInformationFilePath;
+            RiDictionaryFilePath = other.RiDictionaryFilePath;
+            AnalysisBatch = other.AnalysisBatch;
+            ResponseVariable = other.ResponseVariable;
+            InjectionVolume = other.InjectionVolume;
+            AnalysisFileSuperClass = other.AnalysisFileSuperClass;
+            RetentionTimeCorrectionBean = other.RetentionTimeCorrectionBean;
+            ChromPeakFeaturesSummary = other.ChromPeakFeaturesSummary;
+        }
 
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;

@@ -21,6 +21,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
         List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
         List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
+
+        double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null);
+        double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null);
     }
 
     public interface ISerializableAnnotator<in T, in U>

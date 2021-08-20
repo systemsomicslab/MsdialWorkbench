@@ -109,7 +109,67 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.IsTrue(result.ReverseDotProduct > 0);
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
-            Assert.IsTrue(result.TotalScore > 0);
+
+            Assert.AreEqual((float)annotator.CalculateAnnotatedScore(result), result.TotalScore);
+        }
+
+        [TestMethod()]
+        public void CalculatedAnnotatedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+            };
+            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                new[]
+                {
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            var actual = annotator.CalculateAnnotatedScore(result);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void CalculatedSuggestedScoreTest() {
+            var result = new MsScanMatchResult
+            {
+                AcurateMassSimilarity = 0.8f,
+                WeightedDotProduct = 0.7f,
+                SimpleDotProduct = 0.6f,
+                ReverseDotProduct = 0.8f,
+                MatchedPeaksPercentage = 0.75f,
+                IsotopeSimilarity = -1,
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+            };
+            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+            }.Average();
+            var actual = annotator.CalculateSuggestedScore(result);
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -236,65 +296,68 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             {
                 WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.5f,
+                TotalScoreCutoff = 0.7f,
             };
             var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = false, IsSpectrumMatch = false,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = false,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = false, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.4f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.4f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.4f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 0.1f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.4f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[0], results[2], results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] {
+                results[0], results[2], results[4], results[5],
+                results[6], results[7], results[8],
+            }, actuals);
         }
 
         [TestMethod()]
@@ -303,66 +366,66 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             {
                 WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
                 MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.5f,
+                TotalScoreCutoff = 0.7f,
             };
             var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = false, IsSpectrumMatch = false,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = false,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = false, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.4f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.4f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.4f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 0.1f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.4f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
                 new MsScanMatchResult {
                     IsPrecursorMzMatch = true, IsSpectrumMatch = true,
+                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
                     WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f,
-                    TotalScore = 0.8f },
+                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);

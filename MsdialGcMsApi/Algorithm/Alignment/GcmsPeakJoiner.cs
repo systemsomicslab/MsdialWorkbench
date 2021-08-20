@@ -198,7 +198,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
-                        matchFactor = factor;
+                        maxMatchs[i] = matchFactor = factor;
                     }
                 }
                 if (matchIdx.HasValue)

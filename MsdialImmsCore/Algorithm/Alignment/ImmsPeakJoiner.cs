@@ -147,7 +147,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             return spots;
         }
 
-        private void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
+        public void AlignPeaksToMaster(List<AlignmentSpotProperty> spots, List<IMSScanProperty> masters, List<IMSScanProperty> targets, int fileId) {
             var n = masters.Count;
             var maxMatchs = new double[n];
             var dummy = new ChromatogramPeakFeature(); // dummy instance for binary search.
@@ -166,7 +166,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
-                        matchFactor = factor;
+                        maxMatchs[i] = matchFactor = factor;
                     }
                 }
                 if (matchIdx.HasValue)

@@ -79,11 +79,16 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.SMILES = peak.SMILES;
             alignmentPeak.InChIKey = peak.InChIKey;
             alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
+
+            alignmentPeak.MatchResults.ClearResults();
+            alignmentPeak.MatchResults.ClearMspResults();
+            alignmentPeak.MatchResults.ClearTextDbResults();
             alignmentPeak.MSRawID2MspIDs = peak.MSRawID2MspIDs;
             alignmentPeak.TextDbIDs = peak.TextDbIDs;
             alignmentPeak.MSRawID2MspBasedMatchResult = peak.MSRawID2MspBasedMatchResult;
             alignmentPeak.TextDbBasedMatchResult = peak.TextDbBasedMatchResult;
             alignmentPeak.MatchResults.MergeContainers(peak.MatchResults);
+
             alignmentPeak.PeakCharacter = peak.PeakCharacter;
             alignmentPeak.PeakShape = peak.PeakShape;
             //if (peak.IsReferenceMatched) {

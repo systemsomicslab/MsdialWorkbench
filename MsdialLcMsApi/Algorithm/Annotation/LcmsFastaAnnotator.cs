@@ -194,6 +194,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
+
+        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            throw new NotImplementedException();
+        }
+
+        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            throw new NotImplementedException();
+        }
     }
 }
 
