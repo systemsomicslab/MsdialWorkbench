@@ -13,7 +13,7 @@ using System.IO.Compression;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class DataBaseMapper : IMatchResultRefer
+    public class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public DataBaseMapper() {
             Annotators = new List<ISerializableAnnotatorContainer>();
@@ -24,13 +24,13 @@ namespace CompMs.MsdialCore.DataObj
         public List<ISerializableAnnotatorContainer> Annotators { get; set; }
 
         [IgnoreMember]
-        string IMatchResultRefer.Key { get; } = string.Empty;
+        string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key { get; } = string.Empty;
 
         [IgnoreMember]
-        public ReadOnlyDictionary<string, IMatchResultRefer> KeyToRefer
-            => new ReadOnlyDictionary<string, IMatchResultRefer>(keyToRefer);
+        public ReadOnlyDictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> KeyToRefer
+            => new ReadOnlyDictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>>(keyToRefer);
 
-        private Dictionary<string, IMatchResultRefer> keyToRefer = new Dictionary<string, IMatchResultRefer>();
+        private Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> keyToRefer = new Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>>();
 
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
@@ -60,11 +60,11 @@ namespace CompMs.MsdialCore.DataObj
             Annotators.Add(annotatorContainer);
         }
 
-        public void Add(ISerializableAnnotator<IMSIonProperty, IMSScanProperty> annotator) {
+        public void Add(ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator) {
             Add(new SerializableAnnotatorContainer(annotator, new MsRefSearchParameterBase()));
         }
 
-        public void Add(ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> annotator, MoleculeDataBase database) {
+        public void Add(ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator, MoleculeDataBase database) {
             Add(new DatabaseAnnotatorContainer(annotator, database, new MsRefSearchParameterBase()));
         }
 

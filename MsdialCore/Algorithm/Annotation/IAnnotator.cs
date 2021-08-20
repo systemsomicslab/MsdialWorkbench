@@ -1,43 +1,33 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
+﻿using CompMs.Common.Parameter;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotator<in T, in U>
-        : IMatchResultRefer
-        where T : IMSProperty
-        where U : IMSScanProperty
+    public interface IAnnotator<in T, U, V>
+        : IMatchResultRefer<U, V>
     {
-        MsScanMatchResult Annotate(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
-        List<MsScanMatchResult> FindCandidates(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MsRefSearchParameterBase parameter = null);
-        MsScanMatchResult CalculateScore(T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
-        List<MoleculeMsReference> Search(T property, MsRefSearchParameterBase parameter = null);
-        void Validate(MsScanMatchResult result, T property, U scan, IReadOnlyList<IsotopicPeak> isotopes, MoleculeMsReference reference, MsRefSearchParameterBase parameter = null);
+        V Annotate(T query);
+        List<V> FindCandidates(T query);
+        V CalculateScore(T query, U reference);
+        List<U> Search(T query);
+        void Validate(V result, T query, U reference);
 
-        MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
-        List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
-        List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null);
+        V SelectTopHit(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
+        List<V> FilterByThreshold(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
+        List<V> SelectReferenceMatchResults(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
 
-        double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null);
-        double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null);
+        double CalculateAnnotatedScore(V result, MsRefSearchParameterBase parameter = null);
+        double CalculateSuggestedScore(V result, MsRefSearchParameterBase parameter = null);
     }
 
-    public interface ISerializableAnnotator<in T, in U>
-        : IAnnotator<T, U>, IRestorableRefer
-        where T : IMSProperty
-        where U : IMSScanProperty
+    public interface ISerializableAnnotator<in T, U, V>
+        : IAnnotator<T, U, V>, IRestorableRefer<T, U, V>
     {
 
     }
 
-    public interface ISerializableAnnotator<in T, in U, in V>
-        : IAnnotator<T, U>, IRestorableRefer<V>
-        where T : IMSProperty
-        where U : IMSScanProperty
+    public interface ISerializableAnnotator<in T, U, V, in W>
+        : IAnnotator<T, U, V>, IRestorableRefer<T, U, V, W>
     {
 
     }

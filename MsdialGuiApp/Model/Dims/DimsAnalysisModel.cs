@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM.ChemView;
@@ -29,10 +30,10 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer refer,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
-            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator)
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
             : base(analysisFile) {
 
             MspAnnotator = mspAnnotator;
@@ -107,8 +108,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
-        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
 
         public string FileName {
             get => fileName;

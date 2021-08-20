@@ -59,8 +59,8 @@ namespace CompMs.MsdialDimsCore
         public static void Run(
             AnalysisFileBean file,
             MsdialDataStorage container,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textAnnotator,
             bool isGuiProcess = false,
             Action<int> reportAction = null, CancellationToken token = default) {
 

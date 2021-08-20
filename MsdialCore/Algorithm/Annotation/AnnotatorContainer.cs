@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -9,18 +10,18 @@ using System.IO;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotatorContainer
+    public interface IAnnotatorContainer<in T, U, V>
     {
-        IAnnotator<IMSIonProperty, IMSScanProperty> Annotator { get; }
+        IAnnotator<T, U, V> Annotator { get; }
         string AnnotatorID { get; }
 
         MsRefSearchParameterBase Parameter { get; }
     }
 
-    public sealed class AnnotatorContainer : IAnnotatorContainer
+    public sealed class AnnotatorContainer : IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
         public AnnotatorContainer(
-            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
                 throw new ArgumentNullException(nameof(annotator));
@@ -34,7 +35,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Parameter = parameter;
         }
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> Annotator { get; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator { get; }
         public string AnnotatorID { get; }
 
         public MsRefSearchParameterBase Parameter { get; set; }
@@ -42,8 +43,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
     [Union(1, typeof(SerializableAnnotatorContainer))]
-    [Union(2, typeof(ShotgunProteomicsDBAnnotatorContainer))]
-    public interface ISerializableAnnotatorContainer : IAnnotatorContainer
+    public interface ISerializableAnnotatorContainer : IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor);
@@ -53,7 +53,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public sealed class SerializableAnnotatorContainer : ISerializableAnnotatorContainer
     {
         public SerializableAnnotatorContainer(
-            ISerializableAnnotator<IMSIonProperty, IMSScanProperty> annotator,
+            ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
                 throw new ArgumentNullException(nameof(annotator));
@@ -68,7 +68,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public SerializableAnnotatorContainer(
-            IReferRestorationKey annotatorKey,
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorKey,
             MsRefSearchParameterBase parameter) {
             AnnotatorKey = annotatorKey;
             Parameter = parameter;
@@ -76,17 +76,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         [IgnoreMember]
-        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty> Annotator { get; private set; }
+        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey AnnotatorKey { get; set; }
+        public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> AnnotatorKey { get; set; }
 
         [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
 
-        IAnnotator<IMSIonProperty, IMSScanProperty> IAnnotatorContainer.Annotator => Annotator;
+        IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
 
         public void Save(Stream stream) {
             AnnotatorKey = Annotator.Save();
@@ -114,7 +114,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public sealed class DatabaseAnnotatorContainer : IDatabaseAnnotatorContainer
     {
         public DatabaseAnnotatorContainer(
-            ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> annotator,
+            ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator,
             MoleculeDataBase database,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
@@ -136,7 +136,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public DatabaseAnnotatorContainer(
-            IReferRestorationKey<MoleculeDataBase> annotatorKey,
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotatorKey,
             MoleculeDataBase database,
             MsRefSearchParameterBase parameter) {
             AnnotatorKey = annotatorKey;
@@ -146,12 +146,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         [IgnoreMember]
-        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Annotator { get; private set; }
+        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey<MoleculeDataBase> AnnotatorKey { get; set; }
+        public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> AnnotatorKey { get; set; }
 
         [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
@@ -161,7 +161,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         [IgnoreMember]
         public string DatabaseID { get; }
 
-        IAnnotator<IMSIonProperty, IMSScanProperty> IAnnotatorContainer.Annotator => Annotator;
+        IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
 
         public void Save(Stream stream) {
             Database.Save(stream);

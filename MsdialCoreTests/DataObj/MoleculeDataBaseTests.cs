@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 new MoleculeMsReference { ScanID = 2, Name = "C", Comment = "c", },
                 new MoleculeMsReference { ScanID = 4, Name = "E", Comment = "e", },
             };
-            IMatchResultRefer db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB);
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> db = new MoleculeDataBase(references.ToList(), "DB", DataBaseSource.Msp, SourceType.MspDB);
 
             var actual = db.Refer(new MsScanMatchResult { LibraryID = 2, });
             var expected = references[2];

@@ -265,13 +265,13 @@ namespace CompMs.MsdialCore.Normalize.Tests
         }
     }
 
-    class MockRefer : IMatchResultRefer
+    class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public MockRefer(List<MoleculeMsReference> db) {
             this.db = db;
         }
 
-        string IMatchResultRefer.Key { get; } = string.Empty;
+        string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key { get; } = string.Empty;
         private List<MoleculeMsReference> db;
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {

@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean file,
             IMSIonProperty msIonProperty,
             IMoleculeProperty moleculeProperty,
-            IReadOnlyList<IAnnotatorContainer> annotators) {
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators) {
             if (file is null) {
                 throw new ArgumentNullException(nameof(file));
             }
@@ -55,12 +55,12 @@ namespace CompMs.App.Msdial.Model.Search
             Annotator = Annotators.FirstOrDefault();
         }
 
-        public IReadOnlyList<IAnnotatorContainer> Annotators { get; } 
-        public IAnnotatorContainer Annotator {
+        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; } 
+        public IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator {
             get => annotator;
             set => SetProperty(ref annotator, value);
         }
-        private IAnnotatorContainer annotator;
+        private IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator;
         
         public IFileBean File { get; }
 
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean fileBean,
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<IAnnotatorContainer> annotators)
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
             : base(fileBean, property, property, annotators){
 
             if (property == null) {
@@ -158,13 +158,13 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean fileBean,
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<IMSIonProperty, IMSScanProperty> annotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
             MsRefSearchParameterBase parameter = null)
             : this(fileBean,
                   property,
                   msdecResult,
                   isotopes,
-                  new List<IAnnotatorContainer> {
+                  new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> {
                       new AnnotatorContainer(annotator, parameter ?? new MsRefSearchParameterBase())
                   }) {
 
@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         protected override IEnumerable<CompoundResult> SearchCore() {
             var annotator = Annotator.Annotator;
-            var candidates = annotator.FindCandidates(Property, msdecResult, isotopes, Annotator.Parameter);
+            var candidates = annotator.FindCandidates(new AnnotationQuery(Property, msdecResult, isotopes, Annotator.Parameter));
             foreach (var candidate in candidates) {
                 candidate.IsManuallyModified = true;
                 candidate.Source |= SourceType.Manual;

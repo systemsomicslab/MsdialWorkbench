@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
@@ -24,8 +26,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     class AlignmentImmsVM : AlignmentFileViewModel {
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
-            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
@@ -334,7 +336,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
+        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, textDBAnnotator;
 
         private void SearchCompound() {
             if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)

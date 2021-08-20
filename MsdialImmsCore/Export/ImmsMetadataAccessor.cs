@@ -14,7 +14,7 @@ namespace CompMs.MsdialImmsCore.Export
 {
     public class ImmsMetadataAccessor : BaseMetadataAccessor
     {
-        public ImmsMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
+        public ImmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
 
         }
 
@@ -82,12 +82,12 @@ namespace CompMs.MsdialImmsCore.Export
 
     public class ImmsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public ImmsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type)
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
             : base(refer, parameter, type) {
 
         }
 
-        public ImmsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter)
+        public ImmsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter)
             : this(refer, parameter, parameter.ExportSpectraType) {
 
         }

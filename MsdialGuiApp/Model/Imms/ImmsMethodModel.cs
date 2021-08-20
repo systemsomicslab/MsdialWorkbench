@@ -3,6 +3,7 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -48,8 +49,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
 
-        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; private set; }
-        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; private set; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; private set; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; private set; }
 
         public ImmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -101,8 +102,8 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void LoadAnnotator() {
-            MspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
-            TextDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IMSIonProperty, IMSScanProperty>;
+            MspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
+            TextDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {

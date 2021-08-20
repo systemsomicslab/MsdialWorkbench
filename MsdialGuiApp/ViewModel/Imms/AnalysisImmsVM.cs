@@ -2,6 +2,8 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -20,8 +22,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             AnalysisFileBean analysisFile,
-            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
@@ -118,8 +120,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly ImmsAnalysisModel model;
         private readonly AnalysisFileBean analysisFile;
-        public IAnnotator<IMSIonProperty, IMSScanProperty> MspAnnotator { get; }
-        public IAnnotator<IMSIonProperty, IMSScanProperty> TextDBAnnotator { get; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
+        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 

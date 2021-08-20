@@ -11,16 +11,17 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialCore.MSDec;
 using System.Collections.ObjectModel;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.Components;
 
 namespace CompMs.MsdialCore.Export
 {
     public class MztabFormatExport : BaseMetadataAccessor
     {
-        public MztabFormatExport(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter)
+        public MztabFormatExport(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter)
         {
         }
 
-        public readonly IMatchResultRefer refer;
+        public readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         public readonly ParameterBase parameter;
 
         public void MztabFormatExporterCore(

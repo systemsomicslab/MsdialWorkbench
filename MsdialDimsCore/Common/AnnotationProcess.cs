@@ -60,15 +60,15 @@ namespace CompMs.MsdialDimsCore.Common {
 
         public static void Run(
             ChromatogramPeakFeature feature, MSDecResult msdecResult,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textAnnotator,
             MsRefSearchParameterBase mspParam,
             MsRefSearchParameterBase textParam,
             IReadOnlyList<IsotopicPeak> isotopes) {
 
             if (mspAnnotator != null)
             {
-                var candidates = mspAnnotator.FindCandidates(feature, msdecResult, isotopes, mspParam);
+                var candidates = mspAnnotator.FindCandidates(new AnnotationQuery(feature, msdecResult, isotopes, mspParam));
                 var results = mspAnnotator.FilterByThreshold(candidates, mspParam);
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 var matches = mspAnnotator.SelectReferenceMatchResults(results, mspParam);
@@ -89,7 +89,7 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (textAnnotator != null)
             {
-                var candidates = textAnnotator.FindCandidates(feature, msdecResult, isotopes, textParam);
+                var candidates = textAnnotator.FindCandidates(new AnnotationQuery(feature, msdecResult, isotopes, textParam));
                 var results = textAnnotator.FilterByThreshold(candidates, textParam);
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 var matches = textAnnotator.SelectReferenceMatchResults(results, textParam);

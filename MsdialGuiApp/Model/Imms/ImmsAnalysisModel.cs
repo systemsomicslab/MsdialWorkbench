@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM.ChemView;
@@ -30,10 +31,10 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer refer,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
-            IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator,
-            IAnnotator<IMSIonProperty, IMSScanProperty> textDBAnnotator)
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
             : base(analysisFile) {
 
             this.provider = provider;
@@ -126,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private readonly MsdialImmsParameter parameter;
-        private readonly IAnnotator<IMSIonProperty, IMSScanProperty> mspAnnotator, textDBAnnotator;
+        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, textDBAnnotator;
         private readonly IDataProvider provider;
 
         public AnalysisPeakPlotModel PlotModel { get; }

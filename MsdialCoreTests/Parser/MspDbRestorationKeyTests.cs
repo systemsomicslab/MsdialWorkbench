@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,13 +14,13 @@ namespace CompMs.MsdialCore.Parser.Tests
     {
         [TestMethod()]
         public void MspDbRestorationKeyTest() {
-            IReferRestorationKey<MoleculeDataBase> key = new MspDbRestorationKey("MspKey");
-            IReferRestorationKey<MoleculeDataBase> expected = key;
-            IReferRestorationKey<MoleculeDataBase> actual;
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey");
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected = key;
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
 
             using (var stream = new MemoryStream()) {
-                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<MoleculeDataBase>>(key, stream);
-                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<MoleculeDataBase>>(stream);
+                Common.MessagePack.MessagePackDefaultHandler.SaveToStream<IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(key, stream);
+                actual = Common.MessagePack.MessagePackDefaultHandler.LoadFromStream<IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(stream);
             }
 
             Assert.AreEqual(expected.Key, actual.Key);
@@ -35,25 +37,25 @@ namespace CompMs.MsdialCore.Parser.Tests
 
     class MockLoadAnnotator : ILoadAnnotatorVisitor
     {
-        private readonly IReferRestorationKey<MoleculeDataBase> expected;
+        private readonly IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected;
 
-        public MockLoadAnnotator(IReferRestorationKey<MoleculeDataBase> expected) {
+        public MockLoadAnnotator(IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected) {
             this.expected = expected;
         }
 
         public bool Called { get; private set; } = false;
 
-        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             throw new NotImplementedException();
         }
 
-        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
             Assert.AreEqual(expected, key);
             Called = true;
             return null;
         }
 
-        public ISerializableAnnotator<IMSIonProperty, IMSScanProperty, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
+        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
             throw new NotImplementedException();
         }
     }

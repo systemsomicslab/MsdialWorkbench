@@ -1,4 +1,6 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -12,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
     {
         public NormalizationSetViewModel(
             AlignmentResultContainer container,
-            IMatchResultRefer refer,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
 
             this.container = container;
@@ -35,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         public ParameterBaseVM Parameter { get; }
 
         private readonly AlignmentResultContainer container;
-        private readonly IMatchResultRefer refer;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
 
         public SplashSetViewModel SplashVM {
