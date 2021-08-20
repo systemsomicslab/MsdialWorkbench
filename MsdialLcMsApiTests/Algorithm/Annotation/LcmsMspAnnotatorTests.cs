@@ -35,7 +35,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             Assert.AreEqual(db.Database[1].InChIKey, result.InChIKey);
         }
@@ -62,7 +62,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             Assert.AreEqual(db.Database[1].InChIKey, result.InChIKey);
         }
@@ -89,7 +89,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             Assert.AreEqual(db.Database[4].InChIKey, result.InChIKey);
         }
@@ -115,7 +115,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.FindCandidates(target, target, null);
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
             var expected = new List<string>
             {
                 db.Database[0].InChIKey, db.Database[1].InChIKey, db.Database[2].InChIKey,
@@ -145,7 +145,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.FindCandidates(target, target, null);
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
             var expected = new List<string>
             {
                 db.Database[0].InChIKey, db.Database[1].InChIKey, db.Database[2].InChIKey, db.Database[4].InChIKey,
@@ -189,7 +189,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
@@ -246,7 +246,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
@@ -417,7 +417,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             var reference = annotator.Refer(result);
 
@@ -446,7 +446,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.Search(target);
+            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
 
             CollectionAssert.AreEquivalent(new[] { db.Database[0], db.Database[1], db.Database[2], }, results);
         }
@@ -472,7 +472,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsMspAnnotator(db, parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.Search(target);
+            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
 
             CollectionAssert.AreEquivalent(new[] { db.Database[0], db.Database[1], db.Database[2], db.Database[4] }, results);
         }
@@ -513,8 +513,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
-            annotator.Validate(result, target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
@@ -569,8 +569,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
-            annotator.Validate(result, target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
             Assert.IsFalse(result.IsRtMatch);
@@ -612,8 +612,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
-            annotator.Validate(result, target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");

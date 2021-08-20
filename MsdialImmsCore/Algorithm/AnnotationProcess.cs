@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
@@ -35,8 +36,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction) {
 
@@ -63,8 +64,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction,
             int numThreads, System.Threading.CancellationToken token) {
@@ -96,8 +97,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private static void ImmsMatchMethod(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult,
             IReadOnlyList<RawPeakElement> spectrum,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter) {
             //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
             //    Console.WriteLine();
@@ -110,12 +111,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetMspAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter, TargetOmics omics) {
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter, TargetOmics omics) {
 
             if (mspAnnotator == null)
                 return;
 
-            var candidates = mspAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, mspSearchParameter);
+            var candidates = mspAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, mspSearchParameter));
             var results = mspAnnotator.FilterByThreshold(candidates, mspSearchParameter);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             var matches = mspAnnotator.SelectReferenceMatchResults(results, mspSearchParameter);
@@ -135,14 +136,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetTextDBAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
 
             if (textDBAnnotator == null)
                 return;
             //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
             //    Console.WriteLine();
             //}
-            var candidates = textDBAnnotator.FindCandidates(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter);
+            var candidates = textDBAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter));
             var results = textDBAnnotator.SelectReferenceMatchResults(candidates, textDBSearchParameter);
             chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
             chromPeakFeature.MatchResults.AddTextDbResults(results);

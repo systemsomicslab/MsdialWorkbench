@@ -4,14 +4,14 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using System;
 
-namespace CompMs.MsdialImmsCore.Parser
+namespace CompMs.MsdialDimsCore.Parser
 {
-    sealed class ImmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    sealed class DimsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
-        public ImmsLoadAnnotatorVisitor(ParameterBase parameter) {
+        public DimsLoadAnnotatorVisitor(ParameterBase parameter) {
             Parameter = parameter;
         }
 
@@ -19,20 +19,17 @@ namespace CompMs.MsdialImmsCore.Parser
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new ImmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key);
-            }
-            else if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new ImmsTextDBAnnotator(database, key.Parameter, key.Key);
+                return new DimsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new ImmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
+            return new DimsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new ImmsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key);
+            throw new NotSupportedException(nameof(TextDbRestorationKey));
         }
     }
 }

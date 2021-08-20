@@ -11,7 +11,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class MoleculeDataBase : IReferenceDataBase, IMatchResultRefer
+    public class MoleculeDataBase : IReferenceDataBase, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public MoleculeDataBase(IEnumerable<MoleculeMsReference> source, string id, DataBaseSource dbsource, SourceType type) {
             Database = new MoleculeMsReferenceCollection(source.ToList());
@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(2)]
         public DataBaseSource DataBaseSource { get; }
 
-        string IMatchResultRefer.Key => Id;
+        string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
         public void Save(Stream stream) {
             LargeListMessagePack.Serialize(stream, Database);
@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.DataObj
             Database = new MoleculeMsReferenceCollection(db);
         }
 
-        MoleculeMsReference IMatchResultRefer.Refer(MsScanMatchResult result) {
+        MoleculeMsReference IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
             if (result.LibraryID >= Database.Count
                 || Database[result.LibraryID].ScanID != result.LibraryID) {
                 return Database.FirstOrDefault(reference => reference.ScanID == result.LibraryID);

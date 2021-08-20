@@ -1,20 +1,18 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IMatchResultRefer {
+    public interface IMatchResultRefer<out T, in U> {
         string Key { get; }
 
-        MoleculeMsReference Refer(MsScanMatchResult result);
+        T Refer(U result);
     }
 
-    public abstract class BaseDataBaseRefer : IMatchResultRefer
+    public abstract class BaseDataBaseRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public BaseDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) {
             this.db = db;
@@ -42,44 +40,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
     }
 
-    public interface IRestorableRefer : IMatchResultRefer
+    public interface IRestorableRefer<in T, U, V> : IMatchResultRefer<U, V>
     {
-        IReferRestorationKey Save();
+        IReferRestorationKey<T, U, V> Save();
     }
 
-    public interface IRestorableRefer<in T> : IMatchResultRefer
+    public interface IRestorableRefer<in T, U, V, in W> : IMatchResultRefer<U, V>
     {
-        IReferRestorationKey<T> Save();
-    }
-
-    public abstract class RestorableDataBaseRefer : BaseDataBaseRefer, IRestorableRefer<MoleculeDataBase>
-    {
-        public RestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
-
-        }
-
-        public abstract IReferRestorationKey<MoleculeDataBase> Save();
-    }
-
-    public class MspDbRestorableDataBaseRefer : RestorableDataBaseRefer
-    {
-        public MspDbRestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
-
-        }
-
-        public override IReferRestorationKey<MoleculeDataBase> Save() {
-            return new MspDbRestorationKey(Key);
-        }
-    }
-
-    public class TextDbRestorableDataBaseRefer : RestorableDataBaseRefer
-    {
-        public TextDbRestorableDataBaseRefer(IReadOnlyList<MoleculeMsReference> db, string key) : base(db, key) {
-
-        }
-
-        public override IReferRestorationKey<MoleculeDataBase> Save() {
-            return new TextDbRestorationKey(Key);
-        }
+        IReferRestorationKey<T, U, V, W> Save();
     }
 }

@@ -21,12 +21,12 @@ namespace CompMs.MsdialCore.Export
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
 
-        public BaseMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) {
+        public BaseMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
             this.refer = refer;
             this.parameter = parameter;
         }
 
-        private readonly IMatchResultRefer refer;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
 
         public string[] GetHeaders() => GetHeadersCore();

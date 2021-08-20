@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
@@ -39,8 +40,8 @@ namespace CompMs.MsdialImmsCore.Process
         public static void Run(
             AnalysisFileBean file,
             MsdialDataStorage container,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             bool isGuiProcess = false,
             Action<int> reportAction = null, CancellationToken token = default) {
@@ -140,8 +141,8 @@ namespace CompMs.MsdialImmsCore.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> mspAnnotator,
-            IAnnotator<ChromatogramPeakFeature, MSDecResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction,
             CancellationToken token) {

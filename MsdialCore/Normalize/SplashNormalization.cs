@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -12,7 +14,7 @@ namespace CompMs.MsdialCore.Normalize
     {
         public static void Normalize(
             IReadOnlyList<AlignmentSpotProperty> globalSpots,
-            IMatchResultRefer refer,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IReadOnlyList<StandardCompound> splashLipids,
             IonAbundanceUnit unit) {
 
@@ -109,7 +111,7 @@ namespace CompMs.MsdialCore.Normalize
             }
         }
 
-        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer refer, HashSet<string> lipidClasses) {
+        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses) {
 
             if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested) {
                 return "Unknown";

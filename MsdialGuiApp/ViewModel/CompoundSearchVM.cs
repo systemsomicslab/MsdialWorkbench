@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -90,9 +92,9 @@ namespace CompMs.App.Msdial.ViewModel
 
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
 
-        public IReadOnlyList<IAnnotatorContainer> Annotators => model.Annotators;
+        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators => model.Annotators;
 
-        public ReactivePropertySlim<IAnnotatorContainer> Annotator { get; }
+        public ReactivePropertySlim<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotator { get; }
 
         public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterVM { get; }
 

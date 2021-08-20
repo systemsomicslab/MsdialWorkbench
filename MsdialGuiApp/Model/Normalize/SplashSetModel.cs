@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -17,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Normalize
 {
     class SplashSetModel : BindableBase
     {
-        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer refer, ParameterBase parameter) {
+        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
             this.container = container;
             this.spots = container.AlignmentSpotProperties;
             this.refer = refer;
@@ -45,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Normalize
 
         private readonly AlignmentResultContainer container;
         private readonly IReadOnlyList<AlignmentSpotProperty> spots;
-        private readonly IMatchResultRefer refer;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
 
         public ObservableCollection<StandardCompound> StandardCompounds => SplashProduct.Lipids;

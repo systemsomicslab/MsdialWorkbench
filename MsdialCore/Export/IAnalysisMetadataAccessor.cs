@@ -22,14 +22,14 @@ namespace CompMs.MsdialCore.Export
 
     public abstract class BaseAnalysisMetadataAccessor : IAnalysisMetadataAccessor
     {
-        public BaseAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type) {
+        public BaseAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type) {
             this.refer = refer;
             this.parameter = parameter;
             this.type = type;
         }
 
         protected readonly ParameterBase parameter;
-        protected readonly IMatchResultRefer refer;
+        protected readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ExportspectraType type;
 
         public string[] GetHeaders() => GetHeadersCore();

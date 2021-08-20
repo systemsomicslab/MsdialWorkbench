@@ -13,7 +13,7 @@ namespace CompMs.MsdialDimsCore.Export
 {
     public class DimsMetadataAccessor : BaseMetadataAccessor
     {
-        public DimsMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter) : base(refer, parameter) {
+        public DimsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
 
         }
 
@@ -69,11 +69,11 @@ namespace CompMs.MsdialDimsCore.Export
 
     public class DimsAnalysisMetadataAccessor : BaseAnalysisMetadataAccessor
     {
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter)
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter)
             : this(refer, parameter, parameter.ExportSpectraType) {
         }
 
-        public DimsAnalysisMetadataAccessor(IMatchResultRefer refer, ParameterBase parameter, ExportspectraType type)
+        public DimsAnalysisMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, ExportspectraType type)
             : base(refer, parameter, type) {
         }
 

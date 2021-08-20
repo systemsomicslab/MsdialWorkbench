@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -56,9 +56,37 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
+        }
+
+        [TestMethod()]
+        public void FindCandidatesTest() {
+            var db = new List<MoleculeMsReference>
+            {
+                    new MoleculeMsReference {ScanID = 0,  Name = "A", InChIKey = "a", PrecursorMz = 99.991, },
+                    new MoleculeMsReference {ScanID = 1,  Name = "B", InChIKey = "b", PrecursorMz = 100, },
+                    new MoleculeMsReference {ScanID = 2,  Name = "C", InChIKey = "c", PrecursorMz = 100.009, },
+                    new MoleculeMsReference {ScanID = 3,  Name = "D", InChIKey = "d", PrecursorMz = 101, },
+                    new MoleculeMsReference {ScanID = 4,  Name = "E", InChIKey = "e", PrecursorMz = 102, },
+            };
+            var parameter = new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                TotalScoreCutoff = 0,
+            };
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
+
+            var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
+            var expected = new[]
+            {
+                db[0].Name, db[1].Name, db[2].Name,
+            };
+
+            CollectionAssert.AreEquivalent(expected, results.Select(result => result.Name).ToArray());
         }
 
         [TestMethod()]
@@ -93,7 +121,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
@@ -191,7 +219,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(target, target, null);
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
 
             var reference = annotator.Refer(result);
 
@@ -216,7 +244,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB");
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
-            var results = annotator.Search(target);
+            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
 
             CollectionAssert.AreEqual(db.GetRange(1, 2), results);
         }
@@ -255,8 +283,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(target, target, null, reference, null);
-            annotator.Validate(result, target, target, null, reference, null);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
             
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -106,11 +107,11 @@ namespace CompMs.App.Msdial.Model
 
     class MsRefSpectrumLoader : IMsSpectrumLoader<IAnnotatedObject>
     {
-        public MsRefSpectrumLoader(IMatchResultRefer refer) {
+        public MsRefSpectrumLoader(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             this.refer = refer;
         }
 
-        private readonly IMatchResultRefer refer;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
 
         public List<SpectrumPeak> LoadSpectrum(IAnnotatedObject target) {
             if (target == null) {

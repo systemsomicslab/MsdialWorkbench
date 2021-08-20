@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
@@ -29,9 +30,9 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
-            IMatchResultRefer refer,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> mspAnnotator,
-            IAnnotator<AlignmentSpotProperty, MSDecResult> textDBAnnotator) {
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;

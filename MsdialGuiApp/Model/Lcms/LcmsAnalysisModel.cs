@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
@@ -29,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer refer,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
             IReadOnlyList<ISerializableAnnotatorContainer> annotators)
             : base(analysisFile) {

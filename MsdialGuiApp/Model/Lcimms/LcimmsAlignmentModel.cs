@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
@@ -29,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
-            IMatchResultRefer refer) {
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;

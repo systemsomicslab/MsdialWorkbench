@@ -127,7 +127,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             foreach (var annotatorContainer in annotatorContainers) {
                 var annotator = annotatorContainer.Annotator;
 
-                var candidates = annotator.FindCandidates(chromPeak, msdecResult, isotopes, annotatorContainer.Parameter);
+                var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeak, msdecResult, isotopes, annotatorContainer.Parameter));
                 var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
                 var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
                 chromPeak.MatchResults.AddResults(results);
