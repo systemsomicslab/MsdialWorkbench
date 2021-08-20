@@ -13,10 +13,10 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsFastaAnnotationSettingModel : DataBaseAnnotationSettingModelBase {
+    sealed class LcmsFastaAnnotationSettingModel : FastaAnnotationSettingModel {
         
         public ParameterBase ParameterBase { get; }
-        public LcmsFastaAnnotationSettingModel(DataBaseAnnotationSettingModelBase other, ParameterBase paramBase)
+        public LcmsFastaAnnotationSettingModel(FastaAnnotationSettingModel other, ParameterBase paramBase)
             : base(other) {
             this.ParameterBase = paramBase;
         }
@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
-            return new DatabaseAnnotatorContainer(
+            return new ShotgunProteomicsDBAnnotatorContainer(
                 new LcmsFastaAnnotator(molecules.Database, Parameter, this.ParameterBase.ProteomicsParam, AnnotatorID, molecules.SourceType),
                 molecules,
                 Parameter);

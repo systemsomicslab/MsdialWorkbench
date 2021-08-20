@@ -70,17 +70,8 @@ namespace CompMs.MsdialCore.Parser
             SourceType = sourceType;
         }
 
-        public StandardRestorationKey(string key, MsRefSearchParameterBase parameter, ProteomicsParameter proteomicsparam, SourceType sourceType) : base(key) {
-            Parameter = parameter;
-            ProteomicsParameter = proteomicsparam;
-            SourceType = sourceType;
-        }
-
         [MessagePack.Key(nameof(Parameter))]
         public MsRefSearchParameterBase Parameter { get; set; }
-
-        [MessagePack.Key(nameof(ProteomicsParameter))]
-        public ProteomicsParameter ProteomicsParameter { get; set; }
 
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }

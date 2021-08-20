@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -73,19 +74,31 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
     }
 
-    public abstract class ProteomicsStandardRestorableBase : StandardRestorableBase {
-        public ProteomicsParameter ProteomicsParameter { get; }
+    public abstract class ProteomicsStandardRestorableBase : IRestorableRefer<ShotgunProteomicsDB> {
 
         public ProteomicsStandardRestorableBase(
-           IEnumerable<MoleculeMsReference> db,
-           MsRefSearchParameterBase parameter,
-           ProteomicsParameter proteomicsparam,
+           ShotgunProteomicsDB db,
+           MsRefSearchParameterBase msrefSearchParameter,
+           ProteomicsParameter proteomicsParameter,
            string key,
-           SourceType sourceType) : base(db, parameter, key, sourceType) {
-            ProteomicsParameter = proteomicsparam;
+           SourceType sourceType) {
+            ProteomicsParameter = proteomicsParameter;
+            this.ShotgunProteomicsDB = db;
+            MsRefSearchParameter = msrefSearchParameter;
+            SourceType = sourceType;
+            Key = key;
         }
 
-        public override IReferRestorationKey<MoleculeDataBase> Save() {
+        protected readonly ShotgunProteomicsDB ShotgunProteomicsDB;
+        public List<PeptideMsReference> PeptideMsRef { get => ShotgunProteomicsDB.PeptideMsRef; }
+        public List<PeptideMsReference> DecoyPeptideMsRef { get => ShotgunProteomicsDB.DecoyPeptideMsRef; }
+
+        public ProteomicsParameter ProteomicsParameter { get; }
+        public MsRefSearchParameterBase MsRefSearchParameter { get; }
+        public string Key { get; }
+        public SourceType SourceType { get; }
+
+        public void IReferRestorationKey<ShotgunProteomicsDB> Save() {
             return new StandardRestorationKey(Key, Parameter, ProteomicsParameter, SourceType);
         }
     }
