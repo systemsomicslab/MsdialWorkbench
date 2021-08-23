@@ -3,7 +3,7 @@ using Reactive.Bindings;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    internal interface IAnnotationSettingViewModel
+    public interface IAnnotationSettingViewModel
     {
         IAnnotationSettingModel Model { get; }
 

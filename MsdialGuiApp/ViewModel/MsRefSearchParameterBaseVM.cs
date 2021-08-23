@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel
         public MsRefSearchParameterBaseVM(MsRefSearchParameterBase innerModel) : base(innerModel) { }
     }
 
-    class MsRefSearchParameterBaseViewModel : ViewModelBase
+    public class MsRefSearchParameterBaseViewModel : ViewModelBase
     {
         // library search parameters
 
