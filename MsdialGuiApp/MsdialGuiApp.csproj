@@ -160,6 +160,7 @@
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
+    <Compile Include="Model\Imms\ImmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
     <Compile Include="Model\Imms\ImmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
