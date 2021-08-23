@@ -39,7 +39,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ScoreCutOffSetting">
+                  x:Key="ScoreCutOffSettingWithMs2">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Dot product score:">
                 <TextBox Text="{Binding SimpleDotProductCutOff.Value}"/>
@@ -63,6 +63,15 @@
         </StackPanel>
     </DataTemplate>
     
+    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="ScoreCutOffSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Total score:">
+                <TextBox Text="{Binding TotalScoreCutoff.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type localVM:MassAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
@@ -107,7 +116,7 @@
                 <Expander Header="Annotaion cut off" Margin="0,8"
                           Grid.Row="2">
                     <ContentControl Content="{Binding ParameterVM}"
-                                    ContentTemplate="{StaticResource ResourceKey=ScoreCutOffSetting}"
+                                    ContentTemplate="{StaticResource ResourceKey=ScoreCutOffSettingWithMs2}"
                                     Margin="8"/>
                 </Expander>
             </Grid>

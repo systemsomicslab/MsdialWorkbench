@@ -1,13 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
-                    xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+                    xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
                     xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+                    xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <DataTemplate DataType="{x:Type localVM:LcmsAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:ImmsAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Visible">
             <Grid>
@@ -46,7 +46,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ToleranceSettingWithMs2ForLcms">
+                  x:Key="ToleranceSettingWithMs2ForImms">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
                                AppendLabel="Da">
@@ -56,40 +56,40 @@
                                AppendLabel="Da">
                 <TextBox Text="{Binding Ms2Tolerance.Value}"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                               AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
+            <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
+                               AppendLabel="">
+                <TextBox Text="{Binding CcsTolerance.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ToleranceSettingForLcms">
+                  x:Key="ToleranceSettingForImms">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
                                AppendLabel="Da">
                 <TextBox Text="{Binding Ms1Tolerance.Value}"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Retention time tolerance:"
-                               AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
+            <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
+                               AppendLabel="">
+                <TextBox Text="{Binding CcsTolerance.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="RetentionTimeSetting">
+                  x:Key="CcsSetting">
         <StackPanel>
-            <ui:LabeledContent PrependLabel="Use retention time for scoring">
-                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationScoring.Value}"/>
+            <ui:LabeledContent PrependLabel="Use collision cross section for scoring">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationScoring.Value}"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Use retention time for filtering">
-                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationFiltering.Value}"/>
+            <ui:LabeledContent PrependLabel="Use collision cross section for filtering">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationFiltering.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:LcmsLbmAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:ImmsLbmAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -111,7 +111,7 @@
                             Width="64"/>
                 </ui:LabeledContent>
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"
                                 Grid.Row="1"/>
             </StackPanel>
 
@@ -132,13 +132,13 @@
             <Expander Header="Retention time setting" Margin="0,8"
                       Grid.Row="4">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                ContentTemplate="{StaticResource CcsSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:ImmsMspAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -152,7 +152,7 @@
                        VerticalAlignment="Center"
                        Grid.Row="0"/>
             <ContentControl Content="{Binding ParameterVM}"
-                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"
                             Margin="8" Grid.Row="1"/>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
@@ -169,16 +169,16 @@
                                 Margin="8"/>
             </Expander>
 
-            <Expander Header="Retention time setting" Margin="0,8"
+            <Expander Header="Ccs setting" Margin="0,8"
                       Grid.Row="4">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                ContentTemplate="{StaticResource CcsSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:LcmsTextDBAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:ImmsTextDBAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -199,42 +199,42 @@
                                 Margin="8"/>
             </Expander>
 
-            <Expander Header="Retention time setting" Margin="0,8"
+            <Expander Header="Ccs setting" Margin="0,8"
                       Grid.Row="3">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                ContentTemplate="{StaticResource CcsSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
-                  x:Key="LcmsAnnotatorSetting">
+                  x:Key="ImmsAnnotatorSetting">
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource ToleranceSettingForLcms}"/>
-                <TextBlock Text="Retention time setting"/>
+                                ContentTemplate="{StaticResource ToleranceSettingForImms}"/>
+                <TextBlock Text="Ccs setting"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"/>
+                                ContentTemplate="{StaticResource CcsSetting}"/>
             </StackPanel>
         </ScrollViewer>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
-                  x:Key="LcmsAnnotatorSettingWithMs2">
+                  x:Key="ImmsAnnotatorSettingWithMs2">
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"/>
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"/>
                 <TextBlock Text="MS2 spectrum cut off"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
                                 ContentTemplate="{StaticResource Ms2Setting}"/>
-                <TextBlock Text="Retention time setting"/>
+                <TextBlock Text="Ccs setting"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"/>
+                                ContentTemplate="{StaticResource CcsSetting}"/>
             </StackPanel>
         </ScrollViewer>
     </DataTemplate>
