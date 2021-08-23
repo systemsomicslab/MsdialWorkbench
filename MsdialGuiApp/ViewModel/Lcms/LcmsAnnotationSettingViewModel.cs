@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -20,7 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     class LcmsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
     {
-        public LcmsAnnotationSettingViewModel(LcmsAnnotationSettingModel model, MsdialLcmsParameter parameter) {
+        public LcmsAnnotationSettingViewModel(DelegateDataBaseAnnotationSettingModel model, MsdialLcmsParameter parameter) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -118,7 +117,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
         }
 
-        private readonly LcmsAnnotationSettingModel model;
+        private readonly DelegateDataBaseAnnotationSettingModel model;
         IAnnotationSettingModel IAnnotationSettingViewModel.Model => model;
         ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
@@ -175,7 +174,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public MsdialLcmsParameter Parameter { get; }
 
         public LcmsAnnotationSettingViewModel Create() {
-            var m = new LcmsAnnotationSettingModel();
+            var m = new DelegateDataBaseAnnotationSettingModel();
             return new LcmsAnnotationSettingViewModel(m, Parameter);
         }
     }
