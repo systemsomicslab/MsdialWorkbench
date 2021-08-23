@@ -79,6 +79,7 @@
                     <ResourceDictionary.MergedDictionaries>
                         <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
                         <ResourceDictionary Source="/View/Lcms/AnnotationSettingStyle.xaml"/>
+                        <ResourceDictionary Source="/View/Imms/AnnotationSettingStyle.xaml"/>
                         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
                     </ResourceDictionary.MergedDictionaries>
                     <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">

@@ -113,74 +113,74 @@ namespace CompMs.App.Msdial.ViewModel
             MassRangeBegin = new ReactiveProperty<string>(model.MassRangeBegin.ToString())
                 .SetValidateAttribute(() => MassRangeBegin)
                 .AddTo(Disposables);
-            MassRangeBegin.ObserveHasErrors.Where(e => !e)
+            MassRangeBegin.Where(_ => !MassRangeBegin.HasErrors)
                 .Select(_ => float.Parse(MassRangeBegin.Value))
                 .Subscribe(x => this.model.MassRangeBegin = x)
                 .AddTo(Disposables);
             MassRangeEnd = new ReactiveProperty<string>(model.MassRangeEnd.ToString())
                 .SetValidateAttribute(() => MassRangeEnd)
                 .AddTo(Disposables);
-            MassRangeEnd.ObserveHasErrors.Where(e => !e)
+            MassRangeEnd.Where(_ => !MassRangeEnd.HasErrors)
                 .Select(_ => float.Parse(MassRangeEnd.Value))
                 .Subscribe(x => this.model.MassRangeEnd = x)
                 .AddTo(Disposables);
             RtTolerance = new ReactiveProperty<string>(model.RtTolerance.ToString())
                 .SetValidateAttribute(() => RtTolerance)
                 .AddTo(Disposables);
-            RtTolerance.ObserveHasErrors.Where(e => !e)
+            RtTolerance.Where(_ => !RtTolerance.HasErrors)
                 .Select(_ => float.Parse(RtTolerance.Value))
                 .Subscribe(x => this.model.RtTolerance = x)
                 .AddTo(Disposables);
             RiTolerance = new ReactiveProperty<string>(model.RiTolerance.ToString())
                 .SetValidateAttribute(() => RiTolerance)
                 .AddTo(Disposables);
-            RiTolerance.ObserveHasErrors.Where(e => !e)
+            RiTolerance.Where(_ => !RiTolerance.HasErrors)
                 .Select(_ => float.Parse(RiTolerance.Value))
                 .Subscribe(x => this.model.RiTolerance = x)
                 .AddTo(Disposables);
             CcsTolerance = new ReactiveProperty<string>(model.CcsTolerance.ToString())
                 .SetValidateAttribute(() => CcsTolerance)
                 .AddTo(Disposables);
-            CcsTolerance.ObserveHasErrors.Where(e => !e)
+            CcsTolerance.Where(_ => !CcsTolerance.HasErrors)
                 .Select(_ => float.Parse(CcsTolerance.Value))
                 .Subscribe(x => this.model.CcsTolerance = x)
                 .AddTo(Disposables);
             Ms1Tolerance = new ReactiveProperty<string>(model.Ms1Tolerance.ToString())
                 .SetValidateAttribute(() => Ms1Tolerance)
                 .AddTo(Disposables);
-            Ms1Tolerance.ObserveHasErrors.Where(e => !e)
+            Ms1Tolerance.Where(_ => !Ms1Tolerance.HasErrors)
                 .Select(_ => float.Parse(Ms1Tolerance.Value))
                 .Subscribe(x => this.model.Ms1Tolerance = x)
                 .AddTo(Disposables);
             Ms2Tolerance = new ReactiveProperty<string>(model.Ms2Tolerance.ToString())
                 .SetValidateAttribute(() => Ms2Tolerance)
                 .AddTo(Disposables);
-            Ms2Tolerance.ObserveHasErrors.Where(e => !e)
+            Ms2Tolerance.Where(_ => !Ms2Tolerance.HasErrors)
                 .Select(_ => float.Parse(Ms2Tolerance.Value))
                 .Subscribe(x => this.model.Ms2Tolerance = x)
                 .AddTo(Disposables);
             RelativeAmpCutoff = new ReactiveProperty<string>((model.RelativeAmpCutoff * 100).ToString())
                 .SetValidateAttribute(() => RelativeAmpCutoff)
                 .AddTo(Disposables);
-            RelativeAmpCutoff.ObserveHasErrors.Where(e => !e)
+            RelativeAmpCutoff.Where(_ => !RelativeAmpCutoff.HasErrors)
                 .Select(_ => float.Parse(RelativeAmpCutoff.Value) / 100)
                 .Subscribe(x => this.model.RelativeAmpCutoff = x)
                 .AddTo(Disposables);
             AbsoluteAmpCutoff = new ReactiveProperty<string>(model.AbsoluteAmpCutoff.ToString())
                 .SetValidateAttribute(() => AbsoluteAmpCutoff)
                 .AddTo(Disposables);
-            AbsoluteAmpCutoff.ObserveHasErrors.Where(e => !e)
+            AbsoluteAmpCutoff.Where(_ => !AbsoluteAmpCutoff.HasErrors)
                 .Select(_ => float.Parse(AbsoluteAmpCutoff.Value))
                 .Subscribe(x => this.model.AbsoluteAmpCutoff = x)
                 .AddTo(Disposables);
 
             IsUseTimeForAnnotationFiltering = new ReactiveProperty<bool>(model.IsUseTimeForAnnotationFiltering).AddTo(Disposables);
-            IsUseTimeForAnnotationFiltering.ObserveHasErrors.Where(e => !e)
+            IsUseTimeForAnnotationFiltering.Where(_ => !IsUseTimeForAnnotationFiltering.HasErrors)
                 .Select(_ => IsUseTimeForAnnotationFiltering.Value)
                 .Subscribe(x => this.model.IsUseTimeForAnnotationFiltering = x)
                 .AddTo(Disposables);
             IsUseCcsForAnnotationFiltering = new ReactiveProperty<bool>(model.IsUseCcsForAnnotationFiltering).AddTo(Disposables);
-            IsUseCcsForAnnotationFiltering.ObserveHasErrors.Where(e => !e)
+            IsUseCcsForAnnotationFiltering.Where(_ => !IsUseCcsForAnnotationFiltering.HasErrors)
                 .Select(_ => IsUseCcsForAnnotationFiltering.Value)
                 .Subscribe(x => this.model.IsUseCcsForAnnotationFiltering = x)
                 .AddTo(Disposables);
@@ -188,53 +188,53 @@ namespace CompMs.App.Msdial.ViewModel
             WeightedDotProductCutOff = new ReactiveProperty<string>((model.WeightedDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => WeightedDotProductCutOff)
                 .AddTo(Disposables);
-            WeightedDotProductCutOff.ObserveHasErrors.Where(e => !e)
+            WeightedDotProductCutOff.Where(_ => !WeightedDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(WeightedDotProductCutOff.Value) / 1000)
                 .Subscribe(x => this.model.WeightedDotProductCutOff = x)
                 .AddTo(Disposables);
             SimpleDotProductCutOff = new ReactiveProperty<string>((model.SimpleDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => SimpleDotProductCutOff)
                 .AddTo(Disposables);
-            SimpleDotProductCutOff.ObserveHasErrors.Where(e => !e)
+            SimpleDotProductCutOff.Where(_ => !SimpleDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(SimpleDotProductCutOff.Value) / 1000)
                 .Subscribe(x => this.model.SimpleDotProductCutOff = x)
                 .AddTo(Disposables);
             ReverseDotProductCutOff = new ReactiveProperty<string>((model.ReverseDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => ReverseDotProductCutOff)
                 .AddTo(Disposables);
-            ReverseDotProductCutOff.ObserveHasErrors.Where(e => !e)
+            ReverseDotProductCutOff.Where(_ => !ReverseDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(ReverseDotProductCutOff.Value) / 1000)
                 .Subscribe(x => this.model.ReverseDotProductCutOff = x)
                 .AddTo(Disposables);
             MatchedPeaksPercentageCutOff = new ReactiveProperty<string>((model.MatchedPeaksPercentageCutOff * 100).ToString())
                 .SetValidateAttribute(() => MatchedPeaksPercentageCutOff)
                 .AddTo(Disposables);
-            MatchedPeaksPercentageCutOff.ObserveHasErrors.Where(e => !e)
+            MatchedPeaksPercentageCutOff.Where(_ => !MatchedPeaksPercentageCutOff.HasErrors)
                 .Select(_ => float.Parse(MatchedPeaksPercentageCutOff.Value) / 100)
                 .Subscribe(x => this.model.MatchedPeaksPercentageCutOff = x)
                 .AddTo(Disposables);
             TotalScoreCutoff = new ReactiveProperty<string>((model.TotalScoreCutoff * 1000).ToString())
                 .SetValidateAttribute(() => TotalScoreCutoff)
                 .AddTo(Disposables);
-            TotalScoreCutoff.ObserveHasErrors.Where(e => !e)
+            TotalScoreCutoff.Where(_ => !TotalScoreCutoff.HasErrors)
                 .Select(_ => float.Parse(TotalScoreCutoff.Value) / 1000)
                 .Subscribe(x => this.model.TotalScoreCutoff = x)
                 .AddTo(Disposables);
             MinimumSpectrumMatch = new ReactiveProperty<string>(model.MinimumSpectrumMatch.ToString())
                 .SetValidateAttribute(() => MinimumSpectrumMatch)
                 .AddTo(Disposables);
-            MinimumSpectrumMatch.ObserveHasErrors.Where(e => !e)
+            MinimumSpectrumMatch.Where(_ => !MinimumSpectrumMatch.HasErrors)
                 .Select(_ => float.Parse(MinimumSpectrumMatch.Value))
                 .Subscribe(x => this.model.MinimumSpectrumMatch = x)
                 .AddTo(Disposables);
 
             IsUseTimeForAnnotationScoring = new ReactiveProperty<bool>(model.IsUseTimeForAnnotationScoring).AddTo(Disposables);
-            IsUseTimeForAnnotationScoring.ObserveHasErrors.Where(e => !e)
+            IsUseTimeForAnnotationScoring.Where(_ => !IsUseTimeForAnnotationScoring.HasErrors)
                 .Select(_ => IsUseTimeForAnnotationScoring.Value)
                 .Subscribe(x => this.model.IsUseTimeForAnnotationScoring = x)
                 .AddTo(Disposables);
             IsUseCcsForAnnotationScoring = new ReactiveProperty<bool>(model.IsUseCcsForAnnotationScoring).AddTo(Disposables);
-            IsUseCcsForAnnotationScoring.ObserveHasErrors.Where(e => !e)
+            IsUseCcsForAnnotationScoring.Where(_ => !IsUseCcsForAnnotationScoring.HasErrors)
                 .Select(_ => IsUseCcsForAnnotationScoring.Value)
                 .Subscribe(x => this.model.IsUseCcsForAnnotationScoring = x)
                 .AddTo(Disposables);

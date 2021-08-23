@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    interface IAnnotationProcessSettingModel
+    public interface IAnnotationProcessSettingModel
     {
         IReadOnlyList<IAnnotationSettingModel> Annotations { get; }
 

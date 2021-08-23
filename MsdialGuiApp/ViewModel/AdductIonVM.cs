@@ -3,8 +3,12 @@ using CompMs.CommonMVVM.Common;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    class AdductIonVM : DynamicViewModelBase<AdductIon>
+    public class AdductIonVM : DynamicViewModelBase<AdductIon>
     {
-        public AdductIonVM(AdductIon innerModel) : base(innerModel) { }
+        public AdductIonVM(AdductIon innerModel) : base(innerModel) {
+            Model = innerModel;
+        }
+
+        public AdductIon Model { get; }
     }
 }

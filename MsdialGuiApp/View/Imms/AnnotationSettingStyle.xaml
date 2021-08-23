@@ -129,7 +129,7 @@
                                 Margin="8"/>
             </Expander>
 
-            <Expander Header="Retention time setting" Margin="0,8"
+            <Expander Header="Ccs setting" Margin="0,8"
                       Grid.Row="4">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource CcsSetting}"

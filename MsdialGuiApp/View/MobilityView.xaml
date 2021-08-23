@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
@@ -19,6 +20,7 @@
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <validator:DoubleNumericValidation x:Key="DblValid"/>
+            <converter:BooleanToEnumConverter x:Key="b2eConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -37,9 +39,12 @@
                         <Setter Property="Margin" Value="14,1,0,0"/>
                     </Style>
                 </StackPanel.Resources>
-                <RadioButton Name="RadioButton_UseTIMS" Content="TIMS (Bruker)" IsChecked="{Binding Path=Param.IsTIMS}"/>
-                <RadioButton Name="RadioButton_UseDTIMS" Content="DTIMS (Agilent)" IsChecked="{Binding Path=Param.IsDTIMS}"/>
-                <RadioButton Name="RadioButton_UseTWIMS" Content="TWIMS (Waters)" IsChecked="{Binding Path=Param.IsTWIMS}"/>
+                <RadioButton Name="RadioButton_UseTIMS" Content="TIMS (Bruker)"
+                             IsChecked="{Binding Path=Parameter.IonMobilityType.Value, Converter={StaticResource b2eConverter}, ConverterParameter=Tims}"/>
+                <RadioButton Name="RadioButton_UseDTIMS" Content="DTIMS (Agilent)"
+                             IsChecked="{Binding Path=Parameter.IonMobilityType.Value, Converter={StaticResource b2eConverter}, ConverterParameter=Dtims}"/>
+                <RadioButton Name="RadioButton_UseTWIMS" Content="TWIMS (Waters)"
+                             IsChecked="{Binding Path=Parameter.IonMobilityType.Value, Converter={StaticResource b2eConverter}, ConverterParameter=Twims}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="5,10">
@@ -54,7 +59,7 @@
                         <Style TargetType="Label">
                             <Setter Property="Content" Value="not imported yet"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsAllCalibrantDataImported}" Value="True">
+                                <DataTrigger Binding="{Binding IsAllCalibrantDataImported.Value}" Value="True">
                                     <Setter Property="Content" Value="imported"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -76,7 +81,7 @@
                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
                 </Style>
             </Grid.Resources>
-            <TextBlock Visibility="{Binding Param.IsTIMS, Converter={StaticResource ResourceKey=boolean2visibility}}"
+            <TextBlock Visibility="{Binding Parameter.IsTIMS.Value, Converter={StaticResource ResourceKey=boolean2visibility}}"
                        TextWrapping="Wrap"
                        FontSize="16"
                        Foreground="Red"
@@ -93,7 +98,7 @@
                       CanUserReorderColumns="False" CanUserSortColumns="True"
                       ClipboardCopyMode="IncludeHeader" 
                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      Visibility="{Binding Param.IsDTIMS, Converter={StaticResource ResourceKey=boolean2visibility}}"
+                      Visibility="{Binding Parameter.IsDTIMS.Value, Converter={StaticResource ResourceKey=boolean2visibility}}"
                       behavior:DataGridPasteBehavior.Enable="True"
                       Margin="8">
                 <DataGrid.Columns>
@@ -137,7 +142,7 @@
                       CanUserReorderColumns="False" CanUserSortColumns="True"
                       ClipboardCopyMode="IncludeHeader" 
                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      Visibility="{Binding Param.IsTWIMS, Converter={StaticResource ResourceKey=boolean2visibility}}"
+                      Visibility="{Binding Parameter.IsTWIMS.Value, Converter={StaticResource ResourceKey=boolean2visibility}}"
                       behavior:DataGridPasteBehavior.Enable="True"
                       Margin="8">
                 <DataGrid.Columns>

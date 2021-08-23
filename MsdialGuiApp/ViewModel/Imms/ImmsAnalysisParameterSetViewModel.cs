@@ -1,8 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel.Setting;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
@@ -10,7 +9,6 @@ using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -19,32 +17,29 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel.Lcms
+namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class LcmsAnalysisParameterSetViewModel : ViewModelBase
+    public class ImmsAnalysisParameterSetViewModel : ViewModelBase
     {
-        public LcmsAnalysisParameterSetViewModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files)
-            : this(new LcmsAnalysisParameterSetModel(parameter, files)) {
-            
-        }
-
-        public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
+        public ImmsAnalysisParameterSetViewModel(ImmsAnalysisParameterSetModel model) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
             Model = model;
-            Param = MsdialProjectParameterFactory.Create(Model.Parameter);
+            Parameter = new MsdialImmsParameterViewModel(Model.Parameter);
 
             var dt = DateTime.Now;
-            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
-
+            AlignmentResultFileName = $"AlignmentResult_{dt:yyy_MM_dd_hh_mm_ss}";
             AnalysisFiles = Model.AnalysisFiles;
 
             ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
-                Model.ParameterBase.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
-                         .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
+                Model.ParameterBase.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance, })
+                    .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
 
             if (Model.ParameterBase.SearchedAdductIons.IsEmptyOrNull()) {
@@ -55,19 +50,68 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Model.ParameterBase.QcAtLeastFilter = false;
 
-            var factory = new LcmsAnnotationSettingViewModelModelFactory(Model.Parameter);
+            var factory = new ImmsAnnotationSettingViewModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
-                    Model.AnnotationProcessSettingModel,
-                    factory.Create)
-                .AddTo(Disposables);
+                Model.AnnotationProcessSettingModel,
+                factory.Create)
+            .AddTo(Disposables);
 
             if (Model.ParameterBase.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                 AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
                 var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
-                (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
+                (annotationMethod as ImmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
             }
+
+            var rep = Model.FileID2CcsCoefficients.Values.FirstOrDefault();
+            if (rep != null) {
+                if (rep.IsAgilentIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Dtims;
+                }
+                else if (rep.IsWatersIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Twims;
+                }
+                else if (rep.IsBrukerIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Tims;
+                }
+            }
+
+            ccsCalibrationInfoVSs = new ObservableCollection<CcsCalibrationInfoVS>();
+            foreach (var file in Model.AnalysisFiles) {
+                ccsCalibrationInfoVSs.Add(new CcsCalibrationInfoVS(file, Model.FileID2CcsCoefficients[file.AnalysisFileId]));
+            }
+
+            CcsCalibrationInfoVSs = new ReadOnlyObservableCollection<CcsCalibrationInfoVS>(ccsCalibrationInfoVSs);
+            var TimsInfoImported = Parameter.IsTIMS;
+            var DtimsInfoImported = new[]
+            {
+                Parameter.IsDTIMS,
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.AgilentBeta)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.AgilentBeta > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.AgilentTFix)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.AgilentTFix > -1)),
+            }.CombineLatestValuesAreAllTrue();
+            var TwimsInfoImported = new[]
+            {
+                Parameter.IsTWIMS,
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersCoefficient)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersCoefficient > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersT0)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersT0 > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersExponent)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersExponent > -1)),
+            }.CombineLatestValuesAreAllTrue();
+            IsAllCalibrantDataImported = new[]
+            {
+                TimsInfoImported,
+                DtimsInfoImported,
+                TwimsInfoImported,
+            }.CombineLatest(xs => xs.Any(x => x))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+            IsAllCalibrantDataImported.Subscribe(x => Parameter.IsAllCalibrantDataImported.Value = x)
+                .AddTo(Disposables);
 
             ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
                 .ToReactiveCommand<Window>()
@@ -75,50 +119,37 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
         }
 
-        public LcmsAnalysisParameterSetModel Model { get; }
+        public ImmsAnalysisParameterSetModel Model { get; }
 
-        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
+        public MsdialImmsParameterViewModel Parameter { get; }
 
-        public ParameterBaseVM Param {
-            get => paramVM;
-            set => SetProperty(ref paramVM, value);
-        }
-        ParameterBaseVM paramVM;
+        [Obsolete]
+        public ParameterBaseVM Param => Parameter;
 
         public string AlignmentResultFileName {
             get => alignmentResultFileName;
             set => SetProperty(ref alignmentResultFileName, value);
         }
-        string alignmentResultFileName;
+        private string alignmentResultFileName = string.Empty;
 
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles {
-            get => analysisFiles;
-            set => SetProperty(ref analysisFiles, value);
-        }
-        ObservableCollection<AnalysisFileBean> analysisFiles;
+        public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 
-        public ObservableCollection<MzSearchQueryVM> ExcludedMassList {
-            get => excludedMassList;
-            set => SetProperty(ref excludedMassList, value);
-        }
-        ObservableCollection<MzSearchQueryVM> excludedMassList;
+        public ObservableCollection<MzSearchQueryVM> ExcludedMassList { get; }
+        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
-        public ObservableCollection<AdductIonVM> SearchedAdductIons {
-            get => searchedAdductIons;
-            set => SetProperty(ref searchedAdductIons, value);
-        }
-        ObservableCollection<AdductIonVM> searchedAdductIons;
+        public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
 
         public bool TogetherWithAlignment {
-            get => (Param.ProcessOption.HasFlag(ProcessOption.Alignment));
+            get => (Parameter.ProcessOption.HasFlag(ProcessOption.Alignment));
             set {
-                if (Param.ProcessOption.HasFlag(ProcessOption.Alignment) == value)
+                if (Parameter.ProcessOption.HasFlag(ProcessOption.Alignment) == value) {
                     return;
+                }
                 if (value) {
-                    Param.ProcessOption |= ProcessOption.Alignment;
+                    Parameter.ProcessOption |= ProcessOption.Alignment;
                 }
                 else {
-                    Param.ProcessOption &= ~ProcessOption.Alignment;
+                    Parameter.ProcessOption &= ~ProcessOption.Alignment;
                 }
                 OnPropertyChanged(nameof(TogetherWithAlignment));
             }
@@ -126,7 +157,32 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReactiveCommand<Window> ContinueProcessCommand { get; }
 
+        public ReadOnlyObservableCollection<CcsCalibrationInfoVS> CcsCalibrationInfoVSs { get; }
+        private ObservableCollection<CcsCalibrationInfoVS> ccsCalibrationInfoVSs;
+
+        public ReadOnlyReactivePropertySlim<bool> IsAllCalibrantDataImported { get; }
+
         private void ContinueProcess(Window window) {
+            if (!Model.Parameter.IsAllCalibrantDataImported) {
+                var errorMessages = new List<string>();
+                errorMessages.Add("You have to set the coefficients for all files.");
+
+                switch (Model.Parameter.IonMobilityType) {
+                    case IonMobilityType.Dtims:
+                        errorMessages.Add("For Agilent single fieled-based CCS calculation, you have to set the coefficients for all files.");
+                        break;
+                    case IonMobilityType.Twims:
+                        errorMessages.Add("For Waters CCS calculation, you have to set the coefficients for all files.");
+                        break;
+                }
+
+                errorMessages.Add("Otherwise, the Mason–Schamp equation using gasweight=28.0134 and temperature=305.0 is used for CCS calculation for all data.");
+                errorMessages.Add("Do you continue the CCS parameter setting?");
+                if (MessageBox.Show(string.Join(" ", errorMessages), "Error", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.No) {
+                    return;
+                }
+            }
+
             Mouse.OverrideCursor = Cursors.Wait;
 
             var message = new ShortMessageWindow
@@ -159,7 +215,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
                 .Select(query => new MzSearchQuery { Mass = query.Mass.Value, MassTolerance = query.Tolerance.Value })
                 .ToList();
-
+            Model.ParameterBase.SearchedAdductIons = SearchedAdductIons.Select(vm => vm.Model).ToList();
 
             if (Model.ParameterBase.TogetherWithAlignment && AnalysisFiles.Count > 1) {
 
@@ -201,9 +257,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             };
 
             if (window.ShowDialog() == true) {
-                if (Model.ParameterBase.SearchedAdductIons == null)
-                    Model.ParameterBase.SearchedAdductIons = new List<AdductIon>();
-                Model.ParameterBase.SearchedAdductIons.Add(vm.AdductIon);
                 SearchedAdductIons.Add(new AdductIonVM(vm.AdductIon));
             }
         }
@@ -223,7 +276,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             };
 
             if (ofd.ShowDialog() == true) {
-                Param.IsotopeTextDBFilePath = ofd.FileName;
+                Parameter.IsotopeTextDBFilePath = ofd.FileName;
             }
         }
     }
