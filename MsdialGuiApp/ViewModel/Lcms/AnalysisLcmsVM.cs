@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -20,16 +19,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public AnalysisLcmsVM(
             LcmsAnalysisModel model,
-            AnalysisFileBean analysisFile,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
-            }
-
-            if (analysisFile is null) {
-                throw new ArgumentNullException(nameof(analysisFile));
             }
 
             if (compoundSearchService is null) {
@@ -41,7 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             this.model = model;
-            this.analysisFile = analysisFile;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
 
@@ -118,19 +111,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 CommentFilterKeyword)
             .AddTo(Disposables);
 
-            SearchCompoundCommand = new[] {
-                Target.Select(t => t != null && t.InnerModel != null),
-                model.MsdecResult.Select(r => r != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReactiveCommand()
-            .WithSubscribe(SearchCompound)
-            .AddTo(Disposables);
+            SearchCompoundCommand = this.model.CanSearchCompound
+                .ToReactiveCommand()
+                .WithSubscribe(SearchCompound)
+                .AddTo(Disposables);
 
             Ms1PeaksView.Filter += PeakFilter;
         }
 
         private readonly LcmsAnalysisModel model;
-        private readonly AnalysisFileBean analysisFile;
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
@@ -295,14 +284,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
-                analysisFile,
-                Target.Value.InnerModel,
-                this.model.MsdecResult.Value,
-                null,
-                this.model.Annotators))
-            using (var vm = new ViewModel.CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
+            using (var csm = model.CreateCompoundSearchModel()) {
+                if (csm is null) {
+                    return;
+                }
+                using (var vm = new ViewModel.CompoundSearchVM(csm)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
             }
         }
 

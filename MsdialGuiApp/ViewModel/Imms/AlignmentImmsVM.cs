@@ -1,13 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -24,8 +20,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     class AlignmentImmsVM : AlignmentFileViewModel {
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model) {
@@ -39,9 +33,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
-
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -104,11 +95,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 CommentFilterKeyword)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = this.model.Target
-                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+            SearchCompoundCommand = this.model.CanSearchCompound
                 .ToReactiveCommand()
+                .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
-            SearchCompoundCommand.Subscribe(SearchCompound);
         }
 
         private readonly ImmsAlignmentModel model;
@@ -334,20 +324,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, textDBAnnotator;
 
         private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
-                return;
-
-            using (var model = new ImmsCompoundSearchModel<AlignmentSpotProperty>(
-                this.model.AlignmentFile,
-                Target.Value.innerModel,
-                this.model.MsdecResult.Value,
-                null,
-                this.model.AnnotatorContainers))
-            using (var vm = new ImmsCompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
+            using (var csm = model.CreateCompoundSearchModel()) {
+                if (csm is null) {
+                    return;
+                }
+                using (var vm = new ImmsCompoundSearchVM(csm)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
             }
         }
 

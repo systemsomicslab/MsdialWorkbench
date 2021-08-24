@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.Model.Core
                 throw new ArgumentNullException(nameof(analysisFile));
             }
 
+            AnalysisFile = analysisFile;
             var peaks = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
@@ -36,6 +37,8 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         protected readonly MSDecLoader decLoader;
+
+        public AnalysisFileBean AnalysisFile { get; }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 

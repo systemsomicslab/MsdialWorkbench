@@ -4,21 +4,17 @@ using CompMs.App.Msdial.View.Imms;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
@@ -35,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Imms
     class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.Drift);
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
@@ -48,9 +44,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; private set; }
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; private set; }
 
         public ImmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -101,11 +94,6 @@ namespace CompMs.App.Msdial.Model.Imms
             return 0;
         }
 
-        public void LoadAnnotator() {
-            MspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
-            TextDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
-        }
-
         private bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = (MsdialImmsParameter)Storage.ParameterBase;
             var analysisParameterSet = new ImmsAnalysisParameterSetModel(parameter, AnalysisFiles);
@@ -135,14 +123,6 @@ namespace CompMs.App.Msdial.Model.Imms
                     );
                     Storage.AlignmentFiles = AlignmentFiles.ToList();
                 }
-                //var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-                //var mspAnnotator = new ImmsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-                //MspAnnotator = mspAnnotator;
-                //Storage.DataBaseMapper.Add(mspAnnotator, msp);
-                //var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-                //var textDBAnnotator = new ImmsTextDBAnnotator(text, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-                //TextDBAnnotator = textDBAnnotator;
-                //Storage.DataBaseMapper.Add(textDBAnnotator, text);
 
                 return true;
             }
@@ -166,7 +146,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, MspAnnotator, TextDBAnnotator, providerFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, providerFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
@@ -242,9 +222,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 provider,
                 Storage.DataBaseMapper,
                 Storage.ParameterBase,
-                Storage.DataBaseMapper.Annotators,
-                MspAnnotator,
-                TextDBAnnotator)
+                Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
 
@@ -258,9 +236,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 alignmentFile,
                 Storage.ParameterBase,
                 Storage.DataBaseMapper,
-                Storage.DataBaseMapper.Annotators,
-                MspAnnotator,
-                TextDBAnnotator)
+                Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
 

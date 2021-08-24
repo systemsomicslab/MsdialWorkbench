@@ -186,7 +186,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
             AnalysisVM = new AnalysisLcmsVM(
                 model.AnalysisModel,
-                analysisFile.File,
                 compoundSearchService,
                 peakSpotTableService)
             {

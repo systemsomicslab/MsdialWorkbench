@@ -32,16 +32,12 @@ namespace CompMs.App.Msdial.Model.Imms
             IDataProvider provider,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers)
             : base(analysisFile) {
 
             this.provider = provider;
             AnnotatorContainers = annotatorContainers;
             this.parameter = parameter as MsdialImmsParameter;
-            this.mspAnnotator = mspAnnotator;
-            this.textDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
 
@@ -107,6 +103,14 @@ namespace CompMs.App.Msdial.Model.Imms
 
             PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
 
+            CanSearchCompound = new[]
+            {
+                Target.Select(t => t is null || t.InnerModel is null),
+                MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
                     Brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
@@ -128,7 +132,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private readonly MsdialImmsParameter parameter;
-        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, textDBAnnotator;
         private readonly IDataProvider provider;
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -209,6 +212,21 @@ namespace CompMs.App.Msdial.Model.Imms
                 }, token);
             }
             return ms1Spectrum;
+        }
+
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public ImmsCompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
+            if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                return null;
+            }
+
+            return new ImmsCompoundSearchModel<ChromatogramPeakFeature>(
+                AnalysisFile,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                null,
+                AnnotatorContainers);
         }
     }
 }

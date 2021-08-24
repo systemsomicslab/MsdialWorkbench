@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -23,8 +24,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsAnalysisModel : AnalysisModelBase
-    {
+    class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider provider;
 
         public LcmsAnalysisModel(
@@ -54,7 +54,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(annotators));
             }
 
-            AnalysisFile = analysisFile;
             this.provider = provider;
             Parameter = parameter;
             Annotators = annotators;
@@ -144,9 +143,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                         enableCache: true);
                     break;
             }
-        }
 
-        public AnalysisFileBean AnalysisFile { get; }
+            CanSearchCompound = new[]
+            {
+                Target.Select(t => t is null || t.InnerModel is null),
+                MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+        }
 
         public ParameterBase Parameter { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
@@ -170,5 +175,20 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
         public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
         public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
+
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
+            if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
+                return null;
+            }
+
+            return new CompoundSearchModel<ChromatogramPeakFeature>(
+                AnalysisFile,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                null,
+                Annotators);
+        }
     }
 }

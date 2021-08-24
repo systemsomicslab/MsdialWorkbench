@@ -31,9 +31,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
@@ -130,6 +128,14 @@ namespace CompMs.App.Msdial.Model.Imms
                     SelectedBrush = Brushes[1].Mapper;
                     break;
             }
+
+            CanSearchCompound = new[]
+            {
+                Target.Select(t => t?.innerModel is null),
+                MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         static ImmsAlignmentModel() {
@@ -156,6 +162,24 @@ namespace CompMs.App.Msdial.Model.Imms
         public AlignmentEicModel AlignmentEicModel { get; }
 
         public ImmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public void PrepareCompoundSearch() {
+        }
+
+        public ImmsCompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+            if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
+                return null;
+            }
+
+            return new ImmsCompoundSearchModel<AlignmentSpotProperty>(
+                AlignmentFile,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                null,
+                AnnotatorContainers);
+        }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
