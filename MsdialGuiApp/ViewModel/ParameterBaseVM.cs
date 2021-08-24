@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    class ParameterBaseVM : ViewModelBase {
+    public class ParameterBaseVM : ViewModelBase {
 
         protected readonly ParameterBase innerModel;
         public ParameterBaseVM(ParameterBase innerModel) {

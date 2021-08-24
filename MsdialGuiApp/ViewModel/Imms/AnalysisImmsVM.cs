@@ -286,7 +286,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Target.Value.InnerModel,
                 this.model.MsdecResult.Value,
                 null,
-                MspAnnotator))
+                this.model.AnnotatorContainers))
             using (var vm = new ImmsCompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

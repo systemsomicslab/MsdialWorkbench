@@ -2,21 +2,21 @@
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialLcMsApi.Algorithm.Annotation;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using System;
 
-namespace CompMs.App.Msdial.Model.Lcms
+namespace CompMs.App.Msdial.Model.Imms
 {
-    sealed class LcmsMspAnnotationSettingModel : MspAnnotationSettingModel
+    public sealed class ImmsMspAnnotationSettingModel : MspAnnotationSettingModel
     {
-        public LcmsMspAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
+        public ImmsMspAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
             : base(other) {
-            
+
         }
 
         protected override ISerializableAnnotatorContainer BuildCore(ParameterBase parameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new LcmsMspAnnotator(molecules, Parameter, parameter.ProjectParam.TargetOmics, AnnotatorID),
+                new ImmsMspAnnotator(molecules, Parameter, parameter.ProjectParam.TargetOmics, AnnotatorID),
                 molecules,
                 Parameter);
         }

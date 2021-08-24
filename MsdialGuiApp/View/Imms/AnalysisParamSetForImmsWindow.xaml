@@ -6,10 +6,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
         xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+        xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
         mc:Ignorable="d"
-        xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
         Name="AnalysisParamSetView"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAnalysisParameterSetViewModel}}"
         Height="630" Width="650">
     <Window.Resources>
     </Window.Resources>
@@ -31,8 +33,9 @@
                 <commonview:DeconvolutionView />
             </TabItem>
 
-            <TabItem Name="TabItem_Identification" Header="Identification">
-                <local:IdentificationView />
+            <TabItem Name="TabItem_Identification" Header="Identification"
+                     DataContext="{Binding AnnotationProcessSettingViewModel, Mode=OneTime}">
+                <setting:AnnotationProcessSettingView/>
             </TabItem>
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">

@@ -160,22 +160,27 @@
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
+    <Compile Include="Model\Imms\ImmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
+    <Compile Include="Model\Imms\ImmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
+    <Compile Include="Model\Imms\ImmsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
+    <Compile Include="Model\Imms\ImmsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
-    <Compile Include="Model\Lcms\LcmsAnnotationSettingModel.cs" />
+    <Compile Include="Model\Setting\DelegateDataBaseAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsFastaAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
     <Compile Include="Model\Lcms\LcmsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Lcms\LcmsTextDBAnnotationSettingModel.cs" />
+    <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
@@ -224,9 +229,15 @@
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
+    <Compile Include="ViewModel\Imms\ImmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsLbmAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Imms\ImmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsPeakSpotTableViewModel.cs" />
+    <Compile Include="ViewModel\Imms\ImmsTextDBAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Imms\MsdialImmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
@@ -624,6 +635,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Export\AnalysisResultExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Imms\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

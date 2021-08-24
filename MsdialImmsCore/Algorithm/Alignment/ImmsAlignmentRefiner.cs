@@ -28,6 +28,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }
 
+            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
+                TryMergeToMaster(spot, cSpots, donelist, parameter);
+            }
+
             foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }

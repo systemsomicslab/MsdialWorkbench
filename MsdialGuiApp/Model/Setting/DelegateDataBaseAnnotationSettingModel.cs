@@ -1,13 +1,10 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
+﻿using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using System;
 
-namespace CompMs.App.Msdial.Model.Lcms
+namespace CompMs.App.Msdial.Model.Setting
 {
-    sealed class LcmsAnnotationSettingModel : DataBaseAnnotationSettingModelBase
+    public sealed class DelegateDataBaseAnnotationSettingModel : DataBaseAnnotationSettingModelBase
     {
         public IAnnotationSettingModel Implement {
             get => implement;

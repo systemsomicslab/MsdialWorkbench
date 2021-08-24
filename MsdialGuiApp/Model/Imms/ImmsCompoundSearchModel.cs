@@ -21,6 +21,21 @@ namespace CompMs.App.Msdial.Model.Imms
             T property,
             MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContaienrs)
+            :base(
+                 fileBean,
+                 property,
+                 msdecResult,
+                 isotopes,
+                 annotatorContaienrs) {
+
+        }
+
+        public ImmsCompoundSearchModel(
+            IFileBean fileBean,
+            T property,
+            MSDecResult msdecResult,
+            IReadOnlyList<IsotopicPeak> isotopes,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
             MsRefSearchParameterBase parameter = null) : base(
                 fileBean,

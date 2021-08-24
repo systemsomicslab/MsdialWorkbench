@@ -31,12 +31,14 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
             Parameter = parameter;
+            AnnotatorContainers = annotatorContainers;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
@@ -177,6 +179,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public string ResultFile { get; }
 
         public ParameterBase Parameter { get; }
+        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(container, ResultFile);

@@ -3,15 +3,15 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialLcImMsApi.Parameter;
+using CompMs.MsdialImmsCore.Parameter;
 using System;
 using System.Collections.Generic;
 
-namespace CompMs.App.Msdial.Model.Lcimms
+namespace CompMs.App.Msdial.Model.Imms
 {
-    public class LcimmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
+    public class ImmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
     {
-        public LcimmsAnalysisParameterSetModel(MsdialLcImMsParameter parameter, IEnumerable<AnalysisFileBean> files)
+        public ImmsAnalysisParameterSetModel(MsdialImmsParameter parameter, IEnumerable<AnalysisFileBean> files)
             : base(parameter, files) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
         }
 
-        public MsdialLcImMsParameter Parameter { get; }
+        public MsdialImmsParameter Parameter { get; }
 
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; } 
     }

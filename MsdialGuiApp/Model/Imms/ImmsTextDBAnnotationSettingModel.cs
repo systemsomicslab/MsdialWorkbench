@@ -1,20 +1,20 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialLcMsApi.Algorithm.Annotation;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 
-namespace CompMs.App.Msdial.Model.Lcms
+namespace CompMs.App.Msdial.Model.Imms
 {
-    sealed class LcmsTextDBAnnotationSettingModel : TextDBAnnotationSettingModel
+    public sealed class ImmsTextDBAnnotationSettingModel : TextDBAnnotationSettingModel
     {
-        public LcmsTextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
+        public ImmsTextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
             : base(other) {
-            
+
         }
 
         protected override ISerializableAnnotatorContainer BuildCore(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new LcmsTextDBAnnotator(molecules, Parameter, AnnotatorID),
+                new ImmsTextDBAnnotator(molecules, Parameter, AnnotatorID),
                 molecules,
                 Parameter);
         }

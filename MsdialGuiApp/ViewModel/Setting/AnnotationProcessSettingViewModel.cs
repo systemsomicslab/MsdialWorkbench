@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         ICommand RemoveAnnotationCommand { get; }
     }
 
-    class AnnotationProcessSettingViewModel : ViewModelBase, IAnnotationProcessSettingViewModel
+    public class AnnotationProcessSettingViewModel : ViewModelBase, IAnnotationProcessSettingViewModel
     {
         public AnnotationProcessSettingViewModel(
             IAnnotationProcessSettingModel model,

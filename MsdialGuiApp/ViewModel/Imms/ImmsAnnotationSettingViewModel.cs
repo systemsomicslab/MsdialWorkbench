@@ -3,7 +3,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
-using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.MsdialImmsCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,11 +15,11 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 
-namespace CompMs.App.Msdial.ViewModel.Lcms
+namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class LcmsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
+    public sealed class ImmsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
     {
-        public LcmsAnnotationSettingViewModel(DelegateDataBaseAnnotationSettingModel model, MsdialLcmsParameter parameter) {
+        public ImmsAnnotationSettingViewModel(DelegateDataBaseAnnotationSettingModel model, MsdialImmsParameter parameter) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
             DataBaseID.Subscribe(id => this.model.DataBaseID = this.model.AnnotatorID = id).AddTo(Disposables);
             AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta };
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, };
             DBSource = DataBasePath
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
@@ -56,9 +56,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     }
                     else if (Regex.IsMatch(ext, @"\.txt\d*")) {
                         return DataBaseSource.Text;
-                    }
-                    else if (Regex.IsMatch(ext, @"\.fasta\d*")) {
-                        return DataBaseSource.Fasta;
                     }
                     return DataBaseSource.None;
                 })
@@ -74,8 +71,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                             return SourceType.MspDB;
                         case DataBaseSource.Text:
                             return SourceType.TextDB;
-                        case DataBaseSource.Fasta:
-                            return SourceType.FastaDB;
                         default:
                             return SourceType.None;
                     }
@@ -90,13 +85,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Implement = DBSource.Select<DataBaseSource, IAnnotationSettingViewModel>(s => {
                 switch (s) {
                     case DataBaseSource.Msp:
-                        return new LcmsMspAnnotationSettingViewModel(this.model);
+                        return new ImmsMspAnnotationSettingViewModel(this.model);
                     case DataBaseSource.Lbm:
-                        return new LcmsLbmAnnotationSettingViewModel(this.model, Parameter);
+                        return new ImmsLbmAnnotationSettingViewModel(this.model, Parameter);
                     case DataBaseSource.Text:
-                        return new LcmsTextDBAnnotationSettingViewModel(this.model);
-                    case DataBaseSource.Fasta:
-                        return new LcmsFastaAnnotationSettingViewModel(this.model, Parameter);
+                        return new ImmsTextDBAnnotationSettingViewModel(this.model);
                     default:
                         return null;
                 }
@@ -142,7 +135,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand BrowseCommand => browseCommand ?? (browseCommand = new DelegateCommand(Browse));
 
-        public MsdialLcmsParameter Parameter { get; }
+        public MsdialImmsParameter Parameter { get; }
 
         private DelegateCommand browseCommand;
 
@@ -161,9 +154,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
     }
 
-    sealed class LcmsAnnotationSettingViewModelModelFactory
+    public sealed class ImmsAnnotationSettingViewModelFactory
     {
-        public LcmsAnnotationSettingViewModelModelFactory(MsdialLcmsParameter parameter) {
+        public ImmsAnnotationSettingViewModelFactory(MsdialImmsParameter parameter) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
@@ -171,11 +164,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Parameter = parameter;
         }
 
-        public MsdialLcmsParameter Parameter { get; }
+        public MsdialImmsParameter Parameter { get; }
 
-        public LcmsAnnotationSettingViewModel Create() {
+        public ImmsAnnotationSettingViewModel Create() {
             var m = new DelegateDataBaseAnnotationSettingModel();
-            return new LcmsAnnotationSettingViewModel(m, Parameter);
+            return new ImmsAnnotationSettingViewModel(m, Parameter);
         }
     }
 }

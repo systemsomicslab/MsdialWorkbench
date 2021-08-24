@@ -5,7 +5,7 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    class CcsCalibrationInfoVS : ViewModelBase {
+    public class CcsCalibrationInfoVS : ViewModelBase {
         
         public CcsCalibrationInfoVS(AnalysisFileBean file, CoefficientsForCcsCalculation ccsCoef) {
             FilePath = file.AnalysisFilePath;

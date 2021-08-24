@@ -3,8 +3,6 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
@@ -347,8 +345,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Target.Value.innerModel,
                 this.model.MsdecResult.Value,
                 null,
-                mspAnnotator,
-                new MsRefSearchParameterBase(this.model.Parameter.MspSearchParam)))
+                this.model.AnnotatorContainers))
             using (var vm = new ImmsCompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

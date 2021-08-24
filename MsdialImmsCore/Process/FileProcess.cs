@@ -48,6 +48,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             var parameter = container.ParameterBase as MsdialImmsParameter;
             var iupacDB = container.IupacDatabase;
+            var annotatorContainers = container.DataBaseMapper.Annotators;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var provider = providerFactory.Create(file);
@@ -65,7 +66,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
+            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, parameter, reportAction);
@@ -141,11 +142,11 @@ namespace CompMs.MsdialImmsCore.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
-            Action<int> reportAction,
-            CancellationToken token) {
+            Action<int> reportAction, CancellationToken token) {
 
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
@@ -156,7 +157,7 @@ namespace CompMs.MsdialImmsCore.Process
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
                 new AnnotationProcess(initial_annotation_local, max_annotation_local).Run(
                     provider, chromPeakFeatures, msdecResults,
-                    mspAnnotator, textDBAnnotator, parameter,
+                    annotatorContainers, mspAnnotator, textDBAnnotator, parameter,
                     reportAction, parameter.NumThreads, token
                 );
             }

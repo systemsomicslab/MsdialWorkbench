@@ -37,6 +37,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ParameterVM.MatchedPeaksPercentageCutOff.ObserveHasErrors,
                 ParameterVM.MinimumSpectrumMatch.ObserveHasErrors,
                 ParameterVM.TotalScoreCutoff.ObserveHasErrors,
+                ParameterVM.IsUseTimeForAnnotationFiltering.ObserveHasErrors,
+                ParameterVM.IsUseTimeForAnnotationScoring.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

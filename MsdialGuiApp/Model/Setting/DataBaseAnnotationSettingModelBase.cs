@@ -1,18 +1,16 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    
-    abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
+
+    public abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
     {
         public DataBaseAnnotationSettingModelBase() {
 

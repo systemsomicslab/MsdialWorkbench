@@ -107,37 +107,45 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new ImmsAnalysisParamSetVM((MsdialImmsParameter)Storage.ParameterBase, AnalysisFiles);
-            var apsw = new AnalysisParamSetForImmsWindow
-            {
-                DataContext = analysisParamSetVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            var apsw_result = apsw.ShowDialog();
-            if (apsw_result != true) return false;
-
-            var filename = analysisParamSetVM.AlignmentResultFileName;
-            AlignmentFiles.Add(
-                new AlignmentFileBean
+            var parameter = (MsdialImmsParameter)Storage.ParameterBase;
+            var analysisParameterSet = new ImmsAnalysisParameterSetModel(parameter, AnalysisFiles);
+            using (var analysisParamSetVM = new ImmsAnalysisParameterSetViewModel(analysisParameterSet)) {
+                var apsw = new AnalysisParamSetForImmsWindow
                 {
-                    FileID = AlignmentFiles.Count,
-                    FileName = filename,
-                    FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                    SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                var apsw_result = apsw.ShowDialog();
+                if (apsw_result != true) return false;
+
+                Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
+
+                if (parameter.TogetherWithAlignment) {
+                var filename = analysisParamSetVM.AlignmentResultFileName;
+                    AlignmentFiles.Add(
+                        new AlignmentFileBean
+                        {
+                            FileID = AlignmentFiles.Count,
+                            FileName = filename,
+                            FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                            EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                            SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                        }
+                    );
+                    Storage.AlignmentFiles = AlignmentFiles.ToList();
                 }
-            );
-            Storage.AlignmentFiles = AlignmentFiles.ToList();
-            var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            var mspAnnotator = new ImmsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            MspAnnotator = mspAnnotator;
-            Storage.DataBaseMapper.Add(mspAnnotator, msp);
-            var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-            var textDBAnnotator = new ImmsTextDBAnnotator(text, Storage.ParameterBase.TextDbSearchParam, "TextDB");
-            TextDBAnnotator = textDBAnnotator;
-            Storage.DataBaseMapper.Add(textDBAnnotator, text);
-            return true;
+                //var msp = new MoleculeDataBase(analysisParamSetVM.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+                //var mspAnnotator = new ImmsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
+                //MspAnnotator = mspAnnotator;
+                //Storage.DataBaseMapper.Add(mspAnnotator, msp);
+                //var text = new MoleculeDataBase(analysisParamSetVM.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+                //var textDBAnnotator = new ImmsTextDBAnnotator(text, Storage.ParameterBase.TextDbSearchParam, "TextDB");
+                //TextDBAnnotator = textDBAnnotator;
+                //Storage.DataBaseMapper.Add(textDBAnnotator, text);
+
+                return true;
+            }
         }
 
         private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
@@ -232,8 +240,9 @@ namespace CompMs.App.Msdial.Model.Imms
             AnalysisModel = new ImmsAnalysisModel(
                 analysisFile,
                 provider,
-                storage.DataBaseMapper,
+                Storage.DataBaseMapper,
                 Storage.ParameterBase,
+                Storage.DataBaseMapper.Annotators,
                 MspAnnotator,
                 TextDBAnnotator)
             .AddTo(Disposables);
@@ -249,6 +258,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 alignmentFile,
                 Storage.ParameterBase,
                 Storage.DataBaseMapper,
+                Storage.DataBaseMapper.Annotators,
                 MspAnnotator,
                 TextDBAnnotator)
             .AddTo(Disposables);
