@@ -58,7 +58,7 @@
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
+                <TextBox Text="{Binding RtTolerance.Value}" IsEnabled="{Binding CanSetTimeParameter.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
@@ -72,7 +72,7 @@
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
+                <TextBox Text="{Binding RtTolerance.Value}" IsEnabled="{Binding CanSetTimeParameter.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>

@@ -240,8 +240,9 @@ namespace CompMs.App.Msdial.Model.Imms
             AnalysisModel = new ImmsAnalysisModel(
                 analysisFile,
                 provider,
-                storage.DataBaseMapper,
+                Storage.DataBaseMapper,
                 Storage.ParameterBase,
+                Storage.DataBaseMapper.Annotators,
                 MspAnnotator,
                 TextDBAnnotator)
             .AddTo(Disposables);
@@ -257,6 +258,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 alignmentFile,
                 Storage.ParameterBase,
                 Storage.DataBaseMapper,
+                Storage.DataBaseMapper.Annotators,
                 MspAnnotator,
                 TextDBAnnotator)
             .AddTo(Disposables);
