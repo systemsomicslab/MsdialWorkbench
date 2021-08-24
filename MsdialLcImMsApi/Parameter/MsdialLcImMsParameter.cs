@@ -1,13 +1,13 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
-using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 using MessagePack;
 using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialLcImMsApi.Parameter {
     [MessagePackObject]
-    public class MsdialLcImMsParameter : ParameterBase {
+    public class MsdialLcImMsParameter : MsdialLcmsParameter {
         [Key(150)]
         public float DriftTimeBegin { get; set; } = 0;
         [Key(151)]
