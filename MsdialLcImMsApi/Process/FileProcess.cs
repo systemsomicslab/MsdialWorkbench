@@ -137,7 +137,7 @@ namespace CompMs.MsdialLcImMsApi.Process
                 var msdecResults = ce2msdecs.Value;
                 var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new Annotation(initial_annotation_local, max_annotation_local).MainProcess(
+                new AnnotationProcess(initial_annotation_local, max_annotation_local).MainProcess(
                     spectrumList, accumulatedSpecList, chromPeakFeatures, msdecResults,
                     mspDB, textDB, parameter, reportAction);
             }

@@ -16,11 +16,11 @@ using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm {
-    public class Annotation {
+    public class AnnotationProcess {
         public double InitialProgress { get; set; } = 60.0;
         public double ProgressMax { get; set; } = 30.0;
 
-        public Annotation(double InitialProgress, double ProgressMax) {
+        public AnnotationProcess(double InitialProgress, double ProgressMax) {
             this.InitialProgress = InitialProgress;
             this.ProgressMax = ProgressMax;
         }
