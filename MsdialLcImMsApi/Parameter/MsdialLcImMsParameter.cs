@@ -1,21 +1,19 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialLcmsApi.Parameter;
+using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using MessagePack;
 
 namespace CompMs.MsdialLcImMsApi.Parameter {
-    [MessagePack.MessagePackObject]
-    public class MsdialLcImMsParameter : MsdialLcmsParameter {
+    [MessagePackObject]
+    public class MsdialLcImMsParameter : ParameterBase {
         [Key(150)]
         public float DriftTimeBegin { get; set; } = 0;
         [Key(151)]
         public float DriftTimeEnd { get; set; } = 2000;
         [Key(152)]
-        public float AccumulatedRtRagne { get; set; } = 0.2F;
+        public float AccumulatedRtRange { get; set; } = 0.2F;
         [Key(153)]
         public bool IsAccumulateMS2Spectra { get; set; } = false;
         [Key(154)]
@@ -31,7 +29,7 @@ namespace CompMs.MsdialLcImMsApi.Parameter {
 
         [Key(158)]
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
-        public MsdialLcImMsParameter() { this.MachineCategory = Common.Enum.MachineCategory.LCIMMS; }
+        public MsdialLcImMsParameter() { this.MachineCategory = MachineCategory.LCIMMS; }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
@@ -40,7 +38,7 @@ namespace CompMs.MsdialLcImMsApi.Parameter {
             pStrings.Add("# IMMS specific parameters");
             pStrings.Add(String.Join(": ", new string[] { "Drift time begin", DriftTimeBegin.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Drift time end", DriftTimeEnd.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Accumulated RT ragne", AccumulatedRtRagne.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Accumulated RT ragne", AccumulatedRtRange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Accumulate MS2 spectra", IsAccumulateMS2Spectra.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Drift time alignment tolerance", DriftTimeAlignmentTolerance.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Drift time alignment factor", DriftTimeAlignmentFactor.ToString() }));

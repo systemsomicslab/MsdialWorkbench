@@ -6,9 +6,7 @@ using System.IO;
 using System.Linq;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.DataStructure;
 using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -193,22 +191,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Debug.WriteLine("Serialize finish.");
 
             pss.ForEach(ps => ((IDisposable)ps).Dispose());
-        }
-
-        private IEnumerable<List<ChromatogramPeakInfo>> JoinPeakAndSpot(
-            IReadOnlyCollection<AlignmentSpotProperty> spots,
-            IEnumerable<List<ChromatogramPeakInfo>> peaks) {
-            var tree = KdTree<IMSProperty>.Build(
-                spots,
-                spot => spot.PrecursorMz,
-                spot => spot.ChromXs.Value);
-            foreach (var peak in peaks) {
-                var spot = tree.NearestNeighbor(new double[] { peak[0].Mass, peak[0].ChromXsTop.Value });
-                if (Math.Abs(spot.PrecursorMz - peak[0].Mass) <= Param.Ms1AlignmentTolerance
-                    && Math.Abs(1 - spot.ChromXs.Value / peak[0].ChromXsTop.Value) <= 0.01) {
-                    yield return peak;
-                }
-            }
         }
     }
 }

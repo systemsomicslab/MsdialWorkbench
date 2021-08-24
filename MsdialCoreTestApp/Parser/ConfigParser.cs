@@ -155,7 +155,7 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method) {
                 case "drift time begin": if (float.TryParse(value, out float dtBegin)) param.DriftTimeBegin = dtBegin; return true;
                 case "drift time end": if (float.TryParse(value, out float dtEnd)) param.DriftTimeEnd = dtEnd; return true;
-                case "accumulated rt ragne": if (float.TryParse(value, out float accumulatedRtRange)) param.AccumulatedRtRagne = accumulatedRtRange; return true;
+                case "accumulated rt ragne": if (float.TryParse(value, out float accumulatedRtRange)) param.AccumulatedRtRange = accumulatedRtRange; return true;
                 case "accumulate ms2 spectra":
                     if (value == "true")
                         param.IsAccumulateMS2Spectra = true;
