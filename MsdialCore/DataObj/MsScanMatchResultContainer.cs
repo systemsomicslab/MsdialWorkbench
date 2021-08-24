@@ -31,7 +31,17 @@ namespace CompMs.MsdialCore.DataObj
         public List<MsScanMatchResult> MatchResults { get; set; }
 
         [IgnoreMember]
-        public MsScanMatchResult Representative => MatchResults.Any() ? MatchResults.Argmax(result => Tuple.Create(result.Source, result.TotalScore)) : null;
+        public MsScanMatchResult Representative {
+            get {
+                if (cacheRepresentative is null) {
+                    cacheRepresentative =  MatchResults.Any()
+                        ?  MatchResults.Argmax(result => Tuple.Create(result.Source, result.TotalScore))
+                        : null;
+                }
+                return cacheRepresentative;
+            }
+        }
+        private MsScanMatchResult cacheRepresentative = null;
 
         [IgnoreMember]
         public bool IsMspBasedRepresentative => (Representative.Source & SourceType.MspDB) == SourceType.MspDB
@@ -50,22 +60,37 @@ namespace CompMs.MsdialCore.DataObj
         public bool IsUnknown => (Representative.Source & SourceType.Unknown) == SourceType.Unknown;
 
         public void AddResult(MsScanMatchResult result) {
+            AddResultCore(result);
+        }
+
+        private void AddResultCore(MsScanMatchResult result) {
             MatchResults.Add(result);
+            cacheRepresentative = null;
         }
 
         public void AddResults(IEnumerable<MsScanMatchResult> results) {
+            AddResultsCore(results);
+        }
+
+        private void AddResultsCore(IEnumerable<MsScanMatchResult> results) {
             MatchResults.AddRange(results);
+            cacheRepresentative = null;
         }
 
         public void ClearResults() {
+            ClearResultsCore();
+        }
+
+        private void ClearResultsCore() {
             MatchResults.Clear();
             MatchResults.Add(UnknownResult);
+            cacheRepresentative = null;
         }
 
         public void RemoveManuallyResults() {
             MatchResults.RemoveAll(result => (result.Source & SourceType.Manual) != SourceType.None);
+            cacheRepresentative = null;
         }
-
 
         // Msp based match results
         // MS raw id corresponds to ms2 raw ID (in MS/MS) and ms1 raw id (in EI-MS).
@@ -85,12 +110,12 @@ namespace CompMs.MsdialCore.DataObj
                     : MSRawID2MspBasedMatchResult.Values.Argmax(result => result.TotalScore).LibraryID;
 
         public void AddMspResult(int msRawID, MsScanMatchResult result) {
-            MatchResults.Add(result);
+            AddResultCore(result);
             MSRawID2MspBasedMatchResult.Add(msRawID, result);
         }
 
         public void AddMspResults(IDictionary<int, MsScanMatchResult> results) {
-            MatchResults.AddRange(results.Values);
+            AddResults(results.Values);
             foreach (var kvp in results)
                 MSRawID2MspBasedMatchResult.Add(kvp.Key, kvp.Value);
         }
@@ -100,6 +125,7 @@ namespace CompMs.MsdialCore.DataObj
                 MatchResults.Remove(kvp.Value);
             }
             MSRawID2MspBasedMatchResult.Clear();
+            cacheRepresentative = null;
         }
 
 
@@ -115,11 +141,12 @@ namespace CompMs.MsdialCore.DataObj
         public int TextDbID => TextDbBasedMatchResults.IsEmptyOrNull() ? -1 : TextDbBasedMatchResults.Argmax(result => result.TotalScore).LibraryID;
 
         public void AddTextDbResult(MsScanMatchResult result) {
-            MatchResults.Add(result);
+            AddResultCore(result);
             TextDbBasedMatchResults.Add(result);
         }
 
         public void AddTextDbResults(IEnumerable<MsScanMatchResult> results) {
+            AddResultsCore(results);
             TextDbBasedMatchResults.AddRange(results);
         }
 
@@ -128,10 +155,11 @@ namespace CompMs.MsdialCore.DataObj
                 MatchResults.Remove(result);
             }
             TextDbBasedMatchResults.Clear();
+            cacheRepresentative = null;
         }
 
         public void MergeContainers(MsScanMatchResultContainer other) {
-            MatchResults.AddRange(other.MatchResults);
+            AddResults(other.MatchResults);
             foreach (var kvp in other.MSRawID2MspBasedMatchResult)
                 MSRawID2MspBasedMatchResult.Add(kvp.Key, kvp.Value);
             TextDbBasedMatchResults.AddRange(other.TextDbBasedMatchResults);
