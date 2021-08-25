@@ -34,28 +34,26 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, db, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, parameter, db, omics, Key);
+            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, omics, Key);
         }
 
-        private static List<MsScanMatchResult> FindCandidatesCore(
+        private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> mspDB, TargetOmics omics, string sourceKey) {
+            MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
 
-            (var lo, var hi) = SearchBoundIndex(property, mspDB, parameter.Ms1Tolerance, parameter.CcsTolerance);
-            var results = new List<MsScanMatchResult>(hi - lo);
-            for (var i = lo; i < hi; i++) {
-                var candidate = mspDB[i];
-                if (parameter.IsUseCcsForAnnotationFiltering
-                    && Math.Abs(property.CollisionCrossSection - candidate.CollisionCrossSection) > parameter.CcsTolerance)
-                    continue;
-                var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics, sourceKey);
-                result.LibraryIDWhenOrdered = i;
-                ValidateCore(result, property, scan, candidate, parameter, omics);
+            var normScan = DataAccess.GetNormalizedMSScanProperty(scan, parameter);
+            var candidates = parameter.IsUseCcsForAnnotationFiltering
+                ? SearchWithCcsCore(property, parameter.Ms1Tolerance, parameter.CcsTolerance)
+                : SearchCore(property, parameter.Ms1Tolerance);
+            var results = new List<MsScanMatchResult>(candidates.Count);
+            foreach (var candidate in candidates) {
+                var result = CalculateScoreCore(property, normScan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics, sourceKey);
+                ValidateCore(result, property, normScan, candidate, parameter, omics);
                 results.Add(result);
             }
             return results.OrderByDescending(result => result.TotalScore).ToList();
@@ -141,32 +139,32 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject { get; }
+
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
 
+        private MassCcsReferenceSearcher<MoleculeMsReference> SearcherCcs
+            => searcherCcs ?? (searcherCcs = new MassCcsReferenceSearcher<MoleculeMsReference>(db));
+        private MassCcsReferenceSearcher<MoleculeMsReference> searcherCcs;
+
+        private MassReferenceSearcher<MoleculeMsReference> Searcher
+            => searcher ?? (searcher = new MassReferenceSearcher<MoleculeMsReference>(db));
+        private MassReferenceSearcher<MoleculeMsReference> searcher;
+
         public List<MoleculeMsReference> Search(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            (var lo, var hi) = SearchBoundIndex(query.Property, db, parameter.Ms1Tolerance, parameter.CcsTolerance);
-            var candidates = db.GetRange(lo, hi - lo);
-            if (!parameter.IsUseCcsForAnnotationFiltering) {
-                return candidates;
-            }
-            return candidates.Where(candidate => Math.Abs(candidate.CollisionCrossSection - query.Property.CollisionCrossSection) <= parameter.CcsTolerance).ToList();
+            return parameter.IsUseCcsForAnnotationFiltering
+                ? SearchWithCcsCore(query.Property, parameter.Ms1Tolerance, parameter.CcsTolerance).ToList()
+                : SearchCore(query.Property, parameter.Ms1Tolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> mspDB, double ms1Tolerance, double ccsTolerance) {
+        private IReadOnlyList<MoleculeMsReference> SearchCore(IMSIonProperty property, double massTolerance) {
+            return Searcher.Search(new MassSearchQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz)));
+        }
 
-            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSIonProperty(
-                property.PrecursorMz - ms1Tolerance,
-                null, IonMode.Negative, null,
-                property.CollisionCrossSection - ccsTolerance);
-            var lo = SearchCollection.LowerBound(mspDB, dummy, comparer);
-            dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
-            dummy.CollisionCrossSection = property.CollisionCrossSection + ccsTolerance;
-            var hi = SearchCollection.UpperBound(mspDB, dummy, lo, mspDB.Count, comparer);
-            return (lo, hi);
+        private IReadOnlyList<MoleculeMsReference> SearchWithCcsCore(IMSIonProperty property, double massTolerance, double ccsTolerance) {
+            return SearcherCcs.Search(MSIonSearchQuery.CreateMassCcsQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz), property.CollisionCrossSection, ccsTolerance));
         }
 
         private static double CalculateMassTolerance(double tolerance, double mass) {

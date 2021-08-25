@@ -27,13 +27,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             var masters_itr = masters.Cast<ChromatogramPeakFeature>();
             var targets_itr = targets.Cast<ChromatogramPeakFeature>();
             foreach (var target in targets_itr) {
-                var master_sim = masters_itr.Where(m => Equals(m, target)).ToArray();
+                var master_sim = masters_itr.Where(m => IsSimilarTo(m, target)).ToArray();
                 if (master_sim.Length == 0) {
                     masters.Add(target);
                 }
                 foreach (var master in master_sim) {
                     foreach (var tdrift in target.DriftChromFeatures) {
-                        if (!master.DriftChromFeatures.Any(mdrift => Equals(mdrift, tdrift))) {
+                        if (!master.DriftChromFeatures.Any(mdrift => IsSimilarTo(mdrift, tdrift))) {
                             master.DriftChromFeatures.Add(tdrift);
                         }
                     }
@@ -72,7 +72,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
             }
         }
 
-        protected override bool Equals(IMSScanProperty x, IMSScanProperty y) {
+        protected override bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y) {
             return Math.Abs(x.PrecursorMz - y.PrecursorMz) <= _mztol
                 && Math.Abs(x.ChromXs.RT.Value - y.ChromXs.RT.Value) <= _rttol
                 && Math.Abs(x.ChromXs.Drift.Value - y.ChromXs.Drift.Value) <= _dttol;

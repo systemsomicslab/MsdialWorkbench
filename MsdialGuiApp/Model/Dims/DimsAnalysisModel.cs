@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -39,7 +38,6 @@ namespace CompMs.App.Msdial.Model.Dims
             MspAnnotator = mspAnnotator;
             TextDBAnnotator = textDBAnnotator;
 
-            AnalysisFile = analysisFile;
             FileName = analysisFile.AnalysisFileName;
             Parameter = parameter;
 
@@ -105,7 +103,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public AnalysisFileBean AnalysisFile { get; }
         public ParameterBase Parameter { get; }
 
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }

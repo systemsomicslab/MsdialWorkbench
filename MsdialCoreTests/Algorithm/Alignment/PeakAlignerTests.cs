@@ -109,7 +109,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
     class MockJoiner : PeakJoiner
     {
-        protected override bool Equals(IMSScanProperty x, IMSScanProperty y) {
+        protected override bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y) {
             return Math.Abs(x.ChromXs.Value - y.ChromXs.Value) < 1 && Math.Abs(x.PrecursorMz - y.PrecursorMz) < 1;
         }
 

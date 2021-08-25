@@ -10,7 +10,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public abstract class PeakJoiner : IPeakJoiner
     {
-        protected abstract bool Equals(IMSScanProperty x, IMSScanProperty y);
+        protected abstract bool IsSimilarTo(IMSScanProperty x, IMSScanProperty y);
         protected abstract double GetSimilality(IMSScanProperty x, IMSScanProperty y);
 
         public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         public virtual List<IMSScanProperty> MergeChromatogramPeaks(List<IMSScanProperty> masters, List<IMSScanProperty> targets) {
             var merged = new List<IMSScanProperty>(masters);
             foreach (var target in targets) {
-                if (!merged.Any(m => Equals(m, target))) {
+                if (!merged.Any(m => IsSimilarTo(m, target))) {
                     merged.Add(target);
                 }
             }
@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 int? matchIdx = null;
                 double matchFactor = double.MinValue;
                 for (var i = 0; i < n; i++) {
-                    if (!Equals(masters[i], target))
+                    if (!IsSimilarTo(masters[i], target))
                         continue;
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {

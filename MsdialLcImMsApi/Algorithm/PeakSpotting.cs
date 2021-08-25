@@ -84,7 +84,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             chromPeakFeatures = PeakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
 
-            chromPeakFeatures = PeakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(chromPeakFeatures, rawObj, param, param.AccumulatedRtRagne);
+            chromPeakFeatures = PeakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(chromPeakFeatures, rawObj, param, param.AccumulatedRtRange);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
             return chromPeakFeatures;
         }

@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;

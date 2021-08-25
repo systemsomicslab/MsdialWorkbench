@@ -21,7 +21,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         protected override double AxTolSecond => dtTol;
 
         public LcimmsGapFiller(MsdialLcImMsParameter param) : base(param) {
-            rtTol = param.AccumulatedRtRagne;
+            rtTol = param.AccumulatedRtRange;
             mzTol = param.CentroidMs1Tolerance;
             dtTol = param.DriftTimeAlignmentTolerance;
             this.param = param;

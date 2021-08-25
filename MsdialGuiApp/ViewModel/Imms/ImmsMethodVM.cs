@@ -136,8 +136,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public override void LoadProject() {
-            model.LoadAnnotator();
-
             AnalysisFilesView.MoveCurrentToFirst();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
             LoadAnalysisFileCommand.Execute();
@@ -155,10 +153,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
             AnalysisVM = new AnalysisImmsVM(
                 model.AnalysisModel,
-                analysisFile.File,
-                model.MspAnnotator,
-                model.TextDBAnnotator,
-                compoundSearchService, peakSpotTableService)
+                compoundSearchService,
+                peakSpotTableService)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
@@ -176,9 +172,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
             AlignmentVM = new AlignmentImmsVM(
                 model.AlignmentModel,
-                model.MspAnnotator,
-                model.TextDBAnnotator,
-                compoundSearchService, peakSpotTableService)
+                compoundSearchService,
+                peakSpotTableService)
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);

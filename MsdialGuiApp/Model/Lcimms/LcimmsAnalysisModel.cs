@@ -38,7 +38,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
             : base(analysisFile) {
 
-            AnalysisFile = analysisFile;
             this.provider = provider;
             this.parameter = parameter;
             MspAnnotator = mspAnnotator;
@@ -150,8 +149,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public double AmplitudeOrderMax { get; }
 
         private readonly IDataProvider provider;
-
-        public AnalysisFileBean AnalysisFile { get; }
 
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -136,6 +137,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                     SelectedBrush = Brushes[1].Mapper;
                     break;
             }
+
+            CanSearchCompound = new[]
+            {
+                Target.Select(t => t?.innerModel is null),
+                MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
@@ -170,6 +179,21 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(container, AlignmentFile.FilePath);
+        }
+
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+            if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
+                return null;
+            }
+
+            return new CompoundSearchModel<AlignmentSpotProperty>(
+                AlignmentFile,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                null,
+                Annotators);
         }
     }
 }

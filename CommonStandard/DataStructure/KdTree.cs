@@ -11,16 +11,20 @@ namespace CompMs.Common.DataStructure
         private readonly int maxDepth;
         private readonly Func<T, double>[] funcs;
 
-        private KdTree(Node root, Func<T, double>[] funcs) {
+        private KdTree(Node root, IDistanceCalculator calculator, Func<T, double>[] funcs) {
             this.root = root;
             this.funcs = funcs;
             maxDepth = funcs.Length;
-            Calculator = new EuclideanDistance();
+            Calculator = calculator;
         }
 
-        public IDistanceCalculator Calculator { get; set; }
+        public IDistanceCalculator Calculator { get; }
 
         public static KdTree<T> Build(IEnumerable<T> source, params Func<T, double>[] funcs) {
+            return Build(source, new EuclideanDistance(), funcs);
+        }
+
+        public static KdTree<T> Build(IEnumerable<T> source, IDistanceCalculator calculator, params Func<T, double>[] funcs) {
             var s = source.ToList();
             var m = s.Count;
             var xs = new Node[m];
@@ -29,7 +33,7 @@ namespace CompMs.Common.DataStructure
             }
 
             var n = funcs.Length;
-            return new KdTree<T>(Recurse(xs, 0, xs.Length, 0, n), funcs);
+            return new KdTree<T>(Recurse(xs, 0, xs.Length, 0, n), calculator, funcs);
         }
 
         private static Node Recurse(Node[] xs, int left, int right, int depth, int maxDepth) {
@@ -102,11 +106,11 @@ namespace CompMs.Common.DataStructure
             return (nn, d);
         }
 
-        public List<T> RangeSearch(double[] mins, double[] maxs) {
+        public List<T> RangeSearch(IReadOnlyList<double> mins, IReadOnlyList<double> maxs) {
             return RangeSearchImpl(mins, maxs, root).ToList();
         }
 
-        private IEnumerable<T> RangeSearchImpl(double[] mins, double[] maxs, Node current) {
+        private IEnumerable<T> RangeSearchImpl(IReadOnlyList<double> mins, IReadOnlyList<double> maxs, Node current) {
             if (current == Node.nil) {
                 yield break;
             }
@@ -128,7 +132,7 @@ namespace CompMs.Common.DataStructure
             }
         }
 
-        private static bool Isin(double[] xs, double[] mins, double[] maxs) {
+        private static bool Isin(double[] xs, IEnumerable<double> mins, IEnumerable<double> maxs) {
             return xs.Zip(mins, maxs, (x, min, max) => min <= x && x <= max).All(v => v);
         }
 
@@ -242,6 +246,17 @@ namespace CompMs.Common.DataStructure
 
         public double RoughDistance(double[] xs, double[] ys, int i) {
             return Math.Abs(xs[i] - ys[i]);
+        }
+    }
+
+    public static class KdTree
+    {
+        public static KdTree<T> Build<T>(IEnumerable<T> source, IDistanceCalculator calculator, params Func<T, double>[] funcs) {
+            return KdTree<T>.Build(source, calculator, funcs);
+        }
+
+        public static KdTree<T> Build<T>(IEnumerable<T> source, params Func<T, double>[] funcs) {
+            return KdTree<T>.Build(source, funcs);
         }
     }
 }

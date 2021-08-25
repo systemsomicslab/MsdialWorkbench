@@ -1,12 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -107,8 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 CommentFilterKeyword)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = this.model.Target
-                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
+            SearchCompoundCommand = this.model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
@@ -267,17 +264,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
-                return;
-
-            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
-                this.model.AlignmentFile,
-                Target.Value.innerModel,
-                this.model.MsdecResult.Value,
-                null,
-                this.model.Annotators))
-            using (var vm = new ViewModel.CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
+            using (var csm = model.CreateCompoundSearchModel()) {
+                if (csm is null) {
+                    return;
+                }
+                using (var vm = new ViewModel.CompoundSearchVM(csm)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
             }
         }
 
