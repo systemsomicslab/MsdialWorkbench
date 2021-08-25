@@ -61,7 +61,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
+            var scan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
+            var result = CalculateScoreCore(query.Property, scan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
+            ValidateCore(result, query.Property, scan, reference, parameter, omics);
+            return result;
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -172,11 +175,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 return tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + tolerance));
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
-        }
-
-        public void Validate(MsScanMatchResult result, IAnnotationQuery query, MoleculeMsReference reference) {
-            var parameter = query.Parameter ?? Parameter;
-            ValidateCore(result, query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), reference, parameter, omics);
         }
 
         private static void ValidateCore(

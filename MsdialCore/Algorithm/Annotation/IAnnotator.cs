@@ -10,7 +10,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         List<V> FindCandidates(T query);
         V CalculateScore(T query, U reference);
         List<U> Search(T query);
-        void Validate(V result, T query, U reference);
 
         V SelectTopHit(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
         List<V> FilterByThreshold(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
