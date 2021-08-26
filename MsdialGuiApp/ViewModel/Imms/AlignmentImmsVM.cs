@@ -297,8 +297,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched
-                || SuggestedChecked && spot.IsSuggested
+            return RefMatchedChecked && spot.IsRefMatched(model.DataBaseMapper)
+                || SuggestedChecked && spot.IsSuggested(model.DataBaseMapper)
                 || UnknownChecked && spot.IsUnknown;
         }
 

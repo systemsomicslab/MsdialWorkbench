@@ -39,7 +39,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
 
@@ -77,7 +77,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].MatchResults.ClearMspResults();
@@ -179,7 +179,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].MatchResults.AddTextDbResult(
@@ -246,7 +246,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) {
@@ -365,7 +365,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) {
@@ -486,7 +486,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(2, d_mass: -param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].MatchResults.ClearResults();
@@ -497,7 +497,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             alignments[1].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
             alignments[1].TextDbBasedMatchResult = null;
             alignments[1].MatchResults.AddResult(new MsScanMatchResult { IsSpectrumMatch = true, Source = SourceType.Manual });
-            Assert.IsTrue(alignments[1].MatchResults.IsReferenceMatched);
+            Assert.IsTrue(alignments[1].MatchResults.IsReferenceMatched(new DataBaseMapper()));
 
             (var actuals, _) = refiner.Refine(alignments);
 
@@ -529,7 +529,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(8, d_mass: -param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
@@ -606,7 +606,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = false,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(10, d_time: 10, d_mass: 10);
             alignments[1].MassCenter = alignments[0].MassCenter + param.Ms1AlignmentTolerance * 0.99;
@@ -673,7 +673,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(6, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
@@ -774,7 +774,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(5, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].AlignedPeakProperties = new List<AlignmentChromPeakFeature>
@@ -931,7 +931,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             alignments[0].AlignedPeakProperties = BatchBuildAlignmentChromPeakFeature(10, 100);
@@ -1008,7 +1008,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = false,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(5, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) alignment.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
@@ -1187,7 +1187,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = false,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(7, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) alignment.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();
@@ -1345,7 +1345,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
                 IsKeepSuggestedMetaboliteFeatures = true,
             };
             var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new LcmsAlignmentRefiner(param, iupac);
+            var refiner = new LcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
 
             var alignments = BatchBuildAlignmentSpotProperty(8, d_mass: param.Ms1AlignmentTolerance, d_time: param.RetentionTimeAlignmentTolerance);
             foreach (var alignment in alignments) alignment.AlignedPeakProperties = new List<AlignmentChromPeakFeature>();

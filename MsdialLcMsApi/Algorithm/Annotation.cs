@@ -130,7 +130,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeak, msdecResult, isotopes, annotatorContainer.Parameter));
                 var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
                 var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-                chromPeak.MatchResults.AddResults(results);
+                chromPeak.MatchResults.AddResults(matches);
                 if (matches.Count > 0) {
                     var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
                     DataAccess.SetMoleculeMsProperty(chromPeak, annotator.Refer(best), best);

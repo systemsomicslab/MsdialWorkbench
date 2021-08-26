@@ -189,8 +189,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && peak.IsRefMatched
-                || SuggestedChecked && peak.IsSuggested
+            return RefMatchedChecked && peak.IsRefMatched(Model.DataBaseMapper)
+                || SuggestedChecked && peak.IsSuggested(Model.DataBaseMapper)
                 || UnknownChecked && peak.IsUnknown;
         }
 

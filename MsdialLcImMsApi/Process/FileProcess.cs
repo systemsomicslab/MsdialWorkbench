@@ -51,7 +51,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             PeakAnnotation(targetCE2MSDecResults, spectrumList, accumulatedSpecList, chromPeakFeatures, container.MspDB, container.TextDB, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, container.DataBaseMapper, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -147,13 +147,13 @@ namespace CompMs.MsdialLcImMsApi.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             List<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcImMsParameter parameter,
-            Action<int> reportAction
+            DataBaseMapper mapper,
+            MsdialLcImMsParameter parameter, Action<int> reportAction
             ) {
 
-            new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures, 
-                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
-                parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
+                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                mapper, parameter, reportAction);
         }
 
         private static void SaveToFile(

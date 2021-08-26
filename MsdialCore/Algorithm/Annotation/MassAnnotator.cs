@@ -69,7 +69,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, Key);
+            var normScan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
+            var result = CalculateScoreCore(query.Property, normScan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, source, Key);
+            ValidateCore(result, query.Property, normScan, reference, parameter, omics);
+            return result;
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -95,7 +98,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = source, SourceKey = sourceKey
+                Source = source, AnnotatorID = sourceKey
             };
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 
@@ -225,31 +228,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (parameter is null) {
                 parameter = Parameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (SatisfySuggestedConditions(result, parameter) || SatisfyRefMatchedConditions(result, parameter)) {
-                    filtered.Add(result);
-                }
-            }
-            return filtered;
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
-                return false;
-            }
-            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
-                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
-                return false;
-            }
-            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
@@ -257,6 +236,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 parameter = Parameter;
             }
             return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch;
+        }
+
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch && result.IsSpectrumMatch;
         }
 
         public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
@@ -267,6 +254,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     return new TextDbRestorationKey(sourceKey);
             }
             throw new NotSupportedException(source.ToString());
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
         }
     }
 }

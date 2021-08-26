@@ -171,7 +171,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
             pbw.Show();
 
-            var factory = new LcmsAlignmentProcessFactory(storage.ParameterBase as MsdialLcmsParameter, storage.IupacDatabase);
+            var factory = new LcmsAlignmentProcessFactory(storage.ParameterBase as MsdialLcmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();

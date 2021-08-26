@@ -16,7 +16,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
     public class ImmsAlignmentRefiner : AlignmentRefiner
     {
         private readonly MsdialImmsParameter parameter;
-        public ImmsAlignmentRefiner(MsdialImmsParameter parameter, IupacDatabase iupac) : base(parameter, iupac) {
+        public ImmsAlignmentRefiner(MsdialImmsParameter parameter, IupacDatabase iupac, DataBaseMapper mapper) : base(parameter, iupac, mapper) {
             this.parameter = parameter;
         }
 
@@ -24,20 +24,20 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             var cSpots = new List<AlignmentSpotProperty>();
             var donelist = new HashSet<int>();
 
-            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(mapper)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
-                if (spot.IsReferenceMatched) continue;
+                if (spot.IsReferenceMatched(mapper)) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }

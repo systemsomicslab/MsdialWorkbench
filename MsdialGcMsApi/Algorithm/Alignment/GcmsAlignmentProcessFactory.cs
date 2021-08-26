@@ -11,22 +11,25 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     {
+        private readonly DataBaseMapper mapper;
+
         public MsdialGcmsParameter GcmsParameter { get; }
         public List<AnalysisFileBean> Files { get; }
         public List<MoleculeMsReference> MspDB { get; }
 
         public GcmsAlignmentProcessFactory(
             List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB,
-            MsdialGcmsParameter param, IupacDatabase iupac
-            ) : base(param, iupac) {
+            MsdialGcmsParameter param, IupacDatabase iupac,
+            DataBaseMapper mapper) : base(param, iupac) {
 
             GcmsParameter = param;
+            this.mapper = mapper;
             Files = files;
             MspDB = mspDB;
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new GcmsAlignmentRefiner(GcmsParameter, Iupac);
+            return new GcmsAlignmentRefiner(GcmsParameter, Iupac, mapper);
         }
 
         public override DataAccessor CreateDataAccessor() {

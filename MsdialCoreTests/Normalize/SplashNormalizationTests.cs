@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 5, TargetClass = "PE", PeakID = 8 },
             };
 
-            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma);
+            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new DataBaseMapper());
 
             // PC
             for (int i = 0; i < 2; i++) {
@@ -187,7 +187,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 3, TargetClass = "Any others", PeakID = 7 },
             };
 
-            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma);
+            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new DataBaseMapper());
 
             // PC
             for (int i = 0; i < 2; i++) {

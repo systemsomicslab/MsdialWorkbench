@@ -27,8 +27,8 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
-            List<MSDecResult> msdecResults, ParameterBase param, Action<int> reportAction) {
+        public void Process(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+            List<MSDecResult> msdecResults, DataBaseMapper mapper, ParameterBase param, Action<int> reportAction) {
             
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(param);
@@ -37,7 +37,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             Initialization(chromPeakFeatures);
 
-            CharacterAssigner(chromPeakFeatures, spectrumList, msdecResults, param);
+            CharacterAssigner(chromPeakFeatures, spectrumList, msdecResults, mapper, param);
             ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);
 
             FinalizationForAdduct(chromPeakFeatures, param);
@@ -184,20 +184,20 @@ namespace CompMs.MsdialDimsCore.Algorithm
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
         private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<RawSpectrum> spectrumList, List<MSDecResult> msdecResults, ParameterBase param) {
+            List<RawSpectrum> spectrumList, List<MSDecResult> msdecResults, DataBaseMapper mapper, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
-            assignLinksBasedOnInChIKeys(chromPeakFeatures);
+            assignLinksBasedOnInChIKeys(chromPeakFeatures, mapper);
 
             // The identified compound is used for searching.
-            assignLinksBasedOnIdentifiedCompound(chromPeakFeatures, param);
+            assignLinksBasedOnIdentifiedCompound(chromPeakFeatures, mapper, param);
 
             if (param.IonMode == IonMode.Negative)
                 assignAdductByMsMs(chromPeakFeatures, msdecResults, param);
 
             // The identified adduct is used for searching
-            assignLinksBasedOnDeterminedAdduct(chromPeakFeatures, param);
+            assignLinksBasedOnDeterminedAdduct(chromPeakFeatures, mapper, param);
 
             // adduct pairing method
             assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
@@ -396,7 +396,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, DataBaseMapper mapper, ParameterBase param) {
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted)) {
                 var centralAdduct = peak.AdductType;
@@ -415,7 +415,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 foreach (var searchedPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID)) {
                     foreach (var searchedPrecursor in searchedPrecursors) {
                         var adductTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(searchedPeak.Mass, ppm);
-                        if (searchedPeak.IsReferenceMatched) {
+                        if (searchedPeak.IsReferenceMatched(mapper)) {
                             continue;
                         }
 
@@ -435,9 +435,9 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void assignLinksBasedOnIdentifiedCompound(List<ChromatogramPeakFeature> chromPeakFeatures, DataBaseMapper mapper, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-                if (peak.IsUnknown || peak.IsAnnotationSuggested) continue;
+                if (peak.IsUnknown || peak.IsAnnotationSuggested(mapper)) continue;
 
                 //adduct null check
                 if (peak.AdductType == null) continue;
@@ -463,7 +463,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
                         if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
 
-                            if (searchedPeak.IsReferenceMatched) {
+                            if (searchedPeak.IsReferenceMatched(mapper)) {
                                 if (searchedPeak.AdductType.AdductIonName != searchedPrecursor.AdductIon.AdductIonName)
                                     continue;
                             }
@@ -483,10 +483,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
             }
         }
 
-        private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures, DataBaseMapper mapper) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
                 
-                if (peak.IsUnknown || peak.IsAnnotationSuggested) continue;
+                if (peak.IsUnknown || peak.IsAnnotationSuggested(mapper)) continue;
                 if (!peak.IsValidInChIKey()) continue;
                 var inchikey = peak.InChIKey;
                 var shortInChIKey = inchikey.Substring(0, 14);
@@ -498,7 +498,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     
                     if (peak.PeakID == cPeak.PeakID) continue;
                     if (cPeakCharacter.IsLinked) continue;
-                    if (cPeak.IsUnknown || cPeak.IsAnnotationSuggested) continue;
+                    if (cPeak.IsUnknown || cPeak.IsAnnotationSuggested(mapper)) continue;
                     if (!cPeak.IsValidInChIKey()) continue;
 
                     var cInchikey = cPeak.InChIKey;

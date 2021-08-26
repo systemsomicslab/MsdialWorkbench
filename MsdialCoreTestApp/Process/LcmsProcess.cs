@@ -54,7 +54,7 @@ namespace CompMs.App.MsdialConsole.Process {
 
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new LcmsAlignmentProcessFactory(container.ParameterBase as MsdialLcmsParameter, container.IupacDatabase);
+            var factory = new LcmsAlignmentProcessFactory(container.ParameterBase as MsdialLcmsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
 

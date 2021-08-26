@@ -144,14 +144,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             if (textDBAnnotator == null)
                 return;
-            //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
-            //    Console.WriteLine();
-            //}
             var candidates = textDBAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter));
-            var results = textDBAnnotator.SelectReferenceMatchResults(candidates, textDBSearchParameter);
-            chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
-            chromPeakFeature.MatchResults.AddTextDbResults(results);
-            if (results.Count > 0) {
+            var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
+            var matches = textDBAnnotator.SelectReferenceMatchResults(results, textDBSearchParameter);
+            chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));
+            chromPeakFeature.MatchResults.AddTextDbResults(matches);
+            if (matches.Count > 0) {
                 var best = results.Argmax(result => result.TotalScore);
                 if (chromPeakFeature.TextDbBasedMatchResult == null || chromPeakFeature.TextDbBasedMatchResult.TotalScore < best.TotalScore) {
                     chromPeakFeature.TextDbBasedMatchResult = best;
@@ -169,7 +167,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, annotatorContainer.Parameter));
             var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
             var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-            chromPeakFeature.MatchResults.AddResults(results);
+            chromPeakFeature.MatchResults.AddResults(matches);
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(best), best);

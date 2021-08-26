@@ -88,8 +88,15 @@ namespace CompMs.App.Msdial.Model.DataObj
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
-        public bool IsRefMatched => innerModel.IsReferenceMatched;
-        public bool IsSuggested => innerModel.IsAnnotationSuggested;
+
+        public bool IsRefMatched(DataBaseMapper mapper) {
+            return innerModel.IsReferenceMatched(mapper);
+        }
+
+        public bool IsSuggested(DataBaseMapper mapper) {
+            return innerModel.IsAnnotationSuggested(mapper);
+        }
+
         public bool IsUnknown => innerModel.IsUnknown;
         public bool IsMsmsAssigned => innerModel.IsMsmsAssigned;
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;

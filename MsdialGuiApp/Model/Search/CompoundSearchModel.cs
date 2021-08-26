@@ -179,7 +179,6 @@ namespace CompMs.App.Msdial.Model.Search
             var annotator = Annotator.Annotator;
             var candidates = annotator.FindCandidates(new AnnotationQuery(Property, msdecResult, isotopes, Annotator.Parameter));
             foreach (var candidate in candidates) {
-                candidate.IsManuallyModified = true;
                 candidate.Source |= SourceType.Manual;
             }
             return candidates.OrderByDescending(result => result.TotalScore)

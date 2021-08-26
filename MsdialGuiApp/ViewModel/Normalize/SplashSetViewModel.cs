@@ -15,8 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
 {
     class SplashSetViewModel : ViewModelBase
     {
-        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) {
-            Model = new SplashSetModel(container, refer, parameter);
+        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, DataBaseMapper mapper) {
+            Model = new SplashSetModel(container, refer, parameter, mapper);
 
             TargetMetabolites = Model.TargetMetabolites;
 

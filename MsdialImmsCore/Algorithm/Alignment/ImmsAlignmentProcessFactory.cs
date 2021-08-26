@@ -1,16 +1,20 @@
 ﻿using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 {
     public class ImmsAlignmentProcessFactory : AlignmentProcessFactory
     {
+        private readonly DataBaseMapper mapper;
+
         public MsdialImmsParameter ImmsParameter { get; }
 
-        public ImmsAlignmentProcessFactory(MsdialImmsParameter parameter, IupacDatabase iupac) : base(parameter, iupac) {
+        public ImmsAlignmentProcessFactory(MsdialImmsParameter parameter, IupacDatabase iupac, DataBaseMapper mapper) : base(parameter, iupac) {
             ImmsParameter = parameter;
+            this.mapper = mapper;
         }
 
         public override PeakAligner CreatePeakAligner() {
@@ -34,7 +38,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new ImmsAlignmentRefiner(ImmsParameter, Iupac);
+            return new ImmsAlignmentRefiner(ImmsParameter, Iupac, mapper);
         }
     }
 }

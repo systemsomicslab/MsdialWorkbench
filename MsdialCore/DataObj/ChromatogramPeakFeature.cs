@@ -220,39 +220,33 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        [IgnoreMember]
-        public bool IsReferenceMatched {
-            get {
-                if (MatchResults.IsManuallyModifiedRepresentative) {
-                    return !MatchResults.IsUnknown;
-                }
-                if (TextDbBasedMatchResult != null) {
-                    return true;
-                }
-                if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
-                    return true;
-                }
-                return MatchResults.IsReferenceMatched;
+        public bool IsReferenceMatched(DataBaseMapper mapper) {
+            if (MatchResults.IsManuallyModifiedRepresentative) {
+                return !MatchResults.IsUnknown;
             }
+            if (TextDbBasedMatchResult != null) {
+                return true;
+            }
+            if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
+                return true;
+            }
+            return MatchResults.IsReferenceMatched(mapper);
         }
 
-        [IgnoreMember]
-        public bool IsAnnotationSuggested {
-            get {
-                if (MatchResults.IsManuallyModifiedRepresentative) {
-                    return false;
-                }
-                else if (TextDbBasedMatchResult != null) {
-                    return false;
-                }
-                else if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
-                    return false;
-                }
-                else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
-                    return true;
-                }
-                return MatchResults.IsAnnotationSuggested;
+        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+            if (MatchResults.IsManuallyModifiedRepresentative) {
+                return false;
             }
+            else if (TextDbBasedMatchResult != null) {
+                return false;
+            }
+            else if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
+                return false;
+            }
+            else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
+                return true;
+            }
+            return MatchResults.IsAnnotationSuggested(mapper);
         }
 
         [IgnoreMember]

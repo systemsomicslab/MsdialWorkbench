@@ -82,6 +82,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         private readonly bool IsKeepRefMatchedMetaboliteFeatures;
         private readonly bool IsKeepSuggestedMetaboliteFeatures;
         private readonly bool IsKeepRemovableFeaturesAndAssignedTagForChecking;
+        private readonly DataBaseMapper mapper;
 
         public BlankFilter(
             Dictionary<int, AnalysisFileType> FileID2AnalysisFileType_,
@@ -89,14 +90,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             BlankFiltering BlankFiltering_,
             bool IsKeepRefMatchedMetaboliteFeatures_,
             bool IsKeepSuggestedMetaboliteFeatures_,
-            bool IsKeepRemovableFeaturesAndAssignedTagForChecking_
-        ) {
+            bool IsKeepRemovableFeaturesAndAssignedTagForChecking_,
+            DataBaseMapper mapper) {
             FileID2AnalysisFileType = FileID2AnalysisFileType_;
             FoldChangeForBlankFiltering = FoldChangeForBlankFiltering_;
             BlankFiltering = BlankFiltering_;
             IsKeepRefMatchedMetaboliteFeatures = IsKeepRefMatchedMetaboliteFeatures_;
             IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures_;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking_;
+            this.mapper = mapper;
         }
 
         public IEnumerable<AlignmentSpotProperty> Filter(IEnumerable<AlignmentSpotProperty> spots) {
@@ -129,10 +131,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             
                 if (sampleThresh < blankThresh) {
 
-                    if (IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched) {
+                    if (IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched(mapper)) {
 
                     }
-                    else if (IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested) {
+                    else if (IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested(mapper)) {
 
                     }
                     else if (IsKeepRemovableFeaturesAndAssignedTagForChecking) {

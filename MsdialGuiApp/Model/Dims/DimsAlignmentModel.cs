@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             ParameterBase param,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
             eicFile = alignmentFileBean.EicFilePath;
 
             this.Parameter = param;
-            this.DataBaseRefer = refer;
+            this.DataBaseMapper = mapper;
             MspAnnotator = mspAnnotator;
             TextDBAnnotator = textDBAnnotator;
 
@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
-            var refLoader = new MsRefSpectrumLoader(refer);
+            var refLoader = new MsRefSpectrumLoader(mapper);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decSpecLoader, refLoader,
                 spot => spot.Mass,
@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ParameterBase Parameter { get; }
 
-        public IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> DataBaseRefer { get; }
+        public DataBaseMapper DataBaseMapper { get; }
 
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;

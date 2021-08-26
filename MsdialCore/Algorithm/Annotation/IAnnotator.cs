@@ -14,9 +14,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         V SelectTopHit(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
         List<V> FilterByThreshold(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
         List<V> SelectReferenceMatchResults(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
-
-        double CalculateAnnotatedScore(V result, MsRefSearchParameterBase parameter = null);
-        double CalculateSuggestedScore(V result, MsRefSearchParameterBase parameter = null);
+        bool IsReferenceMatched(V result, MsRefSearchParameterBase parameter = null);
+        bool IsAnnotationSuggested(V result, MsRefSearchParameterBase parameter = null);
     }
 
     public interface ISerializableAnnotator<in T, U, V>

@@ -15,12 +15,13 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         public NormalizationSetViewModel(
             AlignmentResultContainer container,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            ParameterBase parameter) {
+            ParameterBase parameter,
+            DataBaseMapper mapper) {
 
             this.container = container;
             this.refer = refer;
             this.parameter = parameter;
-
+            DataBaseMapper = mapper;
             Parameter = new ParameterBaseVM(parameter);
             var notifier = new PropertyChangedNotifier(Parameter);
             Disposables.Add(notifier);
@@ -43,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         public SplashSetViewModel SplashVM {
             get {
                 if (splashVM is null) {
-                    splashVM = new SplashSetViewModel(container, refer, parameter);
+                    splashVM = new SplashSetViewModel(container, refer, parameter, DataBaseMapper);
                     Disposables.Add(splashVM);
                 }
                 return splashVM;
@@ -65,5 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
                 }.Count(isnorm => isnorm) == 1;
             }
         }
+
+        public DataBaseMapper DataBaseMapper { get; }
     }
 }

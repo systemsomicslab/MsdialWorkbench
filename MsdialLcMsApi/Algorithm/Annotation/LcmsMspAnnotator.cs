@@ -63,7 +63,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
+            var normScan = DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter);
+            var result = CalculateScoreCore(query.Property, normScan, query.Isotopes, reference, reference.IsotopicPeaks, parameter, omics, Key);
+            ValidateCore(result, query.Property, normScan, reference, parameter, omics);
+            return result;
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -89,7 +92,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.MspDB, SourceKey = annotatorID
+                Source = SourceType.MspDB, AnnotatorID = annotatorID
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
@@ -243,31 +246,18 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             if (parameter is null) {
                 parameter = Parameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (SatisfySuggestedConditions(result, parameter) || SatisfyRefMatchedConditions(result, parameter)) {
-                    filtered.Add(result);
-                }
-            }
-            return filtered;
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
         }
 
         private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
-                return false;
-            }
-            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
-                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
-                return false;
-            }
-            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+            return result.IsPrecursorMzMatch
+                && result.IsSpectrumMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
         }
 
         private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+            return result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
@@ -275,6 +265,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 parameter = Parameter;
             }
             return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
         }
     }
 }

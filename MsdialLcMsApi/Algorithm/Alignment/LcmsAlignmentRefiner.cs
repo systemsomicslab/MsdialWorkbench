@@ -16,26 +16,26 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac) : base(param, iupac) { }
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac, mapper) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
             var donelist = new HashSet<int>();
 
-            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(mapper)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
-                if (spot.IsReferenceMatched) continue;
+                if (spot.IsReferenceMatched(mapper)) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }

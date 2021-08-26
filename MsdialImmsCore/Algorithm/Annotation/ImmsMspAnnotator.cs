@@ -90,7 +90,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.MspDB, SourceKey = sourceKey
+                Source = SourceType.MspDB, AnnotatorID = sourceKey
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
@@ -241,34 +241,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             if (parameter is null) {
                 parameter = Parameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (SatisfySuggestedConditions(result, parameter)) {
-                    filtered.Add(result);
-                }
-                else if (SatisfyRefMatchedConditions(result, parameter)) {
-                    filtered.Add(result);
-                }
-            }
-            return filtered;
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
-                return false;
-            }
-            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
-                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
-                return false;
-            }
-            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
@@ -276,6 +249,28 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 parameter = Parameter;
             }
             return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+        }
+
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && result.IsSpectrumMatch
+                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
         }
     }
 }

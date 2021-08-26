@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             IReadOnlyList<ISerializableAnnotatorContainer> annotators) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
@@ -43,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
+            DataBaseMapper = mapper;
             Annotators = annotators;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
 
@@ -76,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target,
                 new MsDecSpectrumLoader(loader, Ms1Spots),
-                new MsRefSpectrumLoader(refer),
+                new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity);
             Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
@@ -153,6 +154,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
+        public DataBaseMapper DataBaseMapper { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }

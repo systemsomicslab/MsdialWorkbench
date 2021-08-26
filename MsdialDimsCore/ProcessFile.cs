@@ -113,7 +113,7 @@ namespace CompMs.MsdialDimsCore
                     AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textAnnotator, param.MspSearchParam, param.TextDbSearchParam, null);
                 }
 
-                new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, param, reportAction);
+                new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, container.DataBaseMapper, param, reportAction);
 
                 var paifile = file.PeakAreaBeanInformationFilePath;
                 MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);

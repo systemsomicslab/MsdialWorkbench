@@ -11,7 +11,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public class GcmsAlignmentRefiner : AlignmentRefiner
     {
-        public GcmsAlignmentRefiner(MsdialGcmsParameter param, IupacDatabase iupac) : base(param, iupac) { }
+        public GcmsAlignmentRefiner(MsdialGcmsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac, mapper) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignmentSpotList) {
             if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;

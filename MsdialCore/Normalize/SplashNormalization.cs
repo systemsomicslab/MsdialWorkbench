@@ -16,7 +16,8 @@ namespace CompMs.MsdialCore.Normalize
             IReadOnlyList<AlignmentSpotProperty> globalSpots,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IReadOnlyList<StandardCompound> splashLipids,
-            IonAbundanceUnit unit) {
+            IonAbundanceUnit unit,
+            DataBaseMapper mapper) {
 
 
             // initialize
@@ -38,7 +39,7 @@ namespace CompMs.MsdialCore.Normalize
                 if (IsNormalized(spot)) {
                     continue;
                 }
-                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses);
+                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses, mapper);
                 var stdCompound = stdCompoundsTable[lipidclass].FirstOrDefault();
                 if (stdCompound != null) {
                     NormalizeByInternalStandard(spot, globalSpots[stdCompound.PeakID], stdCompound, unit);
@@ -111,9 +112,9 @@ namespace CompMs.MsdialCore.Normalize
             }
         }
 
-        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses) {
+        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses, DataBaseMapper mapper) {
 
-            if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested) {
+            if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested(mapper)) {
                 return "Unknown";
             }
 

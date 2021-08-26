@@ -89,9 +89,9 @@ namespace CompMs.MsdialLcMsApi.Process {
                 }
 
                 // characterizatin
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures, 
-                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
-                    param, reportAction);
+                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
+                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                    container.DataBaseMapper, param, reportAction);
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;

@@ -10,7 +10,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentRefiner : LcmsAlignmentRefiner
     {
-        public LcimmsAlignmentRefiner(MsdialLcImMsParameter param, IupacDatabase iupac) : base(param, iupac) { }
+        public LcimmsAlignmentRefiner(MsdialLcImMsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac, mapper) { }
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));

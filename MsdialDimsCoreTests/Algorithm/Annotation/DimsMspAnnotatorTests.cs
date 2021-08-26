@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.MsdialDimsCore.Algorithm.Annotation;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
@@ -84,7 +85,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
             var expected = new[]
             {
-                db[0].Name, db[1].Name, db[2].Name, 
+                db[0].Name, db[1].Name, db[2].Name,
             };
 
             CollectionAssert.AreEquivalent(expected, results.Select(result => result.Name).ToArray());
@@ -92,8 +93,11 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void CalculateScoreTest() {
-            var reference = new MoleculeMsReference {
-                Name = "PC 18:0_20:4", CompoundClass = "PC", PrecursorMz = 810.601,
+            var reference = new MoleculeMsReference
+            {
+                Name = "PC 18:0_20:4",
+                CompoundClass = "PC",
+                PrecursorMz = 810.601,
                 AdductType = CompMs.Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -112,7 +116,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             };
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
 
-            var target = new ChromatogramPeakFeature {
+            var target = new ChromatogramPeakFeature
+            {
                 PrecursorMz = 810.604,
                 Spectrum = new List<SpectrumPeak>
                 {
@@ -292,117 +297,66 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void FilterByThresholdTest() {
-            var parameter = new MsRefSearchParameterBase
-            {
-                WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
-                MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.7f,
-            };
+            var parameter = new MsRefSearchParameterBase();
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
-            var results = Enumerable.Repeat(0, 10).Select(_ => BuildMatchResult()).ToList();
-            results[1].IsPrecursorMzMatch = false;
-            results[1].IsSpectrumMatch = false;
-            results[2].IsSpectrumMatch = false;
-            results[3].IsPrecursorMzMatch = false;
-            results[4].WeightedDotProduct = 0.4f;
-            results[5].SimpleDotProduct = 0.4f;
-            results[6].ReverseDotProduct = 0.4f;
-            results[7].MatchedPeaksCount = 2;
-            results[8].MatchedPeaksPercentage = 0.4f;
-            results[9].AcurateMassSimilarity = 0.1f;
+            var results = new List<MsScanMatchResult>
+            {
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+            };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] {
-                results[0], results[2], results[4], results[5],
-                results[6], results[7], results[8],
-            }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
         }
 
         [TestMethod()]
         public void SelectReferenceMatchResultsTest() {
-            var parameter = new MsRefSearchParameterBase
-            {
-                WeightedDotProductCutOff = 0.5f, SimpleDotProductCutOff = 0.5f, ReverseDotProductCutOff = 0.5f,
-                MatchedPeaksPercentageCutOff = 0.5f, MinimumSpectrumMatch = 3,
-                TotalScoreCutoff = 0.7f,
-            };
+            var parameter = new MsRefSearchParameterBase();
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = false,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = false,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = false, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.4f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.4f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.4f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 2, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.4f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 0.1f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
-                new MsScanMatchResult {
-                    IsPrecursorMzMatch = true, IsSpectrumMatch = true,
-                    AcurateMassSimilarity = 1.0f, IsotopeSimilarity = -1,
-                    WeightedDotProduct = 0.8f, SimpleDotProduct = 0.8f, ReverseDotProduct = 0.8f,
-                    MatchedPeaksCount = 6, MatchedPeaksPercentage = 0.8f, },
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
-            CollectionAssert.AreEquivalent(new[] { results[0], results[10], }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[3], }, actuals);
         }
 
-        private static MsScanMatchResult BuildMatchResult() {
-            return new MsScanMatchResult
+        [TestMethod()]
+        public void IsReferenceMatchTest() {
+            var parameter = new MsRefSearchParameterBase();
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
+            var results = new List<MsScanMatchResult>
             {
-                IsPrecursorMzMatch = true,
-                IsSpectrumMatch = true,
-                AcurateMassSimilarity = 1.0f,
-                IsotopeSimilarity = -1,
-                WeightedDotProduct = 0.8f,
-                SimpleDotProduct = 0.8f,
-                ReverseDotProduct = 0.8f,
-                MatchedPeaksCount = 6,
-                MatchedPeaksPercentage = 0.8f,
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
             };
+
+            var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
+            CollectionAssert.AreEqual(new[] { false, false, false, true, }, actuals);
+        }
+
+        [TestMethod()]
+        public void IsSuggestedTest() {
+            var parameter = new MsRefSearchParameterBase();
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB");
+            var results = new List<MsScanMatchResult>
+            {
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
+                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+            };
+
+            var actuals = results.Select(result => annotator.IsAnnotationSuggested(result)).ToList();
+            CollectionAssert.AreEqual(new[] { false, false, true, false, }, actuals);
         }
     }
 }
