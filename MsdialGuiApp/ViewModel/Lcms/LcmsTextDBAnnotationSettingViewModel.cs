@@ -12,7 +12,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    sealed class LcmsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> {
+    sealed class LcmsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel {
         public LcmsTextDBAnnotationSettingViewModel(DataBaseAnnotationSettingModelBase other) {
             model = new LcmsTextDBAnnotationSettingModel(other);
             ParameterVM = new MsRefSearchParameterBaseViewModel(other.Parameter).AddTo(Disposables);
@@ -38,9 +38,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReactivePropertySlim<string> AnnotatorID { get; }
 
-        public IAnnotationSettingModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Model => model;
+        public IAnnotationSettingModel Model => model;
 
-        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.ObserveHasErrors => hasErrors;
+        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
 
         public ReadOnlyReactivePropertySlim<string> Label { get; }
     }

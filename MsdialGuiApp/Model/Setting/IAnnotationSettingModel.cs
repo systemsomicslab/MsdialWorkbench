@@ -6,14 +6,10 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public interface IAnnotationSettingModel : IAnnotationSettingModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> {
-
-    }
-
-    public interface IAnnotationSettingModel<T, U, V>
+    public interface IAnnotationSettingModel
     {
         string AnnotatorID { get; }
 
-        ISerializableAnnotatorContainer<T, U, V> Build(ParameterBase parameter);
+        ISerializableAnnotatorContainer Build(ParameterBase parameter);
     }
 }

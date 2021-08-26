@@ -17,7 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms {
-    sealed class LcmsFastaAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
+    sealed class LcmsFastaAnnotationSettingViewModel : ViewModelBase {
         public LcmsFastaAnnotationSettingViewModel(FastaAnnotationSettingModel other) {
             model = new LcmsFastaAnnotationSettingModel(other);
             ParameterVM = new MsRefSearchParameterBaseViewModel(other.MsRefSearchParameter).AddTo(Disposables);
@@ -61,9 +61,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms {
         public List<Modification> FixedModifications { get => ProteomicsParam.FixedModifications; }
         public int MaxNumberOfModificationsPerPeptide { get => ProteomicsParam.MaxNumberOfModificationsPerPeptide; }
 
-        public IAnnotationSettingModel<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> Model => model;
+        public IAnnotationSettingModel Model => model;
 
-        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>.ObserveHasErrors => hasErrors;
+        //ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
 
         public ReactivePropertySlim<string> AnnotatorID { get; }

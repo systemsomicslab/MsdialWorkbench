@@ -18,17 +18,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             : base(other) {
         }
 
-        public override ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             var db = LoadDataBase();
             return BuildCore(db);
         }
 
-        private ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> BuildCore(ShotgunProteomicsDB database) {
-            return new ShotgunProteomicsDBAnnotatorContainer(
-                new LcmsFastaAnnotator(database, MsRefSearchParameter, ProteomicsParameter, AnnotatorID, AnnotationSource),
-                database,
-                ProteomicsParameter,
-                MsRefSearchParameter);
+        private ISerializableAnnotatorContainer BuildCore(ShotgunProteomicsDB db) {
+            throw new NotImplementedException();
         }
 
         private ShotgunProteomicsDB LoadDataBase() {

@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private MsRefSearchParameterBase parameter = new MsRefSearchParameterBase();
 
-        public abstract ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter);
+        public abstract ISerializableAnnotatorContainer Build(ParameterBase parameter);
 
         protected static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {
             List<MoleculeMsReference> db;

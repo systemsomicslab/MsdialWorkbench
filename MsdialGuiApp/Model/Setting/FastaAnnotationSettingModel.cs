@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    abstract class FastaAnnotationSettingModel : BindableBase, IAnnotationSettingModel<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
+    abstract class FastaAnnotationSettingModel : BindableBase, IAnnotationSettingModel {
         public FastaAnnotationSettingModel() {
 
         }
@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Setting {
         private ProteomicsParameter proteomicsParameter = new ProteomicsParameter();
 
 
-        public abstract ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> Build(ParameterBase parameter);
+        public abstract ISerializableAnnotatorContainer Build(ParameterBase parameter);
 
         protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, 
             ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {

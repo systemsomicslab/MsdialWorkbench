@@ -7,13 +7,8 @@ using System;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    [Obsolete]
-    public interface IAnnotationSettingViewModel : IAnnotationSettingViewModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> {
-        new IAnnotationSettingModel Model { get; }
-    }
-
-    public interface IAnnotationSettingViewModel<T, U, V> {
-        IAnnotationSettingModel<T, U, V> Model { get; }
+    public interface IAnnotationSettingViewModel {
+        IAnnotationSettingModel Model { get; }
 
         ReactivePropertySlim<string> AnnotatorID { get; }
         ReadOnlyReactivePropertySlim<string> Label { get; }
