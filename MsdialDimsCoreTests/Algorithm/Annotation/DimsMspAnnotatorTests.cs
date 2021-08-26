@@ -94,6 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         public void CalculateScoreTest() {
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC", PrecursorMz = 810.601,
+                AdductType = CompMs.Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -131,6 +132,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
             Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
+            Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
+            Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
+            Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");
+            Console.WriteLine($"IsLipidChainsMatch: {result.IsLipidChainsMatch}");
+            Console.WriteLine($"IsLipidPositionMatch: {result.IsLipidPositionMatch}");
+            Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.AcurateMassSimilarity > 0);
             Assert.IsTrue(result.WeightedDotProduct > 0);
@@ -139,8 +146,25 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             Assert.IsTrue(result.MatchedPeaksPercentage > 0);
             Assert.IsTrue(result.MatchedPeaksCount > 0);
             Assert.IsTrue(result.TotalScore > 0);
+            Assert.IsTrue(result.IsPrecursorMzMatch);
+            Assert.IsTrue(result.IsSpectrumMatch);
+            Assert.IsTrue(result.IsLipidClassMatch);
+            Assert.IsFalse(result.IsLipidChainsMatch);
+            Assert.IsFalse(result.IsLipidPositionMatch);
+            Assert.IsFalse(result.IsOtherLipidMatch);
 
-            Assert.AreEqual((float)annotator.CalculateAnnotatedScore(result), result.TotalScore);
+            var expected = new[]
+            {
+                result.AcurateMassSimilarity,
+                new[]
+                {
+                    result.WeightedDotProduct,
+                    result.SimpleDotProduct,
+                    result.ReverseDotProduct,
+                }.Average(),
+                result.MatchedPeaksPercentage,
+            }.Average();
+            Assert.AreEqual(expected, result.TotalScore);
         }
 
         [TestMethod()]
@@ -247,58 +271,6 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var results = annotator.Search(new AnnotationQuery(target, target, null, null));
 
             CollectionAssert.AreEqual(db.GetRange(1, 2), results);
-        }
-
-        [TestMethod()]
-        public void ValidateTest() {
-            var reference = new MoleculeMsReference {
-                Name = "PC 18:0_20:4", CompoundClass = "PC",
-                PrecursorMz = 810.601, AdductType = CompMs.Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
-            };
-            var parameter = new MsRefSearchParameterBase
-            {
-                Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
-                TotalScoreCutoff = 0.7f,
-            };
-            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, CompMs.Common.Enum.TargetOmics.Lipidomics, "MspDB");
-
-            var target = new ChromatogramPeakFeature {
-                PrecursorMz = 810.604,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
-            };
-
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
-            
-            Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
-            Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");
-            Console.WriteLine($"IsLipidClassMatch: {result.IsLipidClassMatch}");
-            Console.WriteLine($"IsLipidChainsMatch: {result.IsLipidChainsMatch}");
-            Console.WriteLine($"IsLipidPositionMatch: {result.IsLipidPositionMatch}");
-            Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
-
-            Assert.IsTrue(result.IsPrecursorMzMatch);
-            Assert.IsTrue(result.IsSpectrumMatch);
-            Assert.IsTrue(result.IsLipidClassMatch);
-            Assert.IsFalse(result.IsLipidChainsMatch);
-            Assert.IsFalse(result.IsLipidPositionMatch);
-            Assert.IsFalse(result.IsOtherLipidMatch);
         }
 
         [TestMethod()]
