@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -18,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
             
         }
 
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             var molecules = LoadDataBase(parameter);
             return Build(parameter.ProjectParam, molecules);
         }

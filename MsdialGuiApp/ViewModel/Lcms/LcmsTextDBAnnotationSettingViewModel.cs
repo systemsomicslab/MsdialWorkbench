@@ -1,7 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -9,8 +12,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    sealed class LcmsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
-    {
+    sealed class LcmsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> {
         public LcmsTextDBAnnotationSettingViewModel(DataBaseAnnotationSettingModelBase other) {
             model = new LcmsTextDBAnnotationSettingModel(other);
             ParameterVM = new MsRefSearchParameterBaseViewModel(other.Parameter).AddTo(Disposables);
@@ -36,9 +38,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReactivePropertySlim<string> AnnotatorID { get; }
 
-        public IAnnotationSettingModel Model => model;
+        public IAnnotationSettingModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Model => model;
 
-        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
+        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.ObserveHasErrors => hasErrors;
 
         public ReadOnlyReactivePropertySlim<string> Label { get; }
     }

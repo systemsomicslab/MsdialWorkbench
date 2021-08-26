@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         }
 
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             return BuildCore(parameter, LoadDataBase(DataBaseID, DataBasePath, DBSource));
         }
 

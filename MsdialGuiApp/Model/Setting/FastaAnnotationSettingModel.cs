@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    abstract class FastaAnnotationSettingModel : BindableBase, IAnnotationSettingModel {
+    abstract class FastaAnnotationSettingModel : BindableBase, IAnnotationSettingModel<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
         public FastaAnnotationSettingModel() {
 
         }
@@ -69,10 +70,11 @@ namespace CompMs.App.Msdial.Model.Setting {
         private ProteomicsParameter proteomicsParameter = new ProteomicsParameter();
 
 
-        public abstract ISerializableAnnotatorContainer Build(ParameterBase parameter);
+        public abstract ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> Build(ParameterBase parameter);
 
-        protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, ParameterBase parameter) {
-            return new ShotgunProteomicsDB(path, id, parameter.ProteomicsParam, parameter.MspSearchParam);
+        protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, 
+            ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
+            return new ShotgunProteomicsDB(path, id, proteomicsParam, msrefSearchParam);
         }
     }
 }
