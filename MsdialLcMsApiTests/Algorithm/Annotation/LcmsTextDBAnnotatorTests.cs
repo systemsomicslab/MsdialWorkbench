@@ -451,7 +451,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             {
                 Ms1Tolerance = 0.01f,
                 RtTolerance = 0.5f,
-                IsUseTimeForAnnotationScoring = false,
+                IsUseTimeForAnnotationFiltering = false,
             };
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
 
@@ -470,8 +470,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
+            Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
+            Assert.IsTrue(result.IsRtMatch);
         }
 
         [TestMethod()]

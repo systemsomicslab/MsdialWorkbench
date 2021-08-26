@@ -490,7 +490,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
-            Assert.IsFalse(result.IsCcsMatch);
+            Assert.IsTrue(result.IsCcsMatch);
         }
 
         [TestMethod()]

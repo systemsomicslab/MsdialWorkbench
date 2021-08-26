@@ -202,10 +202,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            if (parameter.IsUseTimeForAnnotationScoring) {
-                var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-                result.IsRtMatch = diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
-            }
+            var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
+            result.IsRtMatch = diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
         }
 
         private static void ValidateOnLipidomics(

@@ -569,7 +569,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             }.Average();
             Assert.AreEqual((float)expected, result.TotalScore);
             Assert.IsTrue(result.IsPrecursorMzMatch);
-            Assert.IsFalse(result.IsCcsMatch);
+            Assert.IsTrue(result.IsCcsMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
             Assert.IsTrue(result.IsLipidClassMatch);
             Assert.IsFalse(result.IsLipidChainsMatch);

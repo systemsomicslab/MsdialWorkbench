@@ -597,7 +597,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
-                IsUseTimeForAnnotationScoring = false,
+                IsUseTimeForAnnotationFiltering = false,
             };
             var annotator = new LcmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "DB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB");
 
@@ -624,7 +624,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Console.WriteLine($"IsOtherLipidMatch: {result.IsOtherLipidMatch}");
 
             Assert.IsTrue(result.IsPrecursorMzMatch);
-            Assert.IsFalse(result.IsRtMatch);
+            Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
             Assert.IsTrue(result.IsLipidClassMatch);
             Assert.IsFalse(result.IsLipidChainsMatch);

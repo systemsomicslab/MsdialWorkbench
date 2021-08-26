@@ -154,10 +154,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            if (parameter.IsUseCcsForAnnotationScoring) {
-                var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
-                result.IsCcsMatch = diff <= Math.Min(MsdialCcsMatchThreshold, parameter.CcsTolerance);
-            }
+            var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
+            result.IsCcsMatch = diff <= Math.Min(MsdialCcsMatchThreshold, parameter.CcsTolerance);
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
