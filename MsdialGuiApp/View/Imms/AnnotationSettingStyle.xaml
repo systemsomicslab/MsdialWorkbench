@@ -58,7 +58,7 @@
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
                                AppendLabel="">
-                <TextBox Text="{Binding CcsTolerance.Value}" IsEnabled="{Binding CanSetCcsParameter.Value}"/>
+                <TextBox Text="{Binding CcsTolerance.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
@@ -72,7 +72,7 @@
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
                                AppendLabel="">
-                <TextBox Text="{Binding CcsTolerance.Value}" IsEnabled="{Binding CanSetCcsParameter.Value}"/>
+                <TextBox Text="{Binding CcsTolerance.Value}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
@@ -125,7 +125,7 @@
             <Expander Header="Annotaion cut off" Margin="0,8"
                       Grid.Row="3">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource ScoreCutOffSettingWithMs2}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
 
@@ -165,7 +165,7 @@
             <Expander Header="Annotaion cut off" Margin="0,8"
                       Grid.Row="3">
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource ScoreCutOffSettingWithMs2}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
 
@@ -184,23 +184,15 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Text="Tolerance" Grid.Row="0"/>
             <ContentControl Content="{Binding ParameterVM}"
                             ContentTemplate="{StaticResource ToleranceSettingForLcms}"
                             Margin="8" Grid.Row="1"/>
-            <Expander Header="Annotaion cut off" Margin="0,8"
-                      Grid.Row="2">
-                <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource ScoreCutOffSetting}"
-                                Margin="8"/>
-            </Expander>
 
             <Expander Header="Ccs setting" Margin="0,8"
-                      Grid.Row="3">
+                      Grid.Row="2">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource CcsSetting}"
                                 Margin="8"/>
