@@ -20,7 +20,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -28,11 +27,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     class LcmsAnalysisParameterSetViewModel : ViewModelBase
     {
-        public LcmsAnalysisParameterSetViewModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files)
-            : this(new LcmsAnalysisParameterSetModel(parameter, files)) {
-            
-        }
-
         public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
             Model = model;
             Param = MsdialProjectParameterFactory.Create(Model.Parameter);

@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -48,7 +49,10 @@ namespace CompMs.App.MsdialConsole.Process {
             var tasks = new Task[files.Count];
             foreach ((var file, var idx) in files.WithIndex()) {
                 var provider = new StandardDataProvider(file, false, 5);
-                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container));
+                var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
+                    new AnnotationQueryFactory(container.ParameterBase.PeakPickBaseParam),
+                    container.DataBaseMapper.Annotators);
+                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container, annotationProcess));
             }
             Task.WaitAll(tasks);
 

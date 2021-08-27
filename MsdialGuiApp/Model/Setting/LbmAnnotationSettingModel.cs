@@ -37,8 +37,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private IonMode ionMode;
 
+        private MoleculeDataBase db;
         public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
-            return BuildCore(parameter.ProjectParam, LoadDataBase(DataBaseID, DataBasePath, DBSource, parameter));
+            if (db is null) {
+                db = LoadDataBase(DataBaseID, DataBasePath, DBSource, parameter);
+            }
+            return BuildCore(parameter.ProjectParam, db);
         }
 
         protected abstract ISerializableAnnotatorContainer BuildCore(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);

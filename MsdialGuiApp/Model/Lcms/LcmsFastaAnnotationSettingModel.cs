@@ -18,8 +18,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             : base(other) {
         }
 
+        private ShotgunProteomicsDB db;
         public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
-            var db = LoadDataBase();
+            if (db is null) {
+                db = LoadDataBase();
+            }
             return BuildCore(db);
         }
 
