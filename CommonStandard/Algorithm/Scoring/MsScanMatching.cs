@@ -7,6 +7,7 @@ using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
@@ -69,12 +70,30 @@ namespace CompMs.Common.Algorithm.Scoring {
             else if (targetOmics == TargetOmics.Lipidomics) {
                 result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
             } 
-            else if (targetOmics == TargetOmics.Proteomics) {
+
+            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            
+            var isCcsMatch = false;
+            var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
+
+            result.CcsSimilarity = (float)ccsSimilarity;
+            result.IsCcsMatch = isCcsMatch;
+            result.TotalScore = (float)GetTotalScore(result, param);
+            return result;
+        }
+
+        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, PeptideMsReference refSpec, MsRefSearchParameterBase param,
+            TargetOmics targetOmics = TargetOmics.Metabolomics, double scanCCS = -1.0,
+            IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null,
+            double andromedaDelta = 100, int andromedaMaxPeaks = 12) {
+
+            MsScanMatchResult result = null;
+            if (targetOmics == TargetOmics.Proteomics) {
                 result = CompareMS2ProteomicsScanProperties(scanProp, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
             }
 
             result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
-            
+
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
@@ -137,7 +156,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
+        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, PeptideMsReference refSpec, 
             MsRefSearchParameterBase param, float andromedaDelta, float andromedaMaxPeaks) {
 
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);

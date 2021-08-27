@@ -86,7 +86,7 @@ namespace CompMs.App.MsdialConsole {
             //new EnzymesXmlRefParser().Read();
             //new ModificationsXmlRefParser().Read();
 
-            new TestProteomicsProcess().ProcessTest();
+            new TestProteomicsProcess().PDFTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");

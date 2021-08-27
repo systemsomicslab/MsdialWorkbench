@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -18,6 +19,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
+    [MessagePack.Union(4, typeof(FastaDbRestorationKey))]
     public interface IReferRestorationKey<in T, U, V, in W>
     {
         ISerializableAnnotator<T, U, V, W> Accept(ILoadAnnotatorVisitor visitor, W database);
@@ -25,6 +27,7 @@ namespace CompMs.MsdialCore.Parser
         string Key { get; }
     }
 
+   
     [MessagePack.MessagePackObject]
     public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
@@ -70,17 +73,8 @@ namespace CompMs.MsdialCore.Parser
             SourceType = sourceType;
         }
 
-        public StandardRestorationKey(string key, MsRefSearchParameterBase parameter, ProteomicsParameter proteomicsparam, SourceType sourceType) : base(key) {
-            Parameter = parameter;
-            ProteomicsParameter = proteomicsparam;
-            SourceType = sourceType;
-        }
-
         [MessagePack.Key(nameof(Parameter))]
         public MsRefSearchParameterBase Parameter { get; set; }
-
-        [MessagePack.Key(nameof(ProteomicsParameter))]
-        public ProteomicsParameter ProteomicsParameter { get; set; }
 
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }
@@ -89,4 +83,39 @@ namespace CompMs.MsdialCore.Parser
             return visitor.Visit(this, database);
         }
     }
+
+    [MessagePack.MessagePackObject]
+    public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
+        public FastaDbRestorationKey(string key) {
+            Key = key;
+        }
+
+        [MessagePack.Key(nameof(Key))]
+        public string Key { get; set; }
+
+        public abstract ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database);
+    }
+
+    [MessagePack.MessagePackObject]
+    public class ShotgunProteomicsRestorationKey : FastaDbRestorationKey {
+        public ShotgunProteomicsRestorationKey(string key, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter, SourceType sourceType) : base(key) {
+            MsRefSearchParameter = msrefSearchParameter;
+            ProteomicsParameter = proteomicsParameter;
+            SourceType = sourceType;
+        }
+
+        [MessagePack.Key(nameof(MsRefSearchParameter))]
+        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
+
+        [MessagePack.Key(nameof(ProteomicsParameter))]
+        public ProteomicsParameter ProteomicsParameter { get; set; }
+
+        [MessagePack.Key(nameof(SourceType))]
+        public SourceType SourceType { get; set; }
+
+        public override ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database) {
+            return visitor.Visit(this, database);
+        }
+    }
+
 }

@@ -1,7 +1,9 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System;
@@ -42,11 +44,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
     [Union(1, typeof(SerializableAnnotatorContainer))]
-    public interface ISerializableAnnotatorContainer : IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
-    {
+    public interface ISerializableAnnotatorContainer<in T, U, V> : IAnnotatorContainer<T, U, V> {
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor);
     }
+
+    [Union(0, typeof(DatabaseAnnotatorContainer))]
+    [Union(1, typeof(SerializableAnnotatorContainer))]
+    public interface ISerializableAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+    {
+        
+    }
+
+    //public interface ISerializablePepAnnotatorContainer : ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
+
+    //}
 
     [MessagePackObject]
     public sealed class SerializableAnnotatorContainer : ISerializableAnnotatorContainer
@@ -100,6 +112,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public interface IDatabaseAnnotatorContainer : ISerializableAnnotatorContainer
     {
         MoleculeDataBase Database { get; }
+        string DatabaseID { get; }
+    }
+
+    [Union(0, typeof(ShotgunProteomicsDBAnnotatorContainer))]
+    public interface IShotgunProteomicsDBAnnotatorContainer : ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
+        ShotgunProteomicsDB Database { get; }
         string DatabaseID { get; }
     }
 
@@ -163,6 +181,77 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             Database.Load(stream);
+            Annotator = AnnotatorKey.Accept(visitor, Database);
+        }
+    }
+
+    [MessagePackObject]
+    public sealed class ShotgunProteomicsDBAnnotatorContainer : IShotgunProteomicsDBAnnotatorContainer {
+        public ShotgunProteomicsDBAnnotatorContainer(
+            ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotator,
+            ShotgunProteomicsDB database, ProteomicsParameter proteomicsParameter,
+            MsRefSearchParameterBase msRefSearchParameter) {
+            if (annotator is null) {
+                throw new ArgumentNullException(nameof(annotator));
+            }
+
+            if (database is null) {
+                throw new ArgumentNullException(nameof(database));
+            }
+
+            if (msRefSearchParameter is null) {
+                throw new ArgumentNullException(nameof(msRefSearchParameter));
+            }
+
+            if (proteomicsParameter is null) {
+                throw new ArgumentNullException(nameof(proteomicsParameter));
+            }
+            Annotator = annotator;
+            AnnotatorID = Annotator.Key;
+            Database = database;
+            DatabaseID = Database.Id;
+            MsRefSearchParameter = msRefSearchParameter;
+        }
+
+        public ShotgunProteomicsDBAnnotatorContainer(
+            IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotatorKey,
+            ShotgunProteomicsDB database,
+            MsRefSearchParameterBase parameter) {
+            AnnotatorKey = annotatorKey;
+            MsRefSearchParameter = parameter;
+            Database = database;
+            AnnotatorID = AnnotatorKey.Key;
+        }
+
+        [IgnoreMember]
+        public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Annotator { get; private set; }
+        [IgnoreMember]
+        public string AnnotatorID { get; }
+
+        [Key("AnnotatorKey")]
+        public IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> AnnotatorKey { get; set; }
+
+        [Key("MsRefSearchParameter")]
+        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
+
+        [Key("ProteomicsParameter")]
+        public ProteomicsParameter ProteomicsParameter { get; set; }
+
+        [Key("Database")]
+        public ShotgunProteomicsDB Database { get; set; }
+        [IgnoreMember]
+        public string DatabaseID { get; }
+
+        IAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>.Annotator => Annotator;
+        MsRefSearchParameterBase IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>.Parameter => MsRefSearchParameter;
+
+        public void Save(Stream stream) {
+            Database.Save();
+            AnnotatorKey = Annotator.Save();
+        }
+
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
+            Database.Load();
             Annotator = AnnotatorKey.Accept(visitor, Database);
         }
     }

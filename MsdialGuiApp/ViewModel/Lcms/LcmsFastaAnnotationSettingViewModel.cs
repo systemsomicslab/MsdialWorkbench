@@ -2,8 +2,10 @@
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,11 +17,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms {
-    sealed class LcmsFastaAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel {
-        public LcmsFastaAnnotationSettingViewModel(DataBaseAnnotationSettingModelBase other, ParameterBase ParameterBase) {
-            model = new LcmsFastaAnnotationSettingModel(other, ParameterBase);
-            ParameterVM = new MsRefSearchParameterBaseViewModel(other.Parameter).AddTo(Disposables);
-            ProteomicsParameterVM = new ProteomicsParameterVM(ParameterBase.ProteomicsParam).AddTo(Disposables);
+    sealed class LcmsFastaAnnotationSettingViewModel : ViewModelBase {
+        public LcmsFastaAnnotationSettingViewModel(FastaAnnotationSettingModel other) {
+            model = new LcmsFastaAnnotationSettingModel(other);
+            ParameterVM = new MsRefSearchParameterBaseViewModel(other.MsRefSearchParameter).AddTo(Disposables);
+            ProteomicsParameterVM = new ProteomicsParameterVM(other.ProteomicsParameter).AddTo(Disposables);
             AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
             Label = Observable.Return("LcmsFastaAnnotator").ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             hasErrors = new[]
@@ -52,16 +54,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms {
         public MsRefSearchParameterBaseViewModel ParameterVM { get; }
 
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
-        public ProteomicsParameter ProteomicsParam { get => model.ParameterBase.ProteomicsParam; }
-        public List<Enzyme> Enzymes { get => model.ParameterBase.ProteomicsParam.EnzymesForDigestion; }
-        public int MaxMissedCleavage { get => model.ParameterBase.ProteomicsParam.MaxMissedCleavage; }
-        public List<Modification> VariableModifications { get => model.ParameterBase.ProteomicsParam.VariableModifications; }
-        public List<Modification> FixedModifications { get => model.ParameterBase.ProteomicsParam.FixedModifications; }
-        public int MaxNumberOfModificationsPerPeptide { get => model.ParameterBase.ProteomicsParam.MaxNumberOfModificationsPerPeptide; }
+        public ProteomicsParameter ProteomicsParam { get => model.ProteomicsParameter; }
+        public List<Enzyme> Enzymes { get => ProteomicsParam.EnzymesForDigestion; }
+        public int MaxMissedCleavage { get => ProteomicsParam.MaxMissedCleavage; }
+        public List<Modification> VariableModifications { get => ProteomicsParam.VariableModifications; }
+        public List<Modification> FixedModifications { get => ProteomicsParam.FixedModifications; }
+        public int MaxNumberOfModificationsPerPeptide { get => ProteomicsParam.MaxNumberOfModificationsPerPeptide; }
 
         public IAnnotationSettingModel Model => model;
 
-        ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
+        //ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
 
         public ReactivePropertySlim<string> AnnotatorID { get; }

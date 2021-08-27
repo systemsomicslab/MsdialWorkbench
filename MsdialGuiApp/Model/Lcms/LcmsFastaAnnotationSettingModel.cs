@@ -13,66 +13,22 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsFastaAnnotationSettingModel : DataBaseAnnotationSettingModelBase {
-        
-        public ParameterBase ParameterBase { get; }
-        public LcmsFastaAnnotationSettingModel(DataBaseAnnotationSettingModelBase other, ParameterBase paramBase)
+    sealed class LcmsFastaAnnotationSettingModel : FastaAnnotationSettingModel {
+        public LcmsFastaAnnotationSettingModel(FastaAnnotationSettingModel other)
             : base(other) {
-            this.ParameterBase = paramBase;
         }
 
         public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
-            var molecules = LoadDataBase(parameter);
-            return Build(parameter.ProjectParam, molecules);
+            var db = LoadDataBase();
+            return BuildCore(db);
         }
 
-        private ISerializableAnnotatorContainer Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
-            return new DatabaseAnnotatorContainer(
-                new LcmsFastaAnnotator(molecules.Database, Parameter, this.ParameterBase.ProteomicsParam, AnnotatorID, molecules.SourceType),
-                molecules,
-                Parameter);
+        private ISerializableAnnotatorContainer BuildCore(ShotgunProteomicsDB db) {
+            throw new NotImplementedException();
         }
 
-        private MoleculeDataBase LoadDataBase(ParameterBase parameter) {
-            switch (DBSource) {
-                case DataBaseSource.Fasta:
-                    return new MoleculeDataBase(LoadFastaDataBase(DataBasePath, AnnotationSource == SourceType.FastaDB ? false : true, parameter), DataBaseID, DBSource, AnnotationSource);
-                default:
-                    throw new NotSupportedException(DBSource.ToString());
-            }
-        }
-
-        private List<MoleculeMsReference> LoadFastaDataBase(string dataBasePath, bool isDecoyDB, ParameterBase param) {
-            var fastaQueries = FastaParser.ReadFastaUniProtKB(dataBasePath);
-            if (isDecoyDB) {
-                fastaQueries = DecoyCreator.Convert2DecoyQueries(fastaQueries);
-            }
-
-            var cleavageSites = ProteinDigestion.GetCleavageSites(param.EnzymesForDigestion);
-            var modContainer = ModificationUtility.GetModificationContainer(param.FixedModifications, param.VariableModifications);
-            var maxMissedCleavage = param.MaxMissedCleavage;
-            var maxNumberOfModificationsPerPeptide = param.MaxNumberOfModificationsPerPeptide;
-            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
-
-            var refQueries = new List<MoleculeMsReference>();
-            //foreach (var fQuery in fastaQueries) {
-            //    if (fQuery.IsValidated) {
-            //        var sequence = fQuery.Sequence;
-            //        var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, maxMissedCleavage, 
-            //            fQuery.UniqueIdentifier, fQuery.Index);
-
-            //        //Console.WriteLine(fQuery.Header);
-            //        if (!digestedPeptides.IsEmptyOrNull()) {
-
-            //            var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
-            //            foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
-            //                var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, CollisionType.HCD);
-            //                refQueries.Add(refSpec);
-            //            }
-            //        }
-            //    }
-            //}
-            return refQueries;
+        private ShotgunProteomicsDB LoadDataBase() {
+            return LoadShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, MsRefSearchParameter);
         }
     }
 }

@@ -114,5 +114,76 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             Console.WriteLine(sw.ElapsedMilliseconds);
             Console.ReadLine();
         }
+
+
+
+        public void PDFTest() {
+            var data = new double[][] {
+                new double[] { 0 },
+                new double[] { 1 },
+                new double[] { 1 },
+                new double[] { 2 },
+                new double[] { 2 },
+                new double[] { 2 },
+                new double[] { 3 },
+                new double[] { 3 },
+                new double[] { 3 },
+                new double[] { 3 },
+                new double[] { 4 },
+                new double[] { 4 },
+                new double[] { 4 },
+                new double[] { 4 },
+                new double[] { 4 },
+                new double[] { 5 },
+                new double[] { 5 },
+                new double[] { 5 },
+                new double[] { 5 },
+                new double[] { 5 },
+                new double[] { 5 },
+                new double[] { 6 },
+                new double[] { 6 },
+                new double[] { 6 },
+                new double[] { 6 },
+                new double[] { 6 },
+                new double[] { 7 },
+                new double[] { 7 },
+                new double[] { 7 },
+                new double[] { 7 },
+                new double[] { 8 },
+                new double[] { 8 },
+                new double[] { 8 },
+                new double[] { 9 },
+                new double[] { 9 },
+                new double[] { 10 }
+            };
+
+            var dist = PeptideAnnotation.GetGussianKernelDistribution(data);
+            Console.WriteLine(String.Join(" ", dist.Mean));
+            Console.WriteLine(String.Join(" ", dist.Median));
+            Console.WriteLine(String.Join(" ", dist.Covariance));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 0 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 1 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 2 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 3 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 4 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 6 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 7 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 8 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 9 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 10 }));
+
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 0.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 1.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 2.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 3.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 4.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 5.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 6.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 7.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 8.5 }));
+            Console.WriteLine(dist.ProbabilityDensityFunction(new double[] { 9.5 }));
+
+        }
     }
 }

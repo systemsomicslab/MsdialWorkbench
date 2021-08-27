@@ -67,7 +67,6 @@ namespace CompMs.Common.Proteomics.Function {
             var isProteinNTerminal = peptide.IsProteinNterminal;
             var isProteinCTerminal = peptide.IsProteinCterminal;
             var aaSequence = new List<AminoAcid>();
-            
             for (int i = 0; i < sequence.Count; i++) {
                 var modseq = new List<Modification>();
                 var aa = GetAminoAcidByFixedModifications(peptide, modseq, container, i);

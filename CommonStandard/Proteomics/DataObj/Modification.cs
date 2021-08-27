@@ -68,6 +68,10 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         [Key(24)]
         public Dictionary<string, AminoAcid> Code2AminoAcidObj { get; set; }
+        [Key(25)]
+        public Dictionary<int, string> ID2Code { get; set; }
+        [Key(26)]
+        public Dictionary<string, int> Code2ID { get; set; }
 
         public bool IsEmptyOrNull() {
             return ProteinNtermFixedMods.IsEmptyOrNull() && ProteinCtermFixedMods.IsEmptyOrNull() &&
@@ -112,6 +116,26 @@ namespace CompMs.Common.Proteomics.DataObj {
             ProteinNterm2VariableMod = GetModificationProtocolDict(ProteinNtermVariableMods);
 
             Code2AminoAcidObj = GetAminoAcidDictionaryUsedInModificationProtocol();
+            ID2Code = GetID2Code();
+            Code2ID = GetCode2ID();
+        }
+
+        private Dictionary<string, int> GetCode2ID() {
+            var dict = new Dictionary<string, int>();
+            foreach (var item in ID2Code) {
+                dict[item.Value] = item.Key;
+            }
+            return dict;
+        }
+
+        private Dictionary<int, string> GetID2Code() {
+            var counter = 0;
+            var dict = new Dictionary<int, string>();
+            foreach (var item in Code2AminoAcidObj) {
+                dict[counter] = item.Key;
+                counter++;
+            }
+            return dict;
         }
 
         public Dictionary<string, AminoAcid> GetAminoAcidDictionaryUsedInModificationProtocol() {

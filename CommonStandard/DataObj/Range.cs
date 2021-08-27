@@ -1,12 +1,17 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.Common.DataObj {
+    [MessagePackObject]
     public class Range {
+        [Key(0)]
         public int Start { get; }
+        [Key(1)]
         public int End { get; }
-        public int Length() { return End - Start + 1; }
+        [IgnoreMember]
+        public int Length { get => End - Start + 1; }
         public Range(int start, int end) {
             this.Start = start;
             this.End = end;
