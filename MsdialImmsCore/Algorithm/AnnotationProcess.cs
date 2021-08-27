@@ -177,12 +177,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
                 chromPeakFeature.MatchResults.AddResult(best);
-                DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(best), best);
             }
             else if (results.Count > 0) {
                 var best = annotator.SelectTopHit(results, annotatorContainer.Parameter);
                 chromPeakFeature.MatchResults.AddResult(best);
-                DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(best), best);
             }
         }
     }
