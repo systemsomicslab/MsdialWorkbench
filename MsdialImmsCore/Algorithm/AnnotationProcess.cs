@@ -4,8 +4,6 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.FormulaGenerator.Function;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -16,8 +14,6 @@ using CompMs.MsdialImmsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Algorithm
 {
@@ -111,6 +107,17 @@ namespace CompMs.MsdialImmsCore.Algorithm
             foreach (var annotatorContainer in annotatorContainers) {
                 SetAnnotationResult(chromPeakFeature, msdecResult, isotopes, annotatorContainer);
             }
+            var representative = chromPeakFeature.MatchResults.Representative;
+            var annotator = annotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+            if (annotator is null) {
+                return;
+            }
+            else if (annotator.IsReferenceMatched(representative)) {
+                DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
+            }
+            else if (annotator.IsAnnotationSuggested(representative)) {
+                DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
+            }
         }
 
         private static void SetMspAnnotationResult(
@@ -167,13 +174,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, annotatorContainer.Parameter));
             var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
             var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-            chromPeakFeature.MatchResults.AddResults(matches);
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
+                chromPeakFeature.MatchResults.AddResult(best);
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(best), best);
             }
             else if (results.Count > 0) {
                 var best = annotator.SelectTopHit(results, annotatorContainer.Parameter);
+                chromPeakFeature.MatchResults.AddResult(best);
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(best), best);
             }
         }

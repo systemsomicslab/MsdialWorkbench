@@ -51,11 +51,13 @@ namespace CompMs.App.Msdial.ViewModel
         public ReactiveCommand LoadAnalysisFileCommand { get; }
 
         private void LoadAnalysisFile() {
-            foreach (AnalysisFileBeanViewModel analysisFile in AnalysisFilesView) {
-                analysisFile.IsSelected = false;
+            if (!(SelectedAnalysisFile.Value is null)) {
+                foreach (AnalysisFileBeanViewModel analysisFile in AnalysisFilesView) {
+                    analysisFile.IsSelected = false;
+                }
+                SelectedAnalysisFile.Value.IsSelected = true;
+                LoadAnalysisFileCore(SelectedAnalysisFile.Value);
             }
-            SelectedAnalysisFile.Value.IsSelected = true;
-            LoadAnalysisFileCore(SelectedAnalysisFile.Value);
         }
 
         protected abstract void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile);
@@ -63,11 +65,13 @@ namespace CompMs.App.Msdial.ViewModel
         public ReactiveCommand LoadAlignmentFileCommand { get; }
 
         private void LoadAlignmentFile() {
-            foreach (AlignmentFileBeanViewModel alignmentFile in AlignmentFilesView) {
-                alignmentFile.IsSelected = false;
+            if (!(SelectedAlignmentFile.Value is null)) {
+                foreach (AlignmentFileBeanViewModel alignmentFile in AlignmentFilesView) {
+                    alignmentFile.IsSelected = false;
+                }
+                SelectedAlignmentFile.Value.IsSelected = true;
+                LoadAlignmentFileCore(SelectedAlignmentFile.Value);
             }
-            SelectedAlignmentFile.Value.IsSelected = true;
-            LoadAlignmentFileCore(SelectedAlignmentFile.Value);
         }
 
         protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
