@@ -82,8 +82,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public void LoadAnnotator() {
             // TODO: must not cast Refer to Annotator
-            mspAnnotator = Storage.DataBaseMapper.KeyToRefer["MspDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
-            textDBAnnotator = Storage.DataBaseMapper.KeyToRefer["TextDB"] as IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>;
+            mspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"].Annotator;
+            textDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"].Annotator;
         }
 
         public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {

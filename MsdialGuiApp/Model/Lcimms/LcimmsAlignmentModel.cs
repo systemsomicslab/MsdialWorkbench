@@ -107,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
                         ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot.Ontology,
+                        spot => spot?.Ontology ?? string.Empty,
                         Color.FromArgb(180, 181, 181, 181)),
                     "Ontology"),
                 new BrushMapData<AlignmentSpotPropertyModel>(
