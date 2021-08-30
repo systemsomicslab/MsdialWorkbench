@@ -32,20 +32,19 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, omics, Key);
+            return FindCandidatesCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), parameter, Key);
         }
 
-        private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
+        private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, string sourceKey) {
             var candidates = SearchBound(property, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(candidates.Count);
             foreach (var candidate in candidates) {
                 var result = CalculateScoreCore(property, scan, candidate, parameter, sourceKey);
-                ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);
             }
             return results.OrderByDescending(result => result.TotalScore).ToList();
@@ -53,41 +52,68 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), reference, parameter, Key);
+            return CalculateScoreCore(query.Property, query.Scan, reference, parameter, Key);
         }
 
-        private static MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string sourceKey) {
-            var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var matchedPeaksScores = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-
-            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
-            var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
-
+        private MsScanMatchResult CalculateScoreCore(IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, string source) {
+            var normScan = DataAccess.GetNormalizedMSScanProperty(scan, parameter);
             var result = new MsScanMatchResult
             {
-                Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
-                WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
-                MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
-                AcurateMassSimilarity = (float)ms1Similarity,
-                TotalScore = (float)((ms1Similarity + (weightedDotProduct + simpleDotProduct + reverseDotProduct) / 3 + matchedPeaksScores[0]) / 3),
-                Source = SourceType.MspDB, SourceKey = sourceKey
+                Name = reference.Name,
+                LibraryID = reference.ScanID,
+                InChIKey = reference.InChIKey,
+                Source = SourceType.MspDB,
+                AnnotatorID = source,
             };
+            var results = new List<IMatchResult>();
 
-            result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
+            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
+            var massResult = MassCalculator.Calculate(new MassMatchQuery(property.PrecursorMz, ms1Tol), reference);
+            results.Add(massResult);
 
+            if (omics == TargetOmics.Lipidomics) {
+                var ms2Result = LipidMs2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
+                results.Add(ms2Result);
+                if (!ms2Result.IsOtherLipidMatch) {
+                    var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
+                    if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
+                        result.Name = reference.Name; // for others and splash etc in compoundclass
+                    }
+                    else if (molecule.SublevelLipidName == molecule.LipidName) {
+                        result.Name = molecule.LipidName;
+                    }
+                    else {
+                        result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
+                    }
+                }
+            }
+            else {
+                var ms2Result = Ms2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
+                results.Add(ms2Result);
+            }
+
+            result.TotalScore = (float)results.SelectMany(res => res.Scores).Average();
+            results.ForEach(res => res.Assign(result));
             return result;
         }
 
+        private static MassMatchCalculator MassCalculator
+            => massCalculator ?? (massCalculator = new MassMatchCalculator());
+        private static MassMatchCalculator massCalculator;
+
+        private static Ms2MatchCalculator Ms2Calculator
+            => ms2Calculator ?? (ms2Calculator = new Ms2MatchCalculator());
+        private static Ms2MatchCalculator ms2Calculator;
+        
+        private static LipidMs2MatchCalculator LipidMs2Calculator
+            => lipidMs2Calculator ?? (lipidMs2Calculator = new LipidMs2MatchCalculator());
+        private static LipidMs2MatchCalculator lipidMs2Calculator;
+        
         public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return CalculateAnnotatedScoreCore(result, parameter);
+            return CalculateAnnotatedScoreCore(result);
         }
 
-        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static double CalculateAnnotatedScoreCore(MsScanMatchResult result) {
             var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
@@ -99,13 +125,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         }
 
         public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return CalculateSuggestedScoreCore(result, parameter);
+            return CalculateSuggestedScoreCore(result);
         }
 
-        private static double CalculateSuggestedScoreCore(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        private static double CalculateSuggestedScoreCore(MsScanMatchResult result) {
             var scores = new List<double> { };
             if (result.AcurateMassSimilarity >= 0)
                 scores.Add(result.AcurateMassSimilarity);
@@ -132,54 +155,6 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public void Validate(MsScanMatchResult result, IAnnotationQuery query, MoleculeMsReference reference) {
-            var parameter = query.Parameter ?? Parameter;
-            ValidateCore(result, query.Property, DataAccess.GetNormalizedMSScanProperty(query.Scan, parameter), reference, parameter, omics);
-        }
-
-        private static void ValidateCore(MsScanMatchResult result, IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter, TargetOmics omics) {
-            if (omics == TargetOmics.Lipidomics)
-                ValidateOnLipidomics(result, property, scan, reference, parameter);
-            else
-                ValidateBase(result, scan, reference, parameter);
-        }
-
-        private static void ValidateBase(MsScanMatchResult result, IMSProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
-                && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
-                && result.ReverseDotProduct >= parameter.ReverseDotProductCutOff
-                && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
-                && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
-
-            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
-            result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
-        }
-
-        private static void ValidateOnLipidomics(MsScanMatchResult result, IMSProperty property, IMSScanProperty scan, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            ValidateBase(result, property, reference, parameter);
-
-            MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
-            result.IsLipidChainsMatch = isLipidChainsMatch;
-            result.IsLipidClassMatch = isLipidClassMatch;
-            result.IsLipidPositionMatch = isLipidPositionMatch;
-            result.IsOtherLipidMatch = isOtherLipidMatch;
-            result.IsSpectrumMatch &= isLipidChainsMatch | isLipidClassMatch | isLipidPositionMatch | isOtherLipidMatch;
-
-            if (result.IsOtherLipidMatch)
-                return;
-
-            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-            if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
-                result.Name = reference.Name; // for others and splash etc in compoundclass
-            }
-            else if (molecule.SublevelLipidName == molecule.LipidName) {
-                result.Name = molecule.LipidName;
-            }
-            else {
-                result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
-            }
-        }
-
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
             return results.Argmax(result => result.TotalScore);
         }
@@ -188,31 +163,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             if (parameter is null) {
                 parameter = Parameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (SatisfySuggestedConditions(result, parameter) || SatisfyRefMatchedConditions(result, parameter)) {
-                    filtered.Add(result);
-                }
-            }
-            return filtered;
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch || !result.IsSpectrumMatch) {
-                return false;
-            }
-            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
-                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch) {
-                return false;
-            }
-            return CalculateAnnotatedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch && CalculateSuggestedScoreCore(result, parameter) >= parameter.TotalScoreCutoff;
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
@@ -220,6 +171,25 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 parameter = Parameter;
             }
             return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+        }
+
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch && result.IsSpectrumMatch;
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch;
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
         }
     }
 }

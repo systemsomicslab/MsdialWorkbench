@@ -69,7 +69,7 @@ namespace CompMs.MsdialImmsCore.Process
             PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, parameter, reportAction, container.DataBaseMapper);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -168,12 +168,12 @@ namespace CompMs.MsdialImmsCore.Process
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
-            Action<int> reportAction
-            ) {
+            Action<int> reportAction,
+            DataBaseMapper mapper) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider.LoadMsSpectrums(), chromPeakFeatures, 
-                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
-                parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(provider.LoadMsSpectrums(), chromPeakFeatures,
+                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                mapper, parameter, reportAction);
         }
 
         private static void SaveToFile(

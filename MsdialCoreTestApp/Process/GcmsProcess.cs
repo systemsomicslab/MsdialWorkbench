@@ -182,7 +182,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.ParameterBase as MsdialGcmsParameter, container.IupacDatabase);
+            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.ParameterBase as MsdialGcmsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 

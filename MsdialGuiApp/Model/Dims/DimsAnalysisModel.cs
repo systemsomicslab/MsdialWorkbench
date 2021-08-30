@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             ParameterBase parameter,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
@@ -39,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Dims
             TextDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
+            DataBaseMapper = mapper;
             Parameter = parameter;
 
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -69,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(refer),
+                new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity)
             {
@@ -103,6 +104,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
+        public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
 
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }

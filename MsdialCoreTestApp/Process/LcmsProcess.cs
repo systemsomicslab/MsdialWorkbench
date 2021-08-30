@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -48,13 +49,16 @@ namespace CompMs.App.MsdialConsole.Process {
             var tasks = new Task[files.Count];
             foreach ((var file, var idx) in files.WithIndex()) {
                 var provider = new StandardDataProvider(file, false, 5);
-                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container));
+                var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
+                    new AnnotationQueryFactory(container.ParameterBase.PeakPickBaseParam),
+                    container.DataBaseMapper.Annotators);
+                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container, annotationProcess));
             }
             Task.WaitAll(tasks);
 
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new LcmsAlignmentProcessFactory(container.ParameterBase as MsdialLcmsParameter, container.IupacDatabase);
+            var factory = new LcmsAlignmentProcessFactory(container.ParameterBase as MsdialLcmsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
 

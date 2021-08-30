@@ -85,12 +85,12 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsUnknown => Source.HasFlag(SourceType.Unknown);
 
         // Support for multiple annotation method
-        [Key(25)]
-        public bool IsManuallyModified { get; set; }
+        [IgnoreMember]
+        public bool IsManuallyModified => (Source & SourceType.Manual) != 0;
         [Key(26)]
         public SourceType Source { get; set; }
         [Key(27)]
-        public string SourceKey { get; set; }
+        public string AnnotatorID { get; set; }
         [Key(28)]
         public int SpectrumID { get; set; } = -1;
         [Key(30)]

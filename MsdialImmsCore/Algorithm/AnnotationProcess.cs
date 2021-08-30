@@ -4,8 +4,6 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.FormulaGenerator.Function;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -16,8 +14,6 @@ using CompMs.MsdialImmsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Algorithm
 {
@@ -111,6 +107,17 @@ namespace CompMs.MsdialImmsCore.Algorithm
             foreach (var annotatorContainer in annotatorContainers) {
                 SetAnnotationResult(chromPeakFeature, msdecResult, isotopes, annotatorContainer);
             }
+            var representative = chromPeakFeature.MatchResults.Representative;
+            var annotator = annotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+            if (annotator is null) {
+                return;
+            }
+            else if (annotator.IsReferenceMatched(representative)) {
+                DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
+            }
+            else if (annotator.IsAnnotationSuggested(representative)) {
+                DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
+            }
         }
 
         private static void SetMspAnnotationResult(
@@ -144,14 +151,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             if (textDBAnnotator == null)
                 return;
-            //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
-            //    Console.WriteLine();
-            //}
             var candidates = textDBAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter));
-            var results = textDBAnnotator.SelectReferenceMatchResults(candidates, textDBSearchParameter);
-            chromPeakFeature.TextDbIDs.AddRange(results.Select(result => result.LibraryIDWhenOrdered));
-            chromPeakFeature.MatchResults.AddTextDbResults(results);
-            if (results.Count > 0) {
+            var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
+            var matches = textDBAnnotator.SelectReferenceMatchResults(results, textDBSearchParameter);
+            chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));
+            chromPeakFeature.MatchResults.AddTextDbResults(matches);
+            if (matches.Count > 0) {
                 var best = results.Argmax(result => result.TotalScore);
                 if (chromPeakFeature.TextDbBasedMatchResult == null || chromPeakFeature.TextDbBasedMatchResult.TotalScore < best.TotalScore) {
                     chromPeakFeature.TextDbBasedMatchResult = best;
@@ -169,14 +174,13 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, annotatorContainer.Parameter));
             var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
             var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-            chromPeakFeature.MatchResults.AddResults(results);
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
-                DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(best), best);
+                chromPeakFeature.MatchResults.AddResult(best);
             }
             else if (results.Count > 0) {
                 var best = annotator.SelectTopHit(results, annotatorContainer.Parameter);
-                DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(best), best);
+                chromPeakFeature.MatchResults.AddResult(best);
             }
         }
     }

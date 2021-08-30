@@ -84,8 +84,8 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var rand = new Random();
 
 
-            var newFeatures = features.Where(feature => feature.IsReferenceMatched).OrderBy(_ => rand.Next()).Take(10).Concat(
-                features.Where(feature => feature.IsAnnotationSuggested).OrderBy(_ => rand.Next()).Take(5)).Concat(
+            var newFeatures = features.Where(feature => feature.IsReferenceMatched(storage.DataBaseMapper)).OrderBy(_ => rand.Next()).Take(10).Concat(
+                features.Where(feature => feature.IsAnnotationSuggested(storage.DataBaseMapper)).OrderBy(_ => rand.Next()).Take(5)).Concat(
                 features.Where(feature => feature.IsUnknown).OrderBy(_ => rand.Next()).Take(5)).ToList();
             var newDecs = newFeatures.Select(feature => msdecResults[feature.MasterPeakID]).ToList();
 

@@ -39,7 +39,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ScoreCutOffSettingWithMs2">
+                  x:Key="Ms2ScoreCutOffSetting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Dot product score:">
                 <TextBox Text="{Binding SimpleDotProductCutOff.Value}"/>
@@ -57,21 +57,9 @@
             <ui:LabeledContent PrependLabel="Minimum number of matched spectrum:">
                 <TextBox Text="{Binding MinimumSpectrumMatch.Value}"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Total score:">
-                <TextBox Text="{Binding TotalScoreCutoff.Value}"/>
-            </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ScoreCutOffSetting">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Total score:">
-                <TextBox Text="{Binding TotalScoreCutoff.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
     <DataTemplate DataType="{x:Type localVM:MassAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
@@ -116,7 +104,7 @@
                 <Expander Header="Annotaion cut off" Margin="0,8"
                           Grid.Row="2">
                     <ContentControl Content="{Binding ParameterVM}"
-                                    ContentTemplate="{StaticResource ResourceKey=ScoreCutOffSettingWithMs2}"
+                                    ContentTemplate="{StaticResource ResourceKey=Ms2ScoreCutOffSetting}"
                                     Margin="8"/>
                 </Expander>
             </Grid>

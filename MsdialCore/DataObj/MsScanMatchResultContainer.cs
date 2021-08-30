@@ -51,11 +51,31 @@ namespace CompMs.MsdialCore.DataObj
             || TextDbBasedMatchResults.Contains(Representative);
         [IgnoreMember]
         public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
-        [IgnoreMember]
-        public bool IsReferenceMatched => Representative.IsSpectrumMatch
-            || IsTextDbBasedRepresentative && Representative.IsPrecursorMzMatch;
-        [IgnoreMember]
-        public bool IsAnnotationSuggested => !IsReferenceMatched && IsMspBasedRepresentative && Representative.IsPrecursorMzMatch;
+
+        public bool IsReferenceMatched(DataBaseMapper mapper) {
+            var representative = Representative;
+            if (representative.IsManuallyModified && !representative.IsUnknown) {
+                return true; // confidense or unsettled
+            }
+            var annotator = mapper.FindAnnotator(representative)?.Annotator;
+            if (annotator is null) {
+                return false;
+            }
+            return annotator.IsReferenceMatched(representative);
+        }
+
+        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+            var representative = Representative;
+            if (representative.IsManuallyModified && !representative.IsUnknown) {
+                return false; // confidense or unsettled
+            }
+            var annotator = mapper.FindAnnotator(representative)?.Annotator;
+            if (annotator is null) {
+                return false;
+            }
+            return annotator.IsAnnotationSuggested(representative);
+        }
+
         [IgnoreMember]
         public bool IsUnknown => (Representative.Source & SourceType.Unknown) == SourceType.Unknown;
 

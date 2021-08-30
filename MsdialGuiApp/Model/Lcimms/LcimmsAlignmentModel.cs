@@ -30,9 +30,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            DataBaseMapper mapper) {
 
             AlignmentFile = alignmentFileBean;
+            DataBaseMapper = mapper;
             ResultFile = alignmentFileBean.FilePath;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
@@ -59,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
-            var refLoader = new MsRefSpectrumLoader(refer);
+            var refLoader = new MsRefSpectrumLoader(mapper);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decLoader, refLoader,
                 peak => peak.Mass,
@@ -136,6 +137,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
         public AlignmentFileBean AlignmentFile { get; }
+        public DataBaseMapper DataBaseMapper { get; }
         public string ResultFile { get; }
         public AlignmentResultContainer Container { get; }
 

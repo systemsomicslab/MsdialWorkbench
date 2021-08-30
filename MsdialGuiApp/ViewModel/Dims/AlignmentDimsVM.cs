@@ -266,8 +266,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched
-                || SuggestedChecked && spot.IsSuggested
+            return RefMatchedChecked && spot.IsRefMatched(Model.DataBaseMapper)
+                || SuggestedChecked && spot.IsSuggested(Model.DataBaseMapper)
                 || UnknownChecked && spot.IsUnknown;
         }
 
@@ -340,7 +340,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void Normalize(Window owner) {
             var parameter = Model.Parameter;
-            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseRefer, parameter)) {
+            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseMapper, parameter, Model.DataBaseMapper)) {
                 var view = new NormalizationSetView
                 {
                     DataContext = vm,

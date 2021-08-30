@@ -4,20 +4,24 @@ using System.Collections.Generic;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentProcessFactory : AlignmentProcessFactory
     {
+        private readonly DataBaseMapper mapper;
+
         public MsdialLcImMsParameter LcimmsParameter { get; }
 
-        public LcimmsAlignmentProcessFactory(MsdialLcImMsParameter param, IupacDatabase iupac) : base(param, iupac){
+        public LcimmsAlignmentProcessFactory(MsdialLcImMsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac){
             LcimmsParameter = param;
+            this.mapper = mapper;
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac);
+            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac, mapper);
         }
 
         public override DataAccessor CreateDataAccessor() {

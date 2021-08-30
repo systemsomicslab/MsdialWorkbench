@@ -30,12 +30,13 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
             Parameter = parameter;
+            DataBaseMapper = mapper;
             AnnotatorContainers = annotatorContainers;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
@@ -60,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
-            var refLoader = new MsRefSpectrumLoader(refer);
+            var refLoader = new MsRefSpectrumLoader(mapper);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decLoader, refLoader,
                 peak => peak.Mass,
@@ -203,6 +204,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public string ResultFile { get; }
 
         public ParameterBase Parameter { get; }
+        public DataBaseMapper DataBaseMapper { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         public void SaveProject() {

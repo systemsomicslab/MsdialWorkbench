@@ -243,7 +243,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var keepUnknown = false;
             ISpotFilter blankFilter = new BlankFilter(
                 fileId2analysisType, foldChange, blankFiltering,
-                keepRefMatched, keepSuggested, keepUnknown);
+                keepRefMatched, keepSuggested, keepUnknown, new DataBaseMapper());
 
             var spots = new List<AlignmentSpotProperty>
             {
@@ -333,7 +333,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var keepUnknown = false;
             ISpotFilter blankFilter = new BlankFilter(
                 fileId2analysisType, foldChange, blankFiltering,
-                keepRefMatched, keepSuggested, keepUnknown);
+                keepRefMatched, keepSuggested, keepUnknown, new DataBaseMapper());
 
             var spots = new List<AlignmentSpotProperty>
             {

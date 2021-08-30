@@ -78,7 +78,7 @@ namespace CompMs.MsdialDimsCore.MsmsAll {
                 Console.WriteLine("PeakID={0}, Annotation={1}", feature.PeakID, feature.Name);
             }
 
-            new PeakCharacterEstimator(90, 10).Process(spectra, chromFeatures, null, param, null);
+            new PeakCharacterEstimator(90, 10).Process(spectra, chromFeatures, null, new DataBaseMapper(), param, null);
 
             return new ProcessError();
         }

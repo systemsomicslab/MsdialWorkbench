@@ -32,13 +32,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             ParameterBase parameter,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
             : base(analysisFile) {
 
             this.provider = provider;
+            DataBaseMapper = mapper;
             this.parameter = parameter;
             MspAnnotator = mspAnnotator;
             TextDBAnnotator = textDBAnnotator;
@@ -79,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Target,
                 new MsRawSpectrumLoader(provider, parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(refer),
+                new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity)
             {
@@ -150,6 +151,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly IDataProvider provider;
 
+        public DataBaseMapper DataBaseMapper { get; }
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
 

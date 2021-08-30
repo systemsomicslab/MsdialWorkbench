@@ -37,7 +37,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new ImmsAlignmentProcessFactory(container.ParameterBase as MsdialImmsParameter, container.IupacDatabase);
+            var factory = new ImmsAlignmentProcessFactory(container.ParameterBase as MsdialImmsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false); // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);

@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
+            DataBaseMapper mapper,
             ParameterBase parameter,
             IReadOnlyList<ISerializableAnnotatorContainer> annotators)
             : base(analysisFile) {
@@ -42,8 +42,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            if (refer is null) {
-                throw new ArgumentNullException(nameof(refer));
+            if (mapper is null) {
+                throw new ArgumentNullException(nameof(mapper));
             }
 
             if (parameter is null) {
@@ -55,6 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             this.provider = provider;
+            DataBaseMapper = mapper;
             Parameter = parameter;
             Annotators = annotators;
 
@@ -92,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target,
                 new MsRawSpectrumLoader(this.provider, Parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
-                new MsRefSpectrumLoader(refer),
+                new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity)
             {
@@ -153,6 +154,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
+        public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
         public EicLoader EicLoader { get; }

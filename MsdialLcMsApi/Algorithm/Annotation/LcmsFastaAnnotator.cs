@@ -60,7 +60,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public MsScanMatchResult CalculateScore(IPepAnnotationQuery query, PeptideMsReference reference) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            return CalculateScoreCore(query.Property, query.Scan, reference, parameter, proteomicsParam, this.SourceType, this.Key);
+            var result = CalculateScoreCore(query.Property, query.Scan, reference, parameter, proteomicsParam, this.SourceType, this.Key);
+            ValidateCore(result, query.Property, query.Scan, reference, parameter, proteomicsParam);
+            return result;
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -72,7 +74,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
 
             result.Source = type;
-            result.SourceKey = annotatorID;
+            result.AnnotatorID = annotatorID;
 
             return result;
         }
@@ -182,6 +184,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            throw new NotImplementedException();
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            throw new NotImplementedException();
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
             throw new NotImplementedException();
         }
     }

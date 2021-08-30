@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
@@ -18,8 +19,14 @@ namespace CompMs.MsdialLcMsApi.Process {
     public sealed class FileProcess {
         private FileProcess() { }
 
-        public static void Run(AnalysisFileBean file, IDataProvider provider, MsdialDataStorage container,
-            bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = new CancellationToken()) {
+        public static void Run(
+            AnalysisFileBean file,
+            IDataProvider provider,
+            MsdialDataStorage container,
+            IAnnotationProcess annotationProcess,
+            bool isGuiProcess = false,
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
             var param = (MsdialLcmsParameter)container.ParameterBase;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
@@ -85,13 +92,20 @@ namespace CompMs.MsdialLcMsApi.Process {
                     var msdecResults = ce2msdecs.Value;
                     var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                     var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                    new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, annotatorContainers, mspDB, textDB, param, reportAction);
+                    annotationProcess.RunAnnotation(
+                        chromPeakFeatures,
+                        msdecResults,
+                        provider,
+                        param.NumThreads,
+                        token,
+                        v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
+                    // new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, annotatorContainers, mspDB, textDB, param, reportAction);
                 }
 
                 // characterizatin
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures, 
-                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, 
-                    param, reportAction);
+                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
+                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                    container.DataBaseMapper, param, reportAction);
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;

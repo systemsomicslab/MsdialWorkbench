@@ -16,8 +16,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
 
+        MoleculeDataBase db;
         public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
-            return BuildCore(LoadDataBase(DataBaseID, DataBasePath, DBSource));
+            if (db is null) {
+                db = LoadDataBase(DataBaseID, DataBasePath, DBSource);
+            }
+            return BuildCore(db);
         }
 
         protected abstract ISerializableAnnotatorContainer BuildCore(MoleculeDataBase molecules);

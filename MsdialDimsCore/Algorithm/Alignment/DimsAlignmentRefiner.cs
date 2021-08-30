@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 {
@@ -18,10 +17,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private MsdialDimsParameter _param;
         private readonly IupacDatabase _iupac;
+        private readonly DataBaseMapper mapper;
 
-        public DimsAlignmentRefiner(MsdialDimsParameter param, IupacDatabase iupac) {
+        public DimsAlignmentRefiner(MsdialDimsParameter param, IupacDatabase iupac, DataBaseMapper mapper) {
             _param = param;
             _iupac = iupac;
+            this.mapper = mapper;
         }
 
         public Tuple<List<AlignmentSpotProperty>, List<int>> Refine(IList<AlignmentSpotProperty> alignments) {
@@ -58,9 +59,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             var master = new Dictionary<int, List<AlignmentSpotProperty>>();
             var ms1Tol = _param.Ms1AlignmentTolerance;
 
-            MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
-            MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
-            MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 
             return master.Values.SelectMany(props => props).OrderBy(spot => spot.MassCenter).ToList();
         }
@@ -108,7 +109,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                     _param.BlankFiltering,
                     _param.IsKeepRefMatchedMetaboliteFeatures,
                     _param.IsKeepSuggestedMetaboliteFeatures,
-                    _param.IsKeepRemovableFeaturesAndAssignedTagForChecking);
+                    _param.IsKeepRemovableFeaturesAndAssignedTagForChecking,
+                    mapper);
 
                 return blankFilter.Filter(alignments).ToList();
             }
@@ -153,7 +155,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
 
         private void AssignLinksByIdentifiedIonFeatures(List<AlignmentSpotProperty> cSpots) {
             foreach (var cSpot in cSpots) {
-                if (cSpot.IsReferenceMatched) {
+                if (cSpot.IsReferenceMatched(mapper)) {
 
                     //Console.WriteLine(cSpot.MspBasedMatchResult.Name + "\t" + cSpot.AdductType.AdductIonName);
 
@@ -169,7 +171,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                         foreach (var rSpot in cSpots) {
                             if (rSpot.AlignedPeakProperties[repFileID].PeakID == rLinkID) {
                                 if (rLinkProp == PeakLinkFeatureEnum.Adduct) {
-                                    if (rSpot.IsReferenceMatched) {
+                                    if (rSpot.IsReferenceMatched(mapper)) {
                                         if (cSpot.AdductType.AdductIonName == rSpot.AdductType.AdductIonName)
                                             continue;
                                     }

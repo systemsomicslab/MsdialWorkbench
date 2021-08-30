@@ -249,7 +249,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
         }
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
-            var factory = new DimsAlignmentProcessFactory(param, iupac);
+            var factory = new DimsAlignmentProcessFactory(param, iupac, new DataBaseMapper());
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(analysisFiles, alignmentFile, chromSpotSerializer);
             CompMs.Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
@@ -357,8 +357,8 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
                         Intensity = feature.PeakHeightTop,
                         Centroids = ScalingSpectrumPeaks(feature.Spectrum),
                         MspMatch = mspDB.FirstOrDefault(r => r.ScanID == feature.MspID),
-                        RefMatched = feature.IsReferenceMatched,
-                        Suggested = feature.IsAnnotationSuggested,
+                        RefMatched = feature.IsReferenceMatched(new DataBaseMapper()),
+                        Suggested = feature.IsAnnotationSuggested(new DataBaseMapper()),
                         Unknown = feature.IsUnknown,
                         Ms2Acquired = feature.Spectrum.Count != 0,
                     }

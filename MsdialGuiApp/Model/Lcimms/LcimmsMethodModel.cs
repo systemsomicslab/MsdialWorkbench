@@ -87,7 +87,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
-                Storage.ParameterBase, null)
+                Storage.ParameterBase, Storage.DataBaseMapper)
             .AddTo(Disposables);
         }
 
@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage.ParameterBase as MsdialLcImMsParameter, Storage.IupacDatabase);
+            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage.ParameterBase as MsdialLcImMsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);

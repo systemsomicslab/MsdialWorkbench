@@ -18,7 +18,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 {
     public class LcmsTextDBAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
-        private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
+        private static readonly IComparer<IMSProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
         public LcmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string annotatorID)
             : base(textDB.Database, parameter, annotatorID, SourceType.TextDB) {
@@ -28,29 +28,24 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Isotopes, parameter, db, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Isotopes, parameter, db, Key);
+            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key);
         }
 
-        private static List<MsScanMatchResult> FindCandidatesCore(
+        private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, IReadOnlyList<MoleculeMsReference> textDB, string annotatorID) {
+            MsRefSearchParameterBase parameter, string annotatorID) {
 
-            (var lo, var hi) = SearchBoundIndex(property, textDB, parameter.Ms1Tolerance, parameter.RtTolerance);
-            var results = new List<MsScanMatchResult>(hi - lo);
-            for (var i = lo; i < hi; i++) {
-                var candidate = textDB[i];
-                if (parameter.IsUseTimeForAnnotationFiltering
-                    && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > parameter.RtTolerance) {
-                    continue;
-                }
-
+            var candidates = parameter.IsUseTimeForAnnotationFiltering
+                ? SearchWithRtCore(property, parameter.Ms1Tolerance, parameter.RtTolerance)
+                : SearchCore(property, parameter.Ms1Tolerance);
+            var results = new List<MsScanMatchResult>(candidates.Count);
+            foreach (var candidate in candidates) {
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, annotatorID);
-                result.LibraryIDWhenOrdered = i;
                 ValidateCore(result, property, candidate, parameter);
                 results.Add(result);
             }
@@ -59,7 +54,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
             var parameter = query.Parameter ?? Parameter;
-            return CalculateScoreCore(query.Property, query.Isotopes, reference, reference.IsotopicPeaks, parameter, Key);
+            var result = CalculateScoreCore(query.Property, query.Isotopes, reference, reference.IsotopicPeaks, parameter, Key);
+            ValidateCore(result, query.Property, reference, parameter);
+            return result;
         }
 
         private static MsScanMatchResult CalculateScoreCore(
@@ -76,7 +73,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.TextDB, SourceKey = sourceKey
+                Source = SourceType.TextDB, AnnotatorID = sourceKey
             };
             if (parameter.IsUseTimeForAnnotationScoring) {
                 var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
@@ -120,23 +117,23 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public List<MoleculeMsReference> Search(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
-            (var lo, var hi) = SearchBoundIndex(query.Property, db, parameter.Ms1Tolerance, parameter.RtTolerance);
-            var candidates =  db.GetRange(lo, hi - lo);
-            if (!parameter.IsUseTimeForAnnotationFiltering) {
-                return candidates;
-            }
-            return candidates.Where(candidate => Math.Abs(candidate.ChromXs.RT.Value - query.Property.ChromXs.RT.Value) <= parameter.RtTolerance).ToList();
+            return parameter.IsUseTimeForAnnotationFiltering
+                ? SearchWithRtCore(query.Property, parameter.Ms1Tolerance, parameter.RtTolerance).ToList()
+                : SearchCore(query.Property, parameter.Ms1Tolerance).ToList();
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<MoleculeMsReference> textDB, double ms1Tolerance, double rtTolerance) {
-            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var rt = property.ChromXs.RT;
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance, ChromXs = new ChromXs(rt.Value - rtTolerance, rt.Type, rt.Unit) };
-            var lo = SearchCollection.LowerBound(textDB, dummy, comparer);
-            dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
-            dummy.ChromXs.RT.Value = rt.Value + rtTolerance;
-            var hi = SearchCollection.UpperBound(textDB, dummy, lo, textDB.Count, comparer);
-            return (lo, hi);
+        private MassReferenceSearcher<MoleculeMsReference> Searcher
+            => searcher ?? (searcher = new MassReferenceSearcher<MoleculeMsReference>(db));
+        private MassReferenceSearcher<MoleculeMsReference> searcher;
+        private IReadOnlyList<MoleculeMsReference> SearchCore(IMSProperty property, double massTolerance) {
+            return Searcher.Search(new MassSearchQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz)));
+        }
+
+        private MassRtReferenceSearcher<MoleculeMsReference> SearcherWithRt
+            => searcherWithRt ?? (searcherWithRt = new MassRtReferenceSearcher<MoleculeMsReference>(db));
+        private MassRtReferenceSearcher<MoleculeMsReference> searcherWithRt;
+        private IReadOnlyList<MoleculeMsReference> SearchWithRtCore(IMSProperty property, double massTolerance, double rtTolerance) {
+            return SearcherWithRt.Search(MSSearchQuery.CreateMassRtQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz), property.ChromXs.RT.Value, rtTolerance));
         }
 
         private static double CalculateMassTolerance(double tolerance, double mass) {
@@ -156,10 +153,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            if (parameter.IsUseTimeForAnnotationScoring) {
-                var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-                result.IsRtMatch =  diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
-            }
+            var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
+            result.IsRtMatch =  diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
@@ -170,23 +165,35 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             if (parameter is null) {
                 parameter = Parameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (!result.IsPrecursorMzMatch) {
-                    continue;
-                }
-                if (CalculateTotalScoreCore(result, parameter) < parameter.TotalScoreCutoff) {
-                    continue;
-                }
-                filtered.Add(result);
-            }
-            return filtered;
+            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return FilterByThreshold(results, parameter)
-                .Where(result => result.IsPrecursorMzMatch)
-                .ToList();
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
+        }
+
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+        }
+
+        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            if (parameter is null) {
+                parameter = Parameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
         }
     }
 }

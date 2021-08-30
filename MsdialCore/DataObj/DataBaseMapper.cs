@@ -32,6 +32,11 @@ namespace CompMs.MsdialCore.DataObj
 
         private Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> keyToRefer = new Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>>();
 
+        [IgnoreMember]
+        public ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> KeyToAnnotator
+            => new ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>(keyToAnnotator);
+        private Dictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> keyToAnnotator = new Dictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
                 foreach (var annotator in Annotators) {
@@ -49,14 +54,14 @@ namespace CompMs.MsdialCore.DataObj
                     var entry = archive.GetEntry(annotator.AnnotatorID);
                     using (var entry_stream = entry.Open()) {
                         annotator.Load(entry_stream, visitor);
-                        keyToRefer[annotator.AnnotatorID] = annotator.Annotator;
+                        keyToAnnotator[annotator.AnnotatorID] = annotator;
                     }
                 }
             }
         }
 
         public void Add(ISerializableAnnotatorContainer annotatorContainer) {
-            keyToRefer[annotatorContainer.AnnotatorID] = annotatorContainer.Annotator;
+            keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
             Annotators.Add(annotatorContainer);
         }
 
@@ -69,12 +74,12 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public void Remove(ISerializableAnnotatorContainer annotatorContainer) {
-            keyToRefer.Remove(annotatorContainer.AnnotatorID);
+            keyToAnnotator.Remove(annotatorContainer.AnnotatorID);
             Annotators.Remove(annotatorContainer);
         }
 
         public void Remove(string annotatorID) {
-            keyToRefer.Remove(annotatorID);
+            keyToAnnotator.Remove(annotatorID);
             var target = Annotators.Find(annotator => annotator.AnnotatorID == annotatorID);
             if (!(target is null)) {
                 Annotators.Remove(target);
@@ -82,10 +87,18 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (result?.SourceKey != null && KeyToRefer.TryGetValue(result.SourceKey, out var refer)) {
+            if (result?.AnnotatorID != null && KeyToAnnotator.TryGetValue(result.AnnotatorID, out var annotatorContainer)) {
+                var refer = annotatorContainer.Annotator;
                 return refer.Refer(result);
             }
             return null;
         }
+
+        public IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> FindAnnotator(MsScanMatchResult result) {
+            if (result?.AnnotatorID != null && KeyToAnnotator.TryGetValue(result.AnnotatorID, out var annotatorContainer)) {
+                return annotatorContainer;
+            }
+            return null;
+        } 
     }
 }

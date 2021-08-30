@@ -36,7 +36,7 @@ namespace CompMs.App.MsdialConsole.Process {
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase);
+            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
@@ -59,7 +59,7 @@ namespace CompMs.App.MsdialConsole.Process {
             await Task.WhenAll(tasks);
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase);
+            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
