@@ -1126,9 +1126,9 @@ namespace CompMs.MsdialCore.Utility {
             feature.Name = result.Name;
             feature.AddAdductType(reference.AdductType);
             if (isTextDB) return;
-            if (!result.IsSpectrumMatch) {
-                feature.Name = "w/o MS2: " + result.Name;
-            }
+            //if (!result.IsSpectrumMatch) {
+            //    feature.Name = "w/o MS2: " + result.Name;
+            //}
         }
 
         public static void SetTextDBMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {

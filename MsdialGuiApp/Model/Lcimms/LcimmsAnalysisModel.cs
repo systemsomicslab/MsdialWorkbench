@@ -112,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 case TargetOmics.Lipidomics:
                     Brush = new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
                         ChemOntologyColor.Ontology2RgbaBrush,
-                        peak => peak.Ontology,
+                        peak => peak?.Ontology ?? string.Empty,
                         Color.FromArgb(180, 181, 181, 181));
                     break;
                 case TargetOmics.Metabolomics:

@@ -100,7 +100,7 @@ namespace CompMs.MsdialDimsCore.Common {
                 {
                     var best = results.Argmax(result => result.TotalScore);
                     feature.TextDbBasedMatchResult = best;
-                    DataAccess.SetMoleculeMsProperty(feature, textAnnotator.Refer(best), best);
+                    DataAccess.SetTextDBMoleculeMsProperty(feature, textAnnotator.Refer(best), best);
                 }
             }
         }
