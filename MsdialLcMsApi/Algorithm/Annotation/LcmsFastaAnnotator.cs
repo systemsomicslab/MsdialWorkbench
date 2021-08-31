@@ -24,27 +24,36 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
             string annotatorID, SourceType type) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, type) {
             PeptideMsRef.Sort(comparer);
+            DecoyPeptideMsRef.Sort(comparer);
+            ReferObject = reference;
         }
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, msrefParam, proteomicsParam).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, PeptideMsRef, msrefParam, proteomicsParam).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IPepAnnotationQuery query) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, parameter, proteomicsParam);
+            var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, PeptideMsRef, parameter, proteomicsParam);
+            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, DecoyPeptideMsRef, parameter, proteomicsParam);
+            if (pepResults.IsEmptyOrNull() || decoyResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
+            else {
+                pepResults[0].IsDecoy = false;
+                decoyResults[0].IsDecoy = true;
+                return new List<MsScanMatchResult>() { pepResults[0], decoyResults[0] };
+            }
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(
-       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, 
+       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, List<PeptideMsReference> pepMsRef,
        MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
-            (var lo, var hi) = SearchBoundIndex(property, PeptideMsRef, msrefSearchParam.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(property, pepMsRef, msrefSearchParam.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
-                var candidate = PeptideMsRef[i];
+                var candidate = pepMsRef[i];
                 if (msrefSearchParam.IsUseTimeForAnnotationFiltering
                     && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > msrefSearchParam.RtTolerance) {
                     continue;
@@ -72,7 +81,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
             var result = MsScanMatching.CompareMS2ScanProperties(scan, reference, msSearchParam, Common.Enum.TargetOmics.Proteomics, -1,
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
-
             result.Source = type;
             result.AnnotatorID = annotatorID;
 
@@ -141,17 +149,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             if (parameter is null) {
                 parameter = MsRefSearchParameter;
             }
-            var filtered = new List<MsScanMatchResult>();
-            foreach (var result in results) {
-                if (Ms2Filtering(result, parameter)) {
-                    continue;
-                }
-                if (result.TotalScore < parameter.TotalScoreCutoff) {
-                    continue;
-                }
-                filtered.Add(result);
-            }
-            return filtered;
+            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
         }
 
         private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
@@ -170,29 +168,36 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return FilterByThreshold(results, parameter)
-                .Where(result => result.IsPrecursorMzMatch && result.IsSpectrumMatch)
-                .ToList();
+            if (parameter is null) {
+                parameter = MsRefSearchParameter;
+            }
+            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
         }
 
         public override PeptideMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }
 
-        public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            throw new NotImplementedException();
-        }
-
-        public double CalculateSuggestedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            throw new NotImplementedException();
-        }
-
         public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            throw new NotImplementedException();
+            return SatisfyRefMatchedConditions(result, parameter ?? MsRefSearchParameter);
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            throw new NotImplementedException();
+            if (parameter is null) {
+                parameter = MsRefSearchParameter;
+            }
+            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
+        }
+
+        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && result.IsSpectrumMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
+        }
+
+        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+            return result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
         }
     }
 }

@@ -275,7 +275,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm {
             assignLinksBasedOnChromatogramCorrelation(peakSpots, spectrumCollection, param, projectProp);
 
             // linked by partial matching of MS1 and MS2
-            if (projectProp.CheckAIF == true) return;
+            if (projectProp.CheckAIF == true || projectProp.MethodType == MethodType.diMSMS) return;
             assignLinksBasedOnPartialMatchingOfMS1MS2(fs, seekPoints, peakSpots, spectrumCollection, param, projectProp);
         }
 

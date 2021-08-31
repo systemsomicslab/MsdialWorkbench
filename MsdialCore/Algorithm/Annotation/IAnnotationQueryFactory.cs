@@ -29,4 +29,26 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return new AnnotationQuery(property, scan, isotopes, SearchParameter);
         }
     }
+
+    public interface IPepAnnotationQueryFactory<out T> { //?
+        T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum);
+    }
+
+    public class PepAnnotationQueryFactory : IPepAnnotationQueryFactory<PepAnnotationQuery> {
+        private readonly PeakPickBaseParameter peakPickParameter;
+
+        public PepAnnotationQueryFactory(PeakPickBaseParameter peakPickParameter, ProteomicsParameter proteomicsParameter, MsRefSearchParameterBase searchParameter = null) {
+            this.peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
+            SearchParameter = searchParameter;
+            ProteomicsParameter = proteomicsParameter;
+        }
+
+        public MsRefSearchParameterBase SearchParameter { get; set; }
+        public ProteomicsParameter ProteomicsParameter { get; set; }
+
+        public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
+            return new PepAnnotationQuery(property, scan, isotopes, SearchParameter, ProteomicsParameter);
+        }
+    }
 }

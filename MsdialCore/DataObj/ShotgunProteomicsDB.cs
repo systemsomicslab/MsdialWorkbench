@@ -5,6 +5,7 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase {
+    public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
         [Key(0)]
         private bool disposedValue;
 
@@ -65,6 +66,17 @@ namespace CompMs.MsdialCore.DataObj {
         public string DecoyMsFile { get; set; }
         [IgnoreMember]
         public Stream DecoyMsStream { get; set; }
+
+        [IgnoreMember]
+        string IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Key => Id;
+
+        PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
+            if (result.LibraryID >= PeptideMsRef.Count
+                || PeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
+                return PeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+            }
+            return PeptideMsRef[result.LibraryID];
+        }
 
         public ShotgunProteomicsDB() {
 

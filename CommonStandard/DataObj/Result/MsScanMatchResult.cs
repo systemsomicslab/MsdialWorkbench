@@ -94,7 +94,7 @@ namespace CompMs.Common.DataObj.Result {
         [Key(28)]
         public int SpectrumID { get; set; } = -1;
         [Key(30)]
-        public int PeptideLength { get; set; } = 0;
+        public bool IsDecoy { get; set; } = false;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();
