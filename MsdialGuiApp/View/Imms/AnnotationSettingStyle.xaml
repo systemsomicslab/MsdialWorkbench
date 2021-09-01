@@ -188,7 +188,7 @@
 
             <TextBlock Text="Tolerance" Grid.Row="0"/>
             <ContentControl Content="{Binding ParameterVM}"
-                            ContentTemplate="{StaticResource ToleranceSettingForLcms}"
+                            ContentTemplate="{StaticResource ToleranceSettingForImms}"
                             Margin="8" Grid.Row="1"/>
 
             <Expander Header="Ccs setting" Margin="0,8"
