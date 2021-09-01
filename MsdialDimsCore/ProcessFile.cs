@@ -47,40 +47,39 @@ namespace CompMs.MsdialDimsCore
 
         public static void Run(
             AnalysisFileBean file,
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
             MsdialDataStorage container,
             bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
+            Action<int> reportAction = null, CancellationToken token = default) {
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
             var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
-            Run(file, container, mspAnnotator, textAnnotator, isGuiProcess, reportAction, token);
+            Run(file, providerFactory, container, mspAnnotator, textAnnotator, isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
             MsdialDataStorage container,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textAnnotator,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null, CancellationToken token = default) {
+            bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
 
             var param = (MsdialDimsParameter)container.ParameterBase;
             var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
             // var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;
+            var provider = providerFactory.Create(file);
 
             using (var access = new RawDataAccess(filepath, 0, isGuiProcess)) {
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
                 var rawObj = LoadRawMeasurement(access);
-                var spectrumList = rawObj.SpectrumList;
+                var spectrumList = provider.LoadMsSpectrums(); // rawObj.SpectrumList;
 
                 // faeture detections
                 Console.WriteLine("Peak picking started");
-                var ms1Spectrum = spectrumList
-                    .Where(spec => spec.MsLevel == 1 && !spec.Spectrum.IsEmptyOrNull())
-                    .Argmax(spec => spec.Spectrum.Length);
+                var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
                 var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
                 var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
 
@@ -104,7 +103,7 @@ namespace CompMs.MsdialDimsCore
                 var msdecResults = new List<MSDecResult>();
                 var initial_msdec = 30.0;
                 var max_msdec = 30.0;
-                var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
+                var targetCE = spectrumList.Select(spec => (double?)Math.Round(spec.CollisionEnergy, 2)).Distinct().Min() ?? -1;
                 msdecResults = new Algorithm.Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
                        spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
@@ -136,7 +135,7 @@ namespace CompMs.MsdialDimsCore
             throw new FileLoadException($"Loading {access.Filepath} failed.");
         }
 
-        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, List<RawSpectrum> allSpectra, AcquisitionType type) {
+        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
             var ms2SpecObjects = allSpectra
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
@@ -227,7 +226,7 @@ namespace CompMs.MsdialDimsCore
             return ID2CE;
         }
 
-        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, List<RawSpectrum> allSpectra) {
+        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, IReadOnlyList<RawSpectrum> allSpectra) {
             if (ms2RawSpectrumID2CE.Count == 0) return -1;
             return ms2RawSpectrumID2CE.Argmax(kvp => allSpectra[kvp.Key].TotalIonCurrent).Key;
         }
@@ -238,7 +237,7 @@ namespace CompMs.MsdialDimsCore
             }
         }
 
-        private static void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, List<RawSpectrum> spectra) {
+        private static void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, IReadOnlyList<RawSpectrum> spectra) {
             foreach (var feature in chromFeatures) {
                 if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID < spectra.Count) {
                     var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;

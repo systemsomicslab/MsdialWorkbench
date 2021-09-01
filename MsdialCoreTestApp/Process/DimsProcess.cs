@@ -1,6 +1,7 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
@@ -25,14 +26,15 @@ namespace CompMs.App.MsdialConsole.Process {
                 MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, ParameterBase = param
             };
 
+            var providerFactory = new StandardDataProviderFactory();
             Console.WriteLine("Start processing..");
-            return Execute(container, outputFolder, isProjectSaved);
+            return Execute(container, providerFactory, outputFolder, isProjectSaved);
         }
 
-        private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+        private int Execute(MsdialDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
-                ProcessFile.Run(file, container);
+                ProcessFile.Run(file, providerFactory, container);
             }
 
             var alignmentFile = container.AlignmentFiles.First();
@@ -53,9 +55,9 @@ namespace CompMs.App.MsdialConsole.Process {
             return 0;
         }
 
-        private async Task<int> ExecuteAsync(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+        private async Task<int> ExecuteAsync(MsdialDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
-            var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, container)));
+            var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, providerFactory, container)));
             await Task.WhenAll(tasks);
 
             var alignmentFile = container.AlignmentFiles.First();

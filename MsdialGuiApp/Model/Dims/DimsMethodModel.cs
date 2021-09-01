@@ -113,13 +113,14 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, storage, mspAnnotator, textDBAnnotator, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, storage, mspAnnotator, textDBAnnotator, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
             AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage.ParameterBase as MsdialDimsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
+            aligner.ProviderFactory = ProviderFactory;
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
