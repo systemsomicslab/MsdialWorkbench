@@ -60,6 +60,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             var ms1Tol = _param.Ms1AlignmentTolerance;
 
             MergeToMaster(spots.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore), master, ms1Tol);
+            MergeToMaster(spots.Where(spot => spot.IsReferenceMatched(mapper)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore), master, ms1Tol);
             MergeToMaster(spots.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore), master, ms1Tol);
             MergeToMaster(spots.Where(spot => !spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.HeightAverage), master, ms1Tol);
 

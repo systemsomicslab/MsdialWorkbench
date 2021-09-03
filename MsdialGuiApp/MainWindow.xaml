@@ -10,9 +10,6 @@
               mc:Ignorable="d"
               d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowVM}}"
               Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
-    <i:Interaction.Behaviors>
-        <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
-    </i:Interaction.Behaviors>
     <i:Interaction.Triggers>
         <i:PropertyChangedTrigger Binding="{Binding MethodVM, Mode=OneWay}">
             <i:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType=Window}}"

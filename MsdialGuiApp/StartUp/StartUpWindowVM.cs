@@ -159,8 +159,16 @@ namespace CompMs.App.Msdial.StartUp
             }
         }
 
+        public bool HasViewError {
+            get => hasViewError;
+            set => SetProperty(ref hasViewError, value);
+        }
+        private bool hasViewError = false;
+
         private bool ValidateStartUpWindow(Window window) {
             if (HasViewError)
+                return false;
+            if (HasValidationErrors)
                 return false;
             if (ProjectFilePath != null && Path.GetInvalidPathChars().Any(invalidChar => ProjectFilePath.Contains(invalidChar)))
                 return false;

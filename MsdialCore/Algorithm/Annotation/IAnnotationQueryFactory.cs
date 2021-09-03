@@ -29,4 +29,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return new AnnotationQuery(property, scan, isotopes, SearchParameter);
         }
     }
+
+    public class AnnotationQueryWithoutIsotopeFactory : IAnnotationQueryFactory<AnnotationQuery>
+    {
+        public AnnotationQueryWithoutIsotopeFactory(MsRefSearchParameterBase searchParameter = null) {
+            SearchParameter = searchParameter;
+        }
+
+        public MsRefSearchParameterBase SearchParameter { get; set; }
+
+        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
+            return new AnnotationQuery(property, scan, null, SearchParameter);
+        }
+    }
 }

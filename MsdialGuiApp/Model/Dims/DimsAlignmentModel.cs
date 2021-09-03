@@ -40,8 +40,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentFileBean alignmentFileBean,
             DataBaseMapper mapper,
             ParameterBase param,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -50,9 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             this.Parameter = param;
             this.DataBaseMapper = mapper;
-            MspAnnotator = mspAnnotator;
-            TextDBAnnotator = textDBAnnotator;
-
+            AnnotatorContainers = annotatorCotnainers;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
 
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
@@ -166,9 +163,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
 
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
-
+        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {

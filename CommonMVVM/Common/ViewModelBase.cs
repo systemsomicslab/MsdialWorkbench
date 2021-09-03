@@ -180,13 +180,6 @@ namespace CompMs.CommonMVVM
 {
     public class ViewModelBase : ValidatableBase, IDisposable
     {
-        [Obsolete("Please use HasErrors property of INotifyDataErrorInfo")]
-        public bool HasViewError {
-            get => hasViewError;
-            set => SetProperty(ref hasViewError, value);
-        }
-        private bool hasViewError;
-
         protected DisposableCollection Disposables { get; } = new DisposableCollection();
 
         private bool disposedValue;

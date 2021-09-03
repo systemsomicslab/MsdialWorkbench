@@ -11,10 +11,6 @@
         Name="UserDefinedAdductView"
         Title="User-defined adduct setting" Height="80" Width="700">
 
-    <i:Interaction.Behaviors>
-        <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
-    </i:Interaction.Behaviors>
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />

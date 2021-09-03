@@ -17,6 +17,7 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -31,17 +32,13 @@ namespace CompMs.App.Msdial.Model.Dims
             IDataProvider provider,
             DataBaseMapper mapper,
             ParameterBase parameter,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers)
             : base(analysisFile) {
-
-            MspAnnotator = mspAnnotator;
-            TextDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
             DataBaseMapper = mapper;
             Parameter = parameter;
-
+            AnnotatorContainers = annotatorContainers;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
             {
@@ -106,9 +103,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
-
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
+        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         public string FileName {
             get => fileName;

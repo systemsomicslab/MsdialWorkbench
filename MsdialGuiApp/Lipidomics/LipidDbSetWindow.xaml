@@ -12,9 +12,6 @@
         Name="LipidDbSetView"
         Title="Lipid database setting" Height="490" Width="535">
 
-    <i:Interaction.Behaviors>
-        <validator:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
-    </i:Interaction.Behaviors>
     <Window.Resources>
         
         <ObjectDataProvider x:Key="SolventType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">

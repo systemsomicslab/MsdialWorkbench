@@ -156,9 +156,13 @@
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
+    <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
+    <Compile Include="Model\Dims\DimsLbmAnnotationSettingModel.cs" />
+    <Compile Include="Model\Dims\DimsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
+    <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisParameterSetModel.cs" />
@@ -225,10 +229,17 @@
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\AnalysisFileBeanViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\PeakPickBaseParameterViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProcessBaseParameterViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisParameterSetViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsDataCollectionSettingViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsLbmAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisParameterSetViewModel.cs" />
@@ -325,6 +336,9 @@
     </Compile>
     <Compile Include="View\Dims\DimsCompoundSearchView.xaml.cs">
       <DependentUpon>DimsCompoundSearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\DimsDataCollectionView.xaml.cs">
+      <DependentUpon>DimsDataCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
       <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
@@ -624,6 +638,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dims\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dims\DimsAlignmentSpotTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -633,6 +651,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\DimsCompoundSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dims\DimsDataCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

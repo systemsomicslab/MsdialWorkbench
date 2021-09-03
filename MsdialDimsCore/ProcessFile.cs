@@ -53,16 +53,21 @@ namespace CompMs.MsdialDimsCore
             Action<int> reportAction = null, CancellationToken token = default) {
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
             var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
-            Run(file, providerFactory, container, mspAnnotator, textAnnotator, isGuiProcess, reportAction, token);
+            var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
+                new AnnotationQueryWithoutIsotopeFactory(),
+                new[] { new AnnotatorContainer(mspAnnotator, container.ParameterBase.MspSearchParam),
+                        new AnnotatorContainer(textAnnotator, container.ParameterBase.TextDbSearchParam), }); 
+            Run(file, providerFactory, container, annotationProcess, isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             MsdialDataStorage container,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textAnnotator,
-            bool isGuiProcess = false, Action<int> reportAction = null, CancellationToken token = default) {
+            IAnnotationProcess annotationProcess,
+            bool isGuiProcess = false,
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
 
             var param = (MsdialDimsParameter)container.ParameterBase;
             var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
@@ -108,9 +113,12 @@ namespace CompMs.MsdialDimsCore
                        spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
                 Console.WriteLine("Annotation started");
+                annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
+                /*
                 foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
                     AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textAnnotator, param.MspSearchParam, param.TextDbSearchParam, null);
                 }
+                */
 
                 new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, container.DataBaseMapper, param, reportAction);
 
@@ -149,7 +157,7 @@ namespace CompMs.MsdialDimsCore
                 peakFeature.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peakFeature.ChromXs = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
                 peakFeature.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
-                peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.ScanNumber;
+                peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 switch (type) {
                     case AcquisitionType.AIF:
@@ -221,7 +229,7 @@ namespace CompMs.MsdialDimsCore
                 if (spec.Precursor.IsolationTargetMz - precursorMz < - mzTolerance) continue;
                 if (spec.Precursor.IsolationTargetMz - precursorMz > + mzTolerance) break;
 
-                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
+                ID2CE[spec.Index] = spec.CollisionEnergy;
             }
             return ID2CE;
         }

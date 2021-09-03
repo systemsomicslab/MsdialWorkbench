@@ -68,8 +68,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .ObserveProperty(m => m.HorizontalRange)
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
-            var vAxis = Model.PlotModel
-                .ObserveProperty(m => m.VerticalRange)
+            var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
@@ -221,8 +220,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 Target.Value.InnerModel,
                 Model.MsdecResult.Value,
                 null,
-                Model.MspAnnotator,
-                new MsRefSearchParameterBase(Model.Parameter.MspSearchParam)))
+                Model.AnnotatorContainers))
             using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();

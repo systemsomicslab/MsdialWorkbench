@@ -14,5 +14,7 @@ namespace CompMs.App.Msdial.ViewModel
         }
 
         private double? mass, tolerance;
+
+        public bool IsValid => Mass.HasValue && Tolerance.HasValue && Mass > 0 && Tolerance > 0;
     }
 }

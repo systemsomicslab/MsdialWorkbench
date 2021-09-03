@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.Common.Enum;
+﻿using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -108,8 +107,16 @@ namespace CompMs.App.Msdial.Property
             window.Close();
         }
 
+        public bool HasViewError {
+            get => hasViewError;
+            set => SetProperty(ref hasViewError, value);
+        }
+        private bool hasViewError = false;
+
         private bool ValidateAnalysisFilePropertySetWindow(Window window) {
             if (HasViewError)
+                return false;
+            if (HasValidationErrors)
                 return false;
             if (AnalysisFilePropertyCollection.IsEmptyOrNull())
                 return false;

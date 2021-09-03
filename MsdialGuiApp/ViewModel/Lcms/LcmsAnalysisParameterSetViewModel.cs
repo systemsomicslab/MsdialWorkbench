@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Model.ParameterBase.QcAtLeastFilter = false;
 
-            var factory = new LcmsAnnotationSettingViewModelModelFactory(Model.Parameter);
+            var factory = new LcmsAnnotationSettingViewModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
                     Model.AnnotationProcessSettingModel,
                     factory.Create)

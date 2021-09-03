@@ -3,8 +3,6 @@ using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -13,7 +11,6 @@ using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -23,32 +20,26 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    public class DimsAnalysisParameterSetViewModel : ViewModelBase
+    public sealed class DimsAnalysisParameterSetViewModel : ViewModelBase
     {
         public DimsAnalysisParameterSetViewModel(DimsAnalysisParameterSetModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
             Parameter = new ParameterBaseVM(Model.Parameter);
 
-            var dt = DateTime.Now;
-            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
+            AlignmentResultFileName = Model.AlignmentResultFileName;
 
             AnalysisFiles = Model.AnalysisFiles;
 
             ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
-                Model.ParameterBase.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
+                Model.ExcludedMassList?.Select(query => new MzSearchQueryVM { Mass = query.Mass, Tolerance = query.MassTolerance })
                          .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
 
-            if (Model.ParameterBase.SearchedAdductIons.IsEmptyOrNull()) {
-                Model.ParameterBase.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.ParameterBase.IonMode);
-            }
-            Model.ParameterBase.SearchedAdductIons[0].IsIncluded = true;
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.ParameterBase.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            Model.ParameterBase.QcAtLeastFilter = false;
+            DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel);
 
-            /*
-            var factory = new DimsAnnotationSettingViewModelModelFactory(Model.Parameter);
+            var factory = new DimsAnnotationSettingViewModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
                     Model.AnnotationProcessSettingModel,
                     factory.Create)
@@ -61,7 +52,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
                 (annotationMethod as DimsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
             }
-            */
 
             ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
                 .ToReactiveCommand<Window>()
@@ -87,6 +77,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ObservableCollection<MzSearchQueryVM> ExcludedMassList { get; }
 
         public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
+
+        public DimsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
 
         public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
@@ -131,7 +123,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Mouse.OverrideCursor = null;
         }
 
-        protected bool ClosingMethod() {
+        private bool ClosingMethod() {
             if (!Model.ParameterBase.SearchedAdductIons[0].IsIncluded) {
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -153,6 +145,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 }
             }
 
+            DataCollectionSettingViewModel.Commit();
             Model.ClosingMethod();
 
             return true;

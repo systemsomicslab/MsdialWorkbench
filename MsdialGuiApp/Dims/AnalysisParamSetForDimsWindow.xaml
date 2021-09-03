@@ -5,11 +5,13 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.Dims"
+        xmlns:dimsview="clr-namespace:CompMs.App.Msdial.View.Dims"
         xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+        xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
         mc:Ignorable="d"
         xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
         Title="Analysis parameter setting" 
-        d:DataContext="{d:DesignData AnalysisParamSetForDimsVM}"
+        d:DataContext="{d:DesignData DimsAnalysisParameterSetViewModel}"
         Name="AnalysisParamSetView"
         Height="630" Width="650">
     <Window.Resources>
@@ -21,7 +23,7 @@
         </Grid.RowDefinitions>
         <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Name="TabItem_DataCollection" Header="Data collection">
-                <local:DataCollectionView />
+                <dimsview:DimsDataCollectionView DataContext="{Binding DataCollectionSettingViewModel}"/>
             </TabItem>
 
             <TabItem Name="TabItem_PeakDetection" Header="Peak detection" Height="22" VerticalAlignment="Top">
@@ -32,9 +34,11 @@
                 <commonview:DeconvolutionView />
             </TabItem>
 
-            <TabItem Name="TabItem_Identification" Header="Identification">
-                <local:IdentificationView />
+            <TabItem Header="Identification"
+                     DataContext="{Binding AnnotationProcessSettingViewModel, Mode=OneTime}">
+                <setting:AnnotationProcessSettingView/>
             </TabItem>
+
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">
                 <commonview:AdductView />

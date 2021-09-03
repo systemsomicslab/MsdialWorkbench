@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
@@ -55,6 +56,24 @@ namespace CompMs.App.Msdial.Model.Core
         public ObservableCollection<MzSearchQuery> ExcludedMassList { get; }
 
         public ObservableCollection<AdductIon> SearchedAdductIons { get; }
+
+        public bool TogetherWithAlignment {
+            get {
+                return ParameterBase.ProcessOption.HasFlag(ProcessOption.Alignment);
+            }
+            set {
+                if (ParameterBase.ProcessOption.HasFlag(ProcessOption.Alignment) == value) {
+                    return;
+                }
+                if (value) {
+                    ParameterBase.ProcessOption |= ProcessOption.Alignment;
+                }
+                else {
+                    ParameterBase.ProcessOption &= ~ProcessOption.Alignment;
+                }
+                OnPropertyChanged(nameof(TogetherWithAlignment));
+            }
+        }
 
         public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
 

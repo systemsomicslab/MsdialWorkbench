@@ -105,10 +105,6 @@ namespace CompMs.App.Msdial.ViewModel
 
         public ReactiveProperty<bool> IsUseCcsForAnnotationScoring { get; }
 
-        // option
-        public ReadOnlyReactivePropertySlim<bool> CanSetTimeParameter { get; }
-        public ReadOnlyReactivePropertySlim<bool> CanSetCcsParameter { get; }
-
         private readonly MsRefSearchParameterBase model;
 
         public MsRefSearchParameterBaseViewModel(MsRefSearchParameterBase model) {
@@ -242,24 +238,6 @@ namespace CompMs.App.Msdial.ViewModel
                 .Select(_ => IsUseCcsForAnnotationScoring.Value)
                 .Subscribe(x => this.model.IsUseCcsForAnnotationScoring = x)
                 .AddTo(Disposables);
-
-            CanSetTimeParameter = new[]
-            {
-                IsUseTimeForAnnotationFiltering,
-                IsUseTimeForAnnotationScoring,
-            }.CombineLatestValuesAreAllFalse()
-            .Inverse()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
-            CanSetCcsParameter = new[]
-            {
-                IsUseCcsForAnnotationFiltering,
-                IsUseCcsForAnnotationScoring,
-            }.CombineLatestValuesAreAllFalse()
-            .Inverse()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
         }
     }
 }
