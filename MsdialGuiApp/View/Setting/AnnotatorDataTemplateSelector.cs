@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.ViewModel;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using System;
@@ -19,6 +20,10 @@ namespace CompMs.App.Msdial.View.Setting
             {
                 Source = new Uri("/View/Lcms/AnnotationSettingStyle.xaml", UriKind.RelativeOrAbsolute)
             };
+            var dimsSettingResource = new ResourceDictionary
+            {
+                Source = new Uri("/View/Dims/AnnotationSettingStyle.xaml", UriKind.RelativeOrAbsolute)
+            };
             var immsSettingResource = new ResourceDictionary
             {
                 Source = new Uri("/View/Imms/AnnotationSettingStyle.xaml", UriKind.RelativeOrAbsolute)
@@ -28,6 +33,10 @@ namespace CompMs.App.Msdial.View.Setting
                     return (DataTemplate)lcmsSettingResource["LcmsAnnotatorSettingWithMs2"];
                 case LcmsTextDBAnnotator _:
                     return (DataTemplate)lcmsSettingResource["LcmsAnnotatorSetting"];
+                case DimsMspAnnotator _:
+                    return (DataTemplate)dimsSettingResource["DimsAnnotatorSettingWithMs2"];
+                case DimsTextDBAnnotator _:
+                    return (DataTemplate)dimsSettingResource["DimsAnnotatorSetting"];
                 case ImmsMspAnnotator _:
                     return (DataTemplate)immsSettingResource["ImmsAnnotatorSettingWithMs2"];
                 case ImmsTextDBAnnotator _:

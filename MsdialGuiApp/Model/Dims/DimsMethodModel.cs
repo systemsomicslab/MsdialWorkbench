@@ -1,7 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -12,13 +10,11 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialDimsCore.Parser;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,14 +32,12 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsMethodModel(
             MsdialDataStorage storage,
             List<AnalysisFileBean> analysisFiles,
-            List<AlignmentFileBean> alignmentFiles,
-            IDataProviderFactory<AnalysisFileBean> providerFactory)
+            List<AlignmentFileBean> alignmentFiles)
             : base(analysisFiles, alignmentFiles) {
             Storage = storage;
-            ProviderFactory = providerFactory;
         }
 
-        private IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, textDBAnnotator;
+        private IAnnotationProcess annotationProcess;
 
         public MsdialDataStorage Storage {
             get => storage;
@@ -78,48 +72,42 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private MsdialDimsSerializer serializer;
 
-        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
 
-        public void LoadAnnotator() {
-            // TODO: must not cast Refer to Annotator
-            mspAnnotator = Storage.DataBaseMapper.KeyToAnnotator["MspDB"].Annotator;
-            textDBAnnotator = Storage.DataBaseMapper.KeyToAnnotator["TextDB"].Annotator;
+        public void Load() {
+            ProviderFactory = ((MsdialDimsParameter)Storage.ParameterBase).ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
-        public void SetStorageContent(string alignmentResultFileName, List<MoleculeMsReference> MspDB, List<MoleculeMsReference> TextDB) {
-            AlignmentFiles.Add(
-                new AlignmentFileBean
-                {
-                    FileID = AlignmentFiles.Count,
-                    FileName = alignmentResultFileName,
-                    FilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                    EicFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                    SpectraFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
-                }
-            );
-            Storage.AlignmentFiles = AlignmentFiles.ToList();
+        public void AnalysisParamSetProcess(DimsAnalysisParameterSetModel parameterSetModel) {
+            if (parameterSetModel.TogetherWithAlignment) {
+                var alignmentResultFileName = parameterSetModel.AlignmentResultFileName;
+                AlignmentFiles.Add(
+                    new AlignmentFileBean
+                    {
+                        FileID = AlignmentFiles.Count,
+                        FileName = alignmentResultFileName,
+                        FilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
+                        SpectraFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                    }
+                );
+                Storage.AlignmentFiles = AlignmentFiles.ToList();
+            }
 
-            Storage.DataBaseMapper = new DataBaseMapper();
-
-            var msp = new MoleculeDataBase(MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
-            var mspAnnotator = new DimsMspAnnotator(msp, Storage.ParameterBase.MspSearchParam, Storage.ParameterBase.TargetOmics, "MspDB");
-            this.mspAnnotator = mspAnnotator;
-            Storage.DataBaseMapper.Add(mspAnnotator, msp);
-
-            var text = new MoleculeDataBase(TextDB, "TextDB", DataBaseSource.Msp, SourceType.TextDB);
-            var textDBAnnotator = new MassAnnotator(text, Storage.ParameterBase.TextDbSearchParam, Storage.ParameterBase.TargetOmics, SourceType.TextDB, "TextDB");
-            this.textDBAnnotator = textDBAnnotator;
-            Storage.DataBaseMapper.Add(textDBAnnotator, text);
+            Storage.DataBaseMapper = parameterSetModel.BuildAnnotator();
+            annotationProcess = parameterSetModel.BuildAnnotationProcess();
+            ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, storage, mspAnnotator, textDBAnnotator, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, storage, annotationProcess, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
             AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage.ParameterBase as MsdialDimsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
+            aligner.ProviderFactory = ProviderFactory;
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
@@ -165,8 +153,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 ProviderFactory.Create(analysisFile),
                 Storage.DataBaseMapper,
                 Storage.ParameterBase,
-                mspAnnotator,
-                textDBAnnotator).AddTo(Disposables);;
+                Storage.DataBaseMapper.Annotators).AddTo(Disposables);;
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
@@ -178,8 +165,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 alignmentFile,
                 Storage.DataBaseMapper,
                 Storage.ParameterBase,
-                mspAnnotator,
-                textDBAnnotator).AddTo(Disposables);
+                Storage.DataBaseMapper.Annotators).AddTo(Disposables);
         }
     }
 }

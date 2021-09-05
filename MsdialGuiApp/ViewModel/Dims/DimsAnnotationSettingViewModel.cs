@@ -3,7 +3,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
-using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.MsdialDimsCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,11 +15,11 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 
-namespace CompMs.App.Msdial.ViewModel.Lcms
+namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class LcmsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
+    public sealed class DimsAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
     {
-        public LcmsAnnotationSettingViewModel(DelegateDataBaseAnnotationSettingModel model, MsdialLcmsParameter parameter) {
+        public DimsAnnotationSettingViewModel(DelegateDataBaseAnnotationSettingModel model, MsdialDimsParameter parameter) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
             DataBaseID.Subscribe(id => this.model.DataBaseID = this.model.AnnotatorID = id).AddTo(Disposables);
             AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta };
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, };
             DBSource = DataBasePath
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
@@ -90,11 +90,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Implement = DBSource.Select<DataBaseSource, IAnnotationSettingViewModel>(s => {
                 switch (s) {
                     case DataBaseSource.Msp:
-                        return new LcmsMspAnnotationSettingViewModel(this.model);
+                        return new DimsMspAnnotationSettingViewModel(this.model);
                     case DataBaseSource.Lbm:
-                        return new LcmsLbmAnnotationSettingViewModel(this.model, Parameter);
+                        return new DimsLbmAnnotationSettingViewModel(this.model, Parameter);
                     case DataBaseSource.Text:
-                        return new LcmsTextDBAnnotationSettingViewModel(this.model);
+                        return new DimsTextDBAnnotationSettingViewModel(this.model);
                     //case DataBaseSource.Fasta:
                     //    return new LcmsFastaAnnotationSettingViewModel(this.model);
                     default:
@@ -140,9 +140,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReadOnlyReactivePropertySlim<SourceType> AnnotationSource { get; }
 
-        public DelegateCommand BrowseCommand => browseCommand ?? (browseCommand = new DelegateCommand(Browse));
+        public MsdialDimsParameter Parameter { get; }
 
-        public MsdialLcmsParameter Parameter { get; }
+        public DelegateCommand BrowseCommand => browseCommand ?? (browseCommand = new DelegateCommand(Browse));
 
         private DelegateCommand browseCommand;
 
@@ -161,21 +161,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
     }
 
-    sealed class LcmsAnnotationSettingViewModelFactory
+    public sealed class DimsAnnotationSettingViewModelFactory
     {
-        public LcmsAnnotationSettingViewModelFactory(MsdialLcmsParameter parameter) {
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            Parameter = parameter;
+        public DimsAnnotationSettingViewModelFactory(MsdialDimsParameter parameter) {
+            Parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        public MsdialLcmsParameter Parameter { get; }
+        public MsdialDimsParameter Parameter { get; }
 
-        public LcmsAnnotationSettingViewModel Create() {
+        public DimsAnnotationSettingViewModel Create() {
             var m = new DelegateDataBaseAnnotationSettingModel();
-            return new LcmsAnnotationSettingViewModel(m, Parameter);
+            return new DimsAnnotationSettingViewModel(m, Parameter);
         }
     }
 }

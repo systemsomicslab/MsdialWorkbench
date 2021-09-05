@@ -292,8 +292,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 Model.Target.Value.innerModel,
                 Model.MsdecResult.Value,
                 null,
-                Model.MspAnnotator,
-                Model.Parameter.MspSearchParam))
+                Model.AnnotatorContainers))
             using (var vm = new CompoundSearchVM(model)) {
                 if (compoundSearchService.ShowDialog(vm) == true) {
                     Model.Target.Value.RaisePropertyChanged();

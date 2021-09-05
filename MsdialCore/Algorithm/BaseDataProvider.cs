@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public virtual ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList().AsReadOnly();
+            return LoadMsNSpectrums(1);
         }
 
         private Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();

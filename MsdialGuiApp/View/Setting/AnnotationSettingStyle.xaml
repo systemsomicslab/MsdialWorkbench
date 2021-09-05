@@ -18,6 +18,15 @@
         </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="MassToleranceSettingWithoutMs2">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
                   x:Key="Ms2Setting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Spectrum amplitude cutoff (relative):"

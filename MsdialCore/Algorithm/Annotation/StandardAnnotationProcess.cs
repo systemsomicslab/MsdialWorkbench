@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<MSDecResult> msdecResults,
             IDataProvider provider,
             Action<double> reportAction) {
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
@@ -85,7 +85,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             CancellationToken token,
             Action<double> reportAction) {
 
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
@@ -149,8 +149,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void RunAnnotationCore(
             ChromatogramPeakFeature chromPeakFeature,
             MSDecResult msdecResult,
-            IReadOnlyList<RawSpectrum> ms1Spectrums) {
-            var query = QueryFactory.Create(chromPeakFeature, msdecResult, ms1Spectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+            IReadOnlyList<RawSpectrum> msSpectrums) {
+            var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
             var annotatorContainers = AnnotatorContainers;
 
             foreach (var annotatorContainer in annotatorContainers) {
@@ -162,9 +162,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private async Task RunAnnotationCoreAsync(
             ChromatogramPeakFeature chromPeakFeature,
             MSDecResult msdecResult,
-            IReadOnlyList<RawSpectrum> ms1Spectrums,
+            IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
-            var query = QueryFactory.Create(chromPeakFeature, msdecResult, ms1Spectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+            var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
             var annotatorContainers = AnnotatorContainers;
 
             foreach (var annotatorContainer in annotatorContainers) {

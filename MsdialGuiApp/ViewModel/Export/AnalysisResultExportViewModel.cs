@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private Task result;
 
         private bool CanExportPeak() {
-            return result?.Status != TaskStatus.Running && !HasErrors;
+            return result?.Status != TaskStatus.Running && !HasValidationErrors;
         }
 
         public MappedReadOnlyObservableCollection<AnalysisFileBean, FileBeanSelection> SelectedFrom { get; }

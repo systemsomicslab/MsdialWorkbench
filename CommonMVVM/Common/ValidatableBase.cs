@@ -10,7 +10,8 @@ namespace CompMs.CommonMVVM
 {
     public class ValidatableBase : BindableBase, INotifyDataErrorInfo
     {
-        public bool HasErrors => errors.Values.SelectMany(values => values).Any();
+        public bool HasValidationErrors => errors.Values.SelectMany(values => values).Any();
+        bool INotifyDataErrorInfo.HasErrors => HasValidationErrors;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 

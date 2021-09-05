@@ -9,7 +9,6 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
@@ -33,7 +32,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsMethodVM(
             DimsMethodModel model,
-            MsdialDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : base(model, serializer) {
@@ -56,8 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
-                  new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, new StandardDataProviderFactory(retry: 5, isGuiProcess: true)),
-                  storage,
+                  new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles),
                   compoundSearchService,
                   peakSpotTableService) {
 
@@ -150,17 +147,23 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Model.Storage.ParameterBase, Model.AnalysisFiles);
-            var apsw = new AnalysisParamSetForDimsWindow
-            {
-                DataContext = analysisParamSetVM,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            if (apsw.ShowDialog() != true)
-                return false;
+            var parameter = (MsdialDimsParameter)Model.Storage.ParameterBase;
+            var analysisModel = new DimsAnalysisParameterSetModel(parameter, Model.AnalysisFiles);
+            using (var analysisParamSetVM = new DimsAnalysisParameterSetViewModel(analysisModel)) {
 
-            Model.SetStorageContent(analysisParamSetVM.AlignmentResultFileName, analysisParamSetVM.MspDB, analysisParamSetVM.TextDB);
+                // var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Model.Storage.ParameterBase, Model.AnalysisFiles);
+                var apsw = new AnalysisParamSetForDimsWindow
+                {
+                    DataContext = analysisParamSetVM,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                if (apsw.ShowDialog() != true)
+                    return false;
+            }
+            parameter.ProviderFactoryParameter = analysisModel.DataCollectionSettingModel.CreateDataProviderFactoryParameter();
+            Model.AnalysisParamSetProcess(analysisModel);
+            
             return true;
         }
 
@@ -214,8 +217,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public override void LoadProject() {
-            Model.LoadAnnotator();
-
+            Model.Load();
             AnalysisFilesView.MoveCurrentToFirst();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
             LoadAnalysisFileCommand.Execute();

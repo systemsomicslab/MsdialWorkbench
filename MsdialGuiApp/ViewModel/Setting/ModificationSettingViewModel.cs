@@ -48,7 +48,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         private Task result;
 
         private bool CanSet() {
-            return result?.Status != TaskStatus.Running && !HasErrors;
+            return result?.Status != TaskStatus.Running && !HasValidationErrors;
         }
         public MappedReadOnlyObservableCollection<Modification, ModificationBeanSelection> SelectedVariableModificationFrom { get; }
 

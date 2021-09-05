@@ -1,13 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
+                    xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+                    xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
                     xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
-                    xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
+    
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <DataTemplate DataType="{x:Type localVM:ImmsAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:DimsAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Visible">
             <Grid>
@@ -45,56 +46,11 @@
         </ScrollViewer>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ToleranceSettingWithMs2ForImms">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                               AppendLabel="Da">
-                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
-                               AppendLabel="Da">
-                <TextBox Text="{Binding Ms2Tolerance.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
-                               AppendLabel="">
-                <TextBox Text="{Binding CcsTolerance.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="ToleranceSettingForImms">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
-                               AppendLabel="Da">
-                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Collision cross section tolerance:"
-                               AppendLabel="">
-                <TextBox Text="{Binding CcsTolerance.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="CcsSetting">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Use collision cross section for scoring">
-                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationScoring.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Use collision cross section for filtering">
-                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationFiltering.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type localVM:ImmsLbmAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:DimsLbmAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -111,7 +67,7 @@
                             Width="64"/>
                 </ui:LabeledContent>
                 <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"
+                                ContentTemplate="{StaticResource MassToleranceSetting}"
                                 Grid.Row="1"/>
             </StackPanel>
 
@@ -128,22 +84,14 @@
                                 ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
-
-            <Expander Header="Ccs setting" Margin="0,8"
-                      Grid.Row="4">
-                <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource CcsSetting}"
-                                Margin="8"/>
-            </Expander>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:ImmsMspAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:DimsMspAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -152,7 +100,7 @@
                        VerticalAlignment="Center"
                        Grid.Row="0"/>
             <ContentControl Content="{Binding ParameterVM}"
-                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"
+                            ContentTemplate="{StaticResource MassToleranceSetting}"
                             Margin="8" Grid.Row="1"/>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
@@ -168,65 +116,44 @@
                                 ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
-
-            <Expander Header="Ccs setting" Margin="0,8"
-                      Grid.Row="4">
-                <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource CcsSetting}"
-                                Margin="8"/>
-            </Expander>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:ImmsTextDBAnnotationSettingViewModel}">
+    <DataTemplate DataType="{x:Type localVM:DimsTextDBAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition />
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Text="Tolerance" Grid.Row="0"/>
             <ContentControl Content="{Binding ParameterVM}"
-                            ContentTemplate="{StaticResource ToleranceSettingForImms}"
+                            ContentTemplate="{StaticResource MassToleranceSettingWithoutMs2}"
                             Margin="8" Grid.Row="1"/>
-
-            <Expander Header="Ccs setting" Margin="0,8"
-                      Grid.Row="2">
-                <ContentControl Content="{Binding ParameterVM}"
-                                ContentTemplate="{StaticResource CcsSetting}"
-                                Margin="8"/>
-            </Expander>
         </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
-                  x:Key="ImmsAnnotatorSetting">
+                  x:Key="DimsAnnotatorSetting">
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource ToleranceSettingForImms}"/>
-                <TextBlock Text="Ccs setting"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource CcsSetting}"/>
+                                ContentTemplate="{StaticResource MassToleranceSettingWithoutMs2}"/>
             </StackPanel>
         </ScrollViewer>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
-                  x:Key="ImmsAnnotatorSettingWithMs2">
+                  x:Key="DimsAnnotatorSettingWithMs2">
         <ScrollViewer>
             <StackPanel>
                 <TextBlock Text="Mass tolerance"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"/>
+                                ContentTemplate="{StaticResource MassToleranceSetting}"/>
                 <TextBlock Text="MS2 spectrum cut off"/>
                 <ContentControl Content="{Binding ParameterVM.Value}"
                                 ContentTemplate="{StaticResource Ms2Setting}"/>
-                <TextBlock Text="Ccs setting"/>
-                <ContentControl Content="{Binding ParameterVM.Value}"
-                                ContentTemplate="{StaticResource CcsSetting}"/>
             </StackPanel>
         </ScrollViewer>
     </DataTemplate>

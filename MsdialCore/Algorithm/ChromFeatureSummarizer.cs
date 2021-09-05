@@ -15,7 +15,7 @@ namespace CompMs.MsdialCore.Algorithm {
         /// 1) to get the summary of peak detections including the average peak width, retention time, height, etc..
         /// 2) to get the 'insurance' model peak which will be used as the model peak in MS2Dec algorithm in the case that any model peaks cannot be found from the focused MS/MS spectrum.
         /// </summary>
-        public static ChromatogramPeaksDataSummary GetChromFeaturesSummary(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        public static ChromatogramPeaksDataSummary GetChromFeaturesSummary(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
             var summary = new ChromatogramPeaksDataSummary();
 
@@ -25,7 +25,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return summary;
         }
 
-        private static void SetBasicDataSummary(ChromatogramPeaksDataSummary summary, List<RawSpectrum> spectrumList, ParameterBase param) {
+        private static void SetBasicDataSummary(ChromatogramPeaksDataSummary summary, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param) {
             int minScanNumber = (int)spectrumList[0].ScanNumber, maxScanNumber = (int)spectrumList[spectrumList.Count - 1].ScanNumber;
             float minRT = (float)spectrumList[0].ScanStartTime, maxRT = (float)spectrumList[spectrumList.Count - 1].ScanStartTime;
             double minDriftTime = double.MaxValue, maxDriftTime = double.MinValue;

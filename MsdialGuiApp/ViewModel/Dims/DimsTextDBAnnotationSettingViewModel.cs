@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
@@ -6,28 +6,25 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.ViewModel.Lcms
+namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    sealed class LcmsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel {
-        public LcmsTextDBAnnotationSettingViewModel(DataBaseAnnotationSettingModelBase other) {
-            model = new LcmsTextDBAnnotationSettingModel(other);
+    public class DimsTextDBAnnotationSettingViewModel : ViewModelBase, IAnnotationSettingViewModel
+    {
+        public DimsTextDBAnnotationSettingViewModel(DataBaseAnnotationSettingModelBase other) {
+            model = new DimsTextDBAnnotationSettingModel(other);
             ParameterVM = new MsRefSearchParameterBaseViewModel(other.Parameter).AddTo(Disposables);
             AnnotatorID = model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
-            Label = Observable.Return("LcmsTextDBAnnotator").ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Label = Observable.Return("DimsTextDBAnnotator").ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             hasErrors = new[]
             {
                 ParameterVM.Ms1Tolerance.ObserveHasErrors,
-                ParameterVM.RtTolerance.ObserveHasErrors,
-                ParameterVM.TotalScoreCutoff.ObserveHasErrors,
-                ParameterVM.IsUseTimeForAnnotationFiltering.ObserveHasErrors,
-                ParameterVM.IsUseTimeForAnnotationScoring.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
 
-        private readonly LcmsTextDBAnnotationSettingModel model;
+        private readonly DimsTextDBAnnotationSettingModel model;
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
 
         public MsRefSearchParameterBaseViewModel ParameterVM { get; }
