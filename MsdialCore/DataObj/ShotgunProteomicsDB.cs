@@ -71,11 +71,20 @@ namespace CompMs.MsdialCore.DataObj {
         string IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Key => Id;
 
         PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
-            if (result.LibraryID >= PeptideMsRef.Count
-                || PeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
-                return PeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+            if (result.IsDecoy) {
+                if (result.LibraryID >= DecoyPeptideMsRef.Count
+               || DecoyPeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
+                    return DecoyPeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+                }
+                return DecoyPeptideMsRef[result.LibraryID];
             }
-            return PeptideMsRef[result.LibraryID];
+            else {
+                if (result.LibraryID >= PeptideMsRef.Count
+                || PeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
+                    return PeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
+                }
+                return PeptideMsRef[result.LibraryID];
+            }
         }
 
         public ShotgunProteomicsDB() {

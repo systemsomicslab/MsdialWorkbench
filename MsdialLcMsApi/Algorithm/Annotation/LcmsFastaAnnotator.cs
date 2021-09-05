@@ -17,7 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
-    public class LcmsFastaAnnotator : ProteomicsStandardRestorableBase, ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
+    public class LcmsFastaAnnotator : 
+        ProteomicsStandardRestorableBase, 
+        ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
 
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;

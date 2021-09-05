@@ -10,6 +10,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -1121,6 +1122,26 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // annotation
+
+        public static void SetPeptideMsProperty(ChromatogramPeakFeature feature, PeptideMsReference reference, MsScanMatchResult result) {
+            SetPeptidePropertyCore(feature, reference);
+            feature.Name = result.Name;
+            feature.AddAdductType(reference.AdductType);
+        }
+
+        private static void SetPeptidePropertyCore(IMoleculeProperty property, PeptideMsReference reference) {
+            property.Formula = reference.Peptide.Formula;
+            property.Ontology = "Peptide";
+            property.SMILES = reference.Peptide.Position.ToString();
+            property.InChIKey = reference.Peptide.DatabaseOrigin;
+        }
+
+        public static void SetPeptideMsPropertyAsSuggested(ChromatogramPeakFeature feature, PeptideMsReference reference, MsScanMatchResult result) {
+            SetPeptidePropertyCore(feature, reference);
+            feature.AddAdductType(reference.AdductType);
+            feature.Name = "w/o MS2: " + result.Name;
+        }
+
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
             SetMoleculePropertyCore(feature, reference);
             feature.Name = result.Name;

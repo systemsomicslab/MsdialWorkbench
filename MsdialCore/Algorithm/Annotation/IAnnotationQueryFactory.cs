@@ -49,6 +49,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
             return new PepAnnotationQuery(property, scan, isotopes, SearchParameter, ProteomicsParameter);
+        }
+    }
 
     public class AnnotationQueryWithoutIsotopeFactory : IAnnotationQueryFactory<AnnotationQuery>
     {
