@@ -6,9 +6,9 @@ using System;
 
 namespace CompMs.MsdialDimsCore.Parameter
 {
-    [Union(0, typeof(DimsBpiDataProviderFactory))]
-    [Union(1, typeof(DimsTicDataProviderFactory))]
-    [Union(2, typeof(DimsAverageDataProviderFactory))]
+    [Union(0, typeof(DimsBpiDataProviderFactoryParameter))]
+    [Union(1, typeof(DimsTicDataProviderFactoryParameter))]
+    [Union(2, typeof(DimsAverageDataProviderFactoryParameter))]
     public interface IDimsDataProviderFactoryParameter
     {
         IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
@@ -28,7 +28,7 @@ namespace CompMs.MsdialDimsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsTicDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new DimsBpiDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
         }
     }
 
@@ -46,7 +46,7 @@ namespace CompMs.MsdialDimsCore.Parameter
         public double TimeEnd { get; }
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
-            return new DimsBpiDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+            return new DimsTicDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
         }
     }
 

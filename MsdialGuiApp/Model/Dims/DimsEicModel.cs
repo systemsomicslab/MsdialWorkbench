@@ -24,10 +24,17 @@ namespace CompMs.App.Msdial.Model.Dims
         protected override List<ChromatogramPeakWrapper> LoadEicCore(ChromatogramPeakFeatureModel target) {
             var leftMz = target.ChromXValue - 10 ?? 0;
             var rightMz = target.ChromXValue + 10 ?? 0;
+            /*
             return DataAccess.GetSmoothedPeaklist(
                 DataAccess.ConvertRawPeakElementToChromatogramPeakList(
                     provider.LoadMs1Spectrums().Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz),
                 parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
+            */
+            return 
+                DataAccess.ConvertRawPeakElementToChromatogramPeakList(
+                    provider.LoadMs1Spectrums().Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();
         }
