@@ -9,8 +9,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public abstract class MspAnnotationSettingModel : DataBaseAnnotationSettingModelBase
-    {
+    public abstract class MspAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
         public MspAnnotationSettingModel()
             : base() {
 
@@ -22,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         private MoleculeDataBase db;
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource);
             }

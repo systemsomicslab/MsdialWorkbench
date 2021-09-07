@@ -6,15 +6,14 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public sealed class DelegateDataBaseAnnotationSettingModel : DataBaseAnnotationSettingModelBase
-    {
+    public sealed class DelegateDataBaseAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
         public IAnnotationSettingModel Implement {
             get => implement;
             set => SetProperty(ref implement, value);
         }
         private IAnnotationSettingModel implement;
 
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             return Implement.Build(parameter);
         }
     }

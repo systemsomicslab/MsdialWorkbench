@@ -8,8 +8,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public abstract class TextDBAnnotationSettingModel : DataBaseAnnotationSettingModelBase
-    {
+    public abstract class TextDBAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
         public TextDBAnnotationSettingModel(DataBaseAnnotationSettingModelBase other)
             : base(other) {
 
@@ -17,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
 
         MoleculeDataBase db;
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource);
             }

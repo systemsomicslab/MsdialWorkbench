@@ -26,7 +26,6 @@ namespace CompMs.App.Msdial.Model.Setting {
                 Parameter.FixedModifications = mParser.Modifications;
             }
 
-
             var vModifications = Parameter.VariableModifications;
             var selectedVModifications = vModifications.Where(n => n.IsSelected).ToList();
             var unselectedVModifications = vModifications.Where(n => n.IsSelected == false).ToList();
@@ -74,7 +73,6 @@ namespace CompMs.App.Msdial.Model.Setting {
 
             UnSelectedFixedModifications = new ObservableCollection<Modification>(unselectedFModifications);
             SelectedFixedModifications = new ObservableCollection<Modification>(selectedFModifications);
-
 
             MaxNumberOfModificationsPerPeptide = Parameter.MaxNumberOfModificationsPerPeptide;
         }
