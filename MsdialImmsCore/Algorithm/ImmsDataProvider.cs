@@ -56,6 +56,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private readonly List<RawSpectrum> representativeSpectrum;
 
         public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums) : base(spectrums) {
+            this.representativeSpectrum = SelectRepresentative(rawSpectrums).OrderBy(spectrum => spectrum.DriftTime).ToList();
 
         }
 
@@ -76,6 +77,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         public override ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
             return new ReadOnlyCollection<RawSpectrum>(representativeSpectrum);
+        }
+
+        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+            return representativeSpectrum.Concat(rawSpectrums.Where(spec => spec.MsLevel != 1)).ToList().AsReadOnly();
         }
     }
 
