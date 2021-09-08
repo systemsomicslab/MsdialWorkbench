@@ -63,6 +63,56 @@
         </StackPanel>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:ProteomicsParameterVM}"
+                  x:Key="ProteomicsParameterSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Andromeda delta:"
+                               AppendLabel="Da">
+                <TextBox Text="{Binding AndromedaDelta.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Andromeda max peaks:"
+                               AppendLabel="Num of peaks">
+                <TextBox Text="{Binding AndromedaMaxPeaks.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="False discovery rate for peptide:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding FalseDiscoveryRateForPeptide.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="False discovery rate for protein:"
+                               AppendLabel="%">
+                <TextBox Text="{Binding FalseDiscoveryRateForProtein.Value}"/>
+            </ui:LabeledContent>
+
+            <Grid Margin="8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                <Button Content="Browse"
+                                Command="{Binding EnzymeSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1"/>
+                <TextBlock Text="{Binding SelectedEnzymes, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
+                
+            </Grid>
+
+            <Grid Margin="8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                <Button Content="Browse"
+                                Command="{Binding ModificationSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1"/>
+                <TextBlock Text="{Binding SelectedModifications, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
+
+            </Grid>
+        </StackPanel>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
                   x:Key="ToleranceSettingForLcms">
         <StackPanel>
@@ -147,7 +197,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Lipid database and MS/MS identification setting"
+            <TextBlock Text="Metabolite database and MS/MS identification setting"
                        FontStyle="Italic"
                        VerticalAlignment="Center"
                        Grid.Row="0"/>
@@ -195,6 +245,55 @@
                       Grid.Row="2">
                 <ContentControl Content="{Binding ParameterVM}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsFastaAnnotationSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Text="FASTA database and MS/MS identification setting"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterVM}"
+                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                            Margin="8" Grid.Row="1"/>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource Ms2Setting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ParameterVM}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Shotgun proteomics parameter setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ProteomicsParameterVM}"
+                                ContentTemplate="{StaticResource ProteomicsParameterVM}"
                                 Margin="8"/>
             </Expander>
         </Grid>

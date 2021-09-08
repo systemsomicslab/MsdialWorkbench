@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms {
         public List<Modification> FixedModifications { get => ProteomicsParam.FixedModifications; }
         public int MaxNumberOfModificationsPerPeptide { get => ProteomicsParam.MaxNumberOfModificationsPerPeptide; }
 
-        public IAnnotationSettingModel Model => model;
+        //public IAnnotationSettingModel Model => model;
 
         //ReadOnlyReactivePropertySlim<bool> IAnnotationSettingViewModel.ObserveHasErrors => hasErrors;
         private readonly ReadOnlyReactivePropertySlim<bool> hasErrors;
@@ -76,6 +76,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms {
         private void EnzymeSet() {
             using (var vm = new EnzymeSettingViewModel(ProteomicsParam)) {
                 var window = new EnzymeSettingWin {
+                    DataContext = vm,
+                };
+                window.ShowDialog();
+            }
+        }
+
+        public DelegateCommand ModificationSetCommand => modificationSetCommand ?? (modificationSetCommand = new DelegateCommand(ModificationSet));
+        private DelegateCommand modificationSetCommand;
+
+        private void ModificationSet() {
+            using (var vm = new ModificationSettingViewModel(ProteomicsParam)) {
+                var window = new ModificationSettingWin {
                     DataContext = vm,
                 };
                 window.ShowDialog();

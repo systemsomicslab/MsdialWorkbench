@@ -11,8 +11,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public abstract class LbmAnnotationSettingModel : DataBaseAnnotationSettingModelBase
-    {
+    public abstract class LbmAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
         public LbmAnnotationSettingModel()
             : base() {
 
@@ -38,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private IonMode ionMode;
 
         private MoleculeDataBase db;
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource, parameter);
             }

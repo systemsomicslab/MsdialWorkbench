@@ -35,13 +35,26 @@ namespace CompMs.MsdialCore.DataObj
             get {
                 if (cacheRepresentative is null) {
                     cacheRepresentative =  MatchResults.Any()
-                        ?  MatchResults.Argmax(result => Tuple.Create(result.Source, result.TotalScore))
+                        ?  MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.TotalScore))
                         : null;
                 }
                 return cacheRepresentative;
             }
         }
         private MsScanMatchResult cacheRepresentative = null;
+
+        [IgnoreMember]
+        public MsScanMatchResult DecoyRepresentative {
+            get {
+                if (cacheDecoyRepresentative is null) {
+                    cacheDecoyRepresentative = MatchResults.Any()
+                        ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.TotalScore))
+                        : null;
+                }
+                return cacheDecoyRepresentative;
+            }
+        }
+        private MsScanMatchResult cacheDecoyRepresentative = null;
 
         [IgnoreMember]
         public bool IsMspBasedRepresentative => (Representative.Source & SourceType.MspDB) == SourceType.MspDB

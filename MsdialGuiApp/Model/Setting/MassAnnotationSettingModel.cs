@@ -4,12 +4,13 @@ using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
+using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    sealed class MassAnnotationSettingModel : DataBaseAnnotationSettingModelBase
-    {
+    sealed class MassAnnotationSettingModel : DataBaseAnnotationSettingModelBase, IAnnotationSettingModel {
         public MassAnnotationSettingModel() {
 
         }
@@ -20,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         MoleculeDataBase molecules;
-        public override ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
             if (molecules is null) {
                 molecules = LoadDataBase(parameter);
             }
@@ -48,6 +49,25 @@ namespace CompMs.App.Msdial.Model.Setting
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
+        }
+
+        private static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {
+            List<MoleculeMsReference> db;
+            switch (source) {
+                case DataBaseSource.Msp:
+                    db = LibraryHandler.ReadMspLibrary(path);
+                    break;
+                case DataBaseSource.Lbm:
+                    db = LibraryHandler.ReadLipidMsLibrary(path, parameter);
+                    break;
+                default:
+                    db = new List<MoleculeMsReference>(0);
+                    break;
+            }
+            for (int i = 0; i < db.Count; i++) {
+                db[i].ScanID = i;
+            }
+            return db;
         }
     }
 }

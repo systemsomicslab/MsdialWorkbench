@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Setting
 {
 
-    public abstract class DataBaseAnnotationSettingModelBase : BindableBase, IAnnotationSettingModel
+    public abstract class DataBaseAnnotationSettingModelBase : BindableBase
     {
         public DataBaseAnnotationSettingModelBase() {
 
@@ -61,25 +61,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private MsRefSearchParameterBase parameter = new MsRefSearchParameterBase();
 
-        public abstract ISerializableAnnotatorContainer Build(ParameterBase parameter);
+        //public abstract ISerializableAnnotatorContainer Build(ParameterBase parameter);
 
-        protected static List<MoleculeMsReference> LoadMspDataBase(string path, DataBaseSource source, ParameterBase parameter) {
-            List<MoleculeMsReference> db;
-            switch (source) {
-                case DataBaseSource.Msp:
-                    db = LibraryHandler.ReadMspLibrary(path);
-                    break;
-                case DataBaseSource.Lbm:
-                    db = LibraryHandler.ReadLipidMsLibrary(path, parameter);
-                    break;
-                default:
-                    db = new List<MoleculeMsReference>(0);
-                    break;
-            }
-            for(int i = 0; i< db.Count; i++) {
-                db[i].ScanID = i;
-            }
-            return db;
-        }
+        
     }
 }

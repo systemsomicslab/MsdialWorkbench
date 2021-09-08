@@ -55,10 +55,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         protected readonly ShotgunProteomicsDB ShotgunProteomicsDB;
-        //public List<PeptideMsReference> PeptideMsRef { get => ShotgunProteomicsDB.PeptideMsRef; }
-        //public List<PeptideMsReference> DecoyPeptideMsRef { get => ShotgunProteomicsDB.DecoyPeptideMsRef; }
-        public List<PeptideMsReference> PeptideMsRef { get => 
-                SourceType == SourceType.FastaDB ? ShotgunProteomicsDB.PeptideMsRef : ShotgunProteomicsDB.DecoyPeptideMsRef; }
+        public List<PeptideMsReference> PeptideMsRef { get => ShotgunProteomicsDB.PeptideMsRef; }
+        public List<PeptideMsReference> DecoyPeptideMsRef { get => ShotgunProteomicsDB.DecoyPeptideMsRef; }
+        //public List<PeptideMsReference> PeptideMsRef { get => 
+        //        SourceType == SourceType.FastaDB ? ShotgunProteomicsDB.PeptideMsRef : ShotgunProteomicsDB.DecoyPeptideMsRef; }
 
 
         public ProteomicsParameter ProteomicsParameter { get; }

@@ -14,16 +14,15 @@ using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Setting {
     /// <summary>
-    /// Interaction logic for EnzymeSettingWin.xaml
+    /// Interaction logic for ModificationSettingWin.xaml
     /// </summary>
-    public partial class EnzymeSettingWin : Window {
-        public EnzymeSettingWin() {
+    public partial class ModificationSettingWin : Window {
+        public ModificationSettingWin() {
             InitializeComponent();
         }
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
-            if (this.DataContext == null) return;
-            this.Close();
+
         }
     }
 }
