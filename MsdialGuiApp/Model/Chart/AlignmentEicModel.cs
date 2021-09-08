@@ -2,7 +2,9 @@
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -137,16 +139,18 @@ namespace CompMs.App.Msdial.Model.Chart
         public AlignmentEicLoader(
             ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer,
             string eicFile,
-            IReadOnlyDictionary<int, string> id2cls) {
+            PeakPickBaseParameter peakPickParameter, IReadOnlyDictionary<int, string> id2cls) {
 
             this.chromatogramSpotSerializer = chromatogramSpotSerializer;
             this.eicFile = eicFile;
             this.id2cls = id2cls;
+            this.peakPickParameter = peakPickParameter;
         }
 
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly string eicFile;
         private readonly IReadOnlyDictionary<int, string> id2cls;
+        private readonly PeakPickBaseParameter peakPickParameter;
 
         public async Task<List<Chromatogram>> LoadEicAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
             var eicChromatograms = new List<Chromatogram>();
@@ -156,7 +160,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
                     var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
                     foreach (var peakinfo in spotinfo.PeakInfos) {
-                        var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
+                        var items = DataAccess.GetSmoothedPeaklist(peakinfo.Chromatogram, peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel).Select(chrom => new PeakItem(chrom)).ToList();
                         var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
                         chroms.Add(new Chromatogram
                         {

@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // smoother
-        public static List<ChromatogramPeak> GetSmoothedPeaklist(List<ChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        public static List<ChromatogramPeak> GetSmoothedPeaklist(IReadOnlyList<IChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var smoothedPeaklist = new List<ChromatogramPeak>();
 
             switch (smoothingMethod) {

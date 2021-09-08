@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Mathematics.Matrix;
 using System;
@@ -16,13 +17,11 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
     /// The first argument of all smoothing methods should be raw chromatogram (list of ChromatogramPeak as described above.).
     /// The second argument of all smoothing methods is the number of data points which are used for the smoothing.
     /// </summary>
-    public sealed class Smoothing
-    {
-        private Smoothing(){}
+    public sealed class Smoothing {
+        private Smoothing() { }
 
         // imos method
-        public static List<ChromatogramPeak> LinearWeightedMovingAverage(List<ChromatogramPeak> peaklist, int smoothingLevel)
-        {
+        public static List<ChromatogramPeak> LinearWeightedMovingAverage(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel) {
             var n = peaklist.Count;
             var intensities = new double[n + smoothingLevel * 2 + 2];
             int normalizationValue = (smoothingLevel + 1) * (smoothingLevel + 1);
@@ -63,7 +62,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
         }
 
         // imos method
-        public static List<ChromatogramPeak> SimpleMovingAverage(List<ChromatogramPeak> peaklist, int smoothingLevel)
+        public static List<ChromatogramPeak> SimpleMovingAverage(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
             var n = peaklist.Count;
             var intensities = new double[n + smoothingLevel * 2 + 1];
@@ -99,7 +98,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             return smoothedPeaklist;
         }
 
-        public static List<ChromatogramPeak> SavitxkyGolayFilter(List<ChromatogramPeak> peaklist, int smoothingLevel)
+        public static List<ChromatogramPeak> SavitxkyGolayFilter(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
             double[,] hatMatrix;
             double[,] vandermondeMatrix = new double[2 * smoothingLevel + 1, 4];
@@ -140,7 +139,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             return smoothedPeaklist;
         }
 
-        public static List<ChromatogramPeak> BinomialFilter(List<ChromatogramPeak> peaklist, int smoothingLevel)
+        public static List<ChromatogramPeak> BinomialFilter(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
             double[] coefficientVector = new double[2 * smoothingLevel + 1];
             double sum = 0;
@@ -173,7 +172,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             return smoothedPeaklist;
         }
 
-        public static List<ChromatogramPeak> LowessFilter(List<ChromatogramPeak> peaklist, int smoothingLevel)
+        public static List<ChromatogramPeak> LowessFilter(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
             var smoothedPeaklist = new List<ChromatogramPeak>();
 
@@ -238,7 +237,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             return smoothedPeaklist;
         }
 
-        public static List<ChromatogramPeak> LoessFilter(List<ChromatogramPeak> peaklist, int smoothingLevel)
+        public static List<ChromatogramPeak> LoessFilter(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
             var smoothedPeaklist = new List<ChromatogramPeak>();
 

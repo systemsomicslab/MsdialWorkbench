@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Class eic
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, parameter.FileID_ClassName),
+                new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, parameter.PeakPickBaseParam, parameter.FileID_ClassName),
                 peak => peak.Time,
                 peak => peak.Intensity);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";

@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicFile = alignmentFileBean.EicFilePath;
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.PeakPickBaseParam, parameter.FileID_ClassName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 peak => peak.Time,

@@ -93,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Dims
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.FileID_ClassName);
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.PeakPickBaseParam, Parameter.FileID_ClassName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 spot => spot.Time,
