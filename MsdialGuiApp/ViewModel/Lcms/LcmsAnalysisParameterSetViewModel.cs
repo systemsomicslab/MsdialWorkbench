@@ -62,6 +62,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
             }
 
+            IdentitySettingViewModel = new LcmsIdentitySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
+
             ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
                 .ToReactiveCommand<Window>()
                 .WithSubscribe(window => ContinueProcess(window))
@@ -71,6 +73,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsAnalysisParameterSetModel Model { get; }
 
         public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
+
+        public LcmsIdentitySettingViewModel IdentitySettingViewModel { get; }
 
         public ParameterBaseVM Param {
             get => paramVM;

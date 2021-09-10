@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         }
 
-        protected override ISerializableAnnotatorContainer BuildCore(MoleculeDataBase molecules) {
+        protected override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new ImmsTextDBAnnotator(molecules, Parameter, AnnotatorID),
                 molecules,

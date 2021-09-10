@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
@@ -12,7 +14,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             
         }
 
-        protected override ISerializableAnnotatorContainer BuildCore(MoleculeDataBase molecules) {
+        protected override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
                 new LcmsTextDBAnnotator(molecules, Parameter, AnnotatorID),
                 molecules,

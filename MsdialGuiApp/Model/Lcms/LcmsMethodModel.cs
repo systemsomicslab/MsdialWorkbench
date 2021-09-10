@@ -110,6 +110,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
             }
 
+            analysisParamSetModel.IdentitySettingModel.SetAnnotatorContainer(Storage.DataBases);
+            analysisParamSetModel.IdentitySettingModel.SetProteomicsAnnotatorContainer(Storage.DataBases);
+
             if (parameter.TogetherWithAlignment) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
                 AlignmentFiles.Add(

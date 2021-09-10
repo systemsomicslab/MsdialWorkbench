@@ -6,16 +6,19 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
+using MessagePack;
 using System;
 
 namespace CompMs.MsdialLcMsApi.Parser
 {
-    sealed class LcmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
+    [MessagePackObject]
+    public sealed class LcmsLoadAnnotatorVisitor : ILoadAnnotatorVisitor
     {
         public LcmsLoadAnnotatorVisitor(ParameterBase parameter) {
             Parameter = parameter;
         }
 
+        [Key(nameof(Parameter))]
         public ParameterBase Parameter { get; }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {

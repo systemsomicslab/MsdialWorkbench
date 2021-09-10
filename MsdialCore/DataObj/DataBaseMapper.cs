@@ -16,12 +16,12 @@ namespace CompMs.MsdialCore.DataObj
     public class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public DataBaseMapper() {
-            Annotators = new List<ISerializableAnnotatorContainer>();
+            Annotators = new List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
         }
 
         [Key(0)]
         // Should not use setter.
-        public List<ISerializableAnnotatorContainer> Annotators { get; set; }
+        public List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; set; }
 
         [IgnoreMember]
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key { get; } = string.Empty;
@@ -60,20 +60,20 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public void Add(ISerializableAnnotatorContainer annotatorContainer) {
+        public void Add(ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
             Annotators.Add(annotatorContainer);
         }
 
         public void Add(ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator) {
-            Add(new SerializableAnnotatorContainer(annotator, new MsRefSearchParameterBase()));
+            Add(new SerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, new MsRefSearchParameterBase()));
         }
 
         public void Add(ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator, MoleculeDataBase database) {
             Add(new DatabaseAnnotatorContainer(annotator, database, new MsRefSearchParameterBase()));
         }
 
-        public void Remove(ISerializableAnnotatorContainer annotatorContainer) {
+        public void Remove(ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator.Remove(annotatorContainer.AnnotatorID);
             Annotators.Remove(annotatorContainer);
         }

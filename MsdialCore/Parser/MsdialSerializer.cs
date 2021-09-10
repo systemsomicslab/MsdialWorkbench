@@ -21,6 +21,7 @@ namespace CompMs.MsdialCore.Parser
 
             SaveMspDB(GetNewMspFileName(file), mspList);
             SaveDataBaseMapper(GetNewZippedDatabaseFileName(file), container);
+            SaveDataBases(GetDataBasesFileName(file), container);
             SaveMsdialDataStorageCore(file, container);
 
             container.MspDB = mspList;
@@ -29,6 +30,7 @@ namespace CompMs.MsdialCore.Parser
         public virtual MsdialDataStorage LoadMsdialDataStorageBase(string file) {
             var storage = LoadMsdialDataStorageCore(file);
             LoadDataBaseMapper(GetNewZippedDatabaseFileName(file), storage);
+            LoadDataBases(GetDataBasesFileName(file), storage);
             storage.MspDB = LoadMspDB(GetNewMspFileName(file));
             return storage;
         }
@@ -64,6 +66,20 @@ namespace CompMs.MsdialCore.Parser
             }
         }
 
+        protected virtual void SaveDataBases(string path, MsdialDataStorage storage) {
+            using (var stream = File.Open(path, FileMode.Create)) {
+                storage.DataBases?.Save(stream);
+            }
+        }
+
+        protected virtual void LoadDataBases(string path, MsdialDataStorage storage) {
+            if (File.Exists(path)) {
+                using (var stream = File.Open(path, FileMode.Open)) {
+                    storage.DataBases = DataBaseStorage.Load(stream, new StandardLoadAnnotatorVisitor(storage.ParameterBase));
+                }
+            }
+        }
+
         public static string GetNewMspFileName(string path) {
             var fileName = Path.GetFileNameWithoutExtension(path);
             var folder = Path.GetDirectoryName(path);
@@ -72,6 +88,10 @@ namespace CompMs.MsdialCore.Parser
 
         private static string GetNewZippedDatabaseFileName(string path) {
             return GetNewMspFileName(path) + ".zip";
+        }
+
+        private static string GetDataBasesFileName(string path) {
+            return GetNewMspFileName(path) + ".dbs";
         }
     }
 }

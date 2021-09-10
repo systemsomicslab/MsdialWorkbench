@@ -37,14 +37,14 @@ namespace CompMs.App.Msdial.Model.Setting
         private IonMode ionMode;
 
         private MoleculeDataBase db;
-        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase(DataBaseID, DataBasePath, DBSource, parameter);
             }
             return BuildCore(parameter.ProjectParam, db);
         }
 
-        protected abstract ISerializableAnnotatorContainer BuildCore(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
+        protected abstract ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(ProjectBaseParameter projectParameter, MoleculeDataBase molecules);
 
         private static MoleculeDataBase LoadDataBase(string id, string path, DataBaseSource dbsource, ParameterBase parameter) {
             switch (dbsource) {

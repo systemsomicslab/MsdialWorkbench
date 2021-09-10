@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             IDataProvider provider,
             DataBaseMapper mapper,
             ParameterBase parameter,
-            IReadOnlyList<ISerializableAnnotatorContainer> annotators)
+            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -156,7 +156,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
-        public IReadOnlyList<ISerializableAnnotatorContainer> Annotators { get; }
+        public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }

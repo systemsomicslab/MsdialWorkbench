@@ -22,6 +22,8 @@ namespace CompMs.MsdialCore.DataObj
         public IupacDatabase IupacDatabase { get; set; }
         [Key(7)]
         public DataBaseMapper DataBaseMapper { get; set; }
+        [Key(8)]
+        public DataBaseStorage DataBases { get; set; }
 
         public MsdialSaveObj() { } // constructor for messagepack for c#
 
@@ -33,6 +35,7 @@ namespace CompMs.MsdialCore.DataObj
             IsotopeTextDB = container.IsotopeTextDB;
             IupacDatabase = container.IupacDatabase;
             DataBaseMapper = container.DataBaseMapper;
+            DataBases = container.DataBases;
         }
 
         protected virtual MsdialDataStorage ConvertToMsdialDataStorageCore() {
@@ -45,6 +48,7 @@ namespace CompMs.MsdialCore.DataObj
                 IsotopeTextDB = IsotopeTextDB,
                 IupacDatabase = IupacDatabase,
                 DataBaseMapper = DataBaseMapper,
+                DataBases = DataBases,
             };
         }
     }

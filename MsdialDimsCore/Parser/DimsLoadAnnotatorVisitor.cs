@@ -22,6 +22,9 @@ namespace CompMs.MsdialDimsCore.Parser
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
                 return new DimsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key);
             }
+            if (key.SourceType.HasFlag(SourceType.TextDB)) {
+                return new DimsTextDBAnnotator(database, key.Parameter, key.Key);
+            }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
@@ -30,7 +33,7 @@ namespace CompMs.MsdialDimsCore.Parser
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            throw new NotSupportedException(nameof(TextDbRestorationKey));
+            return new DimsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key);
         }
 
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {

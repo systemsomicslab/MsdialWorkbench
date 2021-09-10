@@ -10,6 +10,6 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         string AnnotatorID { get; }
 
-        ISerializableAnnotatorContainer Build(ParameterBase parameter);
+        ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter);
     }
 }

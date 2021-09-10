@@ -19,14 +19,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         private ShotgunProteomicsDB db;
-        public ISerializableAnnotatorContainer Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             if (db is null) {
                 db = LoadDataBase();
             }
             return BuildCore(db);
         }
 
-        private ISerializableAnnotatorContainer BuildCore(ShotgunProteomicsDB db) {
+        private ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(ShotgunProteomicsDB db) {
             throw new NotImplementedException();
         }
 

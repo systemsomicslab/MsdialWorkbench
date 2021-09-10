@@ -20,5 +20,13 @@ namespace CompMs.MsdialLcMsApi.Parser
                 storage.DataBaseMapper?.Restore(new LcmsLoadAnnotatorVisitor(storage.ParameterBase), stream);
             }
         }
+
+        protected override void LoadDataBases(string path, MsdialDataStorage storage) {
+            if (File.Exists(path)) {
+                using (var stream = File.Open(path, FileMode.Open)) {
+                    storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.ParameterBase));
+                }
+            }
+        }
     }
 }

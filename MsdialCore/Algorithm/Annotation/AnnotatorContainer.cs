@@ -43,28 +43,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
-    [Union(1, typeof(SerializableAnnotatorContainer))]
-    public interface ISerializableAnnotatorContainer<in T, U, V> : IAnnotatorContainer<T, U, V> {
+    [Union(1, typeof(SerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>))]
+    [Union(2, typeof(SerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>))]
+    public interface ISerializableAnnotatorContainer<in T, U, V> : IAnnotatorContainer<T, U, V>
+    {
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor);
     }
 
-    [Union(0, typeof(DatabaseAnnotatorContainer))]
-    [Union(1, typeof(SerializableAnnotatorContainer))]
-    public interface ISerializableAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
-    {
-        
-    }
-
-    //public interface ISerializablePepAnnotatorContainer : ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
-
-    //}
-
     [MessagePackObject]
-    public sealed class SerializableAnnotatorContainer : ISerializableAnnotatorContainer
+    public sealed class SerializableAnnotatorContainer<TQuery, TReference, TResult> : ISerializableAnnotatorContainer<TQuery, TReference, TResult>
     {
         public SerializableAnnotatorContainer(
-            ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
+            ISerializableAnnotator<TQuery, TReference, TResult> annotator,
             MsRefSearchParameterBase parameter) {
             if (annotator is null) {
                 throw new ArgumentNullException(nameof(annotator));
@@ -79,7 +70,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public SerializableAnnotatorContainer(
-            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorKey,
+            IReferRestorationKey<TQuery, TReference, TResult> annotatorKey,
             MsRefSearchParameterBase parameter) {
             AnnotatorKey = annotatorKey;
             Parameter = parameter;
@@ -87,17 +78,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         [IgnoreMember]
-        public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator { get; private set; }
+        public ISerializableAnnotator<TQuery, TReference, TResult> Annotator { get; private set; }
         [IgnoreMember]
         public string AnnotatorID { get; }
 
         [Key("AnnotatorKey")]
-        public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> AnnotatorKey { get; set; }
+        public IReferRestorationKey<TQuery, TReference, TResult> AnnotatorKey { get; set; }
 
         [Key("Parameter")]
         public MsRefSearchParameterBase Parameter { get; set; }
 
-        IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>.Annotator => Annotator;
+        IAnnotator<TQuery, TReference, TResult> IAnnotatorContainer<TQuery, TReference, TResult>.Annotator => Annotator;
 
         public void Save(Stream stream) {
             AnnotatorKey = Annotator.Save();
@@ -109,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
-    public interface IDatabaseAnnotatorContainer : ISerializableAnnotatorContainer
+    public interface IDatabaseAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
         MoleculeDataBase Database { get; }
         string DatabaseID { get; }
@@ -246,12 +237,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         MsRefSearchParameterBase IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>.Parameter => MsRefSearchParameter;
 
         public void Save(Stream stream) {
-            Database.Save();
+            Database.Save(null);
             AnnotatorKey = Annotator.Save();
         }
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
-            Database.Load();
+            Database.Load(null);
             Annotator = AnnotatorKey.Accept(visitor, Database);
         }
     }

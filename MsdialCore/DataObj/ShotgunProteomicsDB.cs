@@ -139,12 +139,12 @@ namespace CompMs.MsdialCore.DataObj {
             DecoyMsStream = dFS;
 
             Console.WriteLine("Save");
-            Save();
+            Save(null);
 
             Console.WriteLine("Done");
         }
 
-        public void Save() {
+        public void Save(Stream stream) {
 
             using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
                 LargeListMessagePack.Serialize(fs, FastaQueries);
@@ -163,7 +163,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public void Load() {
+        public void Load(Stream stream) {
             if (this.FastaQueries != null) return;
             using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
                 this.FastaQueries = LargeListMessagePack.Deserialize<FastaProperty>(fs);

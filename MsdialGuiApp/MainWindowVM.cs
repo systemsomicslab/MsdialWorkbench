@@ -12,8 +12,10 @@ using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcMsApi.DataObj;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -80,22 +82,24 @@ namespace CompMs.App.Msdial
         private DelegateCommand<Window> createNewProjectCommand;
 
         private void CreateNewProject(Window window) {
-            var storage = new MsdialDataStorage();
-            storage.DataBaseMapper = new DataBaseMapper();
-
-            //Get IUPAC reference
-            var iupacdb = IupacResourceParser.GetIUPACDatabase();
-            storage.IupacDatabase = iupacdb;
-
             // Set parameterbase
             var parameter = ProcessStartUp(startUpService);
             if (parameter == null)
                 return;
-            storage.ParameterBase = parameter;
+
 
             // Set analysis file property
-            if (!ProcessSetAnalysisFile(analysisFilePropertySetService, storage))
+            var analysisFiles = ProcessSetAnalysisFile(analysisFilePropertySetService, parameter);
+            if (!analysisFiles.Any()) {
                 return;
+            }
+            ParameterFactory.SetParameterFromAnalysisFiles(parameter, analysisFiles);
+
+            var storage = new MsdialDataStorage();
+            storage.AnalysisFiles = analysisFiles;
+            storage.ParameterBase = parameter;
+            storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
+            storage.DataBaseMapper = new DataBaseMapper();
 
             RunProcessAll(window, storage);
 
@@ -162,23 +166,20 @@ namespace CompMs.App.Msdial
             return parameter;
         }
 
-        private static bool ProcessSetAnalysisFile(
+        private static List<AnalysisFileBean> ProcessSetAnalysisFile(
             IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
-            MsdialDataStorage storage) {
+            ParameterBase parameter) {
 
             var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
             {
-                ProjectFolderPath = storage.ParameterBase.ProjectFolderPath,
-                MachineCategory = storage.ParameterBase.MachineCategory,
+                ProjectFolderPath = parameter.ProjectFolderPath,
+                MachineCategory = parameter.MachineCategory,
             };
 
             var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
-            if (afpsw_result != true) return false;
+            if (afpsw_result != true) return new List<AnalysisFileBean>();
 
-            storage.AnalysisFiles = analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
-            ParameterFactory.SetParameterFromAnalysisFiles(storage.ParameterBase, storage.AnalysisFiles);
-
-            return true;
+            return analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
         }
 
         public DelegateCommand<Window> OpenProjectCommand {

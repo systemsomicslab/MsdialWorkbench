@@ -7,7 +7,8 @@ using System.Collections.Generic;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class MsdialDataStorage {
+    public class MsdialDataStorage
+    {
         [Key(0)]
         public List<AnalysisFileBean> AnalysisFiles { get; set; } = new List<AnalysisFileBean>();
         [Key(1)]
@@ -24,5 +25,7 @@ namespace CompMs.MsdialCore.DataObj
         public ParameterBase ParameterBase { get; set; }
         [Key(7)]
         public DataBaseMapper DataBaseMapper { get; set; }
+        [Key(8)]
+        public DataBaseStorage DataBases { get; set; }
     }
 }

@@ -14,9 +14,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             : base(parameter, files) {
 
             Parameter = parameter;
+
+            IdentitySettingModel = new LcmsIdentitySettingModel(Parameter);
         }
 
         public MsdialLcmsParameter Parameter { get; }
+        public LcmsIdentitySettingModel IdentitySettingModel { get; }
 
         public IAnnotationProcess BuildAnnotationProcess() {
             var annotators = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
