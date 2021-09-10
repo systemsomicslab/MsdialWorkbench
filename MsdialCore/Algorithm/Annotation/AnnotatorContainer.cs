@@ -19,6 +19,30 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         MsRefSearchParameterBase Parameter { get; }
     }
 
+    public sealed class AnnotatorContainer<TQuery, TReference, TResult> : IAnnotatorContainer<TQuery, TReference, TResult>
+    {
+        public AnnotatorContainer(
+            IAnnotator<TQuery, TReference, TResult> annotator,
+            MsRefSearchParameterBase parameter) {
+            if (annotator is null) {
+                throw new ArgumentNullException(nameof(annotator));
+            }
+
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            Annotator = annotator;
+            AnnotatorID = Annotator.Key;
+            Parameter = parameter;
+        }
+
+        public IAnnotator<TQuery, TReference, TResult> Annotator { get; }
+        public string AnnotatorID { get; }
+
+        public MsRefSearchParameterBase Parameter { get; set; }
+    }
+
+    [Obsolete]
     public sealed class AnnotatorContainer : IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
         public AnnotatorContainer(

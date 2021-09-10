@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         protected override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(ParameterBase parameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new ImmsMspAnnotator(molecules, Parameter, parameter.ProjectParam.TargetOmics, AnnotatorID),
+                new ImmsMspAnnotator(molecules, Parameter, parameter.ProjectParam.TargetOmics, AnnotatorID, -1),
                 molecules,
                 Parameter);
         }

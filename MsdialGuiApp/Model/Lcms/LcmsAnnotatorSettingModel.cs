@@ -15,10 +15,10 @@ using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
+    // TODO: These interfaces maybe moved to MsdialCore project in future.
     public interface ILcmsAnnotatorSettingModel : INotifyPropertyChanged
     {
         DataBaseSettingModel DataBaseSettingModel { get; }
-        int Priority { get; set; }
         string AnnotatorID { get; set; }
         SourceType AnnotationSource { get; }
     }
@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Lcms
     {
         MsRefSearchParameterBase SearchParameter { get; }
 
-        List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, TargetOmics omics);
+        List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics);
     }
 
     public interface ILcmsProteomicsAnnotatorSettingModel : ILcmsAnnotatorSettingModel
@@ -35,24 +35,17 @@ namespace CompMs.App.Msdial.Model.Lcms
         MsRefSearchParameterBase SearchParameter { get; }
         ProteomicsParameter ProteomicsParameter { get; }
 
-        List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, TargetOmics omics);
+        List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics);
     }
 
     public class LcmsMspAnnotatorSettingModel : BindableBase, ILcmsMetabolomicsAnnotatorSettingModel
     {
         public LcmsMspAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
             DataBaseSettingModel = dataBaseSettingModel;
-            Priority = -serialNumber;
             AnnotatorID = $"{DataBaseSettingModel.DataBaseID}_{serialNumber}";
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
-
-        public int Priority {
-            get => priority;
-            set => SetProperty(ref priority, value);
-        }
-        private int priority;
 
         public string AnnotatorID {
             get => annotatorID;
@@ -64,9 +57,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
 
-        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, TargetOmics omics) {
+        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                new LcmsMspAnnotator(db, SearchParameter, omics, AnnotatorID)
+                new LcmsMspAnnotator(db, SearchParameter, omics, AnnotatorID, -1)
             };
         }
     }
@@ -75,17 +68,10 @@ namespace CompMs.App.Msdial.Model.Lcms
     {
         public LcmsTextDBAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
             DataBaseSettingModel = dataBaseSettingModel;
-            Priority = -serialNumber;
             AnnotatorID = $"{DataBaseSettingModel.DataBaseID}_{serialNumber}";
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
-
-        public int Priority {
-            get => priority;
-            set => SetProperty(ref priority, value);
-        }
-        private int priority;
 
         public string AnnotatorID {
             get => annotatorID;
@@ -97,9 +83,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
 
-        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, TargetOmics omics) {
+        public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                new LcmsTextDBAnnotator(db, SearchParameter, AnnotatorID)
+                new LcmsTextDBAnnotator(db, SearchParameter, AnnotatorID, -1)
             };
         }
     }
@@ -108,17 +94,10 @@ namespace CompMs.App.Msdial.Model.Lcms
     {
         public LcmsProteomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
             DataBaseSettingModel = dataBaseSettingModel;
-            Priority = -serialNumber;
             AnnotatorID = $"{DataBaseSettingModel.DataBaseID}_{serialNumber}";
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
-
-        public int Priority {
-            get => priority;
-            set => SetProperty(ref priority, value);
-        }
-        private int priority;
 
         public string AnnotatorID {
             get => annotatorID;
@@ -132,9 +111,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ProteomicsParameter ProteomicsParameter { get; } = new ProteomicsParameter();
 
-        public List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, TargetOmics omics) {
+        public List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>{
-                new LcmsFastaAnnotator(db, SearchParameter, ProteomicsParameter, annotatorID, SourceType.FastaDB),
+                new LcmsFastaAnnotator(db, SearchParameter, ProteomicsParameter, annotatorID, SourceType.FastaDB, -1),
             };
         }
     }

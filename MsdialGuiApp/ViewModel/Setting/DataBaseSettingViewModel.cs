@@ -27,12 +27,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             DataBaseID = new[]
             {
-                DataBasePath.Select(path => Path.GetFileNameWithoutExtension(path)),
                 Model.ObserveProperty(m => m.DataBaseID),
+                DataBasePath.Merge(Observable.Return(Model.DataBasePath)).Select(path => Path.GetFileNameWithoutExtension(path)),
             }.Merge()
             .ToReactiveProperty()
             .SetValidateAttribute(() => DataBaseID)
             .AddTo(Disposables);
+            DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);
 
             DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, }.AsReadOnly();
             DBSource = DataBasePath
@@ -55,6 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReactiveProperty(DataBaseSource.None)
                 .SetValidateNotifyError(src => DBSources.Contains(src) ? null : "Unknown database")
                 .AddTo(Disposables);
+            DBSource.Where(_ => !DBSource.HasErrors).Subscribe(source => Model.DBSource = source).AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
@@ -70,8 +72,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(Browse)
                 .AddTo(Disposables);
 
-            LipidDBSetCommand = Model.ObserveProperty(m => m.DBSource)
+            IsLipidDataBase = Model.ObserveProperty(m => m.DBSource)
                 .Select(src => src == DataBaseSource.Lbm)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            LipidDBSetCommand = IsLipidDataBase
                 .ToReactiveCommand()
                 .WithSubscribe(LipidDBSet)
                 .AddTo(Disposables);
@@ -107,6 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
         }
 
+        public ReadOnlyReactivePropertySlim<bool> IsLipidDataBase { get; }
         public ReactiveCommand LipidDBSetCommand { get; }
 
         private void LipidDBSet() {

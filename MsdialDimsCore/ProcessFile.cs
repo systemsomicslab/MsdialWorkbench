@@ -51,8 +51,8 @@ namespace CompMs.MsdialDimsCore
             MsdialDataStorage container,
             bool isGuiProcess = false,
             Action<int> reportAction = null, CancellationToken token = default) {
-            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB");
+            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB", -1);
+            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
                 new AnnotationQueryWithoutIsotopeFactory(),
                 new[] { new AnnotatorContainer(mspAnnotator, container.ParameterBase.MspSearchParam),

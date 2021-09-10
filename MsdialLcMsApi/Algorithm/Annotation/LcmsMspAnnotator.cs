@@ -27,10 +27,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
 
-        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID)
+        public int Priority { get; }
+
+        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID, int priority)
             : base(mspDB.Database, parameter, annotatorID, SourceType.MspDB) {
             db.Sort(comparer);
             this.omics = omics;
+            Priority = priority;
             ReferObject = mspDB;
         }
 
@@ -69,7 +72,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID) {
@@ -92,7 +95,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.MspDB, AnnotatorID = annotatorID
+                Source = SourceType.MspDB, AnnotatorID = annotatorID, Priority = Priority,
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
@@ -165,6 +168,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         private MassRtReferenceSearcher<MoleculeMsReference> SearcherWithRt
             => searcherWithRt ?? (searcherWithRt = new MassRtReferenceSearcher<MoleculeMsReference>(db));
+
         private MassRtReferenceSearcher<MoleculeMsReference> searcherWithRt;
         private IReadOnlyList<MoleculeMsReference> SearchWithRtCore(IMSProperty property, double massTolerance, double rtTolerance) {
             return SearcherWithRt.Search(MSSearchQuery.CreateMassRtQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz), property.ChromXs.RT.Value, rtTolerance));

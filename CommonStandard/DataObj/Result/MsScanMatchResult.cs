@@ -94,6 +94,8 @@ namespace CompMs.Common.DataObj.Result {
         public int SpectrumID { get; set; } = -1;
         [Key(30)]
         public bool IsDecoy { get; set; } = false;
+        [Key(31)]
+        public int Priority { get; set; } = -1;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

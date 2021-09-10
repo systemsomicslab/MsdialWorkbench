@@ -32,8 +32,8 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 var mapper = new DataBaseMapper();
                 var msp = new MoleculeDataBase(data.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
                 var text = new MoleculeDataBase(data.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
-                mapper.Add(new MassAnnotator(msp, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB"), msp);
-                mapper.Add(new MassAnnotator(text, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB"), text);
+                mapper.Add(new MassAnnotator(msp, data.Parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1), msp);
+                mapper.Add(new MassAnnotator(text, data.Parameter.TextDbSearchParam, TargetOmics.Lipidomics, SourceType.TextDB, "TextDB", -1), text);
 
                 var exporter = new AlignmentCSVExporter();
                 var stream = new MemoryStream();

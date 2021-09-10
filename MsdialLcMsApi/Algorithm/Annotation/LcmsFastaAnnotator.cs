@@ -23,11 +23,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
+
+        public int Priority { get; }
+
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
-            string annotatorID, SourceType type) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, type) {
+            string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, type) {
             PeptideMsRef.Sort(comparer);
             DecoyPeptideMsRef.Sort(comparer);
             ReferObject = reference;
+            Priority = priority;
         }
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
@@ -76,7 +80,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSIonProperty property, IMSScanProperty scan, 
             PeptideMsReference reference, 
             MsRefSearchParameterBase msSearchParam, ProteomicsParameter proteomicsParam, SourceType type, string annotatorID) {
@@ -85,6 +89,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
             result.Source = type;
             result.AnnotatorID = annotatorID;
+            result.Priority = Priority;
 
             return result;
         }

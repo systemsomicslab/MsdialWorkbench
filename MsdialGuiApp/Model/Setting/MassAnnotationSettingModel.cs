@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ProjectBaseParameter projectParameter, MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new MassAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID),
+                new MassAnnotator(molecules, Parameter, projectParameter.TargetOmics, AnnotationSource, DataBaseID, -1),
                 molecules,
                 Parameter);
         }

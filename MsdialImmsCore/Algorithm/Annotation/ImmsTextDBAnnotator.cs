@@ -20,11 +20,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
     {
         private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
-        public ImmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string sourceKey)
+        public ImmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string sourceKey, int priority)
             : base(textDB.Database, parameter, sourceKey, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
+            Priority = priority;
         }
+
+        public int Priority { get; }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
 
@@ -60,7 +63,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, string sourceKey) {
@@ -73,7 +76,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.TextDB, AnnotatorID = sourceKey
+                Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
@@ -130,6 +133,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         private MassCcsReferenceSearcher<MoleculeMsReference> SearcherWithCcs
             => searcherWithCcs ?? (searcherWithCcs = new MassCcsReferenceSearcher<MoleculeMsReference>(db));
+
         private MassCcsReferenceSearcher<MoleculeMsReference> searcherWithCcs;
         private IReadOnlyList<MoleculeMsReference> SearchWithCcsCore(IMSIonProperty property, double massTolerance, double ccsTolerance) {
             return SearcherWithCcs.Search(MSIonSearchQuery.CreateMassCcsQuery(property.PrecursorMz, CalculateMassTolerance(massTolerance, property.PrecursorMz), property.CollisionCrossSection, ccsTolerance));

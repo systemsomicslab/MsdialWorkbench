@@ -25,12 +25,15 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         private readonly TargetOmics omics;
 
-        public ImmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
+        public ImmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
             : base(mspDB.Database, parameter, sourceKey, SourceType.MspDB){
             this.db.Sort(comparer);
             this.omics = omics;
+            Priority = priority;
             this.ReferObject = mspDB;
         }
+
+        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -67,7 +70,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
@@ -90,7 +93,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.MspDB, AnnotatorID = sourceKey
+                Source = SourceType.MspDB, AnnotatorID = sourceKey, Priority = Priority,
             };
 
             if (parameter.IsUseCcsForAnnotationScoring) {
@@ -142,7 +145,6 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject { get; }
-
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return ReferObject.Refer(result);
         }

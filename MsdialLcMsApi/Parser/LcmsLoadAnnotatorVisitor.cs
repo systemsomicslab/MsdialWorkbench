@@ -23,24 +23,24 @@ namespace CompMs.MsdialLcMsApi.Parser
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new LcmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key);
+                return new LcmsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key, -1);
             }
             else if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new LcmsTextDBAnnotator(database, key.Parameter, key.Key);
+                return new LcmsTextDBAnnotator(database, key.Parameter, key.Key, -1);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new LcmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key);
+            return new LcmsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key, -1);
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new LcmsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key);
+            return new LcmsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key, -1);
         }
 
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {
-            return new LcmsFastaAnnotator(database, database.MsRefSearchParameter, database.ProteomicsParameter, key.Key, key.SourceType);
+            return new LcmsFastaAnnotator(database, database.MsRefSearchParameter, database.ProteomicsParameter, key.Key, key.SourceType, -1);
         }
     }
 }

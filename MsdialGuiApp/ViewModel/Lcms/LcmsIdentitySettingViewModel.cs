@@ -5,7 +5,9 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -21,9 +23,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             DataBaseViewModels = this.model.DataBaseModels.ToReadOnlyReactiveCollection(m => new DataBaseSettingViewModel(m)).AddTo(Disposables);
             AnnotatorViewModels = this.model.AnnotatorModels.ToReadOnlyReactiveCollection(m => annotatorFactory.Create(m)).AddTo(Disposables);
             DataBaseViewModel = new ReactivePropertySlim<DataBaseSettingViewModel>(null).AddTo(Disposables);
-            DataBaseViewModel.Subscribe(vm => this.model.DataBaseModel = vm.Model).AddTo(Disposables);
+            DataBaseViewModel.Where(vm => !(vm is null)).Subscribe(vm => this.model.DataBaseModel = vm.Model).AddTo(Disposables);
             AnnotatorViewModel = new ReactivePropertySlim<ILcmsAnnotatorSettingViewModel>(null).AddTo(Disposables);
-            AnnotatorViewModel.Subscribe(vm => this.model.AnnotatorModel = vm.Model).AddTo(Disposables);
+            AnnotatorViewModel.Where(vm => !(vm is null)).Subscribe(vm => this.model.AnnotatorModel = vm.Model).AddTo(Disposables);
+            SelectedViewModel = new IObservable<object>[]{
+                DataBaseViewModel,
+                AnnotatorViewModel,
+            }.Merge()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+            IsDataBaseExpanded = new[]
+            {
+                DataBaseViewModel.Select(_ => true),
+                AnnotatorViewModel.Select(_ => false),
+            }.Merge()
+            .ToReactiveProperty()
+            .AddTo(Disposables);
+            IsAnnotatorExpanded = new[]
+            {
+                AnnotatorViewModel.Select(_ => true),
+                DataBaseViewModel.Select(_ => false),
+            }.Merge()
+            .ToReactiveProperty()
+            .AddTo(Disposables);
 
             var addedDataBase = DataBaseViewModels.ObserveAddChanged();
             var removedDataBase = DataBaseViewModels.ObserveRemoveChanged();
@@ -89,7 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             AddAnnotatorCommand = new[]{
                 dbIsNotNull.Inverse(),
-                DataBaseViewModel.SelectMany(vm => vm.ObserveHasErrors)
+                DataBaseViewModel.Where(vm => !(vm is null)).SelectMany(vm => vm.ObserveHasErrors)
             }.CombineLatestValuesAreAllFalse()
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.AddAnnotator)
@@ -98,6 +120,38 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.RemoveAnnotator)
                 .AddTo(Disposables);
+            var moveUpTrigger = new Subject<Unit>();
+            var moveDownTrigger = new Subject<Unit>();
+            MoveUpAnnotatorCommand = new[]
+            {
+                annotatorIsNotNull,
+                moveDownTrigger.Merge(AnnotatorViewModel.ToUnit())
+                    .Select(_ => AnnotatorViewModels.FirstOrDefault() != AnnotatorViewModel.Value),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .WithSubscribe(this.model.MoveUpAnnotator)
+            .WithSubscribe(() => moveUpTrigger.OnNext(Unit.Default))
+            .AddTo(Disposables);
+            MoveDownAnnotatorCommand = new[]
+            {
+                annotatorIsNotNull,
+                moveUpTrigger.Merge(AnnotatorViewModel.ToUnit())
+                    .Select(_ => AnnotatorViewModels.LastOrDefault() != AnnotatorViewModel.Value),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveCommand()
+            .WithSubscribe(this.model.MoveDownAnnotator)
+            .WithSubscribe(() => moveDownTrigger.OnNext(Unit.Default))
+            .AddTo(Disposables);
+
+            IsSourceTypeEnabled = new[]
+            {
+                AddAnnotatorCommand.ToUnit(),
+                RemoveAnnotatorCommand.ToUnit(),
+                DataBaseViewModel.ToUnit(),
+            }.Merge()
+            .Select(_ => AnnotatorViewModels.All(vm => vm.Model.DataBaseSettingModel != DataBaseViewModel.Value.Model))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<DataBaseSettingViewModel> DataBaseViewModels { get; }
@@ -108,11 +162,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReactivePropertySlim<ILcmsAnnotatorSettingViewModel> AnnotatorViewModel { get; }
 
+        public ReadOnlyReactivePropertySlim<object> SelectedViewModel { get; }
+        public ReactiveProperty<bool> IsDataBaseExpanded { get; }
+        public ReactiveProperty<bool> IsAnnotatorExpanded { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsSourceTypeEnabled { get; }
+
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReactiveCommand AddDataBaseCommand { get; }
         public ReactiveCommand RemoveDataBaseCommand { get; }
         public ReactiveCommand AddAnnotatorCommand { get; }
         public ReactiveCommand RemoveAnnotatorCommand { get; }
+        public ReactiveCommand MoveUpAnnotatorCommand { get; }
+        public ReactiveCommand MoveDownAnnotatorCommand { get; }
     }
 }

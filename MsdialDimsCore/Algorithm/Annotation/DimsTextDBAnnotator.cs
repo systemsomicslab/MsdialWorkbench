@@ -17,10 +17,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> referObject;
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
 
-        public DimsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string id)
+        public int Priority { get; }
+
+        public DimsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string id, int priority)
             : base(textDB.Database, parameter, id, SourceType.TextDB) {
 
             referObject = textDB;
+            Priority = priority;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(textDB.Database);
         }
 
@@ -63,6 +66,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         private static MassMatchCalculator MassCalculator
             => massCalculator ?? (massCalculator = new MassMatchCalculator());
+
         private static MassMatchCalculator massCalculator;
 
         private MsScanMatchResult CalculateScoreCore(IMSProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -73,6 +77,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 InChIKey = reference.InChIKey,
                 Source = SourceType.TextDB,
                 AnnotatorID = Key,
+                Priority = Priority,
             };
 
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);

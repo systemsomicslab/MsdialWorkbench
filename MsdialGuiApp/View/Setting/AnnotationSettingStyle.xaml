@@ -4,6 +4,58 @@
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
                     xmlns:VM="clr-namespace:CompMs.App.Msdial.ViewModel"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
+    <DataTemplate DataType="{x:Type localVM:DataBaseSettingViewModel}">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Visible">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Grid Margin="8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Database path:" VerticalAlignment="Center" Grid.Column="0"/>
+                        <TextBox Text="{Binding DataBasePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Left"
+                                 Margin="8" Grid.Column="1"/>
+                        <Button Content="Browse"
+                                Command="{Binding BrowseCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="2"/>
+                    </Grid>
+                    <ui:LabeledContent PrependLabel="Database name">
+                        <TextBox Text="{Binding DataBaseID.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Left"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Database type">
+                        <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Lipid database:">
+                        <ui:LabeledContent.Style>
+                            <Style TargetType="ui:LabeledContent">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLipidDataBase.Value}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:LabeledContent.Style>
+                        <Button Content="Set"
+                                Command="{Binding LipidDBSetCommand, Mode=OneTime}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Width="64"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
                   x:Key="MassToleranceSetting">
         <StackPanel>

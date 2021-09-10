@@ -77,6 +77,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
 
+        [Obsolete("AnnotationProcessSettingModel will be removed.")]
         public DataBaseMapper BuildAnnotator() {
             var dbm = new DataBaseMapper();
             foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
@@ -92,6 +93,7 @@ namespace CompMs.App.Msdial.Model.Core
 
             ParameterBase.ExcludedMassList = ExcludedMassList.ToList();
 
+            ParameterBase.TogetherWithAlignment = TogetherWithAlignment;
             if (ParameterBase.TogetherWithAlignment && AnalysisFiles.Count >= 2) {
                 ParameterBase.QcAtLeastFilter = false;
             }

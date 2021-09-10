@@ -35,7 +35,7 @@ namespace CompMs.MsdialCore.DataObj
             get {
                 if (cacheRepresentative is null) {
                     cacheRepresentative =  MatchResults.Any()
-                        ?  MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.TotalScore))
+                        ?  MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
                         : null;
                 }
                 return cacheRepresentative;
@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.DataObj
             get {
                 if (cacheDecoyRepresentative is null) {
                     cacheDecoyRepresentative = MatchResults.Any()
-                        ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.TotalScore))
+                        ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
                         : null;
                 }
                 return cacheDecoyRepresentative;

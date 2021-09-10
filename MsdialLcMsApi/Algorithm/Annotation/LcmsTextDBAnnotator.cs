@@ -20,11 +20,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
     {
         private static readonly IComparer<IMSProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
-        public LcmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string annotatorID)
+        public LcmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string annotatorID, int priority)
             : base(textDB.Database, parameter, annotatorID, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
+            Priority = priority;
         }
+
+        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -59,7 +62,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, string sourceKey) {
@@ -73,7 +76,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             {
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = SourceType.TextDB, AnnotatorID = sourceKey
+                Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
             };
             if (parameter.IsUseTimeForAnnotationScoring) {
                 var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
