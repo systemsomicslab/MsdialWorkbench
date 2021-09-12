@@ -32,7 +32,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
             var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
@@ -55,7 +55,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
             var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
@@ -82,7 +82,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
             var results = annotator.Search(new AnnotationQuery(target, target, null, null));
@@ -113,7 +113,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
             };
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature
             {
@@ -147,7 +147,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void IsAnnotationSuggestedTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
@@ -163,7 +163,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void IsReferenceMatchedTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
@@ -179,7 +179,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void FilterByThresholdTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
@@ -197,7 +197,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void SelectReferenceMatchResultsTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
@@ -215,7 +215,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         [TestMethod()]
         public void SelectTopHitTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -248,7 +248,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB");
+            var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
             var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));

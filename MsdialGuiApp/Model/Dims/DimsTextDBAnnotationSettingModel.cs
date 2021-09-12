@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         protected override ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> BuildCore(MoleculeDataBase molecules) {
             return new DatabaseAnnotatorContainer(
-                new DimsTextDBAnnotator(molecules, Parameter, AnnotatorID),
+                new DimsTextDBAnnotator(molecules, Parameter, AnnotatorID, -1),
                 molecules,
                 Parameter);
         }

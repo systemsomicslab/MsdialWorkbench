@@ -16,9 +16,17 @@ namespace CompMs.MsdialLcMsApi.Parser
         }
 
         protected override void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
-            using (var stream = File.Open(path, FileMode.Open)) {
-                storage.DataBaseMapper?.Restore(new LcmsLoadAnnotatorVisitor(storage.ParameterBase), stream);
+            var mapper = new DataBaseMapper();
+            foreach (var db in storage.DataBases.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
             }
+            storage.DataBaseMapper = mapper;
+        }
+
+        protected override void SaveDataBaseMapper(string path, MsdialDataStorage storage) {
+
         }
 
         protected override void LoadDataBases(string path, MsdialDataStorage storage) {

@@ -502,6 +502,9 @@
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\IdentitySettingView.xaml.cs">
+      <DependentUpon>IdentitySettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
     </Compile>
@@ -845,6 +848,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\EnzymeSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\IdentitySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

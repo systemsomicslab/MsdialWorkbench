@@ -20,15 +20,18 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
     {
         private readonly TargetOmics omics;
 
-        public DimsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey)
+        public DimsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
             : base(mspDB.Database, parameter, sourceKey, SourceType.MspDB) {
             this.omics = omics;
+            Priority = priority;
             ReferObject = mspDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
         }
 
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
+
+        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -64,6 +67,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 InChIKey = reference.InChIKey,
                 Source = SourceType.MspDB,
                 AnnotatorID = source,
+                Priority = Priority,
             };
             var results = new List<IMatchResult>();
 
@@ -107,6 +111,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         
         private static LipidMs2MatchCalculator LipidMs2Calculator
             => lipidMs2Calculator ?? (lipidMs2Calculator = new LipidMs2MatchCalculator());
+
         private static LipidMs2MatchCalculator lipidMs2Calculator;
         
         public double CalculateAnnotatedScore(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {

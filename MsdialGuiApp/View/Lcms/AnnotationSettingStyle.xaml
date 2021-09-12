@@ -139,6 +139,117 @@
         </StackPanel>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="MS/MS identification setting"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterViewModel}"
+                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                            Margin="8" Grid.Row="1"/>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2Setting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsTextDBAnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Tolerance" Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterViewModel}"
+                            ContentTemplate="{StaticResource ToleranceSettingForLcms}"
+                            Margin="8" Grid.Row="1"/>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsProteomicsAnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Text="FASTA database and MS/MS identification setting"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Grid.Row="0"/>
+            <ContentControl Content="{Binding ParameterViewModel}"
+                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                            Margin="8" Grid.Row="1"/>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2Setting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Shotgun proteomics parameter setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ProteomicsParameterViewModel}"
+                                ContentTemplate="{StaticResource ProteomicsParameterVM}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type localVM:LcmsLbmAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>

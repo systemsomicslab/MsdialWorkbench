@@ -24,18 +24,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly string sourceKey;
 
         public MsRefSearchParameterBase Parameter { get; }
+        public int Priority { get; }
 
         public MassAnnotator(
             MoleculeDataBase db,
             MsRefSearchParameterBase parameter,
             TargetOmics omics,
             SourceType source,
-            string sourceKey) {
+            string sourceKey,
+            int priority) {
 
             this.Parameter = parameter;
             this.omics = omics;
             this.source = source;
             this.sourceKey = sourceKey;
+            Priority = priority;
             ReferObject = db;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(db.Database);
         }
@@ -75,7 +78,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return result;
         }
 
-        private static MsScanMatchResult CalculateScoreCore(
+        private MsScanMatchResult CalculateScoreCore(
             IMSProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> scanIsotopes,
             MoleculeMsReference reference, IReadOnlyList<IsotopicPeak> referenceIsotopes,
             MsRefSearchParameterBase parameter, TargetOmics omics, SourceType source, string sourceKey) {
@@ -98,7 +101,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 WeightedDotProduct = (float)weightedDotProduct, SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
-                Source = source, AnnotatorID = sourceKey
+                Source = source, AnnotatorID = sourceKey, Priority = Priority,
             };
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 

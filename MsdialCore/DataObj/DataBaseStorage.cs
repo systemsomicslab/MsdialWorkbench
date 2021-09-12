@@ -98,9 +98,9 @@ namespace CompMs.MsdialCore.DataObj
     {
         public DataBaseItem(
             TDataBase dataBase,
-            List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> containers) {
+            List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> pairs) {
             DataBase = dataBase;
-            Containers = containers;
+            Pairs = pairs;
         }
 
         [IgnoreMember]
@@ -109,8 +109,8 @@ namespace CompMs.MsdialCore.DataObj
         [Key(nameof(DataBase))]
         public TDataBase DataBase { get; }
 
-        [Key(nameof(Containers))]
-        public List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> Containers { get; }
+        [Key(nameof(Pairs))]
+        public List<IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase>> Pairs { get; }
 
         private static readonly string DataBasePath = "DataBase";
         private static readonly string AnnotatorsPath = "Annotators";
@@ -121,7 +121,7 @@ namespace CompMs.MsdialCore.DataObj
                 using (var dbStream = dbEntry.Open()) {
                     DataBase.Save(dbStream);
                 }
-                foreach (var container in Containers) {
+                foreach (var container in Pairs) {
                     var annotatorEntry = archive.CreateEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));
                     using (var annotatorStream = annotatorEntry.Open()) {
                         container.Save(annotatorStream);
@@ -136,7 +136,7 @@ namespace CompMs.MsdialCore.DataObj
                 using (var dbStream = dbEntry.Open()) {
                     DataBase.Load(dbStream);
                 }
-                foreach (var container in Containers) {
+                foreach (var container in Pairs) {
                     var annotatorEntry = archive.GetEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));
                     using (var annotatorStream = annotatorEntry.Open()) {
                         container.Load(annotatorStream, visitor, DataBase);
@@ -151,8 +151,10 @@ namespace CompMs.MsdialCore.DataObj
     public interface IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase> where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }
+        ISerializableAnnotator<TQuery, TReference, TResult, TDataBase> SerializableAnnotator { get; }
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor, TDataBase database);
+        IAnnotatorContainer<TQuery, TReference, TResult> ConvertToAnnotatorContainer();
                
     }
 
@@ -192,6 +194,10 @@ namespace CompMs.MsdialCore.DataObj
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor, MoleculeDataBase dataBase) {
             SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
         }
+
+        public IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
+            return new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
+        }
     }
 
     [MessagePackObject]
@@ -227,6 +233,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB dataBase) {
             SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+        }
+
+        public IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
+            return new AnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
         }
     }
 }

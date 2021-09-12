@@ -3,6 +3,8 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Lcms;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
@@ -13,6 +15,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -128,9 +131,27 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            annotationProcess = analysisParamSetModel.BuildAnnotationProcess();
-            Storage.DataBaseMapper = analysisParamSetModel.BuildAnnotator();
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;
+        }
+
+        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
+            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
+        }
+
+        private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
+            var mapper = new DataBaseMapper();
+            foreach (var db in storage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            return mapper;
         }
 
         public bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {

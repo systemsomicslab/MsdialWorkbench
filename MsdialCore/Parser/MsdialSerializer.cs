@@ -29,8 +29,8 @@ namespace CompMs.MsdialCore.Parser
 
         public virtual MsdialDataStorage LoadMsdialDataStorageBase(string file) {
             var storage = LoadMsdialDataStorageCore(file);
-            LoadDataBaseMapper(GetNewZippedDatabaseFileName(file), storage);
             LoadDataBases(GetDataBasesFileName(file), storage);
+            LoadDataBaseMapper(GetNewZippedDatabaseFileName(file), storage);
             storage.MspDB = LoadMspDB(GetNewMspFileName(file));
             return storage;
         }

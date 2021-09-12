@@ -6,7 +6,6 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialLcMsApi.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -51,6 +50,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (!(db is null)) {
                 DataBaseModels.Remove(db);
                 DataBaseModel = DataBaseModels.LastOrDefault();
+                var removeAnnotators = AnnotatorModels.Where(annotator => annotator.DataBaseSettingModel == db).ToArray();
+                foreach (var annotator in removeAnnotators) {
+                    AnnotatorModels.Remove(annotator);
+                }
             }
         }
 
@@ -71,6 +74,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
+        public void MoveUpAnnotator() {
+            var annotatorModel = AnnotatorModel;
+            if (!(annotatorModel is null)) {
+                var index = AnnotatorModels.IndexOf(annotatorModel);
+                if (index == 0) {
+                    return;
+                }
+                AnnotatorModels.Move(index, index-1);
+            }
+        }
+
+        public void MoveDownAnnotator() {
+            var annotatorModel = AnnotatorModel;
+            if (!(annotatorModel is null)) {
+                var index = AnnotatorModels.IndexOf(annotatorModel);
+                if (index == AnnotatorModels.Count - 1) {
+                    return;
+                }
+                AnnotatorModels.Move(index, index+1);
+            }
+        }
+
         public void SetAnnotatorContainer(DataBaseStorage storage) {
             foreach (var group in AnnotatorModels.OfType<ILcmsMetabolomicsAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
                 var dbModel = group.Key;
@@ -80,7 +105,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 var results = new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
                 foreach (var annotatorModel in group) {
-                    var annotators = annotatorModel.CreateAnnotator(db, parameter.TargetOmics);
+                    var index = AnnotatorModels.IndexOf(annotatorModel);
+                    var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
                     results.AddRange(annotators.Select(annotator => new MetabolomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter)));
                 }
                 storage.AddMoleculeDataBase(db, results);
@@ -96,7 +122,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 var results = new List<IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
                 foreach (var annotatorModel in group) {
-                    var annotators = annotatorModel.CreateAnnotator(db, parameter.TargetOmics);
+                    var index = AnnotatorModels.IndexOf(annotatorModel);
+                    var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
                     results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter, annotatorModel.ProteomicsParameter)));
                 }
                 storage.AddProteomicsDataBase(db, results);

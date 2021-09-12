@@ -31,8 +31,8 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB");
-            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, "TextDB");
+            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB", -1);
+            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, "TextDB", -1);
 
             Run(file, container, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), isGuiProcess, reportAction, token);
         }

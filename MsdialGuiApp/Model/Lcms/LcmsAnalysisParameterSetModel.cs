@@ -1,10 +1,12 @@
-﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Algorithm.Annotation;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Core;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -15,18 +17,18 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             Parameter = parameter;
 
-            IdentitySettingModel = new LcmsIdentitySettingModel(Parameter);
+            IdentitySettingModel = new LcmsIdentitySettingModel(parameter);
+
+            if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
+                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                IdentitySettingModel.AddDataBase();
+                var databaseModel = IdentitySettingModel.DataBaseModels.Last();
+                databaseModel.DataBasePath = lbmFiles.First();
+            }
         }
 
         public MsdialLcmsParameter Parameter { get; }
         public LcmsIdentitySettingModel IdentitySettingModel { get; }
-
-        public IAnnotationProcess BuildAnnotationProcess() {
-            var annotators = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
-                annotators.Add(annotation.Build(ParameterBase));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(Parameter.PeakPickBaseParam), annotators);
-        }
     }
 }
