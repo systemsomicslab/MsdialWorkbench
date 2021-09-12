@@ -79,7 +79,7 @@ namespace CompMs.MsdialDimsCore
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
-                var rawObj = LoadRawMeasurement(access);
+                //var rawObj = LoadRawMeasurement(access);
                 var spectrumList = provider.LoadMsSpectrums(); // rawObj.SpectrumList;
 
                 // faeture detections
