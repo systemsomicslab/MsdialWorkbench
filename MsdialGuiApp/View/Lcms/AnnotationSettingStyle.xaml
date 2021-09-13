@@ -148,13 +148,20 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="MS/MS identification setting"
-                       FontStyle="Italic"
-                       VerticalAlignment="Center"
-                       Grid.Row="0"/>
-            <ContentControl Content="{Binding ParameterViewModel}"
-                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
-                            Margin="8" Grid.Row="1"/>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="MS/MS identification setting"
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                                Margin="8"/>
+            </GroupBox>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
                       Grid.Row="2">
@@ -186,11 +193,18 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
-            <TextBlock Text="Tolerance" Grid.Row="0"/>
-            <ContentControl Content="{Binding ParameterViewModel}"
-                            ContentTemplate="{StaticResource ToleranceSettingForLcms}"
-                            Margin="8" Grid.Row="1"/>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="Tolerance"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource ToleranceSettingForLcms}"
+                                Margin="8"/>
+            </GroupBox>
 
             <Expander Header="Retention time setting" Margin="0,8"
                       Grid.Row="2">
@@ -211,14 +225,20 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            
-            <TextBlock Text="FASTA database and MS/MS identification setting"
-                       FontStyle="Italic"
-                       VerticalAlignment="Center"
-                       Grid.Row="0"/>
-            <ContentControl Content="{Binding ParameterViewModel}"
-                            ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
-                            Margin="8" Grid.Row="1"/>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="FASTA database and MS/MS identification setting"
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
+                                Margin="8"/>
+            </GroupBox>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
                       Grid.Row="2">

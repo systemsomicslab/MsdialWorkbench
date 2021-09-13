@@ -18,6 +18,11 @@
         <Style TargetType="Button" x:Key="IconButton">
             <Setter Property="Width" Value="24"/>
             <Setter Property="Height" Value="24"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="8,4"/>
+            <Setter Property="Padding" Value="3"/>
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -40,10 +45,24 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <ControlTemplate x:Key="CollectionErrorTemplate">
+            <StackPanel>
+                <Border BorderBrush="Red" BorderThickness="1">
+                    <AdornedElementPlaceholder x:Name="adornedElem"/>
+                </Border>
+                <ItemsControl ItemsSource="{Binding AdornedElement.(Validation.Errors), ElementName=adornedElem}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Foreground="Red" Text="{Binding ErrorContent}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ControlTemplate>
         <StreamGeometry x:Key="Plus">M -3,1 H -1 V 3 H 1 V 1 H 3 V -1 H 1 V -3 H -1 V -1 H -3 Z</StreamGeometry>
         <StreamGeometry x:Key="Minus">M -3,1 H 3 V -1 H -3 Z</StreamGeometry>
-        <StreamGeometry x:Key="UpArrow">M 1,0 L 0,-1.3 L -1,0</StreamGeometry>
-        <StreamGeometry x:Key="DownArrow">M 1,0 L 0,1.3 L -1,0</StreamGeometry>
+        <StreamGeometry x:Key="UpArrow">M 1,0 L 0,-1.3 L -1,0 Z</StreamGeometry>
+        <StreamGeometry x:Key="DownArrow">M 1,0 L 0,1.3 L -1,0 Z</StreamGeometry>
 
     </UserControl.Resources>
     <Grid>
@@ -68,21 +87,14 @@
                 <Button Command="{Binding Path=AddDataBaseCommand}"
                         Content="{StaticResource Plus}"
                         Foreground="Green"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left" 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
                 <Button Command="{Binding Path=RemoveDataBaseCommand}"
                         Content="{StaticResource Minus}"
                         Foreground="Red"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
             </StackPanel>
             <ListBox ItemsSource="{Binding Path=DataBaseViewModels}"
+                     Validation.ErrorTemplate="{StaticResource CollectionErrorTemplate}"
                      SelectedValue="{Binding Path=DataBaseViewModel.Value}"
                      DisplayMemberPath="DataBaseID.Value"
                      IsSynchronizedWithCurrentItem="True"
@@ -104,37 +116,22 @@
                 <Button Command="{Binding Path=AddAnnotatorCommand}"
                         Content="{StaticResource Plus}"
                         Foreground="Green"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left" 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
                 <Button Command="{Binding Path=RemoveAnnotatorCommand}"
                         Content="{StaticResource Minus}"
                         Foreground="Red"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
                 <Button Command="{Binding Path=MoveUpAnnotatorCommand}"
                         Content="{StaticResource UpArrow}"
                         Foreground="Black"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left" 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
                 <Button Command="{Binding Path=MoveDownAnnotatorCommand}"
                         Content="{StaticResource DownArrow}"
                         Foreground="Black"
-                        Style="{StaticResource IconButton}"
-                        HorizontalAlignment="Left" 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="8,4" Padding="3"/>
+                        Style="{StaticResource IconButton}"/>
             </StackPanel>
             <ListBox ItemsSource="{Binding Path=AnnotatorViewModels}"
+                     Validation.ErrorTemplate="{StaticResource CollectionErrorTemplate}"
                      SelectedValue="{Binding Path=AnnotatorViewModel.Value}"
                      DisplayMemberPath="AnnotatorID.Value"
                      IsSynchronizedWithCurrentItem="True"
@@ -143,7 +140,8 @@
                      Grid.Row="1"/>
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                    Margin="0,16,0,0">
             <StackPanel.Resources>
                 <ResourceDictionary>
                     <ResourceDictionary.MergedDictionaries>
@@ -169,14 +167,20 @@
             </StackPanel.Resources>
             <Expander Header="DataBase"
                       IsExpanded="{Binding IsDataBaseExpanded.Value}">
-                <ContentControl Content="{Binding Path=DataBaseViewModel.Value, Mode=OneWay}"
-                                IsEnabled="{Binding IsSourceTypeEnabled.Value, Mode=OneWay}"
-                                Margin="8"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Visible"
+                              Margin="8">
+                    <ContentControl Content="{Binding Path=DataBaseViewModel.Value, Mode=OneWay}"
+                                IsEnabled="{Binding IsSourceTypeEnabled.Value, Mode=OneWay}"/>
+                </ScrollViewer>
             </Expander>
             <Expander Header="Annotation method"
                       IsExpanded="{Binding IsAnnotatorExpanded.Value}">
-                <ContentControl Content="{Binding Path=AnnotatorViewModel.Value, Mode=OneWay}"
-                                Margin="8"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Visible"
+                              Margin="8">
+                    <ContentControl Content="{Binding Path=AnnotatorViewModel.Value, Mode=OneWay}"/>
+                </ScrollViewer>
             </Expander>
         </StackPanel>
     </Grid>
