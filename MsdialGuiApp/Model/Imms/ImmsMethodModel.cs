@@ -36,14 +36,11 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
         public ImmsMethodModel(
-            MsdialDataStorage storage,
-            IDataProviderFactory<AnalysisFileBean> providerFactory)
+            MsdialDataStorage storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
-            this.providerFactory = providerFactory;
         }
 
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
 
         public ImmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -73,6 +70,8 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private MsdialDataStorage storage;
 
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
+
         public int InitializeNewProject(Window window) {
             // Set analysis param
             if (!ProcessSetAnalysisParameter(window))
@@ -94,6 +93,14 @@ namespace CompMs.App.Msdial.Model.Imms
             return 0;
         }
 
+        public void Load() {
+            var parameter = (MsdialImmsParameter)Storage.ParameterBase;
+            if (parameter.ProviderFactoryParameter is null) {
+                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
+            }
+            ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
+        }
+
         private bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = (MsdialImmsParameter)Storage.ParameterBase;
             var analysisParameterSet = new ImmsAnalysisParameterSetModel(parameter, AnalysisFiles);
@@ -108,20 +115,21 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (apsw_result != true) return false;
 
                 Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
+                ProviderFactory = analysisParameterSet.Parameter.ProviderFactoryParameter.Create(5, true);
 
                 if (parameter.TogetherWithAlignment) {
-                var filename = analysisParamSetVM.AlignmentResultFileName;
-                    AlignmentFiles.Add(
-                        new AlignmentFileBean
-                        {
-                            FileID = AlignmentFiles.Count,
-                            FileName = filename,
-                            FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                            EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                            SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
-                        }
-                    );
-                    Storage.AlignmentFiles = AlignmentFiles.ToList();
+                    var filename = analysisParamSetVM.AlignmentResultFileName;
+                        AlignmentFiles.Add(
+                            new AlignmentFileBean
+                            {
+                                FileID = AlignmentFiles.Count,
+                                FileName = filename,
+                                FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                                EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
+                                SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                            }
+                        );
+                        Storage.AlignmentFiles = AlignmentFiles.ToList();
                 }
 
                 return true;
@@ -146,7 +154,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, providerFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
@@ -173,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var factory = new ImmsAlignmentProcessFactory(storage.ParameterBase as MsdialImmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
+            aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
@@ -216,7 +224,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Disposables.Remove(AnalysisModel);
             }
 
-            var provider = providerFactory.Create(analysisFile);
+            var provider = ProviderFactory.Create(analysisFile);
             AnalysisModel = new ImmsAnalysisModel(
                 analysisFile,
                 provider,
@@ -285,7 +293,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, providerFactory)) {
+            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, ProviderFactory)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,

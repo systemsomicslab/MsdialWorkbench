@@ -3,8 +3,6 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -33,8 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             Model = model;
             Parameter = new MsdialImmsParameterViewModel(Model.Parameter);
 
-            var dt = DateTime.Now;
-            AlignmentResultFileName = $"AlignmentResult_{dt:yyy_MM_dd_hh_mm_ss}";
+            AlignmentResultFileName = Model.AlignmentResultFileName;
             AnalysisFiles = Model.AnalysisFiles;
 
             ExcludedMassList = new ObservableCollection<MzSearchQueryVM>(
@@ -42,13 +39,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                     .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
 
-            if (Model.ParameterBase.SearchedAdductIons.IsEmptyOrNull()) {
-                Model.ParameterBase.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.ParameterBase.IonMode);
-            }
-            Model.ParameterBase.SearchedAdductIons[0].IsIncluded = true;
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.ParameterBase.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
+            var ions = new ReactiveCollection<AdductIonVM>();
 
-            Model.ParameterBase.QcAtLeastFilter = false;
+            DataCollectionSettingViewModel = new ImmsDataCollectionSettingViewModel(Model.DataCollectionSettingModel);
 
             var factory = new ImmsAnnotationSettingViewModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
@@ -139,6 +133,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
 
+        public ImmsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
+
         public bool TogetherWithAlignment {
             get => (Parameter.ProcessOption.HasFlag(ProcessOption.Alignment));
             set {
@@ -227,7 +223,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 }
             }
 
+            DataCollectionSettingViewModel.Commit();
             Model.ClosingMethod();
+            Model.SetDataProviderFactoryParameter();
 
             return true;
         }

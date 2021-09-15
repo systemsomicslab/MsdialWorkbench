@@ -21,7 +21,8 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <TabControl Grid.Row="0" Name="TabControl_ParameterSetting" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TabItem Name="TabItem_DataCollection" Header="Data collection">
+            <TabItem Name="TabItem_DataCollection" Header="Data collection"
+                     DataContext="{Binding DataCollectionSettingViewModel, Mode=OneTime}">
                 <local:DataCollectionView />
             </TabItem>
 

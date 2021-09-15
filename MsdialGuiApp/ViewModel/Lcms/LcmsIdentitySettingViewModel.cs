@@ -16,6 +16,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly LcmsIdentitySettingModel model;
         private readonly LcmsAnnotatorSettingViewModelFactory annotatorFactory;
 
+        private static readonly string DataBaseIDDuplicateErrorMessage = "DataBase name is duplicated.";
+        private static readonly string AnnotatorIDDuplicateErrorMessage = "Annotation method name is duplicated.";
+
         public LcmsIdentitySettingViewModel(LcmsIdentitySettingModel model) {
             this.model = model;
             annotatorFactory = new LcmsAnnotatorSettingViewModelFactory();
@@ -48,6 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
 
             var addedDataBase = DataBaseViewModels.ObserveAddChanged();
+            addedDataBase.Subscribe(vm => DataBaseViewModel.Value = vm).AddTo(Disposables);
             var removedDataBase = DataBaseViewModels.ObserveRemoveChanged();
             var dataBaseIDDuplicate = new[]
             {
@@ -55,20 +59,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.DataBaseID).ToUnit(),
             }.Merge()
-            .SelectMany(_ => Observable.Defer(() => Observable.Return(
-                DataBaseViewModels.Select(vm => vm.DataBaseID.Value).Distinct().Count() != DataBaseViewModels.Count)));
+            .Select(_ => DataBaseViewModels.Select(vm => vm.DataBaseID.Value).Distinct().Count() != DataBaseViewModels.Count);
+            dataBaseIDDuplicate.Subscribe(hasError => {
+                if (hasError) {
+                    AddError(nameof(DataBaseViewModels), DataBaseIDDuplicateErrorMessage);
+                }
+                else {
+                    RemoveError(nameof(DataBaseViewModels), DataBaseIDDuplicateErrorMessage);
+                }
+            }).AddTo(Disposables);
             var dataBaseHasError = new[]
             {
                 addedDataBase.ToUnit(),
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors).ToUnit(),
             }.Merge()
-            .SelectMany(_ => Observable.Defer(() =>
+            .Select(_ => Observable.Defer(() =>
                 DataBaseViewModels.Select(vm => vm.ObserveHasErrors)
                     .CombineLatestValuesAreAllFalse()
-                    .Inverse()));
+                    .Inverse()))
+            .Switch();
 
             var addedAnnotator = AnnotatorViewModels.ObserveAddChanged();
+            addedAnnotator.Subscribe(vm => AnnotatorViewModel.Value = vm).AddTo(Disposables);
             var removedAnnotator = AnnotatorViewModels.ObserveRemoveChanged();
             var annotatorIDDuplicate = new[]
             {
@@ -76,18 +89,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 removedAnnotator.ToUnit(),
                 AnnotatorViewModels.ObserveElementObservableProperty(vm => vm.AnnotatorID).ToUnit(),
             }.Merge()
-            .SelectMany(_ => Observable.Defer(() => Observable.Return(
-                AnnotatorViewModels.Select(vm => vm.AnnotatorID.Value).Distinct().Count() != AnnotatorViewModels.Count)));
+            .Select(_ => Observable.Defer(() => Observable.Return(
+                AnnotatorViewModels.Select(vm => vm.AnnotatorID.Value).Distinct().Count() != AnnotatorViewModels.Count)))
+            .Switch();
+            annotatorIDDuplicate.Subscribe(hasError => {
+                if (hasError) {
+                    AddError(nameof(AnnotatorViewModels), AnnotatorIDDuplicateErrorMessage);
+                }
+                else {
+                    RemoveError(nameof(AnnotatorViewModels), AnnotatorIDDuplicateErrorMessage);
+                }
+            }).AddTo(Disposables);
             var annotatorHasError = new[]
             {
                 addedAnnotator.ToUnit(),
                 removedAnnotator.ToUnit(),
                 AnnotatorViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors).ToUnit(),
             }.Merge()
-            .SelectMany(_ => Observable.Defer(() =>
+            .Select(_ => Observable.Defer(() =>
                 AnnotatorViewModels.Select(vm => vm.ObserveHasErrors)
                     .CombineLatestValuesAreAllFalse()
-                    .Inverse()));
+                    .Inverse()))
+            .Switch();
 
             ObserveHasErrors = new[]
             {
@@ -111,7 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             AddAnnotatorCommand = new[]{
                 dbIsNotNull.Inverse(),
-                DataBaseViewModel.Where(vm => !(vm is null)).SelectMany(vm => vm.ObserveHasErrors)
+                DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors).Switch()
             }.CombineLatestValuesAreAllFalse()
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.AddAnnotator)
@@ -143,13 +166,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .WithSubscribe(() => moveDownTrigger.OnNext(Unit.Default))
             .AddTo(Disposables);
 
+            var hasAnnotator = DataBaseViewModel.Select(vm => vm is null || AnnotatorViewModels.All(annotator => annotator.Model.DataBaseSettingModel != vm.Model));
             IsSourceTypeEnabled = new[]
             {
-                AddAnnotatorCommand.ToUnit(),
-                RemoveAnnotatorCommand.ToUnit(),
+                AnnotatorViewModels.ObserveAddChanged().ToUnit(),
+                AnnotatorViewModels.ObserveRemoveChanged().ToUnit(),
                 DataBaseViewModel.ToUnit(),
             }.Merge()
-            .Select(_ => AnnotatorViewModels.All(vm => vm.Model.DataBaseSettingModel != DataBaseViewModel.Value.Model))
+            .Select(_ => DataBaseViewModel.Value is null || AnnotatorViewModels.All(annotator => annotator.Model.DataBaseSettingModel != DataBaseViewModel.Value.Model))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }

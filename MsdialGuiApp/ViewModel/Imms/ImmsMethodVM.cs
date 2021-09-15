@@ -5,7 +5,6 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
 using System.Windows;
@@ -44,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
-                  new ImmsMethodModel(storage, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: true)),
+                  new ImmsMethodModel(storage),
                   storage,
                   compoundSearchService, peakSpotTableService) {
 
@@ -137,6 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public override void LoadProject() {
             AnalysisFilesView.MoveCurrentToFirst();
+            model.Load();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
             LoadAnalysisFileCommand.Execute();
         }

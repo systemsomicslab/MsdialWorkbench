@@ -39,6 +39,9 @@ namespace CompMs.MsdialImmsCore.Parameter
         [Key(156)]
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
 
+        [Key(157)]
+        public IImmsDataProviderFactoryParameter ProviderFactoryParameter { get; set; }
+
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
 

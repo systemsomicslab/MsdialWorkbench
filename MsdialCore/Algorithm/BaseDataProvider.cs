@@ -35,6 +35,10 @@ namespace CompMs.MsdialCore.Algorithm
             throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
         }
 
+        protected static IEnumerable<RawSpectrum> FilterByScanTime(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd) {
+            return spectrums.Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd);
+        }
+
         public virtual ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
             return LoadMsNSpectrums(1);
         }

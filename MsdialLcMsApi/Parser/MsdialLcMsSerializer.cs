@@ -17,9 +17,11 @@ namespace CompMs.MsdialLcMsApi.Parser
 
         protected override void LoadDataBaseMapper(string path, MsdialDataStorage storage) {
             var mapper = new DataBaseMapper();
-            foreach (var db in storage.DataBases.MetabolomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+            if (!(storage.DataBases is null)) {
+                foreach (var db in storage.DataBases.MetabolomicsDataBases) {
+                    foreach (var pair in db.Pairs) {
+                        mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                    }
                 }
             }
             storage.DataBaseMapper = mapper;

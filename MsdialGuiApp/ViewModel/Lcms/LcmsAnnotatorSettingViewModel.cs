@@ -3,6 +3,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -10,7 +11,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     public interface ILcmsAnnotatorSettingViewModel : IDisposable
     {
         ILcmsAnnotatorSettingModel Model { get; }
-        ReactivePropertySlim<string> AnnotatorID { get; }
+        ReactiveProperty<string> AnnotatorID { get; }
         ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
@@ -20,10 +21,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsMspAnnotatorSettingViewModel(LcmsMspAnnotatorSettingModel model) {
             this.model = model;
-            AnnotatorID = this.model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
+            AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
+                .SetValidateAttribute(() => AnnotatorID)
+                .AddTo(Disposables);
             ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
             ObserveHasErrors = new[]
             {
+                AnnotatorID.ObserveHasErrors,
                 ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
                 ParameterViewModel.Ms2Tolerance.ObserveHasErrors,
                 ParameterViewModel.RtTolerance.ObserveHasErrors,
@@ -46,7 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
         public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
-        public ReactivePropertySlim<string> AnnotatorID { get; }
+        [Required(ErrorMessage = "Annotator id is required.")]
+        public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
@@ -56,10 +61,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsTextDBAnnotatorSettingViewModel(LcmsTextDBAnnotatorSettingModel model) {
             this.model = model;
-            AnnotatorID = this.model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
+            AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
+                .SetValidateAttribute(() => AnnotatorID)
+                .AddTo(Disposables);
             ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
             ObserveHasErrors = new[]
             {
+                AnnotatorID.ObserveHasErrors,
                 ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
                 ParameterViewModel.RtTolerance.ObserveHasErrors,
                 ParameterViewModel.IsUseTimeForAnnotationFiltering.ObserveHasErrors,
@@ -72,7 +80,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
         public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
-        public ReactivePropertySlim<string> AnnotatorID { get; }
+        [Required(ErrorMessage = "Annotator id is required.")]
+        public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
@@ -82,7 +91,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsProteomicsAnnotatorSettingViewModel(LcmsProteomicsAnnotatorSettingModel model) {
             this.model = model;
-            AnnotatorID = this.model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
+            AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
+                .SetValidateAttribute(() => AnnotatorID)
+                .AddTo(Disposables);
             ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
             ProteomicsParameterVM = new ProteomicsParameterVM(this.model.ProteomicsParameter).AddTo(Disposables);
             ObserveHasErrors = new[]
@@ -104,14 +115,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
                 ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
                 ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
+                AnnotatorID.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
 
-        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model; 
-        public ReactivePropertySlim<string> AnnotatorID { get; }
+        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
+        [Required(ErrorMessage = "Annotator id is required.")]
+        public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }

@@ -48,31 +48,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Model.ParameterBase.QcAtLeastFilter = false;
 
-            var factory = new LcmsAnnotationSettingViewModelFactory(Model.Parameter);
-            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
-                    Model.AnnotationProcessSettingModel,
-                    factory.Create)
-                .AddTo(Disposables);
-
-            if (Model.ParameterBase.TargetOmics == TargetOmics.Lipidomics) {
-                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
-                var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
-                (annotationMethod as LcmsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
-            }
-
             IdentitySettingViewModel = new LcmsIdentitySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
 
-            ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
-                .ToReactiveCommand<Window>()
-                .WithSubscribe(window => ContinueProcess(window))
-                .AddTo(Disposables);
+            ContinueProcessCommand = new[]{
+                IdentitySettingViewModel.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand<Window>()
+            .WithSubscribe(window => ContinueProcess(window))
+            .AddTo(Disposables);
         }
 
         public LcmsAnalysisParameterSetModel Model { get; }
-
-        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
         public LcmsIdentitySettingViewModel IdentitySettingViewModel { get; }
 

@@ -82,7 +82,7 @@
                     <RadioButton Content="BPI(base peak intensity)" IsChecked="{Binding UseMs1WithHighestBpi.Value}"/>
                     <RadioButton Content="Average(average all ms1 spectrums)" IsChecked="{Binding UseAverageMs1.Value}"/>
 
-                    <ui:LabeledContent PrependLabel="MS1 retention time range">
+                    <ui:LabeledContent PrependLabel="MS1 scan time range">
                         <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>

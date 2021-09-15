@@ -97,6 +97,8 @@ namespace CompMs.App.Msdial.Model.Core
             if (ParameterBase.TogetherWithAlignment && AnalysisFiles.Count >= 2) {
                 ParameterBase.QcAtLeastFilter = false;
             }
+
+            ParameterBase.SearchedAdductIons = SearchedAdductIons.ToList();
         }
     }
 }
