@@ -51,48 +51,68 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
     }
 
-    public class ImmsRepresentativeDataProvider : ImmsBaseDataProvider
+    public class ImmsRepresentativeDataProvider : BaseDataProvider
     {
-        private readonly List<RawSpectrum> representativeSpectrum;
+        public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd)
+            : base(SelectRepresentative(FilterByScanTime(spectrums, timeBegin, timeEnd))) {
+            
+        }
 
-        public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums) : base(spectrums) {
-            this.representativeSpectrum = SelectRepresentative(rawSpectrums).OrderBy(spectrum => spectrum.DriftTime).ToList();
+        public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums)
+            : base(SelectRepresentative(spectrums)) {
 
         }
 
-        public ImmsRepresentativeDataProvider(RawMeasurement rawObj) : base(rawObj) {
-            this.representativeSpectrum = SelectRepresentative(rawSpectrums).OrderBy(spectrum => spectrum.DriftTime).ToList();
+        public ImmsRepresentativeDataProvider(RawMeasurement rawObj, double timeBegin, double timeEnd)
+            : this(rawObj.SpectrumList, timeBegin, timeEnd) {
+
+        }
+
+        public ImmsRepresentativeDataProvider(RawMeasurement rawObj)
+            : this(rawObj.SpectrumList) {
+
+        }
+
+        public ImmsRepresentativeDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
+            :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+
         }
 
         public ImmsRepresentativeDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, isGuiProcess, retry)) { }
+            :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList) {
 
-        private static List<RawSpectrum> SelectRepresentative(List<RawSpectrum> rawSpectrums) {
-            var scannumber = rawSpectrums
+        }
+
+        private static List<RawSpectrum> SelectRepresentative(IEnumerable<RawSpectrum> rawSpectrums) {
+            var ms1Spectrums = rawSpectrums
                 .Where(spectrum => spectrum.MsLevel == 1)
                 .GroupBy(spectrum => spectrum.ScanNumber)
-                .Argmax(spectrums => spectrums.Sum(spectrum => spectrum.TotalIonCurrent)).Key;
-            return rawSpectrums.Where(spectrum => spectrum.ScanNumber == scannumber).ToList();
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return new ReadOnlyCollection<RawSpectrum>(representativeSpectrum);
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return representativeSpectrum.Concat(rawSpectrums.Where(spec => spec.MsLevel != 1)).ToList().AsReadOnly();
+                .Argmax(spectrums => spectrums.Sum(spectrum => spectrum.TotalIonCurrent));
+            var result = ms1Spectrums.Concat(rawSpectrums.Where(spec => spec.MsLevel != 1))
+                .Select(spec => spec.ShallowCopy())
+                .OrderBy(spectrum => spectrum.DriftTime).ToList();
+            for (int i = 0; i < result.Count; i++) {
+                result[i].Index = i;
+            }
+            return result;
         }
     }
 
-    public class ImmsAverageDataProvider : ImmsBaseDataProvider
+    public class ImmsAverageDataProvider : BaseDataProvider
     {
-        private readonly List<RawSpectrum> accumulatedSpectrum;
+        public ImmsAverageDataProvider(IEnumerable<RawSpectrum> spectrums, double massTolerance, double driftTolerance, double timeBegin, double timeEnd)
+            : base(AccumulateSpectrum(FilterByScanTime(spectrums, timeBegin, timeEnd).ToList(), massTolerance, driftTolerance)) {
 
+        }
+        
         public ImmsAverageDataProvider(IEnumerable<RawSpectrum> spectrums, double massTolerance, double driftTolerance)
-            : base(spectrums) {
+            : base(AccumulateSpectrum(spectrums.ToList(), massTolerance, driftTolerance)) {
 
-            this.accumulatedSpectrum = AccumulateSpectrum(rawSpectrums, massTolerance, driftTolerance).ToList();
-            this.cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
+        }
+
+        public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance, double timeBegin, double timeEnd)
+            : this(rawObj.SpectrumList, massTolerance, driftTolerance, timeBegin, timeEnd) {
+
         }
 
         public ImmsAverageDataProvider(RawMeasurement rawObj, double massTolerance, double driftTolerance)
@@ -103,11 +123,20 @@ namespace CompMs.MsdialImmsCore.Algorithm
         public ImmsAverageDataProvider(RawMeasurement rawObj)
             :this(rawObj, 0.001, 0.002) { }
 
+        public ImmsAverageDataProvider(AnalysisFileBean file, double massTolerance, double driftTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
+            :this(LoadMeasurement(file, isGuiProcess, retry), massTolerance, driftTolerance, timeBegin, timeEnd) {
+
+        }
+
         public ImmsAverageDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, isGuiProcess, retry)) { }
+            :this(LoadMeasurement(file, isGuiProcess, retry)) {
+
+        }
 
         public ImmsAverageDataProvider(AnalysisFileBean file, double massTolerance, double driftTolerance, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, isGuiProcess, retry), massTolerance, driftTolerance) { }
+            :this(LoadMeasurement(file, isGuiProcess, retry), massTolerance, driftTolerance) {
+
+        }
 
         private static List<RawSpectrum> AccumulateSpectrum(List<RawSpectrum> rawSpectrums, double massTolerance, double driftTolerance) {
             var ms1Spectrum = rawSpectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
@@ -136,42 +165,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var basepeak = peaks.Argmax(peak => peak.Intensity);
                 massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
             }
-            var result = CloneRawSpectrum(ms1Spectrums.First());
+            var result = ms1Spectrums.First().ShallowCopy();
             SpectrumParser.setSpectrumProperties(result, massBins);
             return new[] { result }.Concat(
                 spectrums.Where(spectrum => spectrum.MsLevel != 1)
+                .Select(spec => spec.ShallowCopy())
                 .OrderBy(spectrum => spectrum.Index));
-        }
-
-        private static RawSpectrum CloneRawSpectrum(RawSpectrum spec) {
-            return new RawSpectrum() {
-                OriginalIndex = spec.OriginalIndex,
-                ScanNumber = spec.ScanNumber,
-                ScanStartTime = spec.ScanStartTime,
-                ScanStartTimeUnit = spec.ScanStartTimeUnit,
-                MsLevel = 1,
-                ScanPolarity = spec.ScanPolarity,
-                Precursor = null,
-                DriftScanNumber = spec.DriftScanNumber,
-                DriftTime = spec.DriftTime,
-                DriftTimeUnit = spec.DriftTimeUnit,
-            };
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return LoadMsNSpectrums(1);
-        }
-
-        private readonly Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache;
-        public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            if (cache.ContainsKey(level))
-                return cache[level];
-            else
-                return cache[level] = accumulatedSpectrum.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return accumulatedSpectrum.AsReadOnly();
         }
     }
 
@@ -179,21 +178,26 @@ namespace CompMs.MsdialImmsCore.Algorithm
         : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
     {
         public ImmsRepresentativeDataProviderFactory(
+            double timeBegin, double timeEnd,
             int retry = 5, bool isGuiProcess = false) {
 
+            this.timeBegin = timeBegin;
+            this.timeEnd = timeEnd;
             this.retry = retry;
             this.isGuiProcess = isGuiProcess;
         }
 
         private readonly bool isGuiProcess;
         private readonly int retry;
+        private readonly double timeBegin;
+        private readonly double timeEnd;
 
         public IDataProvider Create(AnalysisFileBean file) {
-            return new ImmsRepresentativeDataProvider(file, isGuiProcess, retry);
+            return new ImmsRepresentativeDataProvider(file, timeBegin, timeEnd, isGuiProcess, retry);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
-            return new ImmsRepresentativeDataProvider(rawMeasurement);
+            return new ImmsRepresentativeDataProvider(rawMeasurement, timeBegin, timeEnd);
         }
     }
 
@@ -208,18 +212,35 @@ namespace CompMs.MsdialImmsCore.Algorithm
             this.isGuiProcess = isGuiProcess;
             this.massTolerance = massTolerance;
             this.driftTolerance = driftTolerance;
+            this.timeBegin = double.MinValue;
+            this.timeEnd = double.MaxValue;
+        }
+
+        public ImmsAverageDataProviderFactory(
+            double massTolerance, double driftTolerance,
+            double timeBegin, double timeEnd,
+            int retry = 5, bool isGuiProcess = false) {
+
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+            this.massTolerance = massTolerance;
+            this.driftTolerance = driftTolerance;
+            this.timeBegin = timeBegin;
+            this.timeEnd = timeEnd;
         }
 
         private readonly bool isGuiProcess;
         private readonly int retry;
         private readonly double massTolerance, driftTolerance;
+        private readonly double timeBegin;
+        private readonly double timeEnd;
 
         public IDataProvider Create(AnalysisFileBean file) {
-            return new ImmsAverageDataProvider(file, massTolerance, driftTolerance, isGuiProcess, retry);
+            return new ImmsAverageDataProvider(file, massTolerance, driftTolerance, timeBegin, timeEnd, isGuiProcess, retry);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
-            return new ImmsAverageDataProvider(rawMeasurement, massTolerance, driftTolerance);
+            return new ImmsAverageDataProvider(rawMeasurement, massTolerance, driftTolerance, timeBegin, timeEnd);
         }
     }
 }
