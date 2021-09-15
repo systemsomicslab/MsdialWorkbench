@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var ofd = new OpenFileDialog
             {
                 Title = "Import alibrary file",
-                Filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|Text library(*.txt)|*.txt|All(*)|*",
+                Filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|FASTA file(*.fasta)|*.fasta|Text library(*.txt)|*.txt|All(*)|*",
                 RestoreDirectory = true,
                 Multiselect = false,
             };

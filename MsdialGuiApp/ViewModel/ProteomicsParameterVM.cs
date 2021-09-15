@@ -1,4 +1,7 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.Common.Proteomics.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -11,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel {
-    class ProteomicsParameterVM : ViewModelBase {
+    public class ProteomicsParameterVM : ViewModelBase {
 
         [Required(ErrorMessage = "Andromeda delta required.")]
         [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
@@ -34,6 +37,12 @@ namespace CompMs.App.Msdial.ViewModel {
         public ReactiveProperty<string> FalseDiscoveryRateForProtein { get; }
 
         private readonly ProteomicsParameter model;
+
+        public List<Enzyme> Enzymes { get => model.EnzymesForDigestion; }
+        public int MaxMissedCleavage { get => model.MaxMissedCleavage; }
+        public List<Modification> VariableModifications { get => model.VariableModifications; }
+        public List<Modification> FixedModifications { get => model.FixedModifications; }
+        public int MaxNumberOfModificationsPerPeptide { get => model.MaxNumberOfModificationsPerPeptide; }
 
         public ProteomicsParameterVM(ProteomicsParameter model) {
             this.model = model;
@@ -71,6 +80,32 @@ namespace CompMs.App.Msdial.ViewModel {
                 .AddTo(Disposables);
 
         }
+
+        public DelegateCommand EnzymeSetCommand => enzymeSetCommand ?? (enzymeSetCommand = new DelegateCommand(EnzymeSet));
+        private DelegateCommand enzymeSetCommand;
+
+        private void EnzymeSet() {
+            using (var vm = new EnzymeSettingViewModel(model)) {
+                var window = new EnzymeSettingWin {
+                    DataContext = vm,
+                };
+                window.ShowDialog();
+            }
+        }
+
+        public DelegateCommand ModificationSetCommand => modificationSetCommand ?? (modificationSetCommand = new DelegateCommand(ModificationSet));
+        private DelegateCommand modificationSetCommand;
+
+        private void ModificationSet() {
+            using (var vm = new ModificationSettingViewModel(model)) {
+                var window = new ModificationSettingWin {
+                    DataContext = vm,
+                };
+                window.ShowDialog();
+            }
+        }
+
+
 
     }
 }

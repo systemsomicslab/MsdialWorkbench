@@ -83,12 +83,39 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsProteomicsAnnotatorSettingViewModel(LcmsProteomicsAnnotatorSettingModel model) {
             this.model = model;
             AnnotatorID = this.model.ToReactivePropertySlimAsSynchronized(m => m.AnnotatorID).AddTo(Disposables);
-            ObserveHasErrors = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(false));
+            ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
+            ProteomicsParameterVM = new ProteomicsParameterVM(this.model.ProteomicsParameter).AddTo(Disposables);
+            ObserveHasErrors = new[]
+            {
+                ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
+                ParameterViewModel.Ms2Tolerance.ObserveHasErrors,
+                ParameterViewModel.RtTolerance.ObserveHasErrors,
+                ParameterViewModel.RelativeAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.AbsoluteAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.MassRangeBegin.ObserveHasErrors,
+                ParameterViewModel.MassRangeEnd.ObserveHasErrors,
+                ParameterViewModel.SimpleDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.WeightedDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.ReverseDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.MatchedPeaksPercentageCutOff.ObserveHasErrors,
+                ParameterViewModel.MinimumSpectrumMatch.ObserveHasErrors,
+                ParameterViewModel.TotalScoreCutoff.ObserveHasErrors,
+                ProteomicsParameterVM.AndromedaDelta.ObserveHasErrors,
+                ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
+                ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
+                ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
-        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
+        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model; 
         public ReactivePropertySlim<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+        public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
+        public ProteomicsParameterVM ProteomicsParameterVM { get; }
     }
 
     public class LcmsAnnotatorSettingViewModelFactory

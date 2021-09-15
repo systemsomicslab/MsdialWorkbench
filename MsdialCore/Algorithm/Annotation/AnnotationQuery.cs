@@ -7,10 +7,7 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IPepAnnotationQuery {
-        IMSIonProperty Property { get; }
-        IMSScanProperty Scan { get; }
-        IReadOnlyList<IsotopicPeak> Isotopes { get; }
+    public interface IPepAnnotationQuery : IAnnotationQuery {
         MsRefSearchParameterBase MsRefSearchParameter { get; }
         ProteomicsParameter ProteomicsParameter { get; }
     }
@@ -19,6 +16,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public IMSIonProperty Property { get; }
         public IMSScanProperty Scan { get; }
         public IReadOnlyList<IsotopicPeak> Isotopes { get; }
+        public MsRefSearchParameterBase Parameter => MsRefSearchParameter;
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
         public ProteomicsParameter ProteomicsParameter { get; }
 

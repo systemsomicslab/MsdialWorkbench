@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    throw new NotImplementedException();
+                    return new ShotgunProteomicsDB(DataBasePath, DataBaseID, parameter.ProteomicsParam, parameter.MspSearchParam);
                 default:
                     return null;
             }

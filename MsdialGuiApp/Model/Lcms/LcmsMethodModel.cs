@@ -8,6 +8,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -142,6 +143,21 @@ namespace CompMs.App.Msdial.Model.Lcms
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
             return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
+        }
+
+        private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
+            var containers = new List<IAnnotatorContainer<IPepAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            var pepContainers = new List<IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.ProteomicsDataBases) {
+                pepContainers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            return new AnnotationProcessOfProteoMetabolomics<IPepAnnotationQuery>(
+                new PepAnnotationQueryFactory(parameter.PeakPickBaseParam, parameter.ProteomicsParam, parameter.MspSearchParam),
+                containers, 
+                pepContainers);
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {

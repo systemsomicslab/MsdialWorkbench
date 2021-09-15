@@ -46,11 +46,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
         }
 
-        public IAnnotationQueryFactory<T> QueryFactory { get; }
-        public IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
-
+        //public IAnnotationQueryFactory<T> QueryFactory { get; }
         public IPepAnnotationQueryFactory<T> PepQueryFactory { get; }
+        public IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
         public IReadOnlyList<IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult>> PepAnnotatorContainers { get; }
+
+        public AnnotationProcessOfProteoMetabolomics(
+            IPepAnnotationQueryFactory<T> pepQueryFactory,
+            IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> containers,
+            IReadOnlyList<IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult>> pepContainers) {
+            AnnotatorContainers = containers;
+            PepQueryFactory = pepQueryFactory;
+            PepAnnotatorContainers = pepContainers;
+        }
 
         private void RunBySingleThread(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, 
@@ -144,7 +152,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 }
             }
             if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+                var query = PepQueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
                 var annotatorContainers = AnnotatorContainers;
 
                 foreach (var annotatorContainer in annotatorContainers) {
@@ -173,7 +181,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
 
             if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+                var query = PepQueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
                 var annotatorContainers = AnnotatorContainers;
 
                 foreach (var annotatorContainer in annotatorContainers) {
