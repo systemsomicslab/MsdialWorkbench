@@ -69,25 +69,32 @@ namespace CompMs.MsdialCore.DataObj
 
         public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor) {
             DataBaseStorage result;
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
-                var storageEntry = archive.GetEntry(StoragePath);
-                using (var storageStream = storageEntry.Open()) {
-                    result = MessagePackDefaultHandler.LoadFromStream<DataBaseStorage>(storageStream);
-                }
+            try {
+                using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
+                    var storageEntry = archive.GetEntry(StoragePath);
+                    using (var storageStream = storageEntry.Open()) {
+                        result = MessagePackDefaultHandler.LoadFromStream<DataBaseStorage>(storageStream);
+                    }
 
-                foreach (var item in result.MetabolomicsDataBases) {
-                    var dbEntry = archive.GetEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
-                    using (var dbStream = dbEntry.Open()) {
-                        item.Load(dbStream, visitor);
+                    foreach (var item in result.MetabolomicsDataBases) {
+                        var dbEntry = archive.GetEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
+                        using (var dbStream = dbEntry.Open()) {
+                            item.Load(dbStream, visitor);
+                        }
+                    }
+
+                    foreach (var item in result.ProteomicsDataBases) {
+                        var dbEntry = archive.GetEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
+                        using (var dbStream = dbEntry.Open()) {
+                            item.Load(dbStream, visitor);
+                        }
                     }
                 }
-
-                foreach (var item in result.ProteomicsDataBases) {
-                    var dbEntry = archive.GetEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
-                    using (var dbStream = dbEntry.Open()) {
-                        item.Load(dbStream, visitor);
-                    }
-                }
+            }
+            catch (InvalidDataException) {
+                result = new DataBaseStorage(
+                    new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
+                    new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>());
             }
             return result;
         }
