@@ -168,6 +168,7 @@
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
+    <Compile Include="Model\Imms\ImmsDataCollectionSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsMspAnnotationSettingModel.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Imms\ImmsDataCollectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsLbmAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsPeakSpotTableViewModel.cs" />

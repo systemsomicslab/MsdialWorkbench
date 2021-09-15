@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             Parameter = parameter;
+            DataCollectionSettingModel = new ImmsDataCollectionSettingModel(parameter);
 
             if (parameter.FileID2CcsCoefficients is null) {
                 parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
@@ -32,6 +33,12 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public MsdialImmsParameter Parameter { get; }
+
+        public ImmsDataCollectionSettingModel DataCollectionSettingModel { get; }
+
+        public void SetDataProviderFactoryParameter() {
+            Parameter.ProviderFactoryParameter = DataCollectionSettingModel.CreateDataProviderFactoryParameter();
+        }
 
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; } 
     }
