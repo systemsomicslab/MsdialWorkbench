@@ -98,6 +98,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ProteomicsParameterVM = new ProteomicsParameterVM(this.model.ProteomicsParameter).AddTo(Disposables);
             ObserveHasErrors = new[]
             {
+                AnnotatorID.ObserveHasErrors,
                 ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
                 ParameterViewModel.Ms2Tolerance.ObserveHasErrors,
                 ParameterViewModel.RtTolerance.ObserveHasErrors,
@@ -115,7 +116,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
                 ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
                 ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
-                AnnotatorID.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

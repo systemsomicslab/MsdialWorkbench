@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -42,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private LipidQueryBean lipidQueryContainer;
 
         private readonly ParameterBase parameter;
+        public TargetOmics TargetOmics => parameter.TargetOmics;
 
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";

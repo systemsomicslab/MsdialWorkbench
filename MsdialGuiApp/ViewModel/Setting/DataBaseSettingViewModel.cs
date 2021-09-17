@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Lipidomics;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using Microsoft.Win32;
@@ -99,10 +100,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveCommand BrowseCommand { get; }
 
         private void Browse() {
+
+            var filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|FASTA file(*.fasta)|*.fasta|Text library(*.txt)|*.txt|All(*)|*";
+            if (Model.TargetOmics == TargetOmics.Proteomics) {
+                filter = "FASTA file(*.fasta)|*.fasta|MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|Text library(*.txt)|*.txt|All(*)|*";
+            }
+
             var ofd = new OpenFileDialog
             {
                 Title = "Import alibrary file",
-                Filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|FASTA file(*.fasta)|*.fasta|Text library(*.txt)|*.txt|All(*)|*",
+                Filter = filter,
                 RestoreDirectory = true,
                 Multiselect = false,
             };
