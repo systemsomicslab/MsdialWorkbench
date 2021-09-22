@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
+using CompMs.Common.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -253,6 +254,29 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                 }
             }
 
+            return new Formula(dict);
+        }
+
+        public static Formula Convert2FormulaObjV3(string formulaString) {
+            // StandardAtom ::= 'C' | 'H' | 'O'...
+            // IsotopeAtom ::= '[' Integer StandardAtom ']'
+            // Atom ::= (StandardAtom | IsotopeAtom) {Integer}?
+            // Molecule ::= {Atom}+
+            var standardAtom = Parsers.Satisfy(char.IsUpper)
+                .Combine(Parsers.Satisfy(char.IsLower).Select(c => c.ToString()).Or(Parsers.ReturnUnit.Select(_ => "")), (x, ys) => x + ys);
+            var isotopeAtom = Parsers.Char('[')
+                .Right(Parsers.Satisfy(char.IsDigit).Many().Combine(standardAtom))
+                .Left(Parsers.Char(']')).Select(pair => "[" + string.Concat(pair.Item1) + pair.Item2 + "]");
+            var atom = standardAtom.Or(isotopeAtom).Combine(Parsers.Integer.Or(Parsers.ReturnUnit.Select(_ => 1)));
+            var molecule = atom.Some();
+
+            var dict = new Dictionary<string, int>();
+            foreach (var p in molecule.Parse(formulaString)) {
+                if (!dict.ContainsKey(p.Item1)) {
+                    dict[p.Item1] = 0;
+                }
+                dict[p.Item1] += p.Item2;
+            }
             return new Formula(dict);
         }
 
