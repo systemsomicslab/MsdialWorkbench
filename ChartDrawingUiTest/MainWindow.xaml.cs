@@ -37,6 +37,7 @@ namespace ChartDrawingUiTest
                 typeof(Dendrogram5),
                 typeof(Heatmap4),
                 typeof(Bar1),
+                typeof(Bar2),
                 typeof(Chromatogram1),
                 typeof(FileOpenControl1),
                 typeof(DataGrid1),
