@@ -39,8 +39,6 @@
                                ItemsSource="{Binding Ms2Features/Spectrum}"
                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                               RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
@@ -57,8 +55,6 @@
                     <spectrum:LineSpectrumControl ItemsSource="{Binding Reference.Spectrum}"
                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                                  RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
                                                   HorizontalPropertyName="Mass"
                                                   VerticalPropertyName="Intensity" >
                         <spectrum:LineSpectrumControl.LinePen>
@@ -78,13 +74,11 @@
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                     HorizontalAxis="{Binding AxisMapper}"
                                     LabelTicks="{Binding LabelTicks}"
-                                    RangeX="{Binding Range}"
                                     Grid.Row="2" Grid.Column="3" />
         <axis:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
                                   VerticalAxis="{Binding AxisMapper}"
                                   LabelTicks="{Binding LabelTicks}"
-                                  RangeY="{Binding Range}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"
                    FontStyle="Italic"

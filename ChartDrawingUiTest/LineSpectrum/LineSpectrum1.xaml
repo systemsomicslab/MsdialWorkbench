@@ -51,8 +51,6 @@
                                     ItemsSource="{Binding SelectedValue, ElementName=SeriesSelector}"
                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y">
                 <spectrum:LineSpectrumControl.LinePen>
@@ -90,12 +88,10 @@
         </Border>
         <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />
         <StackPanel Orientation="Horizontal"

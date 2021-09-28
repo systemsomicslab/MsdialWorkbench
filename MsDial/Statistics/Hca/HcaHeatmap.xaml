@@ -63,8 +63,6 @@
                                 ItemsSource="{Binding HeatmapView}"
                                 HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
-                                RangeX="{Binding Range, Source={StaticResource FileAxis}}"
-                                RangeY="{Binding Range, Source={StaticResource MetaboliteAxis}}"
                                 HorizontalPropertyName="FileId"
                                 VerticalPropertyName="MetaboliteId"
                                 DegreePropertyName="Intensity"
@@ -94,8 +92,6 @@
                                       Tree="{Binding FileTree}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource FileDendrogramAxis}}"
-                                      RangeX="{Binding Range, Source={StaticResource FileAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource FileDendrogramAxis}}"
                                       FlippedY="True"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
@@ -110,8 +106,6 @@
                                       Tree="{Binding MetaboliteTree}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteDendrogramAxis}}"
-                                      RangeX="{Binding Range, Source={StaticResource MetaboliteAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource MetaboliteDendrogramAxis}}"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
                                       behavior:MoveByDragBehavior.IsEnabled="True"
@@ -130,7 +124,6 @@
         <axis:HorizontalAxisControl x:Name="file_axis"
                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource FileAxis}}"
                                     LabelSize="{Binding FileLabelSize}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
                                     Grid.Column="3" Grid.Row="4" >
@@ -147,7 +140,6 @@
         <axis:VerticalAxisControl x:Name="metabolite_axis"
                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource MetaboliteAxis}}"
                                   LabelSize="{Binding MetaboliteLabelSize}"
                                   Grid.Column="1" Grid.Row="2" >
             <axis:VerticalAxisControl.ToolTip>
@@ -163,7 +155,6 @@
         <axis:HorizontalColorAxisControl x:Name="file_coloraxis"
                                          HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                          LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
-                                         RangeX="{Binding Range, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"
                                          Grid.Column="3" Grid.Row="1">
             <axis:HorizontalColorAxisControl.ToolTip>
@@ -179,7 +170,6 @@
         <axis:VerticalColorAxisControl x:Name="metabolite_coloraxis"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
-                                       RangeY="{Binding Range, Source={StaticResource MetaboliteAxis}}"
                                        IdentityPropertyName="TypeBrush"
                                        Grid.Column="4" Grid.Row="2" >
             <axis:VerticalColorAxisControl.ToolTip>
@@ -200,8 +190,7 @@
             <axis:VerticalAxisControl MinWidth="20"
                                       MaxWidth="30"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource HeatmapValueAxis}}" />
+                                      LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}" />
             <Rectangle MinWidth="30"
                        MaxWidth="40">
                 <Rectangle.Fill>

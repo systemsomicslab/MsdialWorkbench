@@ -49,8 +49,6 @@
                                         ItemsSource="{Binding Ms1Spots}"
                                         HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
                                         VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                         HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
                                         EachPlotBrushName="SpotColor"
@@ -115,12 +113,10 @@
         </Border>
         <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"

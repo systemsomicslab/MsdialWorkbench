@@ -230,8 +230,6 @@
                                                   ItemsSource="{Binding Ms2DecSpectrum}"
                                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}, UpdateSourceTrigger=PropertyChanged}"
-                                                  RangeY="{Binding Range, Source={StaticResource MeasureIntensityAxisManager}}"
                                                   HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" >
                         <spectrum:LineSpectrumControl.LinePen>
                             <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
@@ -255,8 +253,6 @@
                                            ItemsSource="{Binding Compounds/Spectrum}"
                                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                            VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
-                                           RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                           RangeY="{Binding Range, Source={StaticResource ReferenceIntensityAxisManager}}"
                                            FlippedY="False"
                                            HorizontalPropertyName="Mass"
                                            VerticalPropertyName="Intensity">
@@ -269,19 +265,16 @@
                                             DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                             HorizontalAxis="{Binding AxisMapper}"
                                             LabelTicks="{Binding LabelTicks}"
-                                            RangeX="{Binding Range}"
                                             Grid.Row="3" Grid.Column="2" />
                 <axis:VerticalAxisControl x:Name="MeasureIntensityAxis"
                                           DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
                                           VerticalAxis="{Binding AxisMapper}"
                                           LabelTicks="{Binding LabelTicks}"
-                                          RangeY="{Binding Range}"
                                           Grid.Row="1" Grid.Column="1" />
                 <axis:VerticalAxisControl x:Name="ReferenceIntensityAxis"
                                           DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
                                           VerticalAxis="{Binding AxisMapper}"
                                           LabelTicks="{Binding LabelTicks}"
-                                          RangeY="{Binding Range}"
                                           FlippedY="False"
                                           Grid.Row="2" Grid.Column="1" />
                 <TextBlock Text="m/z"

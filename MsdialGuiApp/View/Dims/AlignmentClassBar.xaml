@@ -25,8 +25,6 @@
             <bar:BarControl ItemsSource="{Binding BarItems, Mode=OneWay}"
                             HorizontalAxis="{Binding AxisMapper, Source={StaticResource ClassAxis}}"
                             VerticalAxis="{Binding AxisMapper, Source={StaticResource PeakAxis}}"
-                            RangeX="{Binding Range, Source={StaticResource ClassAxis}, Mode=TwoWay}"
-                            RangeY="{Binding Range, Source={StaticResource PeakAxis}, Mode=TwoWay}"
                             HorizontalPropertyName="Class"
                             VerticalPropertyName="Height">
                 <bar:BarControl.ToolTip>

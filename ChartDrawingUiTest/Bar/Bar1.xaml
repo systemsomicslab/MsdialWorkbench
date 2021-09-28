@@ -46,8 +46,6 @@
                             ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
                             HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalContinuousAxis}}"
                             VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                            RangeX="{Binding Range, Source={StaticResource HorizontalContinuousAxis}}"
-                            RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
                             HorizontalPropertyName="X" VerticalPropertyName="Y"
                             Grid.Row="1" Grid.Column="1">
                 <bar:BarControl.ToolTip>
@@ -63,11 +61,9 @@
             </bar:BarControl>
             <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                       Grid.Row="1" Grid.Column="0" />
             <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalContinuousAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalContinuousAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource HorizontalContinuousAxis}, Mode=TwoWay}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"
                           VerticalAlignment="Stretch"
@@ -98,8 +94,6 @@
                             ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
                             HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalCategoryAxis}}"
                             VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                            RangeX="{Binding Range, Source={StaticResource HorizontalCategoryAxis}}"
-                            RangeY="{Binding Range, Source={StaticResource VerticalAxis}}"
                             HorizontalPropertyName="X" VerticalPropertyName="Y"
                             Grid.Row="1" Grid.Column="1">
                 <bar:BarControl.ToolTip>
@@ -115,11 +109,9 @@
             </bar:BarControl>
             <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                      RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                       Grid.Row="1" Grid.Column="0" />
             <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalCategoryAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalCategoryAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource HorizontalCategoryAxis}, Mode=TwoWay}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"
                           VerticalAlignment="Stretch"
