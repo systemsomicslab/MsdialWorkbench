@@ -1,5 +1,5 @@
-﻿using CompMs.Graphics.AxisManager;
-using CompMs.Graphics.Base;
+﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -65,12 +65,13 @@
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
-    <Compile Include="AxisManager\DelegateBrushMapper.cs" />
+    <Compile Include="Design\ConstantBrushMapper.cs" />
+    <Compile Include="Design\DelegateBrushMapper.cs" />
     <Compile Include="AxisManager\Generic\CategoryAxisManager.cs" />
     <Compile Include="AxisManager\Generic\ContinuousAxisManager.cs" />
-    <Compile Include="AxisManager\IdentityBrushMapper.cs" />
-    <Compile Include="AxisManager\KeyBrushMapper.cs" />
-    <Compile Include="AxisManager\SequentialBrushMapper.cs" />
+    <Compile Include="Design\IdentityBrushMapper.cs" />
+    <Compile Include="Design\KeyBrushMapper.cs" />
+    <Compile Include="Design\SequentialBrushMapper.cs" />
     <Compile Include="Base\BrushMapper.cs" />
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
     <Compile Include="Bar\BarControl.cs" />
