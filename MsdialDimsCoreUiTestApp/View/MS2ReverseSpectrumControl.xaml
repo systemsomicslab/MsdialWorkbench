@@ -6,8 +6,7 @@
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
              x:Name="MS2RevChart"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -42,35 +41,35 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <spectrum:LineSpectrumControl x:Name="MS2Line"
+        <chart:LineSpectrumControl x:Name="MS2Line"
                                       ItemsSource="{Binding ItemsSource/Centroids, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
                                       HorizontalPropertyName="Mass"
                                       VerticalPropertyName="Intensity"
                                       Grid.Row="0" Grid.Column="3" />
-        <spectrum:LineSpectrumControl x:Name="MS2Ref"
+        <chart:LineSpectrumControl x:Name="MS2Ref"
                                ItemsSource="{Binding ItemsSource/MspMatch.Spectrum, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
                                VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="2" Grid.Column="3" >
-            <spectrum:LineSpectrumControl.LinePen>
+            <chart:LineSpectrumControl.LinePen>
                 <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-            </spectrum:LineSpectrumControl.LinePen>
-        </spectrum:LineSpectrumControl>
-        <axis:HorizontalAxisControl x:Name="MzAxis"
+            </chart:LineSpectrumControl.LinePen>
+        </chart:LineSpectrumControl>
+        <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                     HorizontalAxis="{Binding AxisMapper}"
                                     LabelTicks="{Binding LabelTicks}"
                                     Grid.Row="4" Grid.Column="3" />
-        <axis:VerticalAxisControl x:Name="MeasureIntensityAxis"
+        <chart:VerticalAxisControl x:Name="MeasureIntensityAxis"
                                   DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
                                   VerticalAxis="{Binding AxisMapper}"
                                   LabelTicks="{Binding LabelTicks}"
                                   Grid.Row="0" Grid.Column="1" />
-        <axis:VerticalAxisControl x:Name="ReferenceIntensityAxis"
+        <chart:VerticalAxisControl x:Name="ReferenceIntensityAxis"
                                   DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
                                   VerticalAxis="{Binding AxisMapper}"
                                   LabelTicks="{Binding LabelTicks}"

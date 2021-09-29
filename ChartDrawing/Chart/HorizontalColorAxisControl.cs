@@ -7,7 +7,7 @@ using System.Windows.Media;
 using CompMs.Graphics.Behavior;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.GraphAxis
+namespace CompMs.Graphics.Chart
 {
     public class HorizontalColorAxisControl : ChartBaseControl
     {
@@ -41,32 +41,27 @@ namespace CompMs.Graphics.GraphAxis
 
         #region Property
         [Obsolete]
-        public List<LabelTickData> LabelTicks
-        {
+        public List<LabelTickData> LabelTicks {
             get => (List<LabelTickData>)GetValue(LabelTicksProperty);
             set => SetValue(LabelTicksProperty, value);
         }
 
-        public IList<Brush> LabelBrushes
-        {
+        public IList<Brush> LabelBrushes {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
             set => SetValue(LabelBrushesProperty, value);
         }
 
-        public string IdentityPropertyName
-        {
+        public string IdentityPropertyName {
             get => (string)GetValue(IdentityPropertyNameProperty);
             set => SetValue(IdentityPropertyNameProperty, value);
         }
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
-        {
+        public Point FocusedPoint {
             get => (Point)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
@@ -76,8 +71,7 @@ namespace CompMs.Graphics.GraphAxis
         private PropertyInfo iPropertyReflection;
         #endregion
 
-        public HorizontalColorAxisControl()
-        {
+        public HorizontalColorAxisControl() {
             MouseMove += VisualFocusOnMouseOver;
             ZoomByDragBehavior.SetIsEnabled(this, true);
             ZoomByWheelBehavior.SetIsEnabled(this, true);
@@ -85,8 +79,7 @@ namespace CompMs.Graphics.GraphAxis
             ResetRangeByDoubleClickBehavior.SetIsEnabled(this, true);
         }
 
-        protected override void Update()
-        {
+        protected override void Update() {
             if (HorizontalAxis == null) return;
 
             var memo = new Dictionary<object, int>();
@@ -96,15 +89,13 @@ namespace CompMs.Graphics.GraphAxis
             var sign = FlippedX ? 1 : -1;
 
             visualChildren.Clear();
-            foreach (var data in HorizontalAxis.GetLabelTicks())
-            {
+            foreach (var data in HorizontalAxis.GetLabelTicks()) {
                 if (data.TickType != TickType.LongTick) continue;
 
                 if (IdentityPropertyName != null && iPropertyReflection == null)
                     iPropertyReflection = data.Source.GetType().GetProperty(IdentityPropertyName);
 
-                if (toKey == null)
-                {
+                if (toKey == null) {
                     if (iPropertyReflection == null)
                         toKey = o => o;
                     else
@@ -115,8 +106,7 @@ namespace CompMs.Graphics.GraphAxis
                 }
 
                 if (toBrush == null)
-                    toBrush = o =>
-                    {
+                    toBrush = o => {
                         var x = toKey(o);
                         if (x is Brush b) return b;
                         if (!memo.ContainsKey(x)) memo[x] = id++;
@@ -136,16 +126,14 @@ namespace CompMs.Graphics.GraphAxis
         }
 
         #region Event handler
-        static void OnIdentityPropertyNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnIdentityPropertyNamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is HorizontalColorAxisControl chart)
                 chart.iPropertyReflection = null;
         }
         #endregion
 
         #region Mouse event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
-        {
+        void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
             VisualTreeHelper.HitTest(this,
@@ -155,27 +143,23 @@ namespace CompMs.Graphics.GraphAxis
                 );
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
+            if (focussed != FocusedItem) {
                 FocusedItem = focussed;
                 FocusedPoint = dv.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
-        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
-        {
+        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters) {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
         }
         #endregion

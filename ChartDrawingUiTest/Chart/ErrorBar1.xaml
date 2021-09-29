@@ -6,7 +6,6 @@
       xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
       xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:am="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -38,7 +37,7 @@
                           Background="WhiteSmoke"
                           BorderBrush="Black"
                           Grid.Row="1">
-            <scatter:ScatterControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
+            <chart:ScatterControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
                                     HorizontalPropertyName="X" VerticalPropertyName="Y"
                                     behavior:ZoomByDragBehavior.IsEnabled="False"
                                     behavior:ZoomByWheelBehavior.IsEnabled="False"

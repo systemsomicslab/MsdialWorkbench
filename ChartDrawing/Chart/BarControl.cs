@@ -7,7 +7,7 @@ using System.Windows.Media;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Bar
+namespace CompMs.Graphics.Chart
 {
     public class BarControl : ChartBaseControl
     {
@@ -36,8 +36,7 @@ namespace CompMs.Graphics.Bar
                 nameof(BarBrush), typeof(Brush), typeof(BarControl),
                 new PropertyMetadata(null, OnBarBrushChanged));
 
-        public Brush BarBrush
-        {
+        public Brush BarBrush {
             get => (Brush)GetValue(BarBrushProperty);
             set => SetValue(BarBrushProperty, value);
         }
@@ -82,20 +81,17 @@ namespace CompMs.Graphics.Bar
             Selector.Mapper = newValue;
         }
 
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
@@ -105,20 +101,17 @@ namespace CompMs.Graphics.Bar
             set => SetValue(BarWidthProperty, value);
         }
 
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
-        {
+        public Point FocusedPoint {
             get => (Point)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
@@ -126,7 +119,7 @@ namespace CompMs.Graphics.Bar
         public static readonly DependencyProperty BarPenProperty =
             DependencyProperty.Register(nameof(BarPen), typeof(Pen), typeof(BarControl));
 
-        public  Pen BarPen {
+        public Pen BarPen {
             get => (Pen)GetValue(BarPenProperty);
             set => SetValue(BarPenProperty, value);
         }
@@ -148,8 +141,7 @@ namespace CompMs.Graphics.Bar
         private PropertyInfo vPropertyReflection;
         #endregion
 
-        public BarControl()
-        {
+        public BarControl() {
             BarPen = new Pen(Brushes.Black, 1);
             BarPen.Freeze();
             MouseLeftButtonDown += VisualSelectOnClick;
@@ -157,9 +149,8 @@ namespace CompMs.Graphics.Bar
             ClipToBounds = true;
         }
 
-        protected override void Update()
-        {
-            if (  hPropertyReflection == null
+        protected override void Update() {
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
@@ -172,8 +163,7 @@ namespace CompMs.Graphics.Bar
             double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
 
             double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * actualHeight;
-            foreach(var visual in visualChildren)
-            {
+            foreach (var visual in visualChildren) {
                 var dv = visual as AnnotatedDrawingVisual;
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
@@ -200,8 +190,7 @@ namespace CompMs.Graphics.Bar
         }
 
         #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -228,8 +217,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -239,8 +227,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -250,8 +237,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -261,8 +247,7 @@ namespace CompMs.Graphics.Bar
         #endregion
 
         #region Mouse event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
-        {
+        void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
             VisualTreeHelper.HitTest(this,
@@ -272,10 +257,8 @@ namespace CompMs.Graphics.Bar
                 );
         }
 
-        void VisualSelectOnClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 1)
-            {
+        void VisualSelectOnClick(object sender, MouseButtonEventArgs e) {
+            if (e.ClickCount == 1) {
                 var pt = e.GetPosition(this);
 
                 VisualTreeHelper.HitTest(this,
@@ -286,27 +269,23 @@ namespace CompMs.Graphics.Bar
             }
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
+            if (focussed != FocusedItem) {
                 FocusedItem = focussed;
                 FocusedPoint = dv.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }

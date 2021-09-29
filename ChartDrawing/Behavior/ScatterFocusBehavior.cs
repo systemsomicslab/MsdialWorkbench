@@ -1,5 +1,5 @@
 ﻿using CompMs.Graphics.Adorner;
-using CompMs.Graphics.Scatter;
+using CompMs.Graphics.Chart;
 using System;
 using System.Collections.Generic;
 using System.Linq;

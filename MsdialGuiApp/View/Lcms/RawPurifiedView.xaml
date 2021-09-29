@@ -7,8 +7,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.MS2"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              Name="RawPurePlot"
              d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
@@ -54,15 +53,15 @@
             <Border Background="WhiteSmoke"
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2">
-                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms2Spectrum}"
+                <chart:LineSpectrumControl ItemsSource="{Binding Ms2Spectrum}"
                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource RawIntensityAxis}}"
                                               HorizontalPropertyName="Mass"
                                               VerticalPropertyName="Intensity" >
-                    <spectrum:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.LinePen>
                         <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
-                    </spectrum:LineSpectrumControl.LinePen>
-                    <spectrum:LineSpectrumControl.ToolTip>
+                    </chart:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Retention time: "/>
@@ -71,18 +70,18 @@
                                 <TextBlock Text="{Binding FocusedItem.Y}"/>
                             </StackPanel>
                         </ToolTip>
-                    </spectrum:LineSpectrumControl.ToolTip>
-                </spectrum:LineSpectrumControl>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
             </Border>
             <Border BorderBrush="Black"
                     BorderThickness="1,0,0,1"
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2"/>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="2" Grid.Column="2" />
-            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource RawIntensityAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource RawIntensityAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource RawIntensityAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="1" Grid.Column="1" />
@@ -125,12 +124,12 @@
             <Border Background="WhiteSmoke"
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2">
-                <spectrum:LineSpectrumControl ItemsSource="{Binding Ms2DeconvolutionSpectrum}"
+                <chart:LineSpectrumControl ItemsSource="{Binding Ms2DeconvolutionSpectrum}"
                                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
                                               VerticalAxis="{Binding AxisMapper, Source={StaticResource PureIntensityAxis}}"
                                               HorizontalPropertyName="Mass"
                                               VerticalPropertyName="Intensity" >
-                    <spectrum:LineSpectrumControl.ToolTip>
+                    <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Retention time: "/>
@@ -139,18 +138,18 @@
                                 <TextBlock Text="{Binding FocusedItem.Y}"/>
                             </StackPanel>
                         </ToolTip>
-                    </spectrum:LineSpectrumControl.ToolTip>
-                </spectrum:LineSpectrumControl>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
             </Border>
             <Border BorderBrush="Black"
                     BorderThickness="1,0,0,1"
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2"/>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="2" Grid.Column="2" />
-            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource PureIntensityAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource PureIntensityAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource PureIntensityAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="1" Grid.Column="1" />

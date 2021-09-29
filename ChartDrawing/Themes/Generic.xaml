@@ -1,7 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart"
-                    xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis"
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI"
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
@@ -156,12 +155,12 @@
                             </Border>
                         </Border>
 
-                        <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
                                                     LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
-                        <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
+                        <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
                                                   LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
@@ -238,12 +237,12 @@
                             </Border>
                         </Border>
 
-                        <axis:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
                                                     LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
-                        <axis:VerticalAxisControl x:Name="PART_VerticalAxis"
+                        <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
                                                   LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"

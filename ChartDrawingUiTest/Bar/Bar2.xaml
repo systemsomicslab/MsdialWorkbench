@@ -6,8 +6,7 @@
       xmlns:local="clr-namespace:ChartDrawingUiTest.Bar"
       mc:Ignorable="d" 
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:bar="clr-namespace:CompMs.Graphics.Bar;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Bar2">
@@ -33,14 +32,14 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <TextBlock Text="Category axis (x)" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
-        <bar:BarControl x:Name="category_bar"
+        <chart:BarControl x:Name="category_bar"
                         ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
                         HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
                         VerticalAxis="{StaticResource VerticalAxis}"
                         BrushMapper="{Binding Mapper, Source={StaticResource BarVM}}"
                         HorizontalPropertyName="X" VerticalPropertyName="Y"
                         Grid.Row="1" Grid.Column="1">
-            <bar:BarControl.ToolTip>
+            <chart:BarControl.ToolTip>
                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="X = "/>
@@ -49,12 +48,12 @@
                         <TextBlock Text="{Binding FocusedItem.Y}"/>
                     </StackPanel>
                 </ToolTip>
-            </bar:BarControl.ToolTip>
-        </bar:BarControl>
-        <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+            </chart:BarControl.ToolTip>
+        </chart:BarControl>
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Grid.Row="1" Grid.Column="0" />
-        <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalCategoryAxis}}"
                                     Grid.Row="2" Grid.Column="1" />
         <GridSplitter HorizontalAlignment="Right"

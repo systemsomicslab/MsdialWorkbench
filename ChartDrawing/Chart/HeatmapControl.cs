@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Heatmap
+namespace CompMs.Graphics.Chart
 {
     public class HeatmapControl : ChartBaseControl
     {
@@ -60,50 +60,42 @@ namespace CompMs.Graphics.Heatmap
         #endregion
 
         #region Property
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        public string DegreePropertyName
-        {
+        public string DegreePropertyName {
             get => (string)GetValue(DegreePropertyNameProperty);
             set => SetValue(DegreePropertyNameProperty, value);
         }
 
-        public GradientStopCollection GradientStops
-        {
+        public GradientStopCollection GradientStops {
             get => (GradientStopCollection)GetValue(GradientStopsProperty);
             set => SetValue(GradientStopsProperty, value);
         }
 
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
-        {
+        public Point FocusedPoint {
             get => (Point)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
@@ -117,15 +109,13 @@ namespace CompMs.Graphics.Heatmap
         private PropertyInfo zPropertyReflection;
         #endregion
 
-        public HeatmapControl()
-        {
+        public HeatmapControl() {
             MouseLeftButtonDown += VisualSelectOnClick;
             MouseMove += VisualFocusOnMouseOver;
         }
 
-        protected override void Update()
-        {
-            if (  hPropertyReflection == null
+        protected override void Update() {
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || zPropertyReflection == null
                || HorizontalAxis == null
@@ -139,15 +129,13 @@ namespace CompMs.Graphics.Heatmap
             double zmax = double.MinValue, zmin = double.MaxValue;
             double xwidth = (HorizontalAxis.TranslateToRenderPoint(1d, FlippedX) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX)) * ActualWidth;
             double ywidth = Math.Abs(VerticalAxis.TranslateToRenderPoint(1d, FlippedY) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY)) * ActualHeight;
-            foreach(var o in cv)
-            {
+            foreach (var o in cv) {
                 var z = zPropertyReflection.GetValue(o);
                 zmax = Math.Max(zmax, Convert.ToDouble(z));
                 zmin = Math.Min(zmin, Convert.ToDouble(z));
             }
 
-            foreach (var o in cv)
-            {
+            foreach (var o in cv) {
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
@@ -171,22 +159,20 @@ namespace CompMs.Graphics.Heatmap
             }
         }
 
-        static Color blendColors(Color ca, Color cb, double factor)
-        {
+        static Color blendColors(Color ca, Color cb, double factor) {
             var f = (float)factor;
             return cb * f + ca * (1 - f);
         }
 
-        static Color getGradientColor(GradientStopCollection gsc, double offset)
-        {
+        static Color getGradientColor(GradientStopCollection gsc, double offset) {
             var lowers = gsc.Where(gs => gs.Offset <= offset).ToArray();
             var highers = gsc.Where(gs => gs.Offset > offset).ToArray();
             if (offset < 0) return highers.Min(gs => (gs.Offset, gs.Color)).Color;
-            if (offset >= 1) return lowers.Max(gs => (gs.Offset, gs.Color)).Color; 
+            if (offset >= 1) return lowers.Max(gs => (gs.Offset, gs.Color)).Color;
 
-            var lo = lowers.Max(gs => (gs.Offset, gs.Color)); 
+            var lo = lowers.Max(gs => (gs.Offset, gs.Color));
             var hi = highers.Min(gs => (gs.Offset, gs.Color));
-            var o = ((offset - lo.Offset) / (hi.Offset - lo.Offset));
+            var o = (offset - lo.Offset) / (hi.Offset - lo.Offset);
             return blendColors(lo.Color, hi.Color, o);
         }
 
@@ -196,8 +182,7 @@ namespace CompMs.Graphics.Heatmap
         #region Event handler
 
         #region PropertyChanged event
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as HeatmapControl;
             if (chart == null) return;
 
@@ -218,8 +203,7 @@ namespace CompMs.Graphics.Heatmap
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as HeatmapControl;
             if (chart == null) return;
 
@@ -229,8 +213,7 @@ namespace CompMs.Graphics.Heatmap
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as HeatmapControl;
             if (chart == null) return;
 
@@ -240,8 +223,7 @@ namespace CompMs.Graphics.Heatmap
             chart.Update();
         }
 
-        static void OnDegreePropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnDegreePropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as HeatmapControl;
             if (chart == null) return;
 
@@ -251,8 +233,7 @@ namespace CompMs.Graphics.Heatmap
             chart.Update();
         }
 
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as HeatmapControl;
             if (chart == null) return;
 
@@ -262,8 +243,7 @@ namespace CompMs.Graphics.Heatmap
         #endregion
 
         #region Visual hit Event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
-        {
+        void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
             VisualTreeHelper.HitTest(this,
@@ -273,10 +253,8 @@ namespace CompMs.Graphics.Heatmap
                 );
         }
 
-        void VisualSelectOnClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 1)
-            {
+        void VisualSelectOnClick(object sender, MouseButtonEventArgs e) {
+            if (e.ClickCount == 1) {
                 var pt = e.GetPosition(this);
 
                 VisualTreeHelper.HitTest(this,
@@ -287,27 +265,23 @@ namespace CompMs.Graphics.Heatmap
             }
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
+            if (focussed != FocusedItem) {
                 FocusedItem = focussed;
                 FocusedPoint = dv.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }

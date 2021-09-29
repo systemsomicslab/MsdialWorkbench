@@ -61,7 +61,7 @@
   <ItemGroup>
     <Compile Include="Adorner\ContentAdorner.cs" />
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
-    <Compile Include="AreaChart\AreaChartControl.cs" />
+    <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
@@ -74,7 +74,7 @@
     <Compile Include="Design\SequentialBrushMapper.cs" />
     <Compile Include="Base\BrushMapper.cs" />
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
-    <Compile Include="Bar\BarControl.cs" />
+    <Compile Include="Chart\BarControl.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
     <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\AxisValue.cs" />
@@ -112,7 +112,7 @@
     <Compile Include="Default\DefaultUC.xaml.cs">
       <DependentUpon>DefaultUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dendrogram\DendrogramControl.cs" />
+    <Compile Include="Chart\DendrogramControl.cs" />
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
     <Compile Include="Base\AxisManager.cs" />
@@ -120,13 +120,13 @@
     <Compile Include="GraphAxis\HorizontalColorAxisControl.cs" />
     <Compile Include="GraphAxis\VerticalAxisControl.cs" />
     <Compile Include="GraphAxis\VerticalColorAxisControl.cs" />
-    <Compile Include="Heatmap\HeatmapControl.cs" />
-    <Compile Include="LineChart\LineChartControl.cs" />
-    <Compile Include="LineSpectrum\LineSpectrumControl.cs" />
+    <Compile Include="Chart\HeatmapControl.cs" />
+    <Compile Include="Chart\LineChartControl.cs" />
+    <Compile Include="Chart\LineSpectrumControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
-    <Compile Include="Scatter\ScatterControl.cs" />
+    <Compile Include="Chart\ScatterControl.cs" />
     <Compile Include="UI\LabeledContent.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">

@@ -7,9 +7,7 @@
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv.Hca"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
-             xmlns:dendrogram="clr-namespace:CompMs.Graphics.Dendrogram;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              x:Name="ClustermapControl"
@@ -59,7 +57,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <heatmap:HeatmapControl x:Name="heatmap"
+        <chart:HeatmapControl x:Name="heatmap"
                                 ItemsSource="{Binding HeatmapView}"
                                 HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                 VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
@@ -72,7 +70,7 @@
                                 behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                 Grid.Column="3" Grid.Row="2"
                                 ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}" >
-            <heatmap:HeatmapControl.ToolTip>
+            <chart:HeatmapControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                          Placement="Relative"
                          PlacementRectangle="0,-20,0,0"
@@ -85,9 +83,9 @@
                         <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
                     </StackPanel>
                 </ToolTip>
-            </heatmap:HeatmapControl.ToolTip>
-        </heatmap:HeatmapControl>
-        <dendrogram:DendrogramControl x:Name="file_dendrogram"
+            </chart:HeatmapControl.ToolTip>
+        </chart:HeatmapControl>
+        <chart:DendrogramControl x:Name="file_dendrogram"
                                       ItemsSource="{Binding FileView}"
                                       Tree="{Binding FileTree}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
@@ -101,7 +99,7 @@
                                       behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                       Margin="0,5,0,0"
                                       Grid.Column="3" Grid.Row="0" />
-        <dendrogram:DendrogramControl x:Name="metabolite_dendrogram"
+        <chart:DendrogramControl x:Name="metabolite_dendrogram"
                                       ItemsSource="{Binding MetaboliteView}"
                                       Tree="{Binding MetaboliteTree}"
                                       HorizontalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
@@ -114,20 +112,20 @@
                                       behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
                                       Margin="0,0,10,0"
                                       Grid.Column="5" Grid.Row="2">
-            <dendrogram:DendrogramControl.LayoutTransform>
+            <chart:DendrogramControl.LayoutTransform>
                 <TransformGroup>
                     <RotateTransform Angle="90" />
                     <TranslateTransform X="{Binding ActualHeight, ElementName=metabolite_dendrogram}" />
                 </TransformGroup>
-            </dendrogram:DendrogramControl.LayoutTransform>
-        </dendrogram:DendrogramControl>
-        <axis:HorizontalAxisControl x:Name="file_axis"
+            </chart:DendrogramControl.LayoutTransform>
+        </chart:DendrogramControl>
+        <chart:HorizontalAxisControl x:Name="file_axis"
                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                     LabelSize="{Binding FileLabelSize}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
                                     Grid.Column="3" Grid.Row="4" >
-            <axis:HorizontalAxisControl.ToolTip>
+            <chart:HorizontalAxisControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                          Placement="Relative"
                          PlacementRectangle="0,-20,0,0"
@@ -135,14 +133,14 @@
                          VerticalOffset="{Binding FocusedPoint.Y}" >
                     <TextBlock Text="{Binding FocusedItem.FileName}" />
                 </ToolTip>
-            </axis:HorizontalAxisControl.ToolTip>
-        </axis:HorizontalAxisControl>
-        <axis:VerticalAxisControl x:Name="metabolite_axis"
+            </chart:HorizontalAxisControl.ToolTip>
+        </chart:HorizontalAxisControl>
+        <chart:VerticalAxisControl x:Name="metabolite_axis"
                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                   LabelSize="{Binding MetaboliteLabelSize}"
                                   Grid.Column="1" Grid.Row="2" >
-            <axis:VerticalAxisControl.ToolTip>
+            <chart:VerticalAxisControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                          Placement="Relative"
                          PlacementRectangle="10,-10,0,0"
@@ -150,14 +148,14 @@
                          VerticalOffset="{Binding FocusedPoint.Y}" >
                     <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
                 </ToolTip>
-            </axis:VerticalAxisControl.ToolTip>
-        </axis:VerticalAxisControl>
-        <axis:HorizontalColorAxisControl x:Name="file_coloraxis"
+            </chart:VerticalAxisControl.ToolTip>
+        </chart:VerticalAxisControl>
+        <chart:HorizontalColorAxisControl x:Name="file_coloraxis"
                                          HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
                                          LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"
                                          Grid.Column="3" Grid.Row="1">
-            <axis:HorizontalColorAxisControl.ToolTip>
+            <chart:HorizontalColorAxisControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                          Placement="Relative"
                          PlacementRectangle="-5,-5,0,0"
@@ -165,14 +163,14 @@
                          VerticalOffset="{Binding FocusedPoint.Y}" >
                     <TextBlock Text="{Binding FocusedItem.ClassName}" />
                 </ToolTip>
-            </axis:HorizontalColorAxisControl.ToolTip>
-        </axis:HorizontalColorAxisControl>
-        <axis:VerticalColorAxisControl x:Name="metabolite_coloraxis"
+            </chart:HorizontalColorAxisControl.ToolTip>
+        </chart:HorizontalColorAxisControl>
+        <chart:VerticalColorAxisControl x:Name="metabolite_coloraxis"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                        IdentityPropertyName="TypeBrush"
                                        Grid.Column="4" Grid.Row="2" >
-            <axis:VerticalColorAxisControl.ToolTip>
+            <chart:VerticalColorAxisControl.ToolTip>
                 <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
                          Placement="Relative"
                          PlacementRectangle="5,5,0,0"
@@ -180,14 +178,14 @@
                          VerticalOffset="{Binding FocusedPoint.Y}" >
                     <TextBlock Text="{Binding FocusedItem.MetaboliteName}" />
                 </ToolTip>
-            </axis:VerticalColorAxisControl.ToolTip>
-        </axis:VerticalColorAxisControl>
+            </chart:VerticalColorAxisControl.ToolTip>
+        </chart:VerticalColorAxisControl>
         <StackPanel Orientation="Horizontal"
                     Height="70"
                     Margin="15, 5"
                     VerticalAlignment="Bottom"
                     Grid.Row="0" Grid.Column="5">
-            <axis:VerticalAxisControl MinWidth="20"
+            <chart:VerticalAxisControl MinWidth="20"
                                       MaxWidth="30"
                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}" />

@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -39,7 +38,7 @@
                 BorderThickness="2,0,0,2"
                 Margin="0,5,5,0" 
                 Grid.Row="0" Grid.Column="1">
-            <scatter:ScatterControl x:Name="scatter"
+            <chart:ScatterControl x:Name="scatter"
                                     ItemsSource="{Binding Series}"
                                     HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
@@ -48,7 +47,7 @@
                                     PointBrush="Pink"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
                                     behavior:ScatterFocusBehavior.LabelTargetPoint="{Binding FocusedPoint, RelativeSource={RelativeSource Self}}">
-                <scatter:ScatterControl.ToolTip>
+                <chart:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
@@ -57,14 +56,14 @@
                             <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
-                </scatter:ScatterControl.ToolTip>
-            </scatter:ScatterControl>
+                </chart:ScatterControl.ToolTip>
+            </chart:ScatterControl>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />

@@ -6,8 +6,7 @@
       xmlns:local="clr-namespace:ChartDrawingUiTest.AreaChart"
       mc:Ignorable="d" 
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AreaChart1">
     <Page.Resources>
@@ -50,18 +49,18 @@
                     BorderThickness="2,0,0,2"
                     Margin="0,5,5,0" 
                     Grid.Row="0" Grid.Column="1">
-                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                <chart:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                        HorizontalPropertyName="X"
                                        VerticalPropertyName="Y" >
-                </area:AreaChartControl>
+                </chart:AreaChartControl>
             </Border>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
-            <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />
@@ -93,18 +92,18 @@
                     BorderThickness="2,0,0,2"
                     Margin="0,5,5,0" 
                     Grid.Row="0" Grid.Column="1">
-                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                <chart:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                        HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
                                        VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
                                        HorizontalPropertyName="X"
                                        VerticalPropertyName="Y" >
-                </area:AreaChartControl>
+                </chart:AreaChartControl>
             </Border>
-            <axis:HorizontalAxisControl HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
-            <axis:VerticalAxisControl VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />
@@ -136,18 +135,18 @@
                     BorderThickness="2,0,0,2"
                     Margin="0,5,5,0" 
                     Grid.Row="0" Grid.Column="1">
-                <area:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+                <chart:AreaChartControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                        HorizontalAxis="{StaticResource HorizontalAxis}"
                                        VerticalAxis="{StaticResource VerticalAxis}"
                                        HorizontalPropertyName="X"
                                        VerticalPropertyName="Y" >
-                </area:AreaChartControl>
+                </chart:AreaChartControl>
             </Border>
-            <axis:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
+            <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
-            <axis:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
+            <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />

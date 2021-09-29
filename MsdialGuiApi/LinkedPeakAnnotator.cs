@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Graphics.Chart;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Scatter;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;

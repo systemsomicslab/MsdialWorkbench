@@ -9,8 +9,6 @@
       d:DesignHeight="450" d:DesignWidth="800"
       xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       Title="SimpleChart1">
     <Page.Resources>
@@ -51,7 +49,7 @@
                                   Background="WhiteSmoke"
                                   BorderBrush="Black"
                                   Grid.Row="1">
-            <scatter:ScatterControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
+            <chart:ScatterControl ItemsSource="{Binding Source={StaticResource SeriesView}}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     Radius="10"
@@ -76,7 +74,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </behavior:ScatterFocusBehavior.LabelTemplate>
-                <scatter:ScatterControl.PointBrush>
+                <chart:ScatterControl.PointBrush>
                     <LinearGradientBrush PresentationOptions:Freeze="true">
                         <GradientStopCollection>
                             <GradientStop Color="Yellow" Offset="0" />
@@ -84,9 +82,9 @@
                             <GradientStop Color="Cyan" Offset="1"/>
                         </GradientStopCollection>
                     </LinearGradientBrush>
-                </scatter:ScatterControl.PointBrush>
+                </chart:ScatterControl.PointBrush>
 
-                <scatter:ScatterControl.ToolTip>
+                <chart:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
@@ -95,8 +93,8 @@
                             <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
-                </scatter:ScatterControl.ToolTip>
-            </scatter:ScatterControl>
+                </chart:ScatterControl.ToolTip>
+            </chart:ScatterControl>
         </chart:SimpleChartControl>
     </Grid>
 </Page>

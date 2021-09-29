@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.AreaChart
+namespace CompMs.Graphics.Chart
 {
     public class AreaChartControl : ChartBaseControl
     {
@@ -35,26 +35,22 @@ namespace CompMs.Graphics.AreaChart
         #endregion
 
         #region Property
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        public Brush AreaBrush
-        {
+        public Brush AreaBrush {
             get => (Brush)GetValue(AreaBrushProperty);
             set => SetValue(AreaBrushProperty, value);
         }
@@ -67,11 +63,10 @@ namespace CompMs.Graphics.AreaChart
         private PropertyInfo vPropertyReflection;
         #endregion
 
-        protected override void Update()
-        {
+        protected override void Update() {
             visualChildren.Clear();
 
-            if (  hPropertyReflection == null
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
@@ -87,10 +82,8 @@ namespace CompMs.Graphics.AreaChart
             var dc = dv.RenderOpen();
             var areaGeometry = new PathGeometry();
             var path = new PathFigure() { IsClosed = true };
-            if (cv.Count != 0)
-            {
-                foreach(var o in cv)
-                {
+            if (cv.Count != 0) {
+                foreach (var o in cv) {
                     path.Segments.Add(new LineSegment()
                     {
                         Point = new Point(
@@ -114,22 +107,19 @@ namespace CompMs.Graphics.AreaChart
         }
 
         #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as AreaChartControl;
             if (chart == null) return;
 
             chart.dataType = null;
             chart.cv = null;
 
-            if (chart.ItemsSource == null)
-            {
+            if (chart.ItemsSource == null) {
                 chart.Update();
                 return;
             }
             var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext())
-            {
+            if (!enumerator.MoveNext()) {
                 chart.Update();
                 return;
             }
@@ -144,8 +134,7 @@ namespace CompMs.Graphics.AreaChart
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as AreaChartControl;
             if (chart == null) return;
 
@@ -155,8 +144,7 @@ namespace CompMs.Graphics.AreaChart
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as AreaChartControl;
             if (chart == null) return;
 

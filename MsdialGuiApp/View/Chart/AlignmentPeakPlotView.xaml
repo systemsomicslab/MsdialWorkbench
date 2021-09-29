@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
-             xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -32,7 +31,7 @@
                           Style="{StaticResource OverlapChart}"
                           Background="WhiteSmoke"
                           BorderBrush="Black">
-            <scatter:ScatterControl x:Name="alignmentScatter"
+            <chart:ScatterControl x:Name="alignmentScatter"
                                     ItemsSource="{Binding Spots}"
                                     HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                                     VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"

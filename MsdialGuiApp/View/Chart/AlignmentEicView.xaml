@@ -6,8 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
-             xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              Name="AlignedEicView"
@@ -50,22 +48,22 @@
             <chart:MultiChart.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <line:LineChartControl ItemsSource="{Binding Peaks}"
+                        <chart:LineChartControl ItemsSource="{Binding Peaks}"
                                                LinePen="{Binding Path=(ItemsControl.AlternationIndex),
                                                                  RelativeSource={RelativeSource Mode=TemplatedParent},
                                                                  Converter={StaticResource LinePenConverter}}"
                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                            <line:LineChartControl.ToolTip>
+                            <chart:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Class: "/>
                                         <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
                                     </StackPanel>
                                 </ToolTip>
-                            </line:LineChartControl.ToolTip>
-                        </line:LineChartControl>
-                        <area:AreaChartControl ItemsSource="{Binding PeakArea}"
+                            </chart:LineChartControl.ToolTip>
+                        </chart:LineChartControl>
+                        <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
                                                AreaBrush="{Binding Path=(ItemsControl.AlternationIndex),
                                                                    RelativeSource={RelativeSource Mode=TemplatedParent},
                                                                    Converter={StaticResource AreaBrushConverter}}"
