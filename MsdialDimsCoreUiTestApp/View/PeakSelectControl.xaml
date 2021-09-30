@@ -30,8 +30,8 @@
         </Grid.RowDefinitions>
         <chart:ScatterControl x:Name="PeakScatter"
                                 ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                                HorizontalAxis="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                VerticalAxis="{StaticResource IntensityAxisManager}"
                                 HorizontalPropertyName="Mass"
                                 VerticalPropertyName="Intensity"
                                 PointGeometry="M 0.0 3.0 L 2.598076211353316 -1.4999999999999993 H -2.5980762113533156 Z"
@@ -47,12 +47,12 @@
         </chart:ScatterControl>
         <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
                                     Grid.Row="2" Grid.Column="3" />
         <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"

@@ -1,9 +1,7 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Windows;
-
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
@@ -27,8 +25,6 @@ namespace CompMs.Graphics.AxisManager
             var axis = (FreezableAxisManager)d;
             axis.ShouldCoerceLabelTicksChanged = true;
             axis.CoerceValue(LabelTicksProperty);
-            axis.ShouldCoerceAxisMapper = true;
-            axis.CoerceValue(AxisMapperProperty);
             axis.RangeChanged?.Invoke(axis, args);
         }
 
@@ -113,33 +109,6 @@ namespace CompMs.Graphics.AxisManager
         }
 
         public Range InitialValueRange => InitialRange;
-
-        public static readonly DependencyProperty AxisMapperProperty =
-            DependencyProperty.Register(
-                nameof(AxisMapper), typeof(IAxisManager), typeof(FreezableAxisManager),
-                new PropertyMetadata(
-                    null,
-                    OnAxisMapperChanged,
-                    CoerceAxisMapper));
-
-        [Obsolete("Use this AxisManager class itself instead of AxisMapper property.")]
-        public IAxisManager AxisMapper {
-            get => (IAxisManager)GetValue(AxisMapperProperty);
-            set => SetValue(AxisMapperProperty, value);
-        }
-
-        private bool ShouldCoerceAxisMapper = false;
-        static void OnAxisMapperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-        }
-
-        static object CoerceAxisMapper(DependencyObject d, object value) {
-            var axis = (FreezableAxisManager)d;
-            if (axis.ShouldCoerceAxisMapper) {
-                axis.ShouldCoerceAxisMapper = false;
-                return new AxisMapper(axis);
-            }
-            return value;
-        }
 
         public static readonly DependencyProperty LabelTicksProperty =
             DependencyProperty.Register(

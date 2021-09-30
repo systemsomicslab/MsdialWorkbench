@@ -23,8 +23,8 @@
         <Border Background="WhiteSmoke"
                 BorderThickness="1,0,0,1">
             <bar:BarControl ItemsSource="{Binding BarItems, Mode=OneWay}"
-                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource ClassAxis}}"
-                            VerticalAxis="{Binding AxisMapper, Source={StaticResource PeakAxis}}"
+                            HorizontalAxis="{StaticResource ClassAxis}"
+                            VerticalAxis="{StaticResource PeakAxis}"
                             HorizontalPropertyName="Class"
                             VerticalPropertyName="Height">
                 <bar:BarControl.ToolTip>

@@ -43,8 +43,8 @@
             <TextBlock Text="Continuous axis (x)" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
             <chart:BarControl x:Name="continuous_bar"
                             ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
-                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalContinuousAxis}}"
-                            VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                            HorizontalAxis="{StaticResource HorizontalContinuousAxis}"
+                            VerticalAxis="{StaticResource VerticalAxis}"
                             HorizontalPropertyName="X" VerticalPropertyName="Y"
                             Grid.Row="1" Grid.Column="1">
                 <chart:BarControl.ToolTip>
@@ -58,10 +58,10 @@
                     </ToolTip>
                 </chart:BarControl.ToolTip>
             </chart:BarControl>
-            <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Grid.Row="1" Grid.Column="0" />
-            <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalContinuousAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalContinuousAxis}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalContinuousAxis}}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"
@@ -91,8 +91,8 @@
             <TextBlock Text="Category axis (x)" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
             <chart:BarControl x:Name="category_bar"
                             ItemsSource="{Binding Series, Source={StaticResource BarVM}}"
-                            HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalCategoryAxis}}"
-                            VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                            HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
+                            VerticalAxis="{StaticResource VerticalAxis}"
                             HorizontalPropertyName="X" VerticalPropertyName="Y"
                             Grid.Row="1" Grid.Column="1">
                 <chart:BarControl.ToolTip>
@@ -106,10 +106,10 @@
                     </ToolTip>
                 </chart:BarControl.ToolTip>
             </chart:BarControl>
-            <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+            <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Grid.Row="1" Grid.Column="0" />
-            <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalCategoryAxis}}"
+            <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalCategoryAxis}}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"

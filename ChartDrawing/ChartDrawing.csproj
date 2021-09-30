@@ -76,7 +76,6 @@
     <Compile Include="AxisManager\DependencyContinuousAxisManager.cs" />
     <Compile Include="Chart\BarControl.cs" />
     <Compile Include="Base\AnnotatedDrawingVisual.cs" />
-    <Compile Include="Base\AxisMapper.cs" />
     <Compile Include="Base\AxisValue.cs" />
     <Compile Include="Base\BasicClass.cs" />
     <Compile Include="AxisManager\CategoryAxisManager.cs" />
@@ -116,10 +115,10 @@
     <Compile Include="DrawVisual\DrawVisual.cs" />
     <Compile Include="DrawVisual\DrawVisualManualPeakModification.cs" />
     <Compile Include="Base\AxisManager.cs" />
-    <Compile Include="GraphAxis\HorizontalAxisControl.cs" />
-    <Compile Include="GraphAxis\HorizontalColorAxisControl.cs" />
-    <Compile Include="GraphAxis\VerticalAxisControl.cs" />
-    <Compile Include="GraphAxis\VerticalColorAxisControl.cs" />
+    <Compile Include="Chart\HorizontalAxisControl.cs" />
+    <Compile Include="Chart\HorizontalColorAxisControl.cs" />
+    <Compile Include="Chart\VerticalAxisControl.cs" />
+    <Compile Include="Chart\VerticalColorAxisControl.cs" />
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />

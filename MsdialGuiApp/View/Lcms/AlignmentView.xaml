@@ -46,8 +46,8 @@
             <Grid Margin="-1,0,0,-1">
                 <chart:ScatterControl x:Name="alignmentScatter"
                                         ItemsSource="{Binding Ms1Spots}"
-                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
-                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+                                        HorizontalAxis="{StaticResource TimeAxis}"
+                                        VerticalAxis="{StaticResource MzAxis}"
                                         HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
                                         EachPlotBrushName="SpotColor"
@@ -110,11 +110,11 @@
                 </ContentControl>
             </Grid>
         </Border>
-        <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource TimeAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource MzAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />

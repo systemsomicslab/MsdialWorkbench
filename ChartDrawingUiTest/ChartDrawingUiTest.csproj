@@ -125,6 +125,9 @@
     </Compile>
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
+    <Compile Include="UI\BindingStaticResource.xaml.cs">
+      <DependentUpon>BindingStaticResource.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\DependencyPropertyTest.xaml.cs">
       <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
     </Compile>
@@ -216,6 +219,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Scatter\Scatter4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\BindingStaticResource.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

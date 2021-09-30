@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <manager:DependencyContinuousAxisManager x:Key="IntensityAxisManager"
                                                  ItemsSource="{Binding DataContext.Ms2CollectionView, Source={x:Reference Name=MS1Chart}}"
-                                                 TargetAxisMapper="{Binding HorizontalAxis.AxisMapper, Source={x:Reference Name=MS1Chart}}"
+                                                 TargetAxisMapper="{Binding HorizontalAxis, Source={x:Reference Name=MS1Chart}}"
                                                  ValuePropertyName="Intensity" TargetPropertyName="Mass"
                                                  TargetRange="{Binding HorizontalAxis.Range, Source={x:Reference Name=MS1Chart}}"
                                                  ChartMargin="0.05"
@@ -34,16 +34,16 @@
         <!--
         <line:LineChartControl x:Name="MS1Line"
                                ItemsSource="{Binding Ms1Peaks}"
-                               HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                               HorizontalAxis="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                               VerticalAxis="{StaticResource IntensityAxisManager}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
         -->
         <chart:LineSpectrumControl x:Name="MS1Line"
                                       ItemsSource="{Binding Ms2CollectionView}"
-                                      HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                                      HorizontalAxis="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                      VerticalAxis="{StaticResource IntensityAxisManager}"
                                       HorizontalPropertyName="Mass"
                                       VerticalPropertyName="Intensity"
                                       Grid.Row="0" Grid.Column="3" >
@@ -58,12 +58,12 @@
         </chart:LineSpectrumControl>
         <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
                                     Grid.Row="2" Grid.Column="3" />
         <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"

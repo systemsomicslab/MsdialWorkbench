@@ -35,8 +35,8 @@
         </Grid.RowDefinitions>
         <chart:LineChartControl x:Name="MS2Spectrum"
                                ItemsSource="{Binding Ms2Features/Spectrum}"
-                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                               HorizontalAxis="{StaticResource MassAxisManager}"
+                               VerticalAxis="{StaticResource IntensityAxisManager}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
@@ -51,8 +51,8 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <chart:LineSpectrumControl ItemsSource="{Binding Reference.Spectrum}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                                                  HorizontalAxis="{StaticResource MassAxisManager}"
+                                                  VerticalAxis="{StaticResource IntensityAxisManager}"
                                                   HorizontalPropertyName="Mass"
                                                   VerticalPropertyName="Intensity" >
                         <chart:LineSpectrumControl.LinePen>
@@ -70,12 +70,12 @@
         </ItemsControl>
         <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
                                     Grid.Row="2" Grid.Column="3" />
         <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"

@@ -55,11 +55,11 @@ namespace CompMs.Graphics.AxisManager
         #endregion
 
         private void BuildTree() {
-            if (ItemsSource == null || tProp == null || vProp == null || AxisMapper == null || TargetAxisMapper == null) {
+            if (ItemsSource == null || tProp == null || vProp == null || TargetAxisMapper == null) {
                 minTree = null; maxTree = null; targets = null;
                 return;
             }
-            var vMapper = AxisMapper;
+            var vMapper = this;
             var tMapper = TargetAxisMapper;
 
             var tmps = new List<(AxisValue target, AxisValue value)>();

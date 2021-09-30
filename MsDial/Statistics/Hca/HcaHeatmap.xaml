@@ -59,8 +59,8 @@
         </Grid.RowDefinitions>
         <chart:HeatmapControl x:Name="heatmap"
                                 ItemsSource="{Binding HeatmapView}"
-                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
-                                VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                HorizontalAxis="{StaticResource FileAxis}"
+                                VerticalAxis="{StaticResource MetaboliteAxis}"
                                 HorizontalPropertyName="FileId"
                                 VerticalPropertyName="MetaboliteId"
                                 DegreePropertyName="Intensity"
@@ -88,8 +88,8 @@
         <chart:DendrogramControl x:Name="file_dendrogram"
                                       ItemsSource="{Binding FileView}"
                                       Tree="{Binding FileTree}"
-                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
-                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource FileDendrogramAxis}}"
+                                      HorizontalAxis="{StaticResource FileAxis}"
+                                      VerticalAxis="{StaticResource FileDendrogramAxis}"
                                       FlippedY="True"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
@@ -102,8 +102,8 @@
         <chart:DendrogramControl x:Name="metabolite_dendrogram"
                                       ItemsSource="{Binding MetaboliteView}"
                                       Tree="{Binding MetaboliteTree}"
-                                      HorizontalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
-                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteDendrogramAxis}}"
+                                      HorizontalAxis="{StaticResource MetaboliteAxis}"
+                                      VerticalAxis="{StaticResource MetaboliteDendrogramAxis}"
                                       HorizontalPropertyName="ID"
                                       IDPropertyName="ID"
                                       behavior:MoveByDragBehavior.IsEnabled="True"
@@ -120,7 +120,7 @@
             </chart:DendrogramControl.LayoutTransform>
         </chart:DendrogramControl>
         <chart:HorizontalAxisControl x:Name="file_axis"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                    HorizontalAxis="{StaticResource FileAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                     LabelSize="{Binding FileLabelSize}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
@@ -136,7 +136,7 @@
             </chart:HorizontalAxisControl.ToolTip>
         </chart:HorizontalAxisControl>
         <chart:VerticalAxisControl x:Name="metabolite_axis"
-                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                  VerticalAxis="{StaticResource MetaboliteAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                   LabelSize="{Binding MetaboliteLabelSize}"
                                   Grid.Column="1" Grid.Row="2" >
@@ -151,7 +151,7 @@
             </chart:VerticalAxisControl.ToolTip>
         </chart:VerticalAxisControl>
         <chart:HorizontalColorAxisControl x:Name="file_coloraxis"
-                                         HorizontalAxis="{Binding AxisMapper, Source={StaticResource FileAxis}}"
+                                         HorizontalAxis="{StaticResource FileAxis}"
                                          LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"
                                          Grid.Column="3" Grid.Row="1">
@@ -166,7 +166,7 @@
             </chart:HorizontalColorAxisControl.ToolTip>
         </chart:HorizontalColorAxisControl>
         <chart:VerticalColorAxisControl x:Name="metabolite_coloraxis"
-                                       VerticalAxis="{Binding AxisMapper, Source={StaticResource MetaboliteAxis}}"
+                                       VerticalAxis="{StaticResource MetaboliteAxis}"
                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                        IdentityPropertyName="TypeBrush"
                                        Grid.Column="4" Grid.Row="2" >
@@ -187,7 +187,7 @@
                     Grid.Row="0" Grid.Column="5">
             <chart:VerticalAxisControl MinWidth="20"
                                       MaxWidth="30"
-                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource HeatmapValueAxis}}"
+                                      VerticalAxis="{StaticResource HeatmapValueAxis}"
                                       LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}" />
             <Rectangle MinWidth="30"
                        MaxWidth="40">

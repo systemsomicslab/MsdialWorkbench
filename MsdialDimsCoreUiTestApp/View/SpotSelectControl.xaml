@@ -35,19 +35,19 @@
         </Grid.RowDefinitions>
         <chart:ScatterControl x:Name="PeakScatter"
                                 ItemsSource="{Binding AlignmentContainer.AlignmentSpotProperties}"
-                                HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
+                                HorizontalAxis="{StaticResource MassAxisManager}"
+                                VerticalAxis="{StaticResource IntensityAxisManager}"
                                 HorizontalPropertyName="MassCenter"
                                 VerticalPropertyName="HeightMax"
                                 Grid.Row="0" Grid.Column="3" />
         <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
                                     Grid.Row="2" Grid.Column="3" />
         <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"

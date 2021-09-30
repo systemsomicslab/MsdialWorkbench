@@ -23,7 +23,7 @@
                                        ChartMargin="0.05" />
         <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
                                                  ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                                 TargetAxisMapper="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                                 TargetAxisMapper="{StaticResource HorizontalAxis}"
                                                  TargetPropertyName="X" ValuePropertyName="Y"
                                                  TargetRange="{Binding Range, Source={StaticResource HorizontalAxis}}"
                                                  ChartMargin="0.05"
@@ -48,8 +48,8 @@
                 Grid.Row="0" Grid.Column="1">
             <chart:LineSpectrumControl x:Name="spectrum"
                                     ItemsSource="{Binding SelectedValue, ElementName=SeriesSelector}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                    HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y">
                 <chart:LineSpectrumControl.LinePen>
@@ -85,11 +85,11 @@
                 </chart:LineSpectrumControl.ToolTip>
             </chart:LineSpectrumControl>
         </Border>
-        <chart:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <chart:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />

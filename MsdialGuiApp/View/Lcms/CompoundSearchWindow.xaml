@@ -227,8 +227,8 @@
                         Grid.Row="1" Grid.Column="2" >
                     <chart:LineSpectrumControl x:Name="MS2DecLine"
                                                   ItemsSource="{Binding Ms2DecSpectrum}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource MeasureIntensityAxisManager}}"
+                                                  HorizontalAxis="{StaticResource MassAxisManager}"
+                                                  VerticalAxis="{StaticResource MeasureIntensityAxisManager}"
                                                   HorizontalPropertyName="Mass" VerticalPropertyName="Intensity" >
                         <chart:LineSpectrumControl.LinePen>
                             <Pen Thickness="1" Brush="Blue" PresentationOptions:Freeze="True" />
@@ -250,8 +250,8 @@
                         Grid.Row="2" Grid.Column="2" >
                     <chart:LineSpectrumControl x:Name="MS2Ref"
                                            ItemsSource="{Binding Compounds/Spectrum}"
-                                           HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                           VerticalAxis="{Binding AxisMapper, Source={StaticResource ReferenceIntensityAxisManager}}"
+                                           HorizontalAxis="{StaticResource MassAxisManager}"
+                                           VerticalAxis="{StaticResource ReferenceIntensityAxisManager}"
                                            FlippedY="False"
                                            HorizontalPropertyName="Mass"
                                            VerticalPropertyName="Intensity">
@@ -262,17 +262,17 @@
                 </Border>
                 <chart:HorizontalAxisControl x:Name="MzAxis"
                                             DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                            HorizontalAxis="{Binding AxisMapper}"
+                                            HorizontalAxis="{Binding}"
                                             LabelTicks="{Binding LabelTicks}"
                                             Grid.Row="3" Grid.Column="2" />
                 <chart:VerticalAxisControl x:Name="MeasureIntensityAxis"
                                           DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
-                                          VerticalAxis="{Binding AxisMapper}"
+                                          VerticalAxis="{Binding}"
                                           LabelTicks="{Binding LabelTicks}"
                                           Grid.Row="1" Grid.Column="1" />
                 <chart:VerticalAxisControl x:Name="ReferenceIntensityAxis"
                                           DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
-                                          VerticalAxis="{Binding AxisMapper}"
+                                          VerticalAxis="{Binding}"
                                           LabelTicks="{Binding LabelTicks}"
                                           FlippedY="False"
                                           Grid.Row="2" Grid.Column="1" />
