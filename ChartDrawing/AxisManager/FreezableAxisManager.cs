@@ -151,9 +151,12 @@ namespace CompMs.Graphics.AxisManager
 
         #endregion
 
-        #region Method
-        protected virtual double TranslateToRenderPointCore(AxisValue value, AxisValue min, AxisValue max, bool isFlipped) {
-            return (isFlipped ? max.Value - value.Value : value.Value - min.Value) / (max.Value - min.Value);
+        private double FlipRelative(double relative, bool isFlipped) {
+            return isFlipped ? 1 - relative : relative;
+        }
+
+        private double TranslateToRelativePointCore(AxisValue value, AxisValue min, AxisValue max) {
+            return (value.Value - min.Value) / (max.Value - min.Value);
         }
 
         public virtual AxisValue TranslateToAxisValue(object value) {
@@ -171,32 +174,32 @@ namespace CompMs.Graphics.AxisManager
             return new AxisValue(double.NaN);
         }
 
-        public virtual double TranslateToRenderPoint(AxisValue val, bool isFlipped) {
-            return TranslateToRenderPointCore(val, Min, Max, isFlipped);
+        private double TranslateToRelativePoint(AxisValue val) {
+            return TranslateToRelativePointCore(val, Min, Max);
         }
 
-        public virtual double TranslateToRenderPoint(object value, bool isFlipped) {
-            return TranslateToRenderPoint(TranslateToAxisValue(value), isFlipped);
+        private double TranslateToRelativePoint(object value) {
+            return TranslateToRelativePoint(TranslateToAxisValue(value));
         }
 
-        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
+        private List<double> TranslateToRelativePoints(IEnumerable<object> values) {
             double max = Max, min = Min;
             var result = new List<double>();
 
             foreach (var value in values) {
                 var axVal = TranslateToAxisValue(value);
-                result.Add(TranslateToRenderPointCore(axVal, min, max, isFlipped));
+                result.Add(TranslateToRelativePointCore(axVal, min, max));
             }
 
             return result;
         }
 
-        protected virtual AxisValue TranslateFromRenderPointCore(double value, double min, double max, bool isFlipped) {
-            return new AxisValue(isFlipped ? max - value * (max - min) : value * (max - min) + min);
+        private AxisValue TranslateFromRelativePointCore(double value, double min, double max) {
+            return new AxisValue(value * (max - min) + min);
         }
 
-        public virtual AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
-            return TranslateFromRenderPointCore(value, Min.Value, Max.Value, isFlipped);
+        private AxisValue TranslateFromRelativePoint(double value) {
+            return TranslateFromRelativePointCore(value, Min.Value, Max.Value);
         }
 
         public void Focus(object low, object high) {
@@ -216,8 +219,27 @@ namespace CompMs.Graphics.AxisManager
         public bool Contains(object obj) {
             return Contains(TranslateToAxisValue(obj));
         }
-        #endregion
 
         public abstract List<LabelTickData> GetLabelTicks();
+
+        public double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
+            return FlipRelative(TranslateToRelativePoint(value), isFlipped) * drawableLength;
+        }
+
+        public double TranslateToRenderPoint(object value, bool isFlipped, double drawableLength) {
+            return FlipRelative(TranslateToRelativePoint(value), isFlipped) * drawableLength;
+        }
+
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
+            var results = TranslateToRelativePoints(values);
+            for (var i = 0; i < results.Count; i++) {
+                results[i] = FlipRelative(results[i], isFlipped) * drawableLength;
+            }
+            return results;
+        }
+
+        public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
+            return TranslateFromRelativePoint(FlipRelative(value / drawableLength, isFlipped));
+        }
     }
 }

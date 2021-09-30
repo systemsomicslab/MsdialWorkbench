@@ -115,8 +115,8 @@ namespace CompMs.Graphics.Chart
                         return LabelBrushes[memo[x] % LabelBrushes.Count];
                     };
 
-                var yorigin = VerticalAxis.TranslateToRenderPoint(data.Center + sign * data.Width / 2, FlippedY) * ActualHeight;
-                var yheight = Math.Abs(VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY)) * ActualHeight;
+                var yorigin = VerticalAxis.TranslateToRenderPoint(data.Center + sign * data.Width / 2, FlippedY, ActualHeight);
+                var yheight = Math.Abs(VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY, ActualHeight) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY, ActualHeight));
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(ActualWidth / 2, yorigin + yheight / 2) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

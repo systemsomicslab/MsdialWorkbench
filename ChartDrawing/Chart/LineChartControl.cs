@@ -139,10 +139,10 @@ namespace CompMs.Graphics.Chart
         List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
             var points = new List<Point>(ds.Count);
 
-            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX);
-            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY);
+            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX, actualWidth);
+            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY, actualHeight);
 
-            return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
+            return xs.Zip(ys, (x, y) => new Point(x, y)).ToList();
         }
 
         void SetHorizontalDatas() {

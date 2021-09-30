@@ -78,8 +78,8 @@ namespace CompMs.Graphics.Specialized
 
                 foreach (var sameGroupPeak in group.Where(peak => peak.PeakID == peakID)) {
 
-                    var xs = HorizontalAxis.TranslateToRenderPoint(sameGroupPeak.ChromXs.Value, flipX) * actualWidth;
-                    var ys = VerticalAxis.TranslateToRenderPoint(sameGroupPeak.Mass, flipY) * actualHeight;
+                    var xs = HorizontalAxis.TranslateToRenderPoint(sameGroupPeak.ChromXs.Value, flipX, actualWidth);
+                    var ys = VerticalAxis.TranslateToRenderPoint(sameGroupPeak.Mass, flipY, actualHeight);
 
                     // showing isotope adduct information
                     #region
@@ -120,8 +120,8 @@ namespace CompMs.Graphics.Specialized
                         var character = linkedPeakCharacter.Character;
                         var linkedPeak = group.FirstOrDefault(peak => peak.PeakID == linkedPeakCharacter.LinkedPeakID);
 
-                        var xe = HorizontalAxis.TranslateToRenderPoint(linkedPeak.ChromXs.Value, flipX) * actualWidth;
-                        var ye = VerticalAxis.TranslateToRenderPoint(linkedPeak.Mass, flipY) * actualHeight;
+                        var xe = HorizontalAxis.TranslateToRenderPoint(linkedPeak.ChromXs.Value, flipX, actualWidth);
+                        var ye = VerticalAxis.TranslateToRenderPoint(linkedPeak.Mass, flipY, actualHeight);
 
                         var blushColor = Brushes.Blue;
                         var xOffset = 30;

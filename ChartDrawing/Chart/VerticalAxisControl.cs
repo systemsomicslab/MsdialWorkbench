@@ -115,7 +115,7 @@ namespace CompMs.Graphics.Chart
             visualChildren.Clear();
 
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double basePoint = VerticalAxis.TranslateToRenderPoint(0d, FlippedY);
+            double basePoint = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
 
             var labelTicks = VerticalAxis
                 .GetLabelTicks()
@@ -139,7 +139,7 @@ namespace CompMs.Graphics.Chart
                         toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
                 }
 
-                var center = VerticalAxis.TranslateToRenderPoint(data.Center, FlippedY) * actualHeight;
+                var center = VerticalAxis.TranslateToRenderPoint(data.Center, FlippedY, actualHeight);
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(actualWidth / 2, center) };
                 // dv.Clip = new RectangleGeometry(new Rect(RenderSize));
@@ -148,14 +148,14 @@ namespace CompMs.Graphics.Chart
                 switch (data.TickType) {
                     case TickType.LongTick:
                         dc.DrawLine(TickPen, new Point(actualWidth, center), new Point(actualWidth - LongTickSize, center));
-                        var maxHeight = VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY) - basePoint;
+                        var maxHeight = VerticalAxis.TranslateToRenderPoint(data.Width, FlippedY, actualHeight) - basePoint;
                         var formattedText = new FormattedText(
                             toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),
                             LabelSize, LabelBrush, 1)
                         {
                             MaxTextWidth = Math.Max(1, actualWidth - LongTickSize),
-                            MaxTextHeight = Math.Max(1, Math.Min(1, Math.Abs(maxHeight)) * actualHeight),
+                            MaxTextHeight = Math.Max(1, Math.Min(actualHeight, Math.Abs(maxHeight))),
                         };
                         dc.DrawText(formattedText, new Point(actualWidth - LongTickSize - formattedText.Width, center - formattedText.Height / 2));
                         break;

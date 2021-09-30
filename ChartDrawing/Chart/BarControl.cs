@@ -162,7 +162,7 @@ namespace CompMs.Graphics.Chart
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
 
-            double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * actualHeight;
+            double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
             foreach (var visual in visualChildren) {
                 var dv = visual as AnnotatedDrawingVisual;
                 var o = dv.Annotation;
@@ -170,9 +170,9 @@ namespace CompMs.Graphics.Chart
                 var y = vPropertyReflection.GetValue(o);
 
                 var haxv = HorizontalAxis.TranslateToAxisValue(x);
-                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX) * actualWidth;
-                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
+                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX, actualWidth);
+                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX, actualWidth);
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
                 dv.Center = new Point((xxl + xxr) / 2, yy);
 
                 using (var dc = dv.RenderOpen()) {

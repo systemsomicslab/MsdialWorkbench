@@ -87,13 +87,13 @@ namespace CompMs.Graphics.Chart
                     path.Segments.Add(new LineSegment()
                     {
                         Point = new Point(
-                            HorizontalAxis.TranslateToRenderPoint(hPropertyReflection.GetValue(o), FlippedX) * ActualWidth,
-                            VerticalAxis.TranslateToRenderPoint(vPropertyReflection.GetValue(o), FlippedY) * ActualHeight
+                            HorizontalAxis.TranslateToRenderPoint(hPropertyReflection.GetValue(o), FlippedX, ActualWidth),
+                            VerticalAxis.TranslateToRenderPoint(vPropertyReflection.GetValue(o), FlippedY, ActualHeight)
                             ),
                     });
                 }
                 var p = (path.Segments.First() as LineSegment).Point;
-                p.Y = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * ActualHeight;
+                p.Y = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, ActualHeight);
                 path.StartPoint = p;
                 var q = (path.Segments.Last() as LineSegment).Point;
                 q.Y = p.Y;

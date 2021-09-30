@@ -28,10 +28,11 @@ namespace CompMs.Graphics.Core.Base
         event EventHandler RangeChanged;
 
         AxisValue TranslateToAxisValue(object value);
-        double TranslateToRenderPoint(AxisValue val, bool isFlipped);
-        double TranslateToRenderPoint(object value, bool isFlipped);
-        List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped);
-        AxisValue TranslateFromRenderPoint(double value, bool isFlipped);
+        double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
+        double TranslateToRenderPoint(object value, bool isFlipped, double drawableLength);
+        List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength);
+        AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength);
+
         bool Contains(AxisValue value);
         bool Contains(object obj);
         void Focus(object low, object high);
@@ -42,8 +43,8 @@ namespace CompMs.Graphics.Core.Base
     public interface IAxisManager<T> : IAxisManager
     {
         AxisValue TranslateToAxisValue(T value);
-        double TranslateToRenderPoint(T value, bool isFlipped);
-        List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped);
+        double TranslateToRenderPoint(T value, bool isFlipped, double drawableLength);
+        List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped, double drawableLength);
         bool Contains(T obj);
         void Focus(T low, T high);
     }

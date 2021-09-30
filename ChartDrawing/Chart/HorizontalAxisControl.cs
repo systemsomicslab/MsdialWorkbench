@@ -106,7 +106,6 @@ namespace CompMs.Graphics.Chart
 
         protected override void Update() {
             if (HorizontalAxis == null
-                || LabelTicks == null
                 || TickPen == null
                 || LabelBrush == null
                 ) return;
@@ -116,7 +115,7 @@ namespace CompMs.Graphics.Chart
             visualChildren.Clear();
 
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double basePoint = HorizontalAxis.TranslateToRenderPoint(0d, FlippedX);
+            double basePoint = HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, actualWidth);
 
             var labelTicks = HorizontalAxis
                 .GetLabelTicks()
@@ -140,7 +139,7 @@ namespace CompMs.Graphics.Chart
                         toLabel = o => dPropertyReflection.GetValue(o.Source).ToString();
                 }
 
-                var center = HorizontalAxis.TranslateToRenderPoint(data.Center, FlippedX) * actualWidth;
+                var center = HorizontalAxis.TranslateToRenderPoint(data.Center, FlippedX, actualWidth);
 
                 var dv = new AnnotatedDrawingVisual(data.Source) { Center = new Point(center, actualHeight / 2) };
                 // dv.Clip = new RectangleGeometry(new Rect(RenderSize));
@@ -149,13 +148,13 @@ namespace CompMs.Graphics.Chart
                 switch (data.TickType) {
                     case TickType.LongTick:
                         dc.DrawLine(TickPen, new Point(center, 0), new Point(center, LongTickSize));
-                        var maxWidth = HorizontalAxis.TranslateToRenderPoint(data.Width, FlippedX) - basePoint;
+                        var maxWidth = HorizontalAxis.TranslateToRenderPoint(data.Width, FlippedX, actualWidth) - basePoint;
                         var formattedText = new FormattedText(
                             toLabel(data), CultureInfo.GetCultureInfo("en-us"),
                             FlowDirection.LeftToRight, new Typeface("Calibri"),
                             LabelSize, LabelBrush, 1)
                         {
-                            MaxTextWidth = Math.Min(1, Math.Abs(maxWidth)) * actualWidth,
+                            MaxTextWidth = Math.Min(actualWidth, Math.Abs(maxWidth)),
                             MaxTextHeight = Math.Max(1, actualHeight - LongTickSize),
                         };
                         dc.DrawText(formattedText, new Point(center - formattedText.Width / 2, LongTickSize));

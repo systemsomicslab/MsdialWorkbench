@@ -124,7 +124,7 @@ namespace CompMs.Graphics.Behavior
                     var haxis = ChartBaseControl.GetHorizontalAxis(fe);
                     if (haxis != null) {
                         var flippedX = ChartBaseControl.GetFlippedX(fe);
-                        var rangeX = haxis.InitialRange.Intersect(RenderPointsToRange(initial.X / fe.ActualWidth, current.X / fe.ActualWidth, haxis, flippedX));
+                        var rangeX = haxis.InitialRange.Intersect(RenderPointsToRange(initial.X, current.X, fe.ActualWidth, haxis, flippedX));
                         if (rangeX.Minimum < rangeX.Maximum)
                             haxis.Range = rangeX;
                     }
@@ -132,7 +132,7 @@ namespace CompMs.Graphics.Behavior
                     var vaxis = ChartBaseControl.GetVerticalAxis(fe);
                     if (vaxis != null) {
                         var flippedY = ChartBaseControl.GetFlippedY(fe);
-                        var rangeY = vaxis.InitialRange.Intersect(RenderPointsToRange(initial.Y / fe.ActualHeight, current.Y / fe.ActualHeight, vaxis, flippedY));
+                        var rangeY = vaxis.InitialRange.Intersect(RenderPointsToRange(initial.Y, current.Y, fe.ActualHeight, vaxis, flippedY));
                         if (rangeY.Minimum < rangeY.Maximum)
                             vaxis.Range = rangeY;
                     }
@@ -140,9 +140,9 @@ namespace CompMs.Graphics.Behavior
             }
         }
 
-        static Range RenderPointsToRange(double u, double v, IAxisManager am, bool flipped) {
-            var uu = am.TranslateFromRenderPoint(u, flipped);
-            var vv = am.TranslateFromRenderPoint(v, flipped);
+        static Range RenderPointsToRange(double u, double v, double w, IAxisManager am, bool flipped) {
+            var uu = am.TranslateFromRenderPoint(u, flipped, w);
+            var vv = am.TranslateFromRenderPoint(v, flipped, w);
             if (uu.Value <= vv.Value)
                 return new Range(uu, vv);
             else

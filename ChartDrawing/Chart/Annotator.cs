@@ -407,8 +407,8 @@ namespace CompMs.Graphics.Chart
                     break;
                 if (!string.IsNullOrEmpty(data.label) && hAxis.Range.Contains(data.x) && vAxis.Range.Contains(data.y)) {
 
-                    double xx = hAxis.TranslateToRenderPoint(data.x, flippedX) * actualWidth;
-                    double yy = vAxis.TranslateToRenderPoint(data.y, flippedY) * actualHeight;
+                    double xx = hAxis.TranslateToRenderPoint(data.x, flippedX, actualWidth);
+                    double yy = vAxis.TranslateToRenderPoint(data.y, flippedY, actualHeight);
 
                     var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, 1)
                     {

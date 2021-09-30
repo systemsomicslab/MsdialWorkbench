@@ -60,7 +60,7 @@ namespace CompMs.Graphics.Behavior
                 if (haxis != null) {
                     var flippedX = ChartBaseControl.GetFlippedX(fe);
                     var rangeX = haxis.Range;
-                    var point = haxis.TranslateFromRenderPoint(p.X / fe.ActualWidth, flippedX);
+                    var point = haxis.TranslateFromRenderPoint(p.X, flippedX, fe.ActualWidth);
                     var range = new Range((1 - scale) * point + rangeX.Minimum * scale, rangeX.Maximum * scale + (1 - scale) * point);
                     haxis.Focus(range);
                 }
@@ -69,7 +69,7 @@ namespace CompMs.Graphics.Behavior
                 if (vaxis != null) {
                     var flippedY = ChartBaseControl.GetFlippedY(fe);
                     var rangeY = vaxis.Range;
-                    var point = vaxis.TranslateFromRenderPoint(p.Y / fe.ActualHeight, flippedY);
+                    var point = vaxis.TranslateFromRenderPoint(p.Y, flippedY, fe.ActualHeight);
                     var range = new Range((1 - scale) * point + rangeY.Minimum * scale, rangeY.Maximum * scale + (1 - scale) * point);
                     vaxis.Focus(range);
                 }

@@ -114,9 +114,9 @@ namespace CompMs.Graphics.Chart
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
-                var yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
-                var y0 = VerticalAxis.TranslateToRenderPoint(0, FlippedY) * ActualHeight;
+                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, ActualWidth);
+                var yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, ActualHeight);
+                var y0 = VerticalAxis.TranslateToRenderPoint(0, FlippedY, ActualHeight);
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));

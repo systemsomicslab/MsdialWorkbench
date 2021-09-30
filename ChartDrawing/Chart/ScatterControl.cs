@@ -96,8 +96,8 @@ namespace CompMs.Graphics.Chart
             }
             var x = hPropertyReflection.GetValue(item);
             var y = vPropertyReflection.GetValue(item);
-            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
-            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
+            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, ActualWidth);
+            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, ActualHeight);
             var pos = new Point(xx, yy);
             select = visualChildren.OfType<AnnotatedDrawingVisual>().Argmin(dv => (dv.Center - pos).Length);
             SelectedPoint = select.Center;
@@ -403,8 +403,8 @@ namespace CompMs.Graphics.Chart
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
+                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, actualWidth);
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {
