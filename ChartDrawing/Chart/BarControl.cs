@@ -160,7 +160,7 @@ namespace CompMs.Graphics.Chart
 
             var pen = BarPen;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
+            double barwidth = BarWidth * HorizontalAxis.InitialRange.Delta / visualChildren.Count;
 
             double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
             foreach (var visual in visualChildren) {

@@ -108,8 +108,6 @@ namespace CompMs.Graphics.AxisManager
             return initial;
         }
 
-        public Range InitialValueRange => InitialRange;
-
         public static readonly DependencyProperty LabelTicksProperty =
             DependencyProperty.Register(
                 nameof(LabelTicks), typeof(List<LabelTickData>), typeof(FreezableAxisManager),
@@ -151,6 +149,16 @@ namespace CompMs.Graphics.AxisManager
 
         #endregion
 
+        public void Focus(Range range) {
+            Range = range;
+        }
+
+        public bool Contains(AxisValue val) {
+            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
+        }
+
+        public abstract List<LabelTickData> GetLabelTicks();
+
         private double FlipRelative(double relative, bool isFlipped) {
             return isFlipped ? 1 - relative : relative;
         }
@@ -174,14 +182,6 @@ namespace CompMs.Graphics.AxisManager
             return new AxisValue(double.NaN);
         }
 
-        private double TranslateToRelativePoint(AxisValue val) {
-            return TranslateToRelativePointCore(val, Min, Max);
-        }
-
-        private double TranslateToRelativePoint(object value) {
-            return TranslateToRelativePoint(TranslateToAxisValue(value));
-        }
-
         private List<double> TranslateToRelativePoints(IEnumerable<object> values) {
             double max = Max, min = Min;
             var result = new List<double>();
@@ -194,40 +194,8 @@ namespace CompMs.Graphics.AxisManager
             return result;
         }
 
-        private AxisValue TranslateFromRelativePointCore(double value, double min, double max) {
-            return new AxisValue(value * (max - min) + min);
-        }
-
-        private AxisValue TranslateFromRelativePoint(double value) {
-            return TranslateFromRelativePointCore(value, Min.Value, Max.Value);
-        }
-
-        public void Focus(object low, object high) {
-            var loval = TranslateToAxisValue(low);
-            var hival = TranslateToAxisValue(high);
-            Range = new Range(loval, hival);
-        }
-
-        public void Focus(Range range) {
-            Range = range;
-        }
-
-        public bool Contains(AxisValue val) {
-            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
-        }
-
-        public bool Contains(object obj) {
-            return Contains(TranslateToAxisValue(obj));
-        }
-
-        public abstract List<LabelTickData> GetLabelTicks();
-
         public double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
-            return FlipRelative(TranslateToRelativePoint(value), isFlipped) * drawableLength;
-        }
-
-        public double TranslateToRenderPoint(object value, bool isFlipped, double drawableLength) {
-            return FlipRelative(TranslateToRelativePoint(value), isFlipped) * drawableLength;
+            return FlipRelative(TranslateToRelativePointCore(value, Min, Max), isFlipped) * drawableLength;
         }
 
         public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
@@ -238,8 +206,12 @@ namespace CompMs.Graphics.AxisManager
             return results;
         }
 
+        private AxisValue TranslateFromRelativePointCore(double value, double min, double max) {
+            return new AxisValue(value * (max - min) + min);
+        }
+
         public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
-            return TranslateFromRelativePoint(FlipRelative(value / drawableLength, isFlipped));
+            return TranslateFromRelativePointCore(FlipRelative(value / drawableLength, isFlipped), Min.Value, Max.Value);
         }
     }
 }
