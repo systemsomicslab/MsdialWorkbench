@@ -29,24 +29,11 @@ namespace CompMs.Graphics.AxisManager
         }
 
         static object CoerceRange(DependencyObject d, object value) {
-            var axis = (FreezableAxisManager)d;
             var range = (Range)value;
 
-            var initial = axis.InitialRange;
-            if (initial != null) {
-                if (initial.Maximum < range.Maximum)
-                    range = new Range(range.Minimum, initial.Maximum);
-                if (initial.Minimum > range.Minimum)
-                    range = new Range(initial.Minimum, range.Maximum);
-            }
-
-            var bounds = axis.Bounds;
-            if (bounds != null) {
-                if (bounds.Minimum < range.Minimum)
-                    range = new Range(bounds.Minimum, range.Maximum);
-                if (bounds.Maximum > range.Maximum)
-                    range = new Range(range.Minimum, bounds.Maximum);
-            }
+            var axis = (FreezableAxisManager)d;
+            range = range.Intersect(axis.InitialRange);
+            range = range.Union(axis.Bounds);
 
             return range;
         }
@@ -67,7 +54,6 @@ namespace CompMs.Graphics.AxisManager
 
         static void OnBoundsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (FreezableAxisManager)d;
-            axis.CoerceValue(InitialRangeProperty);
             axis.CoerceValue(RangeProperty);
         }
 
@@ -90,17 +76,7 @@ namespace CompMs.Graphics.AxisManager
         }
 
         static object CoerceInitialRange(DependencyObject d, object value) {
-            var axis = (FreezableAxisManager)d;
             var initial = (Range)value;
-
-            var bounds = axis.Bounds;
-            if (bounds != null) {
-                if (bounds.Minimum < initial.Minimum)
-                    initial = new Range(bounds.Minimum, initial.Maximum);
-                if (bounds.Maximum > initial.Maximum)
-                    initial = new Range(initial.Minimum, bounds.Maximum);
-            }
-
             if (initial.Minimum == initial.Maximum) {
                 initial = new Range(initial.Minimum - 0.5, initial.Maximum + 0.5);
             }
@@ -151,6 +127,10 @@ namespace CompMs.Graphics.AxisManager
 
         public void Focus(Range range) {
             Range = range;
+        }
+
+        public void Reset() {
+            Range = InitialRange;
         }
 
         public bool Contains(AxisValue val) {

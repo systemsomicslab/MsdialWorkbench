@@ -22,12 +22,6 @@ namespace CompMs.Graphics.AxisManager
             var min = Convert.ToDouble(axis.MinValue);
             var max = Convert.ToDouble(axis.MaxValue);
 
-            var bounds = axis.Bounds;
-            if (bounds != null) {
-                if (min > bounds.Minimum) min = bounds.Minimum;
-                if (max < bounds.Maximum) max = bounds.Maximum;
-            }
-
             if (min == max) {
                 min -= 0.5;
                 max += 0.5;

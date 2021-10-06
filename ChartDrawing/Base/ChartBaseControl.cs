@@ -147,16 +147,6 @@ namespace CompMs.Graphics.Core.Base
             set => SetValue(FlippedYProperty, value);
         }
 
-        public Rect InitialArea
-        {
-            get
-            {
-                var rangeX = HorizontalAxis?.InitialRange ?? new Range(0, 1);
-                var rangeY = VerticalAxis?.InitialRange ?? new Range(0, 1);
-                return new Rect(new Point(rangeX.Minimum, rangeY.Minimum), new Point(rangeX.Maximum, rangeY.Maximum));
-            }
-        }
-
         #region field
         protected VisualCollection visualChildren;
         #endregion

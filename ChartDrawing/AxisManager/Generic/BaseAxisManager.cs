@@ -100,6 +100,10 @@ namespace CompMs.Graphics.AxisManager.Generic
             Range = range.Intersect(InitialRange);
         }
 
+        public void Reset() {
+            Range = InitialRange;
+        }
+
         public abstract List<LabelTickData> GetLabelTicks();
 
         public abstract AxisValue TranslateToAxisValue(T value);

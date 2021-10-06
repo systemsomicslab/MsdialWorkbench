@@ -18,10 +18,7 @@ namespace CompMs.Graphics.Core.Base
     }
 
     public interface IAxisManager {
-        AxisValue Min { get; }
-        AxisValue Max { get; }
         Range Range { get; set; }
-        Range InitialRange { get; }
 
         event EventHandler RangeChanged;
 
@@ -32,6 +29,7 @@ namespace CompMs.Graphics.Core.Base
 
         bool Contains(AxisValue value);
         void Focus(Range range);
+        void Reset();
         List<LabelTickData> GetLabelTicks();
     }
 
@@ -49,6 +47,10 @@ namespace CompMs.Graphics.Core.Base
 
         public static double TranslateToRenderPoint<T>(this IAxisManager<T> axis, T value, bool isFlipped, double drawableLength) {
             return axis.TranslateToRenderPoint(axis.TranslateToAxisValue(value), isFlipped, drawableLength);
+        }
+
+        public static bool Contains(this IAxisManager axis, Range range) {
+            return axis.Contains(range.Minimum) && axis.Contains(range.Maximum);
         }
 
         public static bool Contains(this IAxisManager axis, object value) {

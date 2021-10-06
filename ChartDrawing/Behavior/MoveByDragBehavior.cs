@@ -85,7 +85,7 @@ namespace CompMs.Graphics.Behavior
                         var curr = haxis.TranslateFromRenderPoint(current.X, flippedX, fe.ActualWidth);
                         var delta = prev - curr;
                         rangeX = new Range(rangeX.Minimum + delta, rangeX.Maximum + delta);
-                        if (haxis.InitialRange.Contains(rangeX)) {
+                        if (haxis.Contains(rangeX)) {
                             haxis.Range = rangeX;
                         }
                     }
@@ -98,7 +98,7 @@ namespace CompMs.Graphics.Behavior
                         var curr = vaxis.TranslateFromRenderPoint(current.Y, flippedY, fe.ActualHeight);
                         var delta = prev - curr;
                         rangeY = new Range(rangeY.Minimum + delta, rangeY.Maximum + delta);
-                        if (vaxis.InitialRange.Contains(rangeY)) {
+                        if (vaxis.Contains(rangeY)) {
                             vaxis.Range = rangeY;
                         }
                     }

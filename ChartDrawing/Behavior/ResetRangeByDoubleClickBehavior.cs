@@ -40,10 +40,10 @@ namespace CompMs.Graphics.Behavior
             if (sender is FrameworkElement fe) {
                 if (e.ClickCount == 2) {
                     if (ChartBaseControl.GetHorizontalAxis(fe) is IAxisManager haxis) {
-                        haxis.Range = haxis.InitialRange;
+                        haxis.Reset();
                     }
                     if (ChartBaseControl.GetVerticalAxis(fe) is IAxisManager vaxis) {
-                        vaxis.Range = vaxis.InitialRange;
+                        vaxis.Reset();
                     }
                 }
             }

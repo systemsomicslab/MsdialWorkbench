@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
@@ -160,7 +161,8 @@ namespace CompMs.Graphics.Chart
 
             var pen = BarPen;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double barwidth = BarWidth * HorizontalAxis.InitialRange.Delta / visualChildren.Count;
+            var xs = visualChildren.OfType<AnnotatedDrawingVisual>().Select(v => HorizontalAxis.TranslateToAxisValue(hPropertyReflection.GetValue(v.Annotation)).Value).OrderBy(x => x).ToArray();
+            var barwidth = Enumerable.Range(1, xs.Length - 1).Min(i => xs[i] - xs[i - 1]) * BarWidth;
 
             double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
             foreach (var visual in visualChildren) {
