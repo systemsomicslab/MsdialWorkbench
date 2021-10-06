@@ -29,10 +29,7 @@ namespace CompMs.Graphics.Chart
             new PropertyMetadata(default(string), OnVerticalPropertyNameChanged)
             );
 
-        public static readonly DependencyProperty LinePenProperty = DependencyProperty.Register(
-            nameof(LinePen), typeof(Pen), typeof(LineChartControl),
-            new PropertyMetadata(null)
-            );
+        public static readonly DependencyProperty LinePenProperty;
         #endregion
 
         #region Property
@@ -69,7 +66,7 @@ namespace CompMs.Graphics.Chart
         static LineChartControl() {
             var pen = new Pen(Brushes.Black, 1) { LineJoin = PenLineJoin.Bevel };
             pen.Freeze();
-            LinePenProperty.OverrideMetadata(typeof(Pen), new PropertyMetadata(pen));
+            LinePenProperty = DependencyProperty.Register(nameof(LinePen), typeof(Pen), typeof(LineChartControl), new PropertyMetadata(pen));
         }
 
         public LineChartControl() : base() {
@@ -94,9 +91,9 @@ namespace CompMs.Graphics.Chart
                 var areaGeometry = new PathGeometry();
 
                 var area = new Rect(RenderSize);
-                var path = new PathFigure() { IsClosed = false };
                 var i = 0;
                 while (i < points.Count) {
+                    var path = new PathFigure() { IsClosed = false };
                     while (i < points.Count && !area.Contains(points[i])) {
                         i++;
                     }
@@ -122,13 +119,11 @@ namespace CompMs.Graphics.Chart
                             Point = points[i],
                         });
                     }
+                    var p = (path.Segments.First() as LineSegment).Point;
+                    path.StartPoint = p;
+                    path.Freeze();
+                    areaGeometry.Figures.Add(path);
                 }
-
-                var p = (path.Segments.First() as LineSegment).Point;
-                path.StartPoint = p;
-                path.Freeze();
-
-                areaGeometry.Figures = new PathFigureCollection { path };
 
                 dc.DrawGeometry(null, LinePen, areaGeometry);
             }
