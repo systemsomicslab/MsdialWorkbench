@@ -57,8 +57,6 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         protected Range InitialRangeCore { get; set; }
 
-        public Range InitialValueRange => InitialRangeCore;
-
         public Range InitialRange {
             get => ChartMargin.Add(CoerceRange(InitialRangeCore, Bounds));
         }
@@ -98,35 +96,11 @@ namespace CompMs.Graphics.AxisManager.Generic
             return InitialRange.Contains(value);
         }
 
-        public virtual bool Contains(object obj) {
-            return Contains((T)obj);
-        }
-
-        public bool Contains(T obj) {
-            return InitialRange.Contains(TranslateToAxisValue(obj));
-        }
-
-        public virtual void Focus(object low, object high) {
-            Focus((T)low, (T)high);
-        }
-
-        public void Focus(T low, T high) {
-            Range = new Range(TranslateToAxisValue(low), TranslateToAxisValue(high)).Intersect(InitialRange);
-        }
-
         public void Focus(Range range) {
             Range = range.Intersect(InitialRange);
         }
 
         public abstract List<LabelTickData> GetLabelTicks();
-
-        protected virtual AxisValue TranslateFromRenderPointCore(double value, double min, double max, bool isFlipped) {
-            return new AxisValue(isFlipped ? max - value * (max - min) : value * (max - min) + min);
-        }
-
-        public AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
-            return TranslateFromRenderPointCore(value, Min.Value, Max.Value, isFlipped);
-        }
 
         public abstract AxisValue TranslateToAxisValue(T value);
 
@@ -134,34 +108,45 @@ namespace CompMs.Graphics.AxisManager.Generic
             return TranslateToAxisValue((T)value);
         }
 
-        protected virtual double TranslateToRenderPointCore(AxisValue value, AxisValue min, AxisValue max, bool isFlipped) {
-            return (isFlipped ? max.Value - value.Value : value.Value - min.Value) / (max.Value - min.Value);
+        private double TranslateRelativePointCore(AxisValue value, AxisValue min, AxisValue max) {
+            return (value.Value - min.Value) / (max.Value - min.Value);
         }
 
-        public double TranslateToRenderPoint(AxisValue val, bool isFlipped) {
-            return TranslateToRenderPointCore(val, Min, Max, isFlipped);
-        }
-
-        public virtual double TranslateToRenderPoint(object value, bool isFlipped) {
-            return TranslateToRenderPoint((T)value, isFlipped);
-        }
-
-        public double TranslateToRenderPoint(T value, bool isFlipped) {
-            return TranslateToRenderPointCore(TranslateToAxisValue(value), Min, Max, isFlipped);
-        }
-
-        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
-            return TranslateToRenderPoints(values.OfType<T>(), isFlipped);
-        }
-
-        public List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped) {
+        private List<double> TranslateToRelativePoints(IEnumerable<T> values) {
             double max = Max.Value, min = Min.Value;
             var result = new List<double>();
             foreach (var value in values) {
-                var axVal = TranslateToAxisValue(value);
-                result.Add(TranslateToRenderPointCore(axVal, min, max, isFlipped));
+                result.Add(TranslateRelativePointCore(TranslateToAxisValue(value), min, max));
             }
             return result;
+        }
+
+        private double FlipRelative(double relative, bool isFlipped) {
+            return isFlipped ? 1 - relative : relative;
+        }
+
+        public double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
+            return FlipRelative(TranslateRelativePointCore(value, Min, Max), isFlipped) * drawableLength;
+        }
+
+        private AxisValue TranslateFromRelativePoint(double value) {
+            return new AxisValue(value * (Max.Value - Min.Value) + Min.Value);
+        }
+
+        public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
+            return TranslateFromRelativePoint(FlipRelative(value / drawableLength, isFlipped));
+        }
+
+        public List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped, double drawableLength) {
+            var results = TranslateToRelativePoints(values);
+            for (var i = 0; i < results.Count; i++) {
+                results[i] = FlipRelative(results[i], isFlipped) * drawableLength;
+            }
+            return results;
+        }
+
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
+            return TranslateToRenderPoints(values.Cast<T>(), isFlipped, drawableLength);
         }
     }
 }

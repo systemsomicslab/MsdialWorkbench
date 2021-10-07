@@ -1,9 +1,7 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Windows;
-
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
@@ -27,8 +25,6 @@ namespace CompMs.Graphics.AxisManager
             var axis = (FreezableAxisManager)d;
             axis.ShouldCoerceLabelTicksChanged = true;
             axis.CoerceValue(LabelTicksProperty);
-            axis.ShouldCoerceAxisMapper = true;
-            axis.CoerceValue(AxisMapperProperty);
             axis.RangeChanged?.Invoke(axis, args);
         }
 
@@ -112,35 +108,6 @@ namespace CompMs.Graphics.AxisManager
             return initial;
         }
 
-        public Range InitialValueRange => InitialRange;
-
-        public static readonly DependencyProperty AxisMapperProperty =
-            DependencyProperty.Register(
-                nameof(AxisMapper), typeof(IAxisManager), typeof(FreezableAxisManager),
-                new PropertyMetadata(
-                    null,
-                    OnAxisMapperChanged,
-                    CoerceAxisMapper));
-
-        [Obsolete("Use this AxisManager class itself instead of AxisMapper property.")]
-        public IAxisManager AxisMapper {
-            get => (IAxisManager)GetValue(AxisMapperProperty);
-            set => SetValue(AxisMapperProperty, value);
-        }
-
-        private bool ShouldCoerceAxisMapper = false;
-        static void OnAxisMapperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-        }
-
-        static object CoerceAxisMapper(DependencyObject d, object value) {
-            var axis = (FreezableAxisManager)d;
-            if (axis.ShouldCoerceAxisMapper) {
-                axis.ShouldCoerceAxisMapper = false;
-                return new AxisMapper(axis);
-            }
-            return value;
-        }
-
         public static readonly DependencyProperty LabelTicksProperty =
             DependencyProperty.Register(
                 nameof(LabelTicks), typeof(List<LabelTickData>), typeof(FreezableAxisManager),
@@ -182,9 +149,22 @@ namespace CompMs.Graphics.AxisManager
 
         #endregion
 
-        #region Method
-        protected virtual double TranslateToRenderPointCore(AxisValue value, AxisValue min, AxisValue max, bool isFlipped) {
-            return (isFlipped ? max.Value - value.Value : value.Value - min.Value) / (max.Value - min.Value);
+        public void Focus(Range range) {
+            Range = range;
+        }
+
+        public bool Contains(AxisValue val) {
+            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
+        }
+
+        public abstract List<LabelTickData> GetLabelTicks();
+
+        private double FlipRelative(double relative, bool isFlipped) {
+            return isFlipped ? 1 - relative : relative;
+        }
+
+        private double TranslateToRelativePointCore(AxisValue value, AxisValue min, AxisValue max) {
+            return (value.Value - min.Value) / (max.Value - min.Value);
         }
 
         public virtual AxisValue TranslateToAxisValue(object value) {
@@ -202,53 +182,36 @@ namespace CompMs.Graphics.AxisManager
             return new AxisValue(double.NaN);
         }
 
-        public virtual double TranslateToRenderPoint(AxisValue val, bool isFlipped) {
-            return TranslateToRenderPointCore(val, Min, Max, isFlipped);
-        }
-
-        public virtual double TranslateToRenderPoint(object value, bool isFlipped) {
-            return TranslateToRenderPoint(TranslateToAxisValue(value), isFlipped);
-        }
-
-        public virtual List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped) {
+        private List<double> TranslateToRelativePoints(IEnumerable<object> values) {
             double max = Max, min = Min;
             var result = new List<double>();
 
             foreach (var value in values) {
                 var axVal = TranslateToAxisValue(value);
-                result.Add(TranslateToRenderPointCore(axVal, min, max, isFlipped));
+                result.Add(TranslateToRelativePointCore(axVal, min, max));
             }
 
             return result;
         }
 
-        protected virtual AxisValue TranslateFromRenderPointCore(double value, double min, double max, bool isFlipped) {
-            return new AxisValue(isFlipped ? max - value * (max - min) : value * (max - min) + min);
+        public double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
+            return FlipRelative(TranslateToRelativePointCore(value, Min, Max), isFlipped) * drawableLength;
         }
 
-        public virtual AxisValue TranslateFromRenderPoint(double value, bool isFlipped) {
-            return TranslateFromRenderPointCore(value, Min.Value, Max.Value, isFlipped);
+        public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
+            var results = TranslateToRelativePoints(values);
+            for (var i = 0; i < results.Count; i++) {
+                results[i] = FlipRelative(results[i], isFlipped) * drawableLength;
+            }
+            return results;
         }
 
-        public void Focus(object low, object high) {
-            var loval = TranslateToAxisValue(low);
-            var hival = TranslateToAxisValue(high);
-            Range = new Range(loval, hival);
+        private AxisValue TranslateFromRelativePointCore(double value, double min, double max) {
+            return new AxisValue(value * (max - min) + min);
         }
 
-        public void Focus(Range range) {
-            Range = range;
+        public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {
+            return TranslateFromRelativePointCore(FlipRelative(value / drawableLength, isFlipped), Min.Value, Max.Value);
         }
-
-        public bool Contains(AxisValue val) {
-            return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
-        }
-
-        public bool Contains(object obj) {
-            return Contains(TranslateToAxisValue(obj));
-        }
-        #endregion
-
-        public abstract List<LabelTickData> GetLabelTicks();
     }
 }

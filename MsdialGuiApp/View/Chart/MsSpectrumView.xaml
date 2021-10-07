@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              d:DesignHeight="600" d:DesignWidth="370" >
@@ -26,14 +25,14 @@
                           Style="{StaticResource VerticalConcatChart}"
                           Background="WhiteSmoke" BorderBrush="Black">
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
-                <spectrum:LineSpectrumControl x:Name="MS2Line"
+                <chart:LineSpectrumControl x:Name="MS2Line"
                                               ItemsSource="{Binding UpperSpectrum.Value}"
                                               HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                               VerticalPropertyName="{Binding VerticalProperty}">
-                    <spectrum:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.LinePen>
                         <Pen Thickness="2" Brush="Blue" PresentationOptions:Freeze="True" />
-                    </spectrum:LineSpectrumControl.LinePen>
-                    <spectrum:LineSpectrumControl.ToolTip>
+                    </chart:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="m/z: "/>
@@ -42,8 +41,8 @@
                                 <TextBlock Text="{Binding FocusedItem.Intensity}"/>
                             </StackPanel>
                         </ToolTip>
-                    </spectrum:LineSpectrumControl.ToolTip>
-                </spectrum:LineSpectrumControl>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
                 <chart:Annotator ItemsSource="{Binding UpperSpectrum.Value}"
                                  HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
@@ -55,14 +54,14 @@
 
             <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}"
                   core:ChartBaseControl.FlippedY="False">
-                <spectrum:LineSpectrumControl x:Name="MS2Ref"
+                <chart:LineSpectrumControl x:Name="MS2Ref"
                                               ItemsSource="{Binding LowerSpectrum.Value}"
                                               HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                               VerticalPropertyName="{Binding VerticalProperty.Value}">
-                    <spectrum:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.LinePen>
                         <Pen Thickness="2" Brush="Red" PresentationOptions:Freeze="true"/>
-                    </spectrum:LineSpectrumControl.LinePen>
-                    <spectrum:LineSpectrumControl.ToolTip>
+                    </chart:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="m/z: "/>
@@ -71,8 +70,8 @@
                                 <TextBlock Text="{Binding FocusedItem.Intensity}"/>
                             </StackPanel>
                         </ToolTip>
-                    </spectrum:LineSpectrumControl.ToolTip>
-                </spectrum:LineSpectrumControl>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
                 <chart:Annotator ItemsSource="{Binding LowerSpectrum.Value}"
                                  HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"

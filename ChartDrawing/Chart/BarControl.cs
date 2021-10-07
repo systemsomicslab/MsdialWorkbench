@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.Bar
+namespace CompMs.Graphics.Chart
 {
     public class BarControl : ChartBaseControl
     {
-        #region DependencyProperty
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
             nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(BarControl),
             new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
@@ -35,10 +31,23 @@ namespace CompMs.Graphics.Bar
             new PropertyMetadata(0.95, ChartUpdate)
             );
 
-        public static readonly DependencyProperty BarBrushProperty = DependencyProperty.Register(
-            nameof(BarBrush), typeof(Brush), typeof(BarControl),
-            new PropertyMetadata(Brushes.Blue)
-            );
+        public static readonly DependencyProperty BarBrushProperty =
+            DependencyProperty.Register(
+                nameof(BarBrush), typeof(Brush), typeof(BarControl),
+                new PropertyMetadata(null, OnBarBrushChanged));
+
+        public Brush BarBrush {
+            get => (Brush)GetValue(BarBrushProperty);
+            set => SetValue(BarBrushProperty, value);
+        }
+
+        static void OnBarBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            ((BarControl)d).BarBrushChanged((Brush)e.NewValue, (Brush)e.OldValue);
+        }
+
+        void BarBrushChanged(Brush newValue, Brush oldValue) {
+            Selector.BarBrush = newValue;
+        }
 
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
             nameof(SelectedItem), typeof(object), typeof(BarControl),
@@ -53,23 +62,36 @@ namespace CompMs.Graphics.Bar
             nameof(FocusedPoint), typeof(Point), typeof(BarControl),
             new PropertyMetadata(default)
             );
-        #endregion
 
-        #region Property
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public static readonly DependencyProperty BrushMapperProperty =
+            DependencyProperty.Register(
+                nameof(BrushMapper), typeof(IBrushMapper), typeof(BarControl),
+                new PropertyMetadata(null, OnBrushMapperChanged));
+
+        public IBrushMapper BrushMapper {
+            get => (IBrushMapper)GetValue(BrushMapperProperty);
+            set => SetValue(BrushMapperProperty, value);
+        }
+
+        static void OnBrushMapperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            ((BarControl)d).BrushMapperChanged((IBrushMapper)e.NewValue, (IBrushMapper)e.OldValue);
+        }
+
+        void BrushMapperChanged(IBrushMapper newValue, IBrushMapper oldValue) {
+            Selector.Mapper = newValue;
+        }
+
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
@@ -79,38 +101,38 @@ namespace CompMs.Graphics.Bar
             set => SetValue(BarWidthProperty, value);
         }
 
-        public Brush BarBrush
-        {
-            get => (Brush)GetValue(BarBrushProperty);
-            set => SetValue(BarBrushProperty, value);
-        }
-
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
-        {
+        public Point FocusedPoint {
             get => (Point)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
-        #endregion
 
         public static readonly DependencyProperty BarPenProperty =
             DependencyProperty.Register(nameof(BarPen), typeof(Pen), typeof(BarControl));
 
-        public  Pen BarPen {
+        public Pen BarPen {
             get => (Pen)GetValue(BarPenProperty);
             set => SetValue(BarPenProperty, value);
         }
+
+        private BrushSelector Selector {
+            get {
+                if (selector is null) {
+                    return selector = new BrushSelector();
+                }
+                return selector;
+            }
+        }
+        private BrushSelector selector;
 
         #region field
         private CollectionView cv;
@@ -119,9 +141,7 @@ namespace CompMs.Graphics.Bar
         private PropertyInfo vPropertyReflection;
         #endregion
 
-        public BarControl()
-        {
-            BarBrush.Freeze();
+        public BarControl() {
             BarPen = new Pen(Brushes.Black, 1);
             BarPen.Freeze();
             MouseLeftButtonDown += VisualSelectOnClick;
@@ -129,38 +149,34 @@ namespace CompMs.Graphics.Bar
             ClipToBounds = true;
         }
 
-        protected override void Update()
-        {
-            if (  hPropertyReflection == null
+        protected override void Update() {
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
-               || BarBrush == null
                || cv == null
                )
                 return;
 
-            var brush = BarBrush;
             var pen = BarPen;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            double barwidth = BarWidth * HorizontalAxis.InitialValueRange.Delta / visualChildren.Count;
+            double barwidth = BarWidth * HorizontalAxis.InitialRange.Delta / visualChildren.Count;
 
-            double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY) * actualHeight;
-            foreach(var visual in visualChildren)
-            {
+            double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
+            foreach (var visual in visualChildren) {
                 var dv = visual as AnnotatedDrawingVisual;
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
                 var haxv = HorizontalAxis.TranslateToAxisValue(x);
-                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX) * actualWidth;
-                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
+                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX, actualWidth);
+                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX, actualWidth);
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
                 dv.Center = new Point((xxl + xxr) / 2, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    dc.DrawRectangle(brush, pen, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
+                    dc.DrawRectangle(Selector.GetBrush(o), pen, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
                 }
             }
         }
@@ -174,8 +190,7 @@ namespace CompMs.Graphics.Bar
         }
 
         #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -202,8 +217,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -213,8 +227,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -224,8 +237,7 @@ namespace CompMs.Graphics.Bar
             chart.Update();
         }
 
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as BarControl;
             if (chart == null) return;
 
@@ -235,8 +247,7 @@ namespace CompMs.Graphics.Bar
         #endregion
 
         #region Mouse event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
-        {
+        void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
             VisualTreeHelper.HitTest(this,
@@ -246,10 +257,8 @@ namespace CompMs.Graphics.Bar
                 );
         }
 
-        void VisualSelectOnClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 1)
-            {
+        void VisualSelectOnClick(object sender, MouseButtonEventArgs e) {
+            if (e.ClickCount == 1) {
                 var pt = e.GetPosition(this);
 
                 VisualTreeHelper.HitTest(this,
@@ -260,30 +269,41 @@ namespace CompMs.Graphics.Bar
             }
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
+            if (focussed != FocusedItem) {
                 FocusedItem = focussed;
                 FocusedPoint = dv.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }
         #endregion
+
+        class BrushSelector
+        {
+            // 1. BrushMapper
+            // 2. BarBrush
+            // 3. Default (blue)
+            public Brush BarBrush { get; set; }
+            public IBrushMapper Mapper { get; set; }
+
+            public Brush GetBrush(object o) {
+                return Mapper?.Map(o)
+                    ?? BarBrush
+                    ?? Brushes.Blue;
+            }
+        }
     }
 }

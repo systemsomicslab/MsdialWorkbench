@@ -9,7 +9,7 @@ using System.Windows.Media;
 using CompMs.Common.Extension;
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.LineChart
+namespace CompMs.Graphics.Chart
 {
     public class LineChartControl : ChartBaseControl
     {
@@ -36,26 +36,22 @@ namespace CompMs.Graphics.LineChart
         #endregion
 
         #region Property
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        public Pen LinePen
-        {
+        public Pen LinePen {
             get => (Pen)GetValue(LinePenProperty);
             set => SetValue(LinePenProperty, value);
         }
@@ -82,9 +78,8 @@ namespace CompMs.Graphics.LineChart
             visualChildren.Add(dv);
         }
 
-        protected override void Update()
-        {
-            if (  HorizontalAxis == null
+        protected override void Update() {
+            if (HorizontalAxis == null
                || VerticalAxis == null
                || LinePen == null
                || datas == null
@@ -95,8 +90,7 @@ namespace CompMs.Graphics.LineChart
 
             var points = ValuesToRenderPositions(datas, ActualWidth, ActualHeight);
 
-            if (points.Count != 0)
-            {
+            if (points.Count != 0) {
                 var areaGeometry = new PathGeometry();
 
                 var area = new Rect(RenderSize);
@@ -138,17 +132,17 @@ namespace CompMs.Graphics.LineChart
 
                 dc.DrawGeometry(null, LinePen, areaGeometry);
             }
-            
+
             dc.Close();
         }
 
         List<Point> ValuesToRenderPositions(IReadOnlyList<Data> ds, double actualWidth, double actualHeight) {
             var points = new List<Point>(ds.Count);
 
-            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX);
-            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY);
+            var xs = HorizontalAxis.TranslateToRenderPoints(ds.Select(d => d.x), FlippedX, actualWidth);
+            var ys = VerticalAxis.TranslateToRenderPoints(ds.Select(d => d.y), FlippedY, actualHeight);
 
-            return xs.Zip(ys, (x, y) => new Point(x * actualWidth, y * actualHeight)).ToList();
+            return xs.Zip(ys, (x, y) => new Point(x, y)).ToList();
         }
 
         void SetHorizontalDatas() {
@@ -175,8 +169,7 @@ namespace CompMs.Graphics.LineChart
         }
 
         #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineChartControl;
             if (chart == null || chart.ItemsSource == null) return;
 
@@ -192,8 +185,7 @@ namespace CompMs.Graphics.LineChart
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineChartControl;
             if (chart == null) return;
 
@@ -202,8 +194,7 @@ namespace CompMs.Graphics.LineChart
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineChartControl;
             if (chart == null) return;
 

@@ -6,8 +6,6 @@
       xmlns:local="clr-namespace:ChartDrawingUiTest.Chart"
       mc:Ignorable="d" 
       xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-      xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
-      xmlns:area="clr-namespace:CompMs.Graphics.AreaChart;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       xmlns:am="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
@@ -44,18 +42,18 @@
                           HorizontalTitle="X"
                           VerticalTitle="Y"
                           Grid.Row="1">
-            <line:LineChartControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
+            <chart:LineChartControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
                                    HorizontalPropertyName="X"
                                    VerticalPropertyName="Y"
                                    behavior:ZoomByDragBehavior.IsEnabled="False"
                                    behavior:ZoomByWheelBehavior.IsEnabled="False"
                                    behavior:MoveByDragBehavior.IsEnabled="False"
                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False">
-                <line:LineChartControl.LinePen>
+                <chart:LineChartControl.LinePen>
                     <Pen Thickness="5" Brush="Pink" PresentationOptions:Freeze="True"/>
-                </line:LineChartControl.LinePen>
-            </line:LineChartControl>
-            <area:AreaChartControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
+                </chart:LineChartControl.LinePen>
+            </chart:LineChartControl>
+            <chart:AreaChartControl ItemsSource="{Binding Series, Source={StaticResource vm}}"
                                    HorizontalPropertyName="X"
                                    VerticalPropertyName="Y"
                                    behavior:ZoomByDragBehavior.IsEnabled="False"

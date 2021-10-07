@@ -1,8 +1,10 @@
-﻿using System;
+﻿using CompMs.Common.Extension;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -10,16 +12,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using CompMs.Common.Extension;
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
-
-namespace CompMs.Graphics.Scatter
+namespace CompMs.Graphics.Chart
 {
     public class ScatterControl : ChartBaseControl
     {
-        public ScatterControl()
-        {
+        public ScatterControl() {
             ClipToBounds = true;
         }
 
@@ -30,14 +27,12 @@ namespace CompMs.Graphics.Scatter
                     default(System.Collections.IEnumerable),
                     OnItemsSourceChanged));
 
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as ScatterControl;
             if (chart == null) return;
 
@@ -101,8 +96,8 @@ namespace CompMs.Graphics.Scatter
             }
             var x = hPropertyReflection.GetValue(item);
             var y = vPropertyReflection.GetValue(item);
-            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
-            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
+            double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, ActualWidth);
+            double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, ActualHeight);
             var pos = new Point(xx, yy);
             select = visualChildren.OfType<AnnotatedDrawingVisual>().Argmin(dv => (dv.Center - pos).Length);
             SelectedPoint = select.Center;
@@ -115,14 +110,12 @@ namespace CompMs.Graphics.Scatter
                     default(string),
                     OnHorizontalPropertyNameChanged));
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as ScatterControl;
             if (chart == null) return;
 
@@ -141,14 +134,12 @@ namespace CompMs.Graphics.Scatter
                     default(string),
                     OnVerticalPropertyNameChanged));
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as ScatterControl;
             if (chart == null) return;
 
@@ -167,8 +158,7 @@ namespace CompMs.Graphics.Scatter
                     new EllipseGeometry(new Rect(0, 0, 1, 1)),
                     OnPointGeometryChanged));
 
-        public Geometry PointGeometry
-        {
+        public Geometry PointGeometry {
             get => (Geometry)GetValue(PointGeometryProperty);
             set => SetValue(PointGeometryProperty, value);
         }
@@ -186,8 +176,7 @@ namespace CompMs.Graphics.Scatter
                     Brushes.Black,
                     OnPointBrushChanged));
 
-        public Brush PointBrush
-        {
+        public Brush PointBrush {
             get => (Brush)GetValue(PointBrushProperty);
             set => SetValue(PointBrushProperty, value);
         }
@@ -248,8 +237,7 @@ namespace CompMs.Graphics.Scatter
             }
         }
 
-        public double Radius
-        {
+        public double Radius {
             get => (double)GetValue(RadiusProperty);
             set => SetValue(RadiusProperty, value);
         }
@@ -261,9 +249,8 @@ namespace CompMs.Graphics.Scatter
                     null,
                     OnSelectedItemChanged));
 
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
@@ -272,8 +259,7 @@ namespace CompMs.Graphics.Scatter
                 nameof(SelectedPoint), typeof(Point?), typeof(ScatterControl),
                 new PropertyMetadata(default));
 
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as ScatterControl;
             if (chart == null) return;
 
@@ -281,8 +267,7 @@ namespace CompMs.Graphics.Scatter
                 chart.cv.MoveCurrentTo(e.NewValue);
         }
 
-        public Point? SelectedPoint
-        {
+        public Point? SelectedPoint {
             get => (Point?)GetValue(SelectedPointProperty);
             set => SetValue(SelectedPointProperty, value);
         }
@@ -296,8 +281,7 @@ namespace CompMs.Graphics.Scatter
             remove => RemoveHandler(SelectChangedEvent, value);
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
@@ -305,8 +289,7 @@ namespace CompMs.Graphics.Scatter
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
             base.OnMouseLeftButtonDown(e);
-            if (e.ClickCount == 1)
-            {
+            if (e.ClickCount == 1) {
                 var pt = e.GetPosition(this);
 
                 VisualTreeHelper.HitTest(this,
@@ -317,8 +300,7 @@ namespace CompMs.Graphics.Scatter
             }
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             if (dv != select) {
                 select = dv;
@@ -338,9 +320,8 @@ namespace CompMs.Graphics.Scatter
                 nameof(FocusedItem), typeof(object), typeof(ScatterControl),
                 new PropertyMetadata(null));
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
@@ -349,8 +330,7 @@ namespace CompMs.Graphics.Scatter
                 nameof(FocusedPoint), typeof(Point?), typeof(ScatterControl),
                 new PropertyMetadata(default));
 
-        public Point? FocusedPoint
-        {
+        public Point? FocusedPoint {
             get => (Point?)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
@@ -374,8 +354,7 @@ namespace CompMs.Graphics.Scatter
                 new PointHitTestParameters(pt));
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             if (dv != focus) {
                 focus = dv;
@@ -406,10 +385,9 @@ namespace CompMs.Graphics.Scatter
         private Type dataType;
         private AnnotatedDrawingVisual focus, select;
 
-        protected override void Update()
-        {
+        protected override void Update() {
             base.Update();
-            if (  hPropertyReflection == null
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
@@ -419,15 +397,14 @@ namespace CompMs.Graphics.Scatter
 
             double radius = Radius, actualWidth = ActualWidth, actualHeight = ActualHeight;
 
-            foreach(var visual in visualChildren)
-            {
+            foreach (var visual in visualChildren) {
                 if (!(visual is AnnotatedDrawingVisual dv)) continue;
                 var o = dv.Annotation;
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
-                
-                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * actualWidth;
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * actualHeight;
+
+                double xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, actualWidth);
+                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
                 dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {

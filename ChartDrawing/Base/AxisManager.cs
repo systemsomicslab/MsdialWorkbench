@@ -22,19 +22,15 @@ namespace CompMs.Graphics.Core.Base
         AxisValue Max { get; }
         Range Range { get; set; }
         Range InitialRange { get; }
-        Range InitialValueRange { get; } // TODO: rename
-        Range Bounds { get; }
 
         event EventHandler RangeChanged;
 
         AxisValue TranslateToAxisValue(object value);
-        double TranslateToRenderPoint(AxisValue val, bool isFlipped);
-        double TranslateToRenderPoint(object value, bool isFlipped);
-        List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped);
-        AxisValue TranslateFromRenderPoint(double value, bool isFlipped);
+        double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
+        List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength);
+        AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength);
+
         bool Contains(AxisValue value);
-        bool Contains(object obj);
-        void Focus(object low, object high);
         void Focus(Range range);
         List<LabelTickData> GetLabelTicks();
     }
@@ -42,9 +38,33 @@ namespace CompMs.Graphics.Core.Base
     public interface IAxisManager<T> : IAxisManager
     {
         AxisValue TranslateToAxisValue(T value);
-        double TranslateToRenderPoint(T value, bool isFlipped);
-        List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped);
-        bool Contains(T obj);
-        void Focus(T low, T high);
+        List<double> TranslateToRenderPoints(IEnumerable<T> values, bool isFlipped, double drawableLength);
+    }
+
+    public static class AxisManager
+    {
+        public static double TranslateToRenderPoint(this IAxisManager axis, object value, bool isFlipped, double drawbleLength) {
+            return axis.TranslateToRenderPoint(axis.TranslateToAxisValue(value), isFlipped, drawbleLength);
+        }
+
+        public static double TranslateToRenderPoint<T>(this IAxisManager<T> axis, T value, bool isFlipped, double drawableLength) {
+            return axis.TranslateToRenderPoint(axis.TranslateToAxisValue(value), isFlipped, drawableLength);
+        }
+
+        public static bool Contains(this IAxisManager axis, object value) {
+            return axis.Contains(axis.TranslateToAxisValue(value));
+        }
+
+        public static bool Contains<T>(this IAxisManager<T> axis, T value) {
+            return axis.Contains(axis.TranslateToAxisValue(value));
+        }
+
+        public static void Focus(this IAxisManager axis, object low, object high) {
+            axis.Focus(new Range(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
+        }
+
+        public static void Focus<T>(this IAxisManager<T> axis, T low, T high) {
+            axis.Focus(new Range(axis.TranslateToAxisValue(low), axis.TranslateToAxisValue(high)));
+        }
     }
 }

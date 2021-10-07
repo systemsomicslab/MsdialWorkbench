@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace CompMs.Graphics.AxisManager
+namespace CompMs.Graphics.Design
 {
     public class DelegateBrushMapper<T> : BrushMapper<T>
     {

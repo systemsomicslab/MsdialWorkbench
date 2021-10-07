@@ -6,8 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              d:DataContext="{d:DesignInstance Type=vm:SurveyScanViewModel}"
@@ -42,13 +40,13 @@
                                   BorderBrush="Black"
                                   Style="{StaticResource RotateLeftChart}"
                                   Grid.Row="1">
-            <spectrum:LineSpectrumControl ItemsSource="{Binding Spectrum.Value}"
+            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum.Value}"
                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                           VerticalPropertyName="{Binding VerticalProperty.Value}">
-                <spectrum:LineSpectrumControl.LinePen>
+                <chart:LineSpectrumControl.LinePen>
                     <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
-                </spectrum:LineSpectrumControl.LinePen>
-            </spectrum:LineSpectrumControl>
+                </chart:LineSpectrumControl.LinePen>
+            </chart:LineSpectrumControl>
         </chart:SimpleChartControl>
     </Grid>
 </UserControl>

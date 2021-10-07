@@ -6,8 +6,7 @@
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       xmlns:local="clr-namespace:ChartDrawingUiTest.Scatter"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -47,12 +46,10 @@
                 BorderThickness="2,0,0,2"
                 Margin="0,5,5,0" 
                 Grid.Row="0" Grid.Column="2">
-            <scatter:ScatterControl x:Name="scatter"
+            <chart:ScatterControl x:Name="scatter"
                                     ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     EachPlotBrushName="Brush"
@@ -75,7 +72,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </behavior:ScatterFocusBehavior.LabelTemplate>
-                <scatter:ScatterControl.PointBrush>
+                <chart:ScatterControl.PointBrush>
                     <LinearGradientBrush PresentationOptions:Freeze="true">
                         <GradientStopCollection>
                             <GradientStop Color="Yellow" Offset="0" />
@@ -83,9 +80,9 @@
                             <GradientStop Color="Cyan" Offset="1"/>
                         </GradientStopCollection>
                     </LinearGradientBrush>
-                </scatter:ScatterControl.PointBrush>
+                </chart:ScatterControl.PointBrush>
 
-                <scatter:ScatterControl.ToolTip>
+                <chart:ScatterControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
@@ -94,29 +91,25 @@
                             <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
-                </scatter:ScatterControl.ToolTip>
-            </scatter:ScatterControl>
+                </chart:ScatterControl.ToolTip>
+            </chart:ScatterControl>
         </Border>
-        <axis:HorizontalColorAxisControl HorizontalAxis="{Binding AxisMapper,Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalColorAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                          LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                          LabelBrushes="{StaticResource AxisBrushes1}"
-                                         RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                          Margin="2,0,5,0"
                                          Grid.Row="1" Grid.Column="2" />
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Margin="2,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,2"
                                   FlippedY="False"
                                   Grid.Row="0" Grid.Column="0" />
-        <axis:VerticalColorAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalColorAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                        LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                       RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                        LabelBrushes="{StaticResource AxisBrushes2}"
                                        Margin="0,5,0,2"
                                        FlippedY="False"

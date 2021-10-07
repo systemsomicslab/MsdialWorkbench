@@ -81,8 +81,8 @@ namespace CompMs.Graphics.Behavior
                     if (haxis != null) {
                         var flippedX = ChartBaseControl.GetFlippedX(fe);
                         var rangeX = haxis.Range;
-                        var prev = haxis.TranslateFromRenderPoint(previous.X / fe.ActualWidth, flippedX);
-                        var curr = haxis.TranslateFromRenderPoint(current.X / fe.ActualWidth, flippedX);
+                        var prev = haxis.TranslateFromRenderPoint(previous.X, flippedX, fe.ActualWidth);
+                        var curr = haxis.TranslateFromRenderPoint(current.X, flippedX, fe.ActualWidth);
                         var delta = prev - curr;
                         rangeX = new Range(rangeX.Minimum + delta, rangeX.Maximum + delta);
                         if (haxis.InitialRange.Contains(rangeX)) {
@@ -94,8 +94,8 @@ namespace CompMs.Graphics.Behavior
                     if (vaxis != null) {
                         var flippedY = ChartBaseControl.GetFlippedY(fe);
                         var rangeY = vaxis.Range;
-                        var prev = vaxis.TranslateFromRenderPoint(previous.Y / fe.ActualHeight, flippedY);
-                        var curr = vaxis.TranslateFromRenderPoint(current.Y / fe.ActualHeight, flippedY);
+                        var prev = vaxis.TranslateFromRenderPoint(previous.Y, flippedY, fe.ActualHeight);
+                        var curr = vaxis.TranslateFromRenderPoint(current.Y, flippedY, fe.ActualHeight);
                         var delta = prev - curr;
                         rangeY = new Range(rangeY.Minimum + delta, rangeY.Maximum + delta);
                         if (vaxis.InitialRange.Contains(rangeY)) {

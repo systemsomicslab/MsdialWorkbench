@@ -7,8 +7,7 @@
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:local="clr-namespace:ChartDrawingUiTest.Heatmap"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:heatmap="clr-namespace:CompMs.Graphics.Heatmap;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Heatmap4">
@@ -46,15 +45,15 @@
                 BorderThickness="2,0,0,2"
                 Margin="0,5,5,0" 
                 Grid.Row="0" Grid.Column="1">
-            <heatmap:HeatmapControl x:Name="heatmap"
+            <chart:HeatmapControl x:Name="heatmap"
                                     ItemsSource="{Binding  Source={StaticResource SeriesView}}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+                                    HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     DegreePropertyName="Z"
                                     ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}">
-                <heatmap:HeatmapControl.ToolTip>
+                <chart:HeatmapControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
                              Placement="Relative"
                              PlacementRectangle="0,-20,0,0"
@@ -71,14 +70,14 @@
                             <TextBlock Text="{Binding FocusedItem.Z}"/>
                         </StackPanel>
                     </ToolTip>
-                </heatmap:HeatmapControl.ToolTip>
-            </heatmap:HeatmapControl>
+                </chart:HeatmapControl.ToolTip>
+            </chart:HeatmapControl>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />

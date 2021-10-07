@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 using CompMs.Graphics.Core.Base;
 
-namespace CompMs.Graphics.LineSpectrum
+namespace CompMs.Graphics.Chart
 {
     public class LineSpectrumControl : ChartBaseControl
     {
@@ -50,44 +50,37 @@ namespace CompMs.Graphics.LineSpectrum
         #endregion
 
         #region Property
-        public System.Collections.IEnumerable ItemsSource
-        {
+        public System.Collections.IEnumerable ItemsSource {
             get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        public string HorizontalPropertyName
-        {
+        public string HorizontalPropertyName {
             get => (string)GetValue(HorizontalPropertyNameProperty);
             set => SetValue(HorizontalPropertyNameProperty, value);
         }
 
-        public string VerticalPropertyName
-        {
+        public string VerticalPropertyName {
             get => (string)GetValue(VerticalPropertyNameProperty);
             set => SetValue(VerticalPropertyNameProperty, value);
         }
 
-        public Pen LinePen
-        {
+        public Pen LinePen {
             get => (Pen)GetValue(LinePenProperty);
             set => SetValue(LinePenProperty, value);
         }
 
-        public object SelectedItem
-        {
-            get { return (object)GetValue(SelectedItemProperty); }
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public object FocusedItem
-        {
-            get => (object)GetValue(FocusedItemProperty);
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
             set => SetValue(FocusedItemProperty, value);
         }
 
-        public Point FocusedPoint
-        {
+        public Point FocusedPoint {
             get => (Point)GetValue(FocusedPointProperty);
             set => SetValue(FocusedPointProperty, value);
         }
@@ -100,17 +93,15 @@ namespace CompMs.Graphics.LineSpectrum
         private PropertyInfo vPropertyReflection;
         #endregion
 
-        public LineSpectrumControl()
-        {
+        public LineSpectrumControl() {
             MouseLeftButtonDown += VisualSelectOnClick;
             MouseMove += VisualFocusOnMouseOver;
         }
 
-        protected override void Update()
-        {
+        protected override void Update() {
             visualChildren.Clear();
 
-            if (  hPropertyReflection == null
+            if (hPropertyReflection == null
                || vPropertyReflection == null
                || HorizontalAxis == null
                || VerticalAxis == null
@@ -119,14 +110,13 @@ namespace CompMs.Graphics.LineSpectrum
                )
                 return;
 
-            foreach (var o in cv)
-            {
+            foreach (var o in cv) {
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX) * ActualWidth;
-                var yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY) * ActualHeight;
-                var y0 = VerticalAxis.TranslateToRenderPoint(0, FlippedY) * ActualHeight;
+                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, ActualWidth);
+                var yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, ActualHeight);
+                var y0 = VerticalAxis.TranslateToRenderPoint(0, FlippedY, ActualHeight);
 
                 var dv = new AnnotatedDrawingVisual(o) { Center = new Point(xx, yy) };
                 dv.Clip = new RectangleGeometry(new Rect(RenderSize));
@@ -138,23 +128,20 @@ namespace CompMs.Graphics.LineSpectrum
         }
 
         #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineSpectrumControl;
             if (chart == null) return;
 
             chart.dataType = null;
             chart.cv = null;
 
-            if (chart.ItemsSource == null)
-            {
+            if (chart.ItemsSource == null) {
                 chart.Update();
                 return;
             }
 
             var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext())
-            {
+            if (!enumerator.MoveNext()) {
                 chart.Update();
                 return;
             }
@@ -172,8 +159,7 @@ namespace CompMs.Graphics.LineSpectrum
             chart.Update();
         }
 
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineSpectrumControl;
             if (chart == null) return;
 
@@ -183,8 +169,7 @@ namespace CompMs.Graphics.LineSpectrum
             chart.Update();
         }
 
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineSpectrumControl;
             if (chart == null) return;
 
@@ -194,8 +179,7 @@ namespace CompMs.Graphics.LineSpectrum
             chart.Update();
         }
 
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var chart = d as LineSpectrumControl;
             if (chart == null) return;
 
@@ -205,8 +189,7 @@ namespace CompMs.Graphics.LineSpectrum
         #endregion
 
         #region Mouse event
-        void VisualFocusOnMouseOver(object sender, MouseEventArgs e)
-        {
+        void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
             VisualTreeHelper.HitTest(this,
@@ -217,10 +200,8 @@ namespace CompMs.Graphics.LineSpectrum
                 );
         }
 
-        void VisualSelectOnClick(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 1)
-            {
+        void VisualSelectOnClick(object sender, MouseButtonEventArgs e) {
+            if (e.ClickCount == 1) {
                 var pt = e.GetPosition(this);
 
                 VisualTreeHelper.HitTest(this,
@@ -231,27 +212,23 @@ namespace CompMs.Graphics.LineSpectrum
             }
         }
 
-        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d)
-        {
+        HitTestFilterBehavior VisualHitTestFilter(DependencyObject d) {
             if (d is AnnotatedDrawingVisual)
                 return HitTestFilterBehavior.Continue;
             return HitTestFilterBehavior.ContinueSkipSelf;
         }
 
-        HitTestResultBehavior VisualFocusHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;
             var focussed = dv.Annotation;
-            if (focussed != FocusedItem)
-            {
+            if (focussed != FocusedItem) {
                 FocusedItem = focussed;
                 FocusedPoint = dv.Center;
             }
             return HitTestResultBehavior.Stop;
         }
 
-        HitTestResultBehavior VisualSelectHitTest(HitTestResult result)
-        {
+        HitTestResultBehavior VisualSelectHitTest(HitTestResult result) {
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }

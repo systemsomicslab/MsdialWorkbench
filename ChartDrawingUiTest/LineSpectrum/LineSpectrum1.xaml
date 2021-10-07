@@ -6,8 +6,7 @@
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       xmlns:local="clr-namespace:ChartDrawingUiTest.LineSpectrum"
       xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-      xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-      xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LineSpectrum1">
@@ -24,7 +23,7 @@
                                        ChartMargin="0.05" />
         <manager:DependencyContinuousAxisManager x:Key="VerticalAxis"
                                                  ItemsSource="{Binding Source={StaticResource SeriesView}}"
-                                                 TargetAxisMapper="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+                                                 TargetAxisMapper="{StaticResource HorizontalAxis}"
                                                  TargetPropertyName="X" ValuePropertyName="Y"
                                                  TargetRange="{Binding Range, Source={StaticResource HorizontalAxis}}"
                                                  ChartMargin="0.05"
@@ -47,15 +46,13 @@
                 BorderThickness="2,0,0,2"
                 Margin="0,5,5,0" 
                 Grid.Row="0" Grid.Column="1">
-            <spectrum:LineSpectrumControl x:Name="spectrum"
+            <chart:LineSpectrumControl x:Name="spectrum"
                                     ItemsSource="{Binding SelectedValue, ElementName=SeriesSelector}"
-                                    HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                    VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                    RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                    HorizontalAxis="{StaticResource HorizontalAxis}"
+                                    VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y">
-                <spectrum:LineSpectrumControl.LinePen>
+                <chart:LineSpectrumControl.LinePen>
                     <Pen Thickness="1" PresentationOptions:Freeze="true">
                         <Pen.Brush>
                             <LinearGradientBrush>
@@ -75,8 +72,8 @@
                             </LinearGradientBrush>
                         </Pen.Brush>       
                     </Pen>
-                </spectrum:LineSpectrumControl.LinePen>
-                <spectrum:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl.LinePen>
+                <chart:LineSpectrumControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="X = "/>
@@ -85,17 +82,15 @@
                             <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
-                </spectrum:LineSpectrumControl.ToolTip>
-            </spectrum:LineSpectrumControl>
+                </chart:LineSpectrumControl.ToolTip>
+            </chart:LineSpectrumControl>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="1" Grid.Column="1" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="0" Grid.Column="0" />
         <StackPanel Orientation="Horizontal"

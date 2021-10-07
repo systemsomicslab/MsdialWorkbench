@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-             xmlns:bar="clr-namespace:CompMs.Graphics.Bar;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              d:DataContext="{d:DesignInstance Type={x:Type vm:BarChartViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -28,10 +27,10 @@
                                   HorizontalTitle="{Binding HorizontalTitle.Value}"
                                   VerticalTitle="{Binding VerticalTitle.Value}"
                                   Style="{StaticResource BasicChart}">
-            <bar:BarControl ItemsSource="{Binding BarItems.Value}"
+            <chart:BarControl ItemsSource="{Binding BarItems.Value}"
                             HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                             VerticalPropertyName="{Binding VerticalProperty.Value}" >
-                <bar:BarControl.ToolTip>
+                <chart:BarControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Class: "/>
@@ -40,8 +39,8 @@
                             <TextBlock Text="{Binding FocusedItem.Height}"/>
                         </StackPanel>
                     </ToolTip>
-                </bar:BarControl.ToolTip>
-            </bar:BarControl>
+                </chart:BarControl.ToolTip>
+            </chart:BarControl>
         </chart:SimpleChartControl>
     </Grid>
 </UserControl>

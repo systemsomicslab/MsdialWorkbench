@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.MS2"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -79,15 +78,13 @@
         <Border Background="WhiteSmoke"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2">
-            <line:LineChartControl x:Name="scatter"
+            <chart:LineChartControl x:Name="scatter"
                                    ItemsSource="{Binding}"
-                                   HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
-                                   VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
-                                   RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
-                                   RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
+                                   HorizontalAxis="{StaticResource HorizontalAxis}"
+                                   VerticalAxis="{StaticResource VerticalAxis}"
                                    HorizontalPropertyName="X"
                                    VerticalPropertyName="Y">
-                <line:LineChartControl.ToolTip>
+                <chart:LineChartControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Retention time: "/>
@@ -96,21 +93,19 @@
                             <TextBlock Text="{Binding FocusedItem.Y}"/>
                         </StackPanel>
                     </ToolTip>
-                </line:LineChartControl.ToolTip>
-            </line:LineChartControl>
+                </chart:LineChartControl.ToolTip>
+            </chart:LineChartControl>
         </Border>
         <Border BorderBrush="Black"
                 BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" 
                 Grid.Row="1" Grid.Column="2"/>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource HorizontalAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource HorizontalAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource VerticalAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource VerticalAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="Retention time [min]"

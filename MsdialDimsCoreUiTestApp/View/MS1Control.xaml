@@ -5,16 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
              x:Name="MS1Chart"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <manager:DependencyContinuousAxisManager x:Key="IntensityAxisManager"
                                                  ItemsSource="{Binding DataContext.Ms2CollectionView, Source={x:Reference Name=MS1Chart}}"
-                                                 TargetAxisMapper="{Binding HorizontalAxis.AxisMapper, Source={x:Reference Name=MS1Chart}}"
+                                                 TargetAxisMapper="{Binding HorizontalAxis, Source={x:Reference Name=MS1Chart}}"
                                                  ValuePropertyName="Intensity" TargetPropertyName="Mass"
                                                  TargetRange="{Binding HorizontalAxis.Range, Source={x:Reference Name=MS1Chart}}"
                                                  ChartMargin="0.05"
@@ -36,43 +34,37 @@
         <!--
         <line:LineChartControl x:Name="MS1Line"
                                ItemsSource="{Binding Ms1Peaks}"
-                               HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               RangeX="{Binding HorizontalAxis.Range, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                               RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
+                               HorizontalAxis="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                               VerticalAxis="{StaticResource IntensityAxisManager}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
         -->
-        <spectrum:LineSpectrumControl x:Name="MS1Line"
+        <chart:LineSpectrumControl x:Name="MS1Line"
                                       ItemsSource="{Binding Ms2CollectionView}"
-                                      HorizontalAxis="{Binding HorizontalAxis.AxisMapper, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                      VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                                      RangeX="{Binding HorizontalAxis.Range, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                      RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
+                                      HorizontalAxis="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                      VerticalAxis="{StaticResource IntensityAxisManager}"
                                       HorizontalPropertyName="Mass"
                                       VerticalPropertyName="Intensity"
                                       Grid.Row="0" Grid.Column="3" >
-            <spectrum:LineSpectrumControl.ToolTip>
+            <chart:LineSpectrumControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Name: "/>
                             <TextBlock Text="{Binding FocusedItem.ChromatogramPeakFeature.Name}"/>
                         </StackPanel>
                     </ToolTip>
-            </spectrum:LineSpectrumControl.ToolTip>
-        </spectrum:LineSpectrumControl>
-        <axis:HorizontalAxisControl x:Name="MzAxis"
+            </chart:LineSpectrumControl.ToolTip>
+        </chart:LineSpectrumControl>
+        <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding HorizontalAxis, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
-                                    RangeX="{Binding Range}"
                                     Grid.Row="2" Grid.Column="3" />
-        <axis:VerticalAxisControl x:Name="IntensityAxis"
+        <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
-                                  RangeY="{Binding Range}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"
                    FontStyle="Italic"

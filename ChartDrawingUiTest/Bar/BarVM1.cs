@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace ChartDrawingUiTest.Bar
 {
@@ -35,6 +36,8 @@ namespace ChartDrawingUiTest.Bar
             set => SetProperty(ref ys, value);
         }
 
+        public IBrushMapper<SampleData> Mapper { get; }
+
         private ObservableCollection<SampleData> series;
         private ObservableCollection<double> xs, ys;
 
@@ -47,6 +50,9 @@ namespace ChartDrawingUiTest.Bar
             ss.Add(new SampleData() { X = 4.0, Y = 1.5, });
 
             Series = new ObservableCollection<SampleData>(ss);
+            Mapper = new KeyBrushMapper<SampleData>(
+                ss.Zip(new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Black, }, Tuple.Create)
+                    .ToDictionary(p => p.Item1, p => (Brush)p.Item2));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

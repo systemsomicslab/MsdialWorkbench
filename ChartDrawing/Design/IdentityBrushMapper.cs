@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Media;
 
-namespace CompMs.Graphics.AxisManager
+namespace CompMs.Graphics.Design
 {
     public class IdentityBrushMapper : BrushMapper<Brush>
     {

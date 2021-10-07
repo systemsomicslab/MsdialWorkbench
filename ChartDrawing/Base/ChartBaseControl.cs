@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
-using CompMs.Graphics.Core.Adorner;
 
 
 namespace CompMs.Graphics.Core.Base
@@ -95,12 +93,6 @@ namespace CompMs.Graphics.Core.Base
             InvalidateVisual();
         }
 
-        [Obsolete("Range infomation move to Axis.")]
-        public static readonly DependencyProperty RangeXProperty = DependencyProperty.Register(
-            nameof(RangeX), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
-            );
-
         public Range RangeX {
             get => HorizontalAxis?.Range;
             set {
@@ -108,12 +100,6 @@ namespace CompMs.Graphics.Core.Base
                     HorizontalAxis.Range = value;
             }
         }
-
-        [Obsolete("Range infomation move to Axis.")]
-        public static readonly DependencyProperty RangeYProperty = DependencyProperty.Register(
-            nameof(RangeY), typeof(Range), typeof(ChartBaseControl),
-            new FrameworkPropertyMetadata(new Range(minimum: 0d, maximum: 1d), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
-            );
 
         public Range RangeY {
             get => VerticalAxis?.Range;

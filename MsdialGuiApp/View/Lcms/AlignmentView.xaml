@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:scatter="clr-namespace:CompMs.Graphics.Scatter;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
@@ -45,12 +44,10 @@
         <Border Background="WhiteSmoke" BorderBrush="Black" BorderThickness="1,0,0,1"
                 Margin="0,5,5,0" Grid.Row="1" Grid.Column="2">
             <Grid Margin="-1,0,0,-1">
-                <scatter:ScatterControl x:Name="alignmentScatter"
+                <chart:ScatterControl x:Name="alignmentScatter"
                                         ItemsSource="{Binding Ms1Spots}"
-                                        HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
-                                        VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
-                                        RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
-                                        RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
+                                        HorizontalAxis="{StaticResource TimeAxis}"
+                                        VerticalAxis="{StaticResource MzAxis}"
                                         HorizontalPropertyName="TimesCenter"
                                         VerticalPropertyName="MassCenter"
                                         EachPlotBrushName="SpotColor"
@@ -84,7 +81,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </behavior:ScatterFocusBehavior.LabelTemplate>
-                </scatter:ScatterControl>
+                </chart:ScatterControl>
                 <ContentControl Content="{Binding SelectedPoint, ElementName=alignmentScatter}"
                                 ContentTemplate="{DynamicResource FocusCross}"
                                 IsHitTestVisible="False">
@@ -113,14 +110,12 @@
                 </ContentControl>
             </Grid>
         </Border>
-        <axis:HorizontalAxisControl HorizontalAxis="{Binding AxisMapper, Source={StaticResource TimeAxis}}"
+        <chart:HorizontalAxisControl HorizontalAxis="{StaticResource TimeAxis}"
                                     LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
-                                    RangeX="{Binding Range, Source={StaticResource TimeAxis}, Mode=TwoWay}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
-        <axis:VerticalAxisControl VerticalAxis="{Binding AxisMapper, Source={StaticResource MzAxis}}"
+        <chart:VerticalAxisControl VerticalAxis="{StaticResource MzAxis}"
                                   LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
-                                  RangeY="{Binding Range, Source={StaticResource MzAxis}, Mode=TwoWay}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"

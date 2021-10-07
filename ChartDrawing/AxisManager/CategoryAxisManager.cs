@@ -1,14 +1,11 @@
-﻿using System;
+﻿using CompMs.Graphics.Core.Base;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
 
-using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Base;
 
 namespace CompMs.Graphics.AxisManager
 {
@@ -114,8 +111,6 @@ namespace CompMs.Graphics.AxisManager
                 converter[item] = 0.5 + cnt++;
 
             InitialRange = new Range(minimum: 0d, maximum: cnt);
-
-            AxisMapper = new AxisMapper(this);
         }
 
         #region Event handler

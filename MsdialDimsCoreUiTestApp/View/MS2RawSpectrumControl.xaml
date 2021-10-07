@@ -6,9 +6,7 @@
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:MsdialDimsCoreUiTestApp.View"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             xmlns:line="clr-namespace:CompMs.Graphics.LineChart;assembly=ChartDrawing"
-             xmlns:spectrum="clr-namespace:CompMs.Graphics.LineSpectrum;assembly=ChartDrawing"
-             xmlns:axis="clr-namespace:CompMs.Graphics.GraphAxis;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
              x:Name="MS2Chart"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -35,12 +33,10 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <line:LineChartControl x:Name="MS2Spectrum"
+        <chart:LineChartControl x:Name="MS2Spectrum"
                                ItemsSource="{Binding Ms2Features/Spectrum}"
-                               HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                               VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                               RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                               RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
+                               HorizontalAxis="{StaticResource MassAxisManager}"
+                               VerticalAxis="{StaticResource IntensityAxisManager}"
                                HorizontalPropertyName="Mass"
                                VerticalPropertyName="Intensity"
                                Grid.Row="0" Grid.Column="3" />
@@ -54,37 +50,33 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <spectrum:LineSpectrumControl ItemsSource="{Binding Reference.Spectrum}"
-                                                  HorizontalAxis="{Binding AxisMapper, Source={StaticResource MassAxisManager}}"
-                                                  VerticalAxis="{Binding AxisMapper, Source={StaticResource IntensityAxisManager}}"
-                                                  RangeX="{Binding Range, Source={StaticResource MassAxisManager}}"
-                                                  RangeY="{Binding Range, Source={StaticResource IntensityAxisManager}}"
+                    <chart:LineSpectrumControl ItemsSource="{Binding Reference.Spectrum}"
+                                                  HorizontalAxis="{StaticResource MassAxisManager}"
+                                                  VerticalAxis="{StaticResource IntensityAxisManager}"
                                                   HorizontalPropertyName="Mass"
                                                   VerticalPropertyName="Intensity" >
-                        <spectrum:LineSpectrumControl.LinePen>
+                        <chart:LineSpectrumControl.LinePen>
                             <Pen Thickness="1" Brush="Red" PresentationOptions:Freeze="true"/>
-                        </spectrum:LineSpectrumControl.LinePen>
-                        <spectrum:LineSpectrumControl.ToolTip>
+                        </chart:LineSpectrumControl.LinePen>
+                        <chart:LineSpectrumControl.ToolTip>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Name: " />
                                 <TextBlock Text="{Binding Reference.Name}" />
                             </StackPanel>
-                        </spectrum:LineSpectrumControl.ToolTip>
-                    </spectrum:LineSpectrumControl>
+                        </chart:LineSpectrumControl.ToolTip>
+                    </chart:LineSpectrumControl>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <axis:HorizontalAxisControl x:Name="MzAxis"
+        <chart:HorizontalAxisControl x:Name="MzAxis"
                                     DataContext="{Binding Source={StaticResource MassAxisManager}}"
-                                    HorizontalAxis="{Binding AxisMapper}"
+                                    HorizontalAxis="{Binding}"
                                     LabelTicks="{Binding LabelTicks}"
-                                    RangeX="{Binding Range}"
                                     Grid.Row="2" Grid.Column="3" />
-        <axis:VerticalAxisControl x:Name="IntensityAxis"
+        <chart:VerticalAxisControl x:Name="IntensityAxis"
                                   DataContext="{Binding Source={StaticResource IntensityAxisManager}}"
-                                  VerticalAxis="{Binding AxisMapper}"
+                                  VerticalAxis="{Binding}"
                                   LabelTicks="{Binding LabelTicks}"
-                                  RangeY="{Binding Range}"
                                   Grid.Row="0" Grid.Column="1" />
         <TextBlock Text="Mass"
                    FontStyle="Italic"
