@@ -126,7 +126,7 @@ namespace CompMs.Graphics.Behavior
                         var flippedX = ChartBaseControl.GetFlippedX(fe);
                         var rangeX = RenderPointsToRange(initial.X, current.X, fe.ActualWidth, haxis, flippedX);
                         if (rangeX.Minimum < rangeX.Maximum)
-                            haxis.Range = rangeX;
+                            haxis.Focus(rangeX);
                     }
 
                     var vaxis = ChartBaseControl.GetVerticalAxis(fe);
@@ -134,7 +134,7 @@ namespace CompMs.Graphics.Behavior
                         var flippedY = ChartBaseControl.GetFlippedY(fe);
                         var rangeY = RenderPointsToRange(initial.Y, current.Y, fe.ActualHeight, vaxis, flippedY);
                         if (rangeY.Minimum < rangeY.Maximum)
-                            vaxis.Range = rangeY;
+                            vaxis.Focus(rangeY);
                     }
                 }
             }

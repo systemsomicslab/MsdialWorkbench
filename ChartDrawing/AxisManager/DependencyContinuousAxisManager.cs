@@ -97,7 +97,7 @@ namespace CompMs.Graphics.AxisManager
             var minidx = Math.Max(SearchCollection.UpperBound(targets, range.Minimum, (u, v) => u.Value.CompareTo(v.Value)) - 1, 0);
             var maxidx = SearchCollection.UpperBound(targets, range.Maximum, (u, v) => u.Value.CompareTo(v.Value));
 
-            Range = new Range(minTree.Query(minidx, maxidx), maxTree.Query(minidx, maxidx));
+            Focus(new Range(minTree.Query(minidx, maxidx), maxTree.Query(minidx, maxidx)));
         }
 
         #region event handler

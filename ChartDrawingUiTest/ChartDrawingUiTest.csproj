@@ -74,6 +74,10 @@
       <DependentUpon>Bar2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bar\BarVM1.cs" />
+    <Compile Include="Chart\AxisTest.xaml.cs">
+      <DependentUpon>AxisTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\AxisTestViewModel.cs" />
     <Compile Include="Chart\ChartUpdate.xaml.cs">
       <DependentUpon>ChartUpdate.xaml</DependentUpon>
     </Compile>
@@ -148,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Bar\Bar2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\AxisTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

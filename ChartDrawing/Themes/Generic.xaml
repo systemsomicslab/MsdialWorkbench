@@ -156,13 +156,11 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
                                                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 

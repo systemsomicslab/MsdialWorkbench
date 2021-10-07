@@ -28,8 +28,10 @@ namespace CompMs.Graphics.Core.Base
         AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength);
 
         bool Contains(AxisValue value);
+        bool ContainsCurrent(AxisValue value);
         void Focus(Range range);
         void Reset();
+        void Recalculate(double drawableLength);
         List<LabelTickData> GetLabelTicks();
     }
 

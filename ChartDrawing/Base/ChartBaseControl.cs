@@ -30,9 +30,11 @@ namespace CompMs.Graphics.Core.Base
         }
 
         static void OnHorizontalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is ChartBaseControl bc) {
-                bc.OnHorizontalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
-                bc.InvalidateVisual();
+            if (e.OldValue != e.NewValue) {
+                if (d is ChartBaseControl bc) {
+                    bc.OnHorizontalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
+                    bc.InvalidateVisual();
+                }
             }
         }
 
@@ -43,6 +45,8 @@ namespace CompMs.Graphics.Core.Base
 
             if (newValue != null) {
                 newValue.RangeChanged += OnHorizontalRangeChanged;
+                newValue.Recalculate(ActualWidth);
+                newValue.Reset();
             }
         }
 
@@ -73,9 +77,11 @@ namespace CompMs.Graphics.Core.Base
         }
 
         static void OnVerticalAxisChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is ChartBaseControl bc) {
-                bc.OnVerticalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
-                bc.InvalidateVisual();
+            if (e.OldValue != e.NewValue) {
+                if (d is ChartBaseControl bc) {
+                    bc.OnVerticalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
+                    bc.InvalidateVisual();
+                }
             }
         }
 
@@ -86,6 +92,8 @@ namespace CompMs.Graphics.Core.Base
 
             if (newValue != null) {
                 newValue.RangeChanged += OnVerticalRangeChanged;
+                newValue.Recalculate(ActualHeight);
+                newValue.Reset();
             }
         }
 
@@ -97,7 +105,7 @@ namespace CompMs.Graphics.Core.Base
             get => HorizontalAxis?.Range;
             set {
                 if (HorizontalAxis != null)
-                    HorizontalAxis.Range = value;
+                    HorizontalAxis.Focus(value);
             }
         }
 
@@ -105,7 +113,7 @@ namespace CompMs.Graphics.Core.Base
             get => VerticalAxis?.Range;
             set {
                 if (VerticalAxis != null)
-                    VerticalAxis.Range = value;
+                    VerticalAxis.Focus(value);
             }
         }
 
@@ -168,6 +176,22 @@ namespace CompMs.Graphics.Core.Base
         {
             if (d is FrameworkElement fe) {
                 fe.InvalidateVisual();
+            }
+        }
+
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
+            base.OnRenderSizeChanged(sizeInfo);
+            if (!(HorizontalAxis is null)) {
+                HorizontalAxis.Recalculate(sizeInfo.NewSize.Width);
+                if (sizeInfo.PreviousSize.Width == 0) {
+                    HorizontalAxis.Reset();
+                }
+            }
+            if (!(VerticalAxis is null)) {
+                VerticalAxis.Recalculate(sizeInfo.NewSize.Height);
+                if (sizeInfo.PreviousSize.Height == 0) {
+                    VerticalAxis.Reset();
+                }
             }
         }
         #endregion

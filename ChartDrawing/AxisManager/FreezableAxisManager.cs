@@ -72,7 +72,7 @@ namespace CompMs.Graphics.AxisManager
 
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (FreezableAxisManager)d;
-            axis.Range = (Range)e.NewValue;
+            axis.Focus((Range)e.NewValue);
         }
 
         static object CoerceInitialRange(DependencyObject d, object value) {
@@ -115,12 +115,12 @@ namespace CompMs.Graphics.AxisManager
         #region Property
         public AxisValue Min {
             get => Range.Minimum;
-            set => Range = new Range(minimum: value, maximum: Range.Maximum);
+            set => Focus(new Range(minimum: value, maximum: Range.Maximum));
         }
 
         public AxisValue Max {
             get => Range.Maximum;
-            set => Range = new Range(minimum: Range.Minimum, maximum: value);
+            set => Focus(new Range(minimum: Range.Minimum, maximum: value));
         }
 
         #endregion
@@ -130,11 +130,19 @@ namespace CompMs.Graphics.AxisManager
         }
 
         public void Reset() {
-            Range = InitialRange;
+            Focus(InitialRange);
+        }
+
+        public void Recalculate(double drawableLength) {
+            // TODO: Recalculate initial range
         }
 
         public bool Contains(AxisValue val) {
             return InitialRange.Minimum <= val && val <= InitialRange.Maximum;
+        }
+
+        public bool ContainsCurrent(AxisValue value) {
+            return Range.Contains(value);
         }
 
         public abstract List<LabelTickData> GetLabelTicks();

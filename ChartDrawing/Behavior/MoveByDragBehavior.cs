@@ -86,7 +86,7 @@ namespace CompMs.Graphics.Behavior
                         var delta = prev - curr;
                         rangeX = new Range(rangeX.Minimum + delta, rangeX.Maximum + delta);
                         if (haxis.Contains(rangeX)) {
-                            haxis.Range = rangeX;
+                            haxis.Focus(rangeX);
                         }
                     }
 
@@ -99,7 +99,7 @@ namespace CompMs.Graphics.Behavior
                         var delta = prev - curr;
                         rangeY = new Range(rangeY.Minimum + delta, rangeY.Maximum + delta);
                         if (vaxis.Contains(rangeY)) {
-                            vaxis.Range = rangeY;
+                            vaxis.Focus(rangeY);
                         }
                     }
                 }

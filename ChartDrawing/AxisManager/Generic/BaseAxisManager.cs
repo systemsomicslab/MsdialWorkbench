@@ -8,31 +8,31 @@ namespace CompMs.Graphics.AxisManager.Generic
     public abstract class BaseAxisManager<T> : IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
-            InitialRangeCore = range;
+            InitialRangeCore = InitialRange = range;
             Bounds = bounds;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range, ChartMargin margin) {
-            InitialRangeCore = range;
+            InitialRangeCore = InitialRange = range;
             ChartMargin = margin;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range, ChartMargin margin, Range bounds) {
-            InitialRangeCore = range;
+            InitialRangeCore = InitialRange = range;
             Bounds = bounds;
             ChartMargin = margin;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range) {
-            InitialRangeCore = range;
+            InitialRangeCore = InitialRange = range;
             Range = InitialRange;
         }
 
         public BaseAxisManager(BaseAxisManager<T> source) {
-            InitialRangeCore = source.InitialRangeCore;
+            InitialRangeCore = InitialRange = source.InitialRangeCore;
             Bounds = source.Bounds;
             Range = InitialRange;
         }
@@ -57,9 +57,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         protected Range InitialRangeCore { get; set; }
 
-        public Range InitialRange {
-            get => ChartMargin.Add(CoerceRange(InitialRangeCore, Bounds));
-        }
+        public Range InitialRange { get; private set; }
 
         private static Range CoerceRange(Range r, Range bound) {
             var range = r.Union(bound);
@@ -72,6 +70,8 @@ namespace CompMs.Graphics.AxisManager.Generic
         public Range Bounds { get; protected set; }
 
         public ChartMargin ChartMargin { get; set; } = new ChartMargin(0, 0);
+
+        public double ConstantMargin { get; set; } = 0;
 
         public List<LabelTickData> LabelTicks {
             get => labelTicks ?? GetLabelTicks();
@@ -89,19 +89,34 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public void UpdateInitialRange(Range range) {
             InitialRangeCore = range;
-            Range = InitialRange;
+            Focus(InitialRange);
         }
 
         public bool Contains(AxisValue value) {
             return InitialRange.Contains(value);
         }
 
+        public bool ContainsCurrent(AxisValue value) {
+            return Range.Contains(value);
+        }
+
         public void Focus(Range range) {
-            Range = range.Intersect(InitialRange);
+            Range = range.Union(Bounds).Intersect(InitialRange);
+        }
+
+        public void Recalculate(double drawableLength) {
+            var lo = -(1 + ChartMargin.Left + ChartMargin.Right) / (drawableLength - 2 * ConstantMargin) * ConstantMargin - ChartMargin.Left;
+            var hi = 1 - lo - ChartMargin.Left + ChartMargin.Right;
+            InitialRange = TranslateFromRelativeRange(lo, hi, CoerceRange(InitialRangeCore, Bounds));
         }
 
         public void Reset() {
-            Range = InitialRange;
+            Focus(InitialRange);
+        }
+
+        public void Reset(double drawableLength) {
+            Recalculate(drawableLength);
+            Focus(InitialRange);
         }
 
         public abstract List<LabelTickData> GetLabelTicks();
@@ -134,7 +149,15 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         private AxisValue TranslateFromRelativePoint(double value) {
-            return new AxisValue(value * (Max.Value - Min.Value) + Min.Value);
+            return TranslateFromRelativePoint(value, Range);
+        }
+
+        private AxisValue TranslateFromRelativePoint(double value, Range range) {
+            return new AxisValue(value * (range.Maximum.Value - range.Minimum.Value) + range.Minimum.Value);
+        }
+
+        private Range TranslateFromRelativeRange(double low, double hi, Range range) {
+            return new Range(TranslateFromRelativePoint(low, range), TranslateFromRelativePoint(hi, range));
         }
 
         public AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength) {

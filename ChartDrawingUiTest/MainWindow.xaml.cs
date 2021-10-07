@@ -44,6 +44,7 @@ namespace ChartDrawingUiTest
                 typeof(RangeSlider),
                 typeof(ChartUpdate),
                 typeof(TestPage),
+                typeof(AxisTest),
                 typeof(BindingStaticResource),
                 typeof(DependencyPropertyTest),
                 typeof(SimpleChart1),
