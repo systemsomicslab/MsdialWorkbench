@@ -34,7 +34,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -60,7 +60,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -86,7 +86,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[4].InChIKey, result.InChIKey);
         }
@@ -114,7 +114,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, TODO, null));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey,
@@ -143,7 +143,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, TODO, null));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey, db[4].InChIKey,
@@ -170,7 +170,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -199,7 +199,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -347,7 +347,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             var reference = annotator.Refer(result);
 
@@ -375,7 +375,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
+            var results = annotator.Search(new AnnotationQuery(target, target, null, TODO, null));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], }, results);
         }
@@ -401,7 +401,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var annotator = new ImmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, CollisionCrossSection = 100 };
-            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
+            var results = annotator.Search(new AnnotationQuery(target, target, null, TODO, null));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4], db[5], }, results);
         }
@@ -425,8 +425,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
@@ -454,8 +454,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 111,
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
@@ -483,8 +483,8 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");

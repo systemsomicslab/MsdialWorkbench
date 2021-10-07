@@ -72,15 +72,17 @@ namespace CompMs.MsdialCore.DataObj {
 
         PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
             if (result.IsDecoy) {
-                if (result.LibraryID >= DecoyPeptideMsRef.Count
-               || DecoyPeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
+                if (result.LibraryID < 0 ||
+                    result.LibraryID >= DecoyPeptideMsRef.Count || 
+                    DecoyPeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
                     return DecoyPeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
                 }
                 return DecoyPeptideMsRef[result.LibraryID];
             }
             else {
-                if (result.LibraryID >= PeptideMsRef.Count
-                || PeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
+                if (result.LibraryID < 0 ||
+                    result.LibraryID >= PeptideMsRef.Count || 
+                    PeptideMsRef[result.LibraryID].ScanID != result.LibraryID) {
                     return PeptideMsRef.FirstOrDefault(reference => reference.ScanID == result.LibraryID);
                 }
                 return PeptideMsRef[result.LibraryID];
@@ -101,18 +103,19 @@ namespace CompMs.MsdialCore.DataObj {
             var dt = DateTime.Now;
             var refid = "_" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
             var filename = System.IO.Path.GetFileNameWithoutExtension(file) + refid;
+            var folderpath = Path.GetDirectoryName(file);
+            var filetemp = Path.Combine(folderpath, filename);
+            PeptideMsFile = filetemp + "." + MsdialDataStorageFormat.msf;
+            DecoyMsFile = filetemp + "_decoy." + MsdialDataStorageFormat.msf;
 
-            PeptideMsFile = filename + "." + MsdialDataStorageFormat.msf;
-            DecoyMsFile = "decoy_" + filename + "." + MsdialDataStorageFormat.msf;
+            FastaQueryBinaryFile = filetemp + "." + MsdialDataStorageFormat.bfasta;
+            DecoyQueryBinaryFile = filetemp + "_decoy." + MsdialDataStorageFormat.bfasta;
 
-            FastaQueryBinaryFile = filename + "." + MsdialDataStorageFormat.bfasta;
-            DecoyQueryBinaryFile = "decoy_" + filename + "." + MsdialDataStorageFormat.bfasta;
+            PeptidesSerializeFile = filetemp + "." + MsdialDataStorageFormat.spep;
+            DecoyPeptidesSerializeFile = filetemp + "_decoy." + MsdialDataStorageFormat.spep;
 
-            PeptidesSerializeFile = filename + "." + MsdialDataStorageFormat.spep;
-            DecoyPeptidesSerializeFile = "decoy_" + filename + "." + MsdialDataStorageFormat.spep;
-
-            PeptidesBinaryFile = filename + "." + MsdialDataStorageFormat.bpep;
-            DecoyPeptidesBinaryFile = "decoy_" + filename + "." + MsdialDataStorageFormat.bpep;
+            PeptidesBinaryFile = filetemp + "." + MsdialDataStorageFormat.bpep;
+            DecoyPeptidesBinaryFile = filetemp + "_decoy." + MsdialDataStorageFormat.bpep;
 
             Generate();
         }

@@ -132,7 +132,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            //annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;
         }

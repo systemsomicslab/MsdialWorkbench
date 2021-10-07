@@ -24,7 +24,7 @@ namespace CompMs.Common.Proteomics.Function {
 
         public static string Convert2ReverseSequence(string sequence, bool isSwapKL = true) {
             if (sequence.IsEmptyOrNull()) return string.Empty;
-            var revSeq = new char[sequence.Length - 1];
+            var revSeq = new char[sequence.Length];
             revSeq[0] = sequence[sequence.Length - 1];
             for (int i = 1; i < sequence.Length; i++) {
                 var aaChar = sequence[sequence.Length - i - 1];

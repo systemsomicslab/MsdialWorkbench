@@ -26,6 +26,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 var databaseModel = IdentitySettingModel.DataBaseModels.Last();
                 databaseModel.DataBasePath = lbmFiles.First();
             }
+            else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
+                Parameter.MaxChargeNumber = 6;
+                Parameter.MinimumAmplitude = 100000;
+                Parameter.AmplitudeCutoff = 1000;
+            }
         }
 
         public MsdialLcmsParameter Parameter { get; }

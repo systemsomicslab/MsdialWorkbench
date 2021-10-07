@@ -68,7 +68,8 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (mspAnnotator != null)
             {
-                var candidates = mspAnnotator.FindCandidates(new AnnotationQuery(feature, msdecResult, isotopes, mspParam));
+                var candidates = mspAnnotator.FindCandidates(
+                    new AnnotationQuery(feature, msdecResult, isotopes, feature.PeakCharacter, mspParam));
                 var results = mspAnnotator.FilterByThreshold(candidates, mspParam);
                 feature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 var matches = mspAnnotator.SelectReferenceMatchResults(results, mspParam);
@@ -89,7 +90,8 @@ namespace CompMs.MsdialDimsCore.Common {
 
             if (textAnnotator != null)
             {
-                var candidates = textAnnotator.FindCandidates(new AnnotationQuery(feature, msdecResult, isotopes, textParam));
+                var candidates = textAnnotator.FindCandidates(
+                    new AnnotationQuery(feature, msdecResult, isotopes, feature.PeakCharacter, textParam));
                 var results = textAnnotator.FilterByThreshold(candidates, textParam);
                 feature.TextDbIDs = results.Select(result => result.LibraryIDWhenOrdered).ToList();
                 var matches = textAnnotator.SelectReferenceMatchResults(results, textParam);

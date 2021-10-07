@@ -15,6 +15,7 @@ using System.IO;
 using System.Text;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Common.Proteomics.Parser;
 
 namespace CompMs.MsdialCore.Parameter {
 
@@ -795,6 +796,60 @@ namespace CompMs.MsdialCore.Parameter {
         //// other basic parameter
         //[Key(10)]
         //public MsRefSearchParameterBase MsRefSearchParam { get; set; } = new MsRefSearchParameterBase();
+        public ProteomicsParameter() {
+            EnzymesForDigestion = GetDefaultEnzymeSetting();
+            VariableModifications = GetDefaultVariableModifications();
+            FixedModifications = GetDefaultFixedModifications();
+        }
+
+        public List<Enzyme> GetDefaultEnzymeSetting() {
+            var eParser = new EnzymesXmlRefParser();
+            eParser.Read();
+            var enzymes = eParser.Enzymes;
+
+            var defaultEnzyme = "Trypsin/P";
+            foreach (var enzyme in enzymes) {
+                if (defaultEnzyme == enzyme.Title) {
+                    enzyme.IsSelected = true;
+                }
+            }
+            return enzymes;
+        }
+
+        public List<Modification> GetDefaultVariableModifications() {
+            var mParser = new ModificationsXmlRefParser();
+            mParser.Read();
+            var modifications = mParser.Modifications;
+            var defaultVMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)" };
+
+            foreach (var modification in modifications) {
+                foreach (var dVMod in defaultVMods) {
+                    if (dVMod == modification.Title) {
+                        modification.IsSelected = true;
+                        break;
+                    }
+                }
+            }
+            return modifications;
+        }
+
+        public List<Modification> GetDefaultFixedModifications() {
+            var mParser = new ModificationsXmlRefParser();
+            mParser.Read();
+            var modifications = mParser.Modifications;
+            var defaultFMods = new List<string> { "Carbamidomethyl (C)" };
+            foreach (var modification in modifications) {
+                foreach (var dFMod in defaultFMods) {
+                    if (dFMod == modification.Title) {
+                        modification.IsSelected = true;
+                        break;
+                    }
+                }
+            }
+            return modifications;
+        }
+
+       
     }
 
     [MessagePackObject]

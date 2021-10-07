@@ -34,9 +34,22 @@ namespace CompMs.MsdialCore.DataObj
         public MsScanMatchResult Representative {
             get {
                 if (cacheRepresentative is null) {
-                    cacheRepresentative =  MatchResults.Any()
-                        ?  MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
-                        : null;
+
+                    if (MatchResults.Any()) {
+                        var results = MatchResults.Where(n => !n.IsDecoy);
+                        if (results.IsEmptyOrNull()) {
+                            return null;
+                        }
+                        else {
+                            return results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                        }
+                    }
+                    else {
+                        cacheDecoyRepresentative = null;
+                    }
+                    //cacheRepresentative = MatchResults.Any()
+                    //    ? MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
+                    //    : null;
                 }
                 return cacheRepresentative;
             }
@@ -47,9 +60,21 @@ namespace CompMs.MsdialCore.DataObj
         public MsScanMatchResult DecoyRepresentative {
             get {
                 if (cacheDecoyRepresentative is null) {
-                    cacheDecoyRepresentative = MatchResults.Any()
-                        ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
-                        : null;
+                    if (MatchResults.Any()) {
+                        var decoyResults = MatchResults.Where(n => n.IsDecoy);
+                        if (decoyResults.IsEmptyOrNull()) {
+                            return null;
+                        }
+                        else {
+                            return decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                        }
+                    }
+                    else {
+                        cacheDecoyRepresentative = null;
+                    }
+                    //cacheDecoyRepresentative = MatchResults.Any()
+                    //    ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
+                    //    : null;
                 }
                 return cacheDecoyRepresentative;
             }

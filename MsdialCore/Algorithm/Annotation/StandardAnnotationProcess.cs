@@ -150,7 +150,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             ChromatogramPeakFeature chromPeakFeature,
             MSDecResult msdecResult,
             IReadOnlyList<RawSpectrum> msSpectrums) {
-            var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+            var query = QueryFactory.Create(
+                chromPeakFeature, 
+                msdecResult, 
+                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, 
+                chromPeakFeature.PeakCharacter);
             var annotatorContainers = AnnotatorContainers;
 
             foreach (var annotatorContainer in annotatorContainers) {
@@ -164,7 +168,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MSDecResult msdecResult,
             IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
-            var query = QueryFactory.Create(chromPeakFeature, msdecResult, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum);
+            var query = QueryFactory.Create(
+                chromPeakFeature, 
+                msdecResult, 
+                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, 
+                chromPeakFeature.PeakCharacter);
             var annotatorContainers = AnnotatorContainers;
 
             foreach (var annotatorContainer in annotatorContainers) {

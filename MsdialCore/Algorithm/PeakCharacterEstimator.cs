@@ -44,25 +44,28 @@ namespace CompMs.MsdialCore.Algorithm {
             Initialization(chromPeakFeatures);
 
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.Mass).ToList();
-            for (int i = 0; i < chromPeakFeatures.Count; i++) {
-                var feature = chromPeakFeatures[i];
-                var peakRt = feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
-                var peakMz = feature.Mass;
-                var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, new ChromatogramPeakFeature() { Mass = peakMz - param.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
-                var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
+            if (chromPeakFeatures.Count < 10000) {
+                for (int i = 0; i < chromPeakFeatures.Count; i++) {
+                    var feature = chromPeakFeatures[i];
+                    var peakRt = feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
+                    var peakMz = feature.Mass;
+                    var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, new ChromatogramPeakFeature() { Mass = peakMz - param.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
+                    var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
 
-                for (int j = startScanIndex; j < chromPeakFeatures.Count; j++) {
-                    var sPeakCandidate = chromPeakFeatures[j];
-                    var sPeakRt = sPeakCandidate.ChromXs.RT.Value > 0 ? sPeakCandidate.ChromXs.RT.Value : 0;
-                    if (feature.PeakID == sPeakCandidate.PeakID) continue;
-                    if (Math.Abs(sPeakRt - peakRt) <= rtMargin) {
-                        searchedPeakSpots.Add(sPeakCandidate);
+                    for (int j = startScanIndex; j < chromPeakFeatures.Count; j++) {
+                        var sPeakCandidate = chromPeakFeatures[j];
+                        var sPeakRt = sPeakCandidate.ChromXs.RT.Value > 0 ? sPeakCandidate.ChromXs.RT.Value : 0;
+                        if (feature.PeakID == sPeakCandidate.PeakID) continue;
+                        if (Math.Abs(sPeakRt - peakRt) <= rtMargin) {
+                            searchedPeakSpots.Add(sPeakCandidate);
+                        }
                     }
-                }
 
-                CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, mapper, param);
-                ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
+                    CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, mapper, param);
+                    ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
+                }
             }
+            ReportProgress.Show(InitialProgress, ProgressMax, chromPeakFeatures.Count, chromPeakFeatures.Count, reportAction);
 
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
             FinalizationForAdduct(chromPeakFeatures, param);
@@ -237,7 +240,6 @@ namespace CompMs.MsdialCore.Algorithm {
         private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<RawSpectrum> spectrumList, List<MSDecResult> msdecResults, DataBaseMapper mapper, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
-
             // if the first inchikey is same, it's recognized as the same metabolite.
             assignLinksBasedOnInChIKeys(chromPeakFeatures, mapper);
 
@@ -257,7 +259,7 @@ namespace CompMs.MsdialCore.Algorithm {
             assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, spectrumList, param);
 
             // linked by partial matching of MS1 and MS2
-            if (param.AcquisitionType == AcquisitionType.AIF) return;
+            if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 

@@ -3,6 +3,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public interface IAnnotationQueryFactory<out T>
     {
-        T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum);
+        T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature);
     }
 
     public class AnnotationQueryFactory : IAnnotationQueryFactory<AnnotationQuery>
@@ -24,17 +25,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase SearchParameter { get; set; }
 
-        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
+        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
-            return new AnnotationQuery(property, scan, isotopes, SearchParameter);
+            return new AnnotationQuery(property, scan, isotopes, ionFeature, SearchParameter);
         }
     }
 
-    public interface IPepAnnotationQueryFactory<out T> { //?
-        T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum);
-    }
+    //public interface IPepAnnotationQueryFactory<out T> { //?
+    //    T Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum);
+    //}
 
-    public class PepAnnotationQueryFactory : IPepAnnotationQueryFactory<PepAnnotationQuery> {
+    public class PepAnnotationQueryFactory : IAnnotationQueryFactory<PepAnnotationQuery> {
         private readonly PeakPickBaseParameter peakPickParameter;
 
         public PepAnnotationQueryFactory(PeakPickBaseParameter peakPickParameter, ProteomicsParameter proteomicsParameter, MsRefSearchParameterBase searchParameter = null) {
@@ -46,9 +47,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsRefSearchParameterBase SearchParameter { get; set; }
         public ProteomicsParameter ProteomicsParameter { get; set; }
 
-        public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
+        public PepAnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)property.PrecursorMz, peakPickParameter.CentroidMs1Tolerance);
-            return new PepAnnotationQuery(property, scan, isotopes, SearchParameter, ProteomicsParameter);
+            return new PepAnnotationQuery(property, scan, isotopes, ionFeature, SearchParameter, ProteomicsParameter);
         }
     }
 
@@ -60,8 +61,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase SearchParameter { get; set; }
 
-        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum) {
-            return new AnnotationQuery(property, scan, null, SearchParameter);
+        public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
+            return new AnnotationQuery(property, scan, null, ionFeature, SearchParameter);
         }
     }
 }

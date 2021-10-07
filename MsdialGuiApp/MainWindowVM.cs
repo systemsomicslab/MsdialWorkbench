@@ -100,6 +100,8 @@ namespace CompMs.App.Msdial
             storage.ParameterBase = parameter;
             storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
             storage.DataBaseMapper = new DataBaseMapper();
+            storage.DataBases = new DataBaseStorage();
+
 
             RunProcessAll(window, storage);
 

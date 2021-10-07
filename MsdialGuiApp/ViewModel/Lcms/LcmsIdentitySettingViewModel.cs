@@ -158,10 +158,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     this.model.AddAnnotator();
                 }
                 catch (NotSupportedException ex) {
-                    //Mouse.OverrideCursor = Cursors.Wait;
-                    //Thread.Sleep(10000);
-                    //Mouse.OverrideCursor = null;
-                    //this.model.AddAnnotator();
                 }
             }
             ); // execute this.model.AddAnnotator()

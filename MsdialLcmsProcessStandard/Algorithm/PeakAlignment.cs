@@ -51,7 +51,9 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             peakAreaBeanList = peakAreaBeanList.OrderBy(n => n.AccurateMass).ThenBy(n => n.RtAtPeakTop).ToList();
 
             for (int i = 0; i < peakAreaBeanList.Count; i++)
-                if (peakAreaBeanList[i].IsotopeWeightNumber == 0 || param.TrackingIsotopeLabels)
+                if (peakAreaBeanList[i].IsotopeWeightNumber == 0 || 
+                    (peakAreaBeanList[i].PostIdentificationLibraryId >= 0 && !peakAreaBeanList[i].MetaboliteName.Contains("w/o")) || 
+                    param.TrackingIsotopeLabels)
                     masterPeaklist.Add(peakAreaBeanList[i]);
 
             return masterPeaklist;
@@ -79,26 +81,26 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 //    Console.WriteLine();
                 //}
 
-                if (peakAreaBeanList[i].IsotopeWeightNumber != 0 && param.TrackingIsotopeLabels == false) continue;
-
-                var alignChecker = false;
-                var startIndex = DataAccessLcUtility.GetPeakAreaIntensityListStartIndex(peakAreaBeanMasterList, peakAreaBeanList[i].AccurateMass - param.Ms1AlignmentTolerance);
-                for (int j = startIndex; j < peakAreaBeanMasterList.Count; j++)
-                {
-                    if (peakAreaBeanList[i].AccurateMass - massTol > peakAreaBeanMasterList[j].AccurateMass) continue;
-                    if (peakAreaBeanList[i].AccurateMass + massTol < peakAreaBeanMasterList[j].AccurateMass) break;
-                    if (peakAreaBeanList[i].AccurateMass - massTol <= peakAreaBeanMasterList[j].AccurateMass
-                        && peakAreaBeanMasterList[j].AccurateMass <= peakAreaBeanList[i].AccurateMass + massTol
-                        && peakAreaBeanList[i].RtAtPeakTop - rtTol <= peakAreaBeanMasterList[j].RtAtPeakTop
-                        && peakAreaBeanMasterList[j].RtAtPeakTop <= peakAreaBeanList[i].RtAtPeakTop + rtTol)
-                    {
-                        alignChecker = true;
-                        break;
+                if (peakAreaBeanList[i].IsotopeWeightNumber == 0 ||
+                    (peakAreaBeanList[i].PostIdentificationLibraryId >= 0 && !peakAreaBeanList[i].MetaboliteName.Contains("w/o")) ||
+                    param.TrackingIsotopeLabels) {
+                    var alignChecker = false;
+                    var startIndex = DataAccessLcUtility.GetPeakAreaIntensityListStartIndex(peakAreaBeanMasterList, peakAreaBeanList[i].AccurateMass - param.Ms1AlignmentTolerance);
+                    for (int j = startIndex; j < peakAreaBeanMasterList.Count; j++) {
+                        if (peakAreaBeanList[i].AccurateMass - massTol > peakAreaBeanMasterList[j].AccurateMass) continue;
+                        if (peakAreaBeanList[i].AccurateMass + massTol < peakAreaBeanMasterList[j].AccurateMass) break;
+                        if (peakAreaBeanList[i].AccurateMass - massTol <= peakAreaBeanMasterList[j].AccurateMass
+                            && peakAreaBeanMasterList[j].AccurateMass <= peakAreaBeanList[i].AccurateMass + massTol
+                            && peakAreaBeanList[i].RtAtPeakTop - rtTol <= peakAreaBeanMasterList[j].RtAtPeakTop
+                            && peakAreaBeanMasterList[j].RtAtPeakTop <= peakAreaBeanList[i].RtAtPeakTop + rtTol) {
+                            alignChecker = true;
+                            break;
+                        }
                     }
-                }
 
-                if (alignChecker == false && maxIntensity * 0.0001 < peakAreaBeanList[i].IntensityAtPeakTop) {
-                    addedPeakAreaBeanMasterList.Add(peakAreaBeanList[i]);
+                    if (alignChecker == false && maxIntensity * 0.0001 < peakAreaBeanList[i].IntensityAtPeakTop) {
+                        addedPeakAreaBeanMasterList.Add(peakAreaBeanList[i]);
+                    }
                 }
             }
             if (addedPeakAreaBeanMasterList.Count == 0) return peakAreaBeanMasterList;
@@ -146,7 +148,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
 
             for (int i = 0; i < peakAreaBeanList.Count; i++)
             {
-                if (peakAreaBeanList[i].IsotopeWeightNumber != 0 && isIsotopeTrack == false) continue;
+                var isAnnotatedByPostProcess = peakAreaBeanList[i].PostIdentificationLibraryId >= 0 && !peakAreaBeanList[i].MetaboliteName.Contains("w/o");
+                if (peakAreaBeanList[i].IsotopeWeightNumber != 0 && isIsotopeTrack == false && !isAnnotatedByPostProcess) continue;
                 
                 var startIndex = DataAccessLcUtility.GetPeakAreaIntensityListStartIndex(masterPeaklist, peakAreaBeanList[i].AccurateMass - analysisParametersBean.Ms1AlignmentTolerance);
                 var maxMatchId = -1;
