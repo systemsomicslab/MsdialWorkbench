@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -42,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private LipidQueryBean lipidQueryContainer;
 
         private readonly ParameterBase parameter;
+        public TargetOmics TargetOmics => parameter.TargetOmics;
 
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";
@@ -76,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    throw new NotImplementedException();
+                    return new ShotgunProteomicsDB(DataBasePath, DataBaseID, parameter.ProteomicsParam, parameter.MspSearchParam);
                 default:
                     return null;
             }

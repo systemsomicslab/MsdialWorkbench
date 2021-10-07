@@ -79,6 +79,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         private void IsotopeAnalysis(IReadOnlyList<AlignmentSpotProperty> alignmentSpots) {
             foreach (var spot in alignmentSpots) {
+                spot.PeakCharacter.IsotopeParentPeakID = -1;
+                spot.PeakCharacter.IsotopeWeightNumber = -1;
                 if (_param.TrackingIsotopeLabels || spot.IsReferenceMatched(mapper)) {
                     spot.PeakCharacter.IsotopeParentPeakID = spot.AlignmentID;
                     spot.PeakCharacter.IsotopeWeightNumber = 0;

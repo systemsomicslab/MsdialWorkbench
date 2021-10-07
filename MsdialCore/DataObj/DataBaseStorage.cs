@@ -23,6 +23,11 @@ namespace CompMs.MsdialCore.DataObj
             ProteomicsDataBases = proteomicsDataBases ?? throw new System.ArgumentNullException(nameof(proteomicsDataBases));
         }
 
+        public DataBaseStorage() {
+            MetabolomicsDataBases = new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
+            ProteomicsDataBases = new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
+        }
+
         [Key(nameof(MetabolomicsDataBases))]
         public List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> MetabolomicsDataBases { get; }
 
@@ -215,6 +220,14 @@ namespace CompMs.MsdialCore.DataObj
             MsRefSearchParameterBase searchParameter,
             ProteomicsParameter proteomicsParameter) {
             SerializableAnnotator = serializableAnnotator ?? throw new System.ArgumentNullException(nameof(serializableAnnotator));
+            SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
+            ProteomicsParameter = proteomicsParameter ?? throw new System.ArgumentNullException(nameof(proteomicsParameter));
+        }
+        public ProteomicsAnnotatorParameterPair(
+            IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> serializableAnnotatorKey,
+            MsRefSearchParameterBase searchParameter,
+            ProteomicsParameter proteomicsParameter) {
+            SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
             SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
             ProteomicsParameter = proteomicsParameter ?? throw new System.ArgumentNullException(nameof(proteomicsParameter));
         }

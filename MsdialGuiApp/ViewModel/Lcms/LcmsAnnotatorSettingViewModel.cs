@@ -94,8 +94,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
                 .SetValidateAttribute(() => AnnotatorID)
                 .AddTo(Disposables);
-            ObserveHasErrors = new[]{
+            ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
+            ProteomicsParameterVM = new ProteomicsParameterVM(this.model.ProteomicsParameter).AddTo(Disposables);
+            ObserveHasErrors = new[]
+            {
                 AnnotatorID.ObserveHasErrors,
+                ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
+                ParameterViewModel.Ms2Tolerance.ObserveHasErrors,
+                ParameterViewModel.RtTolerance.ObserveHasErrors,
+                ParameterViewModel.RelativeAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.AbsoluteAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.MassRangeBegin.ObserveHasErrors,
+                ParameterViewModel.MassRangeEnd.ObserveHasErrors,
+                ParameterViewModel.SimpleDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.WeightedDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.ReverseDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.MatchedPeaksPercentageCutOff.ObserveHasErrors,
+                ParameterViewModel.MinimumSpectrumMatch.ObserveHasErrors,
+                ParameterViewModel.TotalScoreCutoff.ObserveHasErrors,
+                ProteomicsParameterVM.AndromedaDelta.ObserveHasErrors,
+                ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
+                ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
+                ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
@@ -106,6 +126,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         [Required(ErrorMessage = "Annotator id is required.")]
         public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+        public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
+        public ProteomicsParameterVM ProteomicsParameterVM { get; }
     }
 
     public class LcmsAnnotatorSettingViewModelFactory

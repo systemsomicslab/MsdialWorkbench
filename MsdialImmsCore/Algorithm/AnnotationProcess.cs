@@ -127,7 +127,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (mspAnnotator == null)
                 return;
 
-            var candidates = mspAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, mspSearchParameter));
+            var candidates = mspAnnotator.FindCandidates(
+                new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter));
             var results = mspAnnotator.FilterByThreshold(candidates, mspSearchParameter);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
             var matches = mspAnnotator.SelectReferenceMatchResults(results, mspSearchParameter);
@@ -151,7 +152,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             if (textDBAnnotator == null)
                 return;
-            var candidates = textDBAnnotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, textDBSearchParameter));
+            var candidates = textDBAnnotator.FindCandidates(
+                new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter));
             var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
             var matches = textDBAnnotator.SelectReferenceMatchResults(results, textDBSearchParameter);
             chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));
@@ -171,7 +173,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var annotator = annotatorContainer.Annotator;
 
-            var candidates = annotator.FindCandidates(new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, annotatorContainer.Parameter));
+            var candidates = annotator.FindCandidates(
+                new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, annotatorContainer.Parameter));
             var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
             var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
             if (matches.Count > 0) {

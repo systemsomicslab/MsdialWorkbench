@@ -60,13 +60,13 @@ namespace CompMs.MsdialCore.Algorithm {
                 for (int j = startScanIndex; j < peakFeatures.Count; j++) {
 
                     var xValue = isDriftAxis ? peakFeatures[j].ChromXsTop.Drift.Value : peakFeatures[j].ChromXsTop.RT.Value;
+                    if (peakFeatures[j].PrecursorMz <= focusedMass) continue;
+                    if (peakFeatures[j].PrecursorMz > focusedMass + isotopeMax) break;
                     if (peakFeatures[j].PeakID == peak.PeakID) continue;
                     if (xValue < focusedXValue - xMargin) continue;
                     if (xValue > focusedXValue + xMargin) continue;
                     if (peakFeatures[j].PeakCharacter.IsotopeWeightNumber >= 0) continue;
-                    if (peakFeatures[j].PrecursorMz <= focusedMass) continue;
-                    if (peakFeatures[j].PrecursorMz > focusedMass + isotopeMax) break;
-
+                   
                     isotopeCandidates.Add(peakFeatures[j]);
                 }
                 EstimateIsotopes(isotopeCandidates, param, iupac, isDriftAxis);
@@ -546,13 +546,13 @@ namespace CompMs.MsdialCore.Algorithm {
 
                 for (int i = idx; i < spots.Count; i++) {
                     var spot = spots[i];
+                    if (spot.MassCenter <= spotMz) continue;
+                    if (spot.MassCenter > spotMz + isotopeMax) break;
                     if (spot.MasterAlignmentID == target.MasterAlignmentID) continue;
                     if (!spot.IsUnknown) continue;
                     if (spot.TimesCenter.Value < spotRt.Value - rtMargin) continue;
                     if (spot.TimesCenter.Value > spotRt.Value + rtMargin) continue;
                     if (spot.PeakCharacter.IsotopeWeightNumber >= 0) continue;
-                    if (spot.MassCenter <= spotMz) continue;
-                    if (spot.MassCenter > spotMz + isotopeMax) continue;
 
                     isotopeCandidates.Add(spot);
                 }

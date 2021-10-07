@@ -100,6 +100,8 @@ namespace CompMs.App.Msdial
             storage.ParameterBase = parameter;
             storage.IupacDatabase = IupacResourceParser.GetIUPACDatabase(); //Get IUPAC reference
             storage.DataBaseMapper = new DataBaseMapper();
+            storage.DataBases = new DataBaseStorage();
+
 
             RunProcessAll(window, storage);
 
@@ -122,11 +124,10 @@ namespace CompMs.App.Msdial
             }
             var method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
             if (method.InitializeNewProject(window) != 0) {
-
-                storage.AnalysisFiles = analysisFiles;
-                method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
-                method.LoadProject();
-                MethodVM = method;
+                //storage.AnalysisFiles = analysisFiles;
+                //method = CreateNewMethodVM(storage.ParameterBase.MachineCategory, storage);
+                //method.LoadProject();
+                //MethodVM = method;
                 return;
             }
 
@@ -155,7 +156,6 @@ namespace CompMs.App.Msdial
 
         private static ParameterBase ProcessStartUp(IWindowService<StartUpWindowVM> service) {
             var startUpWindowVM = new StartUpWindowVM();
-
             var suw_result = service.ShowDialog(startUpWindowVM);
             if (suw_result != true) return null;
 

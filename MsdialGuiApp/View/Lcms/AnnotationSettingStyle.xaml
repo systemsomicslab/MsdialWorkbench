@@ -262,9 +262,9 @@
             </Expander>
 
             <Expander Header="Shotgun proteomics parameter setting" Margin="0,8"
-                      Grid.Row="4">
-                <ContentControl Content="{Binding ProteomicsParameterViewModel}"
-                                ContentTemplate="{StaticResource ProteomicsParameterVM}"
+                      Grid.Row="5">
+                <ContentControl Content="{Binding ProteomicsParameterVM}"
+                                ContentTemplate="{StaticResource ProteomicsParameterSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>

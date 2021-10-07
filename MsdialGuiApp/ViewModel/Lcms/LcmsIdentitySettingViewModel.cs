@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -132,6 +134,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.RemoveDataBase)
                 .AddTo(Disposables);
+            
+            
             AddAnnotatorCommand = new[]{
                 dbIsNotNull.Inverse(),
                 DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors).Switch()
@@ -139,6 +143,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.AddAnnotator)
                 .AddTo(Disposables);
+
+            var noAnnotator = DataBaseViewModel.Select(m => !(m is null) && AnnotatorViewModels.All(vm => vm.Model.DataBaseSettingModel != m.Model)); // All => And And And...
+            var noDBErrors = DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors.Inverse()).Switch(); //inverse() => IObserbable<bool> 's inverse (e.g. false -> true), http://reactivex.io/documentation/operators/switch.html
+            new[]
+            {
+                noAnnotator,
+                noDBErrors,
+            }.CombineLatestValuesAreAllTrue() // e.g. if both true of noAnnotator & noDBerros, provide true otherwise false.
+            .Where(x => x) // only true passed
+            .Delay(TimeSpan.FromSeconds(1))
+            .Subscribe(_ => {
+                try {
+                    this.model.AddAnnotator();
+                }
+                catch (NotSupportedException ex) {
+                }
+            }
+            ); // execute this.model.AddAnnotator()
+
             RemoveAnnotatorCommand = annotatorIsNotNull
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.RemoveAnnotator)

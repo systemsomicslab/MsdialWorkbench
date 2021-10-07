@@ -134,7 +134,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public override int InitializeNewProject(Window window) {
-            InitializeNewProjectCore(window);
+            if (InitializeNewProjectCore(window) != 0) {
+                return -1;
+            }
 
             AnalysisFilesView.MoveCurrentToFirst();
             SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;

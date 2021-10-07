@@ -19,15 +19,14 @@ namespace CompMs.Common.Proteomics.DataObj {
         private Stream Fs { get; set; }
         [Key(1)]
         private long SeekPoint2MS { get; set; }
-        [Key(2)]
-        private long SeekPoint2PEP { get; set; }
 
+        public PeptideMsReference() { }
         public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct) {
             Peptide = peptide; Fs = fs; SeekPoint2MS = seekPoint; AdductType = adduct;
             PrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
         }
 
-        [Key(3)]
+        [Key(2)]
         public int ScanID { get; set; }
         [IgnoreMember]
         public List<SpectrumPeak> Spectrum { get => ReadSpectrum(Fs, SeekPoint2MS); set => new NotSupportedException(); }
@@ -43,7 +42,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         }
 
         [Key(4)]
-        public ChromXs ChromXs { get; set; }
+        public ChromXs ChromXs { get; set; } = new ChromXs();
         [Key(5)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
         [Key(6)]

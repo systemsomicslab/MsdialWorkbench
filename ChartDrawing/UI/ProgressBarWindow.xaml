@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.Graphics.UI.ProgressBar"
         mc:Ignorable="d"
-        Title="Progress of each step: peak detection, identification, and alignment" Height="70" Width="680" ResizeMode="NoResize">
+        Title="Progress..." Height="70" Width="680" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

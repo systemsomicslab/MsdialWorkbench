@@ -135,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     }
 
                     // UNDONE: retrieve spectrum data
-                    return Accessor.AccumulateChromatogram(peak, spot, spectra);
+                    return Accessor.AccumulateChromatogram(peak, spot, spectra, Param.CentroidMs1Tolerance);
                 }).ToList();
 
             var file = Path.GetTempFileName();

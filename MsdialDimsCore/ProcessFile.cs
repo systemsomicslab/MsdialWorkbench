@@ -79,7 +79,7 @@ namespace CompMs.MsdialDimsCore
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
-                var rawObj = LoadRawMeasurement(access);
+                //var rawObj = LoadRawMeasurement(access);
                 var spectrumList = provider.LoadMsSpectrums(); // rawObj.SpectrumList;
 
                 // faeture detections
@@ -203,7 +203,7 @@ namespace CompMs.MsdialDimsCore
                 if (spec.Precursor.IsolationTargetMz - precursorMz < - spec.Precursor.IsolationWindowUpperOffset - mzTolerance) continue;
                 if (spec.Precursor.IsolationTargetMz - precursorMz > spec.Precursor.IsolationWindowLowerOffset + mzTolerance) break;
 
-                ID2CE[spec.ScanNumber] = spec.CollisionEnergy;
+                ID2CE[spec.Index] = spec.CollisionEnergy;
             }
             return ID2CE; /// maybe, in msmsall, the id count is always one but for just in case
         }

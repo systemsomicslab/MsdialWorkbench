@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -40,9 +41,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         private ILcmsAnnotatorSettingModel annotatorModel;
 
         public void AddDataBase() {
+            //Debug.WriteLine("1\t" + DataBaseModels.Count + "\t" + AnnotatorModels.Count);
             var db = new DataBaseSettingModel(parameter);
             DataBaseModels.Add(db);
             DataBaseModel = db;
+            //Debug.WriteLine("2\t" + DataBaseModels.Count + "\t" + AnnotatorModels.Count);
         }
 
         public void RemoveDataBase() {
@@ -58,12 +61,19 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void AddAnnotator() {
+            //Debug.WriteLine("3\t" + DataBaseModels.Count + "\t" + AnnotatorModels.Count);
             var db = DataBaseModel;
-            if (!(db is null)) {
+            //if (db.DBSource == DataBaseSource.None) {
+            //    Debug.WriteLine("3\t" + DataBaseModels.Count + "\t" + AnnotatorModels.Count);
+            //    return;
+            //}
+            Debug.WriteLine("5\t" + db.DataBasePath + "\t" + db.DBSource);
+            if (!(db is null) && db.DBSource != DataBaseSource.None) {
                 var annotatorModel = annotatorFactory.Create(db, serialNumber++);
                 AnnotatorModels.Add(annotatorModel);
                 AnnotatorModel = annotatorModel;
             }
+            //Debug.WriteLine("4\t" + DataBaseModels.Count + "\t" + AnnotatorModels.Count);
         }
 
         public void RemoveAnnotator() {

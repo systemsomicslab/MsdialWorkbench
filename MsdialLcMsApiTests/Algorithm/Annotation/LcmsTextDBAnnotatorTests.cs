@@ -34,7 +34,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -60,7 +60,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -86,7 +86,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             Assert.AreEqual(db[4].InChIKey, result.InChIKey);
         }
@@ -111,7 +111,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, TODO, null));
             var expected = new List<string>
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey,
@@ -140,7 +140,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, null));
+            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, TODO, null));
             var expected = new List<string>
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey, db[4].InChIKey,
@@ -167,7 +167,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
@@ -202,7 +202,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
@@ -353,7 +353,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, null));
+            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
 
             var reference = annotator.Refer(result);
 
@@ -381,7 +381,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
+            var results = annotator.Search(new AnnotationQuery(target, target, null, TODO, null));
 
             CollectionAssert.AreEquivalent(db.GetRange(0, 3), results);
         }
@@ -406,7 +406,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min) };
-            var results = annotator.Search(new AnnotationQuery(target, target, null, null));
+            var results = annotator.Search(new AnnotationQuery(target, target, null, TODO, null));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4] }, results);
         }
@@ -430,8 +430,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
@@ -466,8 +466,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
@@ -495,8 +495,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, null), reference);
-            annotator.Validate(result, new AnnotationQuery(target, target, null, null), reference);
+            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            annotator.Validate(result, new AnnotationQuery(target, target, null, TODO, null), reference);
 
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");

@@ -1124,6 +1124,7 @@ namespace CompMs.MsdialCore.Utility {
         // annotation
 
         public static void SetPeptideMsProperty(ChromatogramPeakFeature feature, PeptideMsReference reference, MsScanMatchResult result) {
+            if (reference == null) return;
             SetPeptidePropertyCore(feature, reference);
             feature.Name = result.Name;
             feature.AddAdductType(reference.AdductType);
@@ -1137,6 +1138,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static void SetPeptideMsPropertyAsSuggested(ChromatogramPeakFeature feature, PeptideMsReference reference, MsScanMatchResult result) {
+            if (reference == null) return;
             SetPeptidePropertyCore(feature, reference);
             feature.AddAdductType(reference.AdductType);
             feature.Name = "w/o MS2: " + result.Name;

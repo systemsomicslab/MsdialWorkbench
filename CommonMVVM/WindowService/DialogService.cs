@@ -20,6 +20,7 @@ namespace CompMs.CommonMVVM.WindowService
             var dialog = new TView()
             {
                 Owner = Owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 DataContext = viewmodel,
             };
 
@@ -30,6 +31,7 @@ namespace CompMs.CommonMVVM.WindowService
             var dialog = new TView()
             {
                 Owner = Owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 DataContext = viewmodel,
             };
 

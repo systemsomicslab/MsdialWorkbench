@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     class MsdialProjectParameterFactory
     {
-        public static ParameterBaseVM Create<T>(T innerModel) where T: ParameterBase {
+        public static ParameterBaseVM Create<T>(T innerModel) where T: ParameterBase { //?
             switch (innerModel) {
                 case MsdialImmsParameter imms:
                     return new MsdialImmsParameterVM(imms);

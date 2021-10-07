@@ -41,8 +41,14 @@ namespace CompMs.Common.Mathematics.Basic {
                 return 1;
             else
             {
-                coefficient = FactorialCalculation(n, k) / FactorialCalculation(k);
-                return coefficient;
+                var nkfactor = FactorialCalculation(n, k);
+                var kfactor = FactorialCalculation(k);
+                if (kfactor != 0) {
+                    return nkfactor / kfactor;
+                }
+                else
+                    return 1;
+                //return coefficient;
             }
         }
 

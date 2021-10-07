@@ -115,8 +115,8 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             progressReports(peakSpot.PeakID, seekpointList.Count, reportAction);
         }
 
-        public static void executeIonMobilityIdentificationProcess(FileStream fs, List<long> seekpointList, 
-            ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB, 
+        public static void executeIonMobilityIdentificationProcess(FileStream fs, List<long> seekpointList,
+            ObservableCollection<RawSpectrum> spectrumCollection, PeakAreaBean peakSpot, List<MspFormatCompoundInformationBean> mspDB,
             AnalysisParametersBean param, ProjectPropertyBean projectProp, Action<int> reportAction) {
 
             //Debug.WriteLine(peakSpot.MasterPeakID);

@@ -177,7 +177,10 @@ namespace CompMs.App.Msdial.Model.Search
 
         protected override IEnumerable<CompoundResult> SearchCore() {
             var annotator = Annotator.Annotator;
-            var candidates = annotator.FindCandidates(new AnnotationQuery(Property, msdecResult, isotopes, Annotator.Parameter));
+            var candidates = annotator.FindCandidates(
+                new AnnotationQuery(Property, msdecResult, isotopes, 
+                new IonFeatureCharacter() { IsotopeWeightNumber = 0 }, 
+                Annotator.Parameter));
             foreach (var candidate in candidates) {
                 candidate.Source |= SourceType.Manual;
             }
