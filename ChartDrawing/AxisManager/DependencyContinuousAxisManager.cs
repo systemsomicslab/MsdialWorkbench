@@ -7,7 +7,6 @@ using System.Windows;
 using CompMs.Common.DataStructure;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.AxisManager

@@ -1,11 +1,12 @@
-﻿using CompMs.Graphics.Core.Base;
+﻿using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Graphics.AxisManager.Generic
 {
-    public abstract class BaseAxisManager<T> : IAxisManager<T>
+    public abstract class BaseAxisManager<T> : ViewModelBase, IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
             InitialRangeCore = InitialRange = range;
@@ -78,6 +79,12 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         protected List<LabelTickData> labelTicks = null;
+
+        public string UnitLabel {
+            get => unitLabel;
+            set => SetProperty(ref unitLabel, value);
+        }
+        private string unitLabel = string.Empty;
 
         public event EventHandler RangeChanged;
 

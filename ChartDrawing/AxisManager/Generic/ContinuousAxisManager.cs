@@ -56,6 +56,37 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public LabelType LabelType {
+            get => labelType;
+            set => SetProperty(ref labelType, value);
+        }
+        private LabelType labelType = LabelType.Standard;
+
+        private ILabelGenerator LabelGenerator {
+            get {
+                switch (LabelType) {
+                    case LabelType.Order:
+                        return labelGenerator is OrderLabelGenerator
+                            ? labelGenerator
+                            : labelGenerator = new OrderLabelGenerator();
+                    case LabelType.Relative:
+                        return labelGenerator is RelativeLabelGenerator
+                            ? labelGenerator
+                            : labelGenerator = new RelativeLabelGenerator();
+                    case LabelType.Percent:
+                        return labelGenerator is PercentLabelGenerator
+                            ? labelGenerator
+                            : labelGenerator = new PercentLabelGenerator();
+                    case LabelType.Standard:
+                    default:
+                        return labelGenerator is StandardLabelGenerator
+                            ? labelGenerator
+                            : labelGenerator = new StandardLabelGenerator();
+                }
+            }
+        }
+        private ILabelGenerator labelGenerator;
+
         public void UpdateInitialRange(T low, T high) {
             UpdateInitialRange(new Range(Convert.ToDouble(low), Convert.ToDouble(high)));
         }
@@ -70,54 +101,10 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public override List<LabelTickData> GetLabelTicks() {
-            if (labelTicks != null) return labelTicks;
-
-            labelTicks = new List<LabelTickData>();
-
-            if (Min >= Max || double.IsNaN(Min) || double.IsNaN(Max)) return labelTicks;
-            var TickInterval = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Max - Min)));
-            if (TickInterval == 0) return labelTicks;
-            var fold = (decimal)(Max - Min) / TickInterval;
-            if (fold <= 2) {
-                TickInterval /= 2;
-                fold *= 2;
-            }
-            decimal shortTickInterval =
-                TickInterval * (decimal)(fold >= 5 ? 0.5 :
-                                         fold >= 2 ? 0.25 :
-                                                     0.1);
-
-            var exp = Math.Floor(Math.Log10(Max));
-            // var LabelFormat = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : TickInterval >= 1 ? "f0" : "f3";
-            var LabelFormat = TickInterval >= 1 ? "f0" : "f3";
-            for(var i = Math.Ceiling((decimal)Min.Value / TickInterval); i * TickInterval <= (decimal)Max.Value; ++i)
-            {
-                var item = new LabelTickData()
-                {
-                    Label = (i * TickInterval).ToString(LabelFormat),
-                    TickType = TickType.LongTick,
-                    Center = (double)(i * TickInterval),
-                    Width = (double)TickInterval,
-                    Source = (double)(i * TickInterval),
-                };
-                labelTicks.Add(item);
-            }
-
-            if (shortTickInterval == 0) return labelTicks;
-            for(var i = Math.Ceiling((decimal)Min.Value / shortTickInterval); i * shortTickInterval <= (decimal)Max.Value; ++i)
-            {
-                var item = new LabelTickData()
-                {
-                    Label = (i * shortTickInterval).ToString(LabelFormat), 
-                    TickType = TickType.ShortTick,
-                    Center = (double)(i * shortTickInterval),
-                    Width = 0,
-                    Source = (double)(i * shortTickInterval),
-                };
-                labelTicks.Add(item);
-            }
-
-            return labelTicks;
+            var generator = LabelGenerator;
+            List<LabelTickData> ticks;
+            (ticks, UnitLabel) = generator.Generate(Range.Minimum.Value, Range.Maximum.Value, InitialRangeCore.Minimum.Value, InitialRangeCore.Maximum.Value);
+            return ticks;
         }
 
         public override AxisValue TranslateToAxisValue(T value) {
@@ -134,6 +121,240 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public static ContinuousAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map, Range bound) {
             return new ContinuousAxisManager<T>(source.Select(map).ToList(), bound);
+        }
+    }
+
+    public enum LabelType
+    {
+        Standard,
+        Order,
+        Relative,
+        Percent,
+    }
+
+    interface ILabelGenerator
+    {
+        (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh);
+    }
+
+    class LabelGeneratorBase
+    {
+        protected static double GetExponent(double x) {
+            return Math.Floor(Math.Log10(x));
+        }
+
+        protected static decimal GetLongInterval(double delta) {
+            var order = (decimal)GetOrder(delta);
+            if ((decimal)delta / order > 2) {
+                return order;
+            }
+            else {
+                return order / 2;
+            }
+        }
+
+        protected static double GetOrder(double x) {
+            return Math.Pow(10, GetExponent(x));
+        }
+
+        protected static decimal GetShortInterval(double delta, decimal longInterval) {
+            if ((decimal)delta / longInterval >= 5) {
+                return longInterval * (decimal)0.5;
+            }
+            else if ((decimal)delta / longInterval >= 2) {
+                return longInterval * (decimal)0.25;
+            }
+            else {
+                return longInterval * (decimal)0.1;
+            }
+        }
+
+        protected List<LabelTickData> GetTicks(decimal lo, decimal hi, decimal interval, Func<decimal, decimal, LabelTickData> create) {
+            var result = new List<LabelTickData>();
+            for(var i = Math.Ceiling(lo / interval); i * interval <= hi; ++i)
+            {
+                result.Add(create(i, interval));
+            }
+            return result;
+        }
+
+        protected List<LabelTickData> GetLongTicks(decimal lo, decimal hi, decimal interval, decimal factor, string format) {
+            return GetTicks(lo, hi, interval,
+                (i, interval_) => new LabelTickData()
+                {
+                    Label = (i * interval_).ToString(format),
+                    TickType = TickType.LongTick,
+                    Center = (double)(i * interval_ * factor),
+                    Width = (double)(interval_ * factor),
+                    Source = (double)(i * interval_ * factor),
+                });
+        }
+
+        protected List<LabelTickData> GetShortTicks(decimal lo, decimal hi, decimal interval, decimal factor, string format) {
+            return GetTicks(lo, hi, interval,
+                (i, interval_) => new LabelTickData()
+                {
+                    Label = (i * interval_).ToString(format),
+                    TickType = TickType.ShortTick,
+                    Center = (double)(i * interval_ * factor),
+                    Width = 0,
+                    Source = (double)(i * interval_ * factor),
+                });
+        }
+
+    }
+
+    class StandardLabelGenerator : LabelGeneratorBase, ILabelGenerator
+    {
+        public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
+            if (low > high) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+
+            var result = new List<LabelTickData>();
+            var longInterval = GetLongInterval(high - low);
+
+            if (longInterval == 0) return (result, string.Empty);
+
+            var exp = GetExponent(Math.Max(Math.Abs(high), Math.Abs(low)));
+            var format = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : longInterval >= 1 ? "f0" : "f3";
+            result.AddRange(GetLongTicks((decimal)low, (decimal)high, longInterval, 1, format));
+
+            var shortTickInterval = GetShortInterval(high - low, longInterval);
+            if (shortTickInterval == 0) return (result, string.Empty);
+            result.AddRange(GetShortTicks((decimal)low, (decimal)high, shortTickInterval, 1, format));
+
+            return (result, string.Empty);
+        }
+    }
+
+    class OrderLabelGenerator : LabelGeneratorBase, ILabelGenerator
+    {
+        public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
+            if (high <= low) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            var result = new List<LabelTickData>();
+            var label = string.Empty;
+
+            var delta = high - low;
+            var factor = (decimal)1;
+            decimal ld = (decimal)low, hd = (decimal)high;
+            var exp = GetExponent(Math.Max(Math.Abs(low), Math.Abs(high)));
+            if (exp >= 3 || exp <= -2) {
+                label = $"10^{exp}";
+                factor = (decimal)Math.Pow(10, exp);
+                hd /= factor;
+                ld /= factor;
+                delta = (high - low) / (double)factor;
+            }
+
+            var longInterval = GetLongInterval(delta);
+            if (longInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(GetLongTicks(ld, hd, longInterval, factor, "f2"));
+
+            var shortInterval = GetShortInterval(delta, longInterval);
+            if (shortInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(GetShortTicks(ld, hd, shortInterval, factor, "f2"));
+            return (result, label);
+        }
+    }
+
+    class RelativeLabelGenerator : LabelGeneratorBase, ILabelGenerator
+    {
+        public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
+            if (high <= low || standardHigh <= standardLow) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            var result = new List<LabelTickData>();
+            var label = string.Empty;
+
+            var delta = high - low;
+            var factor = (decimal)(standardHigh - standardLow);
+            decimal ld = (decimal)(low - standardLow) / factor, hd = (decimal)(high - standardLow) / factor;
+            delta = (high - low) / (double)factor;
+
+            var longInterval = GetLongInterval(delta);
+            if (longInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(
+                GetTicks(ld, hd, longInterval,
+                    (i, interval) => new LabelTickData
+                    {
+                        Label = (i * interval).ToString("g"),
+                        TickType = TickType.LongTick,
+                        Center = (double)(i * interval * factor) + standardLow,
+                        Width = (double)(interval * factor),
+                        Source = (double)(i * interval * factor) + standardLow,
+                    }));
+
+            var shortInterval = GetShortInterval(delta, longInterval);
+            if (shortInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(
+                GetTicks(ld, hd, shortInterval,
+                    (i, interval) => new LabelTickData
+                    {
+                        Label = (i * interval).ToString("g"),
+                        TickType = TickType.ShortTick,
+                        Center = (double)(i * interval * factor) + standardLow,
+                        Width = 0,
+                        Source = (double)(i * interval * factor) + standardLow,
+                    }));
+            return (result, label);
+        }
+    }
+
+    class PercentLabelGenerator : LabelGeneratorBase, ILabelGenerator
+    {
+        public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
+            if (high <= low || standardHigh <= standardLow) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            var result = new List<LabelTickData>();
+            var label = string.Empty;
+
+            var delta = high - low;
+            var factor = (decimal)(standardHigh - standardLow);
+            decimal ld = (decimal)(low - standardLow) / factor, hd = (decimal)(high - standardLow) / factor;
+            delta = (high - low) / (double)factor;
+
+            var longInterval = GetLongInterval(delta);
+            if (longInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(
+                GetTicks(ld, hd, longInterval,
+                    (i, interval) => new LabelTickData
+                    {
+                        Label = (i * interval).ToString("p"),
+                        TickType = TickType.LongTick,
+                        Center = (double)(i * interval * factor) + standardLow,
+                        Width = (double)(interval * factor),
+                        Source = (double)(i * interval * factor) + standardLow,
+                    }));
+
+            var shortInterval = GetShortInterval(delta, longInterval);
+            if (shortInterval == 0) {
+                return (result, label);
+            }
+            result.AddRange(
+                GetTicks(ld, hd, shortInterval,
+                    (i, interval) => new LabelTickData
+                    {
+                        Label = (i * interval).ToString("p"),
+                        TickType = TickType.ShortTick,
+                        Center = (double)(i * interval * factor) + standardLow,
+                        Width = 0,
+                        Source = (double)(i * interval * factor) + standardLow,
+                    }));
+            return (result, label);
         }
     }
 }
