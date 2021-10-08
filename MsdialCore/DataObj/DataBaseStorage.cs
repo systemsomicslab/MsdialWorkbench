@@ -23,9 +23,10 @@ namespace CompMs.MsdialCore.DataObj
             ProteomicsDataBases = proteomicsDataBases ?? throw new System.ArgumentNullException(nameof(proteomicsDataBases));
         }
 
-        public DataBaseStorage() {
-            MetabolomicsDataBases = new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
-            ProteomicsDataBases = new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
+        public DataBaseStorage()
+            : this(
+                new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
+                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>()) {
         }
 
         [Key(nameof(MetabolomicsDataBases))]

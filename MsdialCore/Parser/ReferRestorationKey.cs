@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
-    [MessagePack.Union(4, typeof(FastaDbRestorationKey))]
+    [MessagePack.Union(4, typeof(ShotgunProteomicsRestorationKey))]
     public interface IReferRestorationKey<in T, U, V, in W>
     {
         ISerializableAnnotator<T, U, V, W> Accept(ILoadAnnotatorVisitor visitor, W database);
