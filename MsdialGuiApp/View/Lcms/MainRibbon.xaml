@@ -20,6 +20,7 @@
 
         <Ribbon.Resources>
 
+            <!--
             <Style TargetType="Ribbon">
                 <Setter Property="BorderBrush" Value="LightGray" />
             </Style>
@@ -46,6 +47,7 @@
                 <Setter Property="Background" Value="White"/>
                 
             </Style>
+            -->
 
         </Ribbon.Resources>
 
