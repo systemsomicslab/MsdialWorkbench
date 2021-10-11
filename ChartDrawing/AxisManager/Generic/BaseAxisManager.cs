@@ -14,13 +14,13 @@ namespace CompMs.Graphics.AxisManager.Generic
             Range = InitialRange;
         }
 
-        public BaseAxisManager(Range range, ChartMargin margin) {
+        public BaseAxisManager(Range range, IChartMargin margin) {
             InitialRangeCore = InitialRange = range;
             ChartMargin = margin;
             Range = InitialRange;
         }
 
-        public BaseAxisManager(Range range, ChartMargin margin, Range bounds) {
+        public BaseAxisManager(Range range, IChartMargin margin, Range bounds) {
             InitialRangeCore = InitialRange = range;
             Bounds = bounds;
             ChartMargin = margin;
@@ -56,11 +56,11 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
         private Range range;
 
-        protected Range InitialRangeCore { get; set; }
+        protected Range InitialRangeCore { get; private set; }
 
         public Range InitialRange { get; private set; }
 
-        private static Range CoerceRange(Range r, Range bound) {
+        protected static Range CoerceRange(Range r, Range bound) {
             var range = r.Union(bound);
             if (range.Delta <= 1e-10) {
                 range = new Range(range.Minimum - 1, range.Maximum + 1);
@@ -70,7 +70,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public Range Bounds { get; protected set; }
 
-        public ChartMargin ChartMargin { get; set; } = new ChartMargin(0, 0);
+        public IChartMargin ChartMargin { get; set; } = new RelativeMargin(0, 0);
 
         public double ConstantMargin { get; set; } = 0;
 
@@ -86,17 +86,24 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
         private string unitLabel = string.Empty;
 
-        public event EventHandler RangeChanged;
-
         private static readonly EventArgs args = new EventArgs();
+
+        public event EventHandler RangeChanged;
 
         protected virtual void OnRangeChanged() {
             RangeChanged?.Invoke(this, args);
         }
 
+        public event EventHandler InitialRangeChanged;
+
+        protected virtual void OnInitialRangeChanged() {
+            InitialRangeChanged?.Invoke(this, args);
+        }
+
         public void UpdateInitialRange(Range range) {
             InitialRangeCore = range;
             Focus(InitialRange);
+            OnInitialRangeChanged();
         }
 
         public bool Contains(AxisValue value) {
@@ -112,9 +119,10 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void Recalculate(double drawableLength) {
-            var lo = -(1 + ChartMargin.Left + ChartMargin.Right) / (drawableLength - 2 * ConstantMargin) * ConstantMargin - ChartMargin.Left;
-            var hi = 1 - lo - ChartMargin.Left + ChartMargin.Right;
-            InitialRange = TranslateFromRelativeRange(lo, hi, CoerceRange(InitialRangeCore, Bounds));
+            // var lo = -(1 + ChartMargin.Left + ChartMargin.Right) / (drawableLength - 2 * ConstantMargin) * ConstantMargin - ChartMargin.Left;
+            // var hi = 1 - lo - ChartMargin.Left + ChartMargin.Right;
+            (var lo, var hi) = ChartMargin.Add(0, drawableLength);
+            InitialRange = TranslateFromRelativeRange(lo / drawableLength, hi / drawableLength, CoerceRange(InitialRangeCore, Bounds));
         }
 
         public void Reset() {

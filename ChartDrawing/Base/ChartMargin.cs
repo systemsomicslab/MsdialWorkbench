@@ -137,6 +137,10 @@ namespace CompMs.Graphics.Core.Base
             Upper = upper;
         }
 
+        public ConstantMargin(double margin) {
+            Lower = Upper = margin;
+        }
+
         public double Lower { get; }
         public double Upper { get; }
 
@@ -145,7 +149,7 @@ namespace CompMs.Graphics.Core.Base
         }
 
         public (double, double) Remove(double lower, double upper) {
-            return (lower + Lower, upper + Upper);
+            return (lower + Lower, upper - Upper);
         }
 
         public override string ToString() {

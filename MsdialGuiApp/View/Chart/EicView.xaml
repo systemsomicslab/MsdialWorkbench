@@ -27,7 +27,6 @@
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          VerticalTitle="{Binding VerticalTitle.Value}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           Style="{StaticResource OverlapChart}"
                           Background="WhiteSmoke"
@@ -56,6 +55,14 @@
                     <Pen Brush="Red" Thickness="1.5" LineJoin="Miter" PresentationOptions:Freeze="True"/>
                 </chart:LineSpectrumControl.LinePen>
             </chart:LineSpectrumControl>
+            <chart:MultiChart.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <MultiBinding.Bindings>
+                        <Binding Path="VerticalTitle.Value"/>
+                        <Binding Path="VerticalAxis.UnitLabel"/>
+                    </MultiBinding.Bindings>
+                </MultiBinding>
+            </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
     </Grid>
 </UserControl>

@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveAxisManager(
             IObservable<Range> rangeSource,
-            ChartMargin margin,
+            IChartMargin margin,
             Range bounds = null) : base(new Range(0, 1), margin, bounds) {
             rangeUnSubscriber = rangeSource.ObserveOnDispatcher().Subscribe(UpdateRange);
         }
@@ -49,14 +49,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
     public static class ReactiveAxisManager
     {
-        public static ReactiveAxisManager<T> ToReactiveAxisManager<T>(this IObservable<Range> self, Range bounds = null)
+        public static ReactiveAxisManager<T> ToReactiveAxisManager<T>(this IObservable<Range> self, Range bounds = null, LabelType labelType = LabelType.Standard)
             where T : IConvertible {
-            return new ReactiveAxisManager<T>(self, bounds);
+            return new ReactiveAxisManager<T>(self, bounds) { LabelType = labelType };
         }
 
-        public static ReactiveAxisManager<T> ToReactiveAxisManager<T>(this IObservable<Range> self, ChartMargin margin, Range bounds = null)
+        public static ReactiveAxisManager<T> ToReactiveAxisManager<T>(this IObservable<Range> self, IChartMargin margin, Range bounds = null, LabelType labelType = LabelType.Standard)
             where T : IConvertible {
-            return new ReactiveAxisManager<T>(self, margin, bounds);
+            return new ReactiveAxisManager<T>(self, margin, bounds) { LabelType = labelType };
         }
     }
 }

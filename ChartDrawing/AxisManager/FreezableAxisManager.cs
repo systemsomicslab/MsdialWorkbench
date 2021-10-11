@@ -70,9 +70,12 @@ namespace CompMs.Graphics.AxisManager
             set => SetValue(InitialRangeProperty, value);
         }
 
+        public event EventHandler InitialRangeChanged;
+
         static void OnInitialRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var axis = (FreezableAxisManager)d;
             axis.Focus((Range)e.NewValue);
+            axis.InitialRangeChanged?.Invoke(axis, args);
         }
 
         static object CoerceInitialRange(DependencyObject d, object value) {

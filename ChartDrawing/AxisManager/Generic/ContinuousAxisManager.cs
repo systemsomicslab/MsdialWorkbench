@@ -15,11 +15,11 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
-        public ContinuousAxisManager(Range range, ChartMargin margin) : base(range, margin) {
+        public ContinuousAxisManager(Range range, IChartMargin margin) : base(range, margin) {
 
         }
 
-        public ContinuousAxisManager(Range range, ChartMargin margin, Range bounds) : base(range, margin, bounds) {
+        public ContinuousAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
 
         }
 
@@ -102,8 +102,9 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public override List<LabelTickData> GetLabelTicks() {
             var generator = LabelGenerator;
+            var initialRangeCore = CoerceRange(InitialRangeCore, Bounds); 
             List<LabelTickData> ticks;
-            (ticks, UnitLabel) = generator.Generate(Range.Minimum.Value, Range.Maximum.Value, InitialRangeCore.Minimum.Value, InitialRangeCore.Maximum.Value);
+            (ticks, UnitLabel) = generator.Generate(Range.Minimum.Value, Range.Maximum.Value, initialRangeCore.Minimum.Value, initialRangeCore.Maximum.Value);
             return ticks;
         }
 
@@ -210,6 +211,9 @@ namespace CompMs.Graphics.AxisManager.Generic
             if (low > high) {
                 return (new List<LabelTickData>(), string.Empty);
             }
+            if (double.IsInfinity(low) || double.IsInfinity(high) || double.IsNaN(low) || double.IsNaN(high)) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
 
             var result = new List<LabelTickData>();
             var longInterval = GetLongInterval(high - low);
@@ -232,6 +236,9 @@ namespace CompMs.Graphics.AxisManager.Generic
     {
         public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
             if (high <= low) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            if (double.IsInfinity(low) || double.IsInfinity(high) || double.IsNaN(low) || double.IsNaN(high)) {
                 return (new List<LabelTickData>(), string.Empty);
             }
             var result = new List<LabelTickData>();
@@ -268,6 +275,9 @@ namespace CompMs.Graphics.AxisManager.Generic
     {
         public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
             if (high <= low || standardHigh <= standardLow) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            if (double.IsInfinity(low) || double.IsInfinity(high) || double.IsNaN(low) || double.IsNaN(high)) {
                 return (new List<LabelTickData>(), string.Empty);
             }
             var result = new List<LabelTickData>();
@@ -315,6 +325,9 @@ namespace CompMs.Graphics.AxisManager.Generic
     {
         public (List<LabelTickData>, string) Generate(double low, double high, double standardLow, double standardHigh) {
             if (high <= low || standardHigh <= standardLow) {
+                return (new List<LabelTickData>(), string.Empty);
+            }
+            if (double.IsInfinity(low) || double.IsInfinity(high) || double.IsNaN(low) || double.IsNaN(high)) {
                 return (new List<LabelTickData>(), string.Empty);
             }
             var result = new List<LabelTickData>();

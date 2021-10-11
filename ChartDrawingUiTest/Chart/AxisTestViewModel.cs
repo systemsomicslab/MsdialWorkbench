@@ -58,8 +58,8 @@ namespace ChartDrawingUiTest.Chart
 
             var axisX = new ContinuousAxisManager<double>(xs.Min(dp => dp.X), xs.Max(dp => dp.X));
             var axisY = new ContinuousAxisManager<double>(xs.Min(dp => dp.Y), xs.Max(dp => dp.Y));
-            axisX.ConstantMargin = 100;
-            axisY.ConstantMargin = 10;
+            axisX.ChartMargin = new ConstantMargin(100, 10);
+            axisY.ChartMargin = new ConstantMargin(20, 50);
             AxisX = axisX;
             AxisY = axisY;
         }

@@ -49,7 +49,8 @@
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  Format="N2"
-                                 Overlap="Horizontal, Direct"/>
+                                 Overlap="Horizontal, Direct"
+                                 ClipToBounds="True"/>
             </Grid>
 
             <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}"
@@ -79,7 +80,8 @@
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  ContentAlignment="BottomCenter"
                                  Format="N2"
-                                 Overlap="Horizontal, Direct"/>
+                                 Overlap="Horizontal, Direct"
+                                 ClipToBounds="True"/>
             </Grid>
         </chart:MultiChart>
         <TextBlock Text="Measurement" FontStyle="Italic" FontFamily="Calibri"

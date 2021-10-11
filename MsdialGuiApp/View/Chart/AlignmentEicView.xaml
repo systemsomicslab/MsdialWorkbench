@@ -39,7 +39,6 @@
         <chart:MultiChart Name="Eics"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          VerticalTitle="{Binding VerticalTitle.Value}"
                           HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
                           AlternationCount="1"
@@ -73,6 +72,14 @@
                     </Grid>
                 </DataTemplate>
             </chart:MultiChart.ItemTemplate>
+            <chart:MultiChart.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <MultiBinding.Bindings>
+                        <Binding Path="VerticalTitle.Value"/>
+                        <Binding Path="VerticalAxis.UnitLabel"/>
+                    </MultiBinding.Bindings>
+                </MultiBinding>
+            </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
     </Grid>
 </UserControl>

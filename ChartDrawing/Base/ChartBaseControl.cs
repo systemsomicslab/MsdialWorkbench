@@ -41,16 +41,24 @@ namespace CompMs.Graphics.Core.Base
         void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnHorizontalRangeChanged;
+                oldValue.InitialRangeChanged -= OnHorizontalInitialRangeChanged;
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnHorizontalRangeChanged;
+                newValue.InitialRangeChanged += OnHorizontalInitialRangeChanged;
                 newValue.Recalculate(ActualWidth);
                 newValue.Reset();
             }
         }
 
         void OnHorizontalRangeChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        void OnHorizontalInitialRangeChanged(object sender, EventArgs e) {
+            HorizontalAxis.Recalculate(ActualWidth);
+            HorizontalAxis.Reset();
             InvalidateVisual();
         }
 
@@ -88,16 +96,24 @@ namespace CompMs.Graphics.Core.Base
         void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnVerticalRangeChanged;
+                oldValue.InitialRangeChanged -= OnVerticalInitialRangeChanged;
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnVerticalRangeChanged;
+                newValue.InitialRangeChanged += OnVerticalInitialRangeChanged;
                 newValue.Recalculate(ActualHeight);
                 newValue.Reset();
             }
         }
 
         void OnVerticalRangeChanged(object sender, EventArgs e) {
+            InvalidateVisual();
+        }
+
+        void OnVerticalInitialRangeChanged(object sender, EventArgs e) {
+            VerticalAxis.Recalculate(ActualHeight);
+            VerticalAxis.Reset();
             InvalidateVisual();
         }
 

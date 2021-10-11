@@ -22,6 +22,8 @@ namespace CompMs.Graphics.Core.Base
 
         event EventHandler RangeChanged;
 
+        event EventHandler InitialRangeChanged;
+
         AxisValue TranslateToAxisValue(object value);
         double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
         List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength);
