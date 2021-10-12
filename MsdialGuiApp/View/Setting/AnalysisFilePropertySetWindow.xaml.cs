@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.App.Msdial.ViewModel.Setting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.Property
+namespace CompMs.App.Msdial.View.Setting
 {
     /// <summary>
     /// Interaction logic for AnalysisFilePropertySetWin.xaml
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.Property
 
         private void dg_Drop(object sender, DragEventArgs e) {
             var files = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
-            var vm = (AnalysisFilePropertySetWindowVM)this.DataContext;
+            var vm = (AnalysisFilePropertySetViewModel)this.DataContext;
             vm.Drop(files);
         }
     }

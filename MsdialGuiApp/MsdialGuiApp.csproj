@@ -413,7 +413,7 @@
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowVM.cs" />
-    <Compile Include="ViewModel\Setting\AnalysisFilePropertySetWindowVM.cs" />
+    <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
     <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>

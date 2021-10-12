@@ -14,14 +14,14 @@ using System.Reactive.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
-namespace CompMs.App.Msdial.Property
+namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    class AnalysisFilePropertySetWindowVM : ViewModelBase
+    class AnalysisFilePropertySetViewModel : ViewModelBase
     {
         public MachineCategory MachineCategory => Model.Category;
         public string ProjectFolderPath => Model.ProjectFolderPath;
 
-        public AnalysisFilePropertySetWindowVM(AnalysisFilePropertySetModel model) {
+        public AnalysisFilePropertySetViewModel(AnalysisFilePropertySetModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
             AnalysisFilePropertyCollection = Model.AnalysisFilePropertyCollection
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
@@ -142,13 +142,13 @@ namespace CompMs.App.Msdial.Property
                     includedFiles.Add(files[i]);
                 }
                 else {
-                    excludedFiles.Add(System.IO.Path.GetFileName(files[i]));
+                    excludedFiles.Add(Path.GetFileName(files[i]));
                 }
             }
 
             if (0 < excludedFiles.Count) {
-                System.Windows.MessageBox.Show("The following file(s) cannot be converted because they are not acceptable raw files\n" +
-                    String.Join("\n", excludedFiles.ToArray()),
+                MessageBox.Show("The following file(s) cannot be converted because they are not acceptable raw files\n" +
+                    string.Join("\n", excludedFiles.ToArray()),
                     "Unacceptable Files",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -162,7 +162,7 @@ namespace CompMs.App.Msdial.Property
         }
 
         private bool IsAccepted(string file) {
-            var extension = System.IO.Path.GetExtension(file).ToLower();
+            var extension = Path.GetExtension(file).ToLower();
             switch (extension) {
                 case ".abf":
                 case ".mzml":

@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.Property;
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial
 
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
-            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             if (startUpService is null) {
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
-        private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
+        private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
@@ -168,11 +168,11 @@ namespace CompMs.App.Msdial
         }
 
         private static List<AnalysisFileBean> ProcessSetAnalysisFile(
-            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             ParameterBase parameter) {
 
             var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(parameter.ProjectFolderPath, parameter.MachineCategory);
-            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM(analysisFilePropertySetModel)) {
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
                 var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result != true) {
                     return new List<AnalysisFileBean>();
