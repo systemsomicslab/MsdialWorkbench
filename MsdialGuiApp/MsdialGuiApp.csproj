@@ -412,8 +412,8 @@
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowVM.cs" />
-    <Compile Include="Property\AnalysisFilePropertySetWindowVM.cs" />
-    <Compile Include="Property\AnalysisFilePropertySetWindow.xaml.cs">
+    <Compile Include="ViewModel\Setting\AnalysisFilePropertySetWindowVM.cs" />
+    <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="StartUp\StartUpWindow.xaml.cs">
@@ -773,7 +773,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Property\AnalysisFilePropertySetWindow.xaml">
+    <Page Include="View\Setting\AnalysisFilePropertySetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1033,6 +1033,7 @@
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Property\" />
     <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
