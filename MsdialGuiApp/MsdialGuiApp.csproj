@@ -160,6 +160,7 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
     <Compile Include="Model\Dims\DimsLbmAnnotationSettingModel.cs" />

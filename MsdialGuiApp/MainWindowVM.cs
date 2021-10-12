@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
@@ -13,7 +14,6 @@ using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialLcMsApi.DataObj;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -47,6 +47,8 @@ namespace CompMs.App.Msdial
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            Model = new MainWindowModel();
+
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
             this.compoundSearchService = compoundSearchService;
@@ -57,6 +59,8 @@ namespace CompMs.App.Msdial
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+
+        public MainWindowModel Model { get; }
 
         public MethodViewModel MethodVM {
             get => methodVM;
