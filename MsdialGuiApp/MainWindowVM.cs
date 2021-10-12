@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Property;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Property;
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
@@ -170,16 +171,15 @@ namespace CompMs.App.Msdial
             IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
             ParameterBase parameter) {
 
-            var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
-            {
-                ProjectFolderPath = parameter.ProjectFolderPath,
-                MachineCategory = parameter.MachineCategory,
-            };
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(parameter.ProjectFolderPath, parameter.MachineCategory);
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM(analysisFilePropertySetModel)) {
+                var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
+                if (afpsw_result != true) {
+                    return new List<AnalysisFileBean>();
+                }
 
-            var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
-            if (afpsw_result != true) return new List<AnalysisFileBean>();
-
-            return analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+                return analysisFilePropertySetModel.GetAnalysisFileBeanCollection();
+            }
         }
 
         public DelegateCommand<Window> OpenProjectCommand {

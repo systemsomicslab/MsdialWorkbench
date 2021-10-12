@@ -1,45 +1,81 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Reactive.Linq;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.Property
 {
     class AnalysisFilePropertySetWindowVM : ViewModelBase
     {
-        #region Property
-        public MachineCategory MachineCategory { get; set; }
-        public string ProjectFolderPath { get; set; }
+        public MachineCategory MachineCategory => Model.Category;
+        public string ProjectFolderPath => Model.ProjectFolderPath;
 
-        public ObservableCollection<AnalysisFileBean> AnalysisFilePropertyCollection {
-            get => analysisFilePropertyCollection;
-            set => SetProperty(ref analysisFilePropertyCollection, value);
+        public AnalysisFilePropertySetWindowVM(AnalysisFilePropertySetModel model) {
+            Model = model ?? throw new ArgumentNullException(nameof(model));
+            AnalysisFilePropertyCollection = Model.AnalysisFilePropertyCollection
+                .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
+                .AddTo(Disposables);
+
+            var analysisFileHasError = new[]
+            {
+                AnalysisFilePropertyCollection.ObserveAddChanged().ToUnit(),
+                AnalysisFilePropertyCollection.ObserveRemoveChanged().ToUnit(),
+                AnalysisFilePropertyCollection.ObserveElementObservableProperty(vm => vm.HasErrors).ToUnit(),
+            }.Merge()
+            .Select(_ => AnalysisFilePropertyCollection.Any(vm => vm.HasErrors.Value));
+            analysisFileHasError.Subscribe(x => Console.WriteLine($"file has error: {x}"));
+
+            var analysisFileNameDuplicate = new[]
+            {
+                AnalysisFilePropertyCollection.ObserveAddChanged().ToUnit(),
+                AnalysisFilePropertyCollection.ObserveRemoveChanged().ToUnit(),
+                AnalysisFilePropertyCollection.ObserveElementObservableProperty(vm => vm.AnalysisFileName).ToUnit(),
+            }.Merge()
+            .Select(_ => AnalysisFilePropertyCollection.Select(vm => vm.AnalysisFileName.Value).Distinct().Count() != AnalysisFilePropertyCollection.Count);
+            analysisFileNameDuplicate.Subscribe(hasError => {
+                if (hasError) {
+                    AddError(nameof(AnalysisFilePropertyCollection), FileNameDuplicateErrorMessage);
+                }
+                else {
+                    RemoveError(nameof(AnalysisFilePropertyCollection), FileNameDuplicateErrorMessage);
+                }
+            }).AddTo(Disposables);
+            analysisFileNameDuplicate.Subscribe(x => Console.WriteLine($"file name duplicates: {x}"));
+
+            ObserveHasErrors = new[]
+            {
+                analysisFileHasError,
+                analysisFileNameDuplicate,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim(true)
+            .AddTo(Disposables);
+
+            ObserveHasErrors.Subscribe(x => Console.WriteLine($"something errors: {x}"));
+
+            ContinueProcessCommand = ObserveHasErrors.Inverse()
+                .ToReactiveCommand<Window>()
+                .WithSubscribe(ContinueProcess)
+                .AddTo(Disposables);
         }
 
+        public AnalysisFilePropertySetModel Model { get; }
 
-        #endregion
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
-        #region Field
-        private ObservableCollection<AnalysisFileBean> analysisFilePropertyCollection;
-        #endregion
+        public ReadOnlyReactiveCollection<AnalysisFileBeanViewModel> AnalysisFilePropertyCollection { get; }
 
-        public AnalysisFilePropertySetWindowVM() {
-            AnalysisFilePropertyCollection = new ObservableCollection<AnalysisFileBean>();
-            PropertyChanged += OnAnalysisFileChanged;
-        }
-
-        #region Command
-       
         public DelegateCommand AnalysisFilesSelectCommand {
             get => analysisFilesSelectCommand ?? (analysisFilesSelectCommand = new DelegateCommand(AnalysisFilesSelect));
         }
@@ -53,7 +89,7 @@ namespace CompMs.App.Msdial.Property
                 RestoreDirectory = true,
                 Multiselect = true,
             };
-            if (MachineCategory == MachineCategory.LCIMMS || MachineCategory == MachineCategory.IMMS) {
+            if (Model.Category == MachineCategory.LCIMMS || Model.Category == MachineCategory.IMMS) {
                 ofd.Filter = "IBF file(*.ibf)|*.ibf";
             }
             else {
@@ -68,82 +104,35 @@ namespace CompMs.App.Msdial.Property
                 }
 
                 Mouse.OverrideCursor = Cursors.Wait;
-                AnalysisFilePropertyCollection = ReadImportedFiles(ofd.FileNames);
+                Model.ReadImportedFiles(ofd.FileNames);
                 Mouse.OverrideCursor = null;
             }
         }
 
-        private ObservableCollection<AnalysisFileBean> ReadImportedFiles(string[] filenames) {
-            var dt = DateTime.Now;
-            var analysisfiles = filenames.OrderBy(n => n).Select((filename, i) =>
-                new AnalysisFileBean
-                {
-                    AnalysisFileAnalyticalOrder = i + 1,
-                    AnalysisFileClass = "1",
-                    AnalysisFileId = i,
-                    AnalysisFileIncluded = true,
-                    AnalysisFileName = Path.GetFileNameWithoutExtension(filename),
-                    AnalysisFilePath = filename,
-                    AnalysisFileType = AnalysisFileType.Sample,
-                    AnalysisBatch = 1,
-                    InjectionVolume = 1d,
-                }
-            ).ToList();
-            foreach (var analysisfile in analysisfiles) {
-                analysisfile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm")+ $".{MsdialDataStorageFormat.dcl}");
-                analysisfile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, analysisfile.AnalysisFileName + dt.ToString("_yyyyMMddHHmm") + $".{MsdialDataStorageFormat.pai}");
-            }
-
-            return new ObservableCollection<AnalysisFileBean>(analysisfiles);
-        }
-
-        public DelegateCommand<Window> ContinueProcessCommand {
-            get => continueProcessCommand ?? (continueProcessCommand = new DelegateCommand<Window>(ContinueProcess, ValidateAnalysisFilePropertySetWindow));
-        }
-        private DelegateCommand<Window> continueProcessCommand;
+        public ReactiveCommand<Window> ContinueProcessCommand { get; }
 
         private void ContinueProcess(Window window) {
+            Commit();
             window.DialogResult = true;
             window.Close();
-        }
-
-        public bool HasViewError {
-            get => hasViewError;
-            set => SetProperty(ref hasViewError, value);
-        }
-        private bool hasViewError = false;
-
-        private bool ValidateAnalysisFilePropertySetWindow(Window window) {
-            if (HasViewError)
-                return false;
-            if (HasValidationErrors)
-                return false;
-            if (AnalysisFilePropertyCollection.IsEmptyOrNull())
-                return false;
-            var invalidChars = Path.GetInvalidFileNameChars();
-            if (AnalysisFilePropertyCollection.Any(analysisfile => analysisfile.AnalysisFileName.IndexOfAny(invalidChars) >= 0))
-                return false;
-            return true;
         }
 
         public DelegateCommand<Window> CancelProcessCommand {
             get => cancelProcessCommand ?? (cancelProcessCommand = new DelegateCommand<Window>(CancelProcess));
         }
+
         private DelegateCommand<Window> cancelProcessCommand;
 
         private void CancelProcess(Window window) {
             window.DialogResult = false;
             window.Close();
         }
-        #endregion
-
-        #region Event
-        private void OnAnalysisFileChanged(object sender, PropertyChangedEventArgs e) {
-            ContinueProcessCommand.RaiseCanExecuteChanged();
-        }
 
         public void Drop(string[] files) {
-            string lastfile = "";
+            if (files.IsEmptyOrNull()) {
+                return;
+            }
+
             var includedFiles = new List<string>();
             var excludedFiles = new List<string>();
 
@@ -167,23 +156,35 @@ namespace CompMs.App.Msdial.Property
 
             if (includedFiles.Count > 0) {
                 Mouse.OverrideCursor = Cursors.Wait;
-                AnalysisFilePropertyCollection = ReadImportedFiles(includedFiles.ToArray());
+                Model.ReadImportedFiles(includedFiles);
                 Mouse.OverrideCursor = null;
             }
         }
 
         private bool IsAccepted(string file) {
             var extension = System.IO.Path.GetExtension(file).ToLower();
-            if (extension != ".abf" && extension != ".mzml" &&
-                extension != ".cdf" && extension != ".raw" &&
-                extension != ".d" && extension != ".iabf" && extension != ".ibf" &&
-                extension != ".wiff" && extension != ".wiff2")
-                return false;
-            else
-                return true;
+            switch (extension) {
+                case ".abf":
+                case ".mzml":
+                case ".cdf":
+                case ".raw":
+                case ".d":
+                case ".iabf":
+                case ".ibf":
+                case ".wiff":
+                case ".wiff2":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
-        #endregion
+        public void Commit() {
+            foreach (var file in AnalysisFilePropertyCollection) {
+                file.Commit();
+            }
+        }
 
+        private static readonly string FileNameDuplicateErrorMessage = "File name duplicated.";
     }
 }
