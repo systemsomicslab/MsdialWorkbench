@@ -8,6 +8,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+        xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertySetViewModel}}"
         Title="New project window" Height="700" Width="1000"
@@ -68,8 +69,12 @@
                   Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
                   AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
-                  DragOver="dg_DragOver" Drop="dg_Drop"
                   AllowDrop="True" Margin="20,40,20,5" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Drop">
+                    <reactiveProperty:EventToReactiveCommand Command="{Binding DropFilesCommand, Mode=OneTime}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
@@ -111,7 +116,7 @@
                 <DataGridTemplateColumn Width="0.8*" Header="Class ID" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AnalysisFileClass.Value}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Name="TextBox_FileClass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileClass.Value, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Center"/>
+                            <TextBox Name="TextBox_FileClass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=AnalysisFileClass.Value, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
 
@@ -180,10 +185,23 @@
         </DataGrid>
 
         <Button x:Name="Cancel" Content="Cancel"
-                Command="{Binding CancelProcessCommand}" CommandParameter="{Binding ElementName=AnalysisFilePropertySetView}"
-                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,20,5" />
+                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,20,5">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <i:ChangePropertyAction TargetObject="{Binding ElementName=AnalysisFilePropertySetView}" PropertyName="DialogResult" Value="False"/>
+                    <i:CallMethodAction TargetObject="{Binding ElementName=AnalysisFilePropertySetView}" MethodName="Close"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
         <Button x:Name="Next" Content="Next" 
-                Command="{Binding ContinueProcessCommand}" CommandParameter="{Binding ElementName=AnalysisFilePropertySetView}"
-                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,95,5" />
+                Command="{Binding ContinueProcessCommand, Mode=OneTime}"
+                Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,95,5">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <i:ChangePropertyAction TargetObject="{Binding ElementName=AnalysisFilePropertySetView}" PropertyName="DialogResult" Value="True"/>
+                    <i:CallMethodAction TargetObject="{Binding ElementName=AnalysisFilePropertySetView}" MethodName="Close"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
     </Grid>
 </Window>

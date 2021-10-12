@@ -23,16 +23,5 @@ namespace CompMs.App.Msdial.View.Setting
         public AnalysisFilePropertySetWindow() {
             InitializeComponent();
         }
-
-        private void dg_DragOver(object sender, DragEventArgs e) {
-            e.Effects = System.Windows.DragDropEffects.Copy;
-            e.Handled = true;
-        }
-
-        private void dg_Drop(object sender, DragEventArgs e) {
-            var files = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
-            var vm = (AnalysisFilePropertySetViewModel)this.DataContext;
-            vm.Drop(files);
-        }
     }
 }

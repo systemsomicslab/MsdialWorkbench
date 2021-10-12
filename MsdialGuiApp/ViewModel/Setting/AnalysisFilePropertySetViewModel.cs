@@ -18,13 +18,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     class AnalysisFilePropertySetViewModel : ViewModelBase
     {
-        public MachineCategory MachineCategory => Model.Category;
-        public string ProjectFolderPath => Model.ProjectFolderPath;
-
         public AnalysisFilePropertySetViewModel(AnalysisFilePropertySetModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
             AnalysisFilePropertyCollection = Model.AnalysisFilePropertyCollection
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
+                .AddTo(Disposables);
+
+            DropFilesCommand = new ReactiveCommand<DragEventArgs>().AddTo(Disposables);
+            DropFilesCommand.Select(e => e.Data.GetData(DataFormats.FileDrop) as string[])
+                .Where(files => !files.IsEmptyOrNull())
+                .Subscribe(Drop)
                 .AddTo(Disposables);
 
             var analysisFileHasError = new[]
@@ -34,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 AnalysisFilePropertyCollection.ObserveElementObservableProperty(vm => vm.HasErrors).ToUnit(),
             }.Merge()
             .Select(_ => AnalysisFilePropertyCollection.Any(vm => vm.HasErrors.Value));
-            analysisFileHasError.Subscribe(x => Console.WriteLine($"file has error: {x}"));
 
             var analysisFileNameDuplicate = new[]
             {
@@ -51,7 +53,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     RemoveError(nameof(AnalysisFilePropertyCollection), FileNameDuplicateErrorMessage);
                 }
             }).AddTo(Disposables);
-            analysisFileNameDuplicate.Subscribe(x => Console.WriteLine($"file name duplicates: {x}"));
 
             ObserveHasErrors = new[]
             {
@@ -62,11 +63,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToReadOnlyReactivePropertySlim(true)
             .AddTo(Disposables);
 
-            ObserveHasErrors.Subscribe(x => Console.WriteLine($"something errors: {x}"));
-
             ContinueProcessCommand = ObserveHasErrors.Inverse()
-                .ToReactiveCommand<Window>()
-                .WithSubscribe(ContinueProcess)
+                .ToReactiveCommand()
+                .WithSubscribe(Commit)
                 .AddTo(Disposables);
         }
 
@@ -85,7 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var ofd = new OpenFileDialog()
             {
                 Title = "Import analysis files",
-                InitialDirectory = ProjectFolderPath,
+                InitialDirectory = Model.ProjectFolderPath,
                 RestoreDirectory = true,
                 Multiselect = true,
             };
@@ -97,38 +96,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
 
             if (ofd.ShowDialog() == true) {
-                if (ofd.FileNames.Any(filename => Path.GetDirectoryName(filename) != ProjectFolderPath)) {
+                if (ofd.FileNames.Any(filename => Path.GetDirectoryName(filename) != Model.ProjectFolderPath)) {
                     MessageBox.Show("The directory of analysis files should be where the project file is created.",
                                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                Mouse.OverrideCursor = Cursors.Wait;
-                Model.ReadImportedFiles(ofd.FileNames);
-                Mouse.OverrideCursor = null;
+                ImportFiles(ofd.FileNames);
             }
         }
 
-        public ReactiveCommand<Window> ContinueProcessCommand { get; }
-
-        private void ContinueProcess(Window window) {
-            Commit();
-            window.DialogResult = true;
-            window.Close();
-        }
-
-        public DelegateCommand<Window> CancelProcessCommand {
-            get => cancelProcessCommand ?? (cancelProcessCommand = new DelegateCommand<Window>(CancelProcess));
-        }
-
-        private DelegateCommand<Window> cancelProcessCommand;
-
-        private void CancelProcess(Window window) {
-            window.DialogResult = false;
-            window.Close();
-        }
+        public ReactiveCommand<DragEventArgs> DropFilesCommand { get; }
 
         public void Drop(string[] files) {
+            ImportFiles(files);
+        }
+
+        private void ImportFiles(string[] files) {
             if (files.IsEmptyOrNull()) {
                 return;
             }
@@ -136,17 +120,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             var includedFiles = new List<string>();
             var excludedFiles = new List<string>();
 
-            // Set BaseFileList Clone
-            for (int i = 0; i < files.Length; i++) {
-                if (IsAccepted(files[i])) {
-                    includedFiles.Add(files[i]);
+            foreach (var file in files) {
+                if (IsAccepted(file)) {
+                    includedFiles.Add(file);
                 }
                 else {
-                    excludedFiles.Add(Path.GetFileName(files[i]));
+                    excludedFiles.Add(Path.GetFileName(file));
                 }
             }
 
-            if (0 < excludedFiles.Count) {
+            if (excludedFiles.Count > 0) {
                 MessageBox.Show("The following file(s) cannot be converted because they are not acceptable raw files\n" +
                     string.Join("\n", excludedFiles.ToArray()),
                     "Unacceptable Files",
@@ -178,6 +161,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return false;
             }
         }
+
+        public ReactiveCommand ContinueProcessCommand { get; }
 
         public void Commit() {
             foreach (var file in AnalysisFilePropertyCollection) {

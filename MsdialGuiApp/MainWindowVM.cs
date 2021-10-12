@@ -177,9 +177,8 @@ namespace CompMs.App.Msdial
                 if (afpsw_result != true) {
                     return new List<AnalysisFileBean>();
                 }
-
-                return analysisFilePropertySetModel.GetAnalysisFileBeanCollection();
             }
+            return analysisFilePropertySetModel.GetAnalysisFileBeanCollection();
         }
 
         public DelegateCommand<Window> OpenProjectCommand {
