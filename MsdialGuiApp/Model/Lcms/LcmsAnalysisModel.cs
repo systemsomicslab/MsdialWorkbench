@@ -61,8 +61,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource)
-            {
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource) {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
@@ -76,8 +75,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             // Eic chart
             EicLoader = new EicLoader(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicModel = new EicModel(Target, EicLoader)
-            {
+            EicModel = new EicModel(Target, EicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             };
@@ -95,8 +93,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
-                peak => peak.Intensity)
-            {
+                peak => peak.Intensity) {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance",
@@ -135,6 +132,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         Color.FromArgb(180, 181, 181, 181));
                     break;
                 case TargetOmics.Metabolomics:
+                case TargetOmics.Proteomics:
                     Brush = new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
                         peak => Color.FromArgb(
                             180,
