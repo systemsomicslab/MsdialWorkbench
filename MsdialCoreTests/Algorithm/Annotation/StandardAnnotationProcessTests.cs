@@ -132,11 +132,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             }
 
             public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-                throw new NotImplementedException();
+                return new List<RawSpectrum>().AsReadOnly();
             }
 
             public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-                throw new NotImplementedException();
+                return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
             }
         }
 
