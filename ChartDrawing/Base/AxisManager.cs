@@ -18,7 +18,7 @@ namespace CompMs.Graphics.Core.Base
     }
 
     public interface IAxisManager {
-        Range Range { get; set; }
+        Range Range { get; }
 
         event EventHandler RangeChanged;
 
