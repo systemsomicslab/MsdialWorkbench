@@ -1,13 +1,17 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -16,7 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public BarChartViewModel(
             BarChartModel model,
             IAxisManager<string> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+            IAxisManager<double> verticalAxis = null,
+            IObservable<IBrushMapper<BarItem>> brushSource = null) {
 
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -41,6 +46,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
+
+            if (brushSource is null) {
+                brushSource = BarItems.Select(
+                    items => new KeyBrushMapper<BarItem>(
+                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
+                            .ToDictionary(p => p.item, p => (Brush)p.brush),
+                        Brushes.Blue
+                    ));
+            }
+            BrushSource = brushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             HorizontalTitle = this.model.Elements
                 .ObserveProperty(m => m.HorizontalTitle)
@@ -78,5 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> BrushSource { get; }
     }
 }

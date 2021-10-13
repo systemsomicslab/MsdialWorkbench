@@ -4,6 +4,7 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -13,7 +14,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Data;
-
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
@@ -80,11 +81,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .Subscribe(_ => Ms1Spots.Refresh())
             .AddTo(Disposables);
 
+            var classBrush = new KeyBrushMapper<BarItem, string>(
+                model.Parameter.ProjectParam.ClassnameToColorBytes
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                ),
+                item => item.Class,
+                Colors.Blue);
+
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
