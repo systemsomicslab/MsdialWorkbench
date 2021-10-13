@@ -160,6 +160,7 @@
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
     <Compile Include="Model\Dims\DimsLbmAnnotationSettingModel.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Model\Imms\ImmsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
+    <Compile Include="Model\Setting\AnalysisFilePropertySetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
@@ -412,8 +414,8 @@
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindowVM.cs" />
-    <Compile Include="Property\AnalysisFilePropertySetWindowVM.cs" />
-    <Compile Include="Property\AnalysisFilePropertySetWindow.xaml.cs">
+    <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
+    <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="StartUp\StartUpWindow.xaml.cs">
@@ -773,7 +775,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Property\AnalysisFilePropertySetWindow.xaml">
+    <Page Include="View\Setting\AnalysisFilePropertySetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1033,6 +1035,7 @@
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Property\" />
     <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

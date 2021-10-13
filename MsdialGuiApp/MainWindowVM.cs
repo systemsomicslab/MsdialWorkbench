@@ -1,7 +1,9 @@
-﻿using CompMs.App.Msdial.Property;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -12,7 +14,6 @@ using CompMs.Graphics.UI.Message;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialLcMsApi.DataObj;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace CompMs.App.Msdial
 
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
-            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
             if (startUpService is null) {
@@ -46,6 +47,8 @@ namespace CompMs.App.Msdial
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            Model = new MainWindowModel();
+
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
             this.compoundSearchService = compoundSearchService;
@@ -53,9 +56,11 @@ namespace CompMs.App.Msdial
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
-        private readonly IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService;
+        private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+
+        public MainWindowModel Model { get; }
 
         public MethodViewModel MethodVM {
             get => methodVM;
@@ -167,19 +172,17 @@ namespace CompMs.App.Msdial
         }
 
         private static List<AnalysisFileBean> ProcessSetAnalysisFile(
-            IWindowService<AnalysisFilePropertySetWindowVM> analysisFilePropertySetService,
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             ParameterBase parameter) {
 
-            var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetWindowVM
-            {
-                ProjectFolderPath = parameter.ProjectFolderPath,
-                MachineCategory = parameter.MachineCategory,
-            };
-
-            var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
-            if (afpsw_result != true) return new List<AnalysisFileBean>();
-
-            return analysisFilePropertySetWindowVM.AnalysisFilePropertyCollection.ToList();
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(parameter.ProjectFolderPath, parameter.MachineCategory);
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
+                var afpsw_result = analysisFilePropertySetService.ShowDialog(analysisFilePropertySetWindowVM);
+                if (afpsw_result != true) {
+                    return new List<AnalysisFileBean>();
+                }
+            }
+            return analysisFilePropertySetModel.GetAnalysisFileBeanCollection();
         }
 
         public DelegateCommand<Window> OpenProjectCommand {

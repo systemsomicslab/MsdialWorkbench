@@ -221,7 +221,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             if (longInterval == 0) return (result, string.Empty);
 
             var exp = GetExponent(Math.Max(Math.Abs(high), Math.Abs(low)));
-            var format = exp >= 3 ? "0.00e0" : exp < 0 ? "0.0e0" : longInterval >= 1 ? "f0" : "f3";
+            var format = exp > 3 ? "0.00e0" : exp < -2 ? "0.0e0" : longInterval >= 1 ? "f0" : "f3";
             result.AddRange(GetLongTicks((decimal)low, (decimal)high, longInterval, 1, format));
 
             var shortTickInterval = GetShortInterval(high - low, longInterval);

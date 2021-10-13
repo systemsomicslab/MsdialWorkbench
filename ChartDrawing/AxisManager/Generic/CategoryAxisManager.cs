@@ -17,7 +17,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             this.toKey = toKey;
             this.toLabel = toLabel ?? ToString;
             this.converter = ToDictionary(collection, toKey);
-            ChartMargin = new ChartMargin(0.05);
+            ChartMargin = new RelativeMargin(0.05);
         }
 
         private static Range CountElement(IReadOnlyCollection<T> collection, Func<T, U> toKey) {

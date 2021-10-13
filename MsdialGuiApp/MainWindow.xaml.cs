@@ -1,8 +1,9 @@
-﻿using CompMs.App.Msdial.Property;
-using CompMs.App.Msdial.StartUp;
+﻿using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.DataObj;
@@ -33,7 +34,7 @@ namespace CompMs.App.Msdial
             InitializeComponent();
 
             var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
-            var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetWindowVM>(this);
+            var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetViewModel>(this);
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             DataContext = new MainWindowVM(

@@ -1,13 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using CompMs.Common.Components;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using System.Linq;
 
@@ -35,7 +32,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
+            var result = annotator.Annotate(BuildQuery(target));
 
             Assert.AreEqual(db[1].Name, result.Name);
         }
@@ -58,7 +55,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
-            var results = annotator.FindCandidates(new AnnotationQuery(target, target, null, TODO, null));
+            var results = annotator.FindCandidates(BuildQuery(target));
             var expected = new[]
             {
                 db[0].Name, db[1].Name, db[2].Name,
@@ -85,7 +82,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
-            var results = annotator.Search(new AnnotationQuery(target, target, null, TODO, null));
+            var results = annotator.Search(BuildQuery(target));
 
             CollectionAssert.AreEqual(db.GetRange(1, 2), results);
         }
@@ -127,7 +124,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(new AnnotationQuery(target, target, null, TODO, null), reference);
+            var result = annotator.CalculateScore(BuildQuery(target), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"TotalScore: {result.TotalScore}");
@@ -251,11 +248,15 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(db, "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(new AnnotationQuery(target, target, null, TODO, null));
+            var result = annotator.Annotate(BuildQuery(target));
 
             var reference = annotator.Refer(result);
 
             Assert.AreEqual(db[1], reference);
+        }
+
+        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target) {
+            return new AnnotationQuery(target, target, null, null, null);
         }
     }
 }

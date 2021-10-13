@@ -108,6 +108,7 @@ namespace CompMs.Graphics.Chart
             if (HorizontalAxis == null
                 || TickPen == null
                 || LabelBrush == null
+                || RangeX == null
                 ) return;
 
             Func<LabelTickData, string> toLabel = null;

@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Property;
 using CompMs.App.Msdial.StartUp;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;

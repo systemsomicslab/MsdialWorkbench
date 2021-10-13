@@ -38,15 +38,15 @@ namespace CompMs.Graphics.AxisManager.Generic
             Range = InitialRange;
         }
 
-        public AxisValue Min => Range.Minimum;
+        public AxisValue Min => Range?.Minimum ?? new AxisValue(0d);
 
-        public AxisValue Max => Range.Maximum;
+        public AxisValue Max => Range?.Maximum ?? new AxisValue(0d);
 
         public Range Range {
             get {
                 return range;
             }
-            set {
+            private set {
                 var r = CoerceRange(value, Bounds);
                 if (InitialRange.Contains(r)) {
                     range = r;
@@ -102,7 +102,7 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public void UpdateInitialRange(Range range) {
             InitialRangeCore = range;
-            Focus(InitialRange);
+            Focus(InitialRangeCore);
             OnInitialRangeChanged();
         }
 
@@ -188,7 +188,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
-            return TranslateToRenderPoints(values.Cast<T>(), isFlipped, drawableLength);
+            return TranslateToRenderPoints(values.OfType<T>(), isFlipped, drawableLength);
         }
     }
 }
