@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.StartUp
 
         public StartUpWindowVM() {
             PropertyChanged += OnProjectPropertyChanged;
-            ProjectFilePath = @"E:\6_Projects\PROJECT_ChemProteomics\20210217_Imami_Lox15\jPOST_files_JPST001097.0\test.mtd";
+            //ProjectFilePath = @"E:\6_Projects\PROJECT_ChemProteomics\20210217_Imami_Lox15\jPOST_files_JPST001097.0\test.mtd";
         }
 
         #region Commnad
