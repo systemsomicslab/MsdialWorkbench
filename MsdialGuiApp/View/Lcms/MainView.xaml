@@ -11,6 +11,8 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              Name="MainControl"
+             MouseRightButtonDown="MainControl_MouseRightButtonDown"
+             ContextMenuOpening="MainControl_ContextMenuOpening"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsMethodVM}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
@@ -165,7 +167,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:MainRibbon x:Name="RibbonMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
@@ -199,14 +201,16 @@
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot" >
+                                xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
+                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged">
                         <!--SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"-->
 
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
                                  DataContext="{Binding AnalysisVM}"
-                                 Background="{StaticResource MainThemeColor}">
+                                 Background="{StaticResource MainThemeColor}"
+                                 DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
                             <chart:PeakView DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
@@ -231,7 +235,8 @@
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
                                  DataContext="{Binding AlignmentVM}"
-                                 Background="{StaticResource MainThemeColor}">
+                                 Background="{StaticResource MainThemeColor}"
+                                 DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">

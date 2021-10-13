@@ -159,6 +159,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Database = database;
             DatabaseID = Database.Id;
             Parameter = parameter;
+            AnnotatorKey = Annotator.Save();
         }
 
         public DatabaseAnnotatorContainer(
@@ -226,6 +227,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Database = database;
             DatabaseID = Database.Id;
             MsRefSearchParameter = msRefSearchParameter;
+            AnnotatorKey = Annotator.Save();
         }
 
         public ShotgunProteomicsDBAnnotatorContainer(

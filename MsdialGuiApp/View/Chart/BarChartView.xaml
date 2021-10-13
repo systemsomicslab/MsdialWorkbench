@@ -28,8 +28,9 @@
                                   VerticalTitle="{Binding VerticalTitle.Value}"
                                   Style="{StaticResource BasicChart}">
             <chart:BarControl ItemsSource="{Binding BarItems.Value}"
-                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                            VerticalPropertyName="{Binding VerticalProperty.Value}" >
+                              HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                              VerticalPropertyName="{Binding VerticalProperty.Value}"
+                              BrushMapper="{Binding BrushSource.Value}">
                 <chart:BarControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Horizontal">
