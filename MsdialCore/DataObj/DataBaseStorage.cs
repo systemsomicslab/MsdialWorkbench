@@ -16,17 +16,12 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public class DataBaseStorage
     {
+        // MessagePack use this constructor
         public DataBaseStorage(
             List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> metabolomicsDataBases,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> proteomicsDataBases) {
             MetabolomicsDataBases = metabolomicsDataBases ?? throw new System.ArgumentNullException(nameof(metabolomicsDataBases));
             ProteomicsDataBases = proteomicsDataBases ?? throw new System.ArgumentNullException(nameof(proteomicsDataBases));
-        }
-
-        public DataBaseStorage()
-            : this(
-                new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
-                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>()) {
         }
 
         [Key(nameof(MetabolomicsDataBases))]
@@ -103,6 +98,12 @@ namespace CompMs.MsdialCore.DataObj
                     new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>());
             }
             return result;
+        }
+
+        public static DataBaseStorage CreateEmpty() {
+            return new DataBaseStorage(
+                new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
+                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>());
         }
     }
 
@@ -198,7 +199,7 @@ namespace CompMs.MsdialCore.DataObj
         public MsRefSearchParameterBase SearchParameter { get; }
 
         [IgnoreMember]
-        public string AnnotatorID => SerializableAnnotator.Key;
+        public string AnnotatorID => SerializableAnnotator?.Key ?? SerializableAnnotatorKey.Key;
 
         public void Save(Stream stream) {
             SerializableAnnotatorKey = SerializableAnnotator.Save();
@@ -246,7 +247,7 @@ namespace CompMs.MsdialCore.DataObj
         public ProteomicsParameter ProteomicsParameter { get; }
 
         [IgnoreMember]
-        public string AnnotatorID => SerializableAnnotator.Key;
+        public string AnnotatorID => SerializableAnnotator?.Key ?? SerializableAnnotatorKey.Key;
 
         public void Save(Stream stream) {
             SerializableAnnotatorKey = SerializableAnnotator.Save();

@@ -16,12 +16,12 @@ using CompMs.Common.Components;
 using CompMs.Common.Parser;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.Parser;
 using CompMs.MsdialGcMsApi.Process;
 using CompMs.MsdialCore.Parser;
 using CompMs.App.MsdialConsole.Export;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.Common.DataObj.Database;
+using CompMs.MsdialGcMsApi.DataObj;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -103,9 +103,9 @@ namespace CompMs.App.MsdialConsole.Process
 
             CommonProcess.ParseLibraries(param, -1, out IupacDatabase iupacDB, out _, out var txtDB, out var isotopeTextDB, out _);
 
-            var container = new MsdialDataStorage() {
+            var container = new MsdialGcmsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-                MspDB = mspDB, ParameterBase = param, IupacDatabase = iupacDB, IsotopeTextDB = isotopeTextDB, TextDB = txtDB
+                MspDB = mspDB, MsdialGcmsParameter = param, IupacDatabase = iupacDB, IsotopeTextDB = isotopeTextDB, TextDB = txtDB
             };
 
             Console.WriteLine("Start processing..");
@@ -169,7 +169,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+        private int Execute(MsdialGcmsDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
                 FileProcess.Run(file, container);
@@ -182,12 +182,13 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.ParameterBase as MsdialGcmsParameter, container.IupacDatabase, container.DataBaseMapper);
+            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.MsdialGcmsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            new MsdialGcmsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            var streamManager = new DirectoryTreeStreamManager(container.MsdialGcmsParameter.ProjectFolderPath);
+            container.Save(streamManager, Path.GetFileName(container.MsdialGcmsParameter.ProjectFilePath), string.Empty).Wait();
             return 0;
         }
 

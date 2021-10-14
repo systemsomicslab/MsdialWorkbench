@@ -33,8 +33,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public Range VerticalRange {
             get {
                 if (BarItems.Any()) {
-                    var minimum = BarItems.Min(item => item.Height - item.Error);
-                    var maximum = BarItems.Max(item => item.Height + item.Error);
+                    var minimum = BarItems.Min(item => item.Height - (double.IsNaN(item.Error) ? 0 : item.Error));
+                    var maximum = BarItems.Max(item => item.Height + (double.IsNaN(item.Error) ? 0 : item.Error));
                     return new Range(minimum, maximum);
                 }
                 return new Range(0, 1);

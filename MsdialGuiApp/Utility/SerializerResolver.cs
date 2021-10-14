@@ -7,20 +7,20 @@ namespace CompMs.App.Msdial.Utility
 {
     static class SerializerResolver
     {
-        static readonly Dictionary<MachineCategory, MsdialSerializer> serializers;
+        private static readonly Dictionary<MachineCategory, IMsdialSerializer> serializers;
 
         static SerializerResolver() {
-            serializers = new Dictionary<MachineCategory, MsdialSerializer>
+            serializers = new Dictionary<MachineCategory, IMsdialSerializer>
             {
-                { MachineCategory.GCMS, new MsdialGcMsApi.Parser.MsdialGcmsSerializer() },
-                { MachineCategory.LCMS, new MsdialLcMsApi.Parser.MsdialLcmsSerializer() },
-                { MachineCategory.IFMS, new MsdialDimsCore.Parser.MsdialDimsSerializer() },
-                { MachineCategory.LCIMMS, new MsdialLcImMsApi.Parser.MsdialLcImMsSerializer() },
-                { MachineCategory.IMMS, new MsdialImmsCore.Parser.MsdialImmsSerializer() },
+                { MachineCategory.GCMS, MsdialGcMsApi.DataObj.MsdialGcmsDataStorage.Serializer },
+                { MachineCategory.LCMS, MsdialLcMsApi.DataObj.MsdialLcmsDataStorage.Serializer },
+                { MachineCategory.IFMS, MsdialDimsCore.DataObj.MsdialDimsDataStorage.Serializer },
+                { MachineCategory.LCIMMS, MsdialLcImMsApi.DataObj.MsdialLcImMsDataStorage.Serializer },
+                { MachineCategory.IMMS, MsdialImmsCore.DataObj.MsdialImmsDataStorage.Serializer },
             };
         }
 
-        public static MsdialSerializer ResolveMsdialSerializer(string path) {
+        public static IMsdialSerializer ResolveMsdialSerializer(string path) {
             if (serializers.TryGetValue(ResolveProjectType(path), out var serializer))
                 return serializer;
             throw new System.Runtime.Serialization.SerializationException("Unknown method.");
@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Utility
         // UNDONE: temporary method. (should not deserialize twice)
         private static MachineCategory ResolveProjectType(string path) {
             try {
-                var storage = CompMs.Common.MessagePack.MessagePackHandler.LoadFromFile<MsdialDataStorage>(path);
+                var storage = CompMs.Common.MessagePack.MessagePackDefaultHandler.LoadFromFile<MsdialDataStorage>(path);
                 return storage.ParameterBase.MachineCategory;
             }
             catch (System.InvalidOperationException) {

@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.StartUp
 
             if (fbd.ShowDialog() == Graphics.Window.DialogResult.OK) {
                 var dt = DateTime.Now;
-                ProjectFilePath = Path.Combine(fbd.SelectedPath, dt.ToString("yyyy_MM_dd_HH_mm_ss") + "." + SaveFileFormat.mtd);
+                ProjectFilePath = Path.Combine(fbd.SelectedPath, $"{dt:yyyy_MM_dd_HH_mm_ss}.{SaveFileFormat.mtd}3");
             }
         }
 

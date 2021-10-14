@@ -3,6 +3,7 @@ using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AlignmentResultExport2VM(
             AlignmentFileBean alignmentFile,
             ICollection<AlignmentFileBean> alignmentFiles,
-            MsdialDataStorage container) {
+            IMsdialDataStorage<ParameterBase> container) {
 
             this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
             if (alignmentFile != null)
@@ -78,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public List<ExportType2> ExportTypes { get; } = new List<ExportType2>();
 
-        private readonly MsdialDataStorage container;
+        private readonly IMsdialDataStorage<ParameterBase> container;
 
         public DelegateCommand BrowseDirectoryCommand => browseDirectoryCommand ?? (browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand browseDirectoryCommand;

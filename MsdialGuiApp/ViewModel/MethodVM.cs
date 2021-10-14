@@ -14,9 +14,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(MethodModelBase model, MsdialSerializer serializer) {
-            Serializer = serializer;
-
+        public MethodViewModel(MethodModelBase model) {
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
             var alignmentFilesView = model.AlignmentFiles.ToReadOnlyReactiveCollection(file => new AlignmentFileBeanViewModel(file));
@@ -39,8 +37,6 @@ namespace CompMs.App.Msdial.ViewModel
                 .WithSubscribe(LoadAlignmentFile)
                 .AddTo(Disposables);
         }
-
-        public MsdialSerializer Serializer { get; }
 
         public ReactivePropertySlim<AnalysisFileBeanViewModel> SelectedAnalysisFile { get; }
         public ReactivePropertySlim<AlignmentFileBeanViewModel> SelectedAlignmentFile { get; }

@@ -3,9 +3,9 @@ using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,12 +15,12 @@ namespace CompMs.App.MsdialConsole.Export
     public sealed class ResultExporter {
         private ResultExporter() { }
 
-        public static void ExportChromPeakFeatures(AnalysisFileBean file, string outputFolder, MsdialDataStorage container,
+        public static void ExportChromPeakFeatures(AnalysisFileBean file, string outputFolder, IMsdialDataStorage<ParameterBase> container,
             List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults) {
            
             var outputfile = outputFolder + "\\" + file.AnalysisFileName + ".msdial";
             Console.WriteLine("Exporting peak list data: {0}", outputfile);
-            var param = container.ParameterBase;
+            var param = container.Parameter;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
             var category = param.MachineCategory;
@@ -48,12 +48,12 @@ namespace CompMs.App.MsdialConsole.Export
             }
         }
 
-        public static void ExportAlignmentResult(AlignmentFileBean alignFile, string outputFolder, MsdialDataStorage container,
+        public static void ExportAlignmentResult(AlignmentFileBean alignFile, string outputFolder, IMsdialDataStorage<ParameterBase> container,
             List<AlignmentSpotProperty> alignedSpots, List<MSDecResult> msdecResults) {
 
             var outputfile = outputFolder + "\\" + alignFile.FileName + ".mdalign";
             Console.WriteLine("Exporting alignment result data: {0}", outputfile);
-            var param = container.ParameterBase;
+            var param = container.Parameter;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
             var category = param.MachineCategory;

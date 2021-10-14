@@ -15,6 +15,8 @@ using System.Linq;
 using System.Text;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.DataObj.Result;
+using System.Threading.Tasks;
+using CompMs.MsdialDimsCore.DataObj;
 
 namespace CompMs.MsdialDimsCore.Export.Tests
 {
@@ -70,13 +72,14 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             }
         }
 
-        private static void prepare() {
+        private static async Task prepare() {
             var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\2021_08_11_14_34_01.mtd2";
             var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_dec2.cache";
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data2.cache";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv.cache";
 
-            var storage = new Parser.MsdialDimsSerializer().LoadMsdialDataStorageBase(project);
+            var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
+            var storage = await MsdialDimsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty);
             var analysisFile = storage.AnalysisFiles[0];
 
             var features = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
@@ -99,7 +102,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                     newFeatures, newDecs,
                     new StandardDataProvider(analysisFile, isGuiProcess: false, retry: 5),
                     msp, text,
-                    storage.ParameterBase, MachineCategory.IFMS);
+                    storage.Parameter, MachineCategory.IFMS);
             }
 
             var newMsp = new List<MoleculeMsReference>();
@@ -120,7 +123,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var data = new DataStorageForTest
             {
                 Features = newFeatures,
-                Parameter = storage.ParameterBase,
+                Parameter = storage.Parameter,
                 MsdecResultFile = newmsdecfile,
                 Files = storage.AnalysisFiles,
                 MspDB = msp,

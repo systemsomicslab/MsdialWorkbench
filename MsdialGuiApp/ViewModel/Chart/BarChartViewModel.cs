@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis is null) {
                 verticalAxis = this.model.ObserveProperty(m => m.VerticalRange)
-                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                    .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;

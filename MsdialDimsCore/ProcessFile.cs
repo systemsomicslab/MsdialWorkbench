@@ -13,6 +13,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.Common;
+using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.MsmsAll;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.RawDataHandler.Core;
@@ -48,28 +49,28 @@ namespace CompMs.MsdialDimsCore
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialDimsParameter> container,
             bool isGuiProcess = false,
             Action<int> reportAction = null, CancellationToken token = default) {
-            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB", -1);
-            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, container.ParameterBase.TargetOmics, CompMs.Common.DataObj.Result.SourceType.TextDB, "TextDB", -1);
+            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.Parameter.MspSearchParam, container.Parameter.TargetOmics, "MspDB", -1);
+            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.Parameter.TextDbSearchParam, container.Parameter.TargetOmics, SourceType.TextDB, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
                 new AnnotationQueryWithoutIsotopeFactory(),
-                new[] { new AnnotatorContainer(mspAnnotator, container.ParameterBase.MspSearchParam),
-                        new AnnotatorContainer(textAnnotator, container.ParameterBase.TextDbSearchParam), }); 
+                new[] { new AnnotatorContainer(mspAnnotator, container.Parameter.MspSearchParam),
+                        new AnnotatorContainer(textAnnotator, container.Parameter.TextDbSearchParam), }); 
             Run(file, providerFactory, container, annotationProcess, isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialDimsParameter> container,
             IAnnotationProcess annotationProcess,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var param = (MsdialDimsParameter)container.ParameterBase;
+            var param = container.Parameter;
             var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
             // var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;

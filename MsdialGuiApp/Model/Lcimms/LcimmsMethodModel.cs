@@ -9,8 +9,8 @@ using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
+using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
-using CompMs.MsdialLcImMsApi.Parser;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
 using System;
@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(MsdialDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+        public LcimmsMethodModel(MsdialLcImMsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -40,11 +40,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             this.providerFactory = providerFactory;
         }
 
-        public MsdialDataStorage Storage {
+        public MsdialLcImMsDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
-        private MsdialDataStorage storage;
+        private MsdialLcImMsDataStorage storage;
 
         public LcimmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -58,11 +58,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private LcimmsAlignmentModel alignmentModel;
 
-        public MsdialLcImMsSerializer Serializer {
-            get => serializer ?? (serializer = new MsdialLcImMsSerializer());
-        }
-        private MsdialLcImMsSerializer serializer;
-
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
 
@@ -75,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 provider,
-                null, Storage.ParameterBase,
+                null, Storage.MsdialLcImMsParameter,
                 null, null)
             .AddTo(Disposables);
         }
@@ -87,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
-                Storage.ParameterBase, Storage.DataBaseMapper)
+                Storage.MsdialLcImMsParameter, Storage.DataBaseMapper)
             .AddTo(Disposables);
         }
 
@@ -99,9 +94,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     {
                         FileID = AlignmentFiles.Count,
                         FileName = alignmentResultFileName,
-                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                        FilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
+                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -113,7 +108,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage.ParameterBase as MsdialLcImMsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
+            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage.MsdialLcImMsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
@@ -121,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
         }
 
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialLcImMsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
             var files = storage.AnalysisFiles;
 
             var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();

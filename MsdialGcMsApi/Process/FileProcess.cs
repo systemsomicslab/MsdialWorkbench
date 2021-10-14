@@ -5,21 +5,21 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Algorithm;
+using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 
 namespace CompMs.MsdialGcMsApi.Process {
     public sealed class FileProcess {
         private FileProcess() { }
 
-        public static void Run(AnalysisFileBean file, MsdialDataStorage container, bool isGuiProcess = false, 
+        public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, 
             Action<int> reportAction = null, CancellationToken token = new CancellationToken()) {
-            var param = (MsdialGcmsParameter)container.ParameterBase;
+            var param = container.Parameter;
             var mspDB = container.MspDB;
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;

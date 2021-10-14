@@ -10,6 +10,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialDimsCore.Parser;
 using Reactive.Bindings.Extensions;
@@ -30,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
         public DimsMethodModel(
-            MsdialDataStorage storage,
+            MsdialDimsDataStorage storage,
             List<AnalysisFileBean> analysisFiles,
             List<AlignmentFileBean> alignmentFiles)
             : base(analysisFiles, alignmentFiles) {
@@ -39,11 +40,11 @@ namespace CompMs.App.Msdial.Model.Dims
 
         private IAnnotationProcess annotationProcess;
 
-        public MsdialDataStorage Storage {
+        public MsdialDimsDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
-        private MsdialDataStorage storage;
+        private MsdialDimsDataStorage storage;
 
         public DimsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -67,15 +68,10 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private DimsAlignmentModel alignmentModel;
 
-        public MsdialDimsSerializer Serializer {
-            get => serializer ?? (serializer = new MsdialDimsSerializer());
-        }
-        private MsdialDimsSerializer serializer;
-
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
 
         public void Load() {
-            ProviderFactory = ((MsdialDimsParameter)Storage.ParameterBase).ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+            ProviderFactory = Storage.MsdialDimsParameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
         public void AnalysisParamSetProcess(DimsAnalysisParameterSetModel parameterSetModel) {
@@ -86,9 +82,9 @@ namespace CompMs.App.Msdial.Model.Dims
                     {
                         FileID = AlignmentFiles.Count,
                         FileName = alignmentResultFileName,
-                        FilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.ParameterBase.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                        FilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
+                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -104,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage.ParameterBase as MsdialDimsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
+            AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage.MsdialDimsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             aligner.ProviderFactory = ProviderFactory;
@@ -113,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Dims
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
         }
 
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDimsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
             var files = storage.AnalysisFiles;
 
             var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
@@ -152,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 analysisFile,
                 ProviderFactory.Create(analysisFile),
                 Storage.DataBaseMapper,
-                Storage.ParameterBase,
+                Storage.MsdialDimsParameter,
                 Storage.DataBaseMapper.Annotators).AddTo(Disposables);;
         }
 
@@ -164,7 +160,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
                 Storage.DataBaseMapper,
-                Storage.ParameterBase,
+                Storage.MsdialDimsParameter,
                 Storage.DataBaseMapper.Annotators).AddTo(Disposables);
         }
     }
