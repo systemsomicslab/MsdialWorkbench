@@ -1,9 +1,15 @@
 ﻿namespace CompMs.App.Msdial.Model.DataObj
 {
-    // tempolary classes
     public class BarItem
     {
-        public double Height { get; set; }
-        public string Class { get; set; }
+        public BarItem(string class_, double height, double error) {
+            Class = class_;
+            Height = height;
+            Error = error;
+        }
+
+        public string Class { get; }
+        public double Height { get; }
+        public double Error { get; }
     }
 }

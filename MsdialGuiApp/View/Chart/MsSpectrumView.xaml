@@ -49,6 +49,7 @@
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  Format="N2"
+                                 Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
             </Grid>
@@ -80,6 +81,7 @@
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  ContentAlignment="BottomCenter"
                                  Format="N2"
+                                 Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
             </Grid>

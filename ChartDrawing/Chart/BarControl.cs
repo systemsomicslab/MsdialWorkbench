@@ -125,6 +125,20 @@ namespace CompMs.Graphics.Chart
             set => SetValue(BarPenProperty, value);
         }
 
+        private static readonly DependencyPropertyKey ActualBarWidthPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(ActualBarWidth),
+                typeof(double),
+                typeof(BarControl),
+                new PropertyMetadata(0d));
+
+        public static readonly DependencyProperty ActualBarWidthProperty = ActualBarWidthPropertyKey.DependencyProperty;
+
+        public double ActualBarWidth {
+            get => (double)GetValue(ActualBarWidthProperty);
+            private set => SetValue(ActualBarWidthPropertyKey, value);
+        }
+
         private BrushSelector Selector {
             get {
                 if (selector is null) {
@@ -170,6 +184,8 @@ namespace CompMs.Graphics.Chart
                 barwidth = Enumerable.Range(1, xs.Length - 1).Min(i => xs[i] - xs[i - 1]) * BarWidth;
             }
 
+            var actualBarWidth = ActualBarWidth = HorizontalAxis.TranslateToRenderPoint(barwidth, FlippedX, actualWidth) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, actualWidth);
+
             double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
             foreach (var visual in visualChildren) {
                 var dv = visual as AnnotatedDrawingVisual;
@@ -177,14 +193,12 @@ namespace CompMs.Graphics.Chart
                 var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var haxv = HorizontalAxis.TranslateToAxisValue(x);
-                double xxl = HorizontalAxis.TranslateToRenderPoint(haxv - barwidth / 2, FlippedX, actualWidth);
-                double xxr = HorizontalAxis.TranslateToRenderPoint(haxv + barwidth / 2, FlippedX, actualWidth);
+                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, actualWidth);
                 double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
-                dv.Center = new Point((xxl + xxr) / 2, yy);
+                dv.Center = new Point(xx, yy);
 
                 using (var dc = dv.RenderOpen()) {
-                    dc.DrawRectangle(Selector.GetBrush(o), pen, new Rect(new Point(xxl, yy), new Point(xxr, yorigin)));
+                    dc.DrawRectangle(Selector.GetBrush(o), pen, new Rect(new Point(xx - actualBarWidth / 2, yy), new Point(xx + actualBarWidth / 2, yorigin)));
                 }
             }
         }

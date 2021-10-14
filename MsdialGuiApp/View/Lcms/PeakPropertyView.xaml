@@ -75,7 +75,7 @@
                     <ui:LabeledContent PrependLabel="Peak height|area:">
                         <StackPanel Orientation="Horizontal">
                             <TextBox Name="TextBox_PeakInformation_PeakIntensity"
-                                     Text="{Binding Intensity, Mode=OneWay, TargetNullValue=NA}"/>
+                                     Text="{Binding Intensity, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"/>
                             <Label Content="|"/>
                             <TextBox Name="TextBox_PeakInformation_PeakArea"
                                      Text="{Binding PeakArea, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"/>
@@ -177,7 +177,7 @@
 
                     <ui:LabeledContent PrependLabel="Peak height average:">
                         <TextBox Name="TextBox_PeakInformation_PeakIntensity"
-                                 Text="{Binding HeightAverage, Mode=OneWay, TargetNullValue=NA}"/>
+                                 Text="{Binding HeightAverage, Mode=OneWay, StringFormat=F0, TargetNullValue=NA}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Formula|Ontology:">

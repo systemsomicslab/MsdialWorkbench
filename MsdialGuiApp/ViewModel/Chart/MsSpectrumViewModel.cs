@@ -22,21 +22,21 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = this.model.HorizontalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(5))
+                    .ToReactiveAxisManager<double>(new ConstantMargin(30))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (upperVerticalAxis is null) {
                 upperVerticalAxis = this.model.UpperVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Relative)
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                     .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
                 lowerVerticalAxis = this.model.LowerVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Relative)
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                     .AddTo(Disposables);
             }
             LowerVerticalAxis = lowerVerticalAxis;

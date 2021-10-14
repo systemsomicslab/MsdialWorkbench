@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Abundance",
+                VerticalTitle = "Relative abundance",
                 HorizontaProperty = nameof(SpectrumPeak.Mass),
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
                 LabelProperty = nameof(SpectrumPeak.Mass),

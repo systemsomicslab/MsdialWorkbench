@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.Graphics.Core.Base
 {
@@ -12,7 +8,7 @@ namespace CompMs.Graphics.Core.Base
     public struct AxisValue : IComparable<AxisValue>
     {
         public double Value { get; }
-        public static AxisValue NaN = new AxisValue(double.NaN);
+        public static readonly AxisValue NaN = new AxisValue(double.NaN);
 
         public AxisValue(double val) {
             Value = val;
@@ -36,6 +32,14 @@ namespace CompMs.Graphics.Core.Base
 
         public override string ToString() {
             return Value.ToString();
+        }
+
+        public override int GetHashCode() {
+            return Value.GetHashCode();
+        }
+
+        public bool IsNaN() {
+            return double.IsNaN(Value);
         }
     }
 
