@@ -60,16 +60,41 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             PepAnnotatorContainers = pepContainers;
         }
 
+        private Dictionary<int, List<int>> GetParentID2IsotopePeakIDs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
+            var isotopeGroupDict = new Dictionary<int, List<int>>();
+            var peaks = chromPeakFeatures.OrderBy(n => n.PeakCharacter.IsotopeParentPeakID).ThenBy(n => n.PeakCharacter.IsotopeWeightNumber).ToList();
+            for (int i = 0; i < peaks.Count; i++) {
+                if (peaks[i].PeakCharacter.IsotopeWeightNumber == 0) {
+                    isotopeGroupDict[peaks[i].PeakCharacter.IsotopeParentPeakID] = new List<int>();
+                }
+                else {
+                    isotopeGroupDict[peaks[i].PeakCharacter.IsotopeParentPeakID].Add(peaks[i].MasterPeakID);
+                }
+            }
+            return isotopeGroupDict;
+        }
+
+
         private void RunBySingleThread(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, 
             IReadOnlyList<MSDecResult> msdecResults, 
             IDataProvider provider, 
             Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
+            
+
+
+
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
+                    var msdecResult = msdecResults[i];
+                    if (msdecResult.Spectrum.IsEmptyOrNull()) {
+                        // seek [M+1]
+
+                    }
+
+
                     RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
                 }
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
@@ -118,13 +143,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
             using (var sem = new SemaphoreSlim(numThreads)) {
-                var annotationTasks = chromPeakFeatures.Zip(msdecResults, Tuple.Create)
-                    .Select(async (pair, i) => {
+                var annotationTasks = new List<Task>();
+                for (int i = 0; i < chromPeakFeatures.Count; i++) {
+                    var v = Task.Run(async () => {
                         await sem.WaitAsync();
 
                         try {
-                            var chromPeakFeature = pair.Item1;
-                            var msdecResult = pair.Item2;
+                            var chromPeakFeature = chromPeakFeatures[i];
+                            var msdecResult = msdecResults[i];
                             if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                                 await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                             }
@@ -134,6 +160,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                             reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
                         }
                     });
+                    annotationTasks.Add(v);
+                }
+
+
+
+
+                //var annotationTasks = chromPeakFeatures.Zip(msdecResults, Tuple.Create)
+                //    .Select(async (pair, i) => {
+                //        await sem.WaitAsync();
+
+                //        try {
+                //            var chromPeakFeature = pair.Item1;
+                //            var msdecResult = pair.Item2;
+                //            if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
+                //                await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
+                //            }
+                //        }
+                //        finally {
+                //            sem.Release();
+                //            reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
+                //        }
+                //    });
                 await Task.WhenAll(annotationTasks);
             }
         }

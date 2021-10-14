@@ -121,7 +121,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var provider = ProviderFactory?.Create(analysisFile);
             IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
             if (spectra == null) {
-                using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
+                using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                     spectra = DataAccess.GetAllSpectra(rawDataAccess);
                 }
             }

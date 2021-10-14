@@ -218,7 +218,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 var fileID = file.AnalysisFilePropertyBean.AnalysisFileId;
                 var measurementID = rdamProperty.RdamFileContentBeanCollection[rdamID].FileID_MeasurementID[fileID];
 
-                using (var rawDataAccess = new RawDataAccess(filepath, measurementID, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
+                using (var rawDataAccess = new RawDataAccess(filepath, measurementID, TODO, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
                     var raw_measurment = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
                     var spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(raw_measurment);
                     var accumulatedMs1SpecCollection = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(raw_measurment);

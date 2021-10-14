@@ -319,7 +319,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 var fileID = rdamProperty.RdamFilePath_RdamFileID[files[i].AnalysisFilePropertyBean.AnalysisFilePath];
                 var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[files[i].AnalysisFilePropertyBean.AnalysisFileId];
                // Debug.WriteLine(i + " is started");
-                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true)) {
+                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true)) {
                     var spectrumList = DataAccessGcUtility.GetRdamSpectrumList(rawDataAccess);
                     var alignmentSpots = alignmentResult.AlignmentPropertyBeanCollection;
                     var ms1DecResults = DataStorageGcUtility.ReadMS1DecResults(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath);
@@ -427,7 +427,7 @@ namespace Msdial.Gcms.Dataprocess.Algorithm
                 var fileID = rdamProperty.RdamFilePath_RdamFileID[files[i].AnalysisFilePropertyBean.AnalysisFilePath];
                 var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[files[i].AnalysisFilePropertyBean.AnalysisFileId];
                 //Debug.WriteLine(i);
-                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true))
+                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true))
                 {
                     var spectrumList = DataAccessGcUtility.GetRdamSpectrumList(rawDataAccess);
                     var ms1DecResults = DataStorageGcUtility.ReadMS1DecResults(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath);

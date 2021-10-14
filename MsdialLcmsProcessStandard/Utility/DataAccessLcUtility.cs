@@ -30,7 +30,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             ObservableCollection<RawSpectrum> spectrumCollection;
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
                 spectrumCollection = GetRdamSpectrumCollection(rawDataAccess);
                 var counter = 0;
                 while (spectrumCollection == null) {
@@ -68,7 +68,7 @@ namespace Msdial.Lcms.Dataprocess.Utility
             var fileID = rdamProperty.RdamFilePath_RdamFileID[filepath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[file.AnalysisFilePropertyBean.AnalysisFileId];
 
-            using (var rawDataAccess = new RawDataAccess(filepath, measurementID, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, measurementID, false, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 var mes = rawDataAccess.GetMeasurement();
                 var spectrumCollection = new ObservableCollection<RawSpectrum>(mes.SpectrumList);
                 peaklist = getMs1Peaklist(spectrumCollection, targetMz, mzTolerance, rtBegin, rtEnd, ionmode);

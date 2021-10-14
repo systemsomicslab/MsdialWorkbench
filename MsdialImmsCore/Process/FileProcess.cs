@@ -78,7 +78,7 @@ namespace CompMs.MsdialImmsCore.Process
         }
 
         private static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isGuiProcess)) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
                 for (var i = 0; i < 5; i++) {
                     var rawObj = DataAccess.GetRawDataMeasurement(access);
                     if (rawObj != null)

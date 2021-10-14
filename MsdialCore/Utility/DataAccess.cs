@@ -40,7 +40,7 @@ namespace CompMs.MsdialCore.Utility {
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
                 var measurment = GetRawDataMeasurement(rawDataAccess);
                 rawSpectra = measurment.SpectrumList;
             }
@@ -50,7 +50,7 @@ namespace CompMs.MsdialCore.Utility {
         public static void GetAllSpectraWithAccumulatedMS1(string filepath, out List<RawSpectrum> allSpectrumList, out List<RawSpectrum> accumulatedSpectrumList) {
             allSpectrumList = new List<RawSpectrum>();
             accumulatedSpectrumList = new List<RawSpectrum>();
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
                 var measurment = GetRawDataMeasurement(rawDataAccess);
                 allSpectrumList = measurment.SpectrumList;
                 accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
@@ -69,7 +69,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
                 return rawDataAccess.ReadIonmobilityCalibrationInfo();
             }
         }

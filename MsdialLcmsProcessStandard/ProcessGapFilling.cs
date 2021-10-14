@@ -42,7 +42,7 @@ namespace Msdial.Lcms.DataProcess
                 var fileID = rdamProperty.RdamFilePath_RdamFileID[files[i].AnalysisFilePropertyBean.AnalysisFilePath];
                 var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[files[i].AnalysisFilePropertyBean.AnalysisFileId];
 
-                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, files[i].RetentionTimeCorrectionBean.PredictedRt))
+                using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, files[i].RetentionTimeCorrectionBean.PredictedRt))
                 {
                     var spectrumCollection = DataAccessLcUtility.GetRdamSpectrumCollection(rawDataAccess);
                     var alignedPeakSpotInfoList = new List<AlignedPeakSpotInfo>();
@@ -144,7 +144,7 @@ namespace Msdial.Lcms.DataProcess
                 var fileID = rdamProperty.RdamFilePath_RdamFileID[fileProp.AnalysisFilePath];
                 var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
 
-                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, false, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
                     var raw_measurment = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
                     var accumulatedMs1SpecCollection = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(raw_measurment);
                     var allSpecCollection = DataAccessLcUtility.GetAllSpectrumCollection(raw_measurment);

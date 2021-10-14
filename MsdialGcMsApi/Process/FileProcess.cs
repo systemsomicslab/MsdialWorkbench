@@ -24,7 +24,7 @@ namespace CompMs.MsdialGcMsApi.Process {
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;
             var fileID = file.AnalysisFileId;
-            using (var access = new RawDataAccess(filepath, 0, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var access = new RawDataAccess(filepath, 0, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");

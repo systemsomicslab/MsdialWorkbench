@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm
             :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList) { }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isGuiProcess)) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = DataAccess.GetRawDataMeasurement(access);
                     if (rawObj != null) {

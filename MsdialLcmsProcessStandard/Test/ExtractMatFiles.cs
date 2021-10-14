@@ -141,7 +141,7 @@ namespace Msdial.Lcms.Dataprocess.Test
 
                             using (var fs = File.Open(file.AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite)) {
                                 var seekpointList = SpectralDeconvolution.ReadSeekPointsOfMS2DecResultFile(fs);
-                                using (var rawDataAccess = new RawDataAccess(file.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
+                                using (var rawDataAccess = new RawDataAccess(file.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, file.RetentionTimeCorrectionBean.PredictedRt)) {
                                     var spectrumCollection = DataAccessLcUtility.GetRdamSpectrumCollection(rawDataAccess);
 
                                     DataStorageLcUtility.SetPeakAreaBeanCollection(file, file.AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);

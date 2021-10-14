@@ -3289,7 +3289,7 @@ namespace Rfx.Riken.OsakaUniv
                 MessageBox.Show("There is no peak information in " + analysisFileBean.AnalysisFilePropertyBean.AnalysisFileName +
                     ". So please select other files or check ion mode for it and re-analyze it with the ion mode setting.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); return;
             }
-            this.rawDataAccess = new RawDataAccess(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, analysisFileBean.RetentionTimeCorrectionBean.PredictedRt);
+            this.rawDataAccess = new RawDataAccess(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, analysisFileBean.RetentionTimeCorrectionBean.PredictedRt);
             this.rawMeasurement = DataAccessLcUtility.GetRawDataMeasurement(this.rawDataAccess);
             this.lcmsSpectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(this.rawMeasurement);
             this.accumulatedMs1Specra = DataAccessLcUtility.GetAccumulatedMs1SpectrumCollection(this.rawMeasurement);
@@ -3402,7 +3402,7 @@ namespace Rfx.Riken.OsakaUniv
 				MessageBox.Show("There is no peak information in " + analysisFileBean.AnalysisFilePropertyBean.AnalysisFileName + ". So please select other files or check ion mode for it and re-analyze it with the ion mode setting.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
 			}
-            this.rawDataAccess = new RawDataAccess(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true);
+            this.rawDataAccess = new RawDataAccess(analysisFileBean.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true);
             this.gcmsSpectrumList = DataAccessGcUtility.GetRdamSpectrumList(this.rawDataAccess);
 
             this.ms1DecResults = DataStorageGcUtility.ReadMS1DecResults(analysisFileBean.AnalysisFilePropertyBean.DeconvolutionFilePath);

@@ -2516,7 +2516,7 @@ namespace Rfx.Riken.OsakaUniv
                 {
                     var fileID = rdamFileToID[fileProp.AnalysisFilePath];
                     var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
-                    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, files[i].RetentionTimeCorrectionBean.PredictedRt))
+                    using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, false, true, files[i].RetentionTimeCorrectionBean.PredictedRt))
                     { // open rdam stream
                         using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
                         { // open dcl stream
@@ -2597,7 +2597,7 @@ namespace Rfx.Riken.OsakaUniv
                     var fileID = rdamFileToID[files[i].AnalysisFilePropertyBean.AnalysisFilePath];
                     var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
 
-                    using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, correctedRTs))
+                    using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, correctedRTs))
                     {
                         //set List<PeakAreaBean> on AnalysisFileBean
                         DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
@@ -2745,7 +2745,7 @@ namespace Rfx.Riken.OsakaUniv
                     var fileID = rdamFileToID[files[i].AnalysisFilePropertyBean.AnalysisFilePath];
                     var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
 
-                    using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, true, correctedRTs))
+                    using (var rawDataAccess = new RawDataAccess(files[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, correctedRTs))
                     {
                         //set List<PeakAreaBean> on AnalysisFileBean
                         DataStorageLcUtility.SetPeakAreaBeanCollection(files[i], files[i].AnalysisFilePropertyBean.PeakAreaBeanInformationFilePath);
@@ -2935,7 +2935,7 @@ namespace Rfx.Riken.OsakaUniv
                 var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
                 var fileID = rdamFileToID[fileProp.AnalysisFilePath];
                 var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
-                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, false, true, correctedRTs))
                 { // open rdam stream
                     using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
                     { // open dcl stream
@@ -3029,7 +3029,7 @@ namespace Rfx.Riken.OsakaUniv
                 var correctedRTs = files[i].RetentionTimeCorrectionBean.PredictedRt;
                 var fileID = rdamFileToID[fileProp.AnalysisFilePath];
                 var measurementID = rdamFileCollection[fileID].FileID_MeasurementID[fileProp.AnalysisFileId];
-                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, true, correctedRTs))
+                using (var rawDataAccess = new RawDataAccess(fileProp.AnalysisFilePath, measurementID, false, true, correctedRTs))
                 { // open rdam stream
                     using (var fs = File.Open(files[i].AnalysisFilePropertyBean.DeconvolutionFilePath, FileMode.Open, FileAccess.ReadWrite))
                     { // open dcl stream

@@ -75,7 +75,7 @@ namespace CompMs.MsdialDimsCore
             var filepath = file.AnalysisFilePath;
             var provider = providerFactory.Create(file);
 
-            using (var access = new RawDataAccess(filepath, 0, isGuiProcess)) {
+            using (var access = new RawDataAccess(filepath, 0, true, isGuiProcess)) {
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
