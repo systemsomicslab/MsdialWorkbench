@@ -56,7 +56,7 @@ namespace CompMs.MsdialGcMsApi.Process {
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+                MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
 
                 var dclfile = file.DeconvolutionFilePath;
                 MsdecResultsWriter.Write(dclfile, msdecResults, true);

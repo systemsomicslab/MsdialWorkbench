@@ -22,7 +22,7 @@ namespace CompMs.MsdialGcMsApi.DataObj
 
         public static IMsdialSerializer Serializer { get; } = new MsdialGcmsSerializer();
 
-        class MsdialGcmsSerializer : MsdialSerializerInner, IMsdialSerializer
+        class MsdialGcmsSerializer : MsdialSerializer, IMsdialSerializer
         {
             protected override async Task<IMsdialDataStorage<ParameterBase>> LoadMsdialDataStorageCoreAsync(IStreamManager streamManager, string path) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {

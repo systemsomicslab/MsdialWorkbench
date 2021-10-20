@@ -23,7 +23,7 @@ namespace CompMs.MsdialLcImMsApi.DataObj
 
         public static IMsdialSerializer Serializer { get; } = new MsdialLcImMsSerializerInner();
 
-        class MsdialLcImMsSerializerInner : MsdialSerializerInner, IMsdialSerializer
+        class MsdialLcImMsSerializerInner : MsdialSerializer, IMsdialSerializer
         {
             protected override async Task<IMsdialDataStorage<ParameterBase>> LoadMsdialDataStorageCoreAsync(IStreamManager streamManager, string path) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {

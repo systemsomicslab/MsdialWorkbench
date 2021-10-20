@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.Model.Export
             IAnalysisMetadataAccessor metaAccessor,
             Stream dest) {
 
-            var features = MsdialSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+            var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
             var msdecs = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
 
             exporter.Export(dest, features, msdecs, provider, metaAccessor);

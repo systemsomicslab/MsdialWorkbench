@@ -245,7 +245,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
                 CalculateAndSetAnnotatedReferences(feature, mspDB, textDB, param, isotopes);
             }
 
-            MsdialSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(analysisFileBean.PeakAreaBeanInformationFilePath, chromatogramPeakFeatures);
         }
 
         private void RunAlignment(IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile, IupacDatabase iupac) {
@@ -345,7 +345,7 @@ namespace MsdialDimsCoreUiTestApp.ViewModel
         }
 
         void ReadAndSetMs1Peaks(string serializedPeakPath) {
-            var chromatogramPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(serializedPeakPath);
+            var chromatogramPeakFeatures = MsdialPeakSerializer.LoadChromatogramPeakFeatures(serializedPeakPath);
 
             var ms2Features = new ObservableCollection<Ms2Info>(
                 chromatogramPeakFeatures.Select(feature =>

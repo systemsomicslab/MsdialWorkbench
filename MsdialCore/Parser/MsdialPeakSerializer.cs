@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Parser
 {
-    public static class MsdialSerializer {
+    public static class MsdialPeakSerializer
+    {
         public static void SaveChromatogramPeakFeatures(string file, List<ChromatogramPeakFeature> chromPeakFeatures) {
             MessagePackHandler.SaveToFile<List<ChromatogramPeakFeature>>(chromPeakFeatures, file);
         }

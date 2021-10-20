@@ -46,16 +46,16 @@ namespace CompMs.MsdialCore.DataObj
         public DataBaseStorage DataBases { get; set; }
 
         public async Task Save(IStreamManager streamManager, string projectTitle, string prefix = "") {
-            using (var stream = await streamManager.Create(MsdialSerializerInner.Combine(prefix, MsdialSerializerInner.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
+            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveMspDB(stream);
             }
-            using (var stream = await streamManager.Create(MsdialSerializerInner.Combine(prefix, MsdialSerializerInner.GetNewZippedDatabaseFileName(projectTitle))).ConfigureAwait(false)) {
+            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewZippedDatabaseFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveDataBaseMapper(stream);
             }
-            using (var stream = await streamManager.Create(MsdialSerializerInner.Combine(prefix, MsdialSerializerInner.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
+            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveDataBases(stream);
             }
-            using (var stream = await streamManager.Create(MsdialSerializerInner.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
+            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
                 SaveMsdialDataStorageCore(stream);
@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
-        protected class MsdialSerializerInner : IMsdialSerializer {
+        protected class MsdialSerializer : IMsdialSerializer {
             public virtual Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
                 return dataStorage.Save(streamManager, projectTitle, prefix);
             }
@@ -150,7 +150,7 @@ namespace CompMs.MsdialCore.DataObj
 
         ParameterBase IMsdialDataStorage<ParameterBase>.Parameter => ParameterBase;
 
-        public static IMsdialSerializer Serializer { get; } = new MsdialSerializerInner();
+        public static IMsdialSerializer Serializer { get; } = new MsdialSerializer();
 
         protected override void SaveMsdialDataStorageCore(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(this, stream);

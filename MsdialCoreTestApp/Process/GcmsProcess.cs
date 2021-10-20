@@ -174,7 +174,7 @@ namespace CompMs.App.MsdialConsole.Process
             foreach (var file in files) {
                 FileProcess.Run(file, container);
 
-                var chromPeakFeatures = MsdialSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
+                var chromPeakFeatures = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
                 Console.WriteLine("DCL version: {0}", dcl_version);
 

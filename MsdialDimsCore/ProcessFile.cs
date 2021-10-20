@@ -124,7 +124,7 @@ namespace CompMs.MsdialDimsCore
                 new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, container.DataBaseMapper, param, reportAction);
 
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
+                MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
 
                 var dclfile = file.DeconvolutionFilePath;
                 MsdecResultsWriter.Write(dclfile, msdecResults);

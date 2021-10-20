@@ -109,7 +109,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+                MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
 
                 var dclfile = file.DeconvolutionFilePath;
                 var dclfiles = new List<string>();
