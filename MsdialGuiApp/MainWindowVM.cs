@@ -87,8 +87,7 @@ namespace CompMs.App.Msdial
         }
         private IMsdialDataStorage<ParameterBase> storage;
 
-        public string ProjectFile => Storage?.Parameter?.ProjectFilePath ?? string.Empty;
-
+        public string ProjectFile => Storage?.Parameter is null ? string.Empty : Storage.Parameter.ProjectParam.ProjectFilePath;
 
         public DelegateCommand<Window> CreateNewProjectCommand {
             get => createNewProjectCommand ?? (createNewProjectCommand = new DelegateCommand<Window>(CreateNewProject));
@@ -254,16 +253,14 @@ namespace CompMs.App.Msdial
             var serializer = SerializerResolver.ResolveMsdialSerializer(projectfile);
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile));
             var storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), string.Empty).Result;
+            storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
 
             var previousFolder = storage.Parameter.ProjectFolderPath;
-
             if (projectFolder == previousFolder)
                 return storage;
 
             storage.Parameter.ProjectFolderPath = projectFolder;
 
-            storage.Parameter.ProjectFilePath = ReplaceFolderPath(storage.Parameter.ProjectFilePath, previousFolder, projectFolder);
-            // storage.Parameter.MspFilePath = replaceFolderPath(storage.Parameter.MspFilePath, previousFolder, projectFolder);
             storage.Parameter.TextDBFilePath = ReplaceFolderPath(storage.Parameter.TextDBFilePath, previousFolder, projectFolder);
             storage.Parameter.IsotopeTextDBFilePath = ReplaceFolderPath(storage.Parameter.IsotopeTextDBFilePath, previousFolder, projectFolder);
 
@@ -303,7 +300,7 @@ namespace CompMs.App.Msdial
         private static void SaveProject(MethodViewModel methodVM, IMsdialDataStorage<ParameterBase> storage) {
             // TODO: implement process when project save failed.
             var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath);
-            storage.Save(streamManager, Path.GetFileName(storage.Parameter.ProjectFilePath), string.Empty);
+            storage.Save(streamManager, storage.Parameter.ProjectFileName, string.Empty);
             // storage.Save(storage.Parameter.ProjectFilePath);
             methodVM?.SaveProject();
         }
@@ -318,7 +315,7 @@ namespace CompMs.App.Msdial
             {
                 Filter = "MTD file(*.mtd2)|*.mtd2",
                 Title = "Save project dialog",
-                InitialDirectory = storage.Parameter.ProjectFolderPath
+                InitialDirectory = storage.Parameter.ProjectFolderPath,
             };
 
             if (sfd.ShowDialog() == true) {
@@ -336,7 +333,7 @@ namespace CompMs.App.Msdial
                 };
                 message.Show();
 
-                storage.Parameter.ProjectFilePath = sfd.FileName;
+                storage.Parameter.ProjectFileName = Path.GetFileName(sfd.FileName);
                 SaveProject(methodVM, storage);
 
                 message.Close();

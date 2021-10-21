@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                ParameterBase = new ParameterBase { ProjectFilePath = "TestProjectPath" },
+                ParameterBase = new ParameterBase { ProjectFileName = "TestProjectPath", },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -70,7 +70,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 Assert.AreEqual(storage.IsotopeTextDB[0].DatabaseID, actual.IsotopeTextDB[0].DatabaseID);
                 Assert.AreEqual(storage.IsotopeTextDB[0].Name, actual.IsotopeTextDB[0].Name);
 
-                Assert.AreEqual(storage.ParameterBase.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.ParameterBase.ProjectFileName, actual.Parameter.ProjectFileName);
 
                 Assert.AreEqual(storage.IupacDatabase.Id2AtomElementProperties.Count, actual.IupacDatabase.Id2AtomElementProperties.Count);
                 Assert.IsTrue(actual.IupacDatabase.Id2AtomElementProperties.ContainsKey(6));

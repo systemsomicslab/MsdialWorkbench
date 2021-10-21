@@ -55,10 +55,10 @@ namespace CompMs.App.Msdial.ViewModel
             }
         }
         public string ProjectFilePath {
-            get => innerModel.ProjectFilePath;
+            get => innerModel.ProjectParam.ProjectFilePath;
             set {
-                if (innerModel.ProjectFilePath == value) return;
-                innerModel.ProjectFilePath = value;
+                if (innerModel.ProjectFileName == System.IO.Path.GetFileName(value)) return;
+                innerModel.ProjectFileName = System.IO.Path.GetFileName(value);
                 OnPropertyChanged(nameof(ProjectFilePath));
             }
         }

@@ -27,7 +27,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialGcmsParameter = new MsdialGcmsParameter { ProjectFilePath = "TestProjectPath", RetentionIndexAlignmentTolerance = 30f, },
+                MsdialGcmsParameter = new MsdialGcmsParameter { ProjectFileName = "TestProjectPath", RetentionIndexAlignmentTolerance = 30f, },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -72,7 +72,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
                 Assert.AreEqual(storage.IsotopeTextDB[0].DatabaseID, actual.IsotopeTextDB[0].DatabaseID);
                 Assert.AreEqual(storage.IsotopeTextDB[0].Name, actual.IsotopeTextDB[0].Name);
 
-                Assert.AreEqual(storage.MsdialGcmsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialGcmsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialGcmsParameter);
                 Assert.AreEqual(storage.MsdialGcmsParameter.RetentionIndexAlignmentTolerance, ((MsdialGcmsParameter)actual.Parameter).RetentionIndexAlignmentTolerance);

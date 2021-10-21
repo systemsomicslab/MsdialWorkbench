@@ -29,7 +29,7 @@ namespace CompMs.MsdialDimsCore.DataObj.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialDimsParameter = new MsdialDimsParameter { ProjectFilePath = "TestProjectPath", ProviderFactoryParameter = new DimsBpiDataProviderFactoryParameter(3, 6) },
+                MsdialDimsParameter = new MsdialDimsParameter { ProjectFileName = "TestProjectPath", ProviderFactoryParameter = new DimsBpiDataProviderFactoryParameter(3, 6) },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -73,7 +73,7 @@ namespace CompMs.MsdialDimsCore.DataObj.Tests
                 Assert.AreEqual(storage.IsotopeTextDB[0].DatabaseID, actual.IsotopeTextDB[0].DatabaseID);
                 Assert.AreEqual(storage.IsotopeTextDB[0].Name, actual.IsotopeTextDB[0].Name);
 
-                Assert.AreEqual(storage.MsdialDimsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialDimsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialDimsParameter);
                 Assert.IsTrue(((MsdialDimsParameter)actual.Parameter).ProviderFactoryParameter is DimsBpiDataProviderFactoryParameter);

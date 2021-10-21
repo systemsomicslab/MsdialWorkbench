@@ -40,7 +40,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialDimsParameter = new MsdialDimsParameter { ProjectFilePath = "TestProjectPath", ProviderFactoryParameter = new DimsBpiDataProviderFactoryParameter(3, 6) },
+                MsdialDimsParameter = new MsdialDimsParameter { ProjectFileName = "TestProjectPath", ProviderFactoryParameter = new DimsBpiDataProviderFactoryParameter(3, 6) },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -74,7 +74,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 AreDataBaseMapperEqual(storage.DataBaseMapper, actual.DataBaseMapper);
                 AreDataBaseStorageEqual(storage.DataBases, actual.DataBases);
 
-                Assert.AreEqual(storage.MsdialDimsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialDimsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialDimsParameter);
                 Assert.IsTrue(((MsdialDimsParameter)actual.Parameter).ProviderFactoryParameter is DimsBpiDataProviderFactoryParameter);
@@ -92,7 +92,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialLcmsParameter = new MsdialLcmsParameter { ProjectFilePath = "TestProjectPath", },
+                MsdialLcmsParameter = new MsdialLcmsParameter { ProjectFileName = "TestProjectPath", },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> {
                     { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } }
                 } },
@@ -129,7 +129,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 AreDataBaseMapperEqual(storage.DataBaseMapper, actual.DataBaseMapper);
                 AreDataBaseStorageEqual(storage.DataBases, actual.DataBases);
 
-                Assert.AreEqual(storage.MsdialLcmsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialLcmsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialLcmsParameter);
             }
@@ -144,7 +144,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialImmsParameter = new MsdialImmsParameter { ProjectFilePath = "TestProjectPath", ProviderFactoryParameter = new ImmsTicDataProviderFactoryParameter(3, 6) },
+                MsdialImmsParameter = new MsdialImmsParameter { ProjectFileName = "TestProjectPath", ProviderFactoryParameter = new ImmsTicDataProviderFactoryParameter(3, 6) },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -178,7 +178,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 AreDataBaseMapperEqual(storage.DataBaseMapper, actual.DataBaseMapper);
                 AreDataBaseStorageEqual(storage.DataBases, actual.DataBases);
 
-                Assert.AreEqual(storage.MsdialImmsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialImmsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialImmsParameter);
                 Assert.IsTrue(((MsdialImmsParameter)actual.Parameter).ProviderFactoryParameter is ImmsTicDataProviderFactoryParameter);
@@ -196,7 +196,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialLcImMsParameter = new MsdialLcImMsParameter { ProjectFilePath = "TestProjectPath", DriftTimeBegin = 3f },
+                MsdialLcImMsParameter = new MsdialLcImMsParameter { ProjectFileName = "TestProjectPath", DriftTimeBegin = 3f },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -231,7 +231,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 AreDataBaseMapperEqual(storage.DataBaseMapper, actual.DataBaseMapper);
                 AreDataBaseStorageEqual(storage.DataBases, actual.DataBases);
 
-                Assert.AreEqual(storage.MsdialLcImMsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialLcImMsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialLcImMsParameter);
                 Assert.AreEqual(storage.MsdialLcImMsParameter.DriftTimeBegin, ((MsdialLcImMsParameter)actual.Parameter).DriftTimeBegin);
@@ -247,7 +247,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialGcmsParameter = new MsdialGcmsParameter { ProjectFilePath = "TestProjectPath", RetentionIndexAlignmentTolerance = 30f, },
+                MsdialGcmsParameter = new MsdialGcmsParameter { ProjectFileName = "TestProjectPath", RetentionIndexAlignmentTolerance = 30f, },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> { { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } } } },
                 DataBaseMapper = new DataBaseMapper { },
                 DataBases = DataBaseStorage.CreateEmpty(),
@@ -282,7 +282,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
                 AreDataBaseMapperEqual(storage.DataBaseMapper, actual.DataBaseMapper);
                 AreDataBaseStorageEqual(storage.DataBases, actual.DataBases);
 
-                Assert.AreEqual(storage.MsdialGcmsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialGcmsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialGcmsParameter);
                 Assert.AreEqual(storage.MsdialGcmsParameter.RetentionIndexAlignmentTolerance, ((MsdialGcmsParameter)actual.Parameter).RetentionIndexAlignmentTolerance);

@@ -17,7 +17,7 @@ namespace CompMs.MsdialCore.DataObj
             ProjectParameter = projectParameter;
             InnerStorages = storages;
             Storages = InnerStorages.AsReadOnly();
-            InnerProjectPaths = Storages.Select(storage => storage.Parameter.ProjectParam.ProjectFilePath).ToList();
+            InnerProjectPaths = Storages.Select(storage => storage.Parameter.ProjectParam.ProjectFileName).ToList();
             ProjectPaths = InnerProjectPaths.AsReadOnly();
         }
 
@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public void AddStorage(IMsdialDataStorage<ParameterBase> storage) {
             InnerStorages.Add(storage);
-            InnerProjectPaths.Add(storage.Parameter.ProjectFilePath);
+            InnerProjectPaths.Add(storage.Parameter.ProjectParam.ProjectFilePath);
         }
 
         public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer) {
@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.DataObj
                 MessagePackDefaultHandler.SaveToStream(this, projectStream);
             }
 
-            var tasks = Storages.Select(storage => serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(storage.Parameter.ProjectFilePath), string.Empty));
+            var tasks = Storages.Select(storage => serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(storage.Parameter.ProjectFileName), storage.Parameter.ProjectFolderPath));
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 

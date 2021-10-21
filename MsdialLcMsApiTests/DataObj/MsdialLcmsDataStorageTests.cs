@@ -28,7 +28,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 MspDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 3, Name = "TestMspRef" } },
                 TextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 4, Name = "TestTextRef" } },
                 IsotopeTextDB = new List<MoleculeMsReference> { new MoleculeMsReference { DatabaseID = 5, Name = "TestIsotopeRef" } },
-                MsdialLcmsParameter = new MsdialLcmsParameter { ProjectFilePath = "TestProjectPath", },
+                MsdialLcmsParameter = new MsdialLcmsParameter { ProjectFileName = "TestProjectPath", },
                 IupacDatabase = new IupacDatabase { Id2AtomElementProperties = new Dictionary<int, List<AtomElementProperty>> {
                     { 6, new List<AtomElementProperty> { new AtomElementProperty { ElementName = "TestElement" } } }
                 } },
@@ -75,7 +75,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
                 Assert.AreEqual(storage.IsotopeTextDB[0].DatabaseID, actual.IsotopeTextDB[0].DatabaseID);
                 Assert.AreEqual(storage.IsotopeTextDB[0].Name, actual.IsotopeTextDB[0].Name);
 
-                Assert.AreEqual(storage.MsdialLcmsParameter.ProjectFilePath, actual.Parameter.ProjectFilePath);
+                Assert.AreEqual(storage.MsdialLcmsParameter.ProjectFileName, actual.Parameter.ProjectFileName);
                 Console.WriteLine(actual.Parameter.GetType().FullName);
                 Assert.IsTrue(actual.Parameter is MsdialLcmsParameter);
 

@@ -54,7 +54,7 @@ namespace CompMs.App.MsdialConsole.Process {
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
-            container.Save(streamManager, Path.GetFileName(container.MsdialDimsParameter.ProjectFilePath), string.Empty).Wait();
+            container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
 
             return 0;
         }
@@ -71,7 +71,7 @@ namespace CompMs.App.MsdialConsole.Process {
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
-            await container.Save(streamManager, Path.GetFileName(container.MsdialDimsParameter.ProjectFilePath), string.Empty);
+            await container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty);
             return 0;
         }
     }

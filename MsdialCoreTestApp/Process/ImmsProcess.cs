@@ -52,7 +52,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             var streamManager = new DirectoryTreeStreamManager(container.Parameter.ProjectFolderPath);
-            container.Save(streamManager, Path.GetFileName(container.Parameter.ProjectFilePath), string.Empty).Wait();
+            container.Save(streamManager, container.Parameter.ProjectFileName, string.Empty).Wait();
 
             return 0;
         }

@@ -16,11 +16,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public async Task LoadTest() {
-            var projectParameter = new ParameterBase { ProjectFilePath = "TestProject" };
+            var projectParameter = new ParameterBase { ProjectFileName = "TestProject", };
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
-            var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFilePath = "Test1", } };
-            var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFilePath = "Test2", } };
-            var storage3 = new MockStorage { Parameter = new ParameterBase { ProjectFilePath = "Test3", } };
+            var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
+            var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
+            var storage3 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test3", } };
             proj.AddStorage(storage1);
             proj.AddStorage(storage2);
             proj.AddStorage(storage3);
@@ -34,11 +34,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
                 var actual = await ProjectDataStorage.Load(streamManager, serializer);
 
-                Assert.AreEqual(proj.ProjectParameter.ProjectFilePath, actual.ProjectParameter.ProjectFilePath);
+                Assert.AreEqual(proj.ProjectParameter.ProjectFileName, actual.ProjectParameter.ProjectFileName);
                 CollectionAssert.AreEqual(proj.ProjectPaths, actual.ProjectPaths);
                 Assert.AreEqual(proj.Storages.Count, actual.Storages.Count);
                 foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages)) {
-                    Assert.AreEqual(exp.Parameter.ProjectFilePath, act.Parameter.ProjectFilePath);
+                    Assert.AreEqual(exp.Parameter.ProjectFileName, act.Parameter.ProjectFileName);
                 }
             }
         }
