@@ -35,10 +35,9 @@
             </TabItem>
 
             <TabItem Header="Identification"
-                     DataContext="{Binding AnnotationProcessSettingViewModel, Mode=OneTime}">
-                <setting:AnnotationProcessSettingView/>
+                     DataContext="{Binding IdentifySettingViewModel, Mode=OneTime}">
+                <setting:IdentitySettingView/>
             </TabItem>
-
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">
                 <commonview:AdductView />

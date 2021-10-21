@@ -1,7 +1,5 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -16,9 +14,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -30,8 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Model = model;
             Param = MsdialProjectParameterFactory.Create(Model.Parameter);
 
-            var dt = DateTime.Now;
-            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
+            AlignmentResultFileName = model.AlignmentResultFileName;
 
             AnalysisFiles = Model.AnalysisFiles;
 
@@ -40,13 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                          .Concat(Enumerable.Repeat<MzSearchQueryVM>(null, 200).Select(_ => new MzSearchQueryVM()))
             );
 
-            if (Model.ParameterBase.SearchedAdductIons.IsEmptyOrNull()) {
-                Model.ParameterBase.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(Model.ParameterBase.IonMode);
-            }
-            Model.ParameterBase.SearchedAdductIons[0].IsIncluded = true;
-            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.ParameterBase.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
-
-            Model.ParameterBase.QcAtLeastFilter = false;
+            SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
             IdentitySettingViewModel = new LcmsIdentitySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
 
@@ -54,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 IdentitySettingViewModel.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
-            .WithSubscribe(window => ContinueProcess(window))
+            .WithSubscribe(ContinueProcess)
             .AddTo(Disposables);
         }
 

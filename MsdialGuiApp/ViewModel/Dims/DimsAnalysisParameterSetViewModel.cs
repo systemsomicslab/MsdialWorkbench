@@ -39,6 +39,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel);
 
+            IdentifySettingViewModel = new DimsIdentifySettingViewModel(Model.IdentifySettingModel).AddTo(Disposables);
+
             var factory = new DimsAnnotationSettingViewModelFactory(Model.Parameter);
             AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
                     Model.AnnotationProcessSettingModel,
@@ -53,10 +55,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 (annotationMethod as DimsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
             }
 
-            ContinueProcessCommand = AnnotationProcessSettingViewModel.ObserveHasErrors.Inverse()
-                .ToReactiveCommand<Window>()
-                .WithSubscribe(window => ContinueProcess(window))
-                .AddTo(Disposables);
+            ContinueProcessCommand = new[]{
+                IdentifySettingViewModel.ObserveHasErrors,
+                AnnotationProcessSettingViewModel.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand<Window>()
+            .WithSubscribe(ContinueProcess)
+            .AddTo(Disposables);
         }
 
         public DimsAnalysisParameterSetModel Model { get; }
@@ -79,7 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
 
         public DimsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
-
+        public DimsIdentifySettingViewModel IdentifySettingViewModel { get; }
         public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
         public bool TogetherWithAlignment {

@@ -140,8 +140,10 @@
                      Grid.Row="1"/>
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                    Margin="0,16,0,0">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Visible"
+                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel Margin="8">
             <StackPanel.Resources>
                 <ResourceDictionary>
                     <ResourceDictionary.MergedDictionaries>
@@ -165,23 +167,13 @@
                     </Style> 
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <Expander Header="DataBase"
-                      IsExpanded="{Binding IsDataBaseExpanded.Value}">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                              VerticalScrollBarVisibility="Visible"
-                              Margin="8">
-                    <ContentControl Content="{Binding Path=DataBaseViewModel.Value, Mode=OneWay}"
-                                IsEnabled="{Binding IsSourceTypeEnabled.Value, Mode=OneWay}"/>
-                </ScrollViewer>
-            </Expander>
-            <Expander Header="Annotation method"
-                      IsExpanded="{Binding IsAnnotatorExpanded.Value}">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                              VerticalScrollBarVisibility="Visible"
-                              Margin="8">
+                <GroupBox Header="DataBase">
+                    <ContentControl Content="{Binding Path=DataBaseViewModel.Value, Mode=OneWay}"/>
+                </GroupBox>
+                <GroupBox Header="Annotation method">
                     <ContentControl Content="{Binding Path=AnnotatorViewModel.Value, Mode=OneWay}"/>
-                </ScrollViewer>
-            </Expander>
-        </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -162,7 +162,9 @@
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
+    <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
+    <Compile Include="Model\Dims\DimsIdentifySettingModel.cs" />
     <Compile Include="Model\Dims\DimsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Dims\DimsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
@@ -182,6 +184,8 @@
     <Compile Include="Model\Imms\ImmsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
+    <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Lcms\ILcmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertySetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
@@ -189,12 +193,8 @@
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\DelegateDataBaseAnnotationSettingModel.cs" />
-    <Compile Include="Model\Lcms\LcmsFastaAnnotationSettingModel.cs" />
-    <Compile Include="Model\Lcms\LcmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
-    <Compile Include="Model\Lcms\LcmsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
-    <Compile Include="Model\Lcms\LcmsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsIdentitySettingModel.cs" />
     <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
@@ -245,8 +245,10 @@
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsDataCollectionSettingViewModel.cs" />
+    <Compile Include="ViewModel\Dims\DimsIdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsLbmAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
@@ -268,14 +270,9 @@
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisParameterSetViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotatorSettingViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsFastaAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsIdentitySettingViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsLbmAnnotationSettingViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
     <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
@@ -283,6 +280,7 @@
     <Compile Include="ViewModel\Setting\DataBaseSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\IAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
