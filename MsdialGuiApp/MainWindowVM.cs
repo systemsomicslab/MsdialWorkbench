@@ -19,6 +19,7 @@ using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
+using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -250,7 +251,7 @@ namespace CompMs.App.Msdial
         private static IMsdialDataStorage<ParameterBase> LoadProjectFromPath(string projectfile) {
             var projectFolder = System.IO.Path.GetDirectoryName(projectfile);
 
-            var serializer = SerializerResolver.ResolveMsdialSerializer(projectfile);
+            var serializer = new MsdialIntegrateSerializer();
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile));
             var storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), string.Empty).Result;
             storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);

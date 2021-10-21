@@ -423,7 +423,6 @@
     </Compile>
     <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
-    <Compile Include="Utility\SerializerResolver.cs" />
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
@@ -984,6 +983,10 @@
     <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj">
       <Project>{d024bb64-3ccd-49c2-b6ee-a11900817daf}</Project>
       <Name>MsdialImmsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj">
+      <Project>{9a103a62-9578-48a1-b967-d046925d3ac3}</Project>
+      <Name>MsdialIntegrate</Name>
     </ProjectReference>
     <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj">
       <Project>{0750647B-1DFC-49DC-ADFB-16235E22AA88}</Project>
